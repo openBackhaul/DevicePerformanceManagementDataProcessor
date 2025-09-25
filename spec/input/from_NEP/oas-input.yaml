@@ -1,0 +1,690 @@
+
+# todo for pm data services:
+# 1) add callback to new PM app (this app will provide data in json format, not in csv)
+# 2) in responseBodies: add the mapping from the returned data in callback to the output schema (map json to csv)
+
+  /v1/provide-air-interface-transmission-mode-lists-of-devices:
+    post:
+      operationId: provideAirInterfaceTransmissionModeListsInformationOfDevices
+      summary: 'Responses with air interface transmission mode lists information for all (target) devices in the NetExplorerProxy cache.'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mount-name-list:
+                  type: array
+                  items:
+                    type: string
+                    description: 'Optional list of device names the reponse data shall be filtered for'
+                data-age:
+                  type: integer
+                  description: > 
+                    'Optional: if provided, found data is filtered for data that is not older than data-age hours.
+                    If not provided, all found data (for target devices) is returned.'
+              example:
+                mount-name-list: 
+                  - '305251234'
+                  - '100250001'
+                data-age: 48
+      responses:
+        '200':
+          description: 'Air interface transmission mode list information for all (target) devices in the NetExplorerProxy cache in csv format.'
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: >
+                  'The first line shall contain the following headers:
+                    mount-name;uuid;local-id;transmission-mode-name;symbol-rate-reduction-factor;modulation-scheme-at-lct;modulation-scheme;code-rate;channel-bandwidth;xpic-is-avail;capa-factor
+                  There shall be a single line containing all relevant data per device, air interface and transmission mode (missing information is to be left blank)
+                  from the cache/ElasticSearch (airInterfaceTransmissionModeLists)
+                  Columns are:
+                    - mount-name: the device basekey
+                    - uuid: the ltp uuid
+                    - local-id: the layer protocol (i.a. air-interface) id, to be used together with uuid as mapping key
+                    - transmission-mode-name: name of the supported transmission mode
+                    - symbol-rate-reduction-factor
+                    - modulation-scheme-at-lct: name of the modulation scheme as shown in LCT
+                    - modulation-scheme: indicates the modulation scheme withouth information about light, strong, etc., is the numberOfStates
+                    - code-rate
+                    - channel-bandwidth
+                    - xpic-is-avail: indicates if the modulation scheme supports xpic
+                    - capa-factor: capacity factor in mbps derived from above properties with formula
+                        (channel-bandwidth/symbol-rate-reduction-factor) * log2(modulation-scheme) * code-rate * 1/1,15 * 1/1000'
+                example:
+                  'mount-name;uuid;local-id;transmission-mode-name;symbol-rate-reduction-factor;modulation-scheme-at-lct;modulation-scheme;code-rate;channel-bandwidth;xpic-is-avail;capa-factor
+                  100250001;RF-123456789;123456789;56000-64-v0;1;64 QAM;64;97;56000;true;28340,9
+                  100250001;RF-123456789;123456789;56000-256-v0;1;256 QAM;256;95;56000;true;37008,7
+                  100250001;RF-123456789;123456789;56000-16-v0;1;16 QAM;16;97;56000;true;18893,9'
+          headers:
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-s-is-031/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '502':
+          $ref: '#/components/responses/502'
+        '531':
+          $ref: '#/components/responses/531'
+        '532':
+          $ref: '#/components/responses/532'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+
+
+  /v1/provide-air-interface-non-qam-pm-data-of-devices:
+    post:
+      operationId: provideAirInterfaceNonQamPmDataOfDevices
+      summary: 'Responses with air interface non-QAM PM data for all (target) devices in the NetExplorerProxy cache.'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mount-name-list:
+                  type: array
+                  items:
+                    type: string
+                    description: 'Optional list of device names the reponse data shall be filtered for'
+                data-age:
+                  type: integer
+                  description: > 
+                    'Optional: if provided, found data is filtered for data that is not older than data-age hours.
+                    If not provided, all found data (for target devices) is returned.'
+              example:
+                mount-name-list: 
+                  - '305251234'
+                  - '100250001'
+                data-age: 48
+      responses:
+        '200':
+          description: 'Air interface non-QAM PM data for all (target) devices in the NetExplorerProxy cache in csv format.'
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: >
+                  'The first line shall contain the following headers:
+                    mount-name;uuid;local-id;period-end-time;es;ses;ut;rx-level-min;rx-level-max;rx-level-avg;tx-level-min;tx-level-max;tx-level-avg;xpd-min;xpd-max;xpd-avg;snir-min;snir-max;snir-avg
+                  There shall be a single line containing all relevant data per device, air interface and time interval (missing information is to be left blank)
+                  from the cache/ElasticSearch (airInterfaceNonQamPm).
+                  Columns are:
+                    - mount-name: the device basekey
+                    - uuid: the ltp uuid
+                    - local-id: the layer-protocol (i.e. interface) local-id; required for mapping of response data from other air-interface services 
+                    - period-end-time: timestamp of the 15 minute interval
+                    - es: errored seconds (sec)
+                    - ses: severely errored seconds (sec)
+                    - ut: unavailable time (sec)
+                    - rx-level-min: minimum receive level (dBm)
+                    - rx-level-max: maximum receive level (dBm)
+                    - rx-level-avg: average receive level (dBm)
+                    - tx-level-min: minimum transmit level (dBm)
+                    - tx-level-max: maximum transmit level (dBm)
+                    - tx-level-avg: average transmit level (dBm)
+                    - xpd-min: minimum xpd (= cross-polarization descrimination)
+                    - xpd-max: maximum xpd
+                    - xpd-avg: average xpd
+                    - snir-min: minimum snir (= signal-to-noise-and-interference ration)
+                    - snir-max: maximum snir
+                    - snir-avg: avgerage snir'
+                example:
+                  'mount-name;uuid;local-id;period-end-time;es;ses;ut;rx-level-min;rx-level-max;rx-level-avg;tx-level-min;tx-level-max;tx-level-avg;xpd-min;xpd-max;xpd-avg;snir-min;snir-max;snir-avg
+                  200250003;ltpB-1;ltpB-1-localId-1;2024-12-11T15:30:00+01:00;0;10;90;-50;-40;-45;8;15;20;-99;-99;-99;38;39;-99'
+          headers:
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-s-is-032/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '502':
+          $ref: '#/components/responses/502'
+        '531':
+          $ref: '#/components/responses/531'
+        '532':
+          $ref: '#/components/responses/532'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+  /v1/provide-air-interface-qam-pm-data-of-devices:
+    post:
+      operationId: provideAirInterfaceQamPmDataOfDevices
+      summary: 'Responses with air interface QAM PM data for all (target) devices in the NetExplorerProxy cache.'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mount-name-list:
+                  type: array
+                  items:
+                    type: string
+                    description: 'Optional list of device names the reponse data shall be filtered for'
+                data-age:
+                  type: integer
+                  description: > 
+                    'Optional: if provided, found data is filtered for data that is not older than data-age hours.
+                    If not provided, all found data (for target devices) is returned.'
+              example:
+                mount-name-list: 
+                  - '305251234'
+                  - '100250001'
+                data-age: 48
+      responses:
+        '200':
+          description: 'Air interface QAM PM data for all (target) devices in the NetExplorerProxy cache in csv format.'
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: >
+                  'The first line shall contain the following headers:
+                    mount-name;uuid;local-id;period-end-time;time-xstate-sequence-number;time;transmission-mode
+                  There shall be a single line containing all relevant data per device, air interface and time interval (missing information is to be left blank)
+                  from the cache/ElasticSearch (airInterfaceQamPm).
+                  Columns are:
+                    - mount-name: the device basekey
+                    - uuid: the ltp uuid
+                    - local-id: the layer-protocol (i.e. interface) local-id; required for mapping of response data from other air-interface services 
+                    - period-end-time: timestamp of the 15 minute interval
+                    - time-xstate-sequence-number
+                    - time: the time the link was operating with this modulation scheme (seconds) during the 15min time interval
+                    - transmission-mode: this property contains the transmission-mode-name as found in the response data of /v1/provide-air-interface-transmission-mode-lists-of-devices'
+                example:
+                  'mount-name;uuid;local-id;period-end-time;time-xstate-sequence-number;time;transmission-mode
+                  200250003;ltpB-1;ltpB-1-localId-1;2024-12-11T15:30:00+01:00;2;100;4QAM
+                  200250003;ltpB-1;ltpB-1-localId-1;2024-12-11T15:30:00+01:00;1;700;16QAM'
+          headers:
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-s-is-033/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '502':
+          $ref: '#/components/responses/502'
+        '531':
+          $ref: '#/components/responses/531'
+        '532':
+          $ref: '#/components/responses/532'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+
+  /v1/provide-ethernet-container-pm-data-of-devices:
+    post:
+      operationId: provideEthernetContainerGeneralInformationOfDevices
+      summary: 'Responses with ethernetContainer PM data for all (target) devices in the NetExplorerProxy cache.'
+      tags:
+        - IndividualServices
+      security:
+        - basicAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mount-name-list:
+                  type: array
+                  items:
+                    type: string
+                    description: 'Optional list of device names the reponse data shall be filtered for'
+                data-age:
+                  type: integer
+                  description: > 
+                    'Optional: if provided, found data is filtered for data that is not older than data-age hours.
+                    If not provided, all found data (for target devices) is returned.'
+              example:
+                mount-name-list: 
+                  - '305251234'
+                  - '100250001'
+                data-age: 48
+      responses:
+        '200':
+          description: 'ethernetContainer PM data for all (target) devices in the NetExplorerProxy cache in csv format.'
+          content:
+            text/csv:
+              schema:
+                type: string
+                description: >
+                  'The first line shall contain the following headers:
+                    mount-name;uuid;local-id;period-end-time;total-bytes-input;total-bytes-output;total-frames-input;total-frames-output;errored-frames-input;errored-frames-output;dropped-frames-input;dropped-frames-output
+                  There shall be a single line containing all relevant data per device, ethernetContainer and time interval (missing information is to be left blank)
+                  from the cache/ElasticSearch (ethernetContainerPm).
+                  Columns are:
+                    - mount-name: the device basekey
+                    - uuid: the ltp uuid
+                    - local-id: the layer-protocol (i.e. interface) local-id; required for mapping to ethernet container general information
+                    - period-end-time: timestamp of the 15 minute interval
+                    - total-bytes-input
+                    - total-bytes-output
+                    - total-frames-input
+                    - total-frames-output
+                    - errored-frames-input
+                    - errored-frames-output
+                    - dropped-frames-input
+                    - dropped-frames-output'
+                example:
+                  'mount-name;uuid;local-id;period-end-time;total-bytes-input;total-bytes-output;total-frames-input;total-frames-output;errored-frames-input;errored-frames-output;dropped-frames-input;dropped-frames-output
+                  100250001;ETH-2134639490;2134639490;2024-12-10T08:30:00+01:00;74054;17333;-1;-1;899;0;0;0
+                  100250001;ETH-2134639490;2134639490;2024-12-10T07:45:00+01:00;73444;16016;-1;-1;899;0;0;0'
+          headers:
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-s-is-041/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '502':
+          $ref: '#/components/responses/502'
+        '531':
+          $ref: '#/components/responses/531'
+        '532':
+          $ref: '#/components/responses/532'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+
+
+  # pm data is provisioned differently now, no longer in the cache, so this service requires reworking
+  /v1/provide-nep-data-statistics:
+    post:
+      operationId: provideNepDataStatistics
+      summary: 'Provides (non-MAC) data availability statistics of the NEP cache for the current day'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target-date:
+                  type: string
+                  enum:
+                    - 'today'
+                    - 'yesterday'
+                  description: > 
+                    'Data statistics are provided according to the selected day. If no requestBody is provided (optional), the default=today is applied.'
+      responses:
+        '200':
+          description: 'NEP data statistics provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data-statistics
+                properties:
+                  data-statistics:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        description: > 
+                          'If the service was called with a request body, then 
+                          if {request.body#target-date} == yesterday, then timestamp contains the date from yesterday (yyyy-mm-dd format),
+                          else if {request.body#target-date} == today, or if requestBody not provided at all then the timestamp contains the current date (yyyy-mm-ddThh:mm:ss+offsetHours:offsetMinutes)'
+                      number-of-connected-devices:
+                        type: integer
+                        description: >
+                          'The number of currently connected devices at MWDI
+                          from count of entries in {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetConnectedDevices.response.body#mount-name-list}'
+                      number-of-devices-in-nep-cache:
+                        type: integer
+                        description: >
+                          'The number of devices in the NEP cache
+                          from count of all entries in {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetListOfNepDevices.response.body#mount-name-list/mount-name}'
+                      number-of-recently-update-devices-in-nep-cache:
+                        type: integer
+                        description: >
+                          'The number of recently updated devices in the NEP cache
+                          from count of all entries in {PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetListOfNepDevices.response.body#mount-name-list/mount-name}
+                          where {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetListOfNepDevices.response.body#mount-name-list/last-data-update-timestamp} contains the current day'
+                      number-of-records-per-data-class:
+                        type: object
+                        properties:
+                          general-device-info:
+                            type: integer
+                            description: >
+                              'The number of records for generalInformationOfDevices with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          actual-equipment-info:
+                            type: integer
+                            description: >
+                              'The number of records for actualEquipmentInformation with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          air-interface-general-info:
+                            type: integer
+                            description: >
+                              'The number of records for airInterfaceGeneralInformation with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          air-interface-transmission-mode-lists:
+                            type: integer
+                            description: >
+                              'The number of records for airInterfaceTransmissionModeLists with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          air-interface-non-qam-pm-data:
+                            type: integer
+                            description: >
+                              'The number of records for airInterfaceNonQamPmData with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          air-interface-qam-pm-data:
+                            type: integer
+                            description: >
+                              'The number of records for airInterfaceQamPmData with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          ethernet-container-general-info:
+                            type: integer
+                            description: >
+                              'The number of records for ethernetContainerGeneralInformation with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          ethernet-container-pm-data:
+                            type: integer
+                            description: >
+                              'The number of records for ethernetContainerPmData with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                          wire-interface-general-info:
+                            type: integer
+                            description: >
+                              'The number of records for wireInterfaceGeneralInformation with timestamp containing the day according to {response.body#data-statistics/timestamp}' 
+                              from ElasticSearch callback {$PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache.GetNepDataStatistics}'
+                example:
+                  data-statistics:
+                    timestamp: '2025-01-01T03:27:00+01:02'
+                    number-of-connected-devices: 37500
+                    number-of-devices-in-nep-cache: 40000
+                    number-of-recently-update-devices-in-nep-cache: 18000
+                    number-of-records-per-data-class:
+                      general-device-info: 10000
+                      actual-equipment-info: 25000
+                      air-interface-general-info: 20000
+                      air-interface-transmission-mode-lists: 29000
+                      air-interface-non-qam-pm-data: 90000
+                      air-interface-qam-pm-data: 180000
+                      ethernet-container-general-info: 50000
+                      ethernet-container-pm-data: 150000
+                      wire-interface-general-info: 30000
+          headers:
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-s-is-020/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '502':
+          $ref: '#/components/responses/502'
+        '531':
+          $ref: '#/components/responses/531'
+        '532':
+          $ref: '#/components/responses/532'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        PromptForProvidingNepDataStaticsticsCausesReadingFromNepCache:
+          GetConnectedDevices: #[/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-c-is-mwdi-1-1-2-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              responses:
+                '200':
+                  description: 'List of connected devices provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        required:
+                          - mount-name-list
+                        properties:
+                          mount-name-list:
+                            type: array
+                            items:
+                              type: string
+                      example:
+                        mount-name-list:
+                          - '305251234'
+                          - '105258888'
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '502':
+                  $ref: '#/components/responses/502'
+                '531':
+                  $ref: '#/components/responses/531'
+                '532':
+                  $ref: '#/components/responses/532'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          GetListOfNepDevices: #[/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-nep-1-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-nep-1-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-nep-1-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-tcp-c-nep-1-1-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=nep-1-1-0-op-c-is-nep-1-1-0-021/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]                post:
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              responses:
+                '200':
+                  description: 'List of devices in the NetExplorerProxy cache.'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        required:
+                          - mount-name-list
+                        properties:
+                          mount-name-list:
+                            type: array
+                            items:
+                              type: object
+                              required:
+                                - mount-name
+                                - last-data-update-timestamp
+                              properties:
+                                mount-name:
+                                  type: string
+                                last-data-update-timestamp:
+                                  type: string
+                      example:
+                        mount-name-list:
+                          - mount-name: '305251234'
+                            last-data-update-timestamp: '2025-01-15T14:00:00+01:02'
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '502':
+                  $ref: '#/components/responses/502'
+                '531':
+                  $ref: '#/components/responses/531'
+                '532':
+                  $ref: '#/components/responses/532'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+

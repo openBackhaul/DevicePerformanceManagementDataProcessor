@@ -1,0 +1,45 @@
+# removed services
+
+      # airIf pm
+        - operation-name: /v1/provide-air-interface-transmission-mode-lists-of-devices
+          uuid: nep-1-2-0-op-s-is-031
+          operation-key: n.a.
+          # useless without QAM data
+        - operation-name: /v1/provide-air-interface-non-qam-pm-data-of-devices
+          uuid: nep-1-2-0-op-s-is-032
+          operation-key: n.a.
+        - operation-name: /v1/provide-air-interface-qam-pm-data-of-devices
+          uuid: nep-1-2-0-op-s-is-033
+          operation-key: n.a.
+
+      # eth pm
+        - operation-name: /v1/provide-ethernet-container-pm-data-of-devices
+          uuid: nep-1-2-0-op-s-is-041
+          operation-key: n.a.
+
+      # data stats
+        - operation-name: /v1/provide-nep-data-statistics
+          uuid: nep-1-2-0-op-s-is-050
+          operation-key: n.a.
+
+
+# removed http-clients:
+  # used for /v1/provide-nep-data-statistics
+  - http-client:
+      application-name: NetExplorerProxy
+      release-number: 1.1.0
+      uuid: nep-1-2-0-http-c-nep-1-2-0-000
+    tcp-client:
+      remote-protocol: http
+      ip-address: 127.0.0.1
+      tcp-port: 4018
+      uuid: nep-1-2-0-tcp-c-nep-1-2-0-000
+    operation-clients:
+      own-oam:
+        basic:
+        individual:
+      service:
+        basic:
+        individual:
+          - operation-name: /v1/provide-list-of-devices-in-nep
+            uuid: nep-1-2-0-op-c-is-nep-1-2-0-021
