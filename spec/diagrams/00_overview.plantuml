@@ -1,0 +1,162 @@
+@startuml 00_overview
+skinparam responseMessageBelowArrow true
+
+title
+DevicePerformanceManagementDataProcessor
+end title
+
+participant "MWDI" as mwdi
+participant "DPMDP" as dpmdp
+participant "p1ProcessingOrchestrator" as p1ProOrch
+participant "p1ExampleProcessingFunction" as p1Process
+participant "p1TransmittingFunction" as p1Trans
+participant "Kafka" as kafka
+participant "p1StoringFunction" as p1Store
+
+mwdi -> dpmdp : {counter, timestamp, objectPath, attributeName, newValue}
+activate dpmdp
+
+note right dpmdp
+  IF attributeName=='timeOfLatestChange'
+    create dataStructureForProcessing
+    fill in values from notification
+  ELSE
+    terminate processing
+end note
+
+note right dpmdp
+  IF objectPath contains '/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
+    set dataStructureForProcessing.interfaceType='airInterface'
+  ELSEIF objectPath contains '/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances'
+    set dataStructureForProcessing.interfaceType='ethernetContainer'
+  ELSE
+    terminate processing
+end note
+
+
+== Pre - Processing ==
+
+note right dpmdp
+  Use objectPath for reading PM data from MWDI
+  fill in PM data to dataStructureForProcessing.input
+end note
+
+note right dpmdp
+  compare dataStructureForProcessing.input
+  with dataStore.input for the same objectPath
+  and delete duplicates from dataStructureForProcessing.input
+end note
+
+note right dpmdp
+  IF length of dataStructureForProcessing.input==0
+    terminate processing
+end note
+
+note right dpmdp
+  read device type from MWDI
+  fill in to dataStructureForProcessing.deviceType
+end note
+
+note right dpmdp
+  read further attributes (from MWDI) that are
+  certainly required for multiple ProcessingFunctions 
+  fill them into the dataStructureForProcessing
+end note
+
+
+== Processing ==
+
+dpmdp -> p1ProOrch
+activate p1ProOrch
+
+note right p1ProOrch
+  copy dataStructureForProcessing.input
+  to dataStructureForProcessing.output
+end note
+
+note right p1ProOrch
+  read sequence of ProcessingFunctions
+  for value of dataStructureForProcessing.deviceType
+  from processing configuration list
+  and fill in to dataStructureForProcessing.processing
+end note
+
+note left p1ProOrch #Orange
+  Concept similar to design for automation functions
+  - DPMDP contains a set of ProcessingFunctions
+  - ProcessingFunctions are modifying
+    dataStructureForProcessing.output in regards with
+    - Replacement and deletion of implausible data
+    - Harmonization in format and semantical meaning
+    - Completion by configuration information
+    - Completion by capability information
+    - Completion by calculated KPIs
+  - p1ProOrch is searching list of pre-defined
+    sequence definitions for key attribute value
+  - p1ProOrch is calling sub-set of ProcessingFunctions
+    according to the relevant sequence definition
+end note
+
+group FOR all relevant ProcessingFunctions
+
+  p1ProOrch -> p1Process
+    activate p1Process
+    note right p1Process
+      ProcessingFunction modifies
+      dataStructureForProcessing.output
+    end note
+  p1ProOrch <-- p1Process : ResponseCode
+  deactivate p1Process
+
+  note right p1ProOrch
+    document ResponseCode in dataStructureForProcessing.processing
+  end note
+
+end
+
+dpmdp <-- p1ProOrch : 204
+deactivate p1ProOrch
+
+
+== Transmitting ==
+
+dpmdp -> p1Trans
+activate p1Trans
+
+note right p1Trans
+  create notification from content of
+  dataStructureForProcessing.output
+end note
+
+p1Trans -> kafka
+
+dpmdp <-- p1Trans : 204
+deactivate p1Trans
+
+
+== Storing ==
+
+dpmdp -> p1Store
+activate p1Store
+
+note right p1Store
+  append content of dataStructureForProcessing.output
+  to dataStore.output for the same objectPath
+end note
+
+note left p1Store #Orange
+  What happens with ResponseCodes form processing?
+  Think more about data structure in dataStore
+end note
+
+note right p1Store
+  delete entries elder than 48hours
+end note
+
+dpmdp <-- p1Store : 204
+deactivate p1Store
+
+
+deactivate dpmdp
+
+@enduml
