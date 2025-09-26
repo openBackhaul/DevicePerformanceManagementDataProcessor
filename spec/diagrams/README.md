@@ -1,4 +1,4 @@
-# DevicePerformanceManagementDataProcessor Diagrams  
+# Diagrams  
 
 ## High Level Overview
 ![HighLevelOverview](./highlevel_process.png)  

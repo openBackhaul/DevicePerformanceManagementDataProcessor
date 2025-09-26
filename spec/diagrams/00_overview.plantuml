@@ -19,6 +19,11 @@ participant "ServiceConsumer" as consumer
 mwdi -> dpmdp : {counter, timestamp, objectPath, attributeName, newValue}
 activate dpmdp
 
+note right dpmdp #Orange
+  _PM issue #17 is evaluating a potential change for sending 
+  the entire PM data via Kafka instead of just AVC notification
+end note
+
 note right dpmdp
   IF attributeName=='timeOfLatestChange'
     create dataStructureForProcessing
