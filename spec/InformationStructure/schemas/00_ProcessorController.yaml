@@ -1,0 +1,40 @@
+processor-controller:
+  type: object
+  required:
+    - function
+    - processing-sequence
+    - pulser
+    - alarm-pac
+    - data-store
+  properties:
+    function:
+      type: array
+      x-key: function-name
+      items:
+        type: object
+        description: 'Function - see 02_Function.yaml'
+    processing-sequence:
+      type: array
+      x-key: device-type
+      items:
+        type: object
+        description: 'ProcessingSequence - see 03_ProcessingSequence.yaml'
+    pulser:
+      type: array
+      x-key: _target-function
+      items:
+        type: object
+        description: 'Pulser - see 04_Pulser.yaml'
+    alarm-pac:
+      type: object
+      required:
+        - current-alarms
+      properties:
+        current-alarms:
+          type: object
+    data-store:
+      type: array
+      x-key: object-path
+      items:
+        type: object
+        description: 'DataStore - see 20_DataStore.yaml'

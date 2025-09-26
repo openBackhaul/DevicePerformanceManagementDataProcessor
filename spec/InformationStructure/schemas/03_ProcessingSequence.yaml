@@ -1,0 +1,35 @@
+processing-sequence:
+  type: array
+  x-key: device-type
+  description: >
+    'List of the definitions of processing sequences
+    The defined sequences are input to the generic ProcessingOrchestrator Function
+    ProcessingOrchestrator is responding 204, when all ProcessingFunctions have been executed'
+  items:
+    type: object
+    required:
+      - device-type
+      - sequence
+    properties:
+      device-type:
+        type: string
+        description: >
+          'deviceType as it has been read from the MWDI during pre-processing'
+      sequence:
+        type: array
+        x-key: step-number
+        description: 'Sequence of ProcessingFunctions that shall be executed on the contents of the dataStructureForProcessing.output'
+        items:
+          type: object
+          required:
+            - step-number
+            - _processing-function
+          properties:
+            step-number:
+              type: integer
+              description: 'Sequential number of the validation test (value must be unique and invariant)'
+            _processing-function:
+              type: string
+              description: >
+                'Reference towards an entry in the list of ProcessingFunctions
+                Only Functions for processing the contents of the dataStructureForProcessing.output are allowed to be referenced'

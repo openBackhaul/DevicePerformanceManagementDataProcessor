@@ -1,0 +1,38 @@
+function:
+  type: array
+  x-key: function-name
+  description: 'List of Functions incl. their parameter settings'
+  items:
+    type: object
+    required:
+      - function-name
+      - parameter
+    properties:
+      function-name:
+        type: string
+        description: 'operationId (from the OAS) that is uniquely identifying the module in the implementation'
+        example: 'establishManagementPlaneTransport'
+      function-description:
+        type: string
+        description: 'Description of the Function'
+      parameter:
+        type: array
+        x-key: parameter-name
+        description: 'List of Parameters of the Function'
+        items:
+          type: object
+          required:
+            - parameter-name
+            - parameter-value
+            - parameter-definition
+          properties:
+            parameter-name:
+              type: string
+              pattern: '^([a-z]{1,})((-[a-z]{1,}){0,})$'
+              description: 'parameterName; Invariant name of the parameter'
+            parameter-value:
+              type: string
+              description: 'Configurable value of the parameter. Datatype needs to be internally converted, if required'
+            parameter-definition:
+              type: string
+              description: 'Invariant description of the parameter'
