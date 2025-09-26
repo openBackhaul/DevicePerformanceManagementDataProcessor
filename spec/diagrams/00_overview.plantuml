@@ -6,12 +6,15 @@ DevicePerformanceManagementDataProcessor
 end title
 
 participant "MWDI" as mwdi
-participant "DPMDP" as dpmdp
-participant "p1ProcessingOrchestrator" as p1ProOrch
-participant "p1ExampleProcessingFunction" as p1Process
-participant "p1TransmittingFunction" as p1Trans
-participant "Kafka" as kafka
-participant "p1StoringFunction" as p1Store
+participant "DPMDP" as dpmdp #LightBlue
+participant "p1ProcessingOrchestrator" as p1ProOrch #LightBlue
+participant "p1ExampleProcessingFunction" as p1Process #LightBlue
+participant "p1TransmittingFunction" as p1Trans #LightBlue
+participant "Kafka" as kafka #LightBlue
+participant "p1StoringFunction" as p1Store #LightBlue
+database "dataStore" as db #LightBlue
+participant "p1ExampleInterpretationFunction" as p1Interpret #LightBlue
+participant "ServiceConsumer" as consumer
 
 mwdi -> dpmdp : {counter, timestamp, objectPath, attributeName, newValue}
 activate dpmdp
@@ -140,23 +143,38 @@ dpmdp -> p1Store
 activate p1Store
 
 note right p1Store
-  append content of dataStructureForProcessing.output
-  to dataStore.output for the same objectPath
+  append entire dataStructureForProcessing
+  to dataStore at position identified by objectPath, 
+  respectively {uuid, localId}
 end note
 
-note left p1Store #Orange
-  What happens with ResponseCodes form processing?
-  Think more about data structure in dataStore
-end note
+p1Store -> db
 
 note right p1Store
-  delete entries elder than 48hours
+  delete dataStructureForProcessing 
+  with timestamp==elder than 48hours
 end note
 
 dpmdp <-- p1Store : 204
 deactivate p1Store
 
-
 deactivate dpmdp
+
+
+== Serving ==
+
+consumer -> p1Interpret
+activate p1Interpret
+
+p1Interpret -> db
+p1Interpret <-- db
+
+note left p1Interpret
+  compose responseBody from raw data
+end note
+
+consumer <-- p1Interpret : responseBody
+deactivate p1Interpret
+
 
 @enduml
