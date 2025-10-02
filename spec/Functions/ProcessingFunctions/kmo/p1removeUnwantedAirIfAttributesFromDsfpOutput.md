@@ -30,7 +30,7 @@ The service shall be processed as follows:
     - receiver-on-off-is-avail
     - rx-frequency-max
     - rx-frequency-min
-    - supported-loop-back-kind-list (subclass)
+    - supported-loop-back-kind-list (subclass/array)
     - tx-frequency-max
     - tx-frequency-min
     - from *transmission-mode-list* (in array elements) remove:
@@ -43,9 +43,9 @@ The service shall be processed as follows:
       - tx-power-min
 
   - from *air-interface-configuration* remove:
-    - acm-threshold-cross-alarm-list (subclass)
-    - g-826-threshold-cross-alarm-list (subclass)
-    - xlts-threshold-cross-alarm-list (subclass)
+    - acm-threshold-cross-alarm-list (subclass/array)
+    - g-826-threshold-cross-alarm-list (subclass/array)
+    - xlts-threshold-cross-alarm-list (subclass/array)
     - alic-is-on
     - auto-freq-select-is-on
     - auto-freq-select-range
