@@ -2,15 +2,15 @@
 
 **this assumes data is in CC format, not in APTP format**
 
-The service shall remove unwanted attributes from air interface data in *data-structure-for-processing.output*. All attributes or subclasses that are not listed as to be removed are to be kept.  
+The service shall remove unwanted attributes from air interface data in [/data-structure-for-processing/output]. All attributes or subclasses that are not listed as to be removed are to be kept.  
 
 #### Input
-There is no request body input. All required data is directly read from *data-structure-for-processing.output*
+There is no request body input. All required data is directly read from [/data-structure-for-processing/output]
 
 #### Steps
 The service shall be processed as follows: 
-- IF NOT (*data-structure-for-processing/object-path* contains "ethernet-container") THEN terminate
-- read *data-structure-for-processing.output* and remove the following attributes and subclasses:
+- IF NOT ([/data-structure-for-processing/object-path] contains "ethernet-container") THEN terminate
+- read [/data-structure-for-processing/output] and remove the following attributes and subclasses:
   - *ethernet-container-current-performance* (complete subclass)
 
   - from *ethernet-container-capability* remove:
@@ -73,7 +73,7 @@ The service shall be processed as follows:
 none
 
 #### Output
-There is no additional output defined. All changes are to be applied directly to *data-structure-for-processing.output*.
+There is no additional output defined. All changes are to be applied directly to [/data-structure-for-processing/output].
 
 ---  
 
