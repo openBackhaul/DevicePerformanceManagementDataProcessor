@@ -62,9 +62,35 @@ The service shall be processed as follows:
     - statistics-is-on
 
   - from *ethernet-container-status* remove:
-    - bundling-is-up
-    - interface-status
-    - performance-monitoring-is-up
+    - broadcast-frames-input
+    - broadcast-frames-output
+    - dropped-frames-input
+    - dropped-frames-output
+    - errored-frames-input
+    - errored-frames-output
+    - forwarded-frames-input
+    - forwarded-frames-output
+    - fragmented-frames-input
+    - frames-of-1024-to-1518-byte
+    - frames-of-128-to-255-byte
+    - frames-of-256-to-511-byte
+    - frames-of-512-to-1023-byte
+    - frames-of-64-byte
+    - frames-of-65-to-127-byte
+    - last-10-sec-data-input-rate
+    - last-10-sec-data-output-rate
+    - loop-back-kind-up
+    - multicast-frames-input
+    - multicast-frames-output
+    - remote-site-is-faulty
+    - total-bytes-input
+    - total-bytes-output
+    - total-frames-input
+    - total-frames-output
+    - unicast-frames-input
+    - unicast-frames-output
+    - statistics-is-up
+    - timestamp
 
   - from *ethernet-container-historical-performances/historical-performance-data-list*, for every array element:
     - queue-utilization-list (subclass/array)
@@ -92,35 +118,9 @@ Kept from *ethernet-container-configuration*:
 
 Kept from *ethernet-container-status*:
 - attributes/counters:
-    - broadcast-frames-input
-    - broadcast-frames-output
-    - dropped-frames-input
-    - dropped-frames-output
-    - errored-frames-input
-    - errored-frames-output
-    - forwarded-frames-input
-    - forwarded-frames-output
-    - fragmented-frames-input
-    - frames-of-1024-to-1518-byte
-    - frames-of-128-to-255-byte
-    - frames-of-256-to-511-byte
-    - frames-of-512-to-1023-byte
-    - frames-of-64-byte
-    - frames-of-65-to-127-byte
-    - last-10-sec-data-input-rate
-    - last-10-sec-data-output-rate
-    - loop-back-kind-up
-    - multicast-frames-input
-    - multicast-frames-output
-    - remote-site-is-faulty
-    - statistics-is-up
-    - timestamp
-    - total-bytes-input
-    - total-bytes-output
-    - total-frames-input
-    - total-frames-output
-    - unicast-frames-input
-    - unicast-frames-output
+    - bundling-is-up
+    - interface-status
+    - performance-monitoring-is-up
 
 Kept from *ethernet-container-historical-performances/historical-performance-data-list*:
 - attributes/counters:
