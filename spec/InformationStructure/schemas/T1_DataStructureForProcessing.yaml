@@ -48,825 +48,455 @@ data-structure-for-processing:
       # and used as an input to the pre-processing here
 
     output:
-
       # Please develop the structure of the data that shall be send to the consumers here
-
-      oneOf:
-        - description: 'Successfully executed'
-          type: object
-          properties:
-            request-id:
-              type: string
-              description: >
-                'Identifier of the initial request (to /v1/provide-historical-pm-data-of-device) as it has been provided in its responseBody
-                from {$response.body#request-id}'
-            air-interface-list:
-              description: 'List of microwave air interfaces found in the given devices'
-              type: array
-              items:
+      type: object
+      properties:
+        #request-id is not needed - remove it or keep it (empty) for backwards compatibility?
+        request-id:
+          type: string
+          description: 'required in APTP due to async request'
+        air-interface-list:
+          description: 'List of microwave air interfaces found in the given devices'
+          type: array
+          items:
+            type: object
+            properties:
+              air-interface-identifiers:
                 type: object
                 properties:
-                  air-interface-identifiers:
-                    type: object
-                    properties:
-                      mount-name:
-                        type: string
-                        description: 'Identifier of the device at the controller and in the Telefónica planning tools'
-                      link-endpoint-id:
-                        type: string
-                        description: >
-                          'Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingNameOfAirAndEthernetInterfaces.LtpDesignation.response.body#external-label}'
-                      link-id:
-                        type: string
-                        description: >
-                          'Identifier of the microwave link as used in the Telefonica planning tools.To be obtained by extracting the substring constituted by the 9 first characters
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingNameOfAirAndEthernetInterfaces.LtpDesignation.response.body#external-label}'
-                      logical-termination-point-id:
-                        type: string
-                        description: >
-                          'Identifier of the microwave link endpoint within the MW SDN domain
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingLtpStructure.LtpStructure.response.body#uuid}'
-                      link-aggregation-identifiers:
-                        type: array
-                        description: >
-                          'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames
-                          from {$RequestForProvidingHistoricalPmDataCausesIdentifyingPhysicalLinkAggregations.LtpDesignation.response.body#external-label} in case of AirInterface or
-                          from {$RequestForProvidingHistoricalPmDataCausesIdentifyingPhysicalLinkAggregations.LtpDesignation.response.body#original-ltp-name} in case of WireInterface'
-                        items:
-                          oneOf:
-                            - description: 'AirInterfaces'
-                              type: object
-                              required:
-                                - link-id
-                              properties:
-                                link-id:
-                                  type: string
-                                  description: >
-                                    'Identifier of the microwave link as used in the Telefonica planing tools'
-                            - description: 'WireInterface'
-                              type: object
-                              required:
-                                - interface-name
-                              properties:
-                                interface-name:
-                                  type: string
-                                  description: >
-                                    'Interface name as it is represented at the vendor's own management interface'
-                  air-interface-configuration:
-                    type: object
-                    properties:
-                      configured-atpc-is-on:
-                        type: boolean
-                        description: >
-                          'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#atpc-is-on}'
-                      configured-atpc-threshold-upper:
-                        type: integer
-                        description: >
-                          'Configured upper automatic transmit power control (ATPC) threshold in dBm
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#atpc-thresh-upper}'
-                      configured-atpc-threshold-lower:
-                        type: integer
-                        description: >
-                          'Configured lower automatic transmit power control (ATPC) threshold in dBm
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#atpc-thresh-lower}'
-                      configured-tx-power:
-                        type: integer
-                        description: >
-                          'Configured transmit power that will be operated in maximum in dBm
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#tx-power}'
-                      configured-modulation-minimum:
-                        type: object
-                        description: >
-                          'Configured minimum modulation scheme'
-                        properties:
-                          number-of-states:
-                            type: integer
-                            description: >
-                              'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
-                              transmissionModeMin = {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#air-interface-2-0:air-interface-configuration/transmission-mode-min}
-                              from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme}
-                              where {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
-                          name-at-lct:
-                            type: string
-                            description: >
-                              'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                              transmissionModeMin = {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#air-interface-2-0:air-interface-configuration/transmission-mode-min}
-                              from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}
-                              where {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
-                          configured-capacity-minimum:
-                            type: integer
-                            description: >
-                              'Channel capacity in kbps of the configured minimum modulation scheme. To be filled with default value -1'
-                      configured-modulation-maximum:
-                        type: object
-                        description: 'Configured maximum modulation scheme'
-                        properties:
-                          number-of-states:
-                            type: integer
-                            description: >
-                              'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
-                              transmissionModeMax = {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#air-interface-2-0:air-interface-configuration/transmission-mode-max}
-                              from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme}
-                              where {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
-                          name-at-lct:
-                            type: string
-                            description: >
-                              'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                              transmissionModeMax = {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceConfigurationFromCache.AirInterfaceConfigurationFromCache.response.body#air-interface-2-0:air-interface-configuration/transmission-mode-max}
-                              from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}
-                              where {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
-                          configured-capacity-maximum:
-                            type: integer
-                            description: >
-                              'Channel capacity in kbps of the configured maximum modulation scheme. To be filled with default value -1'
-                  air-interface-performance-measurements-list:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        granularity-period:
-                          type: string
-                          enum:
-                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
-                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
-                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
-                          description: >
-                            'Time period between reset of the underlying counter
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/granularity-period}'
-                        period-end-time:
-                          type: string
-                          description: >
-                            'Time when the counter values have been recorded and the counter reset
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/period-end-time}'
-                        transmit-level-minimum:
-                          type: integer
-                          description: >
-                            'Minimum transmit power in dBm
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/tx-level-min}'
-                        transmit-level-maximum:
-                          type: integer
-                          description: >
-                            'Maximum transmit power in dBm
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/tx-level-max}'
-                        transmit-level-average:
-                          type: integer
-                          description: >
-                            'Averaged transmit power in dBm
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/tx-level-avg}'
-                        receive-level-minimum:
-                          type: integer
-                          description: >
-                            'Minimum receive level in dBm
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/rx-level-min}'
-                        receive-level-maximum:
-                          type: integer
-                          description: >
-                            'Maximum receive level in dBm
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/rx-level-max}'
-                        receive-level-average:
-                          type: integer
-                          description: >
-                            'Averaged receive level in dBm
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/rx-level-avg}'
-                        signal-to-noise-ratio-minimum:
-                          type: integer
-                          description: >
-                            'Minimum signal to noise + interference ratio (SNIR)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/snir-min}'
-                        signal-to-noise-ratio-maximum:
-                          type: integer
-                          description: >
-                            'Maximum signal to noise + interference ratio (SNIR)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/snir-max}'
-                        signal-to-noise-ratio-average:
-                          type: integer
-                          description: >
-                            'Averaged signal to noise + interference ratio (SNIR)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/snir-avg}'
-                        cross-polarization-discrimination-minimum:
-                          type: integer
-                          description: >
-                            'Minimum cross polarization discrimination (XPD)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/xpd-min}'
-                        cross-polarization-discrimination-maximum:
-                          type: integer
-                          description: >
-                            'Maximum cross polarization discrimination (XPD)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/xpd-max}'
-                        cross-polarization-discrimination-average:
-                          type: integer
-                          description: >
-                            'Averaged cross polarization discrimination (XPD)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/xpd-avg}'
-                        operated-transmission-modes-list:
-                          description: 'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed'
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              transmission-mode-name:
-                                type: string
-                                description: >
-                                  'Key attribute, name of the transmission mode
-                                  from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/time-xstates-list/transmission-mode'}
-                              modulation-scheme-name-at-lct:
-                                type: string
-                                description: >
-                                  'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                  transmissionMode = {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/time-xstates-list/transmission-mode'}
-                                  from {$RequestForProvidingHistoricalPmDataCausesReadingCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}
-                                  where {$RequestForProvidingHistoricalPmDataCausesReadingCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionMode'
-                              time:
-                                type: integer
-                                description: >
-                                  'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                  from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/time-xstates-list/time}'
-                              capacity:
-                                type: integer
-                                description: 'Channel capacity in kbps of the modulation scheme. To be filled with default value -1'
-                        interval-capacity:
-                          type: integer
-                          description: 'Channel capacity over the entire performance measurement interval in kbps. Calculated from the capacities of the operated transmission modes, by weighting the duration of each operated mode over the entire measurement period.To be filled with default value -1'
-                        errorred-seconds:
-                          type: integer
-                          description: >
-                            'Number of errored seconds
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/es}'
-                        severely-errorred-seconds:
-                          type: integer
-                          description: >
-                            'Number of severily errored seconds
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/ses}'
-                        consecutive-severely-errorred-seconds:
-                          type: integer
-                          description: >
-                            'Number of consecutive severily errored seconds
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/cses}'
-                        total-unavailability:
-                          type: integer
-                          description: >
-                            'Total time of unavailability in seconds
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/unavailability}'
-                        defect-blocks:
-                          type: integer
-                          description: >
-                            'Total number of blocks that were defect after receiving and could not be corrected by the FEC
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalAirInterfacePerformanceFromCache.AirInterfaceHistoricalPmFromCache.response.body#air-interface-2-0:air-interface-historical-performance/historical-performance-data-list/defect-blocks-sum}'
-                  transmission-mode-list:
-                    description: 'List of supported Transmission Modes'
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        transmission-mode-name:
-                          type: string
-                          description: >
-                            'Key attribute, name of the transmission mode
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/transmission-mode-name}'
-                        number-of-states:
-                          type: integer
-                          description: >
-                            'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme}'
-                        modulation-scheme-name-at-lct:
-                          type: string
-                          description: >
-                            'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}'
-                        channel-bandwidth:
-                          type: integer
-                          description: >
-                            'Bandwidth of the transmit channel in kHz
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/channel-bandwidth}'
-                        code-rate:
-                          type: integer
-                          description: >
-                            'Code rate of the coding scheme in %
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/code-rate}'
-                        symbol-rate-reduction-factor:
-                          type: integer
-                          description: >
-                            'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingAirInterfaceCapabilitiesFromCache.CapabilitiesFromCache.response.body#air-interface-2-0:air-interface-capability/transmission-mode-list/symbol-rate-reduction-factor}'
-            ethernet-container-list:
-              description: 'List of ethernet containers found in the given devices'
-              type: array
-              items:
-                type: object
-                properties:
-                  ethernet-container-identifiers:
-                    type: object
-                    properties:
-                      mount-name:
-                        type: string
-                        description: 'Identifier of the device at the controller and in the Telefónica planning tools'
-                      interface-name:
-                        type: string
-                        description: >
-                          'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingNameOfAirAndEthernetInterfaces.LtpDesignation.response.body#original-ltp-name'
-                      logical-termination-point-id:
-                        type: string
-                        description: >
-                          'Identifier of the ethernet container within the MW SDN domain
-                          from {$RequestForProvidingHistoricalPmDataCausesReadingLtpStructure.LtpStructure.response.body#uuid}'
-                  ethernet-container-performance-measurements-list:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        granularity-period:
-                          type: string
-                          enum:
-                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
-                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
-                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
-                          description: >
-                            'Time period between reset of the underlying counter
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/granularity-period}'
-                        period-end-time:
-                          type: string
-                          description: >
-                            'Time when the counter values have been recorded and the counter reset
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/period-end-time}'
-                        max-bytes-per-second-output:
-                          type: string
-                          description: >
-                            'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/max-bytes-per-second-output}'
-                        total-bytes-input:
-                          type: string
-                          description: >
-                            'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/total-bytes-input}'
-                        total-bytes-output:
-                          type: string
-                          description: >
-                            'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/total-bytes-output}'
-                        total-frames-input:
-                          type: string
-                          description: >
-                            'The total number of Ethernet frames received at this interface (including those received in error)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/total-frames-input}'
-                        total-frames-output:
-                          type: string
-                          description: >
-                            'The total number of Ethernet frames sent at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/total-frames-output}'
-                        forwarded-frames-input:
-                          type: string
-                          description: >
-                            'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/forwarded-frames-input}'
-                        forwarded-frames-output:
-                          type: string
-                          description: >
-                            'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/forwarded-frames-output}'
-                        unicast-frames-input:
-                          type: string
-                          description: >
-                            'Total number of unicast frames received at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/unicast-frames-input}'
-                        unicast-frames-output:
-                          type: string
-                          description: >
-                            'Total number of unicast frames sent at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/unicast-frames-output}'
-                        multicast-frames-input:
-                          type: integer
-                          description: >
-                            'Total number of multicast frames received at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/multicast-frames-input}'
-                        multicast-frames-output:
-                          type: integer
-                          description: >
-                            'Total number of multicast frames sent at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/multicast-frames-output}'
-                        broadcast-frames-input:
-                          type: integer
-                          description: >
-                            'Total number of broadcast frames received at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/broadcast-frames-input}'
-                        broadcast-frames-output:
-                          type: integer
-                          description: >
-                            'Total number of broadcast frames sent at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/broadcast-frames-output}'
-                        fragmented-frames-input:
-                          type: integer
-                          description: >
-                            'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/fragmented-frames-input}'
-                        errored-frames-input:
-                          type: integer
-                          description: >
-                            'Total number of errored frames received at this interface
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/errored-frames-input}'
-                        errored-frames-output:
-                          type: integer
-                          description: >
-                            'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/errored-frames-output}'
-                        dropped-frames-input:
-                          type: integer
-                          description: >
-                            'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/dropped-frames-input}'
-                        dropped-frames-output:
-                          type: integer
-                          description: >
-                            'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/dropped-frames-output}'
-                        oversized-frames-ingress:
-                          type: string
-                          description: >
-                            'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/oversized-frames-ingress}'
-                        undersized-frames-ingress:
-                          type: string
-                          description: >
-                            'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/undersized-frames-ingress}'
-                        jabber-frames-ingress:
-                          type: string
-                          description: >
-                            'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/jabber-frames-ingress}'
-                        unknown-protocol-frames-input:
-                          type: string
-                          description: >
-                            'Total number of received frames that were transporting an unknown protocol
-                            from {$RequestForProvidingHistoricalPmDataCausesReadingHistoricalEthernetContainerPerformanceFromCache.EthernetContainerHistoricalPmFromCache.response.body#ethernet-container-2-0:ethernet-container-historical-performance/historical-performance-data-list/unknown-protocol-frames-input}'
-            mount-name-list-with-errors:
-              type: array
-              items:
-                oneOf:
-                  - description: 'The requested device is not in the list of connected devices'
-                    type: object
-                    required:
-                      - mount-name
-                      - code
-                      - message
-                    properties:
-                      mount-name:
-                        type: string
-                      code:
-                        type: integer
-                        minimum: 460
-                        maximum: 460
-                        format: int32
-                      message:
-                        type: string
-                        enum:
-                          - 'Not connected. Requested device is currently not in connected state at the controller'
-                  - description: 'The entry could not be processed due to some internal error'
-                    type: object
-                    required:
-                      - mount-name
-                      - code
-                      - message
-                    properties:
-                      mount-name:
-                        type: string
-                      code:
-                        type: integer
-                        minimum: 500
-                        maximum: 500
-                        format: int32
-                      message:
-                        type: string
-                        enum:
-                          - 'Internal server error'
-          example:
-            air-interface-list:
-              - air-interface-identifiers:
-                  mount-name: 123273221
-                  link-endpoint-id: "325557888A"
-                  link-id: "325557888"
-                  logical-termination-point-id: "RF-2146697744"
+                  mount-name:
+                    type: string
+                    description: 'Identifier of the device at the controller and in the Telefónica planning tools'
+                  link-endpoint-id:
+                    type: string
+                    description: 'Identifier of the microwave link endpoint as used in the Telefonica planning tools'
+                  link-id:
+                    type: string
+                    description: 'Identifier of the microwave link as used in the Telefonica planning tools. To be obtained by extracting the substring constituted by the 9 first characters'
+                  logical-termination-point-id:
+                    type: string
+                    description: 'Identifier of the microwave link endpoint within the MW SDN domain'
                   link-aggregation-identifiers:
-                    - link-id: "325557888"
-                    - link-id: "325557889"
-                air-interface-configuration:
-                  configured-atpc-is-on: true
-                  configured-atpc-threshold-upper: 99
-                  configured-atpc-threshold-lower: -45
-                  configured-atpc-tx-power-min: -10
-                  configured-tx-power: 4
+                    type: array
+                    description: 'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames'
+                    items:
+                      oneOf:
+                        - description: 'AirInterfaces'
+                          type: object
+                          required:
+                            - link-id
+                          properties:
+                            link-id:
+                              type: string
+                              description: 'Identifier of the microwave link as used in the Telefonica planing tools'
+                        - description: 'WireInterface'
+                          type: object
+                          required:
+                            - interface-name
+                          properties:
+                            interface-name:
+                              type: string
+                              description: 'Interface name as it is represented at the own management interface of the vendor'
+              air-interface-configuration:
+                type: object
+                properties:
+                  configured-atpc-is-on:
+                    type: boolean
+                    description: 'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on'
+                  configured-atpc-threshold-upper:
+                    type: integer
+                    description: 'Configured upper automatic transmit power control (ATPC) threshold in dBm'
+                  configured-atpc-threshold-lower:
+                    type: integer
+                    description: 'Configured lower automatic transmit power control (ATPC) threshold in dBm'
+                  configured-tx-power:
+                    type: integer
+                    description: 'Configured transmit power that will be operated in maximum in dBm'
                   configured-modulation-minimum:
-                    number-of-states: 4
-                    name-at-lct: "4 QAM"
-                    configured-capacity-minimum: -1
+                    type: object
+                    description: 'Configured minimum modulation scheme'
+                    properties:
+                      number-of-states:
+                        type: integer
+                        description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                      name-at-lct:
+                        type: string
+                        description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                      configured-capacity-minimum:
+                        type: integer
+                        description: 'Channel capacity in kbps of the configured minimum modulation scheme (KPI)'
                   configured-modulation-maximum:
-                    number-of-states: 1024
-                    name-at-lct: "1024 QAM"
-                    configured-capacity-maximum: -1
-                air-interface-performance-measurements-list:
-                  - granularity-period: "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-06T13:00:00+01:00"
-                    transmit-level-minimum: -4
-                    transmit-level-maximum: -4
-                    transmit-level-average: 99
-                    receive-level-minimum: -45
-                    receive-level-maximum: -44
-                    receive-level-average: 99
-                    signal-to-noise-ratio-minimum: 40
-                    signal-to-noise-ratio-maximum: 41
-                    signal-to-noise-ratio-average: -99
-                    cross-polarization-discrimination-minimum: 30
-                    cross-polarization-discrimination-maximum: 31
-                    cross-polarization-discrimination-average: 99
-                    operated-transmission-modes-list:
-                      - transmission-mode-name: "56000-1024-v2"
-                        modulation-scheme-name-at-lct:
-                        time: 897
-                        capacity:
-                      - transmission-mode-name: "56000-128-v4"
-                        modulation-scheme-name-at-lct:
-                        time: 3
-                        capacity:
-                    interval-capacity: -1
-                  - granularity-period: "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-06T13:15:00+01:00"
-                    transmit-level-minimum: -4
-                    transmit-level-maximum: -4
-                    transmit-level-average: 99
-                    receive-level-minimum: -45
-                    receive-level-maximum: -44
-                    receive-level-average: 99
-                    signal-to-noise-ratio-minimum: 40
-                    signal-to-noise-ratio-maximum: 41
-                    signal-to-noise-ratio-average: -99
-                    cross-polarization-discrimination-minimum: 30
-                    cross-polarization-discrimination-maximum: 31
-                    cross-polarization-discrimination-average: 99
-                    operated-transmission-modes-list:
-                      - transmission-mode-name: "56000-1024-v2"
-                        modulation-scheme-name-at-lct:
-                        time: 897
-                        capacity:
-                      - transmission-mode-name: "7000-16-v2"
-                        modulation-scheme-name-at-lct:
-                        time: 3
-                        capacity:
-                    interval-capacity: -1
-                transmission-mode-list:
-                  - transmission-mode-name: "56000-1024-v2"
-                    number-of-states: 1024
-                    modulation-scheme-name-at-lct: "1024 QAM"
-                    channel-bandwidth: 56000
-                    code-rate: 94
-                    symbol-rate-reduction-factor: 1
-                  - transmission-mode-name: "7000-16-v2"
-                    number-of-states: 16
-                    modulation-scheme-name-at-lct: "16 QAM"
-                    channel-bandwidth: 7000
-                    code-rate: 86
-                    symbol-rate-reduction-factor: 1
-                  - transmission-mode-name: "40000-128-v0"
-                    number-of-states: 128
-                    modulation-scheme-name-at-lct: "128 QAM"
-                    channel-bandwidth: 40000
-                    code-rate: 94
-                    symbol-rate-reduction-factor: 1
-              - air-interface-identifiers:
-                  mount-name: 423253228
-                  link-endpoint-id: "101551121B"
-                  link-id: "101551121"
-                  logical-termination-point-id: "RF-2146438849"
-                air-interface-configuration:
-                  configured-atpc-is-on: false
-                  configured-atpc-threshold-upper: 99
-                  onfigured-atpc-threshold-lower: -30
-                  configured-atpc-tx-power-min: 20
-                  configured-tx-power: 20
-                  configured-modulation-minimum:
-                    number-of-states: 4
-                    name-at-lct: "4 QAM Strong"
-                    configured-capacity-minimum: -1
-                  configured-modulation-maximum:
-                    number-of-states: 2048
-                    name-at-lct: "2048 QAM light"
-                    configured-capacity-maximum: -1
-                air-interface-performance-measurements-list:
-                  - granularity-period: "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-07T09:30:00+01:00"
-                    transmit-level-minimum: 20
-                    transmit-level-maximum: 20
-                    transmit-level-average: 99
-                    receive-level-minimum: -42
-                    receive-level-maximum: -41
-                    receive-level-average: 99
-                    signal-to-noise-ratio-minimum: 42
-                    signal-to-noise-ratio-maximum: 43
-                    signal-to-noise-ratio-average: -99
-                    cross-polarization-discrimination-minimum: 28
-                    cross-polarization-discrimination-maximum: 39
-                    cross-polarization-discrimination-average: -99
-                    operated-transmission-modes-list:
-                      - transmission-mode-name: "1361-112000-2048-Light"
-                        modulation-scheme-name-at-lct: "2048 QAM light"
-                        time: 643
-                        capacity:
-                      - transmission-mode-name: 1361-112000-256-Light"
-                        modulation-scheme-name-at-lct: "256 QAM light"
-                        time: 257
-                        capacity:
-                    interval-capacity: -1
-                  - granularity-period: "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-07T09:45:00+01:00"
-                    transmit-level-minimum: 20
-                    transmit-level-maximum: 20
-                    transmit-level-average: 99
-                    receive-level-minimum: -42
-                    receive-level-maximum: -41
-                    receive-level-average: 99
-                    signal-to-noise-ratio-minimum: 42
-                    signal-to-noise-ratio-maximum: 43
-                    signal-to-noise-ratio-average: -99
-                    cross-polarization-discrimination-minimum: 28
-                    cross-polarization-discrimination-maximum: 39
-                    cross-polarization-discrimination-average: -99
-                    operated-transmission-modes-list:
-                      - transmission-mode-name: "1361-112000-2048-Light"
-                        modulation-scheme-name-at-lct: "2048 QAM light"
-                        time: 643
-                        capacity:
-                      - transmission-mode-name: 1361-112000-256-Light"
-                        modulation-scheme-name-at-lct: "256 QAM light"
-                        time: 257
-                        capacity:
-                    interval-capacity: -1
-                transmission-mode-list:
-                  - transmission-mode-name: "1303-80000-512-Std"
-                    number-of-states: 512
-                    modulation-scheme-name-at-lct: "512 QAM"
-                    channel-bandwidth: 80000
-                    code-rate: -1
-                    symbol-rate-reduction-factor: 1
-                  - transmission-mode-name: "1356-7000-16-Strong"
-                    number-of-states: 16
-                    modulation-scheme-name-at-lct: "16 QAM Strong"
-                    channel-bandwidth: 7000
-                    code-rate: -1
-                    symbol-rate-reduction-factor: 1
-                  - transmission-mode-name: "1361-112000-2048-Light"
-                    number-of-states: 2048
-                    modulation-scheme-name-at-lct: "2048 QAM Light"
-                    channel-bandwidth: 40000
-                    code-rate: 94
-                    symbol-rate-reduction-factor: 1
-            ethernet-container-list:
-              - ethernet-container-identifiers:
-                  mount-name: 123273221
-                  interface-name: "WAN 1/1/1"
-                  logical-termination-point-id: "ETH-2134646913"
-                ethernet-container-performance-measurements-list:
-                  - granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-07T00:15:00.0+00:00"
-                    max-bytes-per-second-output: 0
-                    total-bytes-input: "0"
-                    total-bytes-output: "0"
-                    total-frames-input: "-1"
-                    total-frames-output: "-1"
-                    forwarded-frames-input: "-1"
-                    forwarded-frames-output: "-1"
-                    unicast-frames-input: "0"
-                    unicast-frames-output: "0"
-                    multicast-frames-input: 0
-                    multicast-frames-output: 0
-                    broadcast-frames-input: 0
-                    broadcast-frames-output: 0
-                    fragmented-frames-input: -1
-                    errored-frames-input: 0
-                    errored-frames-output: 0
-                    dropped-frames-input: 0
-                    dropped-frames-output: 0
-                    oversized-frames-ingress: "-1"
-                    undersized-frames-ingress: "-1"
-                    jabber-frames-ingress: "-1"
-                    unknown-protocol-frames-input: "-1"
-                  - granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-07T00:30:00.0+00:00"
-                    max-bytes-per-second-output: 0
-                    total-bytes-input: "0"
-                    total-bytes-output: "0"
-                    total-frames-input: "-1"
-                    total-frames-output: "-1"
-                    forwarded-frames-input: "-1"
-                    forwarded-frames-output: "-1"
-                    unicast-frames-input: "0"
-                    unicast-frames-output: "0"
-                    multicast-frames-input: 0
-                    multicast-frames-output: 0
-                    broadcast-frames-input: 0
-                    broadcast-frames-output: 0
-                    fragmented-frames-input: -1
-                    errored-frames-input: 0
-                    errored-frames-output: 0
-                    dropped-frames-input: 0
-                    dropped-frames-output: 0
-                    oversized-frames-ingress: "-1"
-                    undersized-frames-ingress: "-1"
-                    jabber-frames-ingress: "-1"
-                    unknown-protocol-frames-input: "-1"
-              - ethernet-container-identifiers:
-                  mount-name: 173253221
-                  interface-name: "WAN 1/1/2"
-                  logical-termination-point-id: "ETH-2134646914"
-                ethernet-container-performance-measurements-list:
-                  - granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-07T01:15:00.0+00:00"
-                    max-bytes-per-second-output: 0
-                    total-bytes-input: "0"
-                    total-bytes-output: "0"
-                    total-frames-input: "-1"
-                    total-frames-output: "-1"
-                    forwarded-frames-input: "-1"
-                    forwarded-frames-output: "-1"
-                    unicast-frames-input: "0"
-                    unicast-frames-output: "0"
-                    multicast-frames-input: 0
-                    multicast-frames-output: 0
-                    broadcast-frames-input: 0
-                    broadcast-frames-output: 0
-                    fragmented-frames-input: -1
-                    errored-frames-input: 0
-                    errored-frames-output: 0
-                    dropped-frames-input: 0
-                    dropped-frames-output: 0
-                    oversized-frames-ingress: "-1"
-                    undersized-frames-ingress: "-1"
-                    jabber-frames-ingress: "-1"
-                    unknown-protocol-frames-input: "-1"
-                  - granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
-                    period-end-time: "2024-03-07T01:30:00.0+00:00"
-                    max-bytes-per-second-output: 0
-                    total-bytes-input: "0"
-                    total-bytes-output: "0"
-                    total-frames-input: "-1"
-                    total-frames-output: "-1"
-                    forwarded-frames-input: "-1"
-                    forwarded-frames-output: "-1"
-                    unicast-frames-input: "0"
-                    unicast-frames-output: "0"
-                    multicast-frames-input: 0
-                    multicast-frames-output: 0
-                    broadcast-frames-input: 0
-                    broadcast-frames-output: 0
-                    fragmented-frames-input: -1
-                    errored-frames-input: 0
-                    errored-frames-output: 0
-                    dropped-frames-input: 0
-                    dropped-frames-output: 0
-                    oversized-frames-ingress: "-1"
-                    undersized-frames-ingress: "-1"
-                    jabber-frames-ingress: "-1"
-                    unknown-protocol-frames-input: "-1"
-            mount-name-list-with-errors:
-              - mount-name: 513278899
-                code: 460
-                message: "Not connected. Requested device is currently not in connected state at the controller"
-              - mount-name: 323258899
-                code: 400
-                message: "Invalid syntax"
-              - mount-name: 543278719
-                code: 460
-                message: "Not connected. Requested device is currently not in connected state at the controller"
-        - description: 'Bad Gateway. Mwdi is unavailable'
-          type: object
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: integer
-              minimum: 502
-              maximum: 502
-              format: int32
-            message:
-              type: string
-              enum:
-                - 'Bad Gateway. The upstream server (MicrowveDeviceInventory) is unavailable'
-        - description: 'Data invalid. Response data not available, incomplete or corrupted'
-          type: object
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: integer
-              minimum: 530
-              maximum: 530
-              format: int32
-            message:
-              type: string
-              enum:
-                - 'Data invalid. Response data not available, incomplete or corrupted'
+                    type: object
+                    description: 'Configured maximum modulation scheme'
+                    properties:
+                      number-of-states:
+                        type: integer
+                        description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                      name-at-lct:
+                        type: string
+                        description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                      configured-capacity-maximum:
+                        type: integer
+                        description: 'Channel capacity in kbps of the configured maximum modulation scheme. To be filled with default value -1'
+              air-interface-performance-measurements-list:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    granularity-period:
+                      type: string
+                      enum:
+                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                      description: 'Time period between reset of the underlying counter'
+                    period-end-time:
+                      type: string
+                      description: 'Time when the counter values have been recorded and the counter reset'
+                    transmit-level-minimum:
+                      type: integer
+                      description: 'Minimum transmit power in dBm'
+                    transmit-level-maximum:
+                      type: integer
+                      description: 'Maximum transmit power in dBm'
+                    transmit-level-average:
+                      type: integer
+                      description: 'Averaged transmit power in dBm'
+                    receive-level-minimum:
+                      type: integer
+                      description: 'Minimum receive level in dBm'
+                    receive-level-maximum:
+                      type: integer
+                      description: 'Maximum receive level in dBm'
+                    receive-level-average:
+                      type: integer
+                      description: 'Averaged receive level in dBm'
+                    signal-to-noise-ratio-minimum:
+                      type: integer
+                      description: 'Minimum signal to noise + interference ratio (SNIR)'
+                    signal-to-noise-ratio-maximum:
+                      type: integer
+                      description: 'Maximum signal to noise + interference ratio (SNIR)'
+                    signal-to-noise-ratio-average:
+                      type: integer
+                      description: 'Averaged signal to noise + interference ratio (SNIR)'
+                    cross-polarization-discrimination-minimum:
+                      type: integer
+                      description: 'Minimum cross polarization discrimination (XPD)'
+                    cross-polarization-discrimination-maximum:
+                      type: integer
+                      description: 'Maximum cross polarization discrimination (XPD)'
+                    cross-polarization-discrimination-average:
+                      type: integer
+                      description: 'Averaged cross polarization discrimination (XPD)'
+                    operated-transmission-modes-list: 
+                      description: 'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed'
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          transmission-mode-name:
+                            type: string
+                            description: 'Key attribute, name of the transmission mode'
+                          modulation-scheme-name-at-lct:
+                            type: string
+                            description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                          time:
+                            type: integer
+                            description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                          capacity:
+                            type: integer
+                            description: 'Channel capacity in kbps of the modulation scheme (KPI).'
+                    interval-capacity:
+                      type: integer
+                      description: 'Channel capacity over the entire performance measurement interval in kbps. Calculated from the capacities of the operated transmission modes, by weighting the duration of each operated mode over the entire measurement period.To be filled with default value -1'
+                    errorred-seconds:
+                      type: integer
+                      description: 'Number of errored seconds'
+                    severely-errorred-seconds:
+                      type: integer
+                      description: 'Number of severily errored seconds'
+                    consecutive-severely-errorred-seconds:
+                      type: integer
+                      description: 'Number of consecutive severily errored seconds'
+                    total-unavailability:
+                      type: integer
+                      description: 'Total time of unavailability in seconds'
+                    defect-blocks:
+                      type: integer
+                      description: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
+              transmission-mode-list:
+                description: 'List of supported Transmission Modes'
+                type: array
+                items:
+                  type: object
+                  properties:
+                    transmission-mode-name:
+                      type: string
+                      description: 'Key attribute, name of the transmission mode'
+                    number-of-states:
+                      type: integer
+                      description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                    modulation-scheme-name-at-lct:
+                      type: string
+                      description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                    channel-bandwidth:
+                      type: integer
+                      description: 'Bandwidth of the transmit channel in kHz'
+                    code-rate:
+                      type: integer
+                      description: 'Code rate of the coding scheme in %'
+                    symbol-rate-reduction-factor:
+                      type: integer
+                      description: 'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
+        ethernet-container-list:
+          description: 'List of ethernet containers found in the given devices'
+          type: array
+          items:
+            type: object
+            properties:
+              ethernet-container-identifiers:
+                type: object
+                properties:
+                  mount-name:
+                    type: string
+                    description: 'Identifier of the device at the controller and in the Telefónica planning tools'
+                  interface-name:
+                    type: string
+                    description: 'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6'
+                  logical-termination-point-id:
+                    type: string
+                    description: 'Identifier of the ethernet container within the MW SDN domain'
+              ethernet-container-performance-measurements-list:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    granularity-period:
+                      type: string
+                      enum:
+                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                      description: 'Time period between reset of the underlying counter'
+                    period-end-time:
+                      type: string
+                      description: 'Time when the counter values have been recorded and the counter reset'
+                    max-bytes-per-second-output:
+                      type: string
+                      description: 'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
+                    total-bytes-input:
+                      type: string
+                      description: 'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
+                    total-bytes-output:
+                      type: string
+                      description: 'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period'
+                    total-frames-input:
+                      type: string
+                      description: 'The total number of Ethernet frames received at this interface (including those received in error)'
+                    total-frames-output:
+                      type: string
+                      description: 'The total number of Ethernet frames sent at this interface'
+                    forwarded-frames-input:
+                      type: string
+                      description: 'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
+                    forwarded-frames-output:
+                      type: string
+                      description: 'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
+                    unicast-frames-input:
+                      type: string
+                      description: 'Total number of unicast frames received at this interface'
+                    unicast-frames-output:
+                      type: string
+                      description: 'Total number of unicast frames sent at this interface'
+                    multicast-frames-input:
+                      type: integer
+                      description: 'Total number of multicast frames received at this interface'
+                    multicast-frames-output:
+                      type: integer
+                      description: 'Total number of multicast frames sent at this interface'
+                    broadcast-frames-input:
+                      type: integer
+                      description: 'Total number of broadcast frames received at this interface'
+                    broadcast-frames-output:
+                      type: integer
+                      description: 'Total number of broadcast frames sent at this interface'
+                    fragmented-frames-input:
+                      type: integer
+                      description: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
+                    errored-frames-input:
+                      type: integer
+                      description: 'Total number of errored frames received at this interface'
+                    errored-frames-output:
+                      type: integer
+                      description: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
+                    dropped-frames-input:
+                      type: integer
+                      description: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
+                    dropped-frames-output:
+                      type: integer
+                      description: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
+                    oversized-frames-ingress:
+                      type: string
+                      description: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
+                    undersized-frames-ingress:
+                      type: string
+                      description: 'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
+                    jabber-frames-ingress:
+                      type: string
+                      description: 'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
+                    unknown-protocol-frames-input:
+                      type: string
+                      description: 'Total number of received frames that were transporting an unknown protocol'
+        mount-name-list-with-errors:
+          type: array
+          items:
+            oneOf:
+              - description: 'The requested device is not in the list of connected devices'
+                type: object
+                required:
+                  - mount-name
+                  - code
+                  - message
+                properties:
+                  mount-name:
+                    type: string
+                  code:
+                    type: integer
+                    minimum: 460
+                    maximum: 460
+                    format: int32
+                  message:
+                    type: string
+                    enum:
+                      - 'Not connected. Requested device is currently not in connected state at the controller'
+              - description: 'The entry could not be processed due to some internal error'
+                type: object
+                required:
+                  - mount-name
+                  - code
+                  - message
+                properties:
+                  mount-name:
+                    type: string
+                  code:
+                    type: integer
+                    minimum: 500
+                    maximum: 500
+                    format: int32
+                  message:
+                    type: string
+                    enum:
+                      - 'Internal server error'
+      example:
+        air-interface-list:
+          - air-interface-identifiers:
+              mount-name: 123273221
+              link-endpoint-id: '325557888A'
+              link-id: '325557888'
+              logical-termination-point-id: 'RF-2146697744'
+              link-aggregation-identifiers:
+                - link-id: '325557888'
+                - link-id: '325557889'
+            air-interface-configuration:
+              configured-atpc-is-on: true
+              configured-atpc-threshold-upper: 99
+              configured-atpc-threshold-lower: -45
+              configured-atpc-tx-power-min: -10
+              configured-tx-power: 4
+              configured-modulation-minimum:
+                number-of-states: 4
+                name-at-lct: '4 QAM'
+                configured-capacity-minimum: -1
+              configured-modulation-maximum:
+                number-of-states: 1024
+                name-at-lct: '1024 QAM'
+                configured-capacity-maximum: -1
+            air-interface-performance-measurements-list:
+              - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                period-end-time: '2024-03-06T13:00:00+01:00'
+                transmit-level-minimum: -4
+                transmit-level-maximum: -4
+                transmit-level-average: 99
+                receive-level-minimum: -45
+                receive-level-maximum: -44
+                receive-level-average: 99
+                signal-to-noise-ratio-minimum: 40
+                signal-to-noise-ratio-maximum: 41
+                signal-to-noise-ratio-average: -99
+                cross-polarization-discrimination-minimum: 30
+                cross-polarization-discrimination-maximum: 31
+                cross-polarization-discrimination-average: 99
+                operated-transmission-modes-list:
+                  - transmission-mode-name: '56000-1024-v2'
+                    modulation-scheme-name-at-lct:
+                    time: 897
+                    capacity:
+                  - transmission-mode-name: '56000-128-v4'
+                    modulation-scheme-name-at-lct:
+                    time: 3
+                    capacity:
+                interval-capacity: -1
+            transmission-mode-list:
+              - transmission-mode-name: '56000-1024-v2'
+                number-of-states: 1024
+                modulation-scheme-name-at-lct: '1024 QAM'
+                channel-bandwidth: 56000
+                code-rate: 94
+                symbol-rate-reduction-factor: 1
+              - transmission-mode-name: '7000-16-v2'
+                number-of-states: 16
+                modulation-scheme-name-at-lct: '16 QAM'
+                channel-bandwidth: 7000
+                code-rate: 86
+                symbol-rate-reduction-factor: 1
+              - transmission-mode-name: '40000-128-v0'
+                number-of-states: 128
+                modulation-scheme-name-at-lct: '128 QAM'
+                channel-bandwidth: 40000
+                code-rate: 94
+                symbol-rate-reduction-factor: 1
+        ethernet-container-list:
+          - ethernet-container-identifiers:
+              mount-name: 123273221
+              interface-name: 'WAN 1/1/1'
+              logical-termination-point-id: 'ETH-2134646913'
+            ethernet-container-performance-measurements-list:
+              - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                period-end-time: '2024-03-07T00:15:00.0+00:00'
+                max-bytes-per-second-output: 0
+                total-bytes-input: '0'
+                total-bytes-output: '0'
+                total-frames-input: '-1'
+                total-frames-output: '-1'
+                forwarded-frames-input: '-1'
+                forwarded-frames-output: '-1'
+                unicast-frames-input: '0'
+                unicast-frames-output: '0'
+                multicast-frames-input: 0
+                multicast-frames-output: 0
+                broadcast-frames-input: 0
+                broadcast-frames-output: 0
+                fragmented-frames-input: -1
+                errored-frames-input: 0
+                errored-frames-output: 0
+                dropped-frames-input: 0
+                dropped-frames-output: 0
+                oversized-frames-ingress: '-1'
+                undersized-frames-ingress: '-1'
+                jabber-frames-ingress: '-1'
+                unknown-protocol-frames-input: '-1'
+        mount-name-list-with-errors:
+          - mount-name: 513278899
+            code: 460
+            message: 'Not connected. Requested device is currently not in connected state at the controller'
+          - mount-name: 323258899
+            code: 400
+            message: 'Invalid syntax'
+          - mount-name: 543278719
+            code: 460
+            message: 'Not connected. Requested device is currently not in connected state at the controller'
+
 
