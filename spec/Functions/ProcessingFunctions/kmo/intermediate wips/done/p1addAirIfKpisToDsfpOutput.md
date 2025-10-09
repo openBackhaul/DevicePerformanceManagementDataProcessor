@@ -13,10 +13,10 @@ The service shall be processed as follows:
   - *air-interface-capability/transmission-mode-list*
   - *air-interface-historical-performances/historical-performance-data-list*:
     - *period-end-time*
-    - *time-xstates-list*
+    - *performance-data/time-xstates-list*
 - execution of callback RequestForComputingAirIfKpisCausesKpiComputationAtCaca to CaCa
   - response contains the air-interface capacity for each transmission-mode found under each *period-end-time*.
-- add the computed air-interface capacity for each *period-end-time* under [/data-structure-for-processing/output] <PATH TODO>
+- add the computed air-interface capacity for each *period-end-time* under [/data-structure-for-processing/output/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list].
 
 #### Callbacks
 - Callback RequestForComputingAirIfKpisCausesKpiComputationAtCaca to service CaCa://p1/compute-air-interface-capacities-for-intervals`
