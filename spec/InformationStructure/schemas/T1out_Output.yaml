@@ -84,45 +84,6 @@ output:
                   configured-capacity-maximum:
                     type: integer
                     description: 'Channel capacity in kbps of the configured maximum modulation scheme. To be filled with default value -1'
-              # added -->
-              adaptive-modulation-is-on:
-                type: boolean
-                description: 'Indicates whether adaptive modulation is active'
-              performance-monitoring-is-on:
-                type: boolean
-                description: 'Enables measurement, collection, storage and access to performance data'
-              power-is-on:
-                type: boolean
-                description: 'If true, power to all physical components required for this AirInterface instance is turned on'
-              remote-air-interface-name:
-                type: string
-                description: 'Name of the air interface, which belongs to the same link, at the remote site'
-              transmitter-in-on:
-                type: boolean
-                description: 'Indicates whether the transmitter inside tha radio is active'
-              xpic-is-on:
-                type: boolean
-                description: 'Indicates whether Cross Polarization Interference Cancelation is active'
-              #---------------------------
-          # added -->
-          air-interface-status:
-            type: object
-            properties:
-              interface-status:
-                type: string
-                enum:
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_UP'
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_DOWN'
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_TESTING'
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_UNKNOWN'
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_DORMANT'
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_NOT_PRESENT'
-                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_NOT_YET_DEFINED'
-                description: 'Indicates the operational state of the interface'
-              performance-monitoring-is-up:
-                type: boolean
-                description: 'Indicates whether performance values are currently collected and aggregated'
-          # ---------------------
           air-interface-performance-measurements-list:
             type: array
             items:
@@ -211,11 +172,9 @@ output:
                 defect-blocks:
                   type: integer
                   description: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
-                # added ->
                 time-period:
                   type: integer
                   description: 'Total (actual) length of the measurement period'
-                # --------------
           transmission-mode-list:
             description: 'List of supported Transmission Modes'
             type: array
@@ -258,46 +217,6 @@ output:
               logical-termination-point-id:
                 type: string
                 description: 'Identifier of the ethernet container within the MW SDN domain'
-          # added --->
-          ethernet-container-capability:
-            type: object
-            properties:
-              bundling-group-size-max:
-                type: integer
-                description: 'Number of Ethernet segments that can be aggregated for transmporting this Ethernet Container. Reasonable values between 1 and 32.'
-          ethernet-container-configuration:
-            type: object
-            properties:
-              bundling-is-on:
-                type: boolean
-                description: 'Indicates whether bundling of Ethernet segments on AirInterfaces is activated'
-              interface-is-on:
-                type: boolean
-                description: 'Indicates whether the interface is activated'
-              performance-monitoring-is-on:
-                type: boolean
-                description: 'Indicates whether collection and aggregation of performance values is switched on'
-          ethernet-container-status:
-            type: object
-            properties:
-              bundling-is-up:
-                type: boolean
-                description: 'Incidates whether algorithm for bundling Ethernet segments on AirInterfaces is operative'
-              interface-status:
-                type: string
-                enum:
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_UP'
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_DOWN'
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_TESTING'
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_UNKNOWN'
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_DORMANT'
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_NOT_PRESENT'
-                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_NOT_YET_DEFINED'
-                description: 'Operational status of the interface'
-              performance-monitoring-is-up:
-                type: boolean
-                description: 'Indicates whether performance values are currently collected and aggregated'
-          # --------------
           ethernet-container-performance-measurements-list:
             type: array
             items:
@@ -380,7 +299,6 @@ output:
                 unknown-protocol-frames-input:
                   type: string
                   description: 'Total number of received frames that were transporting an unknown protocol'
-                # added --->
                 time-period:
                   type: integer
                   description: 'Total (actual) length of the measurement period'
@@ -393,9 +311,9 @@ output:
                 frame-loss:
                   type: integer
                   description: 'The number of lost frames (KPI)'
-    # removed:
-    # mount-name-list-with-errors: ...
   example:
+    # Example sollte die Prozessierung (e.g. Entfernen der ONF Defaultvalues) berücksichtigen
+    #
     air-interface-list:
       - air-interface-identifiers:
           mount-name: 123273221
