@@ -1,0 +1,73 @@
+schema:
+  type: object
+  properties:
+    core-model-1-4:control-construct:
+      type: array
+      items:
+        type: object
+        properties:
+          logical-termination-point:
+            type: array
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                client-ltp:
+                  type: array
+                  items:
+                    type: string
+                server-ltp:
+                  type: array
+                  items:
+                    type: string
+                layer-protocol:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      local-id:
+                        type: string
+                      layer-protocol-name:
+                        type: string
+                ltp-augment-1-0:ltp-augment-pac:
+                  type: object
+                  properties:
+                    type: object
+                    properties:
+                      original-ltp-name:
+                        type: string
+                      external-label:
+                        type: string
+
+
+
+"ltp-augment-1-0:ltp-augment-pac": {
+    "external-label": "",
+    "connector": "",
+    "equipment": [
+        "HUAWEI-EQUIPMENT-1"
+    ],
+    "original-ltp-name": "SLD4MP1/9/7"
+}
+
+
+
+
+
+
+
+        example:
+          core-model-1-4:control-construct:
+            - logical-termination-point:
+                - uuid: '513250010-PureEthStruc-45743677'
+                  client-ltp:
+                    - '513250010-EthContainer-13535345'
+                  server-ltp:
+                    - '513250010-AirInterface-34534563'
+                  layer-protocol:
+                    - local-id: '45743677'
+                      layer-protocol-name: 'LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER'
+                  ltp-augment-1-0:ltp-augment-pac:
+                    original-ltp-name: 'LAN 1/3/3'
+                    external-label: '513550010B'
