@@ -1,0 +1,495 @@
+output:
+  type: object
+  properties:
+    air-interface-list:
+      description: 'List of microwave air interfaces found in the given devices'
+      type: array
+      items:
+        type: object
+        properties:
+          air-interface-identifiers:
+            type: object
+            properties:
+              mount-name:
+                type: string
+                description: 'Identifier of the device at the controller and in the Telefónica planning tools'
+              link-endpoint-id:
+                type: string
+                description: 'Identifier of the microwave link endpoint as used in the Telefonica planning tools'
+              link-id:
+                type: string
+                description: 'Identifier of the microwave link as used in the Telefonica planning tools. To be obtained by extracting the substring constituted by the 9 first characters'
+              logical-termination-point-id:
+                type: string
+                description: 'Identifier of the microwave link endpoint within the MW SDN domain'
+              link-aggregation-identifiers:
+                type: array
+                description: 'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames'
+                items:
+                  oneOf:
+                    - description: 'AirInterfaces'
+                      type: object
+                      required:
+                        - link-id
+                      properties:
+                        link-id:
+                          type: string
+                          description: 'Identifier of the microwave link as used in the Telefonica planing tools'
+                    - description: 'WireInterface'
+                      type: object
+                      required:
+                        - interface-name
+                      properties:
+                        interface-name:
+                          type: string
+                          description: 'Interface name as it is represented at the own management interface of the vendor'
+          air-interface-configuration:
+            type: object
+            properties:
+              configured-atpc-is-on:
+                type: boolean
+                description: 'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on'
+              configured-atpc-threshold-upper:
+                type: integer
+                description: 'Configured upper automatic transmit power control (ATPC) threshold in dBm'
+              configured-atpc-threshold-lower:
+                type: integer
+                description: 'Configured lower automatic transmit power control (ATPC) threshold in dBm'
+              configured-tx-power:
+                type: integer
+                description: 'Configured transmit power that will be operated in maximum in dBm'
+              configured-modulation-minimum:
+                type: object
+                description: 'Configured minimum modulation scheme'
+                properties:
+                  number-of-states:
+                    type: integer
+                    description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                  name-at-lct:
+                    type: string
+                    description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                  configured-capacity-minimum:
+                    type: integer
+                    description: 'Channel capacity in kbps of the configured minimum modulation scheme (KPI)'
+              configured-modulation-maximum:
+                type: object
+                description: 'Configured maximum modulation scheme'
+                properties:
+                  number-of-states:
+                    type: integer
+                    description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                  name-at-lct:
+                    type: string
+                    description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                  configured-capacity-maximum:
+                    type: integer
+                    description: 'Channel capacity in kbps of the configured maximum modulation scheme. To be filled with default value -1'
+              # added -->
+              adaptive-modulation-is-on:
+                type: boolean
+                description: 'Indicates whether adaptive modulation is active'
+              performance-monitoring-is-on:
+                type: boolean
+                description: 'Enables measurement, collection, storage and access to performance data'
+              power-is-on:
+                type: boolean
+                description: 'If true, power to all physical components required for this AirInterface instance is turned on'
+              remote-air-interface-name:
+                type: string
+                description: 'Name of the air interface, which belongs to the same link, at the remote site'
+              transmitter-in-on:
+                type: boolean
+                description: 'Indicates whether the transmitter inside tha radio is active'
+              xpic-is-on:
+                type: boolean
+                description: 'Indicates whether Cross Polarization Interference Cancelation is active'
+              #---------------------------
+          # added -->
+          air-interface-status:
+            type: object
+            properties:
+              interface-status:
+                type: string
+                enum:
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_UP'
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_DOWN'
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_TESTING'
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_UNKNOWN'
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_DORMANT'
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_NOT_PRESENT'
+                  - 'air-interface-2-0:INTERFACE_STATUS_TYPE_NOT_YET_DEFINED'
+                description: 'Indicates the operational state of the interface'
+              performance-monitoring-is-up:
+                type: boolean
+                description: 'Indicates whether performance values are currently collected and aggregated'
+          # ---------------------
+          air-interface-performance-measurements-list:
+            type: array
+            items:
+              type: object
+              properties:
+                granularity-period:
+                  type: string
+                  enum:
+                    - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                    - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                    - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                    - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                  description: 'Time period between reset of the underlying counter'
+                period-end-time:
+                  type: string
+                  description: 'Time when the counter values have been recorded and the counter reset'
+                transmit-level-minimum:
+                  type: integer
+                  description: 'Minimum transmit power in dBm'
+                transmit-level-maximum:
+                  type: integer
+                  description: 'Maximum transmit power in dBm'
+                transmit-level-average:
+                  type: integer
+                  description: 'Averaged transmit power in dBm'
+                receive-level-minimum:
+                  type: integer
+                  description: 'Minimum receive level in dBm'
+                receive-level-maximum:
+                  type: integer
+                  description: 'Maximum receive level in dBm'
+                receive-level-average:
+                  type: integer
+                  description: 'Averaged receive level in dBm'
+                signal-to-noise-ratio-minimum:
+                  type: integer
+                  description: 'Minimum signal to noise + interference ratio (SNIR)'
+                signal-to-noise-ratio-maximum:
+                  type: integer
+                  description: 'Maximum signal to noise + interference ratio (SNIR)'
+                signal-to-noise-ratio-average:
+                  type: integer
+                  description: 'Averaged signal to noise + interference ratio (SNIR)'
+                cross-polarization-discrimination-minimum:
+                  type: integer
+                  description: 'Minimum cross polarization discrimination (XPD)'
+                cross-polarization-discrimination-maximum:
+                  type: integer
+                  description: 'Maximum cross polarization discrimination (XPD)'
+                cross-polarization-discrimination-average:
+                  type: integer
+                  description: 'Averaged cross polarization discrimination (XPD)'
+                operated-transmission-modes-list: 
+                  description: 'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed'
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      transmission-mode-name:
+                        type: string
+                        description: 'Key attribute, name of the transmission mode'
+                      modulation-scheme-name-at-lct:
+                        type: string
+                        description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                      time:
+                        type: integer
+                        description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                      capacity:
+                        type: integer
+                        description: 'Channel capacity in kbps of the modulation scheme (KPI).'
+                interval-capacity:
+                  type: integer
+                  description: 'Channel capacity over the entire performance measurement interval in kbps. Calculated from the capacities of the operated transmission modes, by weighting the duration of each operated mode over the entire measurement period.To be filled with default value -1'
+                errorred-seconds:
+                  type: integer
+                  description: 'Number of errored seconds'
+                severely-errorred-seconds:
+                  type: integer
+                  description: 'Number of severily errored seconds'
+                consecutive-severely-errorred-seconds:
+                  type: integer
+                  description: 'Number of consecutive severily errored seconds'
+                total-unavailability:
+                  type: integer
+                  description: 'Total time of unavailability in seconds'
+                defect-blocks:
+                  type: integer
+                  description: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
+                # added ->
+                time-period:
+                  type: integer
+                  description: 'Total (actual) length of the measurement period'
+                # --------------
+          transmission-mode-list:
+            description: 'List of supported Transmission Modes'
+            type: array
+            items:
+              type: object
+              properties:
+                transmission-mode-name:
+                  type: string
+                  description: 'Key attribute, name of the transmission mode'
+                number-of-states:
+                  type: integer
+                  description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                modulation-scheme-name-at-lct:
+                  type: string
+                  description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                channel-bandwidth:
+                  type: integer
+                  description: 'Bandwidth of the transmit channel in kHz'
+                code-rate:
+                  type: integer
+                  description: 'Code rate of the coding scheme in %'
+                symbol-rate-reduction-factor:
+                  type: integer
+                  description: 'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
+    ethernet-container-list:
+      description: 'List of ethernet containers found in the given devices'
+      type: array
+      items:
+        type: object
+        properties:
+          ethernet-container-identifiers:
+            type: object
+            properties:
+              mount-name:
+                type: string
+                description: 'Identifier of the device at the controller and in the Telefónica planning tools'
+              interface-name:
+                type: string
+                description: 'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6'
+              logical-termination-point-id:
+                type: string
+                description: 'Identifier of the ethernet container within the MW SDN domain'
+          # added --->
+          ethernet-container-capability:
+            type: object
+            properties:
+              bundling-group-size-max:
+                type: integer
+                description: 'Number of Ethernet segments that can be aggregated for transmporting this Ethernet Container. Reasonable values between 1 and 32.'
+          ethernet-container-configuration:
+            type: object
+            properties:
+              bundling-is-on:
+                type: boolean
+                description: 'Indicates whether bundling of Ethernet segments on AirInterfaces is activated'
+              interface-is-on:
+                type: boolean
+                description: 'Indicates whether the interface is activated'
+              performance-monitoring-is-on:
+                type: boolean
+                description: 'Indicates whether collection and aggregation of performance values is switched on'
+          ethernet-container-status:
+            type: object
+            properties:
+              bundling-is-up:
+                type: boolean
+                description: 'Incidates whether algorithm for bundling Ethernet segments on AirInterfaces is operative'
+              interface-status:
+                type: string
+                enum:
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_UP'
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_DOWN'
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_TESTING'
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_UNKNOWN'
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_DORMANT'
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_NOT_PRESENT'
+                  - 'ethernet-container -2-0:INTERFACE_STATUS_TYPE_NOT_YET_DEFINED'
+                description: 'Operational status of the interface'
+              performance-monitoring-is-up:
+                type: boolean
+                description: 'Indicates whether performance values are currently collected and aggregated'
+          # --------------
+          ethernet-container-performance-measurements-list:
+            type: array
+            items:
+              type: object
+              properties:
+                granularity-period:
+                  type: string
+                  enum:
+                    - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                    - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                    - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                    - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                  description: 'Time period between reset of the underlying counter'
+                period-end-time:
+                  type: string
+                  description: 'Time when the counter values have been recorded and the counter reset'
+                max-bytes-per-second-output:
+                  type: string
+                  description: 'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
+                total-bytes-input:
+                  type: string
+                  description: 'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
+                total-bytes-output:
+                  type: string
+                  description: 'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period'
+                total-frames-input:
+                  type: string
+                  description: 'The total number of Ethernet frames received at this interface (including those received in error)'
+                total-frames-output:
+                  type: string
+                  description: 'The total number of Ethernet frames sent at this interface'
+                forwarded-frames-input:
+                  type: string
+                  description: 'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
+                forwarded-frames-output:
+                  type: string
+                  description: 'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
+                unicast-frames-input:
+                  type: string
+                  description: 'Total number of unicast frames received at this interface'
+                unicast-frames-output:
+                  type: string
+                  description: 'Total number of unicast frames sent at this interface'
+                multicast-frames-input:
+                  type: integer
+                  description: 'Total number of multicast frames received at this interface'
+                multicast-frames-output:
+                  type: integer
+                  description: 'Total number of multicast frames sent at this interface'
+                broadcast-frames-input:
+                  type: integer
+                  description: 'Total number of broadcast frames received at this interface'
+                broadcast-frames-output:
+                  type: integer
+                  description: 'Total number of broadcast frames sent at this interface'
+                fragmented-frames-input:
+                  type: integer
+                  description: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
+                errored-frames-input:
+                  type: integer
+                  description: 'Total number of errored frames received at this interface'
+                errored-frames-output:
+                  type: integer
+                  description: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
+                dropped-frames-input:
+                  type: integer
+                  description: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
+                dropped-frames-output:
+                  type: integer
+                  description: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
+                oversized-frames-ingress:
+                  type: string
+                  description: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
+                undersized-frames-ingress:
+                  type: string
+                  description: 'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
+                jabber-frames-ingress:
+                  type: string
+                  description: 'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
+                unknown-protocol-frames-input:
+                  type: string
+                  description: 'Total number of received frames that were transporting an unknown protocol'
+                # added --->
+                time-period:
+                  type: integer
+                  description: 'Total (actual) length of the measurement period'
+                transmit-traffic:
+                  type: float
+                  description: 'TX Traffic [Mbps] KPI)'
+                receive-traffic:
+                  type: float
+                  description: 'RX Traffic [Mbps] (KPI)'
+                frame-loss:
+                  type: integer
+                  description: 'The number of lost frames (KPI)'
+    # removed:
+    # mount-name-list-with-errors: ...
+  example:
+    air-interface-list:
+      - air-interface-identifiers:
+          mount-name: 123273221
+          link-endpoint-id: '325557888A'
+          link-id: '325557888'
+          logical-termination-point-id: 'RF-2146697744'
+          link-aggregation-identifiers:
+            - link-id: '325557888'
+            - link-id: '325557889'
+        air-interface-configuration:
+          configured-atpc-is-on: true
+          configured-atpc-threshold-upper: 99
+          configured-atpc-threshold-lower: -45
+          configured-atpc-tx-power-min: -10
+          configured-tx-power: 4
+          configured-modulation-minimum:
+            number-of-states: 4
+            name-at-lct: '4 QAM'
+            configured-capacity-minimum: -1
+          configured-modulation-maximum:
+            number-of-states: 1024
+            name-at-lct: '1024 QAM'
+            configured-capacity-maximum: -1
+        air-interface-performance-measurements-list:
+          - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+            period-end-time: '2024-03-06T13:00:00+01:00'
+            transmit-level-minimum: -4
+            transmit-level-maximum: -4
+            transmit-level-average: 99
+            receive-level-minimum: -45
+            receive-level-maximum: -44
+            receive-level-average: 99
+            signal-to-noise-ratio-minimum: 40
+            signal-to-noise-ratio-maximum: 41
+            signal-to-noise-ratio-average: -99
+            cross-polarization-discrimination-minimum: 30
+            cross-polarization-discrimination-maximum: 31
+            cross-polarization-discrimination-average: 99
+            operated-transmission-modes-list:
+              - transmission-mode-name: '56000-1024-v2'
+                modulation-scheme-name-at-lct:
+                time: 897
+                capacity:
+              - transmission-mode-name: '56000-128-v4'
+                modulation-scheme-name-at-lct:
+                time: 3
+                capacity:
+            interval-capacity: -1
+        transmission-mode-list:
+          - transmission-mode-name: '56000-1024-v2'
+            number-of-states: 1024
+            modulation-scheme-name-at-lct: '1024 QAM'
+            channel-bandwidth: 56000
+            code-rate: 94
+            symbol-rate-reduction-factor: 1
+          - transmission-mode-name: '7000-16-v2'
+            number-of-states: 16
+            modulation-scheme-name-at-lct: '16 QAM'
+            channel-bandwidth: 7000
+            code-rate: 86
+            symbol-rate-reduction-factor: 1
+          - transmission-mode-name: '40000-128-v0'
+            number-of-states: 128
+            modulation-scheme-name-at-lct: '128 QAM'
+            channel-bandwidth: 40000
+            code-rate: 94
+            symbol-rate-reduction-factor: 1
+    ethernet-container-list:
+      - ethernet-container-identifiers:
+          mount-name: 123273221
+          interface-name: 'WAN 1/1/1'
+          logical-termination-point-id: 'ETH-2134646913'
+        ethernet-container-performance-measurements-list:
+          - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+            period-end-time: '2024-03-07T00:15:00.0+00:00'
+            max-bytes-per-second-output: 0
+            total-bytes-input: '0'
+            total-bytes-output: '0'
+            total-frames-input: '-1'
+            total-frames-output: '-1'
+            forwarded-frames-input: '-1'
+            forwarded-frames-output: '-1'
+            unicast-frames-input: '0'
+            unicast-frames-output: '0'
+            multicast-frames-input: 0
+            multicast-frames-output: 0
+            broadcast-frames-input: 0
+            broadcast-frames-output: 0
+            fragmented-frames-input: -1
+            errored-frames-input: 0
+            errored-frames-output: 0
+            dropped-frames-input: 0
+            dropped-frames-output: 0
+            oversized-frames-ingress: '-1'
+            undersized-frames-ingress: '-1'
+            jabber-frames-ingress: '-1'
+            unknown-protocol-frames-input: '-1'
