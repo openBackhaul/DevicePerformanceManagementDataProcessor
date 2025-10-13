@@ -303,111 +303,116 @@ output:
                   type: integer
                   description: 'Total (actual) length of the measurement period'
                 transmit-traffic:
-                  type: float
+                  type: number
+                  format: float
                   description: 'TX Traffic [Mbps] KPI)'
                 receive-traffic:
-                  type: float
+                  type: number
+                  format: float
                   description: 'RX Traffic [Mbps] (KPI)'
                 frame-loss:
                   type: integer
                   description: 'The number of lost frames (KPI)'
   example:
-    # Example sollte die Prozessierung (e.g. Entfernen der ONF Defaultvalues) berücksichtigen
-    #
-    air-interface-list:
-      - air-interface-identifiers:
-          mount-name: 123273221
-          link-endpoint-id: '325557888A'
-          link-id: '325557888'
-          logical-termination-point-id: 'RF-2146697744'
-          link-aggregation-identifiers:
-            - link-id: '325557888'
-            - link-id: '325557889'
-        air-interface-configuration:
-          configured-atpc-is-on: true
-          configured-atpc-threshold-upper: 99
-          configured-atpc-threshold-lower: -45
-          configured-atpc-tx-power-min: -10
-          configured-tx-power: 4
-          configured-modulation-minimum:
-            number-of-states: 4
-            name-at-lct: '4 QAM'
-            configured-capacity-minimum: -1
-          configured-modulation-maximum:
-            number-of-states: 1024
-            name-at-lct: '1024 QAM'
-            configured-capacity-maximum: -1
-        air-interface-performance-measurements-list:
-          - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-            period-end-time: '2024-03-06T13:00:00+01:00'
-            transmit-level-minimum: -4
-            transmit-level-maximum: -4
-            transmit-level-average: 99
-            receive-level-minimum: -45
-            receive-level-maximum: -44
-            receive-level-average: 99
-            signal-to-noise-ratio-minimum: 40
-            signal-to-noise-ratio-maximum: 41
-            signal-to-noise-ratio-average: -99
-            cross-polarization-discrimination-minimum: 30
-            cross-polarization-discrimination-maximum: 31
-            cross-polarization-discrimination-average: 99
-            operated-transmission-modes-list:
-              - transmission-mode-name: '56000-1024-v2'
-                modulation-scheme-name-at-lct:
-                time: 897
-                capacity:
-              - transmission-mode-name: '56000-128-v4'
-                modulation-scheme-name-at-lct:
-                time: 3
-                capacity:
-            interval-capacity: -1
-        transmission-mode-list:
-          - transmission-mode-name: '56000-1024-v2'
-            number-of-states: 1024
-            modulation-scheme-name-at-lct: '1024 QAM'
-            channel-bandwidth: 56000
-            code-rate: 94
-            symbol-rate-reduction-factor: 1
-          - transmission-mode-name: '7000-16-v2'
-            number-of-states: 16
-            modulation-scheme-name-at-lct: '16 QAM'
-            channel-bandwidth: 7000
-            code-rate: 86
-            symbol-rate-reduction-factor: 1
-          - transmission-mode-name: '40000-128-v0'
-            number-of-states: 128
-            modulation-scheme-name-at-lct: '128 QAM'
-            channel-bandwidth: 40000
-            code-rate: 94
-            symbol-rate-reduction-factor: 1
-    ethernet-container-list:
-      - ethernet-container-identifiers:
-          mount-name: 123273221
-          interface-name: 'WAN 1/1/1'
-          logical-termination-point-id: 'ETH-2134646913'
-        ethernet-container-performance-measurements-list:
-          - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-            period-end-time: '2024-03-07T00:15:00.0+00:00'
-            max-bytes-per-second-output: 0
-            total-bytes-input: '0'
-            total-bytes-output: '0'
-            total-frames-input: '-1'
-            total-frames-output: '-1'
-            forwarded-frames-input: '-1'
-            forwarded-frames-output: '-1'
-            unicast-frames-input: '0'
-            unicast-frames-output: '0'
-            multicast-frames-input: 0
-            multicast-frames-output: 0
-            broadcast-frames-input: 0
-            broadcast-frames-output: 0
-            fragmented-frames-input: -1
-            errored-frames-input: 0
-            errored-frames-output: 0
-            dropped-frames-input: 0
-            dropped-frames-output: 0
-            oversized-frames-ingress: '-1'
-            undersized-frames-ingress: '-1'
-            jabber-frames-ingress: '-1'
-            unknown-protocol-frames-input: '-1'
+    output:
+      air-interface-list:
+        - air-interface-identifiers:
+            mount-name: '123273221'
+            link-endpoint-id: '325557888A'
+            link-id: '325557888'
+            logical-termination-point-id: 'RF-2146697744'
+            link-aggregation-identifiers:
+              - link-id: '325557888'
+              - interface-name: '325557889'
+          air-interface-configuration:
+            configured-atpc-is-on: true
+            configured-atpc-threshold-upper: 99
+            configured-atpc-threshold-lower: -45
+            configured-tx-power: -10
+            configured-modulation-minimum:
+              number-of-states: 4
+              name-at-lct: '4 QAM'
+              configured-capacity-minimum: 2
+            configured-modulation-maximum:
+              number-of-states: 1024
+              name-at-lct: '1024 QAM'
+              configured-capacity-maximum: 10
+          air-interface-performance-measurements-list:
+            - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+              period-end-time: '2024-03-06T13:00:00+01:00'
+              transmit-level-minimum: 18
+              transmit-level-maximum: 22
+              transmit-level-average: 21
+              receive-level-minimum: -45
+              receive-level-maximum: -44
+              receive-level-average: -44
+              signal-to-noise-ratio-minimum: 0
+              signal-to-noise-ratio-maximum: 0
+              signal-to-noise-ratio-average: 0
+              cross-polarization-discrimination-minimum: 30
+              cross-polarization-discrimination-maximum: 31
+              cross-polarization-discrimination-average: 99
+              operated-transmission-modes-list:
+                  - transmission-mode-name: '56000-1024-v2'
+                    modulation-scheme-name-at-lct:
+                    time: 897
+                    capacity: 100
+                  - transmission-mode-name: '56000-128-v4'
+                    modulation-scheme-name-at-lct:
+                    time: 3
+                    capacity: 120
+              interval-capacity: 110
+              errorred-seconds: 10
+              severely-errorred-seconds: 2
+              consecutive-severely-errorred-seconds: 0
+              total-unavailability: 0
+              defect-blocks: 2
+              time-period: 890
+          transmission-mode-list:
+            - transmission-mode-name: '56000-1024-v2'
+              number-of-states: 1024
+              modulation-scheme-name-at-lct: '1024 QAM'
+              channel-bandwidth: 56000
+              code-rate: 94
+              symbol-rate-reduction-factor: 1
+            - transmission-mode-name: '7000-16-v2'
+              number-of-states: 16
+              modulation-scheme-name-at-lct: '16 QAM'
+              channel-bandwidth: 7000
+              code-rate: 86
+              symbol-rate-reduction-factor: 1
+      ethernet-container-list:
+        - ethernet-container-identifiers:
+            mount-name: '123273221'
+            interface-name: 'WAN 1/1/1'
+            logical-termination-point-id: 'ETH-2134646913'
+          ethernet-container-performance-measurements-list:
+            - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+              period-end-time: '2024-03-07T00:15:00.0+00:00'
+              max-bytes-per-second-output: '100'
+              total-bytes-input: '9324688281'
+              total-bytes-output: '9800000000'
+              total-frames-input: '9047677'
+              total-frames-output: '9901000'
+              forwarded-frames-input: '500000'
+              forwarded-frames-output: '510000'
+              unicast-frames-input: '100000'
+              unicast-frames-output: '110000'
+              multicast-frames-input: 51945
+              multicast-frames-output: 10000
+              broadcast-frames-input: 15
+              broadcast-frames-output: 10
+              fragmented-frames-input: 1300
+              errored-frames-input: 4000
+              errored-frames-output: 4001
+              dropped-frames-input: 5000
+              dropped-frames-output: 1200
+              oversized-frames-ingress: '100000'
+              undersized-frames-ingress: '123000'
+              jabber-frames-ingress: '123123'
+              unknown-protocol-frames-input: '124785'
+              time-period: 899
+              transmit-traffic: 320
+              receive-traffic: 250
+              frame-loss: 12000
+
