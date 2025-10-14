@@ -1,0 +1,964 @@
+openapi: 3.0.0
+info:
+  title: DevicePerformanceManagementDataProcessor
+  version: 1.0.0
+
+paths:
+########################################################################################################################
+#   Service Layer - Individual Part
+########################################################################################################################
+
+  /p1/provide-ltp-list-and-info:
+    post:
+      operationId: readInterfaceListAndInfo
+      summary: 'Reads LTP structure and derives information from LTP augment'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name
+              properties:
+                mount-name:
+                  type: string
+                  description: > 
+                    'The mount-name of the device that is addressed by this function'
+      responses:
+        '200':
+          description: 'Augmented LTP structure provided from cache'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  core-model-1-4:control-construct:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        logical-termination-point:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              uuid:
+                                type: string
+                                description: >
+                                  'Identifier of the LTP
+                                  from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/uuid}'
+                              client-ltp:
+                                type: array
+                                items:
+                                  type: string
+                                description: >
+                                  'List of client LTPs of the LTP instance
+                                  from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/client-ltp}'
+                              server-ltp:
+                                type: array
+                                items:
+                                  type: string
+                                description: >
+                                  'List of server LTPs of the LTP instance
+                                  from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/server-ltp}'
+                              layer-protocol:
+                                type: array
+                                items:
+                                  oneOf:
+                                    - description: 'AirInterface'
+                                      type: object
+                                      properties:
+                                        local-id:
+                                          type: string
+                                          description: >
+                                            'Local-id of the layer protocol instance
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/local-id}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates air-interface'
+                                        layer-protocol-name:
+                                          type: string
+                                          enum:
+                                            - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                          description: >
+                                            'Name of the layer protocol instance
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates air-interface'
+                                        link-endpoint-id:
+                                          type: string
+                                          description: >
+                                            'Identifier of the microwave link endpoint as used in the Telefonica planning tools
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/external-label}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates air-interface'
+                                        link-id:
+                                          type: string
+                                          description: >
+                                            'Identifier of the microwave link as used in the Telefonica planning tools.To be obtained by extracting the substring constituted by the 9 first characters
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/external-label}'
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates air-interface'
+                                        link-aggregation-identifiers:
+                                          type: array
+                                          description: >
+                                            'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames
+                                            from {$FunctionForIdentifyingPhysicalLinkAggregationsReadsFromElasticSearch.LtpDesignation.response.body#external-label} in case of AirInterface or
+                                            from {$FunctionForIdentifyingPhysicalLinkAggregationsReadsFromElasticSearch.LtpDesignation.response.body#original-ltp-name} in case of WireInterface'
+                                          items:
+                                            oneOf:
+                                              - description: 'AirInterfaces'
+                                                type: object
+                                                required:
+                                                  - link-id
+                                                properties:
+                                                  link-id:
+                                                    type: string
+                                                    description: >
+                                                      'Identifier of the microwave link as used in the Telefonica planing tools'
+                                              - description: 'WireInterface'
+                                                type: object
+                                                required:
+                                                  - interface-name
+                                                properties:
+                                                  interface-name:
+                                                    type: string
+                                                    description: >
+                                                      'Interface name as it is represented at the vendor's own management interface'
+                                    - description: 'EthernetContainer'
+                                      type: object
+                                      properties:
+                                        local-id:
+                                          type: string
+                                          description: >
+                                            'Local-id of the layer protocol instance
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/local-id}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates ethernet-container'
+                                        layer-protocol-name:
+                                          type: string
+                                          description: >
+                                            'Name of the layer protocol instance
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates ethernet-container'
+                                        interface-name:
+                                          type: string
+                                          description: >
+                                            'Interface name of the EthernetContainer instance as it is represented at the vendors own management interface, e.g. LAN 1/6/6
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/original-ltp-name}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} indicates ethernet-container'
+                                    - description: 'default'
+                                      type: object
+                                      properties:
+                                        local-id:
+                                          type: string
+                                          description: >
+                                            'Local-id of the layer protocol instance
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/local-id}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} does not indicate neither air-interface nor ethernet-container'
+                                        layer-protocol-name:
+                                          type: string
+                                          description: >
+                                            'Name of the layer protocol instance
+                                            from {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name}
+                                            where {$FunctionForReadingLtpInfoCausesReadingFromElasticSearch.LtpInfo.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol-name} does not indicate neither air-interface nor ethernet-container'
+                      example:
+                        core-model-1-4:control-construct:
+                          - logical-termination-point:
+                              - uuid: '513250010-PureEthStruc-45743677'
+                                client-ltp:
+                                  - '513250010-EthContainer-13535345'
+                                server-ltp:
+                                  - '513250010-AirInterface-34534563'
+                                layer-protocol:
+                                  - local-id: '45743677'
+                                    layer-protocol-name: 'LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER'
+                              - uuid: 'RF-819.1.2'
+                                client-ltp:
+                                  - '513250010-PureEthStruc-45743677'
+                                server-ltp:
+                                layer-protocol:
+                                  - local-id: '34534563'
+                                    layer-protocol-name: 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                    link-endpoint-id: '325551001A'
+                                    link-id: '325551001'
+                                    link-aggregation-identifiers:
+                                      - link-id: '325551001'
+                                      - link-id: '325551002'
+                              - uuid: 'ETH-765.1.3'
+                                client-ltp:
+                                  - 'SYNC-765.1.3'
+                                  - 'PTP-123.12.4'
+                                server-ltp:
+                                  - 'PES-819.2.2'
+                                layer-protocol:
+                                  - local-id: '765.1.3'
+                                    layer-protocol-name: 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                                    interface-name: 'WAN 1/1/1'
+      callbacks:
+        FunctionForReadingLtpInfoCausesReadingFromElasticSearch:
+          LtpInfo: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-es-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            get:
+              parameters:
+                - name: mount-name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250001'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from {$request.body#mount-name}'
+                - name: fields
+                  in: query
+                  required: true
+                  schema:
+                    type: string
+                    enum:
+                      - 'logical-termination-point(uuid;server-ltp;client-ltp;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(original-ltp-name;external-label))'
+                    description: 'The fields filter to be used for retrieving LTP structure information'
+              responses:
+                '200':
+                  description: 'LTP structure provided from cache'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          core-model-1-4:control-construct:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                logical-termination-point:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      uuid:
+                                        type: string
+                                      client-ltp:
+                                        type: array
+                                        items:
+                                          type: string
+                                      server-ltp:
+                                        type: array
+                                        items:
+                                          type: string
+                                      layer-protocol:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            local-id:
+                                              type: string
+                                            layer-protocol-name:
+                                              type: string
+                                      ltp-augment-1-0:ltp-augment-pac:
+                                        type: object
+                                        properties:
+                                          external-label:
+                                            type: string
+                                          original-ltp-name:
+                                            type: string
+                        example:
+                          core-model-1-4:control-construct:
+                            - logical-termination-point:
+                                - uuid: '513250010-PureEthStruc-45743677'
+                                  client-ltp:
+                                    - '513250010-EthContainer-13535345'
+                                  server-ltp:
+                                    - '513250010-AirInterface-34534563'
+                                  layer-protocol:
+                                    - local-id: '45743677'
+                                      layer-protocol-name: 'LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER'
+                                  ltp-augment-1-0:ltp-augment-pac:
+                                    external-label: 'External label not yet defined.'
+                                    original-ltp-name: 'LAN:1/1'
+                                - uuid: '513250010-AirInterface-34534563'
+                                  client-ltp:
+                                    - '513250010-PureEthStruc-45743677'
+                                  server-ltp:
+                                  layer-protocol:
+                                    - local-id: '34534563'
+                                      layer-protocol-name: 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                  ltp-augment-1-0:ltp-augment-pac:
+                                    external-label: '3255551001A'
+                                    original-ltp-name: 'CT 1/1/1'
+                                - uuid: 'ETH-765.1.3'
+                                  client-ltp:
+                                    - 'SYNC-765.1.3'
+                                    - 'PTP-123.12.4'
+                                  server-ltp:
+                                    - 'PES-819.2.2'
+                                  layer-protocol:
+                                    - local-id: '765.1.3'
+                                      layer-protocol-name: 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                                  ltp-augment-1-0:ltp-augment-pac:
+                                    external-label: ''
+                                    original-ltp-name: 'WAN 1/1/1'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        FunctionForIdentifyingPhysicalLinkAggregationsReadsFromElasticSearch:
+          LtpDesignation: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-es-1-0-0-201/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'This callback is to be executed for every AirInterface identified in preceeding callback FunctionForReadingLtpInfoCausesReadingFromElasticSearch'
+            get:
+              parameters:
+                - name: mount-name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250301'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from {$request.body#mount-name}'
+                - name: uuid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LTP-MWPS-TTP-1-1'
+                  description: >
+                    'The UUID of the LogicalTerminationPoint with layer protocol Wire/AirInterface that is addressed by the request.
+                    The UUID, which is to be used here, has to be determined by stepping through the hierarchy of LTPs on top of the AirInterface, which is identified
+                    from {$RequestForProvidingHistoricalPmDataCausesReadingLtpStructure.LtpStructure.response.body#core-model-1-4:control-construct/logical-termination-point/uuid}
+                    where {RequestForProvidingHistoricalPmDataCausesReadingLtpStructure.LtpStructure.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol/layer-protocol-name} == air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER
+                    as follows:
+                    ClientLtp OF AirInterfaceUuid = ClientStructureUuid
+                    ClientLtp OF ClientStructureUuid = ClientEthernetContainerUuid
+                    ServerLtp OF ClientEthernetContainerUuid = LIST-OF ServingStructureUuid
+
+                    FOR EACH ServingStructureUuid in LIST-OF ServingStructureUuid:
+                    ServerLtp OF ServingStructureUuid = Wire/AirInterfaceUuid'
+                - name: fields
+                  in: query
+                  required: true
+                  schema:
+                    type: string
+                    enum:
+                      - 'original-ltp-name;external-label'
+              responses:
+                '200':
+                  description: 'LtpAugment provided from cache'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          ltp-augment-1-0:ltp-augment-pac:
+                            type: object
+                            properties:
+                              original-ltp-name:
+                                type: string
+                              external-label:
+                                type: string
+                        example:
+                          ltp-augment-1-0:ltp-augment-pac:
+                            original-ltp-name: 'LAN 1/3/3'
+                            external-label: '513550010B'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
+
+
+
+
+
+
+
+########################################################################################################################
+#   Common Components
+########################################################################################################################
+components:
+  parameters:
+    user:
+      name: user
+      in: header
+      required: true
+      schema:
+        type: string
+        example: 'User Name'
+      description: 'User identifier from the system starting the service call'
+    originator:
+      name: originator
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 3
+        example: 'Resolver'
+      description: >
+        'Identification for the system consuming the API, as defined in
+         [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+    x-correlator:
+      name: x-correlator
+      in: header
+      required: true
+      schema:
+        type: string
+        pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+        example: '550e8400-e29b-11d4-a716-446655440000'
+      description: 'UUID for the service execution flow that allows to correlate requests and responses'
+    trace-indicator:
+      name: trace-indicator
+      in: header
+      required: true
+      schema:
+        type: string
+        pattern: '^([0-9]+)(\.([0-9]+))*$'
+        example: '1.3.1'
+      description: 'Sequence of request numbers along the flow'
+    customer-journey:
+      name: customer-journey
+      in: header
+      required: true
+      schema:
+        type: string
+        example: 'Unknown value'
+      description: 'Holds information supporting customer’s journey to which the execution applies'
+  responses:
+    responseForErroredServiceRequests:
+      description: 'Response in case of errored service requests'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorDescription'
+      headers:
+        x-correlator:
+          schema:
+            type: string
+            pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+            example: '550e8400-e29b-11d4-a716-446655440000'
+          description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+        exec-time:
+          schema:
+            type: integer
+            example: 1100
+          description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+    responseForErroredOutOfDomainServiceRequests:
+      description: 'Response in case of errored service requests from out of MW SDN domain'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorDescription'
+    responseForErroredOamRequests:
+      description: 'Response in case of errored OaM requests'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorDescription'
+    '429':
+      description: 'Response in case too many requests need to be executed in parallel or too many requests have been received within a time period. The maximum number of parallel requests is defined in an IntegerProfile with the service name as a prefix and MaxNumberOfParallelRequests as a suffix. Some time period to elapse for throttling incomming requests is defined in an IntegerProfile with the service name as a prefix and ThrottlingPeriod as a suffix'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 429
+                maximum: 429
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Too many requests'
+    '460':
+      description: 'Response in case the mountName provided in the request is not found in the list of connected devices'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 460
+                maximum: 460
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Not connected. Requested device is currently not in connected state at the controller'
+    '470':
+      description: 'Response in case the resource specified in the request does not exist within the connected device'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 470
+                maximum: 470
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Resource not existing. Device informs about addressed resource unknown'
+    '502':
+      description: 'Response in case the application that is expected to provide a consumed service is not responding'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 502
+                maximum: 502
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Bad Gateway'
+    '530':
+      description: 'Response in case the referenced resource exists (e.g. device connected and resource exists in internal datatree), but response data is either not available, lost during transmission, invalid, incomplete or corrupted'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 530
+                maximum: 530
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Data invalid. Response data not available, incomplete or corrupted'
+  schemas:
+    errorDescription:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    genericRepresentation:
+      type: object
+      required:
+        - response-value-list
+        - consequent-action-list
+      properties:
+        response-value-list:
+          type: array
+          items:
+            type: object
+            required:
+              - field-name
+              - value
+              - datatype
+            properties:
+              field-name:
+                type: string
+                description: >
+                  'Field name
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-capability/field-name]'
+              value:
+                type: string
+                description: >
+                  'Field value
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-configuration/value]'
+              datatype:
+                type: string
+                description: >
+                  'Field datatype
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-capability/datatype]'
+        consequent-action-list:
+          type: array
+          items:
+            type: object
+            required:
+              - label
+              - request
+              - display-in-new-browser-window
+            properties:
+              label:
+                type: string
+                description: >
+                  'Label that shall be presented on the button
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/label]'
+              request:
+                type: string
+                description: >
+                  'Request that shall be called, when button gets pressed
+                  from
+                  [{/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-protocol}]
+                  ://
+                  [{/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/ipv-4-address}
+                  or
+                  {/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/domain-name}]
+                  :
+                  [{/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-port}]
+                  [{/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-configuration/consequent-operation-reference}]'
+              input-value-list:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - field-name
+                  properties:
+                    field-name:
+                      type: string
+                      description: >
+                        'Name of an input value required for executing the Request
+                        from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/input-value-list=*/name]'
+                    unit:
+                      type: string
+                      description: >
+                        'Unit of an input value required for executing the Request
+                        from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/input-value-list=*/unit]'
+              display-in-new-browser-window:
+                type: boolean
+                description: >
+                  'True in case Request shall be represented in a new browser window
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/display-in-new-browser-window]'
+    logicalTerminationPoint:
+      type: object
+      required:
+        - uuid
+        - ltp-direction
+        - client-ltp
+        - server-ltp
+        - layer-protocol
+      properties:
+        uuid:
+          type: string
+        ltp-direction:
+          type: string
+        client-ltp:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        server-ltp:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        layer-protocol:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            oneOf:
+              - description: 'operation server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - operation-server-interface-1-0:operation-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  operation-server-interface-1-0:operation-server-interface-pac:
+                    type: object
+                    required:
+                      - operation-server-interface-capability
+                      - operation-server-interface-configuration
+                    properties:
+                      operation-server-interface-capability:
+                        type: object
+                        required:
+                          - operation-name
+                        properties:
+                          operation-name:
+                            type: string
+                      operation-server-interface-configuration:
+                        type: object
+                        required:
+                          - life-cycle-state
+                        properties:
+                          life-cycle-state:
+                            type: string
+              - description: 'http server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - http-server-interface-1-0:http-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  http-server-interface-1-0:http-server-interface-pac:
+                    type: object
+                    required:
+                      - http-server-interface-capability
+                    properties:
+                      http-server-interface-capability:
+                        type: object
+                        required:
+                          - application-name
+                          - release-number
+                          - data-update-period
+                        properties:
+                          application-name:
+                            type: string
+                          release-number:
+                            type: string
+                          data-update-period:
+                            type: string
+              - description: 'tcp server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - tcp-server-interface-1-0:tcp-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  tcp-server-interface-1-0:tcp-server-interface-pac:
+                    type: object
+                    required:
+                      - tcp-server-interface-configuration
+                    properties:
+                      tcp-server-interface-configuration:
+                        type: object
+                        required:
+                          - description
+                          - local-protocol
+                          - local-address
+                          - local-port
+                        properties:
+                          description:
+                            type: string
+                          local-protocol:
+                            type: string
+                          local-address:
+                            type: object
+                            properties:
+                              ipv-4-address:
+                                type: string
+                              domain-name:
+                                type: string
+                          local-port:
+                            type: integer
+              - description: 'operation client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - operation-client-interface-1-0:operation-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  operation-client-interface-1-0:operation-client-interface-pac:
+                    type: object
+                    required:
+                      - operation-client-interface-configuration
+                      - operation-client-interface-status
+                    properties:
+                      operation-client-interface-configuration:
+                        type: object
+                        required:
+                          - operation-name
+                        properties:
+                          operation-name:
+                            type: string
+                      operation-client-interface-status:
+                        type: object
+                        required:
+                          - operational-state
+                          - life-cycle-state
+                        properties:
+                          operational-state:
+                            type: string
+                          life-cycle-state:
+                            type: string
+              - description: 'elasticsearch client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac:
+                    type: object
+                    required:
+                      - elasticsearch-client-interface-configuration
+                      - elasticsearch-client-interface-status
+                    properties:
+                      elasticsearch-client-interface-configuration:
+                        type: object
+                        required:
+                          - index-alias
+                        properties:
+                          index-alias:
+                            type: string
+                      elasticsearch-client-interface-status:
+                        type: object
+                        required:
+                          - operational-state
+                          - life-cycle-state
+                        properties:
+                          operational-state:
+                            type: string
+                          life-cycle-state:
+                            type: string
+              - description: 'http client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - http-client-interface-1-0:http-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  http-client-interface-1-0:http-client-interface-pac:
+                    type: object
+                    required:
+                      - http-client-interface-configuration
+                    properties:
+                      http-client-interface-configuration:
+                        type: object
+                        required:
+                          - application-name
+                          - release-number
+                        properties:
+                          application-name:
+                            type: string
+                          release-number:
+                            type: string
+              - description: 'tcp client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - tcp-client-interface-1-0:tcp-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  tcp-client-interface-1-0:tcp-client-interface-pac:
+                    type: object
+                    required:
+                      - tcp-client-interface-configuration
+                    properties:
+                      tcp-client-interface-configuration:
+                        type: object
+                        required:
+                          - remote-protocol
+                          - remote-address
+                          - remote-port
+                        properties:
+                          remote-protocol:
+                            type: string
+                          remote-address:
+                            type: object
+                            properties:
+                              ip-address:
+                                type: object
+                                properties:
+                                  ipv-4-address:
+                                    type: string
+                              domain-name:
+                                type: string
+                          remote-port:
+                            type: integer
+    forwardingDomain:
+      type: object
+      required:
+        - uuid
+        - forwarding-construct
+      properties:
+        uuid:
+          type: string
+        forwarding-construct:
+          type: array
+          items:
+            type: object
+            required:
+              - uuid
+              - name
+              - fc-port
+            properties:
+              uuid:
+                type: string
+              name:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - value-name
+                    - value
+                  properties:
+                    value-name:
+                      type: string
+                    value:
+                      type: string
+              fc-port:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - local-id
+                    - port-direction
+                    - logical-termination-point
+                  properties:
+                    local-id:
+                      type: string
+                    port-direction:
+                      type: string
+                    logical-termination-point:
+                      type: string
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: operation-key
+    basicAuth:
+      type: http
+      scheme: basic
