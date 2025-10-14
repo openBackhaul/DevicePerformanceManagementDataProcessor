@@ -18,6 +18,7 @@ The service shall be processed as follows:
 #### Output
 The function returns the list of LTPs of the given mount-name. Entries for AirInterface and EthernetContainers are enriched with additional information from LTP augments.
 
+---  
 
 ### /p1ReadAirInterfaceConfigAndCapabilitiesFromCache
 
@@ -42,6 +43,7 @@ The callback *FunctionForProvidingAirInterfaceConfigAndCabilitiesCausesReadingFr
 #### Output
 The function returns relevant configuration and capability attributes for the given AirInterface instance.
 
+---  
 
 ### /p1ReadRecentAirInterfaceHistoricalPmDataFromCache
 
@@ -63,3 +65,26 @@ The service shall be processed as follows:
 
 #### Output
 The function returns the *air-interface-historical-performances/historical-performance-data-list* with the filtered records of the most recent 15min data.  
+
+---  
+
+### /p1ReadRecentEthernetContainerHistoricalPmDataFromCache
+
+The function shall read EthernetContainer historical PM data records with 15min granularity from Cache, which are newer than an input timestamp.  
+If no input timestamp is provided, all found 15min records are returned. If no newer records are found, the result list remains empty.
+
+#### Input
+The function gets a mount-name, as well as the target EthernetContainer's uuid and localId as input in its requestBody.  
+Additionally a timestamp filter attribute can be provided.
+
+#### Steps
+The service shall be processed as follows: 
+- read all *ethernet-container-historical-performances/historical-performance-data-list* records WHERE *period-end-time* is newer than the input filter *timestamp* AND *granularity-period* indicates 15-min granularity
+- all other records from the *historical-performance-data-list* are ignored
+- return the filtered records which were found. If none were found, the list remains empty.
+
+#### Callbacks
+- FunctionForReadingRecentEthernetContainerHistoricalPmCausesReadingFromElasticSearch
+
+#### Output
+The function returns the *ethernet-container-historical-performances/historical-performance-data-list* with the filtered records of the most recent 15min data.  

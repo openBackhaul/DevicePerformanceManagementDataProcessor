@@ -920,7 +920,328 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  /p1/read-recent-ethernet-container-historical-pm-data-from-cache:
+    post:
+      operationId: p1ReadRecentEthernetContainerHistoricalPmDataFromCache
+      summary: 'Reads recent EthernetContainer Historical Performance Data from Cache'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name
+              properties:
+                mount-name:
+                  type: string
+                  description: 'The mount-name of the device that is addressed by this function'
+                uuid:
+                  type: string
+                  description: 'The uuid of the LogicalTerminationPoint addressed in this function'
+                  example: 'LTP-MWPS-TTP-1-1'
+                local-id:
+                  type: string
+                  description: 'The localId of the LogicalTerminationPoint addressed in this function'
+                  example: 'LP-MWPS-TTP-1-1'
+                timestamp:
+                  type: string
+                  description: 'Only PM records newer than the given timestamp shall be read from the Cache. If not provided, all records will be read'
+                  example: '2025-10-13T14:00:00+02:00'
+      responses:
+        '200':
+          description: 'Recent historical EthernetContainer PM data provided'
+          content:
+            application/json:
+              schema:
+                description: 'Only relevant attributes listed'
+                type: object
+                properties:
+                  ethernet-container-2-0:ethernet-container-historical-performances:
+                    type: object
+                    description: >
+                      'The EthernetContainer historical performances with 15min granularity, which are not newer than {$request.body#timestamp}
+                      from {$FunctionForReadingRecentEthernetContainerHistoricalPmCausesReadingFromElasticSearch.Pm.response.body}.
+                      If there are no newer records found, the historical-performance-data-list remains empty.'
+                    properties:
+                      historical-performance-data-list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            granularity-period:
+                              type: string
+                              enum:
+                                - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                              description: 'If the granularity period does not indicate 15-min data, the complete array item is to be ignored'
+                            period-end-time:
+                              type: string
+                              description: 'If the period-end-time is not newer than the provided timestamp from the requestBody, the complete array item is to be ignored'
+                            max-bytes-per-second-output:
+                              type: integer
+                            total-bytes-input:
+                              type: string
+                              description: 'String representation of int64 value'
+                            total-bytes-output:
+                              type: string
+                              description: 'String representation of int64 value'
+                            total-frames-input:
+                              type: string
+                              description: 'String representation of int64 value'
+                            total-frames-output:
+                              type: string
+                              description: 'String representation of int64 value'
+                            forwarded-frames-input:
+                              type: string
+                              description: 'String representation of int64 value'
+                            forwarded-frames-output:
+                              type: string
+                              description: 'String representation of int64 value'
+                            unicast-frames-input:
+                              type: string
+                              description: 'String representation of int64 value'
+                            unicast-frames-output:
+                              type: string
+                              description: 'String representation of int64 value'
+                            multicast-frames-input:
+                              type: integer
+                            multicast-frames-output:
+                              type: integer
+                            broadcast-frames-input:
+                              type: integer
+                            broadcast-frames-output:
+                              type: integer
+                            fragmented-frames-input:
+                              type: integer
+                            errored-frames-input:
+                              type: integer
+                            errored-frames-output:
+                              type: integer
+                            dropped-frames-input:
+                              type: integer
+                            dropped-frames-output:
+                              type: integer
+                            oversized-frames-ingress:
+                              type: string
+                              description: 'String representation of int64 value'
+                            undersized-frames-ingress:
+                              type: string
+                              description: 'String representation of int64 value'
+                            jabber-frames-ingress:
+                              type: string
+                              description: 'String representation of int64 value'
+                            unknown-protocol-frames-input:
+                              type: string
+                              description: 'String representation of int64 value'
+                example:
+                  ethernet-container-2-0:ethernet-container-historical-performance:
+                    historical-performance-data-list:
+                      - granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
+                        period-end-time: "2024-03-07T00:15:00.0+00:00"
+                        max-bytes-per-second-output: 0
+                        total-bytes-input: "0"
+                        total-bytes-output: "0"
+                        total-frames-input: "-1"
+                        total-frames-output: "-1"
+                        forwarded-frames-input: "-1"
+                        forwarded-frames-output: "-1"
+                        unicast-frames-input: "0"
+                        unicast-frames-output: "0"
+                        multicast-frames-input: 0
+                        multicast-frames-output: 0
+                        broadcast-frames-input: 0
+                        broadcast-frames-output: 0
+                        fragmented-frames-input: -1
+                        errored-frames-input: 0
+                        errored-frames-output: 0
+                        dropped-frames-input: 0
+                        dropped-frames-output: 0
+                        oversized-frames-ingress: "-1"
+                        undersized-frames-ingress: "-1"
+                        jabber-frames-ingress: "-1"
+                        unknown-protocol-frames-input: "-1"
 
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        FunctionForReadingRecentEthernetContainerHistoricalPmCausesReadingFromElasticSearch:
+          Pm: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-es-1-0-0-224/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'Found records from historical-performance-data-list where granularity period does not indicate 15min granularity are not to be read'
+            get:
+              parameters:
+                - name: mount-name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250001'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from {$request.body#mount-name}'
+                - name: uuid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LTP-MWPS-TTP-1-1'
+                  description: >
+                    'The UUID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#uuid}'
+                - name: local-id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LP-MWPS-TTP-1-1'
+                  description: >
+                    'The localID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#local-id}'
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        timestamp:
+                          type: string
+                          description: >
+                            'Entries from the historical-performance-data-list where the period-end-time is not newer than the input timestamp are to be discarded
+                            from {$requst.body#timestamp}'
+              responses:
+                '200':
+                  description: 'EthernetContainerHistoricalPerformances provided from cache'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          ethernet-container-2-0:ethernet-container-historical-performances:
+                            type: object
+                            properties:
+                              historical-performance-data-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    granularity-period:
+                                      type: string
+                                      enum:
+                                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                        - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                      description: 'If the granularity period does not indicate 15-min data, the complete array item is to be ignored'
+                                    period-end-time:
+                                      type: string
+                                      description: 'If the period-end-time is older than the provided timestamp from the requestBody, the complete array item is to be ignored'
+                                    max-bytes-per-second-output:
+                                      type: integer
+                                    total-bytes-input:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    total-bytes-output:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    total-frames-input:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    total-frames-output:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    forwarded-frames-input:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    forwarded-frames-output:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    unicast-frames-input:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    unicast-frames-output:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    multicast-frames-input:
+                                      type: integer
+                                    multicast-frames-output:
+                                      type: integer
+                                    broadcast-frames-input:
+                                      type: integer
+                                    broadcast-frames-output:
+                                      type: integer
+                                    fragmented-frames-input:
+                                      type: integer
+                                    errored-frames-input:
+                                      type: integer
+                                    errored-frames-output:
+                                      type: integer
+                                    dropped-frames-input:
+                                      type: integer
+                                    dropped-frames-output:
+                                      type: integer
+                                    oversized-frames-ingress:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    undersized-frames-ingress:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    jabber-frames-ingress:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                                    unknown-protocol-frames-input:
+                                      type: string
+                                      description: 'String representation of int64 value'
+                        example:
+                          ethernet-container-2-0:ethernet-container-historical-performance:
+                            historical-performance-data-list:
+                              - granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
+                                period-end-time: "2024-03-07T00:15:00.0+00:00"
+                                max-bytes-per-second-output: 0
+                                total-bytes-input: "0"
+                                total-bytes-output: "0"
+                                total-frames-input: "-1"
+                                total-frames-output: "-1"
+                                forwarded-frames-input: "-1"
+                                forwarded-frames-output: "-1"
+                                unicast-frames-input: "0"
+                                unicast-frames-output: "0"
+                                multicast-frames-input: 0
+                                multicast-frames-output: 0
+                                broadcast-frames-input: 0
+                                broadcast-frames-output: 0
+                                fragmented-frames-input: -1
+                                errored-frames-input: 0
+                                errored-frames-output: 0
+                                dropped-frames-input: 0
+                                dropped-frames-output: 0
+                                oversized-frames-ingress: "-1"
+                                undersized-frames-ingress: "-1"
+                                jabber-frames-ingress: "-1"
+                                unknown-protocol-frames-input: "-1"
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
 
 ########################################################################################################################
 #   Common Components
