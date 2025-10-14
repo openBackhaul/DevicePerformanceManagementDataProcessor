@@ -8,9 +8,9 @@ paths:
 #   Service Layer - Individual Part
 ########################################################################################################################
 
-  /p1/provide-ltp-list-and-info:
+  /p1/provide-ltp-list-and-info-from-cache:
     post:
-      operationId: readInterfaceListAndInfo
+      operationId: p1ProvideLtpListAndInfoFromCache
       summary: 'Reads LTP structure and derives information from LTP augment'
       tags:
         - PrivateServices
