@@ -10,7 +10,7 @@ paths:
 
   /p1/provide-ltp-list-and-info-from-cache:
     post:
-      operationId: p1ProvideLtpListAndInfoFromCache
+      operationId: p1ReadLtpListAndInfoFromCache
       summary: 'Reads LTP structure and derives information from LTP augment'
       tags:
         - PrivateServices
@@ -192,6 +192,18 @@ paths:
                                   - local-id: '765.1.3'
                                     layer-protocol-name: 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
                                     interface-name: 'WAN 1/1/1'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         FunctionForReadingLtpInfoCausesReadingFromElasticSearch:
           LtpInfo: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-es-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
@@ -377,10 +389,536 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  /p1/read-air-interface-config-and-capabilities-from-cache:
+    post:
+      operationId: p1ReadAirInterfaceConfigAndCapabilitiesFromCache
+      summary: 'Reads AirInterface config and capabilities from Cache'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name
+              properties:
+                mount-name:
+                  type: string
+                  description: 'The mount-name of the device that is addressed by this function'
+                uuid:
+                  type: string
+                  description: 'The uuid of the LogicalTerminationPoint addressed in this function'
+                  example: 'LTP-MWPS-TTP-1-1'
+                local-id:
+                  type: string
+                  description: 'The localId of the LogicalTerminationPoint addressed in this function'
+                  example: 'LP-MWPS-TTP-1-1'
+      responses:
+        '200':
+          description: 'AirInterface config and capabilities provided'
+          content:
+            application/json:
+              schema:
+                description: 'Only relevant attributes listed'
+                type: object
+                properties:
+                  air-interface-configuration:
+                    type: object
+                    description: >
+                      'Relevant AirInterface configuration attributes
+                      from {$FunctionForProvidingAirInterfaceConfigAndCabilitiesCausesReadingFromElasticSearch.Config.response.body#air-interface-2-0:air-interface-configuration}'
+                    properties:
+                      transmission-mode-min:
+                        type: string
+                      transmission-mode-max:
+                        type: string
+                      tx-power:
+                        type: integer
+                      atpc-is-on:
+                        type: boolean
+                      atpc-thresh-upper:
+                        type: integer
+                      atpc-thresh-lower:
+                        type: integer
+                  air-interface-2-0:air-interface-capability:
+                    type: object
+                    properties:
+                      transmission-mode-list:
+                        type: array
+                        items:
+                          type: object
+                          description: >
+                            'Relevant AirInterface configuration attributes
+                            from {$FunctionForProvidingAirInterfaceConfigAndCabilitiesCausesReadingFromElasticSearch.Capabilities.response.body#air-interface-2-0:air-interface-capability}'
+                          properties:
+                            transmission-mode-name:
+                              type: string
+                              description: 'Key attribute, name of the transmission mode'
+                            channel-bandwidth:
+                              type: integer
+                              description: 'Bandwidth of the transmit channel in kHz'
+                            modulation-scheme:
+                              type: integer
+                              description: 'Number of states in the phase diagram, e.g. BPSK->2 or 256QAM->256'
+                            modulation-scheme-name-at-lct:
+                              type: string
+                              description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                            code-rate:
+                              type: integer
+                              description: 'Code rate of the coding scheme in %'
+                            symbol-rate-reduction-factor:
+                              type: integer
+                              description: 'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
+                example:
+                  air-interface-configuration:
+                    transmission-mode-min: '0056-QPSK-52680/61762-1'
+                    transmission-mode-max: '0056-128QAM-196320/216167-1'
+                    tx-power: 10
+                    atpc-is-on: true
+                    atpc-thresh-upper: -40
+                    atpc-thresh-lower: -45
+                  air-interface-capability:
+                    transmission-mode-list:
+                      - transmission-mode-name: '0028-4QAM-188/204-1'
+                        channel-bandwidth: 28000
+                        modulation-scheme: 4
+                        modulation-scheme-name-at-lct: '4 QAM'
+                        code-rate: -1
+                        symbol-rate-reduction-factor: 1
+                      - transmission-mode-name: '0028-4096QAM-175232/206076-1'
+                        channel-bandwidth: 28000
+                        modulation-scheme: 4096
+                        modulation-scheme-name-at-lct: '4096 QAM'
+                        code-rate: -1
+                        symbol-rate-reduction-factor: 1
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        FunctionForProvidingAirInterfaceConfigAndCabilitiesCausesReadingFromElasticSearch:
+          #note: config and capability are read separately to conform to MWDI, where a path for the complete pac is not provided
+          Config: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-es-1-0-0-211/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            get:
+              parameters:
+                - name: mount-name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250001'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from {$request.body#mount-name}'
+                - name: uuid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LTP-MWPS-TTP-1-1'
+                  description: >
+                    'The UUID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#uuid}'
+                - name: local-id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LP-MWPS-TTP-1-1'
+                  description: >
+                    'The localID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#local-id}'
+              responses:
+                '204':
+                  description: 'AirInterfaceConfiguration provided from cache'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          air-interface-2-0:air-interface-configuration:
+                            type: object
+                            properties:
+                              transmission-mode-min:
+                                type: string
+                              transmission-mode-max:
+                                type: string
+                              tx-power:
+                                type: integer
+                              atpc-is-on:
+                                type: boolean
+                              atpc-thresh-upper:
+                                type: integer
+                              atpc-thresh-lower:
+                                type: integer
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          Capabilities: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-es-1-0-0-210/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            get:
+              parameters:
+                - name: mount-name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250001'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from {$request.body#mount-name}'
+                - name: uuid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LTP-MWPS-TTP-1-1'
+                  description: >
+                    'The UUID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#uuid}'
+                - name: local-id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LP-MWPS-TTP-1-1'
+                  description: >
+                    'The localID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#local-id}'
+              responses:
+                '204':
+                  description: 'AirInterfaceCapability provided from cache'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          air-interface-2-0:air-interface-capability:
+                            type: object
+                            properties:
+                              transmission-mode-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    transmission-mode-name:
+                                      type: string
+                                      description: 'Key attribute, name of the transmission mode'
+                                    channel-bandwidth:
+                                      type: integer
+                                      description: 'Bandwidth of the transmit channel in kHz'
+                                    modulation-scheme:
+                                      type: integer
+                                      description: 'Number of states in the phase diagram, e.g. BPSK->2 or 256QAM->256'
+                                    modulation-scheme-name-at-lct:
+                                      type: string
+                                      description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                                    code-rate:
+                                      type: integer
+                                      description: 'Code rate of the coding scheme in %'
+                                    symbol-rate-reduction-factor:
+                                      type: integer
+                                      description: 'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
 
-
-
-
+  /p1/read-recent-air-interface-historical-pm-data-from-cache:
+    post:
+      operationId: p1ReadRecentAirInterfaceHistoricalPmDataFromCache
+      summary: 'Reads recent AirInterface Historical Performance Data from Cache'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name
+              properties:
+                mount-name:
+                  type: string
+                  description: 'The mount-name of the device that is addressed by this function'
+                uuid:
+                  type: string
+                  description: 'The uuid of the LogicalTerminationPoint addressed in this function'
+                  example: 'LTP-MWPS-TTP-1-1'
+                local-id:
+                  type: string
+                  description: 'The localId of the LogicalTerminationPoint addressed in this function'
+                  example: 'LP-MWPS-TTP-1-1'
+                timestamp:
+                  type: string
+                  description: 'Only PM records newer than the given timestamp shall be read from the Cache. If not provided, all records will be read'
+                  example: '2025-10-13T14:00:00+02:00'
+      responses:
+        '200':
+          description: 'Recent historical AirInterface PM data provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  air-interface-2-0:air-interface-historical-performances:
+                    type: object
+                    description: >
+                      'The AirInterface historical performances with 15min granularity, which are not newer than {$request.body#timestamp}
+                      from {$FunctionForReadingRecentAirInterfaceHistoricalPmCausesReadingFromElasticSearch.Pm.response.body}.
+                      If there are no newer records found, the historical-performance-data-list remains empty.'
+                    properties:
+                      historical-performance-data-list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            granularity-period:
+                              type: string
+                              enum:
+                                - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                              description: 'If the granularity period does not indicate 15-min data, the complete array item is to be ignored'
+                            period-end-time:
+                              type: string
+                              description: 'If the period-end-time is not newer than the provided timestamp from the requestBody, the complete array item is to be ignored'
+                            tx-level-min:
+                              type: integer
+                            tx-level-max:
+                              type: integer
+                            tx-level-avg:
+                              type: integer
+                            rx-level-min:
+                              type: integer
+                            rx-level-max:
+                              type: integer
+                            rx-level-avg:
+                              type: integer
+                            snir-min:
+                              type: integer
+                            snir-max:
+                              type: integer
+                            snir-avg:
+                              type: integer
+                            xpd-min:
+                              type: integer
+                            xpd-max:
+                              type: integer
+                            xpd-avg:
+                              type: integer
+                            time-xstates-list:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  transmission-mode:
+                                    type: string
+                                  time:
+                                    type: integer
+                            es:
+                              type: integer
+                            ses:
+                              type: integer
+                            cses:
+                              type: integer
+                            unavailability:
+                              type: integer
+                            defect-blocks-sum:
+                              type: integer
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        FunctionForReadingRecentAirInterfaceHistoricalPmCausesReadingFromElasticSearch:
+          Pm: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-es-1-0-0-214/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            description: 'Found records from historical-performance-data-list where granularity period does not indicate 15min granularity are not to be read'
+            get:
+              parameters:
+                - name: mount-name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250001'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from {$request.body#mount-name}'
+                - name: uuid
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LTP-MWPS-TTP-1-1'
+                  description: >
+                    'The UUID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#uuid}'
+                - name: local-id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: 'LP-MWPS-TTP-1-1'
+                  description: >
+                    'The localID of a LogicalTerminationPoint that is addressed by the request
+                    from {$request.body#local-id}'
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        timestamp:
+                          type: string
+                          description: >
+                            'Entries from the historical-performance-data-list where the period-end-time is not newer than the input timestamp are to be discarded
+                            from {$requst.body#timestamp}'
+              responses:
+                '200':
+                  description: 'AirInterfaceHistoricalPerformances provided from cache'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          air-interface-2-0:air-interface-historical-performances:
+                            type: object
+                            properties:
+                              historical-performance-data-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    granularity-period:
+                                      type: string
+                                      enum:
+                                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                        - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                      description: 'If the granularity period does not indicate 15-min data, the complete array item is to be ignored'
+                                    period-end-time:
+                                      type: string
+                                      description: 'If the period-end-time is older than the provided timestamp from the requestBody, the complete array item is to be ignored'
+                                    tx-level-min:
+                                      type: integer
+                                    tx-level-max:
+                                      type: integer
+                                    tx-level-avg:
+                                      type: integer
+                                    rx-level-min:
+                                      type: integer
+                                    rx-level-max:
+                                      type: integer
+                                    rx-level-avg:
+                                      type: integer
+                                    snir-min:
+                                      type: integer
+                                    snir-max:
+                                      type: integer
+                                    snir-avg:
+                                      type: integer
+                                    xpd-min:
+                                      type: integer
+                                    xpd-max:
+                                      type: integer
+                                    xpd-avg:
+                                      type: integer
+                                    time-xstates-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode:
+                                            type: string
+                                          time:
+                                            type: integer
+                                    es:
+                                      type: integer
+                                    ses:
+                                      type: integer
+                                    cses:
+                                      type: integer
+                                    unavailability:
+                                      type: integer
+                                    defect-blocks-sum:
+                                      type: integer
+                        example:
+                          air-interface-2-0:air-interface-historical-performance:
+                            historical-performance-data-list:
+                              - granularity-period: "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
+                                period-end-time: "2024-03-07T00:15:00.0+00:00"
+                                tx-level-min: 13
+                                tx-level-max: 13
+                                tx-level-avg: 13
+                                rx-level-min: -35
+                                rx-level-max: -35
+                                rx-level-avg: -35
+                                snir-min: 39
+                                snir-max: 40
+                                snir-avg: -99
+                                xpd-min: -99
+                                xpd-max: -99
+                                xpd-avg: -99
+                                time-xstates-list:
+                                  - transmission-mode: "1361-112000-2048-Light"
+                                    time: 897
+                                  - transmission-mode: "1361-112000-2048-Std"
+                                    time: 3
+                                es: 0
+                                ses: 0
+                                cses: -1
+                                unavailability: 0
+                                defect-blocks-sum: -1
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
 
 
 
