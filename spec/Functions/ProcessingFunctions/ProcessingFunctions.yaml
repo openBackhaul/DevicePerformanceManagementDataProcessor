@@ -122,7 +122,7 @@ paths:
                                                   interface-name:
                                                     type: string
                                                     description: >
-                                                      'Interface name as it is represented at the vendor's own management interface'
+                                                      'Interface name as it is represented at the vendors own management interface'
                                     - description: 'EthernetContainer'
                                       type: object
                                       properties:
