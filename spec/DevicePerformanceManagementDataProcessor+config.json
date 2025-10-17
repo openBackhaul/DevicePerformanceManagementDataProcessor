@@ -202,6 +202,38 @@
               }
             }
           }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-000",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "kafkaNotificationConsumptionSwitch",
+              "enumeration": [
+                "on",
+                "off"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "off"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-001",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "kafkaDataProvisioningSwitch",
+              "enumeration": [
+                "on",
+                "off"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "on"
+            }
+          }
         }
       ]
     },

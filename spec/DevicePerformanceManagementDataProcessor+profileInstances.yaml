@@ -109,3 +109,25 @@ profile-instances:
       datatype: string
     configuration:
       value-reference: '/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/changes'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-000'
+    capability:
+      string-name: 'kafkaNotificationConsumptionSwitch'
+      enumeration:
+        - 'on'
+        - 'off'
+      #description: 'This profileInstance allows toggeling the receipt of notifications from Kafka on/off. Default is off.'
+    configuration:
+      string-value: 'off'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-001'
+    capability:
+      string-name: 'kafkaDataProvisioningSwitch'
+      enumeration:
+        - 'on'
+        - 'off'
+      #description: 'This profileInstance allows toggeling the sending of processed PM data to Kafka on/off. Default is on.'
+    configuration:
+      string-value: 'on'
