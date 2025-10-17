@@ -8,6 +8,7 @@ paths:
 #   Service Layer - Individual Part
 ########################################################################################################################
 
+  # Read ControlConstruct from Cache and create DSFP/output object if relevant PM data is found
   /p1/create-dsfp-output-object-from-cache-data:
     post:
       operationId: p1CreateDsfpOutputObjectFromCache
@@ -524,7 +525,8 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         CreatingDsfpOutputCausesReadingControlConstructFromCache:
-          ReadCc: #todo read complete CC
+          # directly read from ElasticSearch
+          ReadCc:  #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             description: 'The complete CC shall be read from ElasticSearch directly.'
             get:
               parameters:
@@ -889,7 +891,7 @@ paths:
                                                   unknown-protocol-frames-input: '-1'
                                                   time-period: 899
         CreatingDsfpOutputCausesReadingMostRecentTimestampsForDeviceInterfacesFromDeviceTable:
-          GetTimestamps:
+          GetTimestamps: #[dpmdpIpAddress]:[dpmdpPort]/dpmdp-internal-memory:deviceTable
             description: >
               'The DPMDP keeps an internal deviceTable, where it stores for every device, which interfaces it has seen before.
               For each interface there is a timestamp indicating the most recent timestamp that was seen in historical PM data from the last data retrieval for that interface.
@@ -925,7 +927,7 @@ paths:
                             description: 'The most recent timestamp for this interface seen in previous retrievals'
                             example: '2024-03-07T00:15:00.0+00:00'
         CreatingDsfpOutputCausesFilteringAndClusteringInputData:
-          PrepInputData: #url todo
+          PrepInputData: #[dpmdpIpAddress]:[dpmdpPort]/dpmdp-internal-memory
             description: >
               'The input data from {$CreatingDsfpOutputCausesReadingMostRecentTimestampsForDeviceInterfacesFromDeviceTable} is to be traversed and prepared for subsequent processing steps'
             get:
@@ -1210,7 +1212,7 @@ paths:
                                     transmission-mode-list:
                                       type: array
                                       description: >
-                                        'Transmission mode list items shall not be added, if filtered-historical-performance-data-list does not contain any records ater historical PM data has been filtered'
+                                        'Transmission mode list items shall not be added, if code-rate is -1'
                                       items:
                                         type: object
                                         properties:
@@ -1239,7 +1241,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         CreatingDsfpOutputCausesComputingInterfaceNames:
-          LtpDesignation: #url todo
+          LtpDesignation: #[dpmdpIpAddress]:[dpmdpPort]/dpmdp-internal-memory
             description: >
               'This callback determines the interface names for all AirInterface and EthernetContainer instances of the device from the ltp-structure-and-augment
                information compiled in CreatingDsfpOutputCausesFilteringAndClusteringInputData.
@@ -1317,7 +1319,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         CreatingDsfpOutputCausesComputingLagInformation:
-          LtpDesignation: #todo url
+          LtpDesignation: #[dpmdpIpAddress]:[dpmdpPort]/dpmdp-internal-memory
             description: >
               'This callback determines the Link aggregation information for all air-interface instances of the device from the ltp-structure-and-augment
                information compiled in CreatingDsfpOutputCausesFilteringAndClusteringInputData.
@@ -1389,6 +1391,485 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
+
+  # Direct read/write functions on DSFP/output
+  /p1/set-out-of-range-level-values-to-default-in-dsfp-output:
+    post:
+      operationId: p1SetOutOfLevelValuesToDefaultInDsfpOutput
+      summary: 'Reads airInterface level attributes from [/data-structure-for-processing/output] and replaces invalid level values'
+      tags:
+        - PrivateServices
+      responses:
+        '204':
+          description: 'Out-of-range level values set to defaults in [/data-structure-for-processing/output]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput:
+          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+            description: 'Directly read the data from DPMDP memory'
+            get:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output read'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                type: array
+                                items:
+                                  properties:
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmit-level-minimum:
+                                            type: integer
+                                          transmit-level-maximum:
+                                            type: integer
+                                          transmit-level-average:
+                                            type: integer
+                                          receive-level-minimum:
+                                            type: integer
+                                          receive-level-maximum:
+                                            type: integer
+                                          receive-level-average:
+                                            type: integer
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+            description: 'Directly overwrites out-of-range values inside data in DPMDP memory'
+            patch:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output updated'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                type: array
+                                items:
+                                  properties:
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmit-level-minimum:
+                                            type: integer
+                                            description: >
+                                              'Originally delivered TX value
+                                              from {$SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput.getData.response.body#output/air-interface-list/air-interface-performance-measurements-list/transmit-level-minimum},
+                                              IF NOT (transmit-level-minimum within range [-30, 40]) THEN replace with default = -1'
+                                          transmit-level-maximum:
+                                            type: integer
+                                            description: >
+                                              'Originally delivered TX value
+                                              from {$SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput.getData.response.body#output/air-interface-list/air-interface-performance-measurements-list/transmit-level-maximum},
+                                              IF NOT (transmit-level-maximum within range [-30, 40]) THEN replace with default = -1'
+                                          transmit-level-average:
+                                            type: integer
+                                            description: >
+                                              'Originally delivered TX value
+                                              from {$SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput.getData.response.body#output/air-interface-list/air-interface-performance-measurements-list/transmit-level-average},
+                                              IF NOT (transmit-level-average within range [-30, 40]) THEN replace with default = -1'
+                                          receive-level-minimum:
+                                            type: integer
+                                            description: >
+                                              'Originally delivered RX value
+                                              from {$SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput.getData.response.body#output/air-interface-list/air-interface-performance-measurements-list/receive-level-minimum},
+                                              IF NOT (transmit-level-minimum within range (-129, -99.9) AND (-99.9, -10)) THEN replace with default = -1'
+                                          receive-level-maximum:
+                                            type: integer
+                                            description: >
+                                              'Originally delivered RX value
+                                              from {$SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput.getData.response.body#output/air-interface-list/air-interface-performance-measurements-list/receive-level-maximum},
+                                              IF NOT (transmit-level-maximum within range (-129, -99.9) AND (-99.9, -10)) THEN replace with default = -1'
+                                          receive-level-average:
+                                            type: integer
+                                            description: >
+                                              'Originally delivered RX value
+                                              from {$SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput.getData.response.body#output/air-interface-list/air-interface-performance-measurements-list/receive-level-average},
+                                              IF NOT (transmit-level-average within range (-129, -99.9) AND (-99.9, -10)) THEN replace with default = -1'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
+  /p1/inquire-air-interface-kpis-from-caca-and-set-in-dsfp-output:
+    post:
+      operationId: p1InquireAirInterfaceKpisFromCacaAndSetInDsfpOutput
+      summary: 'Sends relevant airInterface attribute values to CapacityCalculatorApp for computation of capacity KPIs and writes them in [/data-structure-for-processing/output]'
+      tags:
+        - PrivateServices
+      responses:
+        '204':
+          description: 'AirInterface capacity KPIs written to [/data-structure-for-processing/output]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        InquiringForAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
+          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+            description: 'Directly read the relevant data from DPMDP memory'
+            get:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output read'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                type: array
+                                items:
+                                  properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        logical-termination-point-id:
+                                          type: string
+                                    air-interface-configuration:
+                                      type: object
+                                      properties:
+                                        configured-modulation-minimum:
+                                          type: object
+                                          properties:
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-minimum:
+                                              type: integer
+                                        configured-modulation-maximum:
+                                          type: object
+                                          properties:
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-maximum:
+                                              type: integer
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          period-end-time:
+                                            type: string
+                                          operated-transmission-modes-list: 
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                transmission-mode-name:
+                                                  type: string
+                                                time:
+                                                  type: integer
+                                    transmission-mode-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode-name:
+                                            type: string
+                                          number-of-states:
+                                            type: integer
+                                          modulation-scheme-name-at-lct:
+                                            type: string
+                                          channel-bandwidth:
+                                            type: integer
+                                          code-rate:
+                                            type: integer
+                                          symbol-rate-reduction-factor:
+                                            type: integer
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        InquiringForAirInterfaceCapacityKpiCalculationCausesCallingCaca:
+          sendDataToCaca: #[Caca_remoteIpAddress][Caca_remotePort][/v1/compute-air-interface-capacity-kpis-for-list-of-air-interfaces]
+            description: 'Send the relevant airInterface data to CapacityCalculatorApp for KPI calculation'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        air-interface-list:
+                          description: >
+                            'The air-interface-list with the attributes relevant for capacity calculation
+                            from {$InquiringForAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput.getData.response.body#output/air-interface-list}'
+                          type: array
+                          items:
+                            properties:
+                              air-interface-identifiers:
+                                type: object
+                                properties:
+                                  logical-termination-point-id:
+                                    type: string
+                              air-interface-configuration:
+                                type: object
+                                properties:
+                                  configured-modulation-minimum:
+                                    type: object
+                                    properties:
+                                      name-at-lct:
+                                        type: string
+                                      configured-capacity-minimum:
+                                        type: integer
+                                  configured-modulation-maximum:
+                                    type: object
+                                    properties:
+                                      name-at-lct:
+                                        type: string
+                                      configured-capacity-maximum:
+                                        type: integer
+                              air-interface-performance-measurements-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    period-end-time:
+                                      type: string
+                                    operated-transmission-modes-list: 
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode-name:
+                                            type: string
+                                          time:
+                                            type: integer
+                              transmission-mode-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    transmission-mode-name:
+                                      type: string
+                                    number-of-states:
+                                      type: integer
+                                    modulation-scheme-name-at-lct:
+                                      type: string
+                                    channel-bandwidth:
+                                      type: integer
+                                    code-rate:
+                                      type: integer
+                                    symbol-rate-reduction-factor:
+                                      type: integer
+              responses:
+                '200':
+                  description: 'Calculated KPIs received'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          air-interface-list:
+                            type: array
+                            items:
+                              properties:
+                                air-interface-identifiers:
+                                  type: object
+                                  properties:
+                                    logical-termination-point-id:
+                                      type: string
+                                air-interface-configuration:
+                                  type: object
+                                  properties:
+                                    configured-modulation-minimum:
+                                      type: object
+                                      properties:
+                                        name-at-lct:
+                                          type: string
+                                        configured-capacity-minimum:
+                                          type: integer
+                                          description: 'Computed Channel capacity KPI of the configured minimum modulation scheme (in kbps), -1 if no value could be computed'
+                                    configured-modulation-maximum:
+                                      type: object
+                                      properties:
+                                        name-at-lct:
+                                          type: string
+                                        configured-capacity-maximum:
+                                          type: integer
+                                          description: 'Computed Channel capacity KPI of the configured maximum modulation scheme (in kbps), -1 if no value could be computed'
+                                air-interface-performance-measurements-list:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      period-end-time:
+                                        type: string
+                                      operated-transmission-modes-list: 
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            transmission-mode-name:
+                                              type: string
+                                            capacity:
+                                              type: integer
+                                              description: 'Computed Channel capacity KPI of the modulation scheme (in kbps), -1 if no value could be computed'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        InquiringForAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput:
+          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+            description: 'Directly overwrites capacity default values inside data in DPMDP memory'
+            patch:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output updated'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only the KPI attribute values have to be updated in [/data-structure-for-processing/output]. Other attributes are just provided for writing data to the correct place.'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                description: >
+                                  'The air-interface-list as
+                                  from {$InquiringForAirInterfaceCapacityKpiCalculationCausesCallingCaca.sendDataToCaca.response.body#air-interface-list}'
+                                type: array
+                                items:
+                                  properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        logical-termination-point-id:
+                                          type: string
+                                    air-interface-configuration:
+                                      type: object
+                                      properties:
+                                        configured-modulation-minimum:
+                                          type: object
+                                          properties:
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-minimum:
+                                              type: integer
+                                              description: > 
+                                                'Computed Channel capacity KPI of the configured minimum modulation scheme (in kbps), -1 if no value could be computed.
+                                                This attribute value is to be written.'
+                                        configured-modulation-maximum:
+                                          type: object
+                                          properties:
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-maximum:
+                                              type: integer
+                                              description: >
+                                                'Computed Channel capacity KPI of the configured maximum modulation scheme (in kbps), -1 if no value could be computed.
+                                                This attribute value is to be written.'
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          period-end-time:
+                                            type: string
+                                          operated-transmission-modes-list: 
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                transmission-mode-name:
+                                                  type: string
+                                                capacity:
+                                                  type: integer
+                                                  description: >
+                                                    'Computed Channel capacity KPI of the modulation scheme (in kbps), -1 if no value could be computed.
+                                                    This attribute value is to be written.'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
+
+
+
+
 
 ########################################################################################################################
 #   Common Components
