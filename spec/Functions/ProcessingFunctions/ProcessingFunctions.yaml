@@ -110,16 +110,19 @@ paths:
                                     from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-configuration/atpc-is-on}'
                                 configured-atpc-threshold-upper:
                                   type: integer
+                                  nullable: true
                                   description: >
                                     'Configured upper automatic transmit power control (ATPC) threshold in dBm
                                     from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-configuration/atpc-thresh-upper}'
                                 configured-atpc-threshold-lower:
                                   type: integer
+                                  nullable: true
                                   description: >
                                     'Configured lower automatic transmit power control (ATPC) threshold in dBm
                                     from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-configuration/atpc-thresh-lower}'
                                 configured-tx-power:
                                   type: integer
+                                  nullable: true
                                   description: >
                                     'Configured transmit power that will be operated in maximum in dBm
                                     from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-configuration/tx-power}'
@@ -129,6 +132,7 @@ paths:
                                   properties:
                                     number-of-states:
                                       type: integer
+                                      nullable: true
                                       description: >
                                         'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
                                         transmissionModeMin = {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-configuration/transmission-mode-min}
@@ -143,6 +147,7 @@ paths:
                                         where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
                                     configured-capacity-minimum:
                                       type: integer
+                                      nullable: true
                                       description: >
                                         'Channel capacity in kbps of the configured minimum modulation scheme (KPI). Set to default=-1.'
                                 configured-modulation-maximum:
@@ -151,6 +156,7 @@ paths:
                                   properties:
                                     number-of-states:
                                       type: integer
+                                      nullable: true
                                       description: >
                                         'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
                                         transmissionModeMax = {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-configuration/transmission-mode-max}
@@ -165,6 +171,7 @@ paths:
                                         where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
                                     configured-capacity-maximum:
                                       type: integer
+                                      nullable: true
                                       description: >
                                         'Channel capacity in kbps of the configured maximum modulation scheme (KPI). Set to default=-1.'
                             air-interface-performance-measurements-list:
@@ -187,61 +194,73 @@ paths:
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/period-end-time}'
                                   transmit-level-minimum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Minimum transmit power in dBm
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/tx-level-min}'
                                   transmit-level-maximum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Maximum transmit power in dBm
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/tx-level-max}'
                                   transmit-level-average:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Averaged transmit power in dBm
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/tx-level-avg}'
                                   receive-level-minimum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Minimum receive level in dBm
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/rx-level-min}'
                                   receive-level-maximum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Maximum receive level in dBm
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/rx-level-max}'
                                   receive-level-average:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Averaged receive level in dBm
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/rx-level-avg}'
                                   signal-to-noise-ratio-minimum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Minimum signal to noise + interference ratio (SNIR)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/snir-min}'
                                   signal-to-noise-ratio-maximum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Maximum signal to noise + interference ratio (SNIR)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/snir-max}'
                                   signal-to-noise-ratio-average:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Averaged signal to noise + interference ratio (SNIR)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/snir-avg}'
                                   cross-polarization-discrimination-minimum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Minimum cross polarization discrimination (XPD)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/xpd-min}'
                                   cross-polarization-discrimination-maximum:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Maximum cross polarization discrimination (XPD)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/xpd-max}'
                                   cross-polarization-discrimination-average:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Averaged cross polarization discrimination (XPD)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/xpd-avg}'
@@ -265,44 +284,53 @@ paths:
                                             where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionMode'
                                         time:
                                           type: integer
+                                          nullable: true
                                           description: >
                                             'Name identifying this transmission mode on the graphical user interface of the local craft terminal
                                             from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/time-xstates-list/time}'
                                         capacity:
                                           type: integer
+                                          nullable: true
                                           description: >
                                             'Channel capacity in kbps of the modulation scheme (KPI). Set to default=-1.'
                                   interval-capacity:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Channel capacity over the entire performance measurement interval in kbps. Calculated from the capacities of the operated transmission modes, by weighting the duration of each operated mode over the entire measurement period. To be filled with default value -1'
                                   errorred-seconds:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Number of errored seconds
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/es}'
                                   severely-errorred-seconds:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Number of severily errored seconds
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/ses}'
                                   consecutive-severely-errorred-seconds:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Number of consecutive severily errored seconds
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/cses}'
                                   total-unavailability:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Total time of unavailability in seconds
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/unavailability}'
                                   defect-blocks:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Total number of blocks that were defect after receiving and could not be corrected by the FEC
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/defect-blocks-sum}'
                                   time-period:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       'Total (actual) length of the measurement period
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/time-period}'
@@ -318,6 +346,7 @@ paths:
                                       'Key attribute, name of the transmission mode'
                                   number-of-states:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       ''Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
                                   modulation-scheme-name-at-lct:
@@ -326,14 +355,17 @@ paths:
                                       ''Name identifying this transmission mode on the graphical user interface of the local craft terminal'
                                   channel-bandwidth:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       ''Bandwidth of the transmit channel in kHz'
                                   code-rate:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       ''Code rate of the coding scheme in %'
                                   symbol-rate-reduction-factor:
                                     type: integer
+                                    nullable: true
                                     description: >
                                       ''Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
                       ethernet-container-list:
@@ -430,46 +462,55 @@ paths:
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/unicast-frames-output}'
                                   multicast-frames-input:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total number of multicast frames received at this interface
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/multicast-frames-input}'
                                   multicast-frames-output:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total number of multicast frames sent at this interface
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/multicast-frames-output}'
                                   broadcast-frames-input:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total number of broadcast frames received at this interface
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/broadcast-frames-input}'
                                   broadcast-frames-output:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total number of broadcast frames sent at this interface
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/broadcast-frames-output}'
                                   fragmented-frames-input:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/fragmented-frames-input}'
                                   errored-frames-input:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total number of errored frames received at this interface
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/errored-frames-input}'
                                   errored-frames-output:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/errored-frames-output}'
                                   dropped-frames-input:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/dropped-frames-input}'
                                   dropped-frames-output:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/dropped-frames-output}'
@@ -495,19 +536,23 @@ paths:
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/unknown-protocol-frames-input}'
                                   time-period:
                                     type: integer
+                                    nullable: true
                                     description: > 
                                       'Total (actual) length of the measurement period
                                       from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/time-period:}'
                                   transmit-traffic:
                                     type: number
                                     format: float
+                                    nullable: true
                                     description: 'TX Traffic [Mbps] (KPI). Set to default=-1.'
                                   receive-traffic:
                                     type: number
                                     format: float
+                                    nullable: true
                                     description: 'RX Traffic [Mbps] (KPI). Set to default=-1.'
                                   frame-loss:
                                     type: integer
+                                    nullable: true
                                     description: 'The number of lost frames (KPI). Set to default=-1.'
                     #example goes here
         '204':

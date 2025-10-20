@@ -51,12 +51,15 @@ output:
                 description: 'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on'
               configured-atpc-threshold-upper:
                 type: integer
+                nullable: true
                 description: 'Configured upper automatic transmit power control (ATPC) threshold in dBm'
               configured-atpc-threshold-lower:
                 type: integer
+                nullable: true
                 description: 'Configured lower automatic transmit power control (ATPC) threshold in dBm'
               configured-tx-power:
                 type: integer
+                nullable: true
                 description: 'Configured transmit power that will be operated in maximum in dBm'
               configured-modulation-minimum:
                 type: object
@@ -64,12 +67,14 @@ output:
                 properties:
                   number-of-states:
                     type: integer
+                    nullable: true
                     description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
                   name-at-lct:
                     type: string
                     description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
                   configured-capacity-minimum:
                     type: integer
+                    nullable: true
                     description: 'Channel capacity in kbps of the configured minimum modulation scheme (KPI)'
               configured-modulation-maximum:
                 type: object
@@ -77,12 +82,14 @@ output:
                 properties:
                   number-of-states:
                     type: integer
+                    nullable: true
                     description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
                   name-at-lct:
                     type: string
                     description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
                   configured-capacity-maximum:
                     type: integer
+                    nullable: true
                     description: 'Channel capacity in kbps of the configured maximum modulation scheme. To be filled with default value -1'
           air-interface-performance-measurements-list:
             type: array
@@ -102,39 +109,51 @@ output:
                   description: 'Time when the counter values have been recorded and the counter reset'
                 transmit-level-minimum:
                   type: integer
+                  nullable: true
                   description: 'Minimum transmit power in dBm'
                 transmit-level-maximum:
                   type: integer
+                  nullable: true
                   description: 'Maximum transmit power in dBm'
                 transmit-level-average:
                   type: integer
+                  nullable: true
                   description: 'Averaged transmit power in dBm'
                 receive-level-minimum:
                   type: integer
+                  nullable: true
                   description: 'Minimum receive level in dBm'
                 receive-level-maximum:
                   type: integer
+                  nullable: true
                   description: 'Maximum receive level in dBm'
                 receive-level-average:
                   type: integer
+                  nullable: true
                   description: 'Averaged receive level in dBm'
                 signal-to-noise-ratio-minimum:
                   type: integer
+                  nullable: true
                   description: 'Minimum signal to noise + interference ratio (SNIR)'
                 signal-to-noise-ratio-maximum:
                   type: integer
+                  nullable: true
                   description: 'Maximum signal to noise + interference ratio (SNIR)'
                 signal-to-noise-ratio-average:
                   type: integer
+                  nullable: true
                   description: 'Averaged signal to noise + interference ratio (SNIR)'
                 cross-polarization-discrimination-minimum:
                   type: integer
+                  nullable: true
                   description: 'Minimum cross polarization discrimination (XPD)'
                 cross-polarization-discrimination-maximum:
                   type: integer
+                  nullable: true
                   description: 'Maximum cross polarization discrimination (XPD)'
                 cross-polarization-discrimination-average:
                   type: integer
+                  nullable: true
                   description: 'Averaged cross polarization discrimination (XPD)'
                 operated-transmission-modes-list: 
                   description: 'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed'
@@ -150,30 +169,39 @@ output:
                         description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
                       time:
                         type: integer
+                        nullable: true
                         description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
                       capacity:
                         type: integer
+                        nullable: true
                         description: 'Channel capacity in kbps of the modulation scheme (KPI).'
                 interval-capacity:
                   type: integer
+                  nullable: true
                   description: 'Channel capacity over the entire performance measurement interval in kbps. Calculated from the capacities of the operated transmission modes, by weighting the duration of each operated mode over the entire measurement period.To be filled with default value -1'
                 errorred-seconds:
                   type: integer
+                  nullable: true
                   description: 'Number of errored seconds'
                 severely-errorred-seconds:
                   type: integer
+                  nullable: true
                   description: 'Number of severily errored seconds'
                 consecutive-severely-errorred-seconds:
                   type: integer
+                  nullable: true
                   description: 'Number of consecutive severily errored seconds'
                 total-unavailability:
                   type: integer
+                  nullable: true
                   description: 'Total time of unavailability in seconds'
                 defect-blocks:
                   type: integer
+                  nullable: true
                   description: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
                 time-period:
                   type: integer
+                  nullable: true
                   description: 'Total (actual) length of the measurement period'
           transmission-mode-list:
             description: 'List of supported Transmission Modes'
@@ -186,18 +214,22 @@ output:
                   description: 'Key attribute, name of the transmission mode'
                 number-of-states:
                   type: integer
+                  nullable: true
                   description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
                 modulation-scheme-name-at-lct:
                   type: string
                   description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
                 channel-bandwidth:
                   type: integer
+                  nullable: true
                   description: 'Bandwidth of the transmit channel in kHz'
                 code-rate:
                   type: integer
+                  nullable: true
                   description: 'Code rate of the coding scheme in %'
                 symbol-rate-reduction-factor:
                   type: integer
+                  nullable: true
                   description: 'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
     ethernet-container-list:
       description: 'List of ethernet containers found in the given devices'
@@ -262,33 +294,43 @@ output:
                   description: 'Total number of unicast frames sent at this interface'
                 multicast-frames-input:
                   type: integer
+                  nullable: true
                   description: 'Total number of multicast frames received at this interface'
                 multicast-frames-output:
                   type: integer
+                  nullable: true
                   description: 'Total number of multicast frames sent at this interface'
                 broadcast-frames-input:
                   type: integer
+                  nullable: true
                   description: 'Total number of broadcast frames received at this interface'
                 broadcast-frames-output:
                   type: integer
+                  nullable: true
                   description: 'Total number of broadcast frames sent at this interface'
                 fragmented-frames-input:
                   type: integer
+                  nullable: true
                   description: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
                 errored-frames-input:
                   type: integer
+                  nullable: true
                   description: 'Total number of errored frames received at this interface'
                 errored-frames-output:
                   type: integer
+                  nullable: true
                   description: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
                 dropped-frames-input:
                   type: integer
+                  nullable: true
                   description: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
                 dropped-frames-output:
                   type: integer
+                  nullable: true
                   description: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
                 oversized-frames-ingress:
                   type: string
+                  nullable: true
                   description: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
                 undersized-frames-ingress:
                   type: string
@@ -301,17 +343,21 @@ output:
                   description: 'Total number of received frames that were transporting an unknown protocol'
                 time-period:
                   type: integer
+                  nullable: true
                   description: 'Total (actual) length of the measurement period'
                 transmit-traffic:
                   type: number
                   format: float
+                  nullable: true
                   description: 'TX Traffic [Mbps] KPI)'
                 receive-traffic:
                   type: number
                   format: float
+                  nullable: true
                   description: 'RX Traffic [Mbps] (KPI)'
                 frame-loss:
                   type: integer
+                  nullable: true
                   description: 'The number of lost frames (KPI)'
   example:
     output:
