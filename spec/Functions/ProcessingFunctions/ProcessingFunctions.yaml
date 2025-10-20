@@ -1537,10 +1537,10 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-  /p1/inquire-air-interface-kpis-from-caca-and-set-in-dsfp-output:
+  /p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output:
     post:
-      operationId: p1InquireAirInterfaceKpisFromCacaAndSetInDsfpOutput
-      summary: 'Sends relevant airInterface attribute values to CapacityCalculatorApp for computation of capacity KPIs and writes them in [/data-structure-for-processing/output]'
+      operationId: p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
+      summary: 'Sends relevant airInterface attribute values to CapacityCalculatorApp for computation of 15min capacity KPIs and writes them in [/data-structure-for-processing/output]'
       tags:
         - PrivateServices
       responses:
@@ -1559,7 +1559,7 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        InquiringForAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
+        InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
           getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
             description: 'Directly read the relevant data from DPMDP memory'
             get:
@@ -1646,7 +1646,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-        InquiringForAirInterfaceCapacityKpiCalculationCausesCallingCaca:
+        InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCaca:
           sendDataToCaca: #[Caca_remoteIpAddress][Caca_remotePort][/v1/compute-air-interface-capacity-kpis-for-list-of-air-interfaces]
             description: 'Send the relevant airInterface data to CapacityCalculatorApp for KPI calculation'
             post:
@@ -1659,7 +1659,7 @@ paths:
                         air-interface-list:
                           description: >
                             'The air-interface-list with the attributes relevant for capacity calculation
-                            from {$InquiringForAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput.getData.response.body#output/air-interface-list}'
+                            from {$InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput.getData.response.body#output/air-interface-list}'
                           type: array
                           items:
                             properties:
@@ -1783,7 +1783,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-        InquiringForAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput:
+        InquiringFor15minAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput:
           updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
             description: 'Directly overwrites capacity default values inside data in DPMDP memory'
             patch:
@@ -1802,7 +1802,7 @@ paths:
                               air-interface-list:
                                 description: >
                                   'The air-interface-list as
-                                  from {$InquiringForAirInterfaceCapacityKpiCalculationCausesCallingCaca.sendDataToCaca.response.body#air-interface-list}'
+                                  from {$InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCaca.sendDataToCaca.response.body#air-interface-list}'
                                 type: array
                                 items:
                                   properties:
@@ -1866,10 +1866,253 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-
-
-
-
+  /p1/inquire-15min-ethernet-container-kpis-from-caca-and-set-in-dsfp-output:
+    post:
+      operationId: p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
+      summary: 'Sends relevant EthernetContainer attribute values to CapacityCalculatorApp for computation of capacity KPIs and writes them in [/data-structure-for-processing/output]'
+      tags:
+        - PrivateServices
+      responses:
+        '204':
+          description: 'EthernetContainer KPIs written to [/data-structure-for-processing/output]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        InquiringFor15minEthContainerCapacityKpiCalculationCausesReadingFromDsfpOutput:
+          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+            description: 'Directly read the relevant data from DPMDP memory'
+            get:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output read'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              ethernet-container-list:
+                                description: 'List of ethernet containers found in the given devices'
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    ethernet-container-identifiers:
+                                      type: object
+                                      properties:
+                                        logical-termination-point-id:
+                                          type: string
+                                    ethernet-container-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          period-end-time:
+                                            type: string
+                                          total-bytes-input:
+                                            type: string
+                                          total-bytes-output:
+                                            type: string
+                                          errored-frames-input:
+                                            type: integer
+                                          errored-frames-output:
+                                            type: integer
+                                          dropped-frames-input:
+                                            type: integer
+                                          dropped-frames-output:
+                                            type: integer
+                                          transmit-traffic:
+                                            type: number
+                                            format: float
+                                          receive-traffic:
+                                            type: number
+                                            format: float
+                                          frame-loss:
+                                            type: integer
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        InquiringFor15minEthernetContainerCapacityKpiCalculationCausesCallingCaca:
+          sendDataToCaca: #[Caca_remoteIpAddress][Caca_remotePort][/v1/compute-air-interface-capacity-kpis-for-list-of-air-interfaces]
+            description: 'Send the relevant EthernetContainer data to CapacityCalculatorApp for KPI calculation'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        ethernet-container-list:
+                          description: >
+                            'The ethernet-container-list with the attributes relevant for KPI calculation
+                            from {$InquiringFor15minEthContainerCapacityKpiCalculationCausesReadingFromDsfpOutput.getData.response.body#output/ethernet-container-list}'
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              ethernet-container-identifiers:
+                                type: object
+                                properties:
+                                  logical-termination-point-id:
+                                    type: string
+                              ethernet-container-performance-measurements-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    period-end-time:
+                                      type: string
+                                    total-bytes-input:
+                                      type: string
+                                    total-bytes-output:
+                                      type: string
+                                    errored-frames-input:
+                                      type: integer
+                                    errored-frames-output:
+                                      type: integer
+                                    dropped-frames-input:
+                                      type: integer
+                                    dropped-frames-output:
+                                      type: integer
+                                    transmit-traffic:
+                                      type: number
+                                      format: float
+                                    receive-traffic:
+                                      type: number
+                                      format: float
+                                    frame-loss:
+                                      type: integer
+              responses:
+                '200':
+                  description: 'Calculated KPIs received'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          ethernet-container-list:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                ethernet-container-identifiers:
+                                  type: object
+                                  properties:
+                                    logical-termination-point-id:
+                                      type: string
+                                ethernet-container-performance-measurements-list:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      transmit-traffic:
+                                        type: number
+                                        format: float
+                                        description: 'Computed TX Traffic KPI (in mbps), -1 if no value could be computed'
+                                      receive-traffic:
+                                        type: number
+                                        format: float
+                                        description: 'Computed RX Traffic KPI (in mbps), -1 if no value could be computed'
+                                      frame-loss:
+                                        type: integer
+                                        description: 'Computed number of lost frames KPI, -1 if no value could be computed'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        InquiringFor15minEthernetContainerCapacityKpiCalculationCausesWritingToDsfpOutput:
+          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+            description: 'Directly overwrites Ethernet KPI default values inside data in DPMDP memory'
+            patch:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output updated'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only the KPI attribute values have to be updated in [/data-structure-for-processing/output]. Other attributes are just provided for writing data to the correct place.'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              ethernet-container-list:
+                                type: array
+                                description: >
+                                  'The air-interface-list as
+                                  from {$InquiringFor15minEthernetContainerCapacityKpiCalculationCausesCallingCaca.sendDataToCaca.response.body#ethernet-container-list}'
+                                items:
+                                  type: object
+                                  properties:
+                                    ethernet-container-identifiers:
+                                      type: object
+                                      properties:
+                                        logical-termination-point-id:
+                                          type: string
+                                    ethernet-container-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmit-traffic:
+                                            type: number
+                                            format: float
+                                            description: >
+                                              'Computed TX Traffic KPI (in mbps), -1 if no value could be computed.
+                                              This attribute value is to be written.'
+                                          receive-traffic:
+                                            type: number
+                                            format: float
+                                            description: >
+                                              'Computed RX Traffic KPI (in mbps), -1 if no value could be computed.
+                                              This attribute value is to be written.'
+                                          frame-loss:
+                                            type: integer
+                                            description: >
+                                              'Computed number of lost frames KPI, -1 if no value could be computed.
+                                              This attribute value is to be written.'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
 
 ########################################################################################################################
 #   Common Components
