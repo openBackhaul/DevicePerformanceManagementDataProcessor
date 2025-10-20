@@ -26,6 +26,7 @@ paths:
               properties:
                 mount-name:
                   type: string
+                  example: '102250001'
                   description: > 
                     'The mount-name of the device that is addressed by this function'
       responses:
