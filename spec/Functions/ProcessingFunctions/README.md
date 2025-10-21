@@ -1,13 +1,6 @@
 # ProcessingFunctions  
 
-    Please add short descriptions of the individual ProcessingFunctions here
-    The concrete description in the yaml should clarify:
-      - where exactly is the input data coming from
-      - exact formulation/algorithm etc.
-      - where exactly is the output data written to
-    Locations might often look like this:
-      from [/data-structure-for-processing/input/...]
-      to [/data-structure-for-processing/output/...]
+In the following the different functions are shortly described.  
 
 ### p1CreateDsfpOutputObjectFromCache
 
@@ -37,27 +30,27 @@ The function shall be processed as follows:
 - from the LTP structure and augment information determine AirInterface and EthernetContainer identifier attributes
 - all relevant information is added to the output schema from the various steps above
   - note that KPIs are added as attributes with default value -1
+- along with the output object the *dsfp-output-object-id* is created; it consists of the mount-name and [/data-structure-for-processing/timestamp] along with a randomized part
 
 #### Callbacks
-- CreatingDsfpOutputCausesReadingControlConstructFromCache:
+- `CreatingDsfpOutputCausesReadingControlConstructFromCache`:
   - reads the ControlConstruct from ElasticSearch
-- CreatingDsfpOutputCausesReadingMostRecentTimestampsForDeviceInterfacesFromDeviceTable
+- `CreatingDsfpOutputCausesReadingMostRecentTimestampsForDeviceInterfacesFromDeviceTable`
   - reads the mostRecentTimestamp for every interface of the given mount-name found inside the DPMDP deviceTable
-- CreatingDsfpOutputCausesFilteringAndClusteringInputData
+- `CreatingDsfpOutputCausesFilteringAndClusteringInputData`
   - clusters input data into LTP structure and augment, lists of AirInterfaces and EthernetContainers
-- CreatingDsfpOutputCausesComputingInterfaceNames
+- `CreatingDsfpOutputCausesComputingInterfaceNames`
   - computes identifiers for AirInterface (link-id, link-endpoint-id) and EthernetContainer (interface-name) from LTP structure and augment information
-- CreatingDsfpOutputCausesComputingLagInformation
+- `CreatingDsfpOutputCausesComputingLagInformation`
   - computes link-aggregation-identifiers for AirInterface from LTP structure and augment information
 
 #### Output
 In the case that relevant data is found in the ControlConstruct data, the function creates a [/data-structure-for-processing/output] object in DPMDP memory.  
+For identifying the output object in the DPMDP memory in other functions an object id (*dsfp-output-object-id*), which is not part of [/data-structure-for-processing/output] itself is also being created and returned.
 
 ---  
 
 ### p1SetOutOfLevelValuesToDefaultInDsfpOutput
-
-**TODO: ADD INFO HOW TO IDENTIFY THE CORRECT DSFP/OUTPUT OBJECT IN THE MEMORY!**
 
 This function replaces invalid level values found in AirInterface entries of [/data-structure-for-processing/output].  
 It directly updates the values of the relevant attributes inside the output object.  
@@ -67,7 +60,7 @@ The level values should be withing the following expected ranges, otherwise they
 - receive-level: ∈ (−129.0, −99.9) ∪ (−99.9, −10.0)
 
 #### Input
-**TODO**
+The target [/data-structure-for-processing/output] object is identified by the *dsfp-output-object-id* returned by p1CreateDsfpOutputObjectFromCache.
 
 #### Steps
 The function shall be processed as follows:  
@@ -77,7 +70,7 @@ The function shall be processed as follows:
 - the changed attribute values then are written directly to [/data-structure-for-processing/output]
 
 #### Callbacks
-- SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput
+- `SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput`
   - first reads the data
   - then updates the changed attributes in the cache
 
@@ -89,12 +82,10 @@ Changes are directly written to [/data-structure-for-processing/output]. Target 
 
 ### p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
 
-**TODO: ADD INFO HOW TO IDENTIFY THE CORRECT DSFP/OUTPUT OBJECT IN THE MEMORY!**
-
 This function sends AirInterface data relevant for capacity calculation to the CapacityCalculator app and writes the received KPI values into the related capacity attributes in [/data-structure-for-processing/output].  
 
 #### Input
-The function 
+The target [/data-structure-for-processing/output] object is identified by the *dsfp-output-object-id* returned by p1CreateDsfpOutputObjectFromCache.
 
 #### Steps
 The function shall be processed as follows:  
@@ -103,11 +94,11 @@ The function shall be processed as follows:
 - update the KPI attributes with the received values directly in [/data-structure-for-processing/output]
 
 #### Callbacks
-- InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput
+- `InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput`
   - reads the relevant AirInterface attributes for all AirInterfaces found in the air-interface-list of [/data-structure-for-processing/output]
-- InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCaca
+- `InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCaca`
   - then it sends this data to the CapacityCalculator
-- InquiringFor15minAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput
+- `InquiringFor15minAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput`
   - and upon receipt of the computed KPI values it writes them back into [/data-structure-for-processing/output]
 
 #### Output
@@ -118,12 +109,10 @@ Changes are directly written to [/data-structure-for-processing/output]. Target 
 
 ### p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
 
-**TODO: ADD INFO HOW TO IDENTIFY THE CORRECT DSFP/OUTPUT OBJECT IN THE MEMORY!**
-
 This function sends EthernetContainer data relevant for KPI to the CapacityCalculator app and writes the received KPI values into the related EthernetContainer attributes in [/data-structure-for-processing/output].  
 
 #### Input
-The function 
+The target [/data-structure-for-processing/output] object is identified by the *dsfp-output-object-id* returned by p1CreateDsfpOutputObjectFromCache.
 
 #### Steps
 The function shall be processed as follows:  
@@ -132,11 +121,11 @@ The function shall be processed as follows:
 - update the KPI attributes with the received values directly in [/data-structure-for-processing/output]
 
 #### Callbacks
-- InquiringFor15minEthContainerCapacityKpiCalculationCausesReadingFromDsfpOutput
+- `InquiringFor15minEthContainerCapacityKpiCalculationCausesReadingFromDsfpOutput`
   - reads the relevant EthernetContainer attributes for all EthernetContainers found in the ethernet-container-list of [/data-structure-for-processing/output]
-- InquiringFor15minEthContainerCapacityKpiCalculationCausesCallingCaca
+- `InquiringFor15minEthContainerCapacityKpiCalculationCausesCallingCaca`
   - then it sends this data to the CapacityCalculator
-- InquiringFor15minEthContainerCapacityKpiCalculationCausesWritingToDsfpOutput
+- `InquiringFor15minEthContainerCapacityKpiCalculationCausesWritingToDsfpOutput`
   - and upon receipt of the computed KPI values it writes them back into [/data-structure-for-processing/output]
 
 #### Output
@@ -146,13 +135,11 @@ Changes are directly written to [/data-structure-for-processing/output]. Target 
 
 ### p1ReplaceOnfDefaultValuesinDsfpOutput
 
-**TODO: ADD INFO HOW TO IDENTIFY THE CORRECT DSFP/OUTPUT OBJECT IN THE MEMORY!**
-
 This function reads the counter attributes in [/data-structure-for-processing/output] and replaces ONF default values of -1 with null (numbers) or empty string (string).  
 For KPI attributes -1 is not replaced.
 
 #### Input
-The function 
+The target [/data-structure-for-processing/output] object is identified by the *dsfp-output-object-id* returned by p1CreateDsfpOutputObjectFromCache.
 
 #### Steps
 The function shall be processed as follows:
@@ -164,7 +151,7 @@ The function shall be processed as follows:
 Note: for some EthernetContainers values are represented as string instead of numbers, thus, empty string is used instead of *null*.  
 
 #### Callbacks
-- FunctionForReplacingOnfDefaultValuesCausesReadingAndChandingDsfpOutput
+- `FunctionForReplacingOnfDefaultValuesCausesReadingAndChandingDsfpOutput`
   - reads the data directly from [/data-structure-for-processing/output]
   - writes back the data to [/data-structure-for-processing/output] with replaced ONF default values
 
