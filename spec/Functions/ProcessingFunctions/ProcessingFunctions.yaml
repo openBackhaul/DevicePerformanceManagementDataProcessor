@@ -37,9 +37,19 @@ paths:
               schema:
                 type: object
                 description: 'The output is only generated if relevant AirInterface and/or EthernetContainer data remains after filtering. Otherwise the 204 is to be returned.'
+                required:
+                  - dsfp-output-object-id
                 properties:
+                  dsfp-output-object-id:
+                    type: string
+                    example: '102250001-2024-03-06T13:00:00+01:00-a0893b37'
+                    description: >
+                      'This id is used to uniquely identify the output object in the DPMDP memory.
+                      It is build from the mount-name, the [/data-structure-for-processing/timestamp] and some random part.
+                      The id is not written to [/data-structure-for-processing/output]'
                   output:
                     type: object
+                    description: 'This object is written to [/data-structure-for-processing/output]'
                     properties:
                       air-interface-list:
                         description: >
@@ -1439,13 +1449,24 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
   # Direct read/write functions on DSFP/output
-  # TODO: add some info how the correct output object is identified in the memory!
   /p1/set-out-of-range-level-values-to-default-in-dsfp-output:
     post:
       operationId: p1SetOutOfLevelValuesToDefaultInDsfpOutput
       summary: 'Reads airInterface level attributes from [/data-structure-for-processing/output] and replaces invalid level values'
       tags:
         - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dsfp-output-object-id
+              properties:
+                dsfp-output-object-id:
+                  type: string
+                  description: 'The id required for identifying the DSFP output object in the DPMDP memory'
       responses:
         '204':
           description: 'Out-of-range level values set to defaults in [/data-structure-for-processing/output]'
@@ -1464,7 +1485,8 @@ paths:
       callbacks:
         SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput:
           getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the data from DPMDP memory'
+            description: 'Directly read the data from DPMDP memory for the output object identified by id
+              from {$request.body#dsfp-output-object-id}'
             get:
               responses:
                 '200':
@@ -1512,7 +1534,8 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
           updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly overwrites out-of-range values inside data in DPMDP memory'
+            description: 'Directly overwrites out-of-range values inside [/data-structure-for-processing/output] object in DPMDP memory identified by id
+              from {$request.body#dsfp-output-object-id}'
             patch:
               responses:
                 '200':
@@ -1584,13 +1607,24 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-  # TODO: add some info how the correct output object is identified in the memory!
   /p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output:
     post:
       operationId: p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
       summary: 'Sends relevant airInterface attribute values to CapacityCalculatorApp for computation of 15min capacity KPIs and writes them in [/data-structure-for-processing/output]'
       tags:
         - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dsfp-output-object-id
+              properties:
+                dsfp-output-object-id:
+                  type: string
+                  description: 'The id required for identifying the DSFP output object in the DPMDP memory'
       responses:
         '204':
           description: 'AirInterface capacity KPIs written to [/data-structure-for-processing/output]'
@@ -1609,7 +1643,8 @@ paths:
       callbacks:
         InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
           getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the relevant data from DPMDP memory'
+            description: 'Directly read the relevant data from DPMDP memory for the output object identified by id
+              from {$request.body#dsfp-output-object-id}'
             get:
               responses:
                 '200':
@@ -1833,7 +1868,8 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         InquiringFor15minAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput:
           updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly overwrites capacity default values inside data in DPMDP memory'
+            description: 'Directly overwrites capacity default values inside [/data-structure-for-processing/output] object in DPMDP memory identified by id
+              from {$request.body#dsfp-output-object-id}'
             patch:
               responses:
                 '200':
@@ -1914,13 +1950,24 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-  # TODO: add some info how the correct output object is identified in the memory!
   /p1/inquire-15min-ethernet-container-kpis-from-caca-and-set-in-dsfp-output:
     post:
       operationId: p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
       summary: 'Sends relevant EthernetContainer attribute values to CapacityCalculatorApp for computation of capacity KPIs and writes them in [/data-structure-for-processing/output]'
       tags:
         - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dsfp-output-object-id
+              properties:
+                dsfp-output-object-id:
+                  type: string
+                  description: 'The id required for identifying the DSFP output object in the DPMDP memory'
       responses:
         '204':
           description: 'EthernetContainer KPIs written to [/data-structure-for-processing/output]'
@@ -1939,7 +1986,8 @@ paths:
       callbacks:
         InquiringFor15minEthContainerCapacityKpiCalculationCausesReadingFromDsfpOutput:
           getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the relevant data from DPMDP memory'
+            description: 'Directly read the relevant data from DPMDP memory for the output object identified by id
+              from {$request.body#dsfp-output-object-id}'
             get:
               responses:
                 '200':
@@ -2101,7 +2149,8 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         InquiringFor15minEthernetContainerCapacityKpiCalculationCausesWritingToDsfpOutput:
           updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly overwrites Ethernet KPI default values inside data in DPMDP memory'
+            description: 'Directly overwrites Ethernet KPI default values inside [/data-structure-for-processing/output] object in DPMDP memory identified by id
+              from {$request.body#dsfp-output-object-id}'
             patch:
               responses:
                 '200':
@@ -2164,7 +2213,6 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
   # Replace ONF default -1 integer/string values by null/empty string for counters
-  # TODO: add some info how the correct output object is identified in the memory!
   /p1/replace-onf-default-values-in-dsfp-output:
     # The replacement values have to be agreed upon with customers, for now non-KPI -1 default values will be replaced by null/empty string
     post:
@@ -2172,6 +2220,18 @@ paths:
       summary: 'Replaces ONF default values in DataStructureForProcessing output'
       tags:
         - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dsfp-output-object-id
+              properties:
+                dsfp-output-object-id:
+                  type: string
+                  description: 'The id required for identifying the DSFP output object in the DPMDP memory'
       responses:
         '204':
           description: 'ONF default values replaced in DSFP output'
@@ -2190,7 +2250,8 @@ paths:
       callbacks:
         FunctionForReplacingOnfDefaultValuesCausesReadingAndChandingDsfpOutput:
           GetData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the data from DPMDP memory'
+            description: 'Directly read the data from DPMDP memory for the output object identified by id
+              from {$request.body#dsfp-output-object-id}'
             get:
               responses:
                 '200':
@@ -2489,7 +2550,8 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
           WriteData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly write data to DPMDP memory'
+            description: 'Directly write data to [/data-structure-for-processing/output] object in DPMDP memory identified by id
+              from {$request.body#dsfp-output-object-id}'
             put:
               requestBody:
                 content:
