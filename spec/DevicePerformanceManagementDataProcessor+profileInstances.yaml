@@ -131,3 +131,14 @@ profile-instances:
       #description: 'This profileInstance allows toggeling the sending of processed PM data to Kafka on/off. Default is on.'
     configuration:
       string-value: 'on'
+
+  - profile-name: 'IntegerProfile'
+    uuid: 'dpmdp-1-0-0--integer-p-000'
+    capability:
+      integer-name: 'waitingTimeForProcessingNotificationsForSameDevice'
+      purpose: 'This profile configures how long DPMDP ignores additional received notifications for a given device, after having received the first notification for that device.'
+      unit: seconds
+      minimum: 1
+      maximum: 180
+    configuration:
+      integer-value: 60

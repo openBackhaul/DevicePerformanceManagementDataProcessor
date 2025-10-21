@@ -26,7 +26,7 @@ paths:
               properties:
                 mount-name:
                   type: string
-                  example: '102250001'
+                  example: '513250010'
                   description: > 
                     'The mount-name of the device that is addressed by this function'
       responses:
@@ -42,7 +42,7 @@ paths:
                 properties:
                   dsfp-output-object-id:
                     type: string
-                    example: '102250001-2024-03-06T13:00:00+01:00-a0893b37'
+                    example: '513250010-2024-03-06T13:00:00+01:00-a0893b37'
                     description: >
                       'This id is used to uniquely identify the output object in the DPMDP memory.
                       It is build from the mount-name, the [/data-structure-for-processing/timestamp] and some random part.
@@ -564,7 +564,99 @@ paths:
                                     type: integer
                                     nullable: true
                                     description: 'The number of lost frames (KPI). Set to default=-1.'
-                    #example goes here
+                    example:
+                      dsfp-output-object-id: '513250010-2024-03-06T13:00:00+01:00-a0893b37'
+                      output:
+                        air-interface-list:
+                          - air-interface-identifiers:
+                              mount-name: '513250010'
+                              link-endpoint-id: '325557888A'
+                              link-id: '325557888'
+                              logical-termination-point-id: 'RF-2146697744'
+                              link-aggregation-identifiers:
+                                - link-id: '325557888'
+                                - link-id: '325557889'
+                            air-interface-configuration:
+                              configured-atpc-is-on: true
+                              configured-atpc-threshold-upper: 99
+                              configured-atpc-threshold-lower: -45
+                              configured-tx-power: 4
+                              configured-modulation-minimum:
+                                number-of-states: 4
+                                name-at-lct: '4 QAM'
+                                configured-capacity-minimum: -1
+                              configured-modulation-maximum:
+                                number-of-states: 1024
+                                name-at-lct: '1024 QAM'
+                                configured-capacity-maximum: -1
+                            air-interface-performance-measurements-list:
+                              - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                period-end-time: '2024-03-06T13:00:00+01:00'
+                                transmit-level-minimum: -4
+                                transmit-level-maximum: -4
+                                transmit-level-average: 99
+                                receive-level-minimum: -450
+                                receive-level-maximum: -44
+                                receive-level-average: 99
+                                signal-to-noise-ratio-minimum: -1
+                                signal-to-noise-ratio-maximum: 41
+                                signal-to-noise-ratio-average: -99
+                                cross-polarization-discrimination-minimum: 30
+                                cross-polarization-discrimination-maximum: 31
+                                cross-polarization-discrimination-average: 99
+                                operated-transmission-modes-list:
+                                  - transmission-mode-name: '56000-1024-v2'
+                                    modulation-scheme-name-at-lct: '1024 QAM'
+                                    time: 897
+                                    capacity: -1
+                                interval-capacity: -1
+                                errorred-seconds: 10
+                                severely-errorred-seconds: 0
+                                consecutive-severely-errorred-seconds: 0
+                                total-unavailability: 2
+                                defect-blocks: 14
+                                time-period: 898
+                            transmission-mode-list:
+                              - transmission-mode-name: '56000-1024-v2'
+                                number-of-states: 1024
+                                modulation-scheme-name-at-lct: '1024 QAM'
+                                channel-bandwidth: 56000
+                                code-rate: 94
+                                symbol-rate-reduction-factor: 1
+                        ethernet-container-list:
+                          - ethernet-container-identifiers:
+                              mount-name: '513250010'
+                              interface-name: 'WAN 1/1/1'
+                              logical-termination-point-id: 'ETH-2134646913'
+                            ethernet-container-performance-measurements-list:
+                              - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                period-end-time: '2024-03-07T00:15:00.0+00:00'
+                                max-bytes-per-second-output: '10'
+                                total-bytes-input: '0'
+                                total-bytes-output: '0'
+                                total-frames-input: '0'
+                                total-frames-output: '0'
+                                forwarded-frames-input: '-1'
+                                forwarded-frames-output: '-1'
+                                unicast-frames-input: '0'
+                                unicast-frames-output: '0'
+                                multicast-frames-input: 0
+                                multicast-frames-output: 0
+                                broadcast-frames-input: 0
+                                broadcast-frames-output: 0
+                                fragmented-frames-input: -1
+                                errored-frames-input: 0
+                                errored-frames-output: 0
+                                dropped-frames-input: 0
+                                dropped-frames-output: 0
+                                oversized-frames-ingress: 10
+                                undersized-frames-ingress: 11
+                                jabber-frames-ingress: 2
+                                unknown-protocol-frames-input: 5
+                                time-period: 899
+                                transmit-traffic: -1
+                                receive-traffic: -1
+                                frame-loss: -1
         '204':
           description: 'No DataStructureForProcessing output object created due to lack of new PM data'
         '400':
@@ -981,7 +1073,10 @@ paths:
                           most-recent-timestamp:
                             type: string
                             description: 'The most recent timestamp for this interface seen in previous retrievals'
-                            example: '2024-03-07T00:15:00.0+00:00'
+                      example:
+                        uuid: '2146697744'
+                        local-id: 'RF-2146697744'
+                        most-recent-timestamp: '2024-03-07T00:15:00.0+00:00'
         CreatingDsfpOutputCausesFilteringAndClusteringInputData:
           PrepInputData: #[dpmdpIpAddress]:[dpmdpPort]/dpmdp-internal-memory
             description: >
@@ -1002,56 +1097,56 @@ paths:
                             type: array
                             items:
                               type: object
-                            properties:
-                              logical-termination-point:
-                                type: array
-                                items:
-                                  type: object
-                                  properties:
-                                    uuid:
-                                      type: string
-                                      description: >
-                                        'The uuid of the currently traversed LTP
-                                        from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/uuid}'
-                                    client-ltp:
-                                      type: array
-                                      description: >
-                                        'The client-ltp array of the currently traversed LTP
-                                        from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/client-ltp}'
-                                      items:
+                              properties:
+                                logical-termination-point:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      uuid:
                                         type: string
-                                    server-ltp:
-                                      type: array
-                                      description: >
-                                        'The server-ltp of the currently traversed LTP
-                                        from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/server-ltp}'
-                                      items:
-                                        type: string
-                                    layer-protocol:
-                                      type: array
-                                      items:
+                                        description: >
+                                          'The uuid of the currently traversed LTP
+                                          from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/uuid}'
+                                      client-ltp:
+                                        type: array
+                                        description: >
+                                          'The client-ltp array of the currently traversed LTP
+                                          from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/client-ltp}'
+                                        items:
+                                          type: string
+                                      server-ltp:
+                                        type: array
+                                        description: >
+                                          'The server-ltp of the currently traversed LTP
+                                          from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/server-ltp}'
+                                        items:
+                                          type: string
+                                      layer-protocol:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            local-id:
+                                              type: string
+                                              description: >
+                                                'The local-id of the currently traversed LTP/layer-protocol
+                                                from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protcol/local-id}'
+                                            layer-protocol-name:
+                                              type: string
+                                              description: >
+                                                'The layer-protocol-name of the currently traversed LTP/layer-protocol
+                                                from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protcol/layer-protocol-name}'
+                                      ltp-augment-1-0:ltp-augment-pac:
                                         type: object
+                                        description: >
+                                          'The ltp-augment of the currently traversed LTP
+                                          from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/ltp-augment}'
                                         properties:
-                                          local-id:
+                                          external-label:
                                             type: string
-                                            description: >
-                                              'The local-id of the currently traversed LTP/layer-protocol
-                                              from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protcol/local-id}'
-                                          layer-protocol-name:
+                                          original-ltp-name:
                                             type: string
-                                            description: >
-                                              'The layer-protocol-name of the currently traversed LTP/layer-protocol
-                                              from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protcol/layer-protocol-name}'
-                                    ltp-augment-1-0:ltp-augment-pac:
-                                      type: object
-                                      description: >
-                                        'The ltp-augment of the currently traversed LTP
-                                        from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/ltp-augment}'
-                                      properties:
-                                        external-label:
-                                          type: string
-                                        original-ltp-name:
-                                          type: string
                           list-of-filtered-ethernet-containers:
                             type: array
                             items:
@@ -1240,7 +1335,7 @@ paths:
                                       defect-blocks-sum:
                                         type: integer
                                       time-period:
-                                        type: string
+                                        type: integer
                                 air-interface-configuration:
                                   type: object
                                   description: >
@@ -1284,6 +1379,91 @@ paths:
                                             type: integer
                                           symbol-rate-reduction-factor:
                                             type: integer
+                      example:
+                        ltp-structure-and-augment:
+                          - logical-termination-point:
+                              - uuid: '513250010-PureEthStruc-45743677'
+                                client-ltp:
+                                  - '513250010-EthContainer-13535345'
+                                server-ltp:
+                                  - '513250010-AirInterface-34534563'
+                                layer-protocol:
+                                  - local-id: '45743677'
+                                    layer-protocol-name: 'LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER'
+                                ltp-augment-1-0:ltp-augment-pac:
+                                  external-label: '325557888A'
+                                  original-ltp-name: 'WAN 1/1/1'
+                        list-of-filtered-ethernet-containers:
+                          - uuid: 'ETH-765.1.5'
+                            local-id: '765.1.5'
+                            filtered-historical-performance-data-list:
+                              - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                period-end-time: '2024-03-07T00:15:00.0+00:00'
+                                max-bytes-per-second-output: '10'
+                                total-bytes-input: '0'
+                                total-bytes-output: '0'
+                                total-frames-input: '0'
+                                total-frames-output: '0'
+                                forwarded-frames-input: '-1'
+                                forwarded-frames-output: '-1'
+                                unicast-frames-input: '0'
+                                unicast-frames-output: '0'
+                                multicast-frames-input: 0
+                                multicast-frames-output: 0
+                                broadcast-frames-input: 0
+                                broadcast-frames-output: 0
+                                fragmented-frames-input: -1
+                                errored-frames-input: 0
+                                errored-frames-output: 0
+                                dropped-frames-input: 0
+                                dropped-frames-output: 0
+                                oversized-frames-ingress: 10
+                                undersized-frames-ingress: 11
+                                jabber-frames-ingress: 2
+                                unknown-protocol-frames-input: 5
+                                time-period: 899
+                        list-of-filtered-air-interfaces:
+                          - uuid: '2146697744'
+                            local-id: 'RF-2146697744'
+                            filtered-historical-performance-data-list:
+                              - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                period-end-time: '2024-03-06T13:00:00+01:00'
+                                tx-level-min: 0
+                                tx-level-max: 0
+                                tx-level-avg: 0
+                                rx-level-min: 0
+                                rx-level-max: 0
+                                rx-level-avg: 0
+                                snir-min: 0
+                                snir-max: 0
+                                snir-avg: 0
+                                xpd-min: 0
+                                xpd-max: 0
+                                xpd-avg: 0
+                                time-xstates-list:
+                                  - transmission-mode: '56000-1024-v2'
+                                    time: 800
+                                es: 0
+                                ses: 0
+                                cses: 0
+                                unavailability: 0
+                                defect-blocks-sum: 0
+                                time-period: 900
+                            air-interface-configuration:
+                              transmission-mode-min: '12800-004-v1'
+                              transmission-mode-max: '56000-1024-v2'
+                              tx-power: 0
+                              atpc-is-on: true
+                              atpc-thresh-upper: 0
+                              atpc-thresh-lower: 0
+                            air-interface-capability:
+                              transmission-mode-list:
+                                - transmission-mode-name: '56000-1024-v2'
+                                  channel-bandwidth: 120
+                                  modulation-scheme: 1024
+                                  modulation-scheme-name-at-lct: '1024 QAM'
+                                  code-rate: 1
+                                  symbol-rate-reduction-factor: 1
                 '400':
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 '401':
