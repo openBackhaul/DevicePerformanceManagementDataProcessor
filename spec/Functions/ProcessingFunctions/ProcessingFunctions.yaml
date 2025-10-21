@@ -1439,6 +1439,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
   # Direct read/write functions on DSFP/output
+  # TODO: add some info how the correct output object is identified in the memory!
   /p1/set-out-of-range-level-values-to-default-in-dsfp-output:
     post:
       operationId: p1SetOutOfLevelValuesToDefaultInDsfpOutput
@@ -1462,7 +1463,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         SettingOutOfRangeLevelValuesToDefaultCausesReadingFromAndWritingToDsfpOutput:
-          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
             description: 'Directly read the data from DPMDP memory'
             get:
               responses:
@@ -1510,7 +1511,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
             description: 'Directly overwrites out-of-range values inside data in DPMDP memory'
             patch:
               responses:
@@ -1583,6 +1584,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  # TODO: add some info how the correct output object is identified in the memory!
   /p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output:
     post:
       operationId: p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
@@ -1606,7 +1608,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
-          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
             description: 'Directly read the relevant data from DPMDP memory'
             get:
               responses:
@@ -1830,7 +1832,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         InquiringFor15minAirInterfaceCapacityKpiCalculationCausesWritingToDsfpOutput:
-          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
             description: 'Directly overwrites capacity default values inside data in DPMDP memory'
             patch:
               responses:
@@ -1912,6 +1914,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  # TODO: add some info how the correct output object is identified in the memory!
   /p1/inquire-15min-ethernet-container-kpis-from-caca-and-set-in-dsfp-output:
     post:
       operationId: p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
@@ -1935,7 +1938,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         InquiringFor15minEthContainerCapacityKpiCalculationCausesReadingFromDsfpOutput:
-          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+          getData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
             description: 'Directly read the relevant data from DPMDP memory'
             get:
               responses:
@@ -2097,7 +2100,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         InquiringFor15minEthernetContainerCapacityKpiCalculationCausesWritingToDsfpOutput:
-          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing-output]
+          updateData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
             description: 'Directly overwrites Ethernet KPI default values inside data in DPMDP memory'
             patch:
               responses:
@@ -2160,6 +2163,752 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  # Replace ONF default -1 integer/string values by null/empty string for counters
+  # TODO: add some info how the correct output object is identified in the memory!
+  /p1/replace-onf-default-values-in-dsfp-output:
+    # The replacement values have to be agreed upon with customers, for now non-KPI -1 default values will be replaced by null/empty string
+    post:
+      operationId: p1ReplaceOnfDefaultValuesinDsfpOutput
+      summary: 'Replaces ONF default values in DataStructureForProcessing output'
+      tags:
+        - PrivateServices
+      responses:
+        '204':
+          description: 'ONF default values replaced in DSFP output'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        FunctionForReplacingOnfDefaultValuesCausesReadingAndChandingDsfpOutput:
+          GetData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
+            description: 'Directly read the data from DPMDP memory'
+            get:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing read'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        mount-name:
+                                          type: string
+                                        link-endpoint-id:
+                                          type: string
+                                        link-id:
+                                          type: string
+                                        logical-termination-point-id:
+                                          type: string
+                                        link-aggregation-identifiers:
+                                          type: array
+                                          items:
+                                            oneOf:
+                                              - description: 'AirInterfaces'
+                                                type: object
+                                                required:
+                                                  - link-id
+                                                properties:
+                                                  link-id:
+                                                    type: string
+                                              - description: 'WireInterface'
+                                                type: object
+                                                required:
+                                                  - interface-name
+                                                properties:
+                                                  interface-name:
+                                                    type: string
+                                    air-interface-configuration:
+                                      type: object
+                                      properties:
+                                        configured-atpc-is-on:
+                                          type: boolean
+                                        configured-atpc-threshold-upper:
+                                          type: integer
+                                          nullable: true
+                                        configured-atpc-threshold-lower:
+                                          type: integer
+                                          nullable: true
+                                        configured-tx-power:
+                                          type: integer
+                                          nullable: true
+                                        configured-modulation-minimum:
+                                          type: object
+                                          properties:
+                                            number-of-states:
+                                              type: integer
+                                              nullable: true
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-minimum:
+                                              type: integer
+                                              nullable: true
+                                        configured-modulation-maximum:
+                                          type: object
+                                          properties:
+                                            number-of-states:
+                                              type: integer
+                                              nullable: true
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-maximum:
+                                              type: integer
+                                              nullable: true
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          granularity-period:
+                                            type: string
+                                            enum:
+                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                          period-end-time:
+                                            type: string
+                                          transmit-level-minimum:
+                                            type: integer
+                                            nullable: true
+                                          transmit-level-maximum:
+                                            type: integer
+                                            nullable: true
+                                          transmit-level-average:
+                                            type: integer
+                                            nullable: true
+                                          receive-level-minimum:
+                                            type: integer
+                                            nullable: true
+                                          receive-level-maximum:
+                                            type: integer
+                                            nullable: true
+                                          receive-level-average:
+                                            type: integer
+                                            nullable: true
+                                          signal-to-noise-ratio-minimum:
+                                            type: integer
+                                            nullable: true
+                                          signal-to-noise-ratio-maximum:
+                                            type: integer
+                                            nullable: true
+                                          signal-to-noise-ratio-average:
+                                            type: integer
+                                            nullable: true
+                                          cross-polarization-discrimination-minimum:
+                                            type: integer
+                                            nullable: true
+                                          cross-polarization-discrimination-maximum:
+                                            type: integer
+                                            nullable: true
+                                          cross-polarization-discrimination-average:
+                                            type: integer
+                                            nullable: true
+                                          operated-transmission-modes-list: 
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                transmission-mode-name:
+                                                  type: string
+                                                modulation-scheme-name-at-lct:
+                                                  type: string
+                                                time:
+                                                  type: integer
+                                                  nullable: true
+                                                capacity:
+                                                  type: integer
+                                                  nullable: true
+                                          interval-capacity:
+                                            type: integer
+                                            nullable: true
+                                          errorred-seconds:
+                                            type: integer
+                                            nullable: true
+                                          severely-errorred-seconds:
+                                            type: integer
+                                            nullable: true
+                                          consecutive-severely-errorred-seconds:
+                                            type: integer
+                                            nullable: true
+                                          total-unavailability:
+                                            type: integer
+                                            nullable: true
+                                          defect-blocks:
+                                            type: integer
+                                            nullable: true
+                                          time-period:
+                                            type: integer
+                                            nullable: true
+                                    transmission-mode-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode-name:
+                                            type: string
+                                          number-of-states:
+                                            type: integer
+                                            nullable: true
+                                          modulation-scheme-name-at-lct:
+                                            type: string
+                                          channel-bandwidth:
+                                            type: integer
+                                            nullable: true
+                                          code-rate:
+                                            type: integer
+                                            nullable: true
+                                          symbol-rate-reduction-factor:
+                                            type: integer
+                                            nullable: true
+                              ethernet-container-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    ethernet-container-identifiers:
+                                      type: object
+                                      properties:
+                                        mount-name:
+                                          type: string
+                                        interface-name:
+                                          type: string
+                                        logical-termination-point-id:
+                                          type: string
+                                    ethernet-container-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          granularity-period:
+                                            type: string
+                                            enum:
+                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                          period-end-time:
+                                            type: string
+                                          max-bytes-per-second-output:
+                                            type: string
+                                          total-bytes-input:
+                                            type: string
+                                          total-bytes-output:
+                                            type: string
+                                          total-frames-input:
+                                            type: string
+                                          total-frames-output:
+                                            type: string
+                                          forwarded-frames-input:
+                                            type: string
+                                          forwarded-frames-output:
+                                            type: string
+                                          unicast-frames-input:
+                                            type: string
+                                          unicast-frames-output:
+                                            type: string
+                                          multicast-frames-input:
+                                            type: integer
+                                            nullable: true
+                                          multicast-frames-output:
+                                            type: integer
+                                            nullable: true
+                                          broadcast-frames-input:
+                                            type: integer
+                                            nullable: true
+                                          broadcast-frames-output:
+                                            type: integer
+                                            nullable: true
+                                          fragmented-frames-input:
+                                            type: integer
+                                            nullable: true
+                                          errored-frames-input:
+                                            type: integer
+                                            nullable: true
+                                          errored-frames-output:
+                                            type: integer
+                                            nullable: true
+                                          dropped-frames-input:
+                                            type: integer
+                                            nullable: true
+                                          dropped-frames-output:
+                                            type: integer
+                                            nullable: true
+                                          oversized-frames-ingress:
+                                            type: string
+                                            nullable: true
+                                          undersized-frames-ingress:
+                                            type: string
+                                          jabber-frames-ingress:
+                                            type: string
+                                          unknown-protocol-frames-input:
+                                            type: string
+                                          time-period:
+                                            type: integer
+                                            nullable: true
+                                          transmit-traffic:
+                                            type: number
+                                            format: float
+                                            nullable: true
+                                          receive-traffic:
+                                            type: number
+                                            format: float
+                                            nullable: true
+                                          frame-loss:
+                                            type: integer
+                                            nullable: true
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          WriteData: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
+            description: 'Directly write data to DPMDP memory'
+            put:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      description: >
+                        'The output schema, with replaced default values
+                        from {$FunctionForReplacingOnfDefaultValuesCausesReadingAndChandingDsfpOutput.response.body#output}'
+                      properties:
+                        output:
+                          type: object
+                          properties:
+                            air-interface-list:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  air-interface-identifiers:
+                                    type: object
+                                    properties:
+                                      mount-name:
+                                        type: string
+                                      link-endpoint-id:
+                                        type: string
+                                      link-id:
+                                        type: string
+                                      logical-termination-point-id:
+                                        type: string
+                                      link-aggregation-identifiers:
+                                        type: array
+                                        items:
+                                          oneOf:
+                                            - description: 'AirInterfaces'
+                                              type: object
+                                              required:
+                                                - link-id
+                                              properties:
+                                                link-id:
+                                                  type: string
+                                            - description: 'WireInterface'
+                                              type: object
+                                              required:
+                                                - interface-name
+                                              properties:
+                                                interface-name:
+                                                  type: string
+                                  air-interface-configuration:
+                                    type: object
+                                    properties:
+                                      configured-atpc-is-on:
+                                        type: boolean
+                                      configured-atpc-threshold-upper:
+                                        type: integer
+                                        nullable: true
+                                        description: >
+                                          'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                      configured-atpc-threshold-lower:
+                                        type: integer
+                                        nullable: true
+                                        description: >
+                                          'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                      configured-tx-power:
+                                        type: integer
+                                        nullable: true
+                                        description: >
+                                          'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                      configured-modulation-minimum:
+                                        type: object
+                                        properties:
+                                          number-of-states:
+                                            type: integer
+                                            nullable: true
+                                            description: >
+                                              'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                          name-at-lct:
+                                            type: string
+                                          configured-capacity-minimum:
+                                            type: integer
+                                            nullable: true
+                                            description: >
+                                              'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                      configured-modulation-maximum:
+                                        type: object
+                                        properties:
+                                          number-of-states:
+                                            type: integer
+                                            nullable: true
+                                            description: >
+                                              'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                          name-at-lct:
+                                            type: string
+                                          configured-capacity-maximum:
+                                            type: integer
+                                            nullable: true
+                                            description: >
+                                              'In case of -1 the (KPI) value is to be kept for backwards-compatibility with APTP'
+                                  air-interface-performance-measurements-list:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        granularity-period:
+                                          type: string
+                                          enum:
+                                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                            - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                        period-end-time:
+                                          type: string
+                                        transmit-level-minimum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        transmit-level-maximum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        transmit-level-average:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        receive-level-minimum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        receive-level-maximum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        receive-level-average:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        signal-to-noise-ratio-minimum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        signal-to-noise-ratio-maximum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        signal-to-noise-ratio-average:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        cross-polarization-discrimination-minimum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        cross-polarization-discrimination-maximum:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        cross-polarization-discrimination-average:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        operated-transmission-modes-list: 
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              transmission-mode-name:
+                                                type: string
+                                              modulation-scheme-name-at-lct:
+                                                type: string
+                                              time:
+                                                type: integer
+                                                nullable: true
+                                                description: >
+                                                  'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                              capacity:
+                                                type: integer
+                                                nullable: true
+                                                description: >
+                                                  'In case of -1 the (KPI) value is to be kept for backwards-compatibility with APTP'
+                                        interval-capacity:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'In case of -1 the (KPI) value is to be kept for backwards-compatibility with APTP'
+                                        errorred-seconds:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        severely-errorred-seconds:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        consecutive-severely-errorred-seconds:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        total-unavailability:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        defect-blocks:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        time-period:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                  transmission-mode-list:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        transmission-mode-name:
+                                          type: string
+                                        number-of-states:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        modulation-scheme-name-at-lct:
+                                          type: string
+                                        channel-bandwidth:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        code-rate:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        symbol-rate-reduction-factor:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                            ethernet-container-list:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  ethernet-container-identifiers:
+                                    type: object
+                                    properties:
+                                      mount-name:
+                                        type: string
+                                      interface-name:
+                                        type: string
+                                      logical-termination-point-id:
+                                        type: string
+                                  ethernet-container-performance-measurements-list:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        granularity-period:
+                                          type: string
+                                          enum:
+                                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                        period-end-time:
+                                          type: string
+                                        max-bytes-per-second-output:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        total-bytes-input:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        total-bytes-output:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        total-frames-input:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        total-frames-output:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        forwarded-frames-input:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        forwarded-frames-output:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        unicast-frames-input:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        unicast-frames-output:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        multicast-frames-input:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        multicast-frames-output:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        broadcast-frames-input:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        broadcast-frames-output:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        fragmented-frames-input:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        errored-frames-input:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        errored-frames-output:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        dropped-frames-input:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        dropped-frames-output:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        oversized-frames-ingress:
+                                          type: string
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        undersized-frames-ingress:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        jabber-frames-ingress:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        unknown-protocol-frames-input:
+                                          type: string
+                                          description: >
+                                            'Replace the attribute value by an empty string in case of -1, before writing the updated output object'
+                                        time-period:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'Replace the attribute value by null in case of -1, before writing the updated output object'
+                                        transmit-traffic:
+                                          type: number
+                                          format: float
+                                          nullable: true
+                                          description: >
+                                            'In case of -1 keep the (KPI) value, as this is not an ONF default value'
+                                        receive-traffic:
+                                          type: number
+                                          format: float
+                                          nullable: true
+                                          description: >
+                                            'In case of -1 keep the (KPI) value, as this is not an ONF default value'
+                                        frame-loss:
+                                          type: integer
+                                          nullable: true
+                                          description: >
+                                            'In case of -1 keep the (KPI) value, as this is not an ONF default value'
+              responses:
+                '204':
+                  description: 'Updated data written to DataStructureForProcessing/Output'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
+
 ########################################################################################################################
 #   Common Components
 ########################################################################################################################
@@ -2186,6 +2935,7 @@ components:
          [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
     x-correlator:
       name: x-correlator
+
       in: header
       required: true
       schema:
