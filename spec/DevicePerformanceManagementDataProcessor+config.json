@@ -234,6 +234,22 @@
               "string-value": "on"
             }
           }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-integer-p-000",
+          "profile-name": "integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE",
+          "integer-profile-1-0:integer-profile-pac": {
+            "integer-profile-capability": {
+              "integer-name": "waitingTimeForProcessingNotificationsForSameDevice",
+              "purpose": "This profile configures how long DPMDP ignores additional received notifications for a given device, after having received the first notification for that device.",
+              "unit": "seconds",
+              "minimum": 1,
+              "maximum": 180
+            },
+            "integer-profile-configuration": {
+              "integer-value": 60
+            }
+          }
         }
       ]
     },

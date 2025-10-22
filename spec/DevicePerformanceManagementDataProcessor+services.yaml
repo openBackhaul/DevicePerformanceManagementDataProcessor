@@ -37,6 +37,12 @@ servers:
       individual:
         - operation-name: /v1/bequeath-your-data-and-die
           uuid: dpmdp-1-0-0-op-s-im-000
+        - operation-name: /v1/list-functions
+          uuid: dpmdp-1-0-0-op-s-im-000
+          operation-key: n.a.
+        - operation-name: /v1/list-processing-sequences
+          uuid: dpmdp-1-0-0-op-s-im-001
+          operation-key: n.a.
     service:
       basic:
         - operation-name: /v1/start-application-in-generic-representation
@@ -58,6 +64,15 @@ servers:
           uuid: dpmdp-1-0-0-op-s-bs-005
           operation-key: n.a.
       individual:
+        # receipt of MWDI AVCN notifications
+        - operation-name: /v1/regard-device-attribute-value-change
+          uuid: dpmdp-1-0-0-op-s-is-000
+          operation-key: n.a.
+
+
+
+
+
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor
     own-release-number: 1.0.0
@@ -301,3 +316,24 @@ clients:
       service:
         basic:
         individual:
+
+
+  # not yet in config file
+  - http-client:
+      application-name: MicroWaveDeviceInventory
+      release-number: 2.0.1
+      uuid: dpmdp-1-0-0-http-c-mwdi-2-0-1-000
+    tcp-client:
+      remote-protocol: http
+      ip-address: 127.0.0.1
+      tcp-port: 4024
+      uuid: dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000
+    operation-clients:
+      own-oam:
+        basic:
+        individual:
+      service:
+        basic:
+        individual:
+          - operation-name: /v1/provide-device-status-metadata
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000

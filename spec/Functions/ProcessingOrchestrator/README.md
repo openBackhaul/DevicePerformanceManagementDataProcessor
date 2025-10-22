@@ -12,6 +12,9 @@ The current specification contains two ways for receiving those notifications:
 MWDI cycically updates complete ControlConstructs - therefore multiple notifications for the same mount-name can be expected to be received everytime a complete ControlConstruct is uploaded to MWDI cache.  
 DPMDP shall only process the first notification for a given device and ignore other notifications for the same device for the time interval configured in integerProfile instance *waitingTimeForProcessingNotificationsForSameDevice*.  
 
+For the current release MWDI is supposed to only send notifications for update values of *time-of-latest-change*.  
+In future MWDI releases there may be more AVCN notifications created. If DPMDP is receiving them all via Webhook, it needs to ignore all those not related to *time-of-latest-change*. If the DPMDP however fetches the notifications from Kafka, filtering can be applied before the notifications are made available to DPMDP. In that case, DPMDP does not need to carry out additional filtering by itself.
+
 ### Processing steps
 
 After having received a new notification for a device (identified by mount-name):
@@ -48,5 +51,8 @@ Note: the replacement values may change, as they need to be aligned with custome
   - it writes changed attribute values back to [/data-structure-for-processing/output]
 
 Further processing steps (functions) may be added later on.
+
+(7) The ProcessingOrchestrator reads the deviceType from MWDI
+(8) The ProcessingOrchestrator creates a new [/data-structure-for-processing] object filled from notification data, the deviceType retrieved in (7) and the output object created during steps (1) to (6).
 
 After all processing steps have been carried out and if a [/data-structure-for-processing/output] object has been created, there is a transition of the [/data-structure-for-processing] from Processing to Transmission. 
