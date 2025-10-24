@@ -1,0 +1,28 @@
+@startuml 015_p1SetMostRecentTimestampInDeviceTable
+skinparam responseMessageBelowArrow true
+
+title
+p1SetMostRecentTimestampInDeviceTable
+end title
+
+participant "requestor" as requestor
+participant "p1SetMostRecentTimestampInDeviceTable" as mostRecentTimestamp #LightBlue
+participant "DPMDP\n(deviceTable)" as deviceTable
+
+activate mostRecentTimestamp
+requestor -> mostRecentTimestamp: {DsfpOutput}
+
+note over mostRecentTimestamp
+<u>SetMostRecentTimestamp</u>
+  iterate over the AirInterfaces and EthernetContainers
+  in DsfpOutput and for each interface instance write
+  into the DPMDP deviceTable:
+  - the mount-name,
+  - the interface-id (LTP-id),
+  - the newest timestamp seen across all period-end-time values
+    for the current interface instance
+end note
+
+mostRecentTimestamp -> deviceTable: {list-of(mountName, LtpId, mostRecentTimestamp)}
+
+deactivate mostRecentTimestamp
