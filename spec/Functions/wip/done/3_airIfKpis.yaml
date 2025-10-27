@@ -8,7 +8,419 @@ paths:
 #   Service Layer - Individual Part
 ########################################################################################################################
 
-
+  /p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output:
+    post:
+      operationId: p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
+      summary: >
+        'Sends relevant AirInterface information to CapacityCalculator to derive 15min capacity KPIs. Either
+        - input is read directly from memory (requestBody with dataHandle), and KPIs are written back directly to memory
+        - or requestBody contains the relevant input and response contains the computed KPIs'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              oneOf:
+                - description: 'dataHandle for direct memory read/write'
+                  required:
+                    - data-handle
+                  properties:
+                    data-handle:
+                      type: string
+                      description: >
+                        'This dataHandle points directly to the [/data-structure-for-processing/output] from where the required data from output.air-interface-list is read.'
+                - description: 'required data for external usage (no direct read/write)'
+                  properties:
+                    output:
+                      description: >
+                        'If the function shall not run on the data in the memory directly, the required data has to be provided as input.
+                        Note that input data follows the schema of [/data-structure-for-processing/output], but only relevant attributes are listed.' 
+                      type: object
+                      properties:
+                        air-interface-list:
+                          description: >
+                            'The air-interface-list with the attributes relevant for capacity calculation.'
+                          type: array
+                          items:
+                            properties:
+                              air-interface-identifiers:
+                                type: object
+                                properties:
+                                  logical-termination-point-id:
+                                    type: string
+                              air-interface-configuration:
+                                type: object
+                                properties:
+                                  configured-modulation-minimum:
+                                    type: object
+                                    properties:
+                                      name-at-lct:
+                                        type: string
+                                      configured-capacity-minimum:
+                                        type: integer
+                                  configured-modulation-maximum:
+                                    type: object
+                                    properties:
+                                      name-at-lct:
+                                        type: string
+                                      configured-capacity-maximum:
+                                        type: integer
+                              air-interface-performance-measurements-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    period-end-time:
+                                      type: string
+                                    operated-transmission-modes-list: 
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode-name:
+                                            type: string
+                                          time:
+                                            type: integer
+                              transmission-mode-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    transmission-mode-name:
+                                      type: string
+                                    number-of-states:
+                                      type: integer
+                                    modulation-scheme-name-at-lct:
+                                      type: string
+                                    channel-bandwidth:
+                                      type: integer
+                                    code-rate:
+                                      type: integer
+                                    symbol-rate-reduction-factor:
+                                      type: integer
+      responses:
+        '200':
+          description: 'AirInterface KPI values provided for external usage'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  air-interface-list:
+                    description: >
+                      'The returned air-interface data with computed KPIs in case of external usage (no dataHandle option)
+                      from {InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCacaAndWritingOrReturningData.getKpis.response.body#air-interface-list}'
+                    type: array
+                    items:
+                      properties:
+                        air-interface-identifiers:
+                          type: object
+                          properties:
+                            logical-termination-point-id:
+                              type: string
+                        air-interface-configuration:
+                          type: object
+                          properties:
+                            configured-modulation-minimum:
+                              type: object
+                              properties:
+                                name-at-lct:
+                                  type: string
+                                configured-capacity-minimum:
+                                  type: integer
+                                  description: >
+                                    'Computed Channel capacity KPI of the configured minimum modulation scheme (in kbps), -1 if no value could be computed'
+                            configured-modulation-maximum:
+                              type: object
+                              properties:
+                                name-at-lct:
+                                  type: string
+                                configured-capacity-maximum:
+                                  type: integer
+                                  description: 'Computed Channel capacity KPI of the configured maximum modulation scheme (in kbps), -1 if no value could be computed'
+                        air-interface-performance-measurements-list:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              period-end-time:
+                                type: string
+                              operated-transmission-modes-list: 
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    transmission-mode-name:
+                                      type: string
+                                    capacity:
+                                      type: integer
+                                      description: 'Computed Channel capacity KPI of the modulation scheme (in kbps), -1 if no value could be computed'
+        '204':
+          description: 'AirInterface capacity KPIs written to [/data-structure-for-processing/output]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
+          readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
+            description: 'Directly read the relevant data from DPMDP memory for the output object identified by id
+              from {$request.body#data-handle}'
+            get:
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing/Output read'
+                  content:
+                    application/json:
+                      schema:
+                        description: 'Only relevant attributes listed'
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                type: array
+                                items:
+                                  properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        logical-termination-point-id:
+                                          type: string
+                                    air-interface-configuration:
+                                      type: object
+                                      properties:
+                                        configured-modulation-minimum:
+                                          type: object
+                                          properties:
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-minimum:
+                                              type: integer
+                                        configured-modulation-maximum:
+                                          type: object
+                                          properties:
+                                            name-at-lct:
+                                              type: string
+                                            configured-capacity-maximum:
+                                              type: integer
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          period-end-time:
+                                            type: string
+                                          operated-transmission-modes-list: 
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                transmission-mode-name:
+                                                  type: string
+                                                time:
+                                                  type: integer
+                                    transmission-mode-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode-name:
+                                            type: string
+                                          number-of-states:
+                                            type: integer
+                                          modulation-scheme-name-at-lct:
+                                            type: string
+                                          channel-bandwidth:
+                                            type: integer
+                                          code-rate:
+                                            type: integer
+                                          symbol-rate-reduction-factor:
+                                            type: integer
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCacaAndWritingOrReturningData:
+          getKpis: #[Caca_remoteIpAddress][Caca_remotePort][/v1/compute-air-interface-capacity-kpis-for-list-of-air-interfaces]
+            description: 'Send the relevant airInterface data to CapacityCalculatorApp for KPI calculation'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        air-interface-list:
+                          description: >
+                            'The air-interface-list with the attributes relevant for capacity calculation
+                            from
+                              - {$InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput.readInputFromMemory.response.body#output/air-interface-list} in case {$request.body} was provided with data-handle
+                              - {$request.body#air-interface-list} in case the input data was provided in the requestBody'
+                          type: array
+                          items:
+                            properties:
+                              air-interface-identifiers:
+                                type: object
+                                properties:
+                                  logical-termination-point-id:
+                                    type: string
+                              air-interface-configuration:
+                                type: object
+                                properties:
+                                  configured-modulation-minimum:
+                                    type: object
+                                    properties:
+                                      name-at-lct:
+                                        type: string
+                                      configured-capacity-minimum:
+                                        type: integer
+                                  configured-modulation-maximum:
+                                    type: object
+                                    properties:
+                                      name-at-lct:
+                                        type: string
+                                      configured-capacity-maximum:
+                                        type: integer
+                              air-interface-performance-measurements-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    period-end-time:
+                                      type: string
+                                    operated-transmission-modes-list: 
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          transmission-mode-name:
+                                            type: string
+                                          time:
+                                            type: integer
+                              transmission-mode-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    transmission-mode-name:
+                                      type: string
+                                    number-of-states:
+                                      type: integer
+                                    modulation-scheme-name-at-lct:
+                                      type: string
+                                    channel-bandwidth:
+                                      type: integer
+                                    code-rate:
+                                      type: integer
+                                    symbol-rate-reduction-factor:
+                                      type: integer
+              responses:
+                '200':
+                  description: 'Calculated KPIs received'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          air-interface-list:
+                            type: array
+                            items:
+                              properties:
+                                air-interface-identifiers:
+                                  type: object
+                                  properties:
+                                    logical-termination-point-id:
+                                      type: string
+                                air-interface-configuration:
+                                  type: object
+                                  properties:
+                                    configured-modulation-minimum:
+                                      type: object
+                                      properties:
+                                        name-at-lct:
+                                          type: string
+                                        configured-capacity-minimum:
+                                          type: integer
+                                          description: 'Computed Channel capacity KPI of the configured minimum modulation scheme (in kbps), -1 if no value could be computed'
+                                    configured-modulation-maximum:
+                                      type: object
+                                      properties:
+                                        name-at-lct:
+                                          type: string
+                                        configured-capacity-maximum:
+                                          type: integer
+                                          description: 'Computed Channel capacity KPI of the configured maximum modulation scheme (in kbps), -1 if no value could be computed'
+                                air-interface-performance-measurements-list:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      period-end-time:
+                                        type: string
+                                      operated-transmission-modes-list: 
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            transmission-mode-name:
+                                              type: string
+                                            capacity:
+                                              type: integer
+                                              description: 'Computed Channel capacity KPI of the modulation scheme (in kbps), -1 if no value could be computed'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          updateDataInMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
+            description: >
+              'This is carried out for the dataHandle option. Changes are written directly to the attributes.
+              The attribute values are to be updated according to attributes in {$InquiringFor15minAirInterfaceCapacityKpiCalculationCausesCallingCacaAndWritingOrReturningData.getKPIs.response.body}.
+              The changes are to be written directly into the [/data-structure-for-processing/output] object in memory identified by {$request.body#data-handle}'
+            patch:
+              responses:
+                '204':
+                  description: 'Computed AirInterface KPI values written directly to [/data-structure-for-processing/output]'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
 
 
 ########################################################################################################################

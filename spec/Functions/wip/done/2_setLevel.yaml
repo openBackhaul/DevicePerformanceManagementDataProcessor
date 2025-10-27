@@ -12,7 +12,7 @@ paths:
     post:
       operationId: p1SetOutOfLevelValuesToDefaultInDsfpOutput
       summary: >
-        'Replaces out-of-range level attribute values. either
+        'Replaces out-of-range level attribute values. Either
         - input is read directly from memory (requestBody with dataHandle), and written back directly to memory
         - or requestBody contains the relevant input and response returns the changed output'
       tags:
@@ -32,12 +32,12 @@ paths:
                       type: string
                       description: >
                         'This dataHandle points directly to the [/data-structure-for-processing/output] from where the required data from output.air-interface-list is read.'
-                - description: 'required data for not direct memory read/write usage'
+                - description: 'required data for external usage (no direct read/write)'
                   properties:
                     output:
                       description: >
                         'If the function shall not run on the data in the memory directly, the required data has to be provided as input.
-                        Note that only relevant fields follow the schema of [/data-structure-for-processing/output], but only relevant attributes are listed.' 
+                        Note that input data follows the schema of [/data-structure-for-processing/output], but only relevant attributes are listed.' 
                       type: object
                       properties:
                         air-interface-list:
@@ -64,7 +64,38 @@ paths:
       responses:
         '200':
           description: 'Dataset with updated values provided'
-          #todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  output:
+                    type: object
+                    properties:
+                      air-interface-list:
+                        description: >
+                          'Only relevant attributes from [/data-for-processing/output]-schema listed
+                          from {$SettingOutOfRangeLevelValuesToDefaultCausesWritingToDsfpOutputOrReturningChangedData.returnDataNonHandle.response.body#air-interface-list}'
+                        type: array
+                        items:
+                          properties:
+                            air-interface-performance-measurements-list:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  transmit-level-minimum:
+                                    type: integer
+                                  transmit-level-maximum:
+                                    type: integer
+                                  transmit-level-average:
+                                    type: integer
+                                  receive-level-minimum:
+                                    type: integer
+                                  receive-level-maximum:
+                                    type: integer
+                                  receive-level-average:
+                                    type: integer
         '204':
           description: 'Out-of-range level values set to defaults in [/data-structure-for-processing/output] (dataHandle option)'
         '400':
