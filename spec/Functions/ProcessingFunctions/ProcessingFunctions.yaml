@@ -1632,7 +1632,124 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-  #timestamp function todo
+  /p1/set-most-recent-timestamp-in-device-table:
+    post:
+      operationId: p1SetMostRecentTimestampInDeviceTable
+      summary: 'Reads and traverses a DsfpOutput object and writes the newest timestamp for each found interface to the DPMDP device table'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data-handle:
+                  type: string
+                  description: >
+                    'This dataHandle points directly to the [/data-structure-for-processing/output]
+                    from where the required data from output is read.'
+      responses:
+        '204':
+          description: 'MostRecentTimestamps written to DMDP deviceTable.'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput:
+          ReadDsfpOutputFromMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
+            description: >
+              'Directly read the data from DPMDP memory for the output object identified by id
+              from {$request.body#data-handle}'
+            get:
+              responses:
+                '200':
+                  description: 'DsfpOutput read from memory. Only relevant attributes listed.'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          output:
+                            type: object
+                            properties:
+                              air-interface-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        mount-name:
+                                          type: string
+                                        logical-termination-point-id:
+                                          type: string
+                                          description: 'The LTP id is used to identify the interface instance for the mount-name in the DPDMP deviceTable'
+                                    air-interface-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                         period-end-time:
+                                            type: string
+                                            description: >
+                                              'Only the record with the newest period-end-time per interface instance is relevant, the others can be discarded'
+                              ethernet-container-list:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    ethernet-container-identifiers:
+                                      type: object
+                                      properties:
+                                        mount-name:
+                                          type: string
+                                        logical-termination-point-id:
+                                          type: string
+                                          description: 'The LTP id is used to identify the interface instance for the mount-name in the DPDMP deviceTable'
+                                    ethernet-container-performance-measurements-list:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          period-end-time:
+                                            type: string
+                                            description: >
+                                              'Only the record with the newest period-end-time per interface instance is relevant, the others can be discarded'                                            type: string
+          SetMostRecentTimestamp: #[dpmdpIpAddress][dpmdpPort][internal-memory: device-table]
+            description: >
+              'For every interface instance found in the read input data
+              from {$SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput.ReadDsfpOutputFromMemory}
+              write one record to the DPMDP deviceTable with the newest found period-end-time:
+                mount-name, logical-termination-point-id, period-end-time
+              Already existing entries are overwritten with the new period-end-time.'
+            patch:
+              responses:
+                '204':
+                  description: 'DPMDP deviceTable entries added'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
 
   #--- functions for internal and external usage ------------
   /p1/set-out-of-range-level-values-to-default-in-dsfp-output:
@@ -1740,7 +1857,8 @@ paths:
       callbacks:
         SettingOutOfRangeLevelValuesToDefaultCausesReadingFromDsfpOutput:
           getData: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
-            description: 'Directly read the data from DPMDP memory for the output object identified by id
+            description: >
+              'Directly read the data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle}'
             get:
               responses:
@@ -2052,7 +2170,8 @@ paths:
       callbacks:
         InquiringFor15minAirIfCapacityKpiCalculationCausesReadingFromDsfpOutput:
           readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the relevant data from DPMDP memory for the output object identified by id
+            description: >
+              'Directly read the relevant data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle} (in case data-handle instead of data was provided in {$request.body})'
             get:
               responses:
@@ -2414,7 +2533,8 @@ paths:
       callbacks:
         InquiringFor15minEthContainerKpiCalculationCausesReadingFromDsfpOutput:
           readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the relevant data from DPMDP memory for the output object identified by id
+            description: >
+              'Directly read the relevant data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle} (in case data-handle instead of data was provided in {$request.body})'
             get:
               responses:
@@ -3201,7 +3321,8 @@ paths:
       callbacks:
         FunctionForReplacingOnfDefaultValuesCausesReadingDsfpOutput:
           readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
-            description: 'Directly read the data from DPMDP memory for the output object identified by id
+            description: >
+              'Directly read the data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle} (in case data-handle instead of data was provided in {$request.body})'
             get:
               responses:
