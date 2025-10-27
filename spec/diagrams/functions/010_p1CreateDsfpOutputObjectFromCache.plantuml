@@ -64,12 +64,11 @@ note over create
 end note
 
 note over create
-<u>Create output object</u>
+<u>CreateAndReturnDsfpOutput</u>
   From the gathered data, the output object is created.
   The output schema is from DataStructureForProcessing.output.
   KPI attributes are already included, but filled with default value -1.
-
-<u>Return the DsfpOutput object</u>
+  Return the created DsfpOutput.
 end note
 create --> requestor: {DsfpOutput}
 

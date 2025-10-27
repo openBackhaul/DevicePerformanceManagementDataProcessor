@@ -9,17 +9,25 @@ participant "MWDI" as mwdi
 participant "DPMDP" as dpmdp
 participant "p1ProcessingOrchestrator" as po #LightBlue
 participant "MWDI://v1/provide-device-status-metadata" as devType
-participant "p1CreateDsfpOutputObjectFromCacheData" as createDsfp #LightBlue
-participant "p1SetOutOfLevelValuesToDefaultInDsfpOutput" as setLevel #LightBlue
-participant "p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput" as kpiAi #LightBlue
-participant "p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput" as kpiEc #LightBlue
-participant "p1ReplaceOnfDefaultValuesInDsfpOutput" as replaceDef #LightBlue
-participant "p1SetMostRecentTimestampInDeviceTable" as deviceTable #LightBlue
+participant "p1CreateDsfpOutput\nObjectFromCacheData" as createDsfp #LightBlue
+participant "p1SetOutOfLevelValues\nToDefaultInDsfpOutput" as setLevel #LightBlue
+participant "p1Inquire15min\nAirInterfaceKpis]\nFromCacaAndSetInDsfpOutput" as kpiAi #LightBlue
+participant "p1Inquire15min\nEthernetContainerKpis\nFromCacaAndSetInDsfpOutput" as kpiEth #LightBlue
+participant "p1ReplaceOnfDefault\nValuesInDsfpOutput" as replaceDef #LightBlue
+participant "p1SetMostRecentTimestamp\nInDeviceTable" as deviceTable #LightBlue
 
+
+note over mwdi, dpmdp #LightGrey
+Notification can be provided via:
+  - Kafka
+  - or Webhook (subscription to MWDI)
+end note
 
 mwdi -> dpmdp : {counter, timestamp,\nobjectPath, attributeName,\nnewValue}
 dpmdp -> po: {counter, timestamp,\nobjectPath, attributeName,\nnewValue}
 activate po
+
+
 
 note over po
   Identify relevant notifications as:
@@ -32,14 +40,14 @@ note over po
   IF (notification == irrelevant)
     terminate process
   ELSE
-    create DataStructureForProcessing (Dsfp)
+    create [/data-structure-for-processing] (Dsfp),
     fill in values from notification
 end note
 
 note over po
   <u>SetDeviceType</u>
   Read the deviceType from MWDI and set it in
-  Dsfp object
+  Dsfp [/data-structure-for-processing/device-type]
 end note
 po -> devType: {(mountName)}
 devType -> po: {deviceType}
@@ -47,7 +55,11 @@ devType -> po: {deviceType}
 note over po
   <u>SetDsfpOutput</u>
   Read the DsfpOutput object
-  set Dsfp.output = DsfpOutput
+  set [/data-structure-for-processing/output] = DsfpOutput.
+
+  <i>dataHandle</i>: create a dataHandle pointing to the DsfpOutput
+  object in memory for allow direct reading of/writing to
+  DspfOuput from/in memory in subsequent steps.
 end note
 po -> createDsfp: {mountName from objectPath}
 createDsfp --> po: {DsfpOutput}
@@ -55,9 +67,10 @@ createDsfp --> po: {DsfpOutput}
 note over po
   <u>ReplaceOutOfRangeLevelValues</u>
   The executed function replaces out-of-range level values by -1,
-  the received changes are written back to DsfpOutput
+  the received changes are written back to DsfpOutput.
+  (DspfOutput object identified by dataHandle.)
 end note
-po -> setLevel: {DsfpOutput.air-interface-list}
+po -> setLevel: {dataHandle}
 setLevel --> po: {modified DsfpOutput.air-interface-list}
 
 note over po
@@ -67,8 +80,8 @@ note over po
   The computed attribute values are set in
   DsfpOutput.
 end note
-po -> kpiAi: {DsfpOutput.air-interface-list}
-kpiAi --> po: {modified DfspOutput.air-interface-list}
+po -> kpiAi: {dataHandle}
+kpiAi --> po: {computed AirInterace KPIs}
 
 note over po
   <u>SetEthContainerKpis</u>
@@ -77,18 +90,18 @@ note over po
   The computed attribute values are set in
   DsfpOutput.
 end note
-po -> kpiEth: {DsfpOutput.ethernet-container-list}
-kpiEth --> po: {modified DfspOutput.ethernet-container-list}
+po -> kpiEth: {dataHandle}
+kpiEth --> po: {computed EthernetContainer KPIs}
 
 note over po
   <u>ReplaceOnfDefaultValues</u>
-  The executed function replaces ONF default values (-1, "-1") of counter
-  attributes in DsfpOutput
+  The executed function replaces ONF default
+  values (-1, "-1") of counter attributes in DsfpOutput
   - number: null
   - string: emptyString
 end note
-po -> p1ReplaceOnfDefaultValuesInDsfpOutput: {DsfpOutput}
-p1ReplaceOnfDefaultValuesInDsfpOutput --> po: {modified DsfpOutput}
+po -> replaceDef: {dataHandle}
+replaceDef --> po: {modified DsfpOutput}
 
 note over po
   <u>SetMostRecentTimestamps</u>
@@ -96,6 +109,8 @@ note over po
   for each interface from DsfpOutput and writes the
   information into DPMDP's internal deviceTable.
 end note
-po -> p1SetMostRecentTimestampInDeviceTable: {DsfpOutput}
+po -> deviceTable: {dataHandle}
+
+po --> dpmdp: {[/data-structure-for-processing]}
 
 deactivate po

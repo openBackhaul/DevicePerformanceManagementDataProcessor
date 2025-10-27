@@ -7,10 +7,19 @@ end title
 
 participant "requestor" as requestor
 participant "p1SetMostRecentTimestampInDeviceTable" as mostRecentTimestamp #LightBlue
+participant "DPMDP\n(internal memory)" as data
 participant "DPMDP\n(deviceTable)" as deviceTable
 
 activate mostRecentTimestamp
-requestor -> mostRecentTimestamp: {DsfpOutput}
+requestor -> mostRecentTimestamp: {dataHandle}
+
+note over mostRecentTimestamp
+<u>ReadDsfpOutputFromMemory</u>
+Read the DsfpOutput object the dataHandle
+is pointing directly from memory.
+end note
+mostRecentTimestamp -> data: {dataHandle}
+data --> mostRecentTimestamp: {DsfpOutput}
 
 note over mostRecentTimestamp
 <u>SetMostRecentTimestamp</u>
@@ -24,5 +33,6 @@ note over mostRecentTimestamp
 end note
 
 mostRecentTimestamp -> deviceTable: {list-of(mountName, LtpId, mostRecentTimestamp)}
+mostRecentTimestamp --> requestor: 204
 
 deactivate mostRecentTimestamp
