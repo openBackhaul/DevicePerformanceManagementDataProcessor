@@ -38,8 +38,6 @@ paths:
               schema:
                 type: object
                 description: 'The output is only generated if relevant AirInterface and/or EthernetContainer data remains after filtering. Otherwise the 204 is to be returned.'
-                required:
-                  - data-handle
                 properties:
                   data-handle:
                     type: string
@@ -1877,11 +1875,20 @@ paths:
                                 type: array
                                 items:
                                   properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        mount-name:
+                                          type: string
+                                        logical-termination-point-id:
+                                          type: string
                                     air-interface-performance-measurements-list:
                                       type: array
                                       items:
                                         type: object
                                         properties:
+                                          period-end-time:
+                                            type: string
                                           transmit-level-minimum:
                                             type: integer
                                           transmit-level-maximum:
@@ -1927,11 +1934,20 @@ paths:
                                 type: array
                                 items:
                                   properties:
+                                    air-interface-identifiers:
+                                      type: object
+                                      properties:
+                                        mount-name:
+                                          type: string
+                                        logical-termination-point-id:
+                                          type: string
                                     air-interface-performance-measurements-list:
                                       type: array
                                       items:
                                         type: object
                                         properties:
+                                          period-end-time:
+                                            type: string
                                           transmit-level-minimum:
                                             type: integer
                                             description: >

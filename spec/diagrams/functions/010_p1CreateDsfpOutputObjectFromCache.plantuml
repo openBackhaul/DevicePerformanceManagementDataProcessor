@@ -70,6 +70,6 @@ note over create
   KPI attributes are already included, but filled with default value -1.
   Return the created DsfpOutput.
 end note
-create --> requestor: {DsfpOutput}
+create --> requestor: {DsfpOutput, dataHandle}
 
 deactivate create
