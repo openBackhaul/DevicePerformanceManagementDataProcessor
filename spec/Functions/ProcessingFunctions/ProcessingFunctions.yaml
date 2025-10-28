@@ -43,9 +43,7 @@ paths:
                     type: string
                     example: '513250010-2024-03-06T13:00:00+01:00-a0893b37'
                     description: >
-                      'This id is used to uniquely identify the output object in the DPMDP memory.
-                      It is build from the mount-name, the [/data-structure-for-processing/timestamp] and some random part.
-                      The id is not written to [/data-structure-for-processing/output]'
+                      'This id is used to uniquely identify the output object in the DPMDP memory.'
                   output:
                     type: object
                     description: 'This object is written to [/data-structure-for-processing/output]'
@@ -1731,7 +1729,7 @@ paths:
               from {$SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput.ReadDsfpOutputFromMemory}
               write one record to the DPMDP deviceTable with the newest found period-end-time:
                 mount-name, logical-termination-point-id, period-end-time
-              Already existing entries are overwritten with the new period-end-time.'
+              Already existing entries for this mountname/interface are overwritten with the new period-end-time.'
             patch:
               responses:
                 '204':

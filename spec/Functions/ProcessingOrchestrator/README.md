@@ -24,35 +24,39 @@ After having received a new notification for a device (identified by mount-name)
   - or if other notifications for that udpate event have already been received within the *waitingTimeForProcessingNotificationsForSameDevice* timeframe
 
 If the notification is to be processed:  
-(2) DPMDP reads the complete ControlConstruct directly from ElasticSearch (i.e. no REST call) by executing function p1/create-dsfp-output-object-from-cache-data
+(2) DPMDP reads the complete ControlConstruct directly from ElasticSearch (i.e. no REST call) by executing function `/p1/create-dsfp-output-object-from-cache-data`
   - the function filters the data for relevant interfaces: AirInterface and EthernetContainer
   - these interfaces are only added to a potential output object, if they contain 15-min historical performance data, that has not been seen before
   - if no new relevant PM data is found, no output object is created
-  - if relevant new output data is found, the function creates the output object under [/data-structure-for-processing/output] and also creates and returns the *dsfp-output-object-id* for further function calls
+  - if relevant new output data is found, the function creates the output object under [/data-structure-for-processing/output] and also creates and returns the *data-handle* for further function calls
+
+(3) The ProcessingOrchestrator reads the MWDI metadataTable information to retrieve the deviceType.
+  - The deviceType is written to the [/data-structure-for-processing/device-type]
 
 If an output object was created in (2):
-(3) The ProcessingOrchestrator calls /p1/set-out-of-range-level-values-to-default to replace any out-of-range level attribute values in AirInterface data of [/data-structure-for-processing/output].
+(4) The ProcessingOrchestrator calls `/p1/set-out-of-range-level-values-to-default` to replace any out-of-range level attribute values in AirInterface data of [/data-structure-for-processing/output].
   - it reads the output object directly from DPMDP memory and writes updated values directly into it
-  - the relevant output object in the memory is identified by the *dsfp-output-object-id*
+  - the relevant output object in the memory is identified by the *data-handle*
 
-(4) The ProcessingOrchestrator calls /p1/inquire-15min-air-interface-kpis-from-caca for computation of AirInterface KPI values.
-  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *dsfp-output-object-id*
+(5) The ProcessingOrchestrator calls `/p1/inquire-15min-air-interface-kpis-from-caca` for computation of AirInterface KPI values.
+  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *data-handle*
   - it sends this data to the CapacityCalculator app
   - it writes the received KPI attribute values back to [/data-structure-for-processing/output]
 
-(5) The ProcessingOrchestrator calls /p1/inquire-15min-ethernet-container-kpis-from-caca for computation of EthernetContainer KPI values.
-  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *dsfp-output-object-id*
+(6) The ProcessingOrchestrator calls `/p1/inquire-15min-ethernet-container-kpis-from-caca` for computation of EthernetContainer KPI values.
+  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *data-handle*
   - it sends this data to the CapacityCalculator app
   - it writes the received KPI attribute values back to [/data-structure-for-processing/output]
 
-(6) The ProcessingOrchestrator calls /p1/replace-onf-default-values, which replaces all ONF default attribute values of -1 (number) or "-1" (string) by null (number) or empty string (string). KPI attribute values are not changed.  
-Note: the replacement values may change, as they need to be aligned with customers.  
-  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *dsfp-output-object-id*
+(7) The ProcessingOrchestrator calls `/p1/replace-onf-default-values`, which replaces all ONF default attribute values of -1 (number) or "-1" (string) by null (number) or empty string (string). KPI attribute values are not changed.  
+Note: the replacement values may change, as they need to be aligned with customers. Also note that the out-of-range level values are replaced by -1, if the related function is executed. If the ONF default values are replaced afterwards, those attribute values are again changed according to the rules defined for ONF default value replacement.  
+  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *data-handle*
   - it writes changed attribute values back to [/data-structure-for-processing/output]
 
-Further processing steps (functions) may be added later on.
-
-(7) The ProcessingOrchestrator reads the deviceType from MWDI
-(8) The ProcessingOrchestrator creates a new [/data-structure-for-processing] object filled from notification data, the deviceType retrieved in (7) and the output object created during steps (1) to (6).
+(8) The ProcessingOrchestrator calls `/p1/set-most-recent-timestamp-in-device-table` for gathering information about the newest timestamp seen for each relevant AirInterface and EthernetContainer of the processed mount-name.  
+This information is used to filter for relevant new data the next time a notification for the same mount-name is processed.  
+  - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *data-handle*
+  - for each AirInterface and EthernetContainer instance it identifies the mostRecentTimestamp as the newest period-end-time for that interface instance
+  - it writes the mount-name, interface (LtpId) and mostRecentTimestamp to the deviceTable. Already existing entries for that mount-name/interface combination are overwritten.
 
 After all processing steps have been carried out and if a [/data-structure-for-processing/output] object has been created, there is a transition of the [/data-structure-for-processing] from Processing to Transmission. 
