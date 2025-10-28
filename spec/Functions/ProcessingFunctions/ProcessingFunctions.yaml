@@ -1750,9 +1750,9 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
   #--- functions for internal and external usage ------------
-  /p1/set-out-of-range-level-values-to-default-in-dsfp-output:
+  /p1/set-out-of-range-level-values-to-default:
     post:
-      operationId: p1SetOutOfLevelValuesToDefaultInDsfpOutput
+      operationId: p1SetOutOfLevelValuesToDefault
       summary: >
         'Replaces out-of-range level attribute values. Either
         - input is read directly from memory (requestBody with dataHandle), and written back directly to memory
@@ -2019,9 +2019,9 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
 
-  /p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output:
+  /p1/inquire-15min-air-interface-kpis-from-caca:
     post:
-      operationId: p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
+      operationId: p1Inquire15minAirInterfaceKpisFromCaca
       summary: >
         'Sends relevant AirInterface information to CapacityCalculator to derive 15min capacity KPIs. Either
         - input is read directly from memory (requestBody with dataHandle), and KPIs are written back directly to memory
@@ -2435,9 +2435,9 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
 
-  /p1/inquire-15min-ethernet-container-kpis-from-caca-and-set-in-dsfp-output:
+  /p1/inquire-15min-ethernet-container-kpis-from-caca:
     post:
-      operationId: p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
+      operationId: p1Inquire15minEthernetContainerKpisFromCaca
       summary: >
         'Sends relevant EthernetContainer information to CapacityCalculator to derive 15min Ethernet KPIs. Either
         - input is read directly from memory (requestBody with dataHandle), and KPIs are written back directly to memory
@@ -2728,10 +2728,10 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
 
-  /p1/replace-onf-default-values-in-dsfp-output:
+  /p1/replace-onf-default-values:
     # The replacement values have to be agreed upon with customers, for now non-KPI -1 default values will be replaced by null/empty string
     post:
-      operationId: p1ReplaceOnfDefaultValuesInDsfpOutput
+      operationId: p1ReplaceOnfDefaultValues
       summary: >
         'Replaces ONF default values in DataStructureForProcessing output. Either
         - input is read directly from memory (requestBody with dataHandle), and changes are written back directly to memory

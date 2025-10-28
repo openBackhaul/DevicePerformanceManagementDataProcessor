@@ -1,15 +1,12 @@
-@startuml 011_p1SetOutOfRangeLevelValuesToDefaultInDsfpOutput
+@startuml 011_p1SetOutOfRangeLevelValuesToDefault
 skinparam responseMessageBelowArrow true
 
 title
-p1SetOutOfRangeLevelValuesToDefaultInDsfpOutput
-
-<i>SettingOutOfRangeLevelValuesToDefaultCausesReadingFromDsfpOutput</i>
-<i>SettingOutOfRangeLevelValuesToDefaultCausesWritingToDsfpOutputOrReturningChangedData</i>
+p1SetOutOfRangeLevelValuesToDefault
 end title
 
 participant "requestor" as requestor
-participant "p1SetOutOfRangeLevelValuesToDefaultInDsfpOutput" as setLvl #LightBlue
+participant "p1SetOutOfRangeLevelValuesToDefault" as setLvl #LightBlue
 participant "DPMDP\n(internal memory)" as data
 
 activate setLvl

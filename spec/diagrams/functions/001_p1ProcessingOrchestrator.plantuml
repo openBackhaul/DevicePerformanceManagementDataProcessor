@@ -10,10 +10,10 @@ participant "DPMDP" as dpmdp
 participant "p1ProcessingOrchestrator" as po #LightBlue
 participant "MWDI://v1/provide-device-status-metadata" as devType
 participant "p1CreateDsfpOutput\nObjectFromCacheData" as createDsfp #LightBlue
-participant "p1SetOutOfLevelValues\nToDefaultInDsfpOutput" as setLevel #LightBlue
-participant "p1Inquire15min\nAirInterfaceKpis]\nFromCacaAndSetInDsfpOutput" as kpiAi #LightBlue
-participant "p1Inquire15min\nEthernetContainerKpis\nFromCacaAndSetInDsfpOutput" as kpiEth #LightBlue
-participant "p1ReplaceOnfDefault\nValuesInDsfpOutput" as replaceDef #LightBlue
+participant "p1SetOutOfLevelValues\nToDefault" as setLevel #LightBlue
+participant "p1Inquire15min\nAirInterfaceKpis\nFromCaca" as kpiAi #LightBlue
+participant "p1Inquire15min\nEthernetContainerKpis\nFromCaca" as kpiEth #LightBlue
+participant "p1ReplaceOnfDefaultValues" as replaceDef #LightBlue
 participant "p1SetMostRecentTimestamp\nInDeviceTable" as deviceTable #LightBlue
 
 

@@ -76,7 +76,7 @@ There is no response. Data is written directly into DPMDP's deviceTable.
 
 ---  
 
-### p1SetOutOfLevelValuesToDefaultInDsfpOutput
+### p1SetOutOfLevelValuesToDefault
 
 This function replaces invalid level values of AirInterface attributes.  
 The level values should be withing the following expected ranges, otherwise they are considered out-of-range:
@@ -115,7 +115,7 @@ Changes are either directly written to [/data-structure-for-processing/output] (
 
 ---  
 
-### p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
+### p1Inquire15minAirInterfaceKpisFromCaca
 
 This function sends AirInterface data to the CapacityCalculator app for getting capacity KPI values.
 
@@ -150,7 +150,7 @@ Changes are either directly written to [/data-structure-for-processing/output] (
 
 ---  
 
-### p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
+### p1Inquire15minEthernetContainerKpisFromCaca
 
 This function sends EthernetContainer data to the CapacityCalculator app for getting Ethernet KPI values.
 
@@ -186,7 +186,7 @@ Changes are either directly written to [/data-structure-for-processing/output] (
 
 ---  
 
-### p1ReplaceOnfDefaultValuesinDsfpOutput
+### p1ReplaceOnfDefaultValues
 
 This function replaces ONF default attribute values of -1 (number) or "-1" (string) and replaces them with null (numbers) or empty string (string). For KPI attributes -1 values are not replaced.  
 

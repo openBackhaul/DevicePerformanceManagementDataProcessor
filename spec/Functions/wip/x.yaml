@@ -1,6 +1,6 @@
-  /p1/set-out-of-range-level-values-to-default-in-dsfp-output:
+  /p1/set-out-of-range-level-values-to-default:
     post:
-      operationId: p1SetOutOfLevelValuesToDefaultInDsfpOutput
+      operationId: p1SetOutOfLevelValuesToDefault
       summary: >
         'Replaces out-of-range level attribute values. Either
         - input is read directly from memory (requestBody with dataHandle), and written back directly to memory

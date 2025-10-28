@@ -120,13 +120,13 @@ paths:
                           example:
                             - function-name: 'p1CreateDsfpOutputObjectFromCacheData'
                               response-code: 200
-                            - function-name: 'p1SetOutOfRangeLevelValuesToDefaultInDsfpOutput'
+                            - function-name: 'p1SetOutOfRangeLevelValuesToDefault'
                               response-code: 204
-                            - function-name: 'p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput'
+                            - function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
                               response-code: 204
-                            - function-name: 'p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput'
+                            - function-name: 'p1Inquire15minEthernetContainerKpisFromCaca'
                               response-code: 204
-                            - function-name: 'p1ReplaceOnfDefaultValuesInDsfpOutput'
+                            - function-name: 'p1ReplaceOnfDefaultValues'
                               response-code: 204
                             - function-name: 'p1SetMostRecentTimestampInDeviceTable'
                               response-code: 500
@@ -220,13 +220,13 @@ paths:
                                 example:
                                   - function-name: 'p1CreateDsfpOutputObjectFromCacheData'
                                     response-code: 200
-                                  - function-name: 'p1SetOutOfRangeLevelValuesToDefaultInDsfpOutput'
+                                  - function-name: 'p1SetOutOfRangeLevelValuesToDefault'
                                     response-code: 204
-                                  - function-name: 'p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput'
+                                  - function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
                                     response-code: 204
-                                  - function-name: 'p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput'
+                                  - function-name: 'p1Inquire15minEthernetContainerKpisFromCaca'
                                     response-code: 204
-                                  - function-name: 'p1ReplaceOnfDefaultValuesInDsfpOutput'
+                                  - function-name: 'p1ReplaceOnfDefaultValues'
                                     response-code: 204
                                   - function-name: 'p1SetMostRecentTimestampInDeviceTable'
                                     response-code: 500
@@ -342,7 +342,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         ProcessingOrchestratorCausesReplacingOutOfRangeLevelValues:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/set-out-of-range-level-values-to-default-in-dsfp-output]
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/set-out-of-range-level-values-to-default]
             description: >
               'This callback receives the complete air-interface-list from the'
             post:
@@ -383,7 +383,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         ProcessingOrchestratorCausesInquiringAirIfKpis:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output]
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-air-interface-kpis-from-caca]
             post:
               requestBody:
                 content:
@@ -537,7 +537,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         ProcessingOrchestratorCausesCallingSetOutOfRangeLevelValuesFunction:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/set-out-of-range-level-values-to-default-in-dsfp-output]
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/set-out-of-range-level-values-to-default]
             post:
               requestBody:
                 content:
@@ -566,7 +566,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         ProcessingOrchestratorCausesCallingInquiringForAirInterfaceKpisFunction:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-air-interface-kpis-from-caca-and-set-in-dsfp-output]
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-air-interface-kpis-from-caca]
             post:
               requestBody:
                 content:
@@ -595,7 +595,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         ProcessingOrchestratorCausesCallingInquiringForEthernetContainerKpisFunction:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-ethernet-container-kpis-from-caca-and-set-in-dsfp-output]
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-ethernet-container-kpis-from-caca]
             post:
               requestBody:
                 content:
@@ -624,7 +624,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         ProcessingOrchestratorCausesCallingReplaceOnfDefaultValuesFunction:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/replace-onf-default-values-in-dsfp-output]
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/replace-onf-default-values]
             post:
               requestBody:
                 content:

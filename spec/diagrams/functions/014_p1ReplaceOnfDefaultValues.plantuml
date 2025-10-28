@@ -1,12 +1,12 @@
-@startuml 014_p1ReplaceOnfDefaultValuesInDsfpOutput
+@startuml 014_p1ReplaceOnfDefaultValues
 skinparam responseMessageBelowArrow true
 
 title
-p1ReplaceOnfDefaultValuesInDsfpOutput
+p1ReplaceOnfDefaultValues
 end title
 
 participant "requestor" as requestor
-participant "p1ReplaceOnfDefaultValuesInDsfpOutput" as replace #LightBlue
+participant "p1ReplaceOnfDefaultValues" as replace #LightBlue
 participant "DPMDP\n(internal memory)" as data
 
 activate replace
