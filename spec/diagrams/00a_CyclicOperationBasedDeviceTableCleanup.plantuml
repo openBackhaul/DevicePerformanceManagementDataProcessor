@@ -1,4 +1,4 @@
-@startuml 00x_CyclicOperationBasedDeviceTableCleanup
+@startuml 00a_CyclicOperationBasedDeviceTableCleanup
 skinparam responseMessageBelowArrow true
 
 title

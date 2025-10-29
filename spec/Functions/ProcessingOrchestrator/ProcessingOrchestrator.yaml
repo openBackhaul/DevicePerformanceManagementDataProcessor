@@ -90,6 +90,11 @@ paths:
                         description: >
                           'newValue from the initial notification
                           from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
+                      mount-name:
+                        type: string
+                        description: >
+                          'The name of the device to be extracted
+                          {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
                       device-type:
                         type: string
                         description: >
@@ -134,6 +139,8 @@ paths:
                           updated:
                           from {$ProcessingOrchestratorCausesCreatingDsfpOutput.response.body}
                           TODO - callbacks ergänzen'
+        '204':
+          description: 'Detected irrelevant notification'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -190,6 +197,11 @@ paths:
                               description: >
                                 'newValue from the initial notification
                                 from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
+                            mount-name:
+                              type: string
+                              description: >
+                                'The mount-name of the device, extracted
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
                             device-type:
                               type: string
                               description: >

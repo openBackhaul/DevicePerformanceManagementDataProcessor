@@ -4,6 +4,7 @@ data-structure-for-processing:
     - object-path
     - attribute-name
     - new-value
+    - mount-name
     - device-type
     - processing
     - input
@@ -18,6 +19,9 @@ data-structure-for-processing:
     object-path:
       type: string
       description: 'objectPath from the initial notification'
+    mount-name:
+      type: string
+      description: 'mountName, extracted from objectPath of the initial notification'
     attribute-name:
       type: string
       description: 'attributeName from the initial notification'

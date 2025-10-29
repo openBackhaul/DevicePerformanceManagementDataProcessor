@@ -29,7 +29,7 @@ activate po
 
 
 
-note over po
+note over po #LightSalmon
   Identify relevant notifications as:
   - IF (attributeName == 'timeOfLatestChange')
     AND (objectPath contains 'air-interface-historical-performances'
@@ -39,6 +39,11 @@ note over po
 
   IF (notification == irrelevant)
     terminate process
+end note
+
+po --> dpmdp: 204
+
+note over po #LightSalmon
   ELSE
     create [/data-structure-for-processing] (Dsfp),
     fill in values from notification
@@ -111,6 +116,6 @@ note over po
 end note
 po -> deviceTable: {dataHandle}
 
-po --> dpmdp: {[/data-structure-for-processing]}
+po --> dpmdp: 200, {[/data-structure-for-processing]}
 
 deactivate po

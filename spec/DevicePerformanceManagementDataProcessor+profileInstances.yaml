@@ -175,3 +175,25 @@ profile-instances:
       maximum: 48
     configuration:
       integer-value: 48
+
+  - profile-name: 'IntegerProfile'
+    uuid: 'dpmdp-1-0-0-integer-p-003'
+    capability:
+      integer-name: 'dataStoreCleanupPeriod'
+      purpose: 'Time period for cleaning up expired entries in [/processing-orchestrator/data-store]'
+      unit: hour
+      minimum: 1
+      maximum: 24
+    configuration:
+      integer-value: 24
+
+  - profile-name: 'IntegerProfile'
+    uuid: 'dpmdp-1-0-0-integer-p-004'
+    capability:
+      integer-name: 'dataStoreRetentionPeriod'
+      purpose: 'Time period for which items are kept in the [/processing-orchestrator/data-store]'
+      unit: hour
+      minimum: 1
+      maximum: 96
+    configuration:
+      integer-value: 96
