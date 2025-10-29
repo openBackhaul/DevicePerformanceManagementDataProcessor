@@ -1,4 +1,4 @@
-  /v1/regard-device-attribute-value-change:
+  /v1/regard-attribute-value-change:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
@@ -91,7 +91,7 @@
               responses:
                 '200':
                   description: >
-                    'IF this callback is called from /v1/regard-device-attribute-value-change
+                    'IF this callback is called from /v1/regard-attribute-value-change
                       THEN REQUEST_BODY = {$request.body}
                     ELSE IF this callback is called from PromptForEmbeddingCausesCyclicNotificationProcessingToApplyDeviceAttributeValueChange
                       THEN REQUEST_BODY = {$PromptForEmbeddingCausesCyclicNotificationProcessingToApplyDeviceAttributeValueChange.applyDeviceAttributeValueChange.request.body}
@@ -119,7 +119,7 @@
                   application/json:
                     schema:
                       description: >
-                        'IF this callback is called from /v1/regard-device-attribute-value-change
+                        'IF this callback is called from /v1/regard-attribute-value-change
                           THEN REQUEST_BODY = {$request.body}
                         ELSE IF this callback is called from PromptForEmbeddingCausesCyclicNotificationProcessingToApplyDeviceAttributeValueChange
                           THEN REQUEST_BODY = {$PromptForEmbeddingCausesCyclicNotificationProcessingToApplyDeviceAttributeValueChange.applyDeviceAttributeValueChange.request.body}

@@ -1,0 +1,36 @@
+@startuml 00x_CyclicOperationBasedDeviceTableCleanup
+skinparam responseMessageBelowArrow true
+
+title
+PromptForEmbeddingCausesCyclicOperationBasedDeviceTableCleanup
+end title
+
+participant "RO" as ro
+participant "DPMDP://v1/embed-yourself" as dpmdp
+participant "DPMDP\n(deviceTable)" as dt
+
+ro -> dpmdp
+activate dpmdp
+
+'general info
+note over dpmdp
+<b>Cyclic operation starts</b>
+ cleanup expired entries from
+ DPMDP deviceTable, time interval
+ configured in integerProfile
+ <i>deviceTableCleanupPeriod</i>
+end note
+
+'read the deviceTable
+note over dpmdp
+  Read the deviceTable entries
+  and delete every entry where
+  the mostRecentTimestamp is older
+  as allowed in integerProfile
+  <i>deviceTableRetentionPeriod</i>
+end note
+dpmdp -> dt: delete expired entries
+
+deactivate dpmdp
+
+@enduml

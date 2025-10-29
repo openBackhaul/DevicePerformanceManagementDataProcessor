@@ -132,6 +132,17 @@ profile-instances:
     configuration:
       string-value: 'on'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-002'
+    capability:
+      string-name: 'mwdiNotificationSubscriptionSwitch'
+      enumeration:
+        - 'on'
+        - 'off'
+      #description: 'This profileInstance allows toggeling the subscription to notifications from MWDI on/off. Default is off.'
+    configuration:
+      string-value: 'off'
+
   - profile-name: 'IntegerProfile'
     uuid: 'dpmdp-1-0-0-integer-p-000'
     capability:
@@ -142,3 +153,25 @@ profile-instances:
       maximum: 180
     configuration:
       integer-value: 60
+
+  - profile-name: 'IntegerProfile'
+    uuid: 'dpmdp-1-0-0-integer-p-001'
+    capability:
+      integer-name: 'deviceTableCleanupPeriod'
+      purpose: 'Time period for cleaning up expired entries in the DPMDP deviceTable'
+      unit: hour
+      minimum: 1
+      maximum: 24
+    configuration:
+      integer-value: 24
+
+  - profile-name: 'IntegerProfile'
+    uuid: 'dpmdp-1-0-0-integer-p-002'
+    capability:
+      integer-name: 'deviceTableRetentionPeriod'
+      purpose: 'Time period for which entries are kept in the deviceTable without an update of mostRecentTimestamp'
+      unit: hour
+      minimum: 1
+      maximum: 48
+    configuration:
+      integer-value: 48

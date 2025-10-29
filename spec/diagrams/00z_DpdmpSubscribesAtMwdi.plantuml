@@ -1,0 +1,26 @@
+@startuml 01z_DpmdpSubscribesAtMwdi
+skinparam responseMessageBelowArrow true
+
+title 
+  PromptForEmbeddingCausesSubscribingForAvcNotificationsAtMwdi
+end title
+
+participant "RO" as ro
+participant "DPMDP://v1/embed-yourself" as dpmdp
+participant "DPMDP://v1/regard-attribute-value-changes" as receiver
+participant "MWDI://v1/notify-attribute-value-changes" as mwdi
+
+
+ro -> dpmdp
+activate dpmdp
+
+note over dpmdp
+IF <i>mwdiNotificationSubscriptionSwitch</i>=='on'
+THEN
+  subscribe for attribute value change notifications
+  (indicate an update of historical performances),
+end note
+dpmdp -> mwdi: {ownIp, ownPort, ownReceiveOperation} (apiKeyAuth)
+mwdi -> receiver: {notifications} (apiKeyAuth)
+
+@enduml

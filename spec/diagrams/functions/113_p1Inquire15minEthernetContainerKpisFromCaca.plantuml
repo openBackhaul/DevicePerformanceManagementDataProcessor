@@ -1,20 +1,23 @@
-@startuml 012_p1Inquire15minAirInterfaceKpisFromCaca
+@startuml 113_p1Inquire15minEthernetContainerKpisFromCaca
 skinparam responseMessageBelowArrow true
 
 title
-p1Inquire15minAirInterfaceKpisFromCaca
+p1Inquire15minEthernetContainerKpisFromCaca
 end title
 
 participant "requestor" as requestor
-participant "p1Inquire15minAirInterfaceKpisFromCaca" as setKpi #LightBlue
+participant "p1Inquire15minEthernetContainerKpisFromCaca" as setKpi #LightBlue
 participant "DPMDP\n(internal memory)" as data
-participant "CaCa://v1/compute-air-interface-capacity-kpis-for-list-of-air-interfaces" as caca
+participant "CaCa://v1/compute-ethernet-container-kpis-for-list-of-air-interfaces" as caca
+
+activate setKpi
+requestor -> setKpi: {DsfpOutput.ethernet-container-list}
 
 note over requestor
   Requestor can hand over either of the two:
   - <b>dataHandle</b>: [DPMDP] this points to the Dsfp.output
     target object directly in the DPMDP memory
-  - <b>DsfpOutput.air-interface-list</b>: [externalUsage] relevant
+  - <b>DsfpOutput.ethernet-container-list</b>: [externalUsage] relevant
     data in the same format as in Dsfp
 end note
 
@@ -28,44 +31,50 @@ note over setKpi
 <u>ReadInputFromMemory</u>
 end note
 setKpi -> data: {dataHandle}
-data --> setKpi: {DsfpOutput/air-interface-list}
+data --> setKpi: {DsfpOutput/ethernet-container-list}
 
 note over setKpi
 <u>GetKpis</u>
-  Send relevant data from DsfpOutput/air-interface-list to CaCa.
+  Send relevant data from DsfpOutput/ethernet-container-list to CaCa.
   CaCa will attempt to compute the capacity KPIs for every
   AirInterface from the list.
   (Where KPI computation failed, CaCa will return -1 as attribute value.)
 end note
-setKpi -> caca: {air-interface-data}
-caca --> setKpi: {air-interface-data with computed KPIs}
+setKpi -> caca: {ethernet-container-data}
+caca --> setKpi: {ethernet-container with computed KPIs}
 
 note over setKpi
 <u>UpdateDataInMemory</u>
   Write the KPI data directly to
   DsfpOutput in memory 
 end note
-setKpi -> data: {air-interface-data with computed KPIs}
+setKpi -> data: {ethernet-container-data with computed KPIs}
 setKpi --> requestor: 204
 
 
 == case 2: external usage == 
 
-requestor -> setKpi: {DsfpOutput/air-interface-list}
+requestor -> setKpi: {DsfpOutput/ethernet-container-list}
 
 note over setKpi
   <u>GetKpis</u>
   Request computed KPIs from CaCa
 end note
-setKpi -> caca: {air-interface-data}
-caca --> setKpi: {air-interface-data with computed KPIs}
+setKpi -> caca: {ethernet-container-data}
+caca --> setKpi: {ethernet-container-data with computed KPIs}
 
 note over setKpi
   <u>ReturnDataNonHandle</u>
     Return the data with computed KPIs
 end note
 
-setKpi --> requestor: 200, {air-interface-data with computed KPIs}
+setKpi --> requestor: 200, {ethernet-container-data with computed KPIs}
+
+
+
+
+
+
 
 
 deactivate setKpi

@@ -236,6 +236,22 @@
           }
         },
         {
+          "uuid": "dpmdp-1-0-0-string-p-002",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mwdiNotificationSubscriptionSwitch",
+              "enumeration": [
+                "on",
+                "off"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "off"
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-0-0-integer-p-000",
           "profile-name": "integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE",
           "integer-profile-1-0:integer-profile-pac": {
@@ -248,6 +264,38 @@
             },
             "integer-profile-configuration": {
               "integer-value": 60
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-integer-p-001",
+          "profile-name": "integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE",
+          "integer-profile-1-0:integer-profile-pac": {
+            "integer-profile-capability": {
+              "integer-name": "deviceTableCleanupPeriod",
+              "purpose": "Time period for cleaning up expired entries in the DPMDP deviceTable",
+              "unit": "hour",
+              "minimum": 1,
+              "maximum": 24
+            },
+            "integer-profile-configuration": {
+              "integer-value": 24
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-integer-p-002",
+          "profile-name": "integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE",
+          "integer-profile-1-0:integer-profile-pac": {
+            "integer-profile-capability": {
+              "integer-name": "deviceTableRetentionPeriod",
+              "purpose": "Time period for which entries are kept in the deviceTable without an update of mostRecentTimestamp",
+              "unit": "hour",
+              "minimum": 1,
+              "maximum": 48
+            },
+            "integer-profile-configuration": {
+              "integer-value": 48
             }
           }
         }
@@ -955,7 +1003,7 @@
                   "user-name": "mwdi",
                   "password": " >>> password <<< "
                 },
-                "topic-name": "mwdi_avcn_notifications",
+                "topic-name": "mwdi_avc_notifications",
                 "client-id": "dpmdp-instance-01",
                 "group-id": "dpmdp-consumer-group"
               },
