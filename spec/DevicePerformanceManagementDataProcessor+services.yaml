@@ -64,11 +64,29 @@ servers:
           uuid: dpmdp-1-0-0-op-s-bs-005
           operation-key: n.a.
       individual:
-        # receipt of MWDI AVCN notifications
+        # receipt of MWDI AVCN notifications trigger processing
         - operation-name: /v1/regard-attribute-value-change
           uuid: dpmdp-1-0-0-op-s-is-000
           operation-key: n.a.
 
+        # read data from DPMDP data store
+        - operation-name: /v1/provide-data-store-item-for-device
+          uuid: dpdmp-1-0-0-op-s-is-020
+          operation-key: n.a.
+        # ggf. später
+        - operation-name: /v1/provide-data-store-item-for-device-interface
+          uuid: dpdmp-1-0-0-op-s-is-021
+          operation-key: n.a.
+
+        # for later
+        #- operation-name: /v1/provide-data-availability-statistics
+        #  uuid: dpdmp-1-0-0-op-s-is-040
+        #  operation-key: n.a.
+
+
+        - operation-name: /v1/provide-dpmdp-device-table
+          uuid: dpmdp-1-0-0-op-is-100
+          operation-key: n.a.
 
 
 

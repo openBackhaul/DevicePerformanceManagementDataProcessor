@@ -1,0 +1,92 @@
+  /v1/provide-dpmdp-device-table:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: provideDpdmpDeviceTable
+      summary: 'Provides the contents of the DPMDP deviceTable'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        description: 'Optionally a mountNameList can be provided to filter the deviceTable output'
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name-list
+              properties:
+                mount-name-list:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      mount-name:
+                        type: string
+              example:
+                mount-name-list:
+                  - '101250001'
+                  - '203251266'
+      responses:
+        '200':
+          description: 'DPMDP deviceTable contents provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  - interface-ltp
+                  - most-recent-timestamp
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The mount-name of a device, part of the table primaryKey. The mount-name-list filter 
+                      from {$request.body#mount-name-list} is to be applied if provided during service call (only mount-names from this list are to be considered, if not found in deviceTable, they are simply ignored).
+                      If not provided, the complete set of mount-names in the table is returned.'
+                  interface-ltp:
+                    type: string
+                    example: 'The logical-termination-point ID (uuid) of the interface, part of the table primaryKey'
+                  most-recent-timestamp:
+                    type: string
+                    description: 'The newest timestamp of this interface in the last processed [/data-structure-for-processing/output] object'
+                example:
+                  - mount-name: '101250001'
+                    interface-ltp: 'ETH-2134646913'
+                    most-recent-timestamp: '2024-03-06T13:00:00+01:00'
+                  - mount-name: '101250001'
+                    interface-ltp: 'RF-2146697744'
+                    most-recent-timestamp: '2024-03-06T14:00:00+01:00'
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+            exec-time:
+              $ref: '#/components/headers/exec-time'
+            backend-time:
+              $ref: '#/components/headers/backend-time'
+            life-cycle-state:
+              $ref: '#/components/headers/life-cycle-state'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-100/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '470':
+          $ref: '#/components/responses/470'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'

@@ -1,0 +1,33 @@
+@startuml 100_ProvideDmpmpDeviceTable
+skinparam responseMessageBelowArrow true
+
+title
+PromptForDpmdpDeviceTableCausesReadingDeviceTableFromMemory
+end title
+
+participant "external" as requestor
+participant "DPMDP://v1/provide-dpmdp-device-table" as dpmdp
+participant "DMPDP\n(deviceTable)" as devTable
+
+requestor -> dpmdp: optional {mountNameList} (BasicAuth)
+activate dpmdp
+
+dpmdp -> devTable: optional {mountNameList} (apiAuthKey)
+note over devTable
+  If the optional mountNameList has
+  been provided, the data from
+  deviceTable is filtered to only
+  contain entries from this mountNameList.
+  (Only mountNames from the deviceTable are
+  contained in the output.)
+
+  PrimaryKey of deviceTable is the combination
+  of mountName + interfaceLtp.
+end note
+devTable --> dpmdp: <i>(filtered)</i> {list-of(mountName, interfaceLtp, mostRecentTimestamp)}
+
+dpmdp --> requestor: <i>(filtered)</i> {list-of(mountName, interfaceLtp, mostRecentTimestamp)}
+
+deactivate dpmdp
+
+@enduml

@@ -26,10 +26,11 @@
                 example:
                   list-of-functions:
                     - p1CreateDsfpOutputObjectFromCache
-                    - p1SetOutOfLevelValuesToDefaultInDsfpOutput
-                    - p1Inquire15minAirInterfaceKpisFromCacaAndSetInDsfpOutput
-                    - p1Inquire15minEthernetContainerKpisFromCacaAndSetInDsfpOutput
-                    - p1ReplaceOnfDefaultValuesinDsfpOutput
+                    - p1SetOutOfLevelValuesToDefault
+                    - p1Inquire15minAirInterfaceKpisFromCaca
+                    - p1Inquire15minEthernetContainerKpisFromCaca
+                    - p1ReplaceOnfDefaultValues
+                    - p1SetMostRecentTimestampInDeviceTable
         '400':
           $ref: '#/components/responses/responseForErroredOamRequests'
         '401':
