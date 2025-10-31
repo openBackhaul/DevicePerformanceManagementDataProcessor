@@ -336,6 +336,26 @@ clients:
 
   # not yet in config file
   - http-client:
+      application-name: DevicePerformanceManagementDataProcessor
+      release-number: 1.0.0
+      uuid: dpmdp-1-0-0-http-c-dpmdp-1-0-0-000
+    tcp-client:
+      remote-protocol: http
+      ip-address: 127.0.0.1
+      tcp-port: 4031
+      uuid: dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000
+    operation-clients:
+      own-oam:
+        basic:
+        individual:
+      service:
+        basic:
+        individual:
+          - operation-name: /v1/provide-device-status-metadata
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
+
+
+  - http-client:
       application-name: MicroWaveDeviceInventory
       release-number: 2.0.1
       uuid: dpmdp-1-0-0-http-c-mwdi-2-0-1-000
@@ -353,3 +373,7 @@ clients:
         individual:
           - operation-name: /v1/provide-device-status-metadata
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
+          - operation-name: /v1/notify-attribute-value-changes
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
+          - operation-name: /v1/end-subscription
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-002

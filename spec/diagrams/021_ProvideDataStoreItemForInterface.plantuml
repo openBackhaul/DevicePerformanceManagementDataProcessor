@@ -6,7 +6,7 @@ PromptForProvidingDataStoreItemForInterfaceCausesReadingDataStore
 end title
 
 participant "external" as requestor
-participant "DPMDP://v1/provide-data-store-item-from-device" as dpmdp
+participant "DPMDP://v1/provide-data-store-item-for-device" as dpmdp
 participant "DMPDP\n([/processor-controller/data-store])" as dataStore
 
 

@@ -8,7 +8,7 @@ end title
 participant "NR://v1/embed-yourself" as NewRelease
 participant "OR://v1/bequeath-your-data-and-die" as OldRelease
 participant "KafkaMessageBroker: \n<i>AttributeValueChangeNotifications</i> topic" as kafka
-participant "NP://v1/end-subscription" as mwdi
+participant "MWDI://v1/end-subscription" as mwdi
 
 NewRelease -> OldRelease
 activate OldRelease

@@ -3,6 +3,8 @@ skinparam responseMessageBelowArrow true
 
 title
 p1ProcessingOrchestrator
+
+<i>ProcessingOrchestratorCausesReadingOfDeviceTypeFromMwdi</i>
 end title
 
 participant "MWDI" as mwdi
