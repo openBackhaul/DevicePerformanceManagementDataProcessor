@@ -446,6 +446,725 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+  /v1/list-functions:
+    post:
+      operationId: v1ListFunctions
+      summary: 'Provides list of identifiers of internal Functions'
+      tags:
+        - IndividualManagement
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: 'List of identifiers of internal Functions provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - list-of-functions
+                properties:
+                  list-of-functions:
+                    type: array
+                    items:
+                      type: string
+                      description: >
+                        'operationId of internal Function
+                        from [/processor-controller/function=*/function-name]'
+                example:
+                  list-of-functions:
+                    - p1CreateDsfpOutputObjectFromCache
+                    - p1SetOutOfLevelValuesToDefault
+                    - p1Inquire15minAirInterfaceKpisFromCaca
+                    - p1Inquire15minEthernetContainerKpisFromCaca
+                    - p1ReplaceOnfDefaultValues
+                    - p1SetMostRecentTimestampInDeviceTable
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+  /v1/list-processing-sequences:
+    post:
+      operationId: v1ListProcessingSequences
+      summary: 'Provides list of operationIds of ProcessingFunctions'
+      tags:
+        - IndividualManagement
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: 'List of operationIds of ProcessingFunctions provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - list-of-trigger-functions
+                properties:
+                  list-of-trigger-functions:
+                    type: array
+                    items:
+                      type: string
+                      description: >
+                        'operationId of ProcessingFunction
+                        from [/processor-controller/validation-sequence=*/_trigger-function]'
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+
+  /v1/regard-attribute-value-change:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: regardDeviceAttributeValueChange
+      summary: 'Receives notifications about changes of values of attributes inside the devices'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - microwave-device-inventory-1-0:attribute-value-changed-notification
+              properties:
+                microwave-device-inventory-1-0:attribute-value-changed-notification:
+                  type: object
+                  required:
+                    - counter
+                    - timestamp
+                    - object-path
+                    - attribute-name
+                    - new-value
+                  properties:
+                    counter:
+                      type: integer
+                      description: 'Sequence number of callbacks sent through this forwarding'
+                    timestamp:
+                      type: string
+                      description: 'Time when the callback is send'
+                    object-path:
+                      type: string
+                      description: 'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value'
+                    attribute-name:
+                      type: string
+                      description: 'Name of the attribute that changed its value'
+                    new-value:
+                      type: string
+                      description: 'New value of the attribute'
+              example:
+                microwave-device-inventory-1-0:attribute-value-changed-notification:
+                  counter: 132
+                  timestamp: '2010-11-20T14:00:00+01:00'
+                  object-path: '/core-model-1-4:network-control-domain=cache/control-construct=513250009/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
+                  attribute-name: 'time-of-latest-change'
+                  new-value: '2010-11-20T13:59:00+01:00'
+      responses:
+        '204':
+          description: 'Notification received'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-000/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '470':
+          $ref: '#/components/responses/470'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        NotifiedDeviceAttributeValueChangeCausesCallingP1ProcessingOrchestrator:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator]
+            description: >
+              'The processingOrchestrator checks the incoming notification for relevance.
+              If relevant, it creates a [/data-structure-for-processing].'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        microwave-device-inventory-1-0:attribute-value-changed-notification:
+                          type: object
+                          properties:
+                            counter:
+                              type: integer
+                              description: >
+                                'The sequence number
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/counter}'
+                            timestamp:
+                              type: string
+                              description: >
+                                'The timestamp
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/timestamp}'
+                            object-path:
+                              type: string
+                              description: >
+                                'The
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+                            attribute-name:
+                              type: string
+                              description: >
+                                'The
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/attribute-name}'
+                            new-value:
+                              type: string
+                              description: >
+                                'The
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
+              responses:
+                '200':
+                  description: 'Data-structure-for-processing created due to notification receipt.'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          data-structure-for-processing:
+                            type: object
+                            properties:
+                              counter:
+                                type: string
+                              timestamp:
+                                type: string
+                              object-path:
+                                type: string
+                              attribute-name:
+                                type: string
+                              new-value:
+                                type: string
+                              mount-name:
+                                type: string
+                              device-type:
+                                type: string
+                              processing:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    function-name:
+                                      type: string
+                                    response-code:
+                                      type: integer
+                              output:
+                                type: object
+                                description: >
+                                  'The output object as specified in T1out_Output.yaml'
+                '204':
+                  description: 'Detected irrelevant notification'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        #NotifiedAttributeValueChangeCausesUpdatingProcessorControllerDataStore
+        #NotifiedAttributeValueChangeCausesProvisioningToKafka
+
+  /v1/provide-data-store-item-for-device:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: provideDataStoreItemForDevice
+      summary: 'Provides the dataStore item for an input device'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name
+              properties:
+                mount-name:
+                  type: string
+                  description: 'The mount-name of the device for which data shall be returned.'
+                timestamp:
+                  type: string
+                  description: 'Optional filter; if provided, the device.lot items shall be filtered for those where x-key (new-value) is newer than the timestamp'
+              example:
+                mount-name: '101250001'
+                timestamp: '2024-03-06T00:00:00+01:00'
+      responses:
+        '200':
+          description: 'DataStore item for device provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - device-item
+                properties:
+                  device-item:
+                    required:
+                      - mount-name
+                      - lot
+                    properties:
+                      mount-name:
+                        type: string
+                        description: > 
+                          'The mountName of the device, matching the mountName
+                          from {$request.body#mount-name}'
+                      lot:
+                        type: array
+                        x-key: new-value
+                        description: >
+                          'The lots contain the processed [/data-structure-for-processing] objects for the given mountName'
+                        items:
+                          type: object
+                          description: >
+                            'If {$request.body#timestamp} provided, only lots with x-key newer than this timestamp contained'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-020/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '470':
+          $ref: '#/components/responses/470'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+  /v1/provide-data-store-item-for-interface:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: provideDataStoreItemForInterface
+      summary: 'Provides the dataStore item for an input device interface'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name
+                - interface-ltp
+              properties:
+                mount-name:
+                  type: string
+                  description: 'The mount-name of the device for which the interface data shall be returned.'
+                interface-ltp:
+                  type: string
+                  description: 'The LTP-ID of the interface for which data shall be returned.'
+                timestamp:
+                  type: string
+                  description: 'Optional filter; if provided, the device.lot items containing the interface data shall be filtered for those where x-key (new-value) is newer than the timestamp'
+              example:
+                mount-name: '123273221'
+                interface-ltp: 'RF-2146697744'
+                timestamp: '2024-03-06T00:00:00+01:00'
+      responses:
+        '200':
+          description: 'DataStore item for device interface provided'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - description: 'air-interface'
+                  type: object
+                  properties:
+                    air-interface:
+                      type: object
+                      description: 'air-interface as item of air-interface-list in [T1out_Output.yaml] schema'
+                - description: 'ethernet-container'
+                  properties:
+                    ethernet-container:
+                      type: object
+                      description: 'ethernet-container as item of ethernet-container-list in [T1out_Output.yaml] schema'
+              examples:
+                air-interface-example:
+                  value:
+                    air-interface:
+                      air-interface-identifiers:
+                        mount-name: '123273221'
+                        link-endpoint-id: '325557888A'
+                        link-id: '325557888'
+                        logical-termination-point-id: 'RF-2146697744'
+                        link-aggregation-identifiers:
+                          - link-id: '325557888'
+                          - interface-name: '325557889'
+                      air-interface-configuration:
+                        configured-atpc-is-on: true
+                        configured-atpc-threshold-upper: 99
+                        configured-atpc-threshold-lower: -45
+                        configured-tx-power: -10
+                        configured-modulation-minimum:
+                          number-of-states: 4
+                          name-at-lct: '4 QAM'
+                          configured-capacity-minimum: 2
+                        configured-modulation-maximum:
+                          number-of-states: 1024
+                          name-at-lct: '1024 QAM'
+                          configured-capacity-maximum: 10
+                      air-interface-performance-measurements-list:
+                        - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                          period-end-time: '2024-03-06T13:00:00+01:00'
+                          transmit-level-minimum: 18
+                          transmit-level-maximum: 22
+                          transmit-level-average: 21
+                          receive-level-minimum: -45
+                          receive-level-maximum: -44
+                          receive-level-average: -44
+                          signal-to-noise-ratio-minimum: 0
+                          signal-to-noise-ratio-maximum: 0
+                          signal-to-noise-ratio-average: 0
+                          cross-polarization-discrimination-minimum: 30
+                          cross-polarization-discrimination-maximum: 31
+                          cross-polarization-discrimination-average: 99
+                          operated-transmission-modes-list:
+                              - transmission-mode-name: '56000-1024-v2'
+                                modulation-scheme-name-at-lct:
+                                time: 897
+                                capacity: 100
+                              - transmission-mode-name: '56000-128-v4'
+                                modulation-scheme-name-at-lct:
+                                time: 3
+                                capacity: 120
+                          interval-capacity: 110
+                          errorred-seconds: 10
+                          severely-errorred-seconds: 2
+                          consecutive-severely-errorred-seconds: 0
+                          total-unavailability: 0
+                          defect-blocks: 2
+                          time-period: 890
+                      transmission-mode-list:
+                        - transmission-mode-name: '56000-1024-v2'
+                          number-of-states: 1024
+                          modulation-scheme-name-at-lct: '1024 QAM'
+                          channel-bandwidth: 56000
+                          code-rate: 94
+                          symbol-rate-reduction-factor: 1
+                        - transmission-mode-name: '7000-16-v2'
+                          number-of-states: 16
+                          modulation-scheme-name-at-lct: '16 QAM'
+                          channel-bandwidth: 7000
+                          code-rate: 86
+                          symbol-rate-reduction-factor: 1
+                ethernet-container-example:
+                  value:
+                    ethernet-container:
+                      ethernet-container-identifiers:
+                        mount-name: '123273221'
+                        interface-name: 'WAN 1/1/1'
+                        logical-termination-point-id: 'ETH-2134646913'
+                      ethernet-container-performance-measurements-list:
+                        - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                          period-end-time: '2024-03-07T00:15:00.0+00:00'
+                          max-bytes-per-second-output: '100'
+                          total-bytes-input: '9324688281'
+                          total-bytes-output: '9800000000'
+                          total-frames-input: '9047677'
+                          total-frames-output: '9901000'
+                          forwarded-frames-input: '500000'
+                          forwarded-frames-output: '510000'
+                          unicast-frames-input: '100000'
+                          unicast-frames-output: '110000'
+                          multicast-frames-input: 51945
+                          multicast-frames-output: 10000
+                          broadcast-frames-input: 15
+                          broadcast-frames-output: 10
+                          fragmented-frames-input: 1300
+                          errored-frames-input: 4000
+                          errored-frames-output: 4001
+                          dropped-frames-input: 5000
+                          dropped-frames-output: 1200
+                          oversized-frames-ingress: '100000'
+                          undersized-frames-ingress: '123000'
+                          jabber-frames-ingress: '123123'
+                          unknown-protocol-frames-input: '124785'
+                          time-period: 899
+                          transmit-traffic: 320
+                          receive-traffic: 250
+                          frame-loss: 12000
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-021/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '204':
+          description: 'No relevant interface data found'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-021/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '470':
+          $ref: '#/components/responses/470'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+
+  /v1/provide-dpmdp-device-table:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: provideDpdmpDeviceTable
+      summary: 'Provides the contents of the DPMDP deviceTable'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        description: 'Optionally a mountNameList can be provided to filter the deviceTable output'
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-name-list
+              properties:
+                mount-name-list:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      mount-name:
+                        type: string
+              example:
+                mount-name-list:
+                  - '101250001'
+                  - '203251266'
+      responses:
+        '200':
+          description: 'DPMDP deviceTable contents provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  - interface-ltp
+                  - most-recent-timestamp
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The mount-name of a device, part of the table primaryKey. The mount-name-list filter 
+                      from {$request.body#mount-name-list} is to be applied if provided during service call (only mount-names from this list are to be considered, if not found in deviceTable, they are simply ignored).
+                      If not provided, the complete set of mount-names in the table is returned.'
+                  interface-ltp:
+                    type: string
+                    example: 'The logical-termination-point ID (uuid) of the interface, part of the table primaryKey'
+                  most-recent-timestamp:
+                    type: string
+                    description: 'The newest timestamp of this interface in the last processed [/data-structure-for-processing/output] object'
+                example:
+                  - mount-name: '101250001'
+                    interface-ltp: 'ETH-2134646913'
+                    most-recent-timestamp: '2024-03-06T13:00:00+01:00'
+                  - mount-name: '101250001'
+                    interface-ltp: 'RF-2146697744'
+                    most-recent-timestamp: '2024-03-06T14:00:00+01:00'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-100/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '470':
+          $ref: '#/components/responses/470'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+
 ########################################################################################################################
 #   Service Layer - Basic Part
 ########################################################################################################################

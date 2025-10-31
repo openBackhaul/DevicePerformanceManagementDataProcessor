@@ -32,12 +32,12 @@ note over dataStore
      In the device item from (1) filter for those lot items
      where <i>lot.x-key</i> == newer than timestamp
 
-  Result: [/processor-controller/data-store/device]
+  Result: a single [/processor-controller/data-store/device]-item
   item containing the relevant lots.
 end note
-dataStore --> dpmdp: (filtered) {[/processor-controller/data-store/device]}
+dataStore --> dpmdp: (filtered) {[/processor-controller/data-store/device]-item}
 
-dpmdp --> requestor: (filtered) {[/processor-controller/data-store/device]}
+dpmdp --> requestor: (filtered) {[/processor-controller/data-store/device]-item}
 
 deactivate dpmdp
 

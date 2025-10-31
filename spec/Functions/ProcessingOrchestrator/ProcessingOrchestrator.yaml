@@ -133,12 +133,8 @@ paths:
                       output:
                         type: object
                         description: >
-                          'The output object generated from processed ControlConstruct data.
-                          Initialized
-                          from {$ProcessingOrchestratorCausesCreatingDsfpOutput.response.body#output},
-                          updated:
-                          from {$ProcessingOrchestratorCausesCreatingDsfpOutput.response.body}
-                          TODO - callbacks ergänzen'
+                          'The output object generated from processed ControlConstruct data,
+                          from {$ProcessingOrchestratorCausesCreatingDsfpOutput.response.body#output}'
         '204':
           description: 'Detected irrelevant notification'
         '400':
@@ -243,7 +239,7 @@ paths:
                                 'The output object generated from processed ControlConstruct data. Intially null, will be set and modified in subsequent steps.'
               responses:
                 '204':
-                  description: '[/Data-structure-for-processing] object created'
+                  description: '[/data-structure-for-processing] object created'
                 '400':
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 '401':
