@@ -426,7 +426,7 @@ paths:
         ProcessingOrchestratorCausesSettingMostRecentTimestampsInDeviceTable:
           url: #[dmpdpIpAddress]:[dpmdpPort][/p1/set-most-recent-timestamp-in-device-table]
             description: >
-              'This callback reads the DsfpOutput data from memory, gathers the mostRecentTimestamp per mountname/interface information and writes it into the DMPDP deviceTable'
+              'This callback reads the DsfpOutput data from memory, gathers the mostRecentTimestamp and number of records/date per mountname/interface information and writes it into the DMPDP deviceTable'
             post:
               requestBody:
                 content:

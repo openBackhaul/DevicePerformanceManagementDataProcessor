@@ -1631,7 +1631,7 @@ paths:
   /p1/set-most-recent-timestamp-in-device-table:
     post:
       operationId: p1SetMostRecentTimestampInDeviceTable
-      summary: 'Reads and traverses a DsfpOutput object and writes the newest timestamp for each found interface to the DPMDP device table'
+      summary: 'Reads and traverses a DsfpOutput object and writes the newest timestamp, and the number of records for the dates from period-end-times for each found interface to the DPMDP device table'
       tags:
         - PrivateServices
       requestBody:
@@ -1722,14 +1722,18 @@ paths:
                                           period-end-time:
                                             type: string
                                             description: >
-                                              'Only the record with the newest period-end-time per interface instance is relevant, the others can be discarded'                                            type: string
+                                              'Only the record with the newest period-end-time per interface instance is relevant for mostRecentTimestamp,
+                                              for the data-availability-statistics they are all relevant'
           SetMostRecentTimestamp: #[dpmdpIpAddress][dpmdpPort][internal-memory: device-table]
             description: >
               'For every interface instance found in the read input data
               from {$SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput.ReadDsfpOutputFromMemory}
               write one record to the DPMDP deviceTable with the newest found period-end-time:
                 mount-name, logical-termination-point-id, period-end-time
-              Already existing entries for this mountname/interface are overwritten with the new period-end-time.'
+              Already existing entries for this mountname/interface are overwritten with the new period-end-time.
+              Also add a new data-availability-statistics entry for this mountName/interface to the deviceTable (with date, numberOfRecords),
+              if there is none for the respective date, or add the numberOfRecords seen in this DSFP object to the already existing numberOfRecords count
+              in the deviceTable, if the date has already been added before.'
             patch:
               responses:
                 '204':

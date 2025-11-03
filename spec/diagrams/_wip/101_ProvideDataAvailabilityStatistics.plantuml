@@ -1,0 +1,29 @@
+@startuml 101_ProvideDataAvailabilityStatistics
+skinparam responseMessageBelowArrow true
+
+title
+PromptForDatavStatisticsCausesReadingDeviceTable
+end title
+
+participant "external" as requestor
+participant "DPMDP://v1/provide-data-availability-statistics" as dpmdp
+participant "DMPDP\n(deviceTable)" as devTable
+
+requestor -> dpmdp: (BasicAuth)
+activate dpmdp
+
+dpmdp -> devTable: (apiAuthKey)
+note over devTable
+  Return entries for all mount-names
+  in the deviceTable.
+  Per mountName and interface combination
+  it contains a list of dates and the
+  number of records per date
+end note
+devTable --> dpmdp: {list-of(mountName, interfaceLtp, list-of(date, numberOfRecords))}
+
+dpmdp --> requestor: {list-of(mountName, interfaceLtp, list-of(date, numberOfRecords))}
+
+deactivate dpmdp
+
+@enduml

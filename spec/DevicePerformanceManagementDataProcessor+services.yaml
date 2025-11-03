@@ -82,12 +82,9 @@ servers:
           uuid: dpmdp-1-0-0-op-is-100
           operation-key: n.a.
 
-        # for later - could possibly use data from deviceTable...
-        #- operation-name: /v1/provide-data-availability-statistics
-        #  uuid: dpdmp-1-0-0-op-s-is-110
-        #  operation-key: n.a.
-
-
+        - operation-name: /v1/provide-data-availability-statistics
+          uuid: dpdmp-1-0-0-op-s-is-110
+          operation-key: n.a.
 
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor

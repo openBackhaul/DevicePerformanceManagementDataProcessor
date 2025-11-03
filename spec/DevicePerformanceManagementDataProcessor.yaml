@@ -1239,6 +1239,7 @@ paths:
                   - mount-name
                   - interface-ltp
                   - most-recent-timestamp
+                  - data-availability-statistics
                 properties:
                   mount-name:
                     type: string
@@ -1252,13 +1253,35 @@ paths:
                   most-recent-timestamp:
                     type: string
                     description: 'The newest timestamp of this interface in the last processed [/data-structure-for-processing/output] object'
+                  data-availability-statistics:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          example: '2024-03-06'
+                          description: 'The date the data was gathered for'
+                        number-of-records:
+                          type: integer
+                          description: 'The number of historical PM records gathered for this date'
                 example:
                   - mount-name: '101250001'
                     interface-ltp: 'ETH-2134646913'
                     most-recent-timestamp: '2024-03-06T13:00:00+01:00'
+                    data-availability-statistics:
+                      - date: '2024-03-05'
+                        number-of-records: 96
+                      - date: '2024-03-06'
+                        number-of-records: 12
                   - mount-name: '101250001'
                     interface-ltp: 'RF-2146697744'
                     most-recent-timestamp: '2024-03-06T14:00:00+01:00'
+                    data-availability-statistics:
+                      - date: '2024-03-05'
+                        number-of-records: 48
+                      - date: '2024-03-06'
+                        number-of-records: 2
           headers:
             x-correlator:
               schema:

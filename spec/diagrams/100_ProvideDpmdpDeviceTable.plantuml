@@ -24,9 +24,9 @@ note over devTable
   PrimaryKey of deviceTable is the combination
   of mountName + interfaceLtp.
 end note
-devTable --> dpmdp: <i>(filtered)</i> {list-of(mountName, interfaceLtp, mostRecentTimestamp)}
+devTable --> dpmdp: <i>(filtered)</i> {list-of(mountName, interfaceLtp, mostRecentTimestamp, list-of(date, numberOfRecords))}
 
-dpmdp --> requestor: <i>(filtered)</i> {list-of(mountName, interfaceLtp, mostRecentTimestamp)}
+dpmdp --> requestor: <i>(filtered)</i> {list-of(mountName, interfaceLtp, mostRecentTimestamp, list-of(date, numberOfRecords))}
 
 deactivate dpmdp
 
