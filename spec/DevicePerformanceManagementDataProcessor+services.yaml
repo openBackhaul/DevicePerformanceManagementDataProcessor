@@ -38,10 +38,10 @@ servers:
         - operation-name: /v1/bequeath-your-data-and-die
           uuid: dpmdp-1-0-0-op-s-im-000
         - operation-name: /v1/list-functions
-          uuid: dpmdp-1-0-0-op-s-im-000
+          uuid: dpmdp-1-0-0-op-s-im-001
           operation-key: n.a.
         - operation-name: /v1/list-processing-sequences
-          uuid: dpmdp-1-0-0-op-s-im-001
+          uuid: dpmdp-1-0-0-op-s-im-002
           operation-key: n.a.
     service:
       basic:

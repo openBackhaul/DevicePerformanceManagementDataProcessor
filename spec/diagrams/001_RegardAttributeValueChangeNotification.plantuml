@@ -2,6 +2,7 @@
 skinparam responseMessageBelowArrow true
 
 title
+NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi
 NotifiedAttributeValueChangeCausesCallingP1ProcessingOrchestrator
 NotifiedAttributeValueChangeCausesUpdatingProcessorControllerDataStore
 NotifiedAttributeValueChangeCausesProvisioningToKafka
@@ -9,6 +10,7 @@ end title
 
 participant "new AVC notification" as notif #LightCyan
 participant "DPMDP://v1/regard-attribute-value-change" as dpmdp
+participant "MWDI://v1/provide-device-status-metadata" as devType
 participant "DPMDP://p1/processingOrchestrator" as po #LightBlue
 participant "DPMDP\n[/processor-controller/data-store]" as dataStore
 participant "Kafka\n(topic=provisioned_historical_pm_data)" as kafka
@@ -29,6 +31,14 @@ end note
 notif -> dpmdp: {notification}
 activate dpmdp
 
+note over dpmdp
+<u>GetDeviceType</u>
+  First read the deviceType from MWDI
+  (input for [/data-structure-for-processing/device-type])
+end note
+dpmdp -> devType: {(mountName)}
+devType -> dpmdp: {deviceType}
+
 note over po
 <u>ExecP1ProcessingOrchestrator</u>
   Execute internal function
@@ -38,7 +48,7 @@ note over po
   a Dsfp object is returned
   (204 otherwise)
 end note
-dpmdp -> po: {notification}
+dpmdp -> po: {notification, deviceType}
 po -> dpmdp: 200, {[/data-structure-for-processing]}
 
 note over dpmdp #LightSalmon

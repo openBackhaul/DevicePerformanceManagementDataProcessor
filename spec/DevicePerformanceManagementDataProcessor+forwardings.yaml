@@ -98,6 +98,10 @@ forwardings:
         uuid: dpmdp-1-0-0-op-s-bm-015
       - server-name: /v1/bequeath-your-data-and-die
         uuid: dpmdp-1-0-0-op-s-im-000
+      - server-name: /v1/list-functions
+        uuid: dpmdp-1-0-0-op-s-im-001
+      - server-name: /v1/list-processing-sequences
+        uuid: dpmdp-1-0-0-op-s-im-002
       - server-name: /v1/start-application-in-generic-representation
         uuid: dpmdp-1-0-0-op-s-bs-000
       - server-name: /v1/inform-about-application
@@ -110,7 +114,14 @@ forwardings:
         uuid: dpmdp-1-0-0-op-s-bs-004
       - server-name: /docs
         uuid: dpmdp-1-0-0-op-s-bs-005
-      ## TODO: All service requests to be complemented
+      - server-name: /v1/regard-attribute-value-change
+        uuid: dpmdp-1-0-0-op-s-is-000
+      - server-name: /v1/provide-data-store-item-for-device
+        uuid: dpmdp-1-0-0-op-s-is-020
+      - server-name: /v1/provide-data-store-item-for-device-interface
+        uuid: dpmdp-1-0-0-op-s-is-021
+      - server-name: /v1/provide-dpmdp-device-table
+        uuid: dpmdp-1-0-0-op-s-is-100
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
         uuid: dpmdp-1-0-0-op-c-bs-eatl-2-1-2-000

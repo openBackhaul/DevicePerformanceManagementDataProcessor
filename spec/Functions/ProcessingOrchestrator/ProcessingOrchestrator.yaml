@@ -22,6 +22,7 @@ paths:
               type: object
               required:
                 - microwave-device-inventory-1-0:attribute-value-changed-notification
+                - device-type
               properties:
                 microwave-device-inventory-1-0:attribute-value-changed-notification:
                   type: object
@@ -47,6 +48,9 @@ paths:
                     new-value:
                       type: string
                       description: 'New value of the attribute'
+                device-type:
+                  type: string
+                  description: 'Device-type as derived from MWDI'
               example:
                 microwave-device-inventory-1-0:attribute-value-changed-notification:
                   counter: 132
@@ -54,6 +58,7 @@ paths:
                   object-path: '/core-model-1-4:network-control-domain=cache/control-construct=513250009/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
                   attribute-name: 'time-of-latest-change'
                   new-value: '2010-11-20T13:59:00+01:00'
+                device-type: 'AGS20'
       responses:
         '200':
           description: 'Data-structure-for-processing created due to notification receipt.'
@@ -99,7 +104,7 @@ paths:
                         type: string
                         description: >
                           'deviceType as investigated during the pre-processing, initialized with emptyString; to be set
-                          from {$ProcessingOrchestratorCausesReadingOfDeviceTypeFromMwdi.response.body#device-status-metadata/device-type}'
+                          from {$request.body#device-type}'
                       processing:
                         type: array
                         description: >
@@ -201,8 +206,8 @@ paths:
                             device-type:
                               type: string
                               description: >
-                                'deviceType as investigated during the pre-processing, initialized with emptyString; to be set
-                                from subsequent callback {$ProcessingOrchestratorCausesReadingOfDeviceTypeFromMwdi.response.body#device-status-metadata/device-type}'
+                                'deviceType as derived from MWDI
+                                from {$request.body#device-type}'
                             processing:
                               type: array
                               description: >
@@ -252,58 +257,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-        ProcessingOrchestratorCausesReadingOfDeviceTypeFromMwdi:
-          url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
-            post:
-              parameters:
-                - $ref: '#/components/parameters/user'
-                - $ref: '#/components/parameters/originator'
-                - $ref: '#/components/parameters/x-correlator'
-                - $ref: '#/components/parameters/trace-indicator'
-                - $ref: '#/components/parameters/customer-journey'
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        mount-name-list:
-                          type: array
-                          description: >
-                            'The mount-name-list is filled with a single mount-name
-                            from {$ProcessingOrchestratorCausesCallingCreateDsfpOutputObjectFromCacheData.request.body#mount-name}'
-                          items:
-                            type: string
-              responses:
-                '200':
-                  description: 'Only relevant attributes listed'
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          device-status-metadata:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                device-type:
-                                  type: string
-                                  description: >
-                                    'The device-type, to be written
-                                    to the Dsfp object from {$ProcessingOrchestratorCausesCreatingDsfp.response.body#data-structure-for-processing/device-type}'
-                '400':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '401':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '403':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '404':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '500':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                default:
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
         ProcessingOrchestratorCausesCreatingDsfpOutput:
           url: #[dpmdpIpAddress]:[dpmdpPort][/p1/create-dsfp-output-object-from-cache-data]
             post:

@@ -4,13 +4,12 @@ skinparam responseMessageBelowArrow true
 title
 p1ProcessingOrchestrator
 
-<i>ProcessingOrchestratorCausesReadingOfDeviceTypeFromMwdi</i>
+
 end title
 
 participant "MWDI" as mwdi
 participant "DPMDP" as dpmdp
 participant "p1ProcessingOrchestrator" as po #LightBlue
-participant "MWDI://v1/provide-device-status-metadata" as devType
 participant "p1CreateDsfpOutput\nObjectFromCacheData" as createDsfp #LightBlue
 participant "p1SetOutOfLevelValues\nToDefault" as setLevel #LightBlue
 participant "p1Inquire15min\nAirInterfaceKpis\nFromCaca" as kpiAi #LightBlue
@@ -25,8 +24,8 @@ Notification can be provided via:
   - or Webhook (subscription to MWDI)
 end note
 
-mwdi -> dpmdp : {counter, timestamp,\nobjectPath, attributeName,\nnewValue}
-dpmdp -> po: {counter, timestamp,\nobjectPath, attributeName,\nnewValue}
+mwdi -> dpmdp : {counter, timestamp,\nobjectPath, attributeName,\nnewValue, \ndeviceType}
+dpmdp -> po: {counter, timestamp,\nobjectPath, attributeName,\nnewValue, \ndeviceType}
 activate po
 
 
@@ -48,16 +47,10 @@ po --> dpmdp: 204
 note over po #LightSalmon
   ELSE
     create [/data-structure-for-processing] (Dsfp),
-    fill in values from notification
+    fill in values from notification, set
+    [/data-structure-for-processing/device-type]
+    to <i>deviceType</i>
 end note
-
-note over po
-  <u>SetDeviceType</u>
-  Read the deviceType from MWDI and set it in
-  Dsfp [/data-structure-for-processing/device-type]
-end note
-po -> devType: {(mountName)}
-devType -> po: {deviceType}
 
 note over po
   <u>SetDsfpOutput</u>
