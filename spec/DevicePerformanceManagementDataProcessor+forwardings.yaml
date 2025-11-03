@@ -481,7 +481,7 @@ forwardings:
       - server-name: /v1/embed-yourself
         uuid: dpmdp-1-0-0-op-s-bm-001
     consequent-requests:
-      - client-name: MWDI:///v1/notify-attribute-value-changes
+      - client-name: MWDI://v1/notify-attribute-value-changes
         uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
 
   - forwarding-name: PromptForEmbeddingCausesCyclicNotificationPollingAndProcessing
@@ -497,7 +497,7 @@ forwardings:
         uuid: dpmdp-1-0-0-op-s-bm-001
     consequent-requests:
       - client-name: DPMDP://v1/regard-attribute-value-change
-        uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
+        uuid: dpmdp-1-0-0-op-c-is-dpmdp-1-0-0-000
 
   - forwarding-name: PromptForBequeathingDataCausesUnsubscribingFromAvcNotificationsAtMwdi
     uuid: dpmdp-1-0-0-op-fc-im-005

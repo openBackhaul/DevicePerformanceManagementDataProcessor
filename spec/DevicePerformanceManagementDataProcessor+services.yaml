@@ -351,8 +351,8 @@ clients:
       service:
         basic:
         individual:
-          - operation-name: /v1/provide-device-status-metadata
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
+          - operation-name: /v1/regard-attribute-value-change
+            uuid: dpmdp-1-0-0-op-c-is-dpmdp-1-0-0-000
 
 
   - http-client:
