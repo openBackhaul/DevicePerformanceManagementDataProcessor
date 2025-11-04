@@ -4,7 +4,6 @@
 
 The ProcessingOrchestrator initiates the ProcessingFunctions according to a configuration list.  
 Calling the ProcessingFunctions is triggered by receiving new data.  
-RequestBodies or ResponseBodies are not exchanged with ProcessingFunctions.  
 [Details on the ProcessingOrchestrator](./ProcessingOrchestrator/)  
 
 ### ProcessingFunctions  

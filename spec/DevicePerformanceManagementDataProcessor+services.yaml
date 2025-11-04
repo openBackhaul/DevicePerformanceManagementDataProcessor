@@ -91,8 +91,8 @@ servers:
     own-release-number: 1.0.0
     uuid: dpmdp-1-0-0-http-s-000
     application-purpose: This application collects and processes historical device performance data, which it then provides to customers
-    owner-name: Thorsten Heinze
-    owner-email-address: Thorsten.Heinze@telefonica.com
+    owner-name: Katharina Mohr
+    owner-email-address: Katharina.Mohr.external@telefonica.com
     release-list:
       - release-number: 1.0.0
         release-date: 30.10.2025
@@ -330,8 +330,6 @@ clients:
         basic:
         individual:
 
-
-  # not yet in config file
   - http-client:
       application-name: DevicePerformanceManagementDataProcessor
       release-number: 1.0.0
