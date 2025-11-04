@@ -3,8 +3,6 @@ skinparam responseMessageBelowArrow true
 
 title
 p1ProcessingOrchestrator
-
-
 end title
 
 participant "MWDI" as mwdi

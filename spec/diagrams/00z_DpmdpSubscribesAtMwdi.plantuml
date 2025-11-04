@@ -1,4 +1,4 @@
-@startuml 01z_DpmdpSubscribesAtMwdi
+@startuml 00z_DpmdpSubscribesAtMwdi
 skinparam responseMessageBelowArrow true
 
 title 

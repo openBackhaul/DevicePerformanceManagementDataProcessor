@@ -1,4 +1,4 @@
-@startuml 00x_RegardAttributeValueChangeNotification
+@startuml 001_RegardAttributeValueChangeNotification
 skinparam responseMessageBelowArrow true
 
 title

@@ -1,4 +1,4 @@
-@startuml 100_ProvideDmpmpDeviceTable
+@startuml 100_ProvideDpmdpDeviceTable
 skinparam responseMessageBelowArrow true
 
 title
