@@ -53,7 +53,7 @@ Note: the replacement values may change, as they need to be aligned with custome
   - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *data-handle*
   - it writes changed attribute values back to [/data-structure-for-processing/output]
 
-(8) The ProcessingOrchestrator calls `/p1/set-most-recent-timestamp-in-device-table` for gathering information about the newest timestamp seen for each relevant AirInterface and EthernetContainer of the processed mount-name.  
+(8) The ProcessingOrchestrator calls `/p1/set-most-recent-timestamp-and-datav-in-device-table` for gathering information about the newest timestamp seen for each relevant AirInterface and EthernetContainer of the processed mount-name.  
 This information is used to filter for relevant new data the next time a notification for the same mount-name is processed.  
   - it reads the relevant data from [/data-structure-for-processing/output]; the correct output object is again identified by *data-handle*
   - for each AirInterface and EthernetContainer instance it identifies the mostRecentTimestamp as the newest period-end-time for that interface instance

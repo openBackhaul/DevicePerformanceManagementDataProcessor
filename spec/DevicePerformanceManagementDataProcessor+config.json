@@ -2907,6 +2907,31 @@
                 "logical-termination-point": "dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000"
               }
             ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-is-110",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptForDatavStatisticsCausesReadingDeviceTable"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-is-110"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000"
+              }
+            ]
           }
         ]
       }

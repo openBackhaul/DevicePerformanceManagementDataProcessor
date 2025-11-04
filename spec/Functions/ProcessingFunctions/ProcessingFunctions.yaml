@@ -1628,9 +1628,9 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-  /p1/set-most-recent-timestamp-in-device-table:
+  /p1/set-most-recent-timestamp-and-datav-in-device-table:
     post:
-      operationId: p1SetMostRecentTimestampInDeviceTable
+      operationId: p1SetMostRecentTimestampAndDatavInDeviceTable
       summary: 'Reads and traverses a DsfpOutput object and writes the newest timestamp, and the number of records for the dates from period-end-times for each found interface to the DPMDP device table'
       tags:
         - PrivateServices

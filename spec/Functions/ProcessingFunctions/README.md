@@ -55,7 +55,7 @@ For identifying the output object in the DPMDP memory in other functions an obje
 
 ---  
 
-### p1SetMostRecentTimestampInDeviceTable
+### p1SetMostRecentTimestampAndDatavInDeviceTable
 
 This function is for internal use in DMPMD only. It traverses all AirInterface and EthernetContainer instances in a specific [/data-structure-for-processing/output] object and records for each mount-name and LTP-id combination the newest period-end-time it has seen in the list of associated historical-performances. This information is written to the DPMDP deviceTable. Already existing entries are overwritten.  
 It also counts the number of records seen for every traversed interface instance for the respective date from period-end-time and records it in the data-availability-statistics of the deviceTable.

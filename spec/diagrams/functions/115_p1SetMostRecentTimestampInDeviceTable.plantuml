@@ -1,12 +1,12 @@
-@startuml 115_p1SetMostRecentTimestampInDeviceTable
+@startuml 115_p1SetMostRecentTimestampAndDatavInDeviceTable
 skinparam responseMessageBelowArrow true
 
 title
-p1SetMostRecentTimestampInDeviceTable
+p1SetMostRecentTimestampAndDatavInDeviceTable
 end title
 
 participant "requestor" as requestor
-participant "p1SetMostRecentTimestampInDeviceTable" as mostRecentTimestamp #LightBlue
+participant "p1SetMostRecentTimestampAndDatavInDeviceTable" as mostRecentTimestamp #LightBlue
 participant "DPMDP\n(internal memory)" as data
 participant "DPMDP\n(deviceTable)" as deviceTable
 

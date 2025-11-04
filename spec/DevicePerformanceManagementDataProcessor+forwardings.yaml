@@ -588,3 +588,18 @@ forwardings:
     consequent-requests:
       - client-name: DPMDP
         uuid: dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000
+
+  - forwarding-name: PromptForDatavStatisticsCausesReadingDeviceTable
+    uuid: dpmdp-1-0-0-op-fc-is-110
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /v1/provide-data-availability-statistics
+        uuid: dpmdp-1-0-0-op-s-is-110
+    consequent-requests:
+      - client-name: DPMDP
+        uuid: dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000

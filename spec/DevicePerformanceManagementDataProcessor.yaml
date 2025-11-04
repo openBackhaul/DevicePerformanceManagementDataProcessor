@@ -558,7 +558,7 @@ paths:
                     - p1Inquire15minAirInterfaceKpisFromCaca
                     - p1Inquire15minEthernetContainerKpisFromCaca
                     - p1ReplaceOnfDefaultValues
-                    - p1SetMostRecentTimestampInDeviceTable
+                    - p1SetMostRecentTimestampAndDatavInDeviceTable
         '400':
           $ref: '#/components/responses/responseForErroredOamRequests'
         '401':
@@ -1309,6 +1309,110 @@ paths:
               description: >
                 'Life cycle state of the consumed service
                 find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-100/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '470':
+          $ref: '#/components/responses/470'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+
+  /v1/provide-data-availability-statistics:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: provideDatavStatistics
+      summary: 'Provides data availability statistics'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: 'Data availability statistics provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  - interface-ltp
+                  - data-availability-statistics
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The mount-name of a device.'
+                  interface-ltp:
+                    type: string
+                    example: 'The logical-termination-point ID (uuid) of the interface.'
+                  data-availability-statistics:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          example: '2024-03-06'
+                          description: 'The date the data was gathered for'
+                        number-of-records:
+                          type: integer
+                          description: 'The number of historical PM records gathered for this date'
+                example:
+                  - mount-name: '101250001'
+                    interface-ltp: 'ETH-2134646913'
+                    most-recent-timestamp: '2024-03-06T13:00:00+01:00'
+                    data-availability-statistics:
+                      - date: '2024-03-05'
+                        number-of-records: 96
+                      - date: '2024-03-06'
+                        number-of-records: 12
+                  - mount-name: '101250001'
+                    interface-ltp: 'RF-2146697744'
+                    most-recent-timestamp: '2024-03-06T14:00:00+01:00'
+                    data-availability-statistics:
+                      - date: '2024-03-05'
+                        number-of-records: 48
+                      - date: '2024-03-06'
+                        number-of-records: 2
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-110/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
