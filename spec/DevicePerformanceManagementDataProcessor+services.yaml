@@ -349,7 +349,6 @@ clients:
           - operation-name: /v1/regard-attribute-value-change
             uuid: dpmdp-1-0-0-op-c-is-dpmdp-1-0-0-000
 
-
   - http-client:
       application-name: MicroWaveDeviceInventory
       release-number: 2.0.1
@@ -372,3 +371,5 @@ clients:
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
           - operation-name: /v1/end-subscription
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-002
+
+#capacitycalculator

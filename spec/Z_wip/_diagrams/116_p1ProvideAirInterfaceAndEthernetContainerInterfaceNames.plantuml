@@ -1,0 +1,35 @@
+@startuml 116_p1ProvideAirInterfaceAndEthernetContainerInterfaceNames
+skinparam responseMessageBelowArrow true
+
+title
+p1ProvideAirInterfaceAndEthernetContainerInterfaceNames
+end title
+
+participant "requestor" as requestor
+participant "p1ProvideAirInterfaceAndEthernetContainerInterfaceNames" as getNames #LightBlue
+
+activate getNames
+
+note over requestor
+The requestor hands over the following information:
+- LTP structure and augment
+- a list of air interfaces (identified by LTP uuid)
+- a list of ethernet containers (identified by LTP uuid)
+end note
+requestor -> getNames: {ltp-structure-and-augment, air-interface-list, ethernet-container-list}
+
+loop for each LTP uuid from airInterfaceList and ethernetContainerList
+  note over getNames
+    FOR each AirInterface/EthernetContainer uuid
+    read the associated entry from LtpStructureAndManagement
+
+    FOR air-interface uuid:
+      linkEndpointName = externalLabel
+      linkId = externalLabel.substring(0,9)
+    FOR ethernet-container uuid:
+      interfaceName = originalLtpName
+  end note
+end
+getNames --> requestor: {list-of(airInterfaceUuid, localId, linkEndpointName, linkId), list-of(ethernetContainerUuid, localId, interfaceName)}
+
+deactivate getNames

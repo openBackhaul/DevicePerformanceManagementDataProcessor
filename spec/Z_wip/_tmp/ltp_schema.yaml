@@ -1,0 +1,37 @@
+ltp-structure-and-augment:
+  type: array
+  items:
+    type: object
+    properties:
+      logical-termination-point:
+        type: array
+        items:
+          type: object
+          properties:
+            uuid:
+              type: string
+            client-ltp:
+              type: array
+              items:
+                type: string
+            server-ltp:
+              type: array
+              items:
+                type: string
+            layer-protocol:
+              type: array
+              items:
+                type: object
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+            ltp-augment-1-0:ltp-augment-pac:
+              type: object
+              properties:
+                external-label:
+                  type: string
+                  example: '100550001A'
+                original-ltp-name:
+                  type: string

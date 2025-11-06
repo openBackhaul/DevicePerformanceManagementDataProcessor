@@ -1,0 +1,33 @@
+@startuml 130_p1ProvideCcIdentifiersForAirInterface
+skinparam responseMessageBelowArrow true
+
+title
+p1ProvideCcIdentifiersForAirInterface
+end title
+
+participant "requestor" as requestor
+participant "p1ProvideCcIdentifiersForAirInterface" as getIds #LightBlue
+
+activate getIds
+
+
+note over requestor
+  Hand over a mountName and linkId
+  to lookup the associated ControlConstruct
+  Ids (ltpUuid, lpLocalId) in
+  LtpStructureAndAugment data
+end note
+requestor -> getIds: {mountName, linkId, ltpStructureAndAugment}
+
+note over getIds
+  Iterate over ltpStructureAndAugment to find the target
+  LTP <i>ltp</i>:
+  IF (<i>ltp</i>.ltpLayerProtocolName == AIR_LAYER)
+      AND (<i>ltp</i>.ltp-augment/external-label contains linkId)
+  THEN
+    return <i>ltp</i>.uuid and <i>ltp</i>.localId
+end note
+
+getIds --> requestor: {mountName, uuid, localId}
+
+deactivate getIds
