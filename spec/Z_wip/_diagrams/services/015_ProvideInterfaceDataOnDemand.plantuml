@@ -1,0 +1,63 @@
+@startuml 015_ProvideInterfaceDataOnDemand
+skinparam responseMessageBelowArrow true
+
+title
+PromptForProvidingInterfaceDataOnDemandCausesReadingMwdiLtpStructureAndAugment
+end title
+
+participant "external" as requestor
+participant "MWDI://v1/provide-data-store-item-for-device" as dpmdp
+participant "DMPDP\n([/processor-controller/data-store])" as dataStore
+
+
+note over dpmdp
+  The requestor can optionally
+  provide a timestamp.
+  Returned data is limited to
+  [/data-store/device/lot] items
+  newer than the timestamp.
+end note
+requestor -> dpmdp: {mountName, interfaceLtp, (optional) timestamp} (BasicAuth)
+activate dpmdp
+
+
+dpmdp -> dataStore: {mountName, interfaceLtp, (optional) timestamp} (apiAuthKey)
+note over dataStore
+<u>DeviceAndTimestampFiltering</u>
+  WITH <i>device.x-key</i> = [/processor-controller/data-store/device].x-key,
+  WITH <i>lot.x-key</i> = [/processor-controller/data-store/device/lot].x-key
+
+  Filtering:
+  (1) filter dataStore device items for those with
+    <i>device.x-key</i> == mountName
+  (2) IF (requestBody.timestamp provided):
+     In the device item from (1) filter for those lot items
+     where <i>lot.x-key</i> == newer than timestamp
+
+  Result: a single [/processor-controller/data-store/device]-item
+  item containing the relevant lots.
+end note
+note over dataStore
+<u>InterfaceFiltering</u>
+In the dataStore item direct interface filtering is not possible.
+Traverse each lot in the previously derived [/processor-controller/data-store/device]-item.
+
+In each [/data-structure-for-processing/output] traverse the data until the target
+interface is found (or all interfaces have been traversed):
+
+IF (output/air-interface-list/air-interface-identifiers/
+  logical-termination-point-id == interfaceLtp)
+  THEN return the air-interface (the found object from air-interface-list)
+ELSE if (output/ethernet-container-list/ethernet-container-identifiers/
+  logical-termination-point-id == interfaceLtp)
+  THEN return the ethernet-container (the found object from ethernet-container-list)
+ELSE if not found return 204
+end note
+
+
+dataStore --> dpmdp: 200, (filtered) {air-interface | ethernet-container}, or\n204 "no data found"
+dpmdp --> requestor: 200, (filtered) {air-interface | ethernet-container}, or\n204 "no data found"
+
+deactivate dpmdp
+
+@enduml

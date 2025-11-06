@@ -252,6 +252,18 @@
           }
         },
         {
+          "uuid": "dpmdp-1-0-0-string-p-003",
+          "profile-name": "PromptForProvidingInterfaceDataOnDemandCausesReadingMwdiLtpStructureAndAugment",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mwdiNotificationSubscriptionSwitch"
+            },
+            "string-profile-configuration": {
+              "string-value": "logical-termination-point(uuid;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name))"
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-0-0-integer-p-000",
           "profile-name": "integer-profile-1-0:PROFILE_NAME_TYPE_INTEGER_PROFILE",
           "integer-profile-1-0:integer-profile-pac": {

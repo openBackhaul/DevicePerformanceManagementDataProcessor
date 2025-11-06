@@ -143,6 +143,14 @@ profile-instances:
     configuration:
       string-value: 'off'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-003'
+    capability:
+      string-name: 'PromptForProvidingInterfaceDataOnDemandCausesReadingMwdiLtpStructureAndAugment'
+      #description: 'This profileInstance configures the fields filter for retrieving LtpStructureAndAugment data from MWDI'
+    configuration:
+      string-value: 'logical-termination-point(uuid;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name))'
+
   - profile-name: 'IntegerProfile'
     uuid: 'dpmdp-1-0-0-integer-p-000'
     capability:

@@ -371,5 +371,23 @@ clients:
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
           - operation-name: /v1/end-subscription
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-002
+          # TODO: add all in configFile!
+          # for on-demand interface data
+          # -> ltp structure + augment: fields=logical-termination-point(uuid;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name))
+          - operation-name: /core-model-1-4:network-control-domain=cache/control-construct={mountName}
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-003
+          # airInterface/EthernetContainer pac not exposed at MWDI --> read all parts separately; read from live!
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-capability
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-210
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-configuration
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-211
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-historical-performances
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-214
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-status
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-512
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/ethernet-container-2-0:ethernet-container-pac/ethernet-container-status
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-222
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances
+            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-224
 
 #capacitycalculator
