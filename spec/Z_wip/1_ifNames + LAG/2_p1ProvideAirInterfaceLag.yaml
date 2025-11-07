@@ -85,36 +85,41 @@
                     Result = List-of-Wire/AirInterfaceUuid'
                 type: object
                 properties:
-                  uuid:
-                    type: string
-                    description: >
-                      'The uuid of the currently traversed EthernetContainer LTP/LP
-                      from {$request.body#ltp-structure-and-augment/logical-termination-point/uuid}'
-                  link-aggregation-identifiers:
+                  air-interface-list: 
                     type: array
                     items:
-                      oneOf:
-                        - description: 'AirInterfaces'
-                          type: object
-                          required:
-                            - link-id
-                          properties:
-                            link-id:
-                              type: string
-                              example: '513550010'
-                              description: >
-                                'The link-ID for the current AirInterface uuid from List-of-Wire/AirInterfaceUuids to be obtained by extracting the substring constituted by the 9 first characters
-                                from {$request.body#ltp-structure-and-augment/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}'
-                        - description: 'WireInterface'
-                          type: object
-                          required:
-                            - interface-name
-                          properties:
-                            interface-name:
-                              type: string
-                              description: >
-                                'Interface name for the current WireInterface uuid from List-of-Wire/InterfaceUuids
-                                from {$request.body#ltp-structure-and-augment/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}'
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                          description: >
+                            'The uuid of the currently traversed EthernetContainer LTP/LP
+                            from {$request.body#ltp-structure-and-augment/logical-termination-point/uuid}'
+                        link-aggregation-identifiers:
+                          type: array
+                          items:
+                            oneOf:
+                              - description: 'AirInterfaces'
+                                type: object
+                                required:
+                                  - link-id
+                                properties:
+                                  link-id:
+                                    type: string
+                                    example: '513550010'
+                                    description: >
+                                      'The link-ID for the current AirInterface uuid from List-of-Wire/AirInterfaceUuids to be obtained by extracting the substring constituted by the 9 first characters
+                                      from {$request.body#ltp-structure-and-augment/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}'
+                              - description: 'WireInterface'
+                                type: object
+                                required:
+                                  - interface-name
+                                properties:
+                                  interface-name:
+                                    type: string
+                                    description: >
+                                      'Interface name for the current WireInterface uuid from List-of-Wire/InterfaceUuids
+                                      from {$request.body#ltp-structure-and-augment/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}'
           '400':
             $ref: '#/components/responses/responseForErroredServiceRequests'
           '401':

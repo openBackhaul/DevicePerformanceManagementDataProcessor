@@ -8,6 +8,7 @@ paths:
 #   Service Layer - Individual Part
 ########################################################################################################################
 
+  #name anpassen
   /p1/processing-orchestrator:
     post:
       operationId: p1ProcessingOrchestrator
@@ -60,6 +61,7 @@ paths:
                   new-value: '2010-11-20T13:59:00+01:00'
                 device-type: 'AGS20'
       responses:
+        # braucht mach nicht hier, weil daten werden in callback weiter unten in DS und kafka geschoben
         '200':
           description: 'Data-structure-for-processing created due to notification receipt.'
           content:
@@ -155,6 +157,7 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
+        #namen anpassen >ProcessingOrchestratorCauses< rauswerfen (wegen serieller Exekution unnötig)
         ProcessingOrchestratorCausesCreatingDsfp:
           url: #[dpmdpIpAddress]:[dpmdpPort]
             description: >
