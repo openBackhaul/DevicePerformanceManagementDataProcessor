@@ -7,7 +7,7 @@ end title
 
 participant "MWDI" as mwdi
 participant "DPMDP" as dpmdp #LightBlue
-participant "p1ProcessingOrchestrator" as p1ProOrch #LightBlue
+participant "p1ProcessingOrchestratorFor15MinHistoricalPm" as p1ProOrch #LightBlue
 participant "p1ExampleProcessingFunction" as p1Process #LightBlue
 participant "p1TransmittingFunction" as p1Trans #LightBlue
 participant "Kafka" as kafka #LightBlue

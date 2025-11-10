@@ -9,9 +9,9 @@ paths:
 ########################################################################################################################
 
   #name anpassen
-  /p1/processing-orchestrator:
+  /p1/processing-orchestrator-for-15min-historical-pm:
     post:
-      operationId: p1ProcessingOrchestrator
+      operationId: p1ProcessingOrchestratorFor15MinHistoricalPm
       summary: 'The processing orchestrator is triggered by incoming notifications. It reads device data and processes it.'
       tags:
         - PrivateServices
@@ -426,7 +426,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-        ProcessingOrchestratorCausesSettingMostRecentTimestampsInDeviceTable:
+        ProcessingOrchestratorCausesSettingMostRecentTimestampsAndDatavInDeviceTable:
           url: #[dmpdpIpAddress]:[dpmdpPort][/p1/set-most-recent-timestamp-and-datav-in-device-table]
             description: >
               'This callback reads the DsfpOutput data from memory, gathers the mostRecentTimestamp and number of records/date per mountname/interface information and writes it into the DMPDP deviceTable'

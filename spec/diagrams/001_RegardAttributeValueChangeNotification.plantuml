@@ -2,10 +2,10 @@
 skinparam responseMessageBelowArrow true
 
 title
-NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi
-NotifiedAttributeValueChangeCausesCallingP1ProcessingOrchestrator
+ReadingOfDeviceTypeFromMwdiForDsfpObject
+NotifiedAttributeValueChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPm
 NotifiedAttributeValueChangeCausesUpdatingProcessorControllerDataStore
-NotifiedAttributeValueChangeCausesProvisioningToKafka
+ProvisioningOf15minPmDataToKafka
 end title
 
 participant "new AVC notification" as notif #LightCyan
@@ -21,7 +21,7 @@ note over notif
    - or pulled from Kafka
 end note
 
-== Notification receipt and processing by p1ProcessingOrchestrator ==
+== Notification receipt and processing by p1ProcessingOrchestratorFor15MinHistoricalPm ==
 
 note over dpmdp
   If notification received via Kafka,
@@ -40,9 +40,9 @@ dpmdp -> devType: {(mountName)}
 devType -> dpmdp: {deviceType}
 
 note over po
-<u>ExecP1ProcessingOrchestrator</u>
+<u>Execp1ProcessingOrchestratorFor15MinHistoricalPm</u>
   Execute internal function
-  p1ProcessingOrchestrator
+  p1ProcessingOrchestratorFor15MinHistoricalPm
   to process the notification, 
   if the notification was relevant,
   a Dsfp object is returned
@@ -52,7 +52,7 @@ dpmdp -> po: {notification, deviceType}
 po -> dpmdp: 200, {[/data-structure-for-processing]}
 
 note over dpmdp #LightSalmon
-  If p1ProcessingOrchestrator did
+  If p1ProcessingOrchestratorFor15MinHistoricalPm did
   not return 200,
   Terminate
 end note
@@ -62,7 +62,7 @@ end note
 
 note over dpmdp
 <u>CreateOrUpdateDataStore</u>
-IF p1ProcessingOrchestrator returned
+IF p1ProcessingOrchestratorFor15MinHistoricalPm returned
 a 200 (Dsfp object), add it to the
 DataStore, if no associated DataStore
 item exists yet, create it

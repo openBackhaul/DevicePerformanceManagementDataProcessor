@@ -1662,7 +1662,7 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput:
+        SettingMostRecentTimestampsAndDatavInDeviceTableCausesReadingDsfpOutput:
           ReadDsfpOutputFromMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
             description: >
               'Directly read the data from DPMDP memory for the output object identified by id
@@ -1727,7 +1727,7 @@ paths:
           SetMostRecentTimestamp: #[dpmdpIpAddress][dpmdpPort][internal-memory: device-table]
             description: >
               'For every interface instance found in the read input data
-              from {$SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput.ReadDsfpOutputFromMemory}
+              from {$SettingMostRecentTimestampsAndDatavInDeviceTableCausesReadingDsfpOutput.ReadDsfpOutputFromMemory}
               write one record to the DPMDP deviceTable with the newest found period-end-time:
                 mount-name, logical-termination-point-id, period-end-time
               Already existing entries for this mountname/interface are overwritten with the new period-end-time.

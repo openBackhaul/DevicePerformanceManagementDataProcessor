@@ -708,8 +708,8 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingP1ProcessingOrchestratorFor15MinHistoPm:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator]
+        NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPmFor15MinHistoPm:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator-for-15min-historical-pm]
             description: >
               'The processingOrchestrator checks the incoming notification for relevance.
               If relevant, it creates a [/data-structure-for-processing].'
@@ -752,7 +752,7 @@ paths:
                           type: string
                           description: >
                             'The device-type available for this mount-name in MWDI
-                            from {$NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi.response.body#device-status-metadata/device-type}'
+                            from {$ReadingOfDeviceTypeFromMwdiForDsfpObject.response.body#device-status-metadata/device-type}'
               responses:
                 '204':
                   description: 'Notification processed'
@@ -795,6 +795,7 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
+        #other processing orchestrators could be called here in future releases as alternative (!) to the 15minHistoricalPm processing orchestrator
 
   /v1/provide-data-store-item-for-device:
     parameters:

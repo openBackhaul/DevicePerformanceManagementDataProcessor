@@ -612,7 +612,7 @@ paths:
 
 
   # nur 1 callback:
-  # NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingP1ProcessingOrchestratorFor15MinHistoPm
+  # NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPmFor15MinHistoPm
   # - die anderen callbacks wandern in den rein
   # - rückgabe nur 204, weil daten werden innerhalb vom procOrch nach Kafka + datstore geschoben
   # - callback Name ändern:
@@ -771,8 +771,8 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         #TODO: Namen ändern!
-        NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingP1ProcessingOrchestratorFor15MinHistoPm:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator]
+        NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPmFor15MinHistoPm:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator-for-15min-historical-pm]
             description: >
               'The processingOrchestrator checks the incoming notification for relevance.
               If relevant, it creates a [/data-structure-for-processing].'

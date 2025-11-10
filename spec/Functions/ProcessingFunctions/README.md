@@ -70,7 +70,7 @@ The function receives the dataHandle in its requestBody for reading the data obj
   along with the data availability statistics
 
 #### Callbacks
-- `SettingMostRecentTimestampsInDeviceTableCausesReadingDsfpOutput`:
+- `SettingMostRecentTimestampsAndDatavInDeviceTableCausesReadingDsfpOutput`:
   - *ReadDsfpOutputFromMemory*: reads the DsfpOutput object from memory
   - *SetMostRecentTimestamp*: writes the mostRecentTimestamps and data availability statistics for each found mount-name/interface combination to the deviceTable
 

@@ -514,7 +514,7 @@ forwardings:
       - client-name: MWDI://v1/end-subscription
         uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-002
 
-  - forwarding-name: NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi
+  - forwarding-name: ReadingOfDeviceTypeFromMwdiForDsfpObject
     uuid: dpmdp-1-0-0-op-fc-is-000
     forwarding-type: InvariantProcessSnippet
     management-requests:
@@ -529,7 +529,7 @@ forwardings:
       - client-name: MWDI://v1/provide-device-status-metadata
         uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
 
-  - forwarding-name: NotifiedAttributeValueChangeCausesProvisioningToKafka
+  - forwarding-name: ProvisioningOf15minPmDataToKafka
     uuid: dpmdp-1-0-0-op-fc-is-001
     forwarding-type: InvariantProcessSnippet
     management-requests:

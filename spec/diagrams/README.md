@@ -22,7 +22,7 @@
 ![PromptForEmbeddingCausesSubscribingForAvcNotificationsAtMwdi](./00z_DpmdpSubscribesAtMwdi.png)  
 .  
 .  
-![NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi](./001_RegardAttributeValueChangeNotification.png)  
+![ReadingOfDeviceTypeFromMwdiForDsfpObject](./001_RegardAttributeValueChangeNotification.png)  
 .  
 .  
 ![PromptForBequeathingDataCausesUnsubscribingFromAvcNotificationsAtMwdi](./09x_BequeathYourDataAndDie.png)  
@@ -45,7 +45,7 @@
 
 ## Functions
 
-![p1ProcessingOrchestrator](./functions/101_p1ProcessingOrchestrator.png)  
+![p1ProcessingOrchestratorFor15MinHistoricalPm](./functions/101_p1ProcessingOrchestratorFor15MinHistoricalPm.png)  
 .  
 .  
 ![p1CreateDsfpOutputObjectFromCacheData](./functions/110_p1CreateDsfpOutputObjectFromCache.png)  

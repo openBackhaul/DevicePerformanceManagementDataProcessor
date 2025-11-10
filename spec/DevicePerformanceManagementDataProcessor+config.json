@@ -2997,7 +2997,7 @@
               },
               {
                 "value-name": "ForwardingName",
-                "value": "NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi"
+                "value": "ReadingOfDeviceTypeFromMwdiForDsfpObject"
               }
             ],
             "fc-port": [
@@ -3022,7 +3022,7 @@
               },
               {
                 "value-name": "ForwardingName",
-                "value": "NotifiedAttributeValueChangeCausesProvisioningToKafka"
+                "value": "ProvisioningOf15minPmDataToKafka"
               }
             ],
             "fc-port": [

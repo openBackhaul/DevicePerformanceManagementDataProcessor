@@ -1,13 +1,13 @@
-@startuml 101_p1ProcessingOrchestrator
+@startuml 101_p1ProcessingOrchestratorFor15MinHistoricalPm
 skinparam responseMessageBelowArrow true
 
 title
-p1ProcessingOrchestrator
+p1ProcessingOrchestratorFor15MinHistoricalPm
 end title
 
 participant "MWDI" as mwdi
 participant "DPMDP" as dpmdp
-participant "p1ProcessingOrchestrator" as po #LightBlue
+participant "p1ProcessingOrchestratorFor15MinHistoricalPm" as po #LightBlue
 participant "p1CreateDsfpOutput\nObjectFromCacheData" as createDsfp #LightBlue
 participant "p1ProvideAirInterface\nAndEthernetContainer\nInterfaceNames" as ifNames #LightBlue
 participant "p1ProvideAirInterface\nPhysicalLinkAggregation" as lag #LightBlue

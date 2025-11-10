@@ -1,10 +1,10 @@
-# ProcessingOrchestrator  
+# ProcessingOrchestratorFor15MinHistoricalPm  
 
-The ProcessingOrchestrator is triggered by incoming notifications about new data being available at the MWDI.  
+This ProcessingOrchestrator is triggered by incoming notifications about new data being available at the MWDI.  
 
 ### Notification receipt
 
-The incoming notifications are created by MWDI when the *time-of-latest-change* attribute of and AirInterface or EthernetContainer changes.  
+The incoming notifications of relevance are created by MWDI when the *time-of-latest-change* attribute of and AirInterface or EthernetContainer changes.  
 The current specification contains two ways for receiving those notifications:
 - either from Kafka
 - or via subscribing to the MWDI
@@ -13,7 +13,7 @@ MWDI cycically updates complete ControlConstructs - therefore multiple notificat
 DPMDP shall only process the first notification for a given device and ignore other notifications for the same device for the time interval configured in integerProfile instance *waitingTimeForProcessingNotificationsForSameDevice*.  
 
 For the current release MWDI is supposed to only send notifications for update values of *time-of-latest-change*.  
-In future MWDI releases there may be more AVCN notifications created. If DPMDP is receiving them all via Webhook, it needs to ignore all those not related to *time-of-latest-change*. If the DPMDP however fetches the notifications from Kafka, filtering can be applied before the notifications are made available to DPMDP. In that case, DPMDP does not need to carry out additional filtering by itself.
+In future MWDI releases there may be more AVCN notifications created. If DPMDP is receiving them all via Webhook, it needs to ignore all those not related to *time-of-latest-change* for this processingOrchestrator (if other AVCN notifications are also to be processed, this will be done by a different processingOrchestrator!). If the DPMDP however fetches the notifications from Kafka, filtering can be applied before the notifications are made available to DPMDP. In that case, DPMDP does not need to carry out additional filtering by itself.
 
 ### Processing steps
 
@@ -60,3 +60,6 @@ This information is used to filter for relevant new data the next time a notific
   - it writes the mount-name, interface (LtpId) and mostRecentTimestamp to the deviceTable. Already existing entries for that mount-name/interface combination are overwritten.
 
 After all processing steps have been carried out and if a [/data-structure-for-processing/output] object has been created, there is a transition of the [/data-structure-for-processing] from Processing to Transmission. 
+
+
+# TODO: den Ablauf an neue Änderungen anpassen
