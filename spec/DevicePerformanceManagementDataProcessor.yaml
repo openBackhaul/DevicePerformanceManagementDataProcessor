@@ -4,9 +4,9 @@ info:
   version: 1.0.0
   description: DevicePerformanceManagementDataProcessor gathers PM data from cache and makes it available for consumption by external tools.
   contact:
-    name: Zia Ul Haq Hussain Batcha
-    url: https://github.com/openBackhaul/NetExplorerProxy
-    email: zia-ul-haq.hussain-batcha.external@telefonica.com
+    name: Katharina Mohr
+    url: https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor
+    email: katharina.mohr.external@telefonica.com
   x-api-id: u-1792-sdn-microwave-dpmdp
 
 x-gui-paths:
@@ -525,7 +525,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
-
+# todo: To be moved to "OAM Layer - Individual Part"
   /v1/list-functions:
     post:
       operationId: v1ListFunctions
@@ -551,14 +551,15 @@ paths:
                       description: >
                         'operationId of internal Function
                         from [/processor-controller/function=*/function-name]'
+                      # todo: DataStructure to be revised
                 example:
                   list-of-functions:
-                    - p1CreateDsfpOutputObjectFromCache
-                    - p1SetOutOfLevelValuesToDefault
-                    - p1Inquire15minAirInterfaceKpisFromCaca
-                    - p1Inquire15minEthernetContainerKpisFromCaca
-                    - p1ReplaceOnfDefaultValues
-                    - p1SetMostRecentTimestampAndDatavInDeviceTable
+                    - 'p1CreateDsfpOutputObjectFromCache'
+                    - 'p1SetOutOfRangeLevelValuesToDefault'
+                    - 'p1Inquire15minAirInterfaceKpisFromCaca'
+                    - 'p1Inquire15minEthernetContainerKpisFromCaca'
+                    - 'p1ReplaceOnfDefaultValues'
+                    - 'p1SetMostRecentTimestampAndDatavInDeviceTable'
         '400':
           $ref: '#/components/responses/responseForErroredOamRequests'
         '401':
@@ -571,6 +572,177 @@ paths:
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
+  /v1/provide-config-of-function:
+    post:
+      operationId: v1ProvideConfigOfFunction
+      summary: 'Provides parameter set of the specified internal Function'
+      tags:
+        - IndividualManagement
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - function-name
+              properties:
+                function-name:
+                  type: string
+                  description: 'operationId of internal Function'
+              example:
+                function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+      responses:
+        '200':
+          description: 'Parameter set of the specified internal Function provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - function-name
+                  - function-description
+                  - parameter
+                properties:
+                  function-name:
+                    type: string
+                    description: >
+                      'operationId of internal Function
+                      from [/domain-controller/function=functionName/function-name]'
+                    # todo: DataStructure to be revised
+                  function-description:
+                    type: string
+                    description: >
+                      'Description of the Function
+                      from [/domain-controller/function=functionName/function-description]'
+                  parameter:
+                    type: array
+                    x-key: parameter-name
+                    description: 'List of Parameters of the Function'
+                    items:
+                      type: object
+                      required:
+                        - parameter-name
+                        - parameter-value
+                        - parameter-definition
+                      properties:
+                        parameter-name:
+                          type: string
+                          description: >
+                            'Invariant name of the parameter
+                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
+                        parameter-value:
+                          type: string
+                          description: >
+                            'Configurable value of the parameter
+                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+                        parameter-definition:
+                          type: string
+                          description: >
+                            'Invariant description of the parameter
+                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-definition]'
+                example:
+                  function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+                  function-description: 'Overwrites values outside a predefined range by a default value.'
+                  parameter:
+                    - parameter-name: 'minimum-rx'
+                      parameter-value: '-60dBm'
+                      parameter-definition: 'Minimum acceptable value of the receive level.'
+                    - parameter-name: 'maximum-rx'
+                      parameter-value: '-20dBm'
+                      parameter-definition: 'Maximum acceptable value of the receive level.'
+                    - parameter-name: 'default-rx'
+                      parameter-value: '-1dBm'
+                      parameter-definition: 'Default value in case of invalid receive level.'
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+  /v1/update-function:
+    post:
+      operationId: v1UpdateFunction
+      summary: 'Updates parameter set of specified internal Function'
+      tags:
+        - IndividualManagement
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - function-name
+              properties:
+                function-name:
+                  type: string
+                  description: >
+                    'operationId of internal Function
+                    find in [/domain-controller/function=*/function-name]'
+                  # todo: DataStructure to be revised
+                function-description:
+                  type: string
+                  description: >
+                    'Description of the Function
+                    if provided, update [/domain-controller/function=functionName/function-description]'
+                parameter:
+                  type: array
+                  x-key: parameter-name
+                  description: 'List of Parameters of the Function'
+                  items:
+                    type: object
+                    required:
+                      - parameter-name
+                    properties:
+                      parameter-name:
+                        type: string
+                        description: >
+                          'Invariant name of the parameter
+                          find in [/domain-controller/function=functionName/parameter=*/parameter-name]'
+                      parameter-value:
+                        type: string
+                        description: >
+                          'Configurable value of the parameter
+                          if provided, update [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+                      parameter-definition:
+                        type: string
+                        description: >
+                          'Invariant description of the parameter
+                          if provided, update [/domain-controller/function=functionName/parameter=parameterName/parameter-definition]'
+              example:
+                function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+                function-description: 'Overwrites values outside a predefined range by a default value.'
+                parameter:
+                  - parameter-name: 'default-rx'
+                    parameter-value: '0dBm'
+                    parameter-definition: 'Default value in case of invalid receive level.'
+      responses:
+        '204':
+          description: 'Parameter set updated'
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+
   /v1/list-processing-sequences:
     post:
       operationId: v1ListProcessingSequences
@@ -587,15 +759,197 @@ paths:
               schema:
                 type: object
                 required:
-                  - list-of-trigger-functions
+                  - list-of-processing-sequences
                 properties:
-                  list-of-trigger-functions:
+                  list-of-processing-sequences:
                     type: array
+                    x-key: processing-sequence-name
+                    description: 'List of predefined processing sequences'
                     items:
-                      type: string
-                      description: >
-                        'operationId of ProcessingFunction
-                        from [/processor-controller/validation-sequence=*/_trigger-function]'
+                      type: object
+                      required:
+                        - processing-sequence-name
+                        - processing-sequence-purpose
+                      properties:
+                        processing-sequence-name:
+                          type: string
+                          description: >
+                            'operationId of a predefined sequence of processing steps
+                            from [/processor-controller/validation-sequence=*/_trigger-function]'
+                          # todo: DataStructure to be revised
+                        processing-sequence-purpose:
+                          type: string
+                          description: >
+                            'Description of the purpose of the sequence of processing steps
+                            from [/processor-controller/validation-sequence=*/_trigger-function]'
+                example:
+                  # todo: document at least one reasonable processing sequence
+                  # todo: processing-sequence-purpose to be added
+                  list-of-processing-sequences:
+                    - processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
+                      processing-sequence-purpose:
+                    - processing-sequence-name: 'p1PrepareEthernetContainerPerformanceData'
+                      processing-sequence-purpose:
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+  /v1/provide-processing-sequence:
+    post:
+      operationId: v1ProvideProcessingSequence
+      summary: 'Provides configuration of a processing sequence'
+      tags:
+        - IndividualManagement
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - processing-sequence-name
+              properties:
+                processing-sequence-name:
+                  type: string
+                  description: 'operationId of a predefined sequence of processing steps'
+              example:
+                function-name: 'p1PrepareAirInterfacePerformanceData'
+      responses:
+        '200':
+          description: 'Sequence of processing steps provided'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - processing-sequence-name
+                  - sequence
+                properties:
+                  processing-sequence-name:
+                    type: string
+                    description: >
+                      'operationId of a predefined sequence of processing steps
+                      from [/domain-controller/function=functionName/function-name]'
+                    # todo: DataStructure to be revised
+                  sequence:
+                    type: array
+                    x-key: step-number
+                    description: 'List of Functions to be executed during the processing'
+                    items:
+                      type: object
+                      required:
+                        - step-number
+                        - function-name
+                        - is-activated
+                      properties:
+                        step-number:
+                          type: integer
+                          description: >
+                            '
+                            from [/domain-controller/validation-sequence=triggerFunction/sequence=*/step-number]'
+                          # todo: Description and DataStructure to be revised
+                        function-name:
+                          type: string
+                          description: >
+                            'Invariant name of the parameter
+                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
+                          # todo: Description and DataStructure to be revised
+                        is-activated:
+                          type: boolean
+                          description: >
+                            'If true, Function shall be called during executing the process
+                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+                          # todo: Description and DataStructure to be revised
+                example:
+                  processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
+                  sequence:
+                    - step-number: 0
+                      function-name: 'p1CreateDsfpOutputObjectFromCache'
+                      is-activated: true
+                    - step-number: 1
+                      function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+                      is-activated: true
+                    - step-number: 2
+                      function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
+                      is-activated: true
+                    - step-number: 3
+                      function-name: 'p1ReplaceOnfDefaultValues'
+                      is-activated: true
+                    - step-number: 4
+                      function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+                      is-activated: false
+        '400':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredOamRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredOamRequests'
+  /v1/update-processing-sequence:
+    post:
+      operationId: v1UpdateProcessingSequence
+      summary: 'Allows activating and de-activating of individual processing steps'
+      tags:
+        - IndividualManagement
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - processing-sequence-name
+                - sequence
+              properties:
+                processing-sequence-name:
+                  type: string
+                  description: 'operationId of a predefined sequence of processing steps'
+                sequence:
+                  type: array
+                  x-key: function-name
+                  description: 'List of Functions that shall be activated or de-activated'
+                  items:
+                    type: object
+                    required:
+                      - function-name
+                      - shall-be-active
+                    properties:
+                      function-name:
+                        type: string
+                        description: >
+                          'Invariant name of the parameter
+                          from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
+                        # todo: Description and DataStructure to be revised
+                      shall-be-active:
+                        type: boolean
+                        description: >
+                          'If true, the function shall be executed as a part of the processing
+                          from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+              example:
+                processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
+                sequence:
+                  - function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+                    shall-be-active: true
+      responses:
+        '204':
+          description: 'Sequence of ValidationFunctions updated'
         '400':
           $ref: '#/components/responses/responseForErroredOamRequests'
         '401':
