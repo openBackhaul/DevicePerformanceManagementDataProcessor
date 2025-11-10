@@ -609,6 +609,16 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
 
+
+
+  # nur 1 callback:
+  # NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingP1ProcessingOrchestratorFor15MinHistoPm
+  # - die anderen callbacks wandern in den rein
+  # - rückgabe nur 204, weil daten werden innerhalb vom procOrch nach Kafka + datstore geschoben
+  # - callback Name ändern:
+  #   - was genau wurde notified - timeOfLatestChange in interfaceHistoPm
+  #   - was genau wird aufgerufen - der procOrchestrator für 15minHistoPm
+  #   - weitere callbacks hier wären nur Alternativen zu dem procOrch, keine sequentielle ausführung!
   /v1/regard-attribute-value-change:
     parameters:
       - $ref: '#/components/parameters/user'
@@ -708,6 +718,59 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
+        #DevType callback geht auch in den p1ProcOrch rein
+        NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi:
+          url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        mount-name-list:
+                          type: array
+                          description: >
+                            'The mount-name-list is filled with a single mount-name
+                            from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path} extract the mount-name'
+                          items:
+                            type: string
+              responses:
+                '200':
+                  description: 'Only relevant attributes listed'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          device-status-metadata:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                device-type:
+                                  type: string
+                                  description: >
+                                    'The device-type as provided by MWDI. If not available in MWDI return: unknown'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        #TODO: Namen ändern!
         NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingP1ProcessingOrchestratorFor15MinHistoPm:
           url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator]
             description: >
@@ -754,35 +817,46 @@ paths:
                             'The device-type available for this mount-name in MWDI
                             from {$NotifiedAttributeValueChangeCausesReadingOfDeviceTypeFromMwdi.response.body#device-status-metadata/device-type}'
               responses:
+              #TODO hier auf 204 ändern, DSFP wird nur von nachfolgenden Callbacks benötigt, die wandern in p1ProcOrch rein!
+                '200':
+                  description: 'Data-structure-for-processing created due to notification receipt.'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          data-structure-for-processing:
+                            type: object
+                            properties:
+                              counter:
+                                type: string
+                              timestamp:
+                                type: string
+                              object-path:
+                                type: string
+                              attribute-name:
+                                type: string
+                              new-value:
+                                type: string
+                              mount-name:
+                                type: string
+                              device-type:
+                                type: string
+                              processing:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    function-name:
+                                      type: string
+                                    response-code:
+                                      type: integer
+                              output:
+                                type: object
+                                description: >
+                                  'The output object as specified in T1out_Output.yaml'
                 '204':
-                  description: 'Notification processed'
-                  headers:
-                    x-correlator:
-                      schema:
-                        type: string
-                        example: '550e8400-e29b-11d4-a716-446655440000'
-                    exec-time:
-                      schema:
-                        type: integer
-                        example: 1100
-                    backend-time:
-                      schema:
-                        type: integer
-                        example: 850
-                    life-cycle-state:
-                    # hat eine function einen LifeCycleState??
-                      schema:
-                        type: string
-                        enum:
-                          - 'EXPERIMENTAL'
-                          - 'OPERATIONAL'
-                          - 'DEPRECATED'
-                          - 'OBSOLETE'
-                          - 'UNKNOWN'
-                          - 'NOT_YET_DEFINED'
-                        example: 'EXPERIMENTAL'
-                      description: >
-                        'Life cycle state of the consumed service'
+                  description: 'Detected irrelevant notification'
                 '400':
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 '401':
@@ -795,6 +869,8 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
+        #NotifiedAttributeValueChangeCausesUpdatingProcessorControllerDataStore
+        #NotifiedAttributeValueChangeCausesProvisioningToKafka
 
   /v1/provide-data-store-item-for-device:
     parameters:

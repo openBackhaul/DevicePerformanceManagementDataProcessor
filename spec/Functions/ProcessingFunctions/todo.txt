@@ -1,0 +1,5 @@
+kein datahandle mehr
+requestBody mit nötigen eingaben
+responseBody mit rückgabe
+
+im procOrchestrator werden daten explizit beim aufruf übergeben / übernommen
