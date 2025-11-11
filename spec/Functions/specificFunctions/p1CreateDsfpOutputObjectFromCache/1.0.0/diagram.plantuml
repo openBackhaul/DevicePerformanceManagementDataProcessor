@@ -1,31 +1,33 @@
-@startuml 110_p1CreateDsfpOutputObjectFromCacheData
+@startuml diagram
 skinparam responseMessageBelowArrow true
 
 title
-p1CreateDsfpOutputObjectFromCacheData
+  p1CreateDsfpOutputObjectFromCache
 end title
 
-participant "requestor" as requestor
+participant "requestor\ne.g. p1ProcessingOrchestratorFor15MinHistoricalPm" as requestor
 participant "p1CreateDsfpOutputObjectFromCache" as create #LightBlue
-participant "ElasticSearch" as es
-participant "DPMDP\n(deviceTable)" as devTable
+database "DPMDP\nCacheDomain" as DpmdpEs
+database "DPMDP\nApplicationData\nDeviceTable" as deviceTable
 
-activate create
+
 requestor -> create: {mount-name}
+activate create
 
 note over create
-<u>ReadCC</u>
+<u>ReadCc</u>
   Read the ControlConstruct
-  directly from ElasticSearch
+  from DPMDP CacheDomain 
+  (=Replication of MWDI ElasticSearch index)
 end note
-create -> es: {mount-name}
-es --> create: {ControlConstruct}
+create -> DpmdpEs: {mount-name}
+create <-- DpmdpEs: {ControlConstruct}
 
 note over create
 <u>GetMostRecentTimestamps</u>
   Read the mostRecentTimestamp
   for each interface of the mount-name
-  found in DPMDP deviceTable
+  from deviceTable in ApplicationData
 
   <i>mostRecentTimestamp denotes</i>
   <i>the newest period-end-time seen</i>
@@ -34,8 +36,8 @@ note over create
   <i>For interfaces missing here, all</i>
   <i>fetched data will be considered newer</i>
 end note
-create -> devTable: {mount-name}
-devTable --> create: {list-of(interfaceId, mostRecentTimestamp)}
+create -> deviceTable: {mount-name}
+create <-- deviceTable: {list-of(interfaceId, mostRecentTimestamp)}
 
 note over create
 <u>FilterAndCluster</u>

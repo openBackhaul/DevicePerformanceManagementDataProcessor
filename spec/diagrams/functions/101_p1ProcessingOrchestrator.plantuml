@@ -6,6 +6,8 @@ p1ProcessingOrchestratorFor15MinHistoricalPm
 end title
 
 participant "MWDI" as mwdi
+database "MWDI\nCacheDomain" as MwdiEs
+database "DPMDP\nCacheDomain" as DpmdpEs
 participant "DPMDP" as dpmdp
 participant "p1ProcessingOrchestratorFor15MinHistoricalPm" as po #LightBlue
 participant "p1CreateDsfpOutput\nObjectFromCacheData" as createDsfp #LightBlue
@@ -15,6 +17,11 @@ participant "p1Inquire15min\nEthernetContainerKpis\nFromCaca" as kpiEth #LightBl
 participant "p1ReplaceOnfDefaultValues" as replaceDef #LightBlue
 participant "p1SetMostRecentTimestamp\nInDeviceTable" as deviceTable #LightBlue
 
+note right MwdiEs #Lightgrey
+  Replicates cache domain from within MWDI (ElasticSearch index)
+  to cache domain within DPMDP (ElasticSearch index)
+end note
+MwdiEs -> DpmdpEs
 
 note over mwdi, dpmdp #LightGrey
 Notification can be provided via:
@@ -23,6 +30,13 @@ Notification can be provided via:
 end note
 
 mwdi -> dpmdp : {counter, timestamp,\nobjectPath, attributeName,\nnewValue, \ndeviceType}
+note over dpmdp
+  Delay for assuring the update of the DPMDP CacheDomain being completed
+  before the processing starts based on trigger by notification.
+  Delay must be configurable and values must exceed the duration 
+  between two replications of the MWDI ElasticSearch index.
+end note
+
 dpmdp -> po: {counter, timestamp,\nobjectPath, attributeName,\nnewValue, \ndeviceType}
 activate po
 

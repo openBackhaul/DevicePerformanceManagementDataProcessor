@@ -2,7 +2,7 @@
 skinparam responseMessageBelowArrow true
 
 title
-p1CreateDsfpOutputObjectFromCacheData
+p1CreateDsfpOutputObjectFromCache
 end title
 
 participant "requestor" as requestor

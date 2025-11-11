@@ -13,6 +13,12 @@
 
 ### Description  
 
+The output object inside the DataStructureForProcessing object is comprising the PM data of all AirInterfaces and all EthernetContainers at the device.  
+
+It comprises the latest 15 minute values.
+
+
+
 <!-- todo: Detailed description to be added -->
 
 
@@ -26,6 +32,6 @@
 [!diagram](./diagram.png)  
 
 
-### NPM Module Reference
+### NPM Module  
 
-No NPM module, as module specific to this application.
+No NPM package for specific function.  
