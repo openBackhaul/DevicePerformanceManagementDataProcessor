@@ -79,7 +79,7 @@ There is no response. Data is written directly into DPMDP's deviceTable.
 
 ---  
 
-### p1SetOutOfLevelValuesToDefault
+### p1SetOutOfRangeLevelValuesToDefault
 
 This function replaces invalid level values of AirInterface attributes.  
 The level values should be withing the following expected ranges, otherwise they are considered out-of-range:
