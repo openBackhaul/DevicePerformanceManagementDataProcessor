@@ -2,6 +2,7 @@
 
 Retrieves PM data from cache, processes it, and makes it available via Kafka.  
 
+
 ### Description  
 
 The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
@@ -14,7 +15,18 @@ The DPMDP implements a hard coded workflow for processing the raw data, but it a
 
 The following modules are provided:
 
+
 #### Plausibility
+
+- [p1CreateDsfpOutputObjectFromCache](./spec/Functions/specificFunctions/p1CreateDsfpOutputObjectFromCache/1.0.0/)  
+  - creates the initial Output object inside the DataStructureForProcessing object  
+  - removes data that has already been processed in past  
+  - removes performance measurement records that are not of 15 minutes granularity  
+  - removes empty adaptive modulation counter records (device did not operate this modulation)  
+  - removes incomplete adaptive modulation capabilities (codeRate attribute has default value)  
+  - terminates process if no new data remains  
+
+<!-- todo: Further entries to be used for additional plausibility checks or for making parts of the p1CreateDsfpOutputObjectFromCache available for individual de-/activation. Entries to be deleted if not needed. -->
 
 - name  
   Checks this for plausibility  
@@ -22,11 +34,6 @@ The following modules are provided:
 - name  
   Checks that for plausibility  
 
-- p1CreateDsfpOutputObjectFromCache
-  Checks for plausibility during creation of the initial DataStructureForProcessing output object
-  - removes performance measurement records without 15min granularity
-  - removes adaptive modulation counter records from PM records in which no time was spent (if time <= 0)
-  - removes adaptive modulation capability records without useful information (if code-rate == -1)
 
 #### Harmonization  
 
