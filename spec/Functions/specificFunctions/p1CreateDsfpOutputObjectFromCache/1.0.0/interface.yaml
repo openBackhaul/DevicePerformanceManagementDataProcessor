@@ -29,11 +29,6 @@ x-javascript-interface:
               type: object
               description: 'The output is only generated if relevant AirInterface and/or EthernetContainer data remains after filtering. Otherwise the 204 is to be returned.'
               properties:
-                data-handle:
-                  type: string
-                  example: '513250010-2024-03-06T13:00:00+01:00-a0893b37'
-                  description: >
-                    'This id is used to uniquely identify the output object in the DPMDP memory.'
                 output:
                   type: object
                   description: 'This object is written to [/data-structure-for-processing/output]'
@@ -59,15 +54,11 @@ x-javascript-interface:
                               link-endpoint-id:
                                 type: string
                                 description: >
-                                  'Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                                  from {$CreatingDsfpOutputCausesComputingInterfaceNames.LtpDesignation.response.body#list-of-air-interface-names/link-endpoint-id},
-                                  for the given combination of uuid and local-id, if none found set to default=null'
+                                  'Identifier of the microwave link endpoint as used in the Telefonica planning tools, initialized with empty string'
                               link-id:
                                 type: string
                                 description: >
-                                  'Identifier of the microwave link as used in the Telefonica planning tools.
-                                  from {$CreatingDsfpOutputCausesComputingInterfaceNames.LtpDesignation.response.body#list-of-air-interface-names/link-id},
-                                  for the given combination of uuid and local-id, if none found set to default=null'
+                                  'Identifier of the microwave link as used in the Telefonica planning tools, initialized with empty string'
                               logical-termination-point-id:
                                 type: string
                                 description: > 
@@ -76,9 +67,7 @@ x-javascript-interface:
                               link-aggregation-identifiers:
                                 type: array
                                 description: > 
-                                  'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames
-                                  from {$CreatingDsfpOutputCausesComputingLagInformation.LtpDesignation.response.body#link-aggregation-identifiers}
-                                  for the given combination of uuid and local-id'
+                                  'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames, initially an empty array.
                                 items:
                                   oneOf:
                                     - description: 'AirInterfaces'
@@ -386,9 +375,7 @@ x-javascript-interface:
                               interface-name:
                                 type: string
                                 description: > 
-                                  'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6
-                                  from {$CreatingDsfpOutputCausesComputingInterfaceNames.LtpDesignation.response.body#list-of-ethernet-container-names/interface-name},
-                                  for the given combination of uuid and local-id, if none found set to default=null'
+                                  'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6, initialized with empty string'
                               logical-termination-point-id:
                                 type: string
                                 description: > 
@@ -552,7 +539,6 @@ x-javascript-interface:
                                   nullable: true
                                   description: 'The number of lost frames (KPI). Set to default=-1.'
                   example:
-                    data-handle: '513250010-2024-03-06T13:00:00+01:00-a0893b37'
                     output:
                       air-interface-list:
                         - air-interface-identifiers:
@@ -662,7 +648,7 @@ x-javascript-interface:
                 description: >
                   'The mount-name of the device that is addressed by this callback
                   from {$request.body#mount-name}'
-            responses:
+            output:
               '200':
                 description: 'ControlConstruct provided from cache'
                 content:
@@ -858,7 +844,7 @@ x-javascript-interface:
                                                                 - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
                                                             period-end-time:
                                                               type: string
-                                                              description: 'If the period-end-time is not newer than the provided timestamp from the requestBody, the complete array item is to be ignored'
+                                                              description: 'If the period-end-time is not newer than the provided timestamp from the input, the complete array item is to be ignored'
                                                             max-bytes-per-second-output:
                                                               type: integer
                                                             total-bytes-input:
@@ -1020,7 +1006,7 @@ x-javascript-interface:
             For each interface there is a timestamp indicating the most recent timestamp that was seen in historical PM data from the last data retrieval for that interface.
             The list of these timestamps is read here for the given device'
           get:
-            requestBody:
+            input:
               content:
                 application/json:
                   schema:
@@ -1031,7 +1017,7 @@ x-javascript-interface:
                         description: >
                           'The mount-name of the device
                           from {$requst.body#mount-name}'
-            responses:
+            output:
               '200':
                 description: 'List of most recent PM data timestamps for the devices interfaces provided'
                 content:
@@ -1058,7 +1044,7 @@ x-javascript-interface:
             'The input data from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body} is to be traversed
             and prepared for subsequent processing steps'
           get:
-            responses:
+            output:
               '200':
                 description: 'Input CC data filtered and clustered'
                 content:
@@ -1454,6 +1440,9 @@ x-javascript-interface:
                 description: ''
               default:
                 description: ''
+
+
+      # both processing steps to be done via generic functions instead -> no longer processing steps of this function!
       CreatingDsfpOutputCausesComputingInterfaceNames:
         LtpDesignation: #[dpmdpIpAddress]:[dpmdpPort]/dpmdp-internal-memory
           description: >
@@ -1462,7 +1451,7 @@ x-javascript-interface:
               Therefore it shall iterate over the all {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#ltp-structure-and-augment/logical-termination-point}
               array items and compute the interface names where layer-protocol-name indicates AIR_LAYER or ETHERNET_CONTAINER_LAYER.'
           get:
-            responses:
+            output:
               '200':
                 description: 'Interface names compiled'
                 content:
@@ -1550,7 +1539,7 @@ x-javascript-interface:
               
               Result = List-of-Wire/AirInterfaceUuid'
           get:
-            responses:
+            output:
               '200':
                 description: 'Ltp augment for LAGs provided'
                 content:
