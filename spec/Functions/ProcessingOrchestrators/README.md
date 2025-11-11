@@ -4,6 +4,12 @@ This ProcessingOrchestrator is triggered by incoming notifications about new dat
 
 ### Notification receipt
 
+    Übernommen aus übergeordnetem Readme:
+    Notification receipt:
+    - Upon receipt, DPMDP only processes the first notification for a device related to this ControlConstruct update, subsequent notifications are ignored
+    - DPMDP reads the complete ControlConstruct for the device from the respective notification directly from ElasticSearch
+ 
+
 The incoming notifications of relevance are created by MWDI when the *time-of-latest-change* attribute of and AirInterface or EthernetContainer changes.  
 The current specification contains two ways for receiving those notifications:
 - either from Kafka

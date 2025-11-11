@@ -1,12 +1,47 @@
-# DevicePerformanceManagementDataProcessor
-Retrieves PM data from cache, processes it, and makes it available via Kafka.
+# DevicePerformanceManagementDataProcessor  
 
-## Description
+Retrieves PM data from cache, processes it, and makes it available via Kafka.  
 
-The DevicePerformanceMangementDataProcessor (DPMDP) gatheres relevant historical performance data of devices from cache, triggered by MWDI notifications.
-- Notification receipt:
-  - MWDI cycically retrieves the complete ControlConstruct of devices, thereby creating a new attribute value change notification for every AirInterface and EthernetContainer with changed timeOfLastChange attribute
-  - DPMDP can either subscribe to MWDI to directly receive these notifications via Webhook or can consume them from Kafka
-  - Upon receipt, DPMDP only processes the first notification for a device related to this ControlConstruct update, subsequent notifications are ignored
-- DPMDP reads the complete ControlConstruct for the device from the respective notification directly from ElasticSearch
-- DPMDP applies various internal functions to process the data, like removing irrelevant data, replacing unreasonable attribute values, etc.
+### Description  
+
+The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
+
+The DPMDP gets triggered by AttributeValueChanged notifications (via Kafka consumer interface) that are indicating updated historical performance data.  
+
+Whenever triggered, the DPMDP reads the raw performance data from the copied cache and prepares value added data that is streamed to out-of-domain tools (via Kafka provider interface).  
+
+The DPMDP implements a hard coded workflow for processing the raw data, but it also facilitates to de-/activate individual processing modules.  
+
+The following modules are provided:
+
+#### Plausibility
+
+- name  
+  Checks this for plausibility  
+
+- name  
+  Checks that for plausibility  
+
+#### Harmonization  
+
+- name  
+  Harmonizes the semantic meaning of the data in this aspect  
+
+- name  
+  Harmonizes the semantic meaning of the data in that aspect  
+
+#### KPIs  
+
+- name  
+  Adds this derived performance indicator  
+
+- name  
+  Adds that derived performance indicator  
+
+#### Supplementation  
+
+- name  
+  Adds this interface configuration information  
+
+- name  
+  Adds that interface status information  
