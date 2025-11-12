@@ -7,13 +7,22 @@ Retrieves PM data from cache, processes it, and makes it available via Kafka.
 
 The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
 
-The DPMDP gets triggered by AttributeValueChanged notifications (via Kafka consumer interface) that are indicating updated historical performance data.  
+The DPMDP gets triggered by AttributeValueChanged (AVC) notifications (via Kafka consumer interface) that are indicating updated historical performance data.  
 
 Whenever triggered, the DPMDP reads the raw performance data from the copied cache and prepares value added data that is streamed to out-of-domain tools (via Kafka provider interface).  
 
 The DPMDP implements a hard coded workflow for processing the raw data, but it also facilitates to de-/activate individual processing modules.  
 
 The following modules are provided:
+
+
+#### Workflow  
+
+- v1RegardAttributeValueChange
+  Receives and categorizes the AttributeValueChanged notifications and initiates device-wise processing of PM data
+
+- p1ProcessingOrchestrator
+  Orchestrates the device-wise processing of PM data
 
 
 #### Plausibility
