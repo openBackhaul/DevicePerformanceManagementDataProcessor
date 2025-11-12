@@ -525,6 +525,8 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
 
+# todo: paths to be adapted to API GW requirements ("v1/" to be deleted)
+
 # todo: To be moved to "OAM Layer - Individual Part"
   /v1/list-functions:
     post:
@@ -963,7 +965,7 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
 
-  /v1/regard-attribute-value-change:
+  /regard-attribute-value-change:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
@@ -971,8 +973,8 @@ paths:
       - $ref: '#/components/parameters/trace-indicator'
       - $ref: '#/components/parameters/customer-journey'
     post:
-      operationId: regardDeviceAttributeValueChange
-      summary: 'Receives notifications about changes of values of attributes inside the devices'
+      operationId: regardAttributeValueChange
+      summary: 'Receives notifications about changes of values of attributes'
       tags:
         - IndividualServices
       security:
@@ -1062,94 +1064,60 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        NotifiedAttributeValueChangeInIfHistoPmTimeOfLatestChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPmFor15MinHistoPm:
-          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/processing-orchestrator-for-15min-historical-pm]
-            description: >
-              'The processingOrchestrator checks the incoming notification for relevance.
-              If relevant, it creates a [/data-structure-for-processing].'
-            post:
-              requestBody:
+        NotifiedValueChangeInTimeOfLatestChangeAttributeTriggersP1ProcessingOrchestratorFor15MinHistoricalPmData:
+          x-javascript-interface:
+            p1ProcessingOrchestratorFor15MinHistoricalPmData:
+              summary: 'Creates DataStructureForProcessing and triggers the Functions that are processing the PM data provisioning'
+              input:
+                required: true
                 content:
                   application/json:
                     schema:
                       type: object
+                      required:
+                        - attribute-value-changed-notification
                       properties:
-                        microwave-device-inventory-1-0:attribute-value-changed-notification:
+                        attribute-value-changed-notification:
                           type: object
+                          required:
+                            - counter
+                            - timestamp
+                            - object-path
+                            - attribute-name
+                            - new-value
                           properties:
                             counter:
                               type: integer
                               description: >
-                                'The sequence number
+                                'Sequence number of callbacks sent through this forwarding
                                 from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/counter}'
                             timestamp:
                               type: string
                               description: >
-                                'The timestamp
+                                'Time when the callback is send
                                 from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/timestamp}'
                             object-path:
                               type: string
                               description: >
-                                'The
+                                'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value
                                 from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
                             attribute-name:
                               type: string
                               description: >
-                                'The
+                                'Name of the attribute that changed its value
                                 from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/attribute-name}'
                             new-value:
                               type: string
                               description: >
-                                'The
+                                'New value of the attribute
                                 from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
-                        device-type:
-                          type: string
-                          description: >
-                            'The device-type available for this mount-name in MWDI
-                            from {$ReadingOfDeviceTypeFromMwdiForDsfpObject.response.body#device-status-metadata/device-type}'
-              responses:
-                '204':
-                  description: 'Notification processed'
-                  headers:
-                    x-correlator:
-                      schema:
-                        type: string
-                        example: '550e8400-e29b-11d4-a716-446655440000'
-                    exec-time:
-                      schema:
-                        type: integer
-                        example: 1100
-                    backend-time:
-                      schema:
-                        type: integer
-                        example: 850
-                    life-cycle-state:
-                    # hat eine function einen LifeCycleState??
-                      schema:
-                        type: string
-                        enum:
-                          - 'EXPERIMENTAL'
-                          - 'OPERATIONAL'
-                          - 'DEPRECATED'
-                          - 'OBSOLETE'
-                          - 'UNKNOWN'
-                          - 'NOT_YET_DEFINED'
-                        example: 'EXPERIMENTAL'
-                      description: >
-                        'Life cycle state of the consumed service'
-                '400':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '401':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '403':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '404':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                '500':
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-                default:
-                  $ref: '#/components/responses/responseForErroredServiceRequests'
-        #other processing orchestrators could be called here in future releases as alternative (!) to the 15minHistoricalPm processing orchestrator
+              output:
+                success:
+                  description: 'PM data processed, sent and stored'
+                error:
+                  description: 'just for preventing an error in VSCode'
+                  # todo: description potentially to be deleted; behavior in case of errors to be described
+        # alternative processing orchestrators could be called here in future releases
 
   /v1/provide-data-store-item-for-device:
     parameters:

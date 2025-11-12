@@ -64,8 +64,8 @@ servers:
           uuid: dpmdp-1-0-0-op-s-bs-005
           operation-key: n.a.
       individual:
-        # receipt of MWDI AVCN notifications trigger processing
-        - operation-name: /v1/regard-attribute-value-change
+        # receipt of MWDI AVC notifications trigger processing
+        - operation-name: /regard-attribute-value-change
           uuid: dpmdp-1-0-0-op-s-is-000
           operation-key: n.a.
 

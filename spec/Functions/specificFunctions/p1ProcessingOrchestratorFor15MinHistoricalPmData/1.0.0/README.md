@@ -1,6 +1,30 @@
-# ProcessingOrchestratorFor15MinHistoricalPm  
+# p1ProcessingOrchestratorFor15MinHistoricalPmData  
 
-This ProcessingOrchestrator is triggered by incoming notifications about new data being available at the MWDI.  
+<!-- todo: Potentially to be updated -->
+
+- creates the DataStructureForProcessing (DSFP) object  
+  incl. data of AVC notification  
+
+- determines MountName and attaches it to DSFP  
+
+- determines DeviceType and attaches it to DSFP  
+
+- creates the initial Output object and attaches it to DSFP  
+
+- determines list of references to AirInterfaces and attaches it to DSFP  
+
+- determines list of references to EthernetContainers and attaches it to DSFP  
+
+-    hier geht's weiter mit Aufruf einer Funktion, welche die neuen PM Daten ermittelt
+      zu klären ist:
+          - das Vorgehen dabei
+          - was mit den Daten geschehen soll (ans DSFP oder schon ins output)
+
+
+
+
+
+
 
 ### Notification receipt
 
