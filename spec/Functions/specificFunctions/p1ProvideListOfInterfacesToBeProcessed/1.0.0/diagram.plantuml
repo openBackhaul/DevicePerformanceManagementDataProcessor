@@ -1,0 +1,40 @@
+@startuml diagram
+skinparam responseMessageBelowArrow true
+
+title
+  p1ProvideListOfInterfacesToBeProcessed
+end title
+
+participant "requestor\ne.g. p1ProcessingOrchestratorFor15MinHistoricalPmData" as requestor
+participant "p1ProvideListOfInterfacesToBeProcessed" as ITBP #LightBlue
+database "MWDI\nCache Replica" as MWDI
+participant "p1ExtractNewPmData" as ENPD
+
+
+requestor -> ITBP : {MountName}
+activate ITBP
+note over ITBP
+  Use FieldsFilter for distilling {uuid, localId, layerProtocolName}
+  of all AirInterfaces and EthernetContainers
+end note
+ITBP -> MWDI : {MountName}
+ITBP <-- MWDI : [{uuid, localId, layerProtocolName}]
+
+note over ITBP
+  Create empty listOfInterfacesToBeProcessed
+end note
+
+group FOR each interface
+  ITBP -> ENPD : {MountName, uuid, localId, layerProtocolName}
+  ITBP <-- ENPD : [{newPmData}]
+  note over ITBP
+    IF [{newPmData}].length > 0
+      add {uuid, localId, [{newPmData}]} to listOfInterfacesToBeProcessed
+  end note
+end
+
+requestor <-- ITBP : [ {uuid, localId, [{newPmData}]} ]
+
+deactivate ITBP
+
+@enduml

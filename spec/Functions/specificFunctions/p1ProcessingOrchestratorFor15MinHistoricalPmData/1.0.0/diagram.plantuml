@@ -5,3 +5,69 @@ title
   p1ProcessingOrchestratorFor15MinHistoricalPmData
 end title
 
+participant "requestor\ne.g. regardAttributeValueChange" as requestor
+participant "p1ProcessingOrchestratorFor15MinHistoricalPmData" as PO15 #LightBlue
+participant "MWDI:\n/v1/provide-device-status-metadata" as metadata
+participant "p1ProvideListOfInterfacesToBeProcessed" as ITBP
+
+
+participant "destilliere neue PM Daten" as DesignedDomainBorderThickness
+
+
+requestor -> PO15 : {AVC notification}
+activate PO15
+note over PO15
+  Create DataStructureForProcessing (DSFP)
+  and add AVC notification (AVCN)
+end note
+
+note over PO15
+  Distill MountName from 
+  AVCN::objectPath attribute
+end note
+note over PO15
+  Add MountName to DSFP
+end note
+
+PO15 -> metadata : {MountName}
+PO15 <-- metadata : {..., deviceType, ...}
+note over PO15
+  Add deviceType to DSFP
+end note
+
+PO15 -> ITBP : {MountName}
+  note over ITBP
+    Determines the new PM data for all 
+    AirInterfaces and all EthernetContainers
+  end note
+PO15 <-- ITBP : [ uuid, localId, [{newPmData}] ]
+
+note over PO15 #Orange
+  IF [].length == 0 (no interface with new PM data)
+    process to be terminated
+end note
+
+
+
+note over PO15 #LightGray
+  Pre-Processing to be detailed
+end note
+
+note over PO15 #LightGray
+  Processing to be detailed
+end note
+
+note over PO15 #LightGray
+  Sending to be detailed
+end note
+
+note over PO15 #LightGray
+  Storing to be detailed
+end note
+
+
+
+deactivate PO15
+
+@enduml
+

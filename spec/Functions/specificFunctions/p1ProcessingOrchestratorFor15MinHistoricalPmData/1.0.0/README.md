@@ -9,17 +9,27 @@
 
 - determines DeviceType and attaches it to DSFP  
 
+- calls p1ProvideListOfInterfacesToBeProcessed
+          |
+          ---> calls p1ExtractNewPmData
+
+                  hier geht's weiter:
+                    erstelle plantuml für p1ExtractNewPmData
+
+                    aktuelles Problem: 
+                      - wo bekommen wir den Wert von mostRecentTimestamp her?
+                        bzw. wo schreiben wir ihn persistent hin?
+
+                        (
+                          Im configfile hat er nix zu suchen
+                        im output format ist er nicht enthalten 
+                        (ihn bei jedem Durchgang aus den Daten des output formats zu errechnen ist zu langsam)
+                        Sollen wir anstatt des output formats das DSFP persistent speichern 
+                        (das widerspricht aber der Idee die ES des DPMDP eventuell weiteren APPs zu sharen)
+                        )
+
+
 - creates the initial Output object and attaches it to DSFP  
-
-- determines list of references to AirInterfaces and attaches it to DSFP  
-
-- determines list of references to EthernetContainers and attaches it to DSFP  
-
--    hier geht's weiter mit Aufruf einer Funktion, welche die neuen PM Daten ermittelt
-      zu klären ist:
-          - das Vorgehen dabei
-          - was mit den Daten geschehen soll (ans DSFP oder schon ins output)
-
 
 
 
