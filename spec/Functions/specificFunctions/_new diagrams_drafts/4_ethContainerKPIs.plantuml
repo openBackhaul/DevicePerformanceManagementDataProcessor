@@ -1,0 +1,25 @@
+@startuml p1Inquire15minEthernetContainerKpisFromCaca
+skinparam responseMessageBelowArrow true
+
+title
+p1Inquire15minEthernetContainerKpisFromCaca
+end title
+
+participant "requestor" as requestor
+participant "p1Inquire15minEthernetContainerKpisFromCaca" as setKpi #LightBlue
+participant "CaCa://v1/compute-ethernet-container-kpis-for-list-of-air-interfaces" as caca
+
+activate setKpi
+requestor -> setKpi: {todo: list ethContainer attributes/classes}
+
+note over setKpi #LightCoral
+ tb decided: shall DPDMP compute KPIs by itself
+ or will new app be created for that?
+end note
+
+setKpi -> caca: {todo: copy list of parameters here}
+setKpi <-- caca: {computed EthernetContainer KPIs}
+
+setKpi <-- requestor: {computed EthernetContainer KPIs}
+
+deactivate setKpi

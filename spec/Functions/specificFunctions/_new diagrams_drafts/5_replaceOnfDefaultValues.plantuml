@@ -1,0 +1,44 @@
+@startuml p1ReplaceOnfDefaultValues
+skinparam responseMessageBelowArrow true
+
+title
+p1ReplaceOnfDefaultValues
+end title
+
+participant "requestor" as requestor
+participant "p1ReplaceOnfDefaultValues" as replace #LightBlue
+
+activate replace
+
+note over requestor
+  decide on what shall be handed over,
+  only PM counters shall be replaced
+end note
+
+note over replace
+  ONF default counter attribute values shall be replaced.
+  The replacement value(s) can be configured via function parametrization.
+
+  If not configured differently, the following replacement values are applied:
+  - integer: null
+  - string: empty string
+end note
+
+requestor -> replace: {todo: add what data to hand over}
+
+note over replace
+<u>ReplaceOnfDefaultsAndReturnData</u>
+  Replace the ONF default values as
+  described above.
+  Return the data with replace default values
+  to requestor.
+
+  The function returns all the input data,
+  even if no replacements were necessary.
+end note
+
+replace --> requestor: modified {todo: add input parameters here}
+
+deactivate replace
+
+

@@ -1,0 +1,39 @@
+@startuml p1SetOutOfRangeLevelValuesToDefault
+skinparam responseMessageBelowArrow true
+
+title
+p1SetOutOfRangeLevelValuesToDefault
+end title
+
+participant "requestor" as requestor
+participant "p1SetOutOfRangeLevelValuesToDefault" as setLvl #LightBlue
+
+
+activate setLvl
+
+note over setLvl
+  The acceptable ranges for both RX and TX level counter values
+  can be configured as part of the function parametrization, as
+  well as the default value with which out of range counter values
+  shall be replaced.
+
+  If not changed, the default is as follows.
+  Valid level value ranges are:
+  - TX: values within [-30 , 40]
+  - RX: values within (-129, -99.9) AND (-99.9, -10)
+  Default replacement value: -1
+end note
+
+requestor -> setLvl: {TxLevelMin, TxLevelMax, TxLevelAvg,\nRxLevelMin, RxLevelMax, RxLevelAvg}
+
+note over setLvl
+  <u>ReplaceAndReturnModifiedLevelCounters</u>
+  For each handed over attribute check whether
+  its value is in the allowed range.  
+  If not, the respective attribute value is replaced
+  by the default.
+end note
+
+setLvl --> requestor: modified \n{TxLevelMin, TxLevelMax, TxLevelAvg,\nRxLevelMin, RxLevelMax, RxLevelAvg}
+
+deactivate setLvl
