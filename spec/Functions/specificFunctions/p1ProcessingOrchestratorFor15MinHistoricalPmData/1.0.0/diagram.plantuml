@@ -14,19 +14,11 @@ participant "p1ProvideListOfInterfacesToBeProcessed" as ITBP
 participant "destilliere neue PM Daten" as DesignedDomainBorderThickness
 
 
-requestor -> PO15 : {AVC notification}
+requestor -> PO15 : {mountName, processingStartTime}
 activate PO15
 note over PO15
   Create DataStructureForProcessing (DSFP)
-  and add AVC notification (AVCN)
-end note
-
-note over PO15
-  Distill MountName from 
-  AVCN::objectPath attribute
-end note
-note over PO15
-  Add MountName to DSFP
+  incl. mountName and processingStartTime
 end note
 
 PO15 -> metadata : {MountName}

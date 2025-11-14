@@ -3,9 +3,7 @@
 <!-- todo: Potentially to be updated -->
 
 - creates the DataStructureForProcessing (DSFP) object  
-  incl. data of AVC notification  
-
-- determines MountName and attaches it to DSFP  
+  incl. MountName and processing-start-time
 
 - determines DeviceType and attaches it to DSFP  
 
@@ -16,17 +14,8 @@
                   hier geht's weiter:
                     erstelle plantuml für p1ExtractNewPmData
 
-                    aktuelles Problem: 
-                      - wo bekommen wir den Wert von mostRecentTimestamp her?
-                        bzw. wo schreiben wir ihn persistent hin?
-
-                        (
-                          Im configfile hat er nix zu suchen
-                        im output format ist er nicht enthalten 
-                        (ihn bei jedem Durchgang aus den Daten des output formats zu errechnen ist zu langsam)
-                        Sollen wir anstatt des output formats das DSFP persistent speichern 
-                        (das widerspricht aber der Idee die ES des DPMDP eventuell weiteren APPs zu sharen)
-                        )
+                    die Frage wo der mostRecentTimestamp herkommt wurde gelöst
+                    Er ist nun im DataStore zu finden
 
 
 - creates the initial Output object and attaches it to DSFP  

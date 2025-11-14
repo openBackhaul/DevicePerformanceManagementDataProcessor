@@ -1,13 +1,25 @@
-# Information Structure  
+# Schemas  
+
+**[DataStructureForProcessing (DSFP)](./DataStructureForProcessing.yaml)**  
+Owned by p1ProcessingOrchestratorFor15MinHistoricalPmData for orchestrating the processing, sending and storing of the PM data.  
+
+**[Output](./Output.yaml)**  
+Owned by p1ProcessingOrchestratorFor15MinHistoricalPmData for holding the result of processing the raw PM data.  
+PM data format that is agreed with the Consumers and transmitted via Kafka.  
+
+**[DataStore](./DataStore.yaml)**  
+Format of the data in the persistent data store.  
 
 
-## Introduction  
+---
 
+Most likely no longer required:  
 
-## Detailed Schemas  
+[ProcessingSequence](./ProcessingSequence.yaml)  
+Checklist for processing the raw PM data.  
 
+--- 
 
+Support for updating the APT interface:
 
-## APT Update Support  
-As a support for updating the APT interface the [T1out_Output_AptpLegacy.yaml](./schemas/T1out_Output_AptpLegacy.yaml) file is provided.  
-Differences between APTP's asynchronous response to the /v1/provide-historical-pm-data-of-device service and the PM data Kafka event streaming interface of the DPMDP can be visualized by creating a diff-report comparing [T1out_Output_AptpLegacy.yaml](./schemas/T1out_Output_AptpLegacy.yaml) and [T1out_Output.yaml](./schemas/T1out_Output.yaml).  
+Differences between APTP's asynchronous response to the /v1/provide-historical-pm-data-of-device service and the PM data provided via the Kafka event streaming interface of the DPMDP can be visualized by creating a diff-report comparing [Output_AptpLegacy.yaml](./Output_AptpLegacy.yaml) and [Output.yaml](./Output.yaml).  

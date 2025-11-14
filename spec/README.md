@@ -21,3 +21,6 @@
 
 ### Comments
 ./.
+
+### High Level Overview  
+![high level process](./diagrams/highlevelOverview/highlevel_process.png)

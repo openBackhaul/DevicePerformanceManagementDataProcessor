@@ -1,6 +1,10 @@
 @startuml 001_RegardAttributeValueChangeNotification
 skinparam responseMessageBelowArrow true
 
+
+' Update required !!! '
+
+
 title
 ReadingOfDeviceTypeFromMwdiForDsfpObject
 NotifiedAttributeValueChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPm

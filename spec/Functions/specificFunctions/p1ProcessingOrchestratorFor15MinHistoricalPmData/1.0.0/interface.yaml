@@ -13,39 +13,22 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - attribute-value-changed-notification
+              - mount-name
+              - processing-start-time
             properties:
-              attribute-value-changed-notification:
-                type: object
-                required:
-                  - counter
-                  - timestamp
-                  - object-path
-                  - attribute-name
-                  - new-value
-                properties:
-                  counter:
-                    type: integer
-                    description: 'Sequence number of callbacks sent through this forwarding'
-                  timestamp:
-                    type: string
-                    description: 'Time when the callback is send'
-                  object-path:
-                    type: string
-                    description: 'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value'
-                  attribute-name:
-                    type: string
-                    description: 'Name of the attribute that changed its value'
-                  new-value:
-                    type: string
-                    description: 'New value of the attribute'
+              mount-name:
+                type: string
+                description: >
+                  'Extract mountName from objectPath in AVC notification sent by MWDI indicating change in timeOfLatestChange
+                  from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+              processing-start-time:
+                type: string
+                description: >
+                  'Processing has been initiated by an AVC notification sent by the cronjob for updating the DPMDP ES
+                  from {$request.body#cronjob-dpmdp-es-update:attribute-value-changed-notification/timestamp}'
             example:
-              attribute-value-changed-notification:
-                counter: 132
-                timestamp: '2010-11-20T14:00:00+01:00'
-                object-path: '/core-model-1-4:network-control-domain=cache/control-construct=513250009/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
-                attribute-name: 'time-of-latest-change'
-                new-value: '2010-11-20T13:59:00+01:00'
+              mount-name: '513250009'
+              processing-start-time: '2010-11-20T13:59:00+01:00'
     output:
       success:
         description: 'PM data processed, sent and stored'

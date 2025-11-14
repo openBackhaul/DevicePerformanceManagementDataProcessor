@@ -984,41 +984,74 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - microwave-device-inventory-1-0:attribute-value-changed-notification
-              properties:
-                microwave-device-inventory-1-0:attribute-value-changed-notification:
-                  type: object
-                  required:
-                    - counter
-                    - timestamp
-                    - object-path
-                    - attribute-name
-                    - new-value
-                  properties:
-                    counter:
-                      type: integer
-                      description: 'Sequence number of callbacks sent through this forwarding'
-                    timestamp:
-                      type: string
-                      description: 'Time when the callback is send'
-                    object-path:
-                      type: string
-                      description: 'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value'
-                    attribute-name:
-                      type: string
-                      description: 'Name of the attribute that changed its value'
-                    new-value:
-                      type: string
-                      description: 'New value of the attribute'
-              example:
-                microwave-device-inventory-1-0:attribute-value-changed-notification:
-                  counter: 132
-                  timestamp: '2010-11-20T14:00:00+01:00'
-                  object-path: '/core-model-1-4:network-control-domain=cache/control-construct=513250009/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
-                  attribute-name: 'time-of-latest-change'
-                  new-value: '2010-11-20T13:59:00+01:00'
+              oneOf:
+              - description: 'AVC notification sent by MWDI'
+                type: object
+                required:
+                  - microwave-device-inventory-1-0:attribute-value-changed-notification
+                properties:
+                  microwave-device-inventory-1-0:attribute-value-changed-notification:
+                    type: object
+                    required:
+                      - counter
+                      - timestamp
+                      - object-path
+                      - attribute-name
+                      - new-value
+                    properties:
+                      counter:
+                        type: integer
+                        description: 'Sequence number of callbacks sent through this forwarding'
+                      timestamp:
+                        type: string
+                        description: 'Time when the callback is send'
+                      object-path:
+                        type: string
+                        description: 'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value'
+                      attribute-name:
+                        type: string
+                        description: 'Name of the attribute that changed its value'
+                      new-value:
+                        type: string
+                        description: 'New value of the attribute'
+              - description: 'AVC notification sent by cronjob'
+                type: object
+                required:
+                  - cronjob-dpmdp-es-update:attribute-value-changed-notification
+                properties:
+                  cronjob-dpmdp-es-update:attribute-value-changed-notification:
+                    type: object
+                    required:
+                      - timestamp
+                    properties:
+                      counter:
+                        type: integer
+                      timestamp:
+                        type: string
+                        description: 'Time when the callback is send'
+                      object-path:
+                        type: string
+                      attribute-name:
+                        type: string
+                      new-value:
+                        type: string
+            examples:
+              sent-by-mwdi:
+                value:
+                  microwave-device-inventory-1-0:attribute-value-changed-notification:
+                    counter: 132
+                    timestamp: '2010-11-20T14:00:00+01:00'
+                    object-path: '/core-model-1-4:network-control-domain=cache/control-construct=513250009/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
+                    attribute-name: 'time-of-latest-change'
+                    new-value: '2010-11-20T13:59:00+01:00'
+              sent-by-cronjob:
+                value:
+                  cronjob-dpmdp-es-update:attribute-value-changed-notification:
+                    counter: 99
+                    timestamp: '2010-11-20T14:00:00+01:00'
+                    object-path: '/'
+                    attribute-name: 'time-of-latest-change'
+                    new-value: '2010-11-20T14:00:00+01:00'
       responses:
         '204':
           description: 'Notification received'
@@ -1075,42 +1108,19 @@ paths:
                     schema:
                       type: object
                       required:
-                        - attribute-value-changed-notification
+                        - mount-name
+                        - processing-start-time
                       properties:
-                        attribute-value-changed-notification:
-                          type: object
-                          required:
-                            - counter
-                            - timestamp
-                            - object-path
-                            - attribute-name
-                            - new-value
-                          properties:
-                            counter:
-                              type: integer
-                              description: >
-                                'Sequence number of callbacks sent through this forwarding
-                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/counter}'
-                            timestamp:
-                              type: string
-                              description: >
-                                'Time when the callback is send
-                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/timestamp}'
-                            object-path:
-                              type: string
-                              description: >
-                                'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value
-                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
-                            attribute-name:
-                              type: string
-                              description: >
-                                'Name of the attribute that changed its value
-                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/attribute-name}'
-                            new-value:
-                              type: string
-                              description: >
-                                'New value of the attribute
-                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
+                        mount-name:
+                          type: string
+                          description: >
+                            'Extract mountName from objectPath in AVC notification sent by MWDI indicating change in timeOfLatestChange
+                            from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+                        processing-start-time:
+                          type: string
+                          description: >
+                            'Processing has been initiated by an AVC notification sent by the cronjob for updating the DPMDP ES
+                            from {$request.body#cronjob-dpmdp-es-update:attribute-value-changed-notification/timestamp}'
               output:
                 success:
                   description: 'PM data processed, sent and stored'

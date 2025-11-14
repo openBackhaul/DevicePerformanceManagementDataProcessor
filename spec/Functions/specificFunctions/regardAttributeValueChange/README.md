@@ -19,6 +19,15 @@ The delay depends on the periodicity that is configured into the cronjob in ES.
 This configuration is unknown to the DPMDP, respectively the application layer in general.  
 To overcome this lack of information and to synchronize the DPMDP to the cyclic update of its ES index, the following process shall be used.  
 
+> **Note**  
+> During "MW SDN Implementation and Integration Feedback" call on Friday, 14th of November,  
+> we discussed that the cronjob for updating the DPMDP ES could send a REST request  
+> to the DPMDP to indicate an updated DPMDP ES content.  
+> If feasibility of this option could be validated, the rest of this chapter would be obsolete.  
+> If the notification send by the cronjob would be formatted like a AVC notification  
+> and address the DPMDP://regard-attribute-value-change dealing with this notification  
+> should be described here, and not further change would be required.  
+
 After the regardAttributeValueChange received the first AVC notification, it shall regularly (e.g. once within a second) check the DPMDP ElasticSearch index for the referenced attribute having the new value.  
 The time period between receiving the first AVC notification and measuring an updated ES shall be defined to be the expected period length.  
 

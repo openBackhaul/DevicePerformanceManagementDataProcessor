@@ -1,33 +1,23 @@
 data-structure-for-processing:
   type: object
   required:
-    - object-path
-    - attribute-name
-    - new-value
     - mount-name
+    - processing-start-time
     - device-type
     - processing
     - input
     - output
   properties:
-    counter:
-      type: string
-      description: 'counter from the initial notification'
-    timestamp:
-      type: string
-      description: 'timestamp from the initial notification'
-    object-path:
-      type: string
-      description: 'objectPath from the initial notification'
     mount-name:
       type: string
-      description: 'mountName, extracted from objectPath of the initial notification'
-    attribute-name:
+      description: >
+        'mountName
+        from {$p1ProcessingOrchestratorFor15MinHistoricalPmData.request.body#/mount-name}'
+    processing-start-time:
       type: string
-      description: 'attributeName from the initial notification'
-    new-value:
-      type: string
-      description: 'newValue from the initial notification'
+      description: >
+        'Processing has been initiated by an AVC notification sent by the cronjob for updating the DPMDP ES
+        from {$p1ProcessingOrchestratorFor15MinHistoricalPmData.request.body#/processing-start-time}'
     device-type:
       type: string
       description: 'deviceType as investigated during the pre-processing'
