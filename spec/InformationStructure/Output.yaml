@@ -2,7 +2,9 @@ output:
   type: object
   properties:
     air-interface-list:
-      description: 'List of microwave air interfaces found in the given devices'
+      description: >
+        'List of microwave air interfaces found in the given devices
+        from { ??? }'
       type: array
       items:
         type: object
@@ -12,19 +14,29 @@ output:
             properties:
               mount-name:
                 type: string
-                description: 'Identifier of the device at the controller and in the Telefónica planning tools'
+                description: >
+                  'Identifier of the device at the controller and in the Telefónica planning tools
+                  from { ??? }'
               link-endpoint-id:
                 type: string
-                description: 'Identifier of the microwave link endpoint as used in the Telefonica planning tools'
+                description: >
+                  'Identifier of the microwave link endpoint as used in the Telefonica planning tools
+                  from { ??? }'
               link-id:
                 type: string
-                description: 'Identifier of the microwave link as used in the Telefonica planning tools. To be obtained by extracting the substring constituted by the 9 first characters'
+                description: >
+                  'Identifier of the microwave link as used in the Telefonica planning tools. To be obtained by extracting the substring constituted by the 9 first characters
+                  from { ??? }'
               logical-termination-point-id:
                 type: string
-                description: 'Identifier of the microwave link endpoint within the MW SDN domain'
+                description: >
+                  'Identifier of the microwave link endpoint within the MW SDN domain
+                  from { ??? }'
               link-aggregation-identifiers:
                 type: array
-                description: 'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames'
+                description: >
+                  'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames
+                  from { ??? }'
                 items:
                   oneOf:
                     - description: 'AirInterfaces'
@@ -34,7 +46,9 @@ output:
                       properties:
                         link-id:
                           type: string
-                          description: 'Identifier of the microwave link as used in the Telefonica planing tools'
+                          description: >
+                            'Identifier of the microwave link as used in the Telefonica planing tools
+                            from { ??? }'
                     - description: 'WireInterface'
                       type: object
                       required:
@@ -42,55 +56,74 @@ output:
                       properties:
                         interface-name:
                           type: string
-                          description: 'Interface name as it is represented at the own management interface of the vendor'
+                          description: >
+                            'Interface name as it is represented at the own management interface of the vendor
+                            from { ??? }'
           air-interface-configuration:
             type: object
             properties:
               configured-atpc-is-on:
                 type: boolean
-                description: 'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on'
+                description: >
+                  'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on
+                  from { ??? }'
               configured-atpc-threshold-upper:
                 type: integer
-                nullable: true
-                description: 'Configured upper automatic transmit power control (ATPC) threshold in dBm'
+                description: >
+                  'Configured upper automatic transmit power control (ATPC) threshold in dBm
+                  from { ??? }'
               configured-atpc-threshold-lower:
                 type: integer
-                nullable: true
-                description: 'Configured lower automatic transmit power control (ATPC) threshold in dBm'
+                description: >
+                  'Configured lower automatic transmit power control (ATPC) threshold in dBm
+                  from { ??? }'
               configured-tx-power:
                 type: integer
-                nullable: true
-                description: 'Configured transmit power that will be operated in maximum in dBm'
+                description: >
+                  'Configured transmit power that will be operated in maximum in dBm
+                  from { ??? }'
               configured-modulation-minimum:
                 type: object
-                description: 'Configured minimum modulation scheme'
+                description: >
+                  'Configured minimum modulation scheme
+                  from { ??? }'
                 properties:
                   number-of-states:
                     type: integer
-                    nullable: true
-                    description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                    description: >
+                      'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
+                      from { ??? }'
                   name-at-lct:
                     type: string
-                    description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                    description: >
+                      'Name identifying this transmission mode on the graphical user interface of the local craft terminal
+                      from { ??? }'
                   configured-capacity-minimum:
                     type: integer
-                    nullable: true
-                    description: 'Channel capacity in kbps of the configured minimum modulation scheme (KPI)'
+                    description: >
+                      'AirInterface capacity for the configured minimum modulation scheme calculated with ONF formula
+                      from { ??? }'
               configured-modulation-maximum:
                 type: object
-                description: 'Configured maximum modulation scheme'
+                description: >
+                  'Configured maximum modulation scheme
+                  from { ??? }'
                 properties:
                   number-of-states:
                     type: integer
-                    nullable: true
-                    description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                    description: >
+                      'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
+                      from { ??? }'
                   name-at-lct:
                     type: string
-                    description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                    description: >
+                      'Name identifying this transmission mode on the graphical user interface of the local craft terminal
+                      from { ??? }'
                   configured-capacity-maximum:
                     type: integer
-                    nullable: true
-                    description: 'Channel capacity in kbps of the configured maximum modulation scheme. To be filled with default value -1'
+                    description: >
+                      'AirInterface capacity for the configured maximum modulation scheme calculated with ONF formula
+                      from { ??? }'
           air-interface-performance-measurements-list:
             type: array
             items:
@@ -103,136 +136,178 @@ output:
                     - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                     - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
                     - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
-                  description: 'Time period between reset of the underlying counter'
+                  description: >
+                    'Time period between reset of the underlying counter
+                    from { ??? }'
                 period-end-time:
                   type: string
-                  description: 'Time when the counter values have been recorded and the counter reset'
+                  description: >
+                    'Time when the counter values have been recorded and the counter reset
+                    from { ??? }'
                 transmit-level-minimum:
                   type: integer
-                  nullable: true
-                  description: 'Minimum transmit power in dBm'
+                  description: >
+                    'Minimum transmit power in dBm
+                    from { ??? }'
                 transmit-level-maximum:
                   type: integer
-                  nullable: true
-                  description: 'Maximum transmit power in dBm'
+                  description: >
+                    'Maximum transmit power in dBm
+                    from { ??? }'
                 transmit-level-average:
                   type: integer
-                  nullable: true
-                  description: 'Averaged transmit power in dBm'
+                  description: >
+                    'Averaged transmit power in dBm
+                    from { ??? }'
                 receive-level-minimum:
                   type: integer
-                  nullable: true
-                  description: 'Minimum receive level in dBm'
+                  description: >
+                    'Minimum receive level in dBm
+                    from { ??? }'
                 receive-level-maximum:
                   type: integer
-                  nullable: true
-                  description: 'Maximum receive level in dBm'
+                  description: >
+                    'Maximum receive level in dBm
+                    from { ??? }'
                 receive-level-average:
                   type: integer
-                  nullable: true
-                  description: 'Averaged receive level in dBm'
+                  description: >
+                    'Averaged receive level in dBm
+                    from { ??? }'
                 signal-to-noise-ratio-minimum:
                   type: integer
-                  nullable: true
-                  description: 'Minimum signal to noise + interference ratio (SNIR)'
+                  description: >
+                    'Minimum signal to noise + interference ratio (SNIR)
+                    from { ??? }'
                 signal-to-noise-ratio-maximum:
                   type: integer
-                  nullable: true
-                  description: 'Maximum signal to noise + interference ratio (SNIR)'
+                  description: >
+                    'Maximum signal to noise + interference ratio (SNIR)
+                    from { ??? }'
                 signal-to-noise-ratio-average:
                   type: integer
-                  nullable: true
-                  description: 'Averaged signal to noise + interference ratio (SNIR)'
+                  description: >
+                    'Averaged signal to noise + interference ratio (SNIR)
+                    from { ??? }'
                 cross-polarization-discrimination-minimum:
                   type: integer
-                  nullable: true
-                  description: 'Minimum cross polarization discrimination (XPD)'
+                  description: >
+                    'Minimum cross polarization discrimination (XPD)
+                    from { ??? }'
                 cross-polarization-discrimination-maximum:
                   type: integer
-                  nullable: true
-                  description: 'Maximum cross polarization discrimination (XPD)'
+                  description: >
+                    'Maximum cross polarization discrimination (XPD)
+                    from { ??? }'
                 cross-polarization-discrimination-average:
                   type: integer
-                  nullable: true
-                  description: 'Averaged cross polarization discrimination (XPD)'
+                  description: >
+                    'Averaged cross polarization discrimination (XPD)
+                    from { ??? }'
                 operated-transmission-modes-list: 
-                  description: 'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed'
+                  description: >
+                    'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed
+                    from { ??? }'
                   type: array
                   items:
                     type: object
                     properties:
                       transmission-mode-name:
                         type: string
-                        description: 'Key attribute, name of the transmission mode'
+                        description: >
+                          'Key attribute, name of the transmission mode
+                          from { ??? }'
                       modulation-scheme-name-at-lct:
                         type: string
-                        description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                        description: >
+                          'Name identifying this transmission mode on the graphical user interface of the local craft terminal
+                          from { ??? }'
                       time:
                         type: integer
-                        nullable: true
-                        description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                        description: >
+                          'Name identifying this transmission mode on the graphical user interface of the local craft terminal
+                          from { ??? }'
                       capacity:
                         type: integer
-                        nullable: true
-                        description: 'Channel capacity in kbps of the modulation scheme (KPI).'
+                        description: >
+                          'Channel capacity in kbps of the modulation scheme (KPI).
+                          from { ??? }'
                 interval-capacity:
                   type: integer
-                  nullable: true
-                  description: 'Channel capacity over the entire performance measurement interval in kbps. Calculated from the capacities of the operated transmission modes, by weighting the duration of each operated mode over the entire measurement period.To be filled with default value -1'
+                  description: >
+                    'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period.
+                    from { ??? }'
                 errorred-seconds:
                   type: integer
-                  nullable: true
-                  description: 'Number of errored seconds'
+                  description: >
+                    'Number of errored seconds
+                    from { ??? }'
                 severely-errorred-seconds:
                   type: integer
-                  nullable: true
-                  description: 'Number of severily errored seconds'
+                  description: >
+                    'Number of severily errored seconds
+                    from { ??? }'
                 consecutive-severely-errorred-seconds:
                   type: integer
-                  nullable: true
-                  description: 'Number of consecutive severily errored seconds'
+                  description: >
+                    'Number of consecutive severily errored seconds
+                    from { ??? }'
                 total-unavailability:
                   type: integer
-                  nullable: true
-                  description: 'Total time of unavailability in seconds'
+                  description: >
+                    'Total time of unavailability in seconds
+                    from { ??? }'
                 defect-blocks:
                   type: integer
-                  nullable: true
-                  description: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
+                  description: >
+                    'Total number of blocks that were defect after receiving and could not be corrected by the FEC
+                    from { ??? }'
                 time-period:
                   type: integer
-                  nullable: true
-                  description: 'Total (actual) length of the measurement period'
+                  description: >
+                    'Total (actual) length of the measurement period'
           transmission-mode-list:
-            description: 'List of supported Transmission Modes'
+            description: >
+                  'List of supported Transmission Modes
+                  from { ??? }'
             type: array
             items:
               type: object
               properties:
                 transmission-mode-name:
                   type: string
-                  description: 'Key attribute, name of the transmission mode'
+                  description: >
+                    'Key attribute, name of the transmission mode
+                    from { ??? }'
                 number-of-states:
                   type: integer
-                  nullable: true
-                  description: 'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)'
+                  description: >
+                    'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
+                    from { ??? }'
                 modulation-scheme-name-at-lct:
                   type: string
-                  description: 'Name identifying this transmission mode on the graphical user interface of the local craft terminal'
+                  description: >
+                    'Name identifying this transmission mode on the graphical user interface of the local craft terminal
+                    from { ??? }'
                 channel-bandwidth:
                   type: integer
-                  nullable: true
-                  description: 'Bandwidth of the transmit channel in kHz'
+                  description: >
+                    'Bandwidth of the transmit channel in kHz
+                    from { ??? }'
                 code-rate:
                   type: integer
-                  nullable: true
-                  description: 'Code rate of the coding scheme in %'
+                  description: >
+                    'Code rate of the coding scheme in %
+                    from { ??? }'
                 symbol-rate-reduction-factor:
                   type: integer
-                  nullable: true
-                  description: 'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
+                  description: >
+                    'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK
+                    from { ??? }'
     ethernet-container-list:
-      description: 'List of ethernet containers found in the given devices'
+      description: >
+        'List of ethernet containers found in the given devices
+        from { ??? }'
       type: array
       items:
         type: object
@@ -242,13 +317,18 @@ output:
             properties:
               mount-name:
                 type: string
-                description: 'Identifier of the device at the controller and in the Telefónica planning tools'
+                description: >
+                  'Identifier of the device at the controller and in the Telefónica planning tools
+                  from { ??? }'
               interface-name:
                 type: string
-                description: 'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6'
+                description: >
+                  'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6
+                  from { ??? }'
               logical-termination-point-id:
                 type: string
-                description: 'Identifier of the ethernet container within the MW SDN domain'
+                description: >
+                  'Identifier of the ethernet container within the MW SDN domain'
           ethernet-container-performance-measurements-list:
             type: array
             items:
@@ -261,104 +341,151 @@ output:
                     - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                     - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
                     - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
-                  description: 'Time period between reset of the underlying counter'
+                  description: >
+                    'Time period between reset of the underlying counter
+                    from { ??? }'
                 period-end-time:
                   type: string
-                  description: 'Time when the counter values have been recorded and the counter reset'
+                  description: >
+                    'Time when the counter values have been recorded and the counter reset
+                    from { ??? }'
                 max-bytes-per-second-output:
                   type: string
-                  description: 'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
+                  description: >
+                    'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period
+                    from { ??? }'
                 total-bytes-input:
                   type: string
-                  description: 'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
+                  description: >
+                    'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period
+                    from { ??? }'
                 total-bytes-output:
                   type: string
-                  description: 'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period'
+                  description: >
+                    'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period
+                    from { ??? }'
                 total-frames-input:
                   type: string
-                  description: 'The total number of Ethernet frames received at this interface (including those received in error)'
+                  description: >
+                    'The total number of Ethernet frames received at this interface (including those received in error)
+                    from { ??? }'
                 total-frames-output:
                   type: string
-                  description: 'The total number of Ethernet frames sent at this interface'
+                  description: >
+                    'The total number of Ethernet frames sent at this interface
+                    from { ??? }'
                 forwarded-frames-input:
                   type: string
-                  description: 'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
+                  description: >
+                    'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination
+                    from { ??? }'
                 forwarded-frames-output:
                   type: string
-                  description: 'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
+                  description: >
+                    'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination
+                    from { ??? }'
                 unicast-frames-input:
                   type: string
-                  description: 'Total number of unicast frames received at this interface'
+                  description: >
+                    'Total number of unicast frames received at this interface
+                    from { ??? }'
                 unicast-frames-output:
                   type: string
-                  description: 'Total number of unicast frames sent at this interface'
+                  description: >
+                    'Total number of unicast frames sent at this interface
+                    from { ??? }'
                 multicast-frames-input:
                   type: integer
-                  nullable: true
-                  description: 'Total number of multicast frames received at this interface'
+                  description: >
+                    'Total number of multicast frames received at this interface
+                    from { ??? }'
                 multicast-frames-output:
                   type: integer
-                  nullable: true
-                  description: 'Total number of multicast frames sent at this interface'
+                  description: >
+                    'Total number of multicast frames sent at this interface
+                    from { ??? }'
                 broadcast-frames-input:
                   type: integer
-                  nullable: true
-                  description: 'Total number of broadcast frames received at this interface'
+                  description: >
+                    'Total number of broadcast frames received at this interface
+                    from { ??? }'
                 broadcast-frames-output:
                   type: integer
-                  nullable: true
-                  description: 'Total number of broadcast frames sent at this interface'
+                  description: >
+                    'Total number of broadcast frames sent at this interface
+                    from { ??? }'
                 fragmented-frames-input:
                   type: integer
-                  nullable: true
-                  description: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
+                  description: >
+                    'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)
+                    from { ??? }'
                 errored-frames-input:
                   type: integer
-                  nullable: true
-                  description: 'Total number of errored frames received at this interface'
+                  description: >
+                    'Total number of errored frames received at this interface
+                    from { ??? }'
                 errored-frames-output:
                   type: integer
-                  nullable: true
-                  description: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
+                  description: >
+                    'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination
+                    from { ??? }'
                 dropped-frames-input:
                   type: integer
-                  nullable: true
-                  description: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
+                  description: >
+                    'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)
+                    from { ??? }'
                 dropped-frames-output:
                   type: integer
-                  nullable: true
-                  description: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
+                  description: >
+                    'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)
+                    from { ??? }'
                 oversized-frames-ingress:
                   type: string
-                  nullable: true
-                  description: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
+                  description: >
+                    'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed
+                    from { ??? }'
                 undersized-frames-ingress:
                   type: string
-                  description: 'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
+                  description: >
+                    'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed
+                    from { ??? }'
                 jabber-frames-ingress:
                   type: string
-                  description: 'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
+                  description: >
+                    'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem
+                    from { ??? }'
                 unknown-protocol-frames-input:
                   type: string
-                  description: 'Total number of received frames that were transporting an unknown protocol'
+                  description: >
+                    'Total number of received frames that were transporting an unknown protocol
+                    from { ??? }'
                 time-period:
                   type: integer
-                  nullable: true
-                  description: 'Total (actual) length of the measurement period'
+                  description: >
+                    'Total (actual) length of the measurement period
+                    from { ??? }'
                 transmit-traffic:
                   type: number
                   format: float
-                  nullable: true
-                  description: 'TX Traffic [Mbps] KPI)'
+                  description: >
+                    'TX Traffic [Mbps] KPI)
+                    from { ??? }'
                 receive-traffic:
                   type: number
                   format: float
-                  nullable: true
-                  description: 'RX Traffic [Mbps] (KPI)'
-                frame-loss:
+                  description: >
+                    'RX Traffic [Mbps] (KPI)
+                    from { ??? }'
+                frame-loss-input:
                   type: integer
-                  nullable: true
-                  description: 'The number of lost frames (KPI)'
+                  description: >
+                    'Sum of errored and dropped frames on the ingress (KPI)
+                    from { ??? }'
+                frame-loss-output:
+                  type: integer
+                  description: >
+                    'Sum of errored and dropped frames on the egress (KPI)
+                    from { ??? }'
   example:
     output:
       air-interface-list:
@@ -461,4 +588,3 @@ output:
               transmit-traffic: 320
               receive-traffic: 250
               frame-loss: 12000
-
