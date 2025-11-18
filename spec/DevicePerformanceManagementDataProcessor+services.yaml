@@ -37,11 +37,23 @@ servers:
       individual:
         - operation-name: /v1/bequeath-your-data-and-die
           uuid: dpmdp-1-0-0-op-s-im-000
-        - operation-name: /v1/list-functions
+        - operation-name: /list-functions
           uuid: dpmdp-1-0-0-op-s-im-001
           operation-key: n.a.
-        - operation-name: /v1/list-processing-sequences
+        - operation-name: /provide-config-of-function
           uuid: dpmdp-1-0-0-op-s-im-002
+          operation-key: n.a.
+        - operation-name: /update-function
+          uuid: dpmdp-1-0-0-op-s-im-003
+          operation-key: n.a.
+        - operation-name: /list-processing-sequences
+          uuid: dpmdp-1-0-0-op-s-im-004
+          operation-key: n.a.
+        - operation-name: /provide-processing-sequence
+          uuid: dpmdp-1-0-0-op-s-im-005
+          operation-key: n.a.
+        - operation-name: /update-processing-sequence
+          uuid: dpmdp-1-0-0-op-s-im-006
           operation-key: n.a.
     service:
       basic:

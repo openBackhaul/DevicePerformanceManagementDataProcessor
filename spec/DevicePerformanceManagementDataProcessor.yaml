@@ -528,9 +528,10 @@ paths:
 # todo: paths to be adapted to API GW requirements ("v1/" to be deleted)
 
 # todo: To be moved to "OAM Layer - Individual Part"
-  /v1/list-functions:
+# + todo: add forwardings (fowardingList + configFile)
+  /list-functions:
     post:
-      operationId: v1ListFunctions
+      operationId: listFunctions
       summary: 'Provides list of identifiers of internal Functions'
       tags:
         - IndividualManagement
@@ -574,9 +575,9 @@ paths:
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
-  /v1/provide-config-of-function:
+  /provide-config-of-function:
     post:
-      operationId: v1ProvideConfigOfFunction
+      operationId: provideConfigOfFunction
       summary: 'Provides parameter set of the specified internal Function'
       tags:
         - IndividualManagement
@@ -670,9 +671,9 @@ paths:
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
-  /v1/update-function:
+  /update-function:
     post:
-      operationId: v1UpdateFunction
+      operationId: updateFunction
       summary: 'Updates parameter set of specified internal Function'
       tags:
         - IndividualManagement
@@ -745,9 +746,9 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
 
-  /v1/list-processing-sequences:
+  /list-processing-sequences:
     post:
-      operationId: v1ListProcessingSequences
+      operationId: listProcessingSequences
       summary: 'Provides list of operationIds of ProcessingFunctions'
       tags:
         - IndividualManagement
@@ -804,9 +805,9 @@ paths:
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
-  /v1/provide-processing-sequence:
+  /provide-processing-sequence:
     post:
-      operationId: v1ProvideProcessingSequence
+      operationId: provideProcessingSequence
       summary: 'Provides configuration of a processing sequence'
       tags:
         - IndividualManagement
@@ -902,9 +903,9 @@ paths:
           $ref: '#/components/responses/responseForErroredOamRequests'
         default:
           $ref: '#/components/responses/responseForErroredOamRequests'
-  /v1/update-processing-sequence:
+  /update-processing-sequence:
     post:
-      operationId: v1UpdateProcessingSequence
+      operationId: updateProcessingSequence
       summary: 'Allows activating and de-activating of individual processing steps'
       tags:
         - IndividualManagement

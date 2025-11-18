@@ -98,10 +98,10 @@ forwardings:
         uuid: dpmdp-1-0-0-op-s-bm-015
       - server-name: /v1/bequeath-your-data-and-die
         uuid: dpmdp-1-0-0-op-s-im-000
-      - server-name: /v1/list-functions
+      - server-name: /list-functions
         uuid: dpmdp-1-0-0-op-s-im-001
       - server-name: /v1/list-processing-sequences
-        uuid: dpmdp-1-0-0-op-s-im-002
+        uuid: dpmdp-1-0-0-op-s-im-004
       - server-name: /v1/start-application-in-generic-representation
         uuid: dpmdp-1-0-0-op-s-bs-000
       - server-name: /v1/inform-about-application
