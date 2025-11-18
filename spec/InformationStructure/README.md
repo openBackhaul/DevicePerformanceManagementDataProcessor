@@ -1,10 +1,10 @@
 # Schemas  
 
 **[DataStructureForProcessing (DSFP)](./DataStructureForProcessing.yaml)**  
-Owned by p1ProcessingOrchestratorFor15MinHistoricalPmData for orchestrating the processing, sending and storing of the PM data.  
+Owned by p1ProcessingOrchestratorForHistoricalPmData for orchestrating the processing, sending and storing of the PM data.  
 
 **[Output](./Output.yaml)**  
-Owned by p1ProcessingOrchestratorFor15MinHistoricalPmData for holding the result of processing the raw PM data.  
+Owned by p1ProcessingOrchestratorForHistoricalPmData for holding the result of processing the raw PM data.  
 PM data format that is agreed with the Consumers and transmitted via Kafka.  
 
 **[DataStore](./DataStore.yaml)**  

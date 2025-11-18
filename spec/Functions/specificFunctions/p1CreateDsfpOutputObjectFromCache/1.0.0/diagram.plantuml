@@ -5,7 +5,7 @@ title
   p1CreateDsfpOutputObjectFromCache
 end title
 
-participant "requestor\ne.g. p1ProcessingOrchestratorFor15MinHistoricalPm" as requestor
+participant "requestor\ne.g. p1ProcessingOrchestratorForHistoricalPm" as requestor
 participant "p1CreateDsfpOutputObjectFromCache" as create #LightBlue
 database "DPMDP\nCacheDomain" as DpmdpEs
 database "DPMDP\nApplicationData\nDeviceTable" as deviceTable

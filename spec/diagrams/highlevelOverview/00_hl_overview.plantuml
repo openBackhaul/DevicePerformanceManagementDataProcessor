@@ -1,0 +1,167 @@
+@startuml 00_hl_overview
+skinparam responseMessageBelowArrow true
+
+title
+  DevicePerformanceManagementDataProcessor
+end title
+
+participant "MWDI\n" as mwdi
+participant "cronjob\nin ES" as cjes
+participant "regardAttribute-\nValueChange" as rAVC #LightCyan
+
+participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
+
+participant "p1LoadRawData" as p1AddRaw #LightCyan
+database  "MWDI ES\nReplica" as MwdiEs #LightCyan
+
+participant "example\np1SpecificProcessing" as p1Specific #LightBlue
+participant "example\np1GenericProcessing" as p1Generic #LightBlue
+
+participant "example\np1OutputFormatting" as p1Output #LightCyan
+participant "example\np1Transmitting" as p1Trans #LightCyan
+
+participant "p1RemoveRawData" as p1DelRaw #LightCyan
+
+participant "p1Storing" as p1Store #LightBlue
+database "dataStore" as db #LightBlue
+
+
+activate rAVC #LightCyan
+
+mwdi -> rAVC
+note over rAVC
+  AVC notifications are collected
+  and categorized by MountName
+end note
+
+cjes -> rAVC
+note over rAVC
+  AVC notification from cronjob
+  is initiating processing
+end note
+
+rAVC -> p1ProOrch : separate for every MountName
+activate p1ProOrch #LightCyan
+
+  note over p1ProOrch
+    DataStructureForProcessing
+    gets created
+  end note
+
+  p1ProOrch -> p1AddRaw
+  activate p1AddRaw #LightCyan
+
+    p1AddRaw -> MwdiEs
+    p1AddRaw <-- MwdiEs : {rawCC}
+    note over p1AddRaw
+      {rawCC} is reduced to AirInterfaces
+      and EthernetContainers
+    end note
+
+  p1ProOrch <-- p1AddRaw : {rawCC*}
+  deactivate p1AddRaw
+
+  note over p1ProOrch
+    Add {rawCC*} to
+    DataStructureForProcessing
+  end note
+
+  p1ProOrch -> p1Specific : {_rawCC*, {input}, {parameters}}
+  activate p1Specific
+
+    note over p1Specific
+      categorization into processes 
+      in unclear, and undesigned
+      potentially, 
+        - adding capability, config, performance
+        - processing Ericsson, Huawei, SIAE
+        - processing AirInterface, EthernetContainer
+    end note
+
+    p1Specific -> p1Generic
+    activate p1Generic
+  
+      note over p1Generic
+        e.g., 
+          - capacity calculation
+          - default value replacement
+          - semantical harmonization
+      end note
+
+    p1Specific <-- p1Generic
+    deactivate p1Generic
+    
+  p1ProOrch <-- p1Specific : {return}
+  deactivate p1Specific
+
+  note over p1ProOrch
+    DataStructureForProcessing
+    gets filled with {return}
+  end note
+
+  p1ProOrch -> p1Output : _resultCC
+  activate p1Output #LightCyan
+
+    note over p1Output #Orange
+      idea:
+      in pre-release, _rawCC* instead of _resultCC gets passed
+      -> {output} gets created from raw data instead of missing results
+    end note
+
+    note over p1Output
+      formatting the results
+      for transmitting
+    end note
+
+  p1ProOrch <-- p1Output : {output}
+  deactivate p1Output
+
+  note over p1ProOrch
+    {output} gets added to
+    DataStructureForProcessing
+  end note
+
+  p1ProOrch -> p1Trans : {output}
+  activate p1Trans #LightCyan
+
+    note over p1Trans
+      {output} gets transmitted
+    end note
+
+  p1ProOrch <-- p1Trans
+  deactivate p1Trans
+
+  p1ProOrch -> p1DelRaw : _DataStructureForProcessing
+  activate p1DelRaw
+
+    note over p1DelRaw
+      Delete {rawCC*} from
+      DataStructureForProcessing
+    end note
+
+  p1ProOrch <-- p1DelRaw
+  deactivate p1DelRaw
+
+  p1ProOrch -> p1Store : _DataStructureForProcessing
+  activate p1Store
+
+    note over p1Store
+      DataStructureForProcessing
+      gets stored
+    end note
+
+    p1Store -> db
+
+    note over p1Store
+      Content elder than
+      48h gets deleted
+    end note
+
+    p1Store -> db
+
+  p1ProOrch <-- p1Store
+  deactivate p1Store
+
+deactivate p1ProOrch
+
+@enduml

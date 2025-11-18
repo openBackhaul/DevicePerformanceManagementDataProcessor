@@ -4,7 +4,7 @@ The following modules are provided here.
 
 #### Workflow  
 
-- p1ProcessingOrchestratorFor15MinHistoricalPmData  
+- p1ProcessingOrchestratorForHistoricalPmData  
   Orchestrates the device-wise processing, sending and storing of PM data for 15 minutes periods  
 
 

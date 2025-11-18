@@ -57,11 +57,11 @@ Length of period n:
 
 The regardAttributeValueChange categorized the incoming AVC notifications by MountName.  
 
-At the end of the waiting period, it is initiating an instance of p1ProcessingOrchestratorFor15MinHistoricalPmData for every MountName it received during that period.  
+At the end of the waiting period, it is initiating an instance of p1ProcessingOrchestratorForHistoricalPmData for every MountName it received during that period.  
 
 MountNames that are processed in one period are blocked for the next period, because receiving notifications might reach across the border between the two periods.  
 
-The way of implementing the initiation of multiple p1ProcessingOrchestratorFor15MinHistoricalPmData instances assures a smooth resource consumption.  
+The way of implementing the initiation of multiple p1ProcessingOrchestratorForHistoricalPmData instances assures a smooth resource consumption.  
 
 
 ### Outlook  

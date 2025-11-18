@@ -7,7 +7,7 @@ skinparam responseMessageBelowArrow true
 
 title
 ReadingOfDeviceTypeFromMwdiForDsfpObject
-NotifiedAttributeValueChangeCausesCallingp1ProcessingOrchestratorFor15MinHistoricalPm
+NotifiedAttributeValueChangeCausesCallingp1ProcessingOrchestratorForHistoricalPm
 NotifiedAttributeValueChangeCausesUpdatingProcessorControllerDataStore
 ProvisioningOf15minPmDataToKafka
 end title
@@ -25,7 +25,7 @@ note over notif
    - or pulled from Kafka
 end note
 
-== Notification receipt and processing by p1ProcessingOrchestratorFor15MinHistoricalPm ==
+== Notification receipt and processing by p1ProcessingOrchestratorForHistoricalPm ==
 
 note over dpmdp
   If notification received via Kafka,
@@ -44,9 +44,9 @@ dpmdp -> devType: {(mountName)}
 devType -> dpmdp: {deviceType}
 
 note over po
-<u>Execp1ProcessingOrchestratorFor15MinHistoricalPm</u>
+<u>Execp1ProcessingOrchestratorForHistoricalPm</u>
   Execute internal function
-  p1ProcessingOrchestratorFor15MinHistoricalPm
+  p1ProcessingOrchestratorForHistoricalPm
   to process the notification, 
   if the notification was relevant,
   a Dsfp object is returned
@@ -56,7 +56,7 @@ dpmdp -> po: {notification, deviceType}
 po -> dpmdp: 200, {[/data-structure-for-processing]}
 
 note over dpmdp #LightSalmon
-  If p1ProcessingOrchestratorFor15MinHistoricalPm did
+  If p1ProcessingOrchestratorForHistoricalPm did
   not return 200,
   Terminate
 end note
@@ -66,7 +66,7 @@ end note
 
 note over dpmdp
 <u>CreateOrUpdateDataStore</u>
-IF p1ProcessingOrchestratorFor15MinHistoricalPm returned
+IF p1ProcessingOrchestratorForHistoricalPm returned
 a 200 (Dsfp object), add it to the
 DataStore, if no associated DataStore
 item exists yet, create it

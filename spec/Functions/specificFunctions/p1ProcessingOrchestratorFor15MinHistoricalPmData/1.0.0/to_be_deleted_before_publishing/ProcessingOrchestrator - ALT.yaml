@@ -11,7 +11,7 @@ paths:
   #name anpassen
   /p1/processing-orchestrator-for-15min-historical-pm:
     post:
-      operationId: p1ProcessingOrchestratorFor15MinHistoricalPm
+      operationId: p1ProcessingOrchestratorForHistoricalPm
       summary: 'The processing orchestrator is triggered by incoming notifications. It reads device data and processes it.'
       tags:
         - PrivateServices

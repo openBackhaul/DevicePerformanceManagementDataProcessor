@@ -1098,9 +1098,9 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        NotifiedValueChangeInTimeOfLatestChangeAttributeTriggersP1ProcessingOrchestratorFor15MinHistoricalPmData:
+        NotifiedValueChangeInTimeOfLatestChangeAttributeTriggersp1ProcessingOrchestratorForHistoricalPmData:
           x-javascript-interface:
-            p1ProcessingOrchestratorFor15MinHistoricalPmData:
+            p1ProcessingOrchestratorForHistoricalPmData:
               summary: 'Creates DataStructureForProcessing and triggers the Functions that are processing the PM data provisioning'
               input:
                 required: true

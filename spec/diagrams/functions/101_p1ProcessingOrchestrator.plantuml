@@ -1,15 +1,15 @@
-@startuml 101_p1ProcessingOrchestratorFor15MinHistoricalPm
+@startuml 101_p1ProcessingOrchestratorForHistoricalPm
 skinparam responseMessageBelowArrow true
 
 title
-p1ProcessingOrchestratorFor15MinHistoricalPm
+p1ProcessingOrchestratorForHistoricalPm
 end title
 
 participant "MWDI" as mwdi
 database "MWDI\nCacheDomain" as MwdiEs
 database "DPMDP\nCacheDomain" as DpmdpEs
 participant "DPMDP" as dpmdp
-participant "p1ProcessingOrchestratorFor15MinHistoricalPm" as po #LightBlue
+participant "p1ProcessingOrchestratorForHistoricalPm" as po #LightBlue
 participant "p1CreateDsfpOutput\nObjectFromCacheData" as createDsfp #LightBlue
 participant "p1SetOutOfLevelValues\nToDefault" as setLevel #LightBlue
 participant "p1Inquire15min\nAirInterfaceKpis\nFromCaca" as kpiAi #LightBlue

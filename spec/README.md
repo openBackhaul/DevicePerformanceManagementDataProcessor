@@ -4,6 +4,12 @@
 - [Collection of Diagrams](./diagrams)
 
 ### ServiceList
+The following Functions shall be covered in the Pre-release:
+- regardAttributeValueChange
+- p1ProcessingOrchestratorForHistoricalPm
+
+
+
 - [DevicePerformanceManagementDataProcessor+services](./DevicePerformanceManagementDataProcessor+services.yaml)
 
 ### ProfileList and ProfileInstanceList
