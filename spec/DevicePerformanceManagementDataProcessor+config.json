@@ -850,7 +850,7 @@
           }
         ]
       },
-      {6
+      {
         "uuid": "dpmdp-1-0-0-op-s-im-00",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [
