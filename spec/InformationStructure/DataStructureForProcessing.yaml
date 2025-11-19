@@ -366,5 +366,5 @@ data-structure-for-processing:
                 description: 'responseCode that resulted from executing the ProcessingFunction'
     output:
       anyOf:
-        - description: 'APT legacy output format - see Output.yaml'
+        - description: 'APT legacy output format - see OutputApt.yaml'
           type: object

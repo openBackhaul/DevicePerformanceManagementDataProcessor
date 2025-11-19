@@ -1,0 +1,1038 @@
+openapi: 3.0.0
+info:
+  title: DevicePerformanceManagementDataProcessor
+  version: 1.0.0
+
+paths:
+########################################################################################################################
+#   Service Layer - Individual Part
+########################################################################################################################
+
+  #name anpassen
+  /p1/processing-orchestrator-for-15min-historical-pm:
+    post:
+      operationId: p1ProcessingOrchestratorForHistoricalPm
+      summary: 'The processing orchestrator is triggered by incoming notifications. It reads device data and processes it.'
+      tags:
+        - PrivateServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - microwave-device-inventory-1-0:attribute-value-changed-notification
+                - device-type
+              properties:
+                microwave-device-inventory-1-0:attribute-value-changed-notification:
+                  type: object
+                  required:
+                    - counter
+                    - timestamp
+                    - object-path
+                    - attribute-name
+                    - new-value
+                  properties:
+                    counter:
+                      type: integer
+                      description: 'Sequence number of callbacks sent through this forwarding'
+                    timestamp:
+                      type: string
+                      description: 'Time when the callback is send'
+                    object-path:
+                      type: string
+                      description: 'Path (cache path as available at the MWDI API) to the object that holds the attribute that changed its value'
+                    attribute-name:
+                      type: string
+                      description: 'Name of the attribute that changed its value'
+                    new-value:
+                      type: string
+                      description: 'New value of the attribute'
+                device-type:
+                  type: string
+                  description: 'Device-type as derived from MWDI'
+              example:
+                microwave-device-inventory-1-0:attribute-value-changed-notification:
+                  counter: 132
+                  timestamp: '2010-11-20T14:00:00+01:00'
+                  object-path: '/core-model-1-4:network-control-domain=cache/control-construct=513250009/logical-termination-point=RF-2146697857/layer-protocol=2146697857/air-interface-2-0:air-interface-pac/air-interface-historical-performances'
+                  attribute-name: 'time-of-latest-change'
+                  new-value: '2010-11-20T13:59:00+01:00'
+                device-type: 'AGS20'
+      responses:
+        # braucht mach nicht hier, weil daten werden in callback weiter unten in DS und kafka geschoben
+        '200':
+          description: 'Data-structure-for-processing created due to notification receipt.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data-structure-for-processing:
+                    type: object
+                    properties:
+                      counter:
+                        type: string
+                        description: >
+                          'counter from the initial notification
+                          from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/counter}'
+                      timestamp:
+                        type: string
+                        description: >
+                          'timestamp from the initial notification
+                          from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/timestamp}'
+                      object-path:
+                        type: string
+                        description: >
+                          'objectPath from the initial notification
+                          from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+                      attribute-name:
+                        type: string
+                        description: >
+                          'attributeName from the initial notification
+                          from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/attribute-name}'
+                      new-value:
+                        type: string
+                        description: >
+                          'newValue from the initial notification
+                          from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
+                      mount-name:
+                        type: string
+                        description: >
+                          'The name of the device to be extracted
+                          {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+                      device-type:
+                        type: string
+                        description: >
+                          'deviceType as investigated during the pre-processing, initialized with emptyString; to be set
+                          from {$request.body#device-type}'
+                      processing:
+                        type: array
+                        description: >
+                          'This array holds the names of the internal functions and their response-codes which will be executing during this function execution.
+                          Each of the subsequent callbacks, for which an internal p1-function is executed, shall add the function-name and the response-code to the list'
+                        items:
+                          type: object
+                          required:
+                            - function-name
+                            - response-code
+                          properties:
+                            function-name:
+                              type: string
+                              description: 'functionName of the ProcessingFunction'
+                            response-code:
+                              type: integer
+                              description: 'responseCode that resulted from executing the ProcessingFunction'
+                          example:
+                            - function-name: 'p1CreateDsfpOutputObjectFromCache'
+                              response-code: 200
+                            - function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+                              response-code: 204
+                            - function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
+                              response-code: 204
+                            - function-name: 'p1Inquire15minEthernetContainerKpisFromCaca'
+                              response-code: 204
+                            - function-name: 'p1ReplaceOnfDefaultValues'
+                              response-code: 204
+                            - function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+                              response-code: 500
+                      output:
+                        type: object
+                        description: >
+                          'The output object generated from processed ControlConstruct data,
+                          from {$ProcessingOrchestratorCausesCreatingDsfpOutput.response.body#output}'
+        '204':
+          description: 'Detected irrelevant notification'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        #namen anpassen >ProcessingOrchestratorCauses< rauswerfen (wegen serieller Exekution unnötig)
+        ProcessingOrchestratorCausesCreatingDsfp:
+          url: #[dpmdpIpAddress]:[dpmdpPort]
+            description: >
+              'In case of relevant notification, the processingOrchestrator creates a DataStructureForProcessing object and fills it with notification information
+              The notification is irrelevant IF:
+              - NOT(object-path.contains((air-interface-historical-performances) OR (ethernet-container-historical-performances)) AND (attribute-name==time-of-latest-change))
+              - its object-path and attribute-name point to the correct attribute, but within the timeframe configured in integerProfile waitingTimeForProcessingNotificationsForSameDevice
+                another notification about a historical-performances/time-of-latest-change update has already been received and processed'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        data-structure-for-processing:
+                          type: object
+                          properties:
+                            counter:
+                              type: string
+                              description: >
+                                'counter from the initial notification
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/counter}'
+                            timestamp:
+                              type: string
+                              description: >
+                                'timestamp from the initial notification
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/timestamp}'
+                            object-path:
+                              type: string
+                              description: >
+                                'objectPath from the initial notification
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+                            attribute-name:
+                              type: string
+                              description: >
+                                'attributeName from the initial notification
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/attribute-name}'
+                            new-value:
+                              type: string
+                              description: >
+                                'newValue from the initial notification
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/new-value}'
+                            mount-name:
+                              type: string
+                              description: >
+                                'The mount-name of the device, extracted
+                                from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
+                            device-type:
+                              type: string
+                              description: >
+                                'deviceType as derived from MWDI
+                                from {$request.body#device-type}'
+                            processing:
+                              type: array
+                              description: >
+                                'This array holds the names of the internal functions and their response-codes which will be executing during this function execution.
+                                Each of the subsequent callbacks, for which an internal p1-function is executed, shall add the function-name and the response-code to the list'
+                              items:
+                                type: object
+                                required:
+                                  - function-name
+                                  - response-code
+                                properties:
+                                  function-name:
+                                    type: string
+                                    description: 'functionName of the ProcessingFunction'
+                                  response-code:
+                                    type: integer
+                                    description: 'responseCode that resulted from executing the ProcessingFunction'
+                                example:
+                                  - function-name: 'p1CreateDsfpOutputObjectFromCache'
+                                    response-code: 200
+                                  - function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+                                    response-code: 204
+                                  - function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
+                                    response-code: 204
+                                  - function-name: 'p1Inquire15minEthernetContainerKpisFromCaca'
+                                    response-code: 204
+                                  - function-name: 'p1ReplaceOnfDefaultValues'
+                                    response-code: 204
+                                  - function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+                                    response-code: 500
+                            output:
+                              type: object
+                              description: >
+                                'The output object generated from processed ControlConstruct data. Intially null, will be set and modified in subsequent steps.'
+              responses:
+                '204':
+                  description: '[/data-structure-for-processing] object created'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
+        ProcessingOrchestratorCausesCreatingDsfpOutput:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/create-dsfp-output-object-from-cache-data]
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        mount-name:
+                          type: string
+                          example: '513250010'
+                          description: > 
+                            'The mount-name of the device that is addressed by this function
+                            from {request.body#object-path} extract the mount-name, which is the ID following the control-construct= part'
+              responses:
+                '200':
+                  description: 'DataStructureForProcessing output object containing new 15min PM data'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          data-handle:
+                            type: string
+                            example: '513250010-2024-03-06T13:00:00+01:00-a0893b37'
+                            description: >
+                              'This id is used to uniquely identify the output object in the DPMDP memory.'
+                          output:
+                            type: object
+                            description: 'Output - see OutputApt.yaml, starting at properties keyword'
+                '204':
+                  description: 'No DataStructureForProcessing output object created due to lack of new PM data'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        ProcessingOrchestratorCausesReplacingOutOfRangeLevelValues:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/set-out-of-range-level-values-to-default]
+            description: >
+              'This callback reads the DsfpOutput data from memory and writes changes also directly back into this DsfpOutput object'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        data-handle:
+                          type: string
+                          description: >
+                            'The function will read the DsfpOutput data associated with this dataHandle directly from memory as input'
+              responses:
+                '204':
+                  description: 'Out-of-range level values set to defaults in [/data-structure-for-processing/output]'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        ProcessingOrchestratorCausesInquiringAirIfKpis:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-air-interface-kpis-from-caca]
+            description: >
+              'This callback reads the DsfpOutput data from memory and writes changes also directly back into this DsfpOutput object'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        data-handle:
+                          type: string
+                          description: >
+                            'The function will read the DsfpOutput data associated with this dataHandle directly from memory as input'
+              responses:
+                '204':
+                  description: 'AirInterface capacity KPIs written to [/data-structure-for-processing/output]'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        ProcessingOrchestratorCausesInquiringEthernetContainerKpis:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/inquire-15min-ethernet-container-kpis-from-caca]
+            description: >
+              'This callback reads the DsfpOutput data from memory and writes changes also directly back into this DsfpOutput object'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        data-handle:
+                          type: string
+                          description: >
+                            'The function will read the DsfpOutput data associated with this dataHandle directly from memory as input'
+              responses:
+                '204':
+                  description: 'EthernetContainer KPIs written to [/data-structure-for-processing/output]'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        ProcessingOrchestratorCausesCallingReplaceOnfDefaultValuesFunction:
+          url: #[dpmdpIpAddress]:[dpmdpPort][/p1/replace-onf-default-values]
+            description: >
+              'This callback reads the DsfpOutput data from memory and writes changes also directly back into this DsfpOutput object'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        data-handle:
+                          type: string
+                          description: >
+                            'The function will read the DsfpOutput data associated with this dataHandle directly from memory as input'
+              responses:
+                '204':
+                  description: 'ONF default values replaced in [/data-structure-for-processing/output]'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+        ProcessingOrchestratorCausesSettingMostRecentTimestampsAndDatavInDeviceTable:
+          url: #[dmpdpIpAddress]:[dpmdpPort][/p1/set-most-recent-timestamp-and-datav-in-device-table]
+            description: >
+              'This callback reads the DsfpOutput data from memory, gathers the mostRecentTimestamp and number of records/date per mountname/interface information and writes it into the DMPDP deviceTable'
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        data-handle:
+                          type: string
+                          description: >
+                            'The function will read the DsfpOutput data associated with this dataHandle directly from memory as input'
+              responses:
+                '204':
+                  description: 'MostRecentTimestamps written to DMDP deviceTable.'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+
+########################################################################################################################
+#   Common Components
+########################################################################################################################
+components:
+  parameters:
+    user:
+      name: user
+      in: header
+      required: true
+      schema:
+        type: string
+        example: 'User Name'
+      description: 'User identifier from the system starting the service call'
+    originator:
+      name: originator
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 3
+        example: 'Resolver'
+      description: >
+        'Identification for the system consuming the API, as defined in
+         [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+    x-correlator:
+      name: x-correlator
+
+      in: header
+      required: true
+      schema:
+        type: string
+        pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+        example: '550e8400-e29b-11d4-a716-446655440000'
+      description: 'UUID for the service execution flow that allows to correlate requests and responses'
+    trace-indicator:
+      name: trace-indicator
+      in: header
+      required: true
+      schema:
+        type: string
+        pattern: '^([0-9]+)(\.([0-9]+))*$'
+        example: '1.3.1'
+      description: 'Sequence of request numbers along the flow'
+    customer-journey:
+      name: customer-journey
+      in: header
+      required: true
+      schema:
+        type: string
+        example: 'Unknown value'
+      description: 'Holds information supporting customer’s journey to which the execution applies'
+  responses:
+    responseForErroredServiceRequests:
+      description: 'Response in case of errored service requests'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorDescription'
+      headers:
+        x-correlator:
+          schema:
+            type: string
+            pattern: '^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$'
+            example: '550e8400-e29b-11d4-a716-446655440000'
+          description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+        exec-time:
+          schema:
+            type: integer
+            example: 1100
+          description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+    responseForErroredOutOfDomainServiceRequests:
+      description: 'Response in case of errored service requests from out of MW SDN domain'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorDescription'
+    responseForErroredOamRequests:
+      description: 'Response in case of errored OaM requests'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorDescription'
+    '429':
+      description: 'Response in case too many requests need to be executed in parallel or too many requests have been received within a time period. The maximum number of parallel requests is defined in an IntegerProfile with the service name as a prefix and MaxNumberOfParallelRequests as a suffix. Some time period to elapse for throttling incomming requests is defined in an IntegerProfile with the service name as a prefix and ThrottlingPeriod as a suffix'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 429
+                maximum: 429
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Too many requests'
+    '460':
+      description: 'Response in case the mountName provided in the request is not found in the list of connected devices'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 460
+                maximum: 460
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Not connected. Requested device is currently not in connected state at the controller'
+    '470':
+      description: 'Response in case the resource specified in the request does not exist within the connected device'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 470
+                maximum: 470
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Resource not existing. Device informs about addressed resource unknown'
+    '502':
+      description: 'Response in case the application that is expected to provide a consumed service is not responding'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 502
+                maximum: 502
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Bad Gateway'
+    '530':
+      description: 'Response in case the referenced resource exists (e.g. device connected and resource exists in internal datatree), but response data is either not available, lost during transmission, invalid, incomplete or corrupted'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: integer
+                minimum: 530
+                maximum: 530
+                format: int32
+              message:
+                type: string
+                enum:
+                  - 'Data invalid. Response data not available, incomplete or corrupted'
+  schemas:
+    errorDescription:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    genericRepresentation:
+      type: object
+      required:
+        - response-value-list
+        - consequent-action-list
+      properties:
+        response-value-list:
+          type: array
+          items:
+            type: object
+            required:
+              - field-name
+              - value
+              - datatype
+            properties:
+              field-name:
+                type: string
+                description: >
+                  'Field name
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-capability/field-name]'
+              value:
+                type: string
+                description: >
+                  'Field value
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-configuration/value]'
+              datatype:
+                type: string
+                description: >
+                  'Field datatype
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-response-p-*/response-profile-1-0:response-profile-pac/response-profile-capability/datatype]'
+        consequent-action-list:
+          type: array
+          items:
+            type: object
+            required:
+              - label
+              - request
+              - display-in-new-browser-window
+            properties:
+              label:
+                type: string
+                description: >
+                  'Label that shall be presented on the button
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/label]'
+              request:
+                type: string
+                description: >
+                  'Request that shall be called, when button gets pressed
+                  from
+                  [{/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-protocol}]
+                  ://
+                  [{/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/ipv-4-address}
+                  or
+                  {/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-address/domain-name}]
+                  :
+                  [{/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-s-000/layer-protocol=0/tcp-server-interface-1-0:tcp-server-interface-pac/tcp-server-interface-configuration/local-port}]
+                  [{/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-configuration/consequent-operation-reference}]'
+              input-value-list:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - field-name
+                  properties:
+                    field-name:
+                      type: string
+                      description: >
+                        'Name of an input value required for executing the Request
+                        from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/input-value-list=*/name]'
+                    unit:
+                      type: string
+                      description: >
+                        'Unit of an input value required for executing the Request
+                        from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/input-value-list=*/unit]'
+              display-in-new-browser-window:
+                type: boolean
+                description: >
+                  'True in case Request shall be represented in a new browser window
+                  from [/core-model-1-4:control-construct/profile-collection/profile=dpmdp-1-0-0-action-p-*/action-profile-1-0:action-profile-pac/action-profile-capability/display-in-new-browser-window]'
+    logicalTerminationPoint:
+      type: object
+      required:
+        - uuid
+        - ltp-direction
+        - client-ltp
+        - server-ltp
+        - layer-protocol
+      properties:
+        uuid:
+          type: string
+        ltp-direction:
+          type: string
+        client-ltp:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        server-ltp:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        layer-protocol:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            oneOf:
+              - description: 'operation server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - operation-server-interface-1-0:operation-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  operation-server-interface-1-0:operation-server-interface-pac:
+                    type: object
+                    required:
+                      - operation-server-interface-capability
+                      - operation-server-interface-configuration
+                    properties:
+                      operation-server-interface-capability:
+                        type: object
+                        required:
+                          - operation-name
+                        properties:
+                          operation-name:
+                            type: string
+                      operation-server-interface-configuration:
+                        type: object
+                        required:
+                          - life-cycle-state
+                        properties:
+                          life-cycle-state:
+                            type: string
+              - description: 'http server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - http-server-interface-1-0:http-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  http-server-interface-1-0:http-server-interface-pac:
+                    type: object
+                    required:
+                      - http-server-interface-capability
+                    properties:
+                      http-server-interface-capability:
+                        type: object
+                        required:
+                          - application-name
+                          - release-number
+                          - data-update-period
+                        properties:
+                          application-name:
+                            type: string
+                          release-number:
+                            type: string
+                          data-update-period:
+                            type: string
+              - description: 'tcp server'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - tcp-server-interface-1-0:tcp-server-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  tcp-server-interface-1-0:tcp-server-interface-pac:
+                    type: object
+                    required:
+                      - tcp-server-interface-configuration
+                    properties:
+                      tcp-server-interface-configuration:
+                        type: object
+                        required:
+                          - description
+                          - local-protocol
+                          - local-address
+                          - local-port
+                        properties:
+                          description:
+                            type: string
+                          local-protocol:
+                            type: string
+                          local-address:
+                            type: object
+                            properties:
+                              ipv-4-address:
+                                type: string
+                              domain-name:
+                                type: string
+                          local-port:
+                            type: integer
+              - description: 'operation client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - operation-client-interface-1-0:operation-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  operation-client-interface-1-0:operation-client-interface-pac:
+                    type: object
+                    required:
+                      - operation-client-interface-configuration
+                      - operation-client-interface-status
+                    properties:
+                      operation-client-interface-configuration:
+                        type: object
+                        required:
+                          - operation-name
+                        properties:
+                          operation-name:
+                            type: string
+                      operation-client-interface-status:
+                        type: object
+                        required:
+                          - operational-state
+                          - life-cycle-state
+                        properties:
+                          operational-state:
+                            type: string
+                          life-cycle-state:
+                            type: string
+              - description: 'elasticsearch client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac:
+                    type: object
+                    required:
+                      - elasticsearch-client-interface-configuration
+                      - elasticsearch-client-interface-status
+                    properties:
+                      elasticsearch-client-interface-configuration:
+                        type: object
+                        required:
+                          - index-alias
+                        properties:
+                          index-alias:
+                            type: string
+                      elasticsearch-client-interface-status:
+                        type: object
+                        required:
+                          - operational-state
+                          - life-cycle-state
+                        properties:
+                          operational-state:
+                            type: string
+                          life-cycle-state:
+                            type: string
+              - description: 'http client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - http-client-interface-1-0:http-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  http-client-interface-1-0:http-client-interface-pac:
+                    type: object
+                    required:
+                      - http-client-interface-configuration
+                    properties:
+                      http-client-interface-configuration:
+                        type: object
+                        required:
+                          - application-name
+                          - release-number
+                        properties:
+                          application-name:
+                            type: string
+                          release-number:
+                            type: string
+              - description: 'tcp client'
+                type: object
+                required:
+                  - local-id
+                  - layer-protocol-name
+                  - tcp-client-interface-1-0:tcp-client-interface-pac
+                properties:
+                  local-id:
+                    type: string
+                  layer-protocol-name:
+                    type: string
+                  tcp-client-interface-1-0:tcp-client-interface-pac:
+                    type: object
+                    required:
+                      - tcp-client-interface-configuration
+                    properties:
+                      tcp-client-interface-configuration:
+                        type: object
+                        required:
+                          - remote-protocol
+                          - remote-address
+                          - remote-port
+                        properties:
+                          remote-protocol:
+                            type: string
+                          remote-address:
+                            type: object
+                            properties:
+                              ip-address:
+                                type: object
+                                properties:
+                                  ipv-4-address:
+                                    type: string
+                              domain-name:
+                                type: string
+                          remote-port:
+                            type: integer
+    forwardingDomain:
+      type: object
+      required:
+        - uuid
+        - forwarding-construct
+      properties:
+        uuid:
+          type: string
+        forwarding-construct:
+          type: array
+          items:
+            type: object
+            required:
+              - uuid
+              - name
+              - fc-port
+            properties:
+              uuid:
+                type: string
+              name:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - value-name
+                    - value
+                  properties:
+                    value-name:
+                      type: string
+                    value:
+                      type: string
+              fc-port:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - local-id
+                    - port-direction
+                    - logical-termination-point
+                  properties:
+                    local-id:
+                      type: string
+                    port-direction:
+                      type: string
+                    logical-termination-point:
+                      type: string
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: operation-key
+    basicAuth:
+      type: http
+      scheme: basic

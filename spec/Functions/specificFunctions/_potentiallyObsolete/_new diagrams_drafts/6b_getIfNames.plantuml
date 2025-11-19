@@ -1,0 +1,35 @@
+@startuml p1ProvideAirInterfaceAndEthernetContainerInterfaceNames
+skinparam responseMessageBelowArrow true
+
+title
+p1ProvideAirInterfaceAndEthernetContainerInterfaceNames
+end title
+
+participant "requestor" as requestor
+participant "p1ProvideAirInterfaceAndEthernetContainerInterfaceNames" as getNames #LightBlue
+
+activate getNames
+
+note over requestor #LightCoral
+  could be split into 2 functions to 
+  return only AirIf OR EthContainer data.
+  Now: can handle both
+end note
+
+requestor -> getNames: {ltp-structure-and-augment, uuid, local-id, layer-protocol-name}
+
+loop for each LTP uuid from airInterfaceList and ethernetContainerList
+  note over getNames
+    FOR the AirInterface/EthernetContainer uuid
+    read the associated entry from LtpStructureAndManagement
+
+    IF layer-protocol indicates AIR_LAYER:
+      linkEndpointName = externalLabel
+      linkId = externalLabel.substring(0,9)
+    ELSE IF layer-protocol indicates ETHERNET_CONTAINER
+      interfaceName = originalLtpName
+  end note
+end
+getNames --> requestor: {oneOf((linkEndpointName, linkId), interfaceName)}
+
+deactivate getNames

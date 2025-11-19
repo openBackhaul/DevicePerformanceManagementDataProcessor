@@ -11,14 +11,14 @@ participant "regardAttribute-\nValueChange" as rAVC #LightCyan
 
 participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
 
-participant "p1LoadRawData" as p1AddRaw #LightCyan
+participant "p1LoadRawDeviceData" as p1AddRaw #LightCyan
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
 
-participant "example\np1SpecificProcessing" as p1Specific #LightBlue
-participant "example\np1GenericProcessing" as p1Generic #LightBlue
+participant "example\np1ProcessingSpecific" as p1Specific #LightBlue
+participant "example\np1ProcessingGeneric" as p1Generic #LightBlue
 
-participant "example\np1OutputFormatting" as p1Output #LightCyan
-participant "example\np1Transmitting" as p1Trans #LightCyan
+participant "p1FormattingOutputApt" as p1Output #LightCyan
+participant "p1TransmittingKafka" as p1Trans #LightCyan
 
 participant "p1PrepareStoring" as p1PrepStore #LightBlue
 

@@ -1,0 +1,79 @@
+@startuml diagram
+skinparam responseMessageBelowArrow true
+
+title
+  p1CreateDsfpOutputObjectFromCache
+end title
+
+participant "requestor\ne.g. p1ProcessingOrchestratorForHistoricalPm" as requestor
+participant "p1CreateDsfpOutputObjectFromCache" as create #LightBlue
+database "DPMDP\nCacheDomain" as DpmdpEs
+database "DPMDP\nApplicationData\nDeviceTable" as deviceTable
+
+
+requestor -> create: {mount-name}
+activate create
+
+note over create
+<u>ReadCc</u>
+  Read the ControlConstruct
+  from DPMDP CacheDomain 
+  (=Replication of MWDI ElasticSearch index)
+end note
+create -> DpmdpEs: {mount-name}
+create <-- DpmdpEs: {ControlConstruct}
+
+note over create
+<u>GetMostRecentTimestamps</u>
+  Read the mostRecentTimestamp
+  for each interface of the mount-name
+  from deviceTable in ApplicationData
+
+  <i>mostRecentTimestamp denotes</i>
+  <i>the newest period-end-time seen</i>
+  <i>for this interface during the last</i>
+  <i>successful PM data retrieval.</i>
+  <i>For interfaces missing here, all</i>
+  <i>fetched data will be considered newer</i>
+end note
+create -> deviceTable: {mount-name}
+create <-- deviceTable: {list-of(interfaceId, mostRecentTimestamp)}
+
+note over create
+<u>FilterAndCluster</u>
+  The read CC data is filtered for relevant data and clustered for further processing.
+  Relevant clusters are:
+  - (1) LTP structure and augment
+  - (2) AirInterface list
+  - (3) EthernetContainer list
+
+  - Only relevant attributes from the CC are kept.
+  - For (2/3): interfaces are only added to the list, if they have 15min PM records where the respective
+    <i>period-end-time</i> is newer than the interfaces <i>mostRecentTimestamp</i>.
+  - for (2):
+    - <i>time-xstates-list</i> entries with (<i>time<i> <= 0) are discarded
+    - capability <i>transmission-mode-list</i> entries with (<i>code-rate</i> == -1) are discarded
+end note
+
+note over create #LightCoral
+Todo: das wird beides in eigene (generische) Funkionen ausgelagert
+
+<u>ComputeInterfaceNames</u>,
+<u>ComputeLAGs</u>
+  The LTP structure and augment information
+  is used to compute:
+  
+  - identifiers for AirInterface (link-endpoint-id, link-id) and EternetContainer (interface-name)
+  - and link-aggregation-identifiers (for AirInterface)
+end note
+
+note over create
+<u>CreateAndReturnDsfpOutput</u>
+  From the gathered data, the output object is created.
+  The output schema is from DataStructureForProcessing.output.
+  KPI attributes are already included, but filled with default value -1.
+  Return the created DsfpOutput.
+end note
+create --> requestor: {DsfpOutput, dataHandle}
+
+deactivate create

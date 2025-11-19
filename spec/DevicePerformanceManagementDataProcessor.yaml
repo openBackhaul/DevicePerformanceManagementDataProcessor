@@ -1280,12 +1280,12 @@ paths:
   #                 properties:
   #                   air-interface:
   #                     type: object
-  #                     description: 'air-interface as item of air-interface-list in [T1out_Output.yaml] schema'
+  #                     description: 'air-interface as item of air-interface-list in [OutputApt.yaml] schema'
   #               - description: 'ethernet-container'
   #                 properties:
   #                   ethernet-container:
   #                     type: object
-  #                     description: 'ethernet-container as item of ethernet-container-list in [T1out_Output.yaml] schema'
+  #                     description: 'ethernet-container as item of ethernet-container-list in [OutputApt.yaml] schema'
   #             examples:
   #               air-interface-example:
   #                 value:

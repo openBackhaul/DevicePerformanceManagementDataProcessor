@@ -135,7 +135,7 @@ clients:
 # todo: add      uuid: dpmdp-1-0-0-es-c-es-1-0-0-000
 # todo: add      index-alias: 16
 
-  # consumed notifications from MWDI
+# todo: delete  # consumed notifications from MWDI
   - http-client:
       application-name: KafkaMessageBus
       release-number: 1.0.0
@@ -146,22 +146,29 @@ clients:
       tcp-port: 3017
       uuid: dpmdp-1-0-0-tcp-c-kmb-1-0-0-000
     kafka-client:
-      uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-000
-      topic-name: mwdi_avc_notifications
+# todo: now array      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-000
+# todo: now array        topic-name: mwdi_avc_notifications
+# todo: add        type: consumer
+# todo: add      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-001
+# todo: add        topic-name: cronjob_avc_notifications
+# todo: add        type: consumer
+# todo: add      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-010
+# todo: add        topic-name: provisioned_historical_pm_data
+# todo: add        type: provider
 
-  # provisioned historical PM data for external tools
-  - http-client:
-      application-name: KafkaMessageBus
-      release-number: 1.0.0
-      uuid: dpmdp-1-0-0-http-c-kmb-1-0-0-001
-    tcp-client:
-      remote-protocol: http
-      ip-address: 127.0.0.1
-      tcp-port: 3017
-      uuid: dpmdp-1-0-0-tcp-c-kmb-1-0-0-001
-    kafka-client:
-      uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-001
-      topic-name: provisioned_historical_pm_data
+# todo: delete  # provisioned historical PM data for external tools
+# todo: delete  - http-client:
+# todo: delete      application-name: KafkaMessageBus
+# todo: delete      release-number: 1.0.0
+# todo: delete      uuid: dpmdp-1-0-0-http-c-kmb-1-0-0-001
+# todo: delete    tcp-client:
+# todo: delete      remote-protocol: http
+# todo: delete      ip-address: 127.0.0.1
+# todo: delete      tcp-port: 3017
+# todo: delete      uuid: dpmdp-1-0-0-tcp-c-kmb-1-0-0-001
+# todo: delete    kafka-client:
+# todo: delete      uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-001
+# todo: delete      topic-name: provisioned_historical_pm_data
 
   - http-client:
       application-name: OldRelease
