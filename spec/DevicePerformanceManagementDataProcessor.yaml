@@ -443,7 +443,7 @@ paths:
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
         PromptForBequeathingDataCausesUnsubscribingFromAvcNotificationsAtMwdi:
-          url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-002/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+          url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
               parameters:
                 - $ref: '#/components/parameters/user'
@@ -476,7 +476,7 @@ paths:
                           type: string
                           description: >
                             'Name of operation that had been addressed for starting getting notifications. Requests have to be sent for the following subscriptions:
-                            from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
+                            from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]'
                       example:
                         subscriber-application: 'DevicePerformanceManagementDataProcessor'
                         subscriber-release-number: '1.0.0'
@@ -528,443 +528,442 @@ paths:
 # todo: paths to be adapted to API GW requirements ("v1/" to be deleted)
 
 # todo: To be moved to "OAM Layer - Individual Part"
-# + todo: add forwardings (fowardingList + configFile)
-  /list-functions:
-    post:
-      operationId: listFunctions
-      summary: 'Provides list of identifiers of internal Functions'
-      tags:
-        - IndividualManagement
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'List of identifiers of internal Functions provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - list-of-functions
-                properties:
-                  list-of-functions:
-                    type: array
-                    items:
-                      type: string
-                      description: >
-                        'operationId of internal Function
-                        from [/processor-controller/function=*/function-name]'
-                      # todo: DataStructure to be revised
-                example:
-                  list-of-functions:
-                    - 'p1CreateDsfpOutputObjectFromCache'
-                    - 'p1SetOutOfRangeLevelValuesToDefault'
-                    - 'p1Inquire15minAirInterfaceKpisFromCaca'
-                    - 'p1Inquire15minEthernetContainerKpisFromCaca'
-                    - 'p1ReplaceOnfDefaultValues'
-                    - 'p1SetMostRecentTimestampAndDatavInDeviceTable'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /provide-config-of-function:
-    post:
-      operationId: provideConfigOfFunction
-      summary: 'Provides parameter set of the specified internal Function'
-      tags:
-        - IndividualManagement
-      security:
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - function-name
-              properties:
-                function-name:
-                  type: string
-                  description: 'operationId of internal Function'
-              example:
-                function-name: 'p1SetOutOfRangeLevelValuesToDefault'
-      responses:
-        '200':
-          description: 'Parameter set of the specified internal Function provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - function-name
-                  - function-description
-                  - parameter
-                properties:
-                  function-name:
-                    type: string
-                    description: >
-                      'operationId of internal Function
-                      from [/domain-controller/function=functionName/function-name]'
-                    # todo: DataStructure to be revised
-                  function-description:
-                    type: string
-                    description: >
-                      'Description of the Function
-                      from [/domain-controller/function=functionName/function-description]'
-                  parameter:
-                    type: array
-                    x-key: parameter-name
-                    description: 'List of Parameters of the Function'
-                    items:
-                      type: object
-                      required:
-                        - parameter-name
-                        - parameter-value
-                        - parameter-definition
-                      properties:
-                        parameter-name:
-                          type: string
-                          description: >
-                            'Invariant name of the parameter
-                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
-                        parameter-value:
-                          type: string
-                          description: >
-                            'Configurable value of the parameter
-                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
-                        parameter-definition:
-                          type: string
-                          description: >
-                            'Invariant description of the parameter
-                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-definition]'
-                example:
-                  function-name: 'p1SetOutOfRangeLevelValuesToDefault'
-                  function-description: 'Overwrites values outside a predefined range by a default value.'
-                  parameter:
-                    - parameter-name: 'minimum-rx'
-                      parameter-value: '-60dBm'
-                      parameter-definition: 'Minimum acceptable value of the receive level.'
-                    - parameter-name: 'maximum-rx'
-                      parameter-value: '-20dBm'
-                      parameter-definition: 'Maximum acceptable value of the receive level.'
-                    - parameter-name: 'default-rx'
-                      parameter-value: '-1dBm'
-                      parameter-definition: 'Default value in case of invalid receive level.'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /update-function:
-    post:
-      operationId: updateFunction
-      summary: 'Updates parameter set of specified internal Function'
-      tags:
-        - IndividualManagement
-      security:
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - function-name
-              properties:
-                function-name:
-                  type: string
-                  description: >
-                    'operationId of internal Function
-                    find in [/domain-controller/function=*/function-name]'
-                  # todo: DataStructure to be revised
-                function-description:
-                  type: string
-                  description: >
-                    'Description of the Function
-                    if provided, update [/domain-controller/function=functionName/function-description]'
-                parameter:
-                  type: array
-                  x-key: parameter-name
-                  description: 'List of Parameters of the Function'
-                  items:
-                    type: object
-                    required:
-                      - parameter-name
-                    properties:
-                      parameter-name:
-                        type: string
-                        description: >
-                          'Invariant name of the parameter
-                          find in [/domain-controller/function=functionName/parameter=*/parameter-name]'
-                      parameter-value:
-                        type: string
-                        description: >
-                          'Configurable value of the parameter
-                          if provided, update [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
-                      parameter-definition:
-                        type: string
-                        description: >
-                          'Invariant description of the parameter
-                          if provided, update [/domain-controller/function=functionName/parameter=parameterName/parameter-definition]'
-              example:
-                function-name: 'p1SetOutOfRangeLevelValuesToDefault'
-                function-description: 'Overwrites values outside a predefined range by a default value.'
-                parameter:
-                  - parameter-name: 'default-rx'
-                    parameter-value: '0dBm'
-                    parameter-definition: 'Default value in case of invalid receive level.'
-      responses:
-        '204':
-          description: 'Parameter set updated'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
+  # /list-functions:
+  #   post:
+  #     operationId: listFunctions
+  #     summary: 'Provides list of identifiers of internal Functions'
+  #     tags:
+  #       - IndividualManagement
+  #     security:
+  #       - basicAuth: []
+  #     responses:
+  #       '200':
+  #         description: 'List of identifiers of internal Functions provided'
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               required:
+  #                 - list-of-functions
+  #               properties:
+  #                 list-of-functions:
+  #                   type: array
+  #                   items:
+  #                     type: string
+  #                     description: >
+  #                       'operationId of internal Function
+  #                       from [/processor-controller/function=*/function-name]'
+  #                     # todo: DataStructure to be revised
+  #               example:
+  #                 list-of-functions:
+  #                   - 'p1CreateDsfpOutputObjectFromCache'
+  #                   - 'p1SetOutOfRangeLevelValuesToDefault'
+  #                   - 'p1Inquire15minAirInterfaceKpisFromCaca'
+  #                   - 'p1Inquire15minEthernetContainerKpisFromCaca'
+  #                   - 'p1ReplaceOnfDefaultValues'
+  #                   - 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  # /provide-config-of-function:
+  #   post:
+  #     operationId: provideConfigOfFunction
+  #     summary: 'Provides parameter set of the specified internal Function'
+  #     tags:
+  #       - IndividualManagement
+  #     security:
+  #       - basicAuth: []
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - function-name
+  #             properties:
+  #               function-name:
+  #                 type: string
+  #                 description: 'operationId of internal Function'
+  #             example:
+  #               function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+  #     responses:
+  #       '200':
+  #         description: 'Parameter set of the specified internal Function provided'
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               required:
+  #                 - function-name
+  #                 - function-description
+  #                 - parameter
+  #               properties:
+  #                 function-name:
+  #                   type: string
+  #                   description: >
+  #                     'operationId of internal Function
+  #                     from [/domain-controller/function=functionName/function-name]'
+  #                   # todo: DataStructure to be revised
+  #                 function-description:
+  #                   type: string
+  #                   description: >
+  #                     'Description of the Function
+  #                     from [/domain-controller/function=functionName/function-description]'
+  #                 parameter:
+  #                   type: array
+  #                   x-key: parameter-name
+  #                   description: 'List of Parameters of the Function'
+  #                   items:
+  #                     type: object
+  #                     required:
+  #                       - parameter-name
+  #                       - parameter-value
+  #                       - parameter-definition
+  #                     properties:
+  #                       parameter-name:
+  #                         type: string
+  #                         description: >
+  #                           'Invariant name of the parameter
+  #                           from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
+  #                       parameter-value:
+  #                         type: string
+  #                         description: >
+  #                           'Configurable value of the parameter
+  #                           from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+  #                       parameter-definition:
+  #                         type: string
+  #                         description: >
+  #                           'Invariant description of the parameter
+  #                           from [/domain-controller/function=functionName/parameter=parameterName/parameter-definition]'
+  #               example:
+  #                 function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+  #                 function-description: 'Overwrites values outside a predefined range by a default value.'
+  #                 parameter:
+  #                   - parameter-name: 'minimum-rx'
+  #                     parameter-value: '-60dBm'
+  #                     parameter-definition: 'Minimum acceptable value of the receive level.'
+  #                   - parameter-name: 'maximum-rx'
+  #                     parameter-value: '-20dBm'
+  #                     parameter-definition: 'Maximum acceptable value of the receive level.'
+  #                   - parameter-name: 'default-rx'
+  #                     parameter-value: '-1dBm'
+  #                     parameter-definition: 'Default value in case of invalid receive level.'
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  # /update-function:
+  #   post:
+  #     operationId: updateFunction
+  #     summary: 'Updates parameter set of specified internal Function'
+  #     tags:
+  #       - IndividualManagement
+  #     security:
+  #       - basicAuth: []
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - function-name
+  #             properties:
+  #               function-name:
+  #                 type: string
+  #                 description: >
+  #                   'operationId of internal Function
+  #                   find in [/domain-controller/function=*/function-name]'
+  #                 # todo: DataStructure to be revised
+  #               function-description:
+  #                 type: string
+  #                 description: >
+  #                   'Description of the Function
+  #                   if provided, update [/domain-controller/function=functionName/function-description]'
+  #               parameter:
+  #                 type: array
+  #                 x-key: parameter-name
+  #                 description: 'List of Parameters of the Function'
+  #                 items:
+  #                   type: object
+  #                   required:
+  #                     - parameter-name
+  #                   properties:
+  #                     parameter-name:
+  #                       type: string
+  #                       description: >
+  #                         'Invariant name of the parameter
+  #                         find in [/domain-controller/function=functionName/parameter=*/parameter-name]'
+  #                     parameter-value:
+  #                       type: string
+  #                       description: >
+  #                         'Configurable value of the parameter
+  #                         if provided, update [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+  #                     parameter-definition:
+  #                       type: string
+  #                       description: >
+  #                         'Invariant description of the parameter
+  #                         if provided, update [/domain-controller/function=functionName/parameter=parameterName/parameter-definition]'
+  #             example:
+  #               function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+  #               function-description: 'Overwrites values outside a predefined range by a default value.'
+  #               parameter:
+  #                 - parameter-name: 'default-rx'
+  #                   parameter-value: '0dBm'
+  #                   parameter-definition: 'Default value in case of invalid receive level.'
+  #     responses:
+  #       '204':
+  #         description: 'Parameter set updated'
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
 
-  /list-processing-sequences:
-    post:
-      operationId: listProcessingSequences
-      summary: 'Provides list of operationIds of ProcessingFunctions'
-      tags:
-        - IndividualManagement
-      security:
-        - basicAuth: []
-      responses:
-        '200':
-          description: 'List of operationIds of ProcessingFunctions provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - list-of-processing-sequences
-                properties:
-                  list-of-processing-sequences:
-                    type: array
-                    x-key: processing-sequence-name
-                    description: 'List of predefined processing sequences'
-                    items:
-                      type: object
-                      required:
-                        - processing-sequence-name
-                        - processing-sequence-purpose
-                      properties:
-                        processing-sequence-name:
-                          type: string
-                          description: >
-                            'operationId of a predefined sequence of processing steps
-                            from [/processor-controller/validation-sequence=*/_trigger-function]'
-                          # todo: DataStructure to be revised
-                        processing-sequence-purpose:
-                          type: string
-                          description: >
-                            'Description of the purpose of the sequence of processing steps
-                            from [/processor-controller/validation-sequence=*/_trigger-function]'
-                example:
-                  # todo: document at least one reasonable processing sequence
-                  # todo: processing-sequence-purpose to be added
-                  list-of-processing-sequences:
-                    - processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
-                      processing-sequence-purpose:
-                    - processing-sequence-name: 'p1PrepareEthernetContainerPerformanceData'
-                      processing-sequence-purpose:
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /provide-processing-sequence:
-    post:
-      operationId: provideProcessingSequence
-      summary: 'Provides configuration of a processing sequence'
-      tags:
-        - IndividualManagement
-      security:
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - processing-sequence-name
-              properties:
-                processing-sequence-name:
-                  type: string
-                  description: 'operationId of a predefined sequence of processing steps'
-              example:
-                function-name: 'p1PrepareAirInterfacePerformanceData'
-      responses:
-        '200':
-          description: 'Sequence of processing steps provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - processing-sequence-name
-                  - sequence
-                properties:
-                  processing-sequence-name:
-                    type: string
-                    description: >
-                      'operationId of a predefined sequence of processing steps
-                      from [/domain-controller/function=functionName/function-name]'
-                    # todo: DataStructure to be revised
-                  sequence:
-                    type: array
-                    x-key: step-number
-                    description: 'List of Functions to be executed during the processing'
-                    items:
-                      type: object
-                      required:
-                        - step-number
-                        - function-name
-                        - is-activated
-                      properties:
-                        step-number:
-                          type: integer
-                          description: >
-                            '
-                            from [/domain-controller/validation-sequence=triggerFunction/sequence=*/step-number]'
-                          # todo: Description and DataStructure to be revised
-                        function-name:
-                          type: string
-                          description: >
-                            'Invariant name of the parameter
-                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
-                          # todo: Description and DataStructure to be revised
-                        is-activated:
-                          type: boolean
-                          description: >
-                            'If true, Function shall be called during executing the process
-                            from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
-                          # todo: Description and DataStructure to be revised
-                example:
-                  processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
-                  sequence:
-                    - step-number: 0
-                      function-name: 'p1CreateDsfpOutputObjectFromCache'
-                      is-activated: true
-                    - step-number: 1
-                      function-name: 'p1SetOutOfRangeLevelValuesToDefault'
-                      is-activated: true
-                    - step-number: 2
-                      function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
-                      is-activated: true
-                    - step-number: 3
-                      function-name: 'p1ReplaceOnfDefaultValues'
-                      is-activated: true
-                    - step-number: 4
-                      function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
-                      is-activated: false
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
-  /update-processing-sequence:
-    post:
-      operationId: updateProcessingSequence
-      summary: 'Allows activating and de-activating of individual processing steps'
-      tags:
-        - IndividualManagement
-      security:
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - processing-sequence-name
-                - sequence
-              properties:
-                processing-sequence-name:
-                  type: string
-                  description: 'operationId of a predefined sequence of processing steps'
-                sequence:
-                  type: array
-                  x-key: function-name
-                  description: 'List of Functions that shall be activated or de-activated'
-                  items:
-                    type: object
-                    required:
-                      - function-name
-                      - shall-be-active
-                    properties:
-                      function-name:
-                        type: string
-                        description: >
-                          'Invariant name of the parameter
-                          from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
-                        # todo: Description and DataStructure to be revised
-                      shall-be-active:
-                        type: boolean
-                        description: >
-                          'If true, the function shall be executed as a part of the processing
-                          from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
-              example:
-                processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
-                sequence:
-                  - function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
-                    shall-be-active: true
-      responses:
-        '204':
-          description: 'Sequence of ValidationFunctions updated'
-        '400':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredOamRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredOamRequests'
+  # /list-processing-sequences:
+  #   post:
+  #     operationId: listProcessingSequences
+  #     summary: 'Provides list of operationIds of ProcessingFunctions'
+  #     tags:
+  #       - IndividualManagement
+  #     security:
+  #       - basicAuth: []
+  #     responses:
+  #       '200':
+  #         description: 'List of operationIds of ProcessingFunctions provided'
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               required:
+  #                 - list-of-processing-sequences
+  #               properties:
+  #                 list-of-processing-sequences:
+  #                   type: array
+  #                   x-key: processing-sequence-name
+  #                   description: 'List of predefined processing sequences'
+  #                   items:
+  #                     type: object
+  #                     required:
+  #                       - processing-sequence-name
+  #                       - processing-sequence-purpose
+  #                     properties:
+  #                       processing-sequence-name:
+  #                         type: string
+  #                         description: >
+  #                           'operationId of a predefined sequence of processing steps
+  #                           from [/processor-controller/validation-sequence=*/_trigger-function]'
+  #                         # todo: DataStructure to be revised
+  #                       processing-sequence-purpose:
+  #                         type: string
+  #                         description: >
+  #                           'Description of the purpose of the sequence of processing steps
+  #                           from [/processor-controller/validation-sequence=*/_trigger-function]'
+  #               example:
+  #                 # todo: document at least one reasonable processing sequence
+  #                 # todo: processing-sequence-purpose to be added
+  #                 list-of-processing-sequences:
+  #                   - processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
+  #                     processing-sequence-purpose:
+  #                   - processing-sequence-name: 'p1PrepareEthernetContainerPerformanceData'
+  #                     processing-sequence-purpose:
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  # /provide-processing-sequence:
+  #   post:
+  #     operationId: provideProcessingSequence
+  #     summary: 'Provides configuration of a processing sequence'
+  #     tags:
+  #       - IndividualManagement
+  #     security:
+  #       - basicAuth: []
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - processing-sequence-name
+  #             properties:
+  #               processing-sequence-name:
+  #                 type: string
+  #                 description: 'operationId of a predefined sequence of processing steps'
+  #             example:
+  #               function-name: 'p1PrepareAirInterfacePerformanceData'
+  #     responses:
+  #       '200':
+  #         description: 'Sequence of processing steps provided'
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               required:
+  #                 - processing-sequence-name
+  #                 - sequence
+  #               properties:
+  #                 processing-sequence-name:
+  #                   type: string
+  #                   description: >
+  #                     'operationId of a predefined sequence of processing steps
+  #                     from [/domain-controller/function=functionName/function-name]'
+  #                   # todo: DataStructure to be revised
+  #                 sequence:
+  #                   type: array
+  #                   x-key: step-number
+  #                   description: 'List of Functions to be executed during the processing'
+  #                   items:
+  #                     type: object
+  #                     required:
+  #                       - step-number
+  #                       - function-name
+  #                       - is-activated
+  #                     properties:
+  #                       step-number:
+  #                         type: integer
+  #                         description: >
+  #                           '
+  #                           from [/domain-controller/validation-sequence=triggerFunction/sequence=*/step-number]'
+  #                         # todo: Description and DataStructure to be revised
+  #                       function-name:
+  #                         type: string
+  #                         description: >
+  #                           'Invariant name of the parameter
+  #                           from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
+  #                         # todo: Description and DataStructure to be revised
+  #                       is-activated:
+  #                         type: boolean
+  #                         description: >
+  #                           'If true, Function shall be called during executing the process
+  #                           from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+  #                         # todo: Description and DataStructure to be revised
+  #               example:
+  #                 processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
+  #                 sequence:
+  #                   - step-number: 0
+  #                     function-name: 'p1CreateDsfpOutputObjectFromCache'
+  #                     is-activated: true
+  #                   - step-number: 1
+  #                     function-name: 'p1SetOutOfRangeLevelValuesToDefault'
+  #                     is-activated: true
+  #                   - step-number: 2
+  #                     function-name: 'p1Inquire15minAirInterfaceKpisFromCaca'
+  #                     is-activated: true
+  #                   - step-number: 3
+  #                     function-name: 'p1ReplaceOnfDefaultValues'
+  #                     is-activated: true
+  #                   - step-number: 4
+  #                     function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+  #                     is-activated: false
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  # /update-processing-sequence:
+  #   post:
+  #     operationId: updateProcessingSequence
+  #     summary: 'Allows activating and de-activating of individual processing steps'
+  #     tags:
+  #       - IndividualManagement
+  #     security:
+  #       - basicAuth: []
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - processing-sequence-name
+  #               - sequence
+  #             properties:
+  #               processing-sequence-name:
+  #                 type: string
+  #                 description: 'operationId of a predefined sequence of processing steps'
+  #               sequence:
+  #                 type: array
+  #                 x-key: function-name
+  #                 description: 'List of Functions that shall be activated or de-activated'
+  #                 items:
+  #                   type: object
+  #                   required:
+  #                     - function-name
+  #                     - shall-be-active
+  #                   properties:
+  #                     function-name:
+  #                       type: string
+  #                       description: >
+  #                         'Invariant name of the parameter
+  #                         from [/domain-controller/function=functionName/parameter=parameterName/parameter-name]'
+  #                       # todo: Description and DataStructure to be revised
+  #                     shall-be-active:
+  #                       type: boolean
+  #                       description: >
+  #                         'If true, the function shall be executed as a part of the processing
+  #                         from [/domain-controller/function=functionName/parameter=parameterName/parameter-value]'
+  #             example:
+  #               processing-sequence-name: 'p1PrepareAirInterfacePerformanceData'
+  #               sequence:
+  #                 - function-name: 'p1SetMostRecentTimestampAndDatavInDeviceTable'
+  #                   shall-be-active: true
+  #     responses:
+  #       '204':
+  #         description: 'Sequence of ValidationFunctions updated'
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredOamRequests'
 
   /regard-attribute-value-change:
     parameters:
@@ -1130,574 +1129,339 @@ paths:
                   # todo: description potentially to be deleted; behavior in case of errors to be described
         # alternative processing orchestrators could be called here in future releases
 
-  /v1/provide-data-store-item-for-device:
-    parameters:
-      - $ref: '#/components/parameters/user'
-      - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
-      - $ref: '#/components/parameters/trace-indicator'
-      - $ref: '#/components/parameters/customer-journey'
-    post:
-      operationId: provideDataStoreItemForDevice
-      summary: 'Provides the dataStore item for an input device'
-      tags:
-        - IndividualServices
-      security:
-        - apiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - mount-name
-              properties:
-                mount-name:
-                  type: string
-                  description: 'The mount-name of the device for which data shall be returned.'
-                timestamp:
-                  type: string
-                  description: 'Optional filter; if provided, the device.lot items shall be filtered for those where x-key (new-value) is newer than the timestamp'
-              example:
-                mount-name: '101250001'
-                timestamp: '2024-03-06T00:00:00+01:00'
-      responses:
-        '200':
-          description: 'DataStore item for device provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - device-item
-                properties:
-                  device-item:
-                    required:
-                      - mount-name
-                      - lot
-                    properties:
-                      mount-name:
-                        type: string
-                        description: > 
-                          'The mountName of the device, matching the mountName
-                          from {$request.body#mount-name}'
-                      lot:
-                        type: array
-                        x-key: new-value
-                        description: >
-                          'The lots contain the processed [/data-structure-for-processing] objects for the given mountName'
-                        items:
-                          type: object
-                          description: >
-                            'If {$request.body#timestamp} provided, only lots with x-key newer than this timestamp contained'
-          headers:
-            x-correlator:
-              schema:
-                type: string
-                example: '550e8400-e29b-11d4-a716-446655440000'
-            exec-time:
-              schema:
-                type: integer
-                example: 1100
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-020/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
-        '400':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '470':
-          $ref: '#/components/responses/470'
-        '500':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-  /v1/provide-data-store-item-for-interface:
-    parameters:
-      - $ref: '#/components/parameters/user'
-      - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
-      - $ref: '#/components/parameters/trace-indicator'
-      - $ref: '#/components/parameters/customer-journey'
-    post:
-      operationId: provideDataStoreItemForInterface
-      summary: 'Provides the dataStore item for an input device interface'
-      tags:
-        - IndividualServices
-      security:
-        - apiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - mount-name
-                - interface-ltp
-              properties:
-                mount-name:
-                  type: string
-                  description: 'The mount-name of the device for which the interface data shall be returned.'
-                interface-ltp:
-                  type: string
-                  description: 'The LTP-ID of the interface for which data shall be returned.'
-                timestamp:
-                  type: string
-                  description: 'Optional filter; if provided, the device.lot items containing the interface data shall be filtered for those where x-key (new-value) is newer than the timestamp'
-              example:
-                mount-name: '123273221'
-                interface-ltp: 'RF-2146697744'
-                timestamp: '2024-03-06T00:00:00+01:00'
-      responses:
-        '200':
-          description: 'DataStore item for device interface provided'
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - description: 'air-interface'
-                  type: object
-                  properties:
-                    air-interface:
-                      type: object
-                      description: 'air-interface as item of air-interface-list in [T1out_Output.yaml] schema'
-                - description: 'ethernet-container'
-                  properties:
-                    ethernet-container:
-                      type: object
-                      description: 'ethernet-container as item of ethernet-container-list in [T1out_Output.yaml] schema'
-              examples:
-                air-interface-example:
-                  value:
-                    air-interface:
-                      air-interface-identifiers:
-                        mount-name: '123273221'
-                        link-endpoint-id: '325557888A'
-                        link-id: '325557888'
-                        logical-termination-point-id: 'RF-2146697744'
-                        link-aggregation-identifiers:
-                          - link-id: '325557888'
-                          - interface-name: '325557889'
-                      air-interface-configuration:
-                        configured-atpc-is-on: true
-                        configured-atpc-threshold-upper: 99
-                        configured-atpc-threshold-lower: -45
-                        configured-tx-power: -10
-                        configured-modulation-minimum:
-                          number-of-states: 4
-                          name-at-lct: '4 QAM'
-                          configured-capacity-minimum: 2
-                        configured-modulation-maximum:
-                          number-of-states: 1024
-                          name-at-lct: '1024 QAM'
-                          configured-capacity-maximum: 10
-                      air-interface-performance-measurements-list:
-                        - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                          period-end-time: '2024-03-06T13:00:00+01:00'
-                          transmit-level-minimum: 18
-                          transmit-level-maximum: 22
-                          transmit-level-average: 21
-                          receive-level-minimum: -45
-                          receive-level-maximum: -44
-                          receive-level-average: -44
-                          signal-to-noise-ratio-minimum: 0
-                          signal-to-noise-ratio-maximum: 0
-                          signal-to-noise-ratio-average: 0
-                          cross-polarization-discrimination-minimum: 30
-                          cross-polarization-discrimination-maximum: 31
-                          cross-polarization-discrimination-average: 99
-                          operated-transmission-modes-list:
-                              - transmission-mode-name: '56000-1024-v2'
-                                modulation-scheme-name-at-lct:
-                                time: 897
-                                capacity: 100
-                              - transmission-mode-name: '56000-128-v4'
-                                modulation-scheme-name-at-lct:
-                                time: 3
-                                capacity: 120
-                          interval-capacity: 110
-                          errorred-seconds: 10
-                          severely-errorred-seconds: 2
-                          consecutive-severely-errorred-seconds: 0
-                          total-unavailability: 0
-                          defect-blocks: 2
-                          time-period: 890
-                      transmission-mode-list:
-                        - transmission-mode-name: '56000-1024-v2'
-                          number-of-states: 1024
-                          modulation-scheme-name-at-lct: '1024 QAM'
-                          channel-bandwidth: 56000
-                          code-rate: 94
-                          symbol-rate-reduction-factor: 1
-                        - transmission-mode-name: '7000-16-v2'
-                          number-of-states: 16
-                          modulation-scheme-name-at-lct: '16 QAM'
-                          channel-bandwidth: 7000
-                          code-rate: 86
-                          symbol-rate-reduction-factor: 1
-                ethernet-container-example:
-                  value:
-                    ethernet-container:
-                      ethernet-container-identifiers:
-                        mount-name: '123273221'
-                        interface-name: 'WAN 1/1/1'
-                        logical-termination-point-id: 'ETH-2134646913'
-                      ethernet-container-performance-measurements-list:
-                        - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                          period-end-time: '2024-03-07T00:15:00.0+00:00'
-                          max-bytes-per-second-output: '100'
-                          total-bytes-input: '9324688281'
-                          total-bytes-output: '9800000000'
-                          total-frames-input: '9047677'
-                          total-frames-output: '9901000'
-                          forwarded-frames-input: '500000'
-                          forwarded-frames-output: '510000'
-                          unicast-frames-input: '100000'
-                          unicast-frames-output: '110000'
-                          multicast-frames-input: 51945
-                          multicast-frames-output: 10000
-                          broadcast-frames-input: 15
-                          broadcast-frames-output: 10
-                          fragmented-frames-input: 1300
-                          errored-frames-input: 4000
-                          errored-frames-output: 4001
-                          dropped-frames-input: 5000
-                          dropped-frames-output: 1200
-                          oversized-frames-ingress: '100000'
-                          undersized-frames-ingress: '123000'
-                          jabber-frames-ingress: '123123'
-                          unknown-protocol-frames-input: '124785'
-                          time-period: 899
-                          transmit-traffic: 320
-                          receive-traffic: 250
-                          frame-loss: 12000
-          headers:
-            x-correlator:
-              schema:
-                type: string
-                example: '550e8400-e29b-11d4-a716-446655440000'
-            exec-time:
-              schema:
-                type: integer
-                example: 1100
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-021/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
-        '204':
-          description: 'No relevant interface data found'
-          headers:
-            x-correlator:
-              schema:
-                type: string
-                example: '550e8400-e29b-11d4-a716-446655440000'
-            exec-time:
-              schema:
-                type: integer
-                example: 1100
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-021/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+  # /v1/provide-data-store-item-for-device:
+  #   parameters:
+  #     - $ref: '#/components/parameters/user'
+  #     - $ref: '#/components/parameters/originator'
+  #     - $ref: '#/components/parameters/x-correlator'
+  #     - $ref: '#/components/parameters/trace-indicator'
+  #     - $ref: '#/components/parameters/customer-journey'
+  #   post:
+  #     operationId: provideDataStoreItemForDevice
+  #     summary: 'Provides the dataStore item for an input device'
+  #     tags:
+  #       - IndividualServices
+  #     security:
+  #       - apiKeyAuth: []
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - mount-name
+  #             properties:
+  #               mount-name:
+  #                 type: string
+  #                 description: 'The mount-name of the device for which data shall be returned.'
+  #               timestamp:
+  #                 type: string
+  #                 description: 'Optional filter; if provided, the device.lot items shall be filtered for those where x-key (new-value) is newer than the timestamp'
+  #             example:
+  #               mount-name: '101250001'
+  #               timestamp: '2024-03-06T00:00:00+01:00'
+  #     responses:
+  #       '200':
+  #         description: 'DataStore item for device provided'
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               required:
+  #                 - device-item
+  #               properties:
+  #                 device-item:
+  #                   required:
+  #                     - mount-name
+  #                     - lot
+  #                   properties:
+  #                     mount-name:
+  #                       type: string
+  #                       description: > 
+  #                         'The mountName of the device, matching the mountName
+  #                         from {$request.body#mount-name}'
+  #                     lot:
+  #                       type: array
+  #                       x-key: new-value
+  #                       description: >
+  #                         'The lots contain the processed [/data-structure-for-processing] objects for the given mountName'
+  #                       items:
+  #                         type: object
+  #                         description: >
+  #                           'If {$request.body#timestamp} provided, only lots with x-key newer than this timestamp contained'
+  #         headers:
+  #           x-correlator:
+  #             schema:
+  #               type: string
+  #               example: '550e8400-e29b-11d4-a716-446655440000'
+  #           exec-time:
+  #             schema:
+  #               type: integer
+  #               example: 1100
+  #           backend-time:
+  #             schema:
+  #               type: integer
+  #               example: 850
+  #           life-cycle-state:
+  #             schema:
+  #               type: string
+  #               enum:
+  #                 - 'EXPERIMENTAL'
+  #                 - 'OPERATIONAL'
+  #                 - 'DEPRECATED'
+  #                 - 'OBSOLETE'
+  #                 - 'UNKNOWN'
+  #                 - 'NOT_YET_DEFINED'
+  #               example: 'EXPERIMENTAL'
+  #             description: >
+  #               'Life cycle state of the consumed service
+  #               find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-020/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '470':
+  #         $ref: '#/components/responses/470'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  # /v1/provide-data-store-item-for-interface:
+  #   parameters:
+  #     - $ref: '#/components/parameters/user'
+  #     - $ref: '#/components/parameters/originator'
+  #     - $ref: '#/components/parameters/x-correlator'
+  #     - $ref: '#/components/parameters/trace-indicator'
+  #     - $ref: '#/components/parameters/customer-journey'
+  #   post:
+  #     operationId: provideDataStoreItemForInterface
+  #     summary: 'Provides the dataStore item for an input device interface'
+  #     tags:
+  #       - IndividualServices
+  #     security:
+  #       - apiKeyAuth: []
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - mount-name
+  #               - interface-ltp
+  #             properties:
+  #               mount-name:
+  #                 type: string
+  #                 description: 'The mount-name of the device for which the interface data shall be returned.'
+  #               interface-ltp:
+  #                 type: string
+  #                 description: 'The LTP-ID of the interface for which data shall be returned.'
+  #               timestamp:
+  #                 type: string
+  #                 description: 'Optional filter; if provided, the device.lot items containing the interface data shall be filtered for those where x-key (new-value) is newer than the timestamp'
+  #             example:
+  #               mount-name: '123273221'
+  #               interface-ltp: 'RF-2146697744'
+  #               timestamp: '2024-03-06T00:00:00+01:00'
+  #     responses:
+  #       '200':
+  #         description: 'DataStore item for device interface provided'
+  #         content:
+  #           application/json:
+  #             schema:
+  #               oneOf:
+  #               - description: 'air-interface'
+  #                 type: object
+  #                 properties:
+  #                   air-interface:
+  #                     type: object
+  #                     description: 'air-interface as item of air-interface-list in [T1out_Output.yaml] schema'
+  #               - description: 'ethernet-container'
+  #                 properties:
+  #                   ethernet-container:
+  #                     type: object
+  #                     description: 'ethernet-container as item of ethernet-container-list in [T1out_Output.yaml] schema'
+  #             examples:
+  #               air-interface-example:
+  #                 value:
+  #                   air-interface:
+  #                     air-interface-identifiers:
+  #                       mount-name: '123273221'
+  #                       link-endpoint-id: '325557888A'
+  #                       link-id: '325557888'
+  #                       logical-termination-point-id: 'RF-2146697744'
+  #                       link-aggregation-identifiers:
+  #                         - link-id: '325557888'
+  #                         - interface-name: '325557889'
+  #                     air-interface-configuration:
+  #                       configured-atpc-is-on: true
+  #                       configured-atpc-threshold-upper: 99
+  #                       configured-atpc-threshold-lower: -45
+  #                       configured-tx-power: -10
+  #                       configured-modulation-minimum:
+  #                         number-of-states: 4
+  #                         name-at-lct: '4 QAM'
+  #                         configured-capacity-minimum: 2
+  #                       configured-modulation-maximum:
+  #                         number-of-states: 1024
+  #                         name-at-lct: '1024 QAM'
+  #                         configured-capacity-maximum: 10
+  #                     air-interface-performance-measurements-list:
+  #                       - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+  #                         period-end-time: '2024-03-06T13:00:00+01:00'
+  #                         transmit-level-minimum: 18
+  #                         transmit-level-maximum: 22
+  #                         transmit-level-average: 21
+  #                         receive-level-minimum: -45
+  #                         receive-level-maximum: -44
+  #                         receive-level-average: -44
+  #                         signal-to-noise-ratio-minimum: 0
+  #                         signal-to-noise-ratio-maximum: 0
+  #                         signal-to-noise-ratio-average: 0
+  #                         cross-polarization-discrimination-minimum: 30
+  #                         cross-polarization-discrimination-maximum: 31
+  #                         cross-polarization-discrimination-average: 99
+  #                         operated-transmission-modes-list:
+  #                             - transmission-mode-name: '56000-1024-v2'
+  #                               modulation-scheme-name-at-lct:
+  #                               time: 897
+  #                               capacity: 100
+  #                             - transmission-mode-name: '56000-128-v4'
+  #                               modulation-scheme-name-at-lct:
+  #                               time: 3
+  #                               capacity: 120
+  #                         interval-capacity: 110
+  #                         errorred-seconds: 10
+  #                         severely-errorred-seconds: 2
+  #                         consecutive-severely-errorred-seconds: 0
+  #                         total-unavailability: 0
+  #                         defect-blocks: 2
+  #                         time-period: 890
+  #                     transmission-mode-list:
+  #                       - transmission-mode-name: '56000-1024-v2'
+  #                         number-of-states: 1024
+  #                         modulation-scheme-name-at-lct: '1024 QAM'
+  #                         channel-bandwidth: 56000
+  #                         code-rate: 94
+  #                         symbol-rate-reduction-factor: 1
+  #                       - transmission-mode-name: '7000-16-v2'
+  #                         number-of-states: 16
+  #                         modulation-scheme-name-at-lct: '16 QAM'
+  #                         channel-bandwidth: 7000
+  #                         code-rate: 86
+  #                         symbol-rate-reduction-factor: 1
+  #               ethernet-container-example:
+  #                 value:
+  #                   ethernet-container:
+  #                     ethernet-container-identifiers:
+  #                       mount-name: '123273221'
+  #                       interface-name: 'WAN 1/1/1'
+  #                       logical-termination-point-id: 'ETH-2134646913'
+  #                     ethernet-container-performance-measurements-list:
+  #                       - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+  #                         period-end-time: '2024-03-07T00:15:00.0+00:00'
+  #                         max-bytes-per-second-output: '100'
+  #                         total-bytes-input: '9324688281'
+  #                         total-bytes-output: '9800000000'
+  #                         total-frames-input: '9047677'
+  #                         total-frames-output: '9901000'
+  #                         forwarded-frames-input: '500000'
+  #                         forwarded-frames-output: '510000'
+  #                         unicast-frames-input: '100000'
+  #                         unicast-frames-output: '110000'
+  #                         multicast-frames-input: 51945
+  #                         multicast-frames-output: 10000
+  #                         broadcast-frames-input: 15
+  #                         broadcast-frames-output: 10
+  #                         fragmented-frames-input: 1300
+  #                         errored-frames-input: 4000
+  #                         errored-frames-output: 4001
+  #                         dropped-frames-input: 5000
+  #                         dropped-frames-output: 1200
+  #                         oversized-frames-ingress: '100000'
+  #                         undersized-frames-ingress: '123000'
+  #                         jabber-frames-ingress: '123123'
+  #                         unknown-protocol-frames-input: '124785'
+  #                         time-period: 899
+  #                         transmit-traffic: 320
+  #                         receive-traffic: 250
+  #                         frame-loss: 12000
+  #         headers:
+  #           x-correlator:
+  #             schema:
+  #               type: string
+  #               example: '550e8400-e29b-11d4-a716-446655440000'
+  #           exec-time:
+  #             schema:
+  #               type: integer
+  #               example: 1100
+  #           backend-time:
+  #             schema:
+  #               type: integer
+  #               example: 850
+  #           life-cycle-state:
+  #             schema:
+  #               type: string
+  #               enum:
+  #                 - 'EXPERIMENTAL'
+  #                 - 'OPERATIONAL'
+  #                 - 'DEPRECATED'
+  #                 - 'OBSOLETE'
+  #                 - 'UNKNOWN'
+  #                 - 'NOT_YET_DEFINED'
+  #               example: 'EXPERIMENTAL'
+  #             description: >
+  #               'Life cycle state of the consumed service
+  #               find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-021/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+  #       '204':
+  #         description: 'No relevant interface data found'
+  #         headers:
+  #           x-correlator:
+  #             schema:
+  #               type: string
+  #               example: '550e8400-e29b-11d4-a716-446655440000'
+  #           exec-time:
+  #             schema:
+  #               type: integer
+  #               example: 1100
+  #           backend-time:
+  #             schema:
+  #               type: integer
+  #               example: 850
+  #           life-cycle-state:
+  #             schema:
+  #               type: string
+  #               enum:
+  #                 - 'EXPERIMENTAL'
+  #                 - 'OPERATIONAL'
+  #                 - 'DEPRECATED'
+  #                 - 'OBSOLETE'
+  #                 - 'UNKNOWN'
+  #                 - 'NOT_YET_DEFINED'
+  #               example: 'EXPERIMENTAL'
+  #             description: >
+  #               'Life cycle state of the consumed service
+  #               find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-021/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
 
-        '400':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '470':
-          $ref: '#/components/responses/470'
-        '500':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-
-  /v1/provide-dpmdp-device-table:
-    parameters:
-      - $ref: '#/components/parameters/user'
-      - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
-      - $ref: '#/components/parameters/trace-indicator'
-      - $ref: '#/components/parameters/customer-journey'
-    post:
-      operationId: provideDpdmpDeviceTable
-      summary: 'Provides the contents of the DPMDP deviceTable'
-      tags:
-        - IndividualServices
-      security:
-        - apiKeyAuth: []
-      requestBody:
-        description: 'Optionally a mountNameList can be provided to filter the deviceTable output'
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - mount-name-list
-              properties:
-                mount-name-list:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      mount-name:
-                        type: string
-              example:
-                mount-name-list:
-                  - '101250001'
-                  - '203251266'
-      responses:
-        '200':
-          description: 'DPMDP deviceTable contents provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - mount-name
-                  - interface-ltp
-                  - most-recent-timestamp
-                  - data-availability-statistics
-                properties:
-                  mount-name:
-                    type: string
-                    description: >
-                      'The mount-name of a device, part of the table primaryKey. The mount-name-list filter 
-                      from {$request.body#mount-name-list} is to be applied if provided during service call (only mount-names from this list are to be considered, if not found in deviceTable, they are simply ignored).
-                      If not provided, the complete set of mount-names in the table is returned.'
-                  interface-ltp:
-                    type: string
-                    example: 'The logical-termination-point ID (uuid) of the interface, part of the table primaryKey'
-                  most-recent-timestamp:
-                    type: string
-                    description: 'The newest timestamp of this interface in the last processed [/data-structure-for-processing/output] object'
-                  data-availability-statistics:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        date:
-                          type: string
-                          example: '2024-03-06'
-                          description: 'The date the data was gathered for'
-                        number-of-records:
-                          type: integer
-                          description: 'The number of historical PM records gathered for this date'
-                example:
-                  - mount-name: '101250001'
-                    interface-ltp: 'ETH-2134646913'
-                    most-recent-timestamp: '2024-03-06T13:00:00+01:00'
-                    data-availability-statistics:
-                      - date: '2024-03-05'
-                        number-of-records: 96
-                      - date: '2024-03-06'
-                        number-of-records: 12
-                  - mount-name: '101250001'
-                    interface-ltp: 'RF-2146697744'
-                    most-recent-timestamp: '2024-03-06T14:00:00+01:00'
-                    data-availability-statistics:
-                      - date: '2024-03-05'
-                        number-of-records: 48
-                      - date: '2024-03-06'
-                        number-of-records: 2
-          headers:
-            x-correlator:
-              schema:
-                type: string
-                example: '550e8400-e29b-11d4-a716-446655440000'
-            exec-time:
-              schema:
-                type: integer
-                example: 1100
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-100/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
-        '400':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '470':
-          $ref: '#/components/responses/470'
-        '500':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-
-  /v1/provide-data-availability-statistics:
-    parameters:
-      - $ref: '#/components/parameters/user'
-      - $ref: '#/components/parameters/originator'
-      - $ref: '#/components/parameters/x-correlator'
-      - $ref: '#/components/parameters/trace-indicator'
-      - $ref: '#/components/parameters/customer-journey'
-    post:
-      operationId: provideDatavStatistics
-      summary: 'Provides data availability statistics'
-      tags:
-        - IndividualServices
-      security:
-        - apiKeyAuth: []
-      responses:
-        '200':
-          description: 'Data availability statistics provided'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - mount-name
-                  - interface-ltp
-                  - data-availability-statistics
-                properties:
-                  mount-name:
-                    type: string
-                    description: >
-                      'The mount-name of a device.'
-                  interface-ltp:
-                    type: string
-                    example: 'The logical-termination-point ID (uuid) of the interface.'
-                  data-availability-statistics:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        date:
-                          type: string
-                          example: '2024-03-06'
-                          description: 'The date the data was gathered for'
-                        number-of-records:
-                          type: integer
-                          description: 'The number of historical PM records gathered for this date'
-                example:
-                  - mount-name: '101250001'
-                    interface-ltp: 'ETH-2134646913'
-                    most-recent-timestamp: '2024-03-06T13:00:00+01:00'
-                    data-availability-statistics:
-                      - date: '2024-03-05'
-                        number-of-records: 96
-                      - date: '2024-03-06'
-                        number-of-records: 12
-                  - mount-name: '101250001'
-                    interface-ltp: 'RF-2146697744'
-                    most-recent-timestamp: '2024-03-06T14:00:00+01:00'
-                    data-availability-statistics:
-                      - date: '2024-03-05'
-                        number-of-records: 48
-                      - date: '2024-03-06'
-                        number-of-records: 2
-          headers:
-            x-correlator:
-              schema:
-                type: string
-                example: '550e8400-e29b-11d4-a716-446655440000'
-            exec-time:
-              schema:
-                type: integer
-                example: 1100
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                find in [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-is-110/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
-        '400':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '470':
-          $ref: '#/components/responses/470'
-        '500':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        default:
-          $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '400':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '401':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '403':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '404':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       '470':
+  #         $ref: '#/components/responses/470'
+  #       '500':
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
+  #       default:
+  #         $ref: '#/components/responses/responseForErroredServiceRequests'
 
 ########################################################################################################################
 #   Service Layer - Basic Part
@@ -2487,7 +2251,7 @@ paths:
         #PromptForEmbeddingCausesCyclicOperationBasedDataStoreCleanup: omitted
         #PromptForEmbeddingCausesSubscribingForDeviceChangeNotificationsAtKafka: omitted
         PromptForEmbeddingCausesSubscribingForAvcNotificationsAtMwdi:
-          url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-or-1-2-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-or-1-2-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-or-1-2-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+          url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-or-1-2-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-or-1-2-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-or-1-2-1-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000/layer-protocol=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
               parameters:
                 - $ref: '#/components/parameters/user'
