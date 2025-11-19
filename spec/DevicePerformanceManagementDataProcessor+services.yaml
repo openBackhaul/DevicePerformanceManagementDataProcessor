@@ -37,24 +37,24 @@ servers:
       individual:
         - operation-name: /v1/bequeath-your-data-and-die
           uuid: dpmdp-1-0-0-op-s-im-000
-        - operation-name: /list-functions
-          uuid: dpmdp-1-0-0-op-s-im-001
-          operation-key: n.a.
-        - operation-name: /provide-config-of-function
-          uuid: dpmdp-1-0-0-op-s-im-002
-          operation-key: n.a.
-        - operation-name: /update-function
-          uuid: dpmdp-1-0-0-op-s-im-003
-          operation-key: n.a.
-        - operation-name: /list-processing-sequences
-          uuid: dpmdp-1-0-0-op-s-im-004
-          operation-key: n.a.
-        - operation-name: /provide-processing-sequence
-          uuid: dpmdp-1-0-0-op-s-im-005
-          operation-key: n.a.
-        - operation-name: /update-processing-sequence
-          uuid: dpmdp-1-0-0-op-s-im-006
-          operation-key: n.a.
+#        - operation-name: /list-functions
+#          uuid: dpmdp-1-0-0-op-s-im-001
+#          operation-key: n.a.
+#        - operation-name: /provide-config-of-function
+#          uuid: dpmdp-1-0-0-op-s-im-002
+#          operation-key: n.a.
+#        - operation-name: /update-function
+#          uuid: dpmdp-1-0-0-op-s-im-003
+#          operation-key: n.a.
+#        - operation-name: /list-processing-sequences
+#          uuid: dpmdp-1-0-0-op-s-im-004
+#          operation-key: n.a.
+#        - operation-name: /provide-processing-sequence
+#          uuid: dpmdp-1-0-0-op-s-im-005
+#          operation-key: n.a.
+#        - operation-name: /update-processing-sequence
+#          uuid: dpmdp-1-0-0-op-s-im-006
+#          operation-key: n.a.
     service:
       basic:
         - operation-name: /v1/start-application-in-generic-representation
@@ -82,32 +82,31 @@ servers:
           operation-key: n.a.
 
         # read data from DPMDP data store
-        - operation-name: /v1/provide-data-store-item-for-device
-          uuid: dpdmp-1-0-0-op-s-is-020
-          operation-key: n.a.
-        # ggf. später
-        - operation-name: /v1/provide-data-store-item-for-device-interface
-          uuid: dpdmp-1-0-0-op-s-is-021
-          operation-key: n.a.
+#        - operation-name: /v1/provide-data-store-item-for-device
+#          uuid: dpdmp-1-0-0-op-s-is-020
+#          operation-key: n.a.
+#        - operation-name: /v1/provide-data-store-item-for-device-interface
+#          uuid: dpdmp-1-0-0-op-s-is-021
+#          operation-key: n.a.
 
-        - operation-name: /v1/provide-dpmdp-device-table
-          uuid: dpmdp-1-0-0-op-is-100
-          operation-key: n.a.
+# todo: delete        - operation-name: /v1/provide-dpmdp-device-table
+# todo: delete          uuid: dpmdp-1-0-0-op-is-100
+# todo: delete          operation-key: n.a.
 
-        - operation-name: /v1/provide-data-availability-statistics
-          uuid: dpdmp-1-0-0-op-s-is-110
-          operation-key: n.a.
+# todo: delete        - operation-name: /v1/provide-data-availability-statistics
+# todo: delete          uuid: dpdmp-1-0-0-op-s-is-110
+# todo: delete          operation-key: n.a.
 
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor
     own-release-number: 1.0.0
     uuid: dpmdp-1-0-0-http-s-000
-    application-purpose: This application collects and processes historical device performance data, which it then provides to customers
+# todo: change to    application-purpose: This application collects and processes historical device performance data and streams it to customers
     owner-name: Katharina Mohr
     owner-email-address: Katharina.Mohr.external@telefonica.com
     release-list:
       - release-number: 1.0.0
-        release-date: 30.10.2025
+# todo: change to        release-date: 28.11.2025
         changes: Initial version
   tcp-server:
     - description: Without TLS layer
@@ -120,7 +119,7 @@ servers:
 clients:
 
   - http-client:
-      application-name: ElasticSearch
+# todo: change to              application-name: ElasticSearchMwdiReplica
       release-number: 1.0.0
       uuid: dpmdp-1-0-0-http-c-es-1-0-0-000
     tcp-client:
@@ -131,6 +130,18 @@ clients:
     elasticsearch-client:
       uuid: dpmdp-1-0-0-es-c-es-1-0-0-000
       index-alias: 15
+# todo: add          - http-client:
+# todo: add      application-name: ElasticSearchDpmdp
+# todo: add      release-number: 1.0.0
+# todo: add      uuid: dpmdp-1-0-0-http-c-es-1-0-0-001
+# todo: add    tcp-client:
+# todo: add      remote-protocol: http
+# todo: add      ip-address: 127.0.0.1
+# todo: add      tcp-port: 3015
+# todo: add      uuid: dpmdp-1-0-0-tcp-c-es-1-0-0-000
+# todo: add    elasticsearch-client:
+# todo: add      uuid: dpmdp-1-0-0-es-c-es-1-0-0-000
+# todo: add      index-alias: 16
 
   # consumed notifications from MWDI
   - http-client:
@@ -342,24 +353,24 @@ clients:
         basic:
         individual:
 
-  - http-client:
-      application-name: DevicePerformanceManagementDataProcessor
-      release-number: 1.0.0
-      uuid: dpmdp-1-0-0-http-c-dpmdp-1-0-0-000
-    tcp-client:
-      remote-protocol: http
-      ip-address: 127.0.0.1
-      tcp-port: 4031
-      uuid: dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000
-    operation-clients:
-      own-oam:
-        basic:
-        individual:
-      service:
-        basic:
-        individual:
-          - operation-name: /v1/regard-attribute-value-change
-            uuid: dpmdp-1-0-0-op-c-is-dpmdp-1-0-0-000
+# todo: delete  - http-client:
+# todo: delete      application-name: DevicePerformanceManagementDataProcessor
+# todo: delete      release-number: 1.0.0
+# todo: delete      uuid: dpmdp-1-0-0-http-c-dpmdp-1-0-0-000
+# todo: delete    tcp-client:
+# todo: delete      remote-protocol: http
+# todo: delete      ip-address: 127.0.0.1
+# todo: delete      tcp-port: 4031
+# todo: delete      uuid: dpmdp-1-0-0-tcp-c-dpmdp-1-0-0-000
+# todo: delete    operation-clients:
+# todo: delete      own-oam:
+# todo: delete        basic:
+# todo: delete        individual:
+# todo: delete      service:
+# todo: delete        basic:
+# todo: delete        individual:
+# todo: delete          - operation-name: /v1/regard-attribute-value-change
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-dpmdp-1-0-0-000
 
   - http-client:
       application-name: MicroWaveDeviceInventory
@@ -377,29 +388,27 @@ clients:
       service:
         basic:
         individual:
-          - operation-name: /v1/provide-device-status-metadata
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
+# todo: delete          - operation-name: /v1/provide-device-status-metadata
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
           - operation-name: /v1/notify-attribute-value-changes
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
           - operation-name: /v1/end-subscription
             uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-002
-          # TODO: add all in configFile!
-          # for on-demand interface data
-          # -> ltp structure + augment: fields=logical-termination-point(uuid;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name))
-          - operation-name: /core-model-1-4:network-control-domain=cache/control-construct={mountName}
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-003
-          # airInterface/EthernetContainer pac not exposed at MWDI --> read all parts separately; read from live!
-          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-capability
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-210
-          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-configuration
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-211
-          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-historical-performances
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-214
-          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-status
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-512
-          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/ethernet-container-2-0:ethernet-container-pac/ethernet-container-status
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-222
-          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-224
-
-#capacitycalculator
+# todo: delete          # TODO: add all in configFile!
+# todo: delete          # for on-demand interface data
+# todo: delete          # -> ltp structure + augment: fields=logical-termination-point(uuid;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name))
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=cache/control-construct={mountName}
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-003
+# todo: delete          # airInterface/EthernetContainer pac not exposed at MWDI --> read all parts separately; read from live!
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-capability
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-210
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-configuration
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-211
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-historical-performances
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-214
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/air-interface-2-0:air-interface-pac/air-interface-status
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-512
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/ethernet-container-2-0:ethernet-container-pac/ethernet-container-status
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-222
+# todo: delete          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}/logical-termination-point={uuid}/layer-protocol={localId}/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances
+# todo: delete            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-224

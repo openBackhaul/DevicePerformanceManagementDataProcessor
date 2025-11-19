@@ -20,11 +20,17 @@ participant "example\np1GenericProcessing" as p1Generic #LightBlue
 participant "example\np1OutputFormatting" as p1Output #LightCyan
 participant "example\np1Transmitting" as p1Trans #LightCyan
 
-participant "p1RemoveRawData" as p1DelRaw #LightCyan
+participant "p1PrepareStoring" as p1PrepStore #LightBlue
 
 participant "p1Storing" as p1Store #LightBlue
 database "dataStore" as db #LightBlue
 
+note right mwdi #Orange
+  If the Pre-Release does not comprise Storing
+  the processing and sending cannot be limited to new PM data
+  It is recommended to configure a testing MWDI with
+  a very small sliding window to limit the amount of data  
+end note
 
 activate rAVC #LightCyan
 
@@ -54,8 +60,9 @@ activate p1ProOrch #LightCyan
     p1AddRaw -> MwdiEs
     p1AddRaw <-- MwdiEs : {rawCC}
     note over p1AddRaw
-      {rawCC} is reduced to AirInterfaces
-      and EthernetContainers
+      Content of {rawCC} is reduced 
+      to the necessary data
+      Sub-functions might be applied
     end note
 
   p1ProOrch <-- p1AddRaw : {rawCC*}
@@ -91,21 +98,21 @@ activate p1ProOrch #LightCyan
     p1Specific <-- p1Generic
     deactivate p1Generic
     
-  p1ProOrch <-- p1Specific : {return}
+  p1ProOrch <-- p1Specific : {{result}, [responseCode]}
   deactivate p1Specific
 
   note over p1ProOrch
     DataStructureForProcessing
-    gets filled with {return}
+    gets filled with results
+    and "responseCodes"
   end note
 
-  p1ProOrch -> p1Output : _resultCC
+  p1ProOrch -> p1Output : {_resultCC, {input}, {parameters}}
   activate p1Output #LightCyan
 
     note over p1Output #Orange
-      idea:
-      in pre-release, _rawCC* instead of _resultCC gets passed
-      -> {output} gets created from raw data instead of missing results
+      idea: in pre-release, _rawCC* instead of _resultCC gets passed
+      -> {output} gets created from raw data instead of not yet calculated results
     end note
 
     note over p1Output
@@ -121,7 +128,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Trans : {output}
+  p1ProOrch -> p1Trans : {_output, {input}, {parameters}}
   activate p1Trans #LightCyan
 
     note over p1Trans
@@ -131,18 +138,19 @@ activate p1ProOrch #LightCyan
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1DelRaw : _DataStructureForProcessing
-  activate p1DelRaw
+  p1ProOrch -> p1PrepStore : {_DataStructureForProcessing}
+  activate p1PrepStore
 
-    note over p1DelRaw
-      Delete {rawCC*} from
-      DataStructureForProcessing
+    note over p1PrepStore
+      Prepare DataStructureForProcessing
+      for storing (e.g., delete {rawCC*}
+      and {output})
     end note
 
-  p1ProOrch <-- p1DelRaw
-  deactivate p1DelRaw
+  p1ProOrch <-- p1PrepStore
+  deactivate p1PrepStore
 
-  p1ProOrch -> p1Store : _DataStructureForProcessing
+  p1ProOrch -> p1Store : {_DataStructureForProcessing}
   activate p1Store
 
     note over p1Store
