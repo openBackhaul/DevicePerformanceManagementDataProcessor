@@ -1,0 +1,552 @@
+openapi: 3.0.0
+info:
+  title: p1LoadRawDeviceData
+  version: 1.0.0
+
+
+# todo: in readControlConstructFromEs: unclear whether x-key must already be provided in the related output schema
+
+x-javascript-interface:
+  p1LoadRawDeviceData:
+    summary: 'Reads device ControlConstruct from MWDI ES replica, applies filtering and returns the remaining data to the caller'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - mount-name
+            properties:
+              mount-name:
+                type: string
+                description: 'The mount-name of the device for which ControlConstruct data shall be read'
+            example:
+              mount-name: '100250001'
+    output:
+      success:
+        description: '(Filtered) raw ControlConstruct data provided.'
+        content:
+          application/json:
+            schema:
+              type: object
+              description: >
+                'The filtered ControlConstruct data is obtained by executing:
+                - (1) readControlConstructFromEs: reads the complete ControlConstruct data from ES
+                - (2) retrieveMostRecentPeriodEndTimesFromDs: reads the most-recent-period-endtimes for each interface of the device from the data-store
+                - (3) applyFilteringForLtpStructureAugmentAirIfAndEthContainer: filters the data obtained in (1) for
+                  - equipment data
+                  - ltp structure and augment data
+                  - air-interfaces and ethernet-containers with relevant data:
+                    - only 15min and 24h historical performances data relevant
+                    - which is newer than the most-recent-period-endtime for this interface from (2),
+                      if no most-recend-period-end-time available for a specific interface, work with a default (e.g. 1970-01-01T00:00:00+00:00)
+                In case different filting rules shall be applied in later releases, replace (3) applyFilteringForLtpStructureAugmentAirIfAndEthContainer by
+                another new processing step.'
+              properties:
+                raw-control-construct:
+                  type: object
+                  description: >
+                    'The filtered ControlConstruct data
+                    from {$applyFilteringForLtpStructureAugmentAirIfAndEthContainer.output#core-model-1-4:control-construct}
+                    (right under core-model-1-4:control-construct; not all attributes and subclasses listed explicitly'
+                  required:
+                    - equipment-augment-1-0:control-construct-pac
+                    - logical-termination-point
+                  properties:
+                    equipment-augment-1-0:control-construct-pac:
+                      type: object
+                      required:
+                        - external-label
+                        - device-model-name
+                      properties:
+                        external-label:
+                          type: string
+                        device-model-name:
+                          type: string
+                    logical-termination-point:
+                      type: array
+                      x-key: uuid
+                      items:
+                        type: object
+                        required:
+                          - uuid
+                          - ltp-augment-1-0:ltp-augment-pac
+                          - layer-protocol
+                        properties:
+                          uuid:
+                            type: string
+                          client-ltp:
+                            type: array
+                            items:
+                              type: string
+                          server-ltp:
+                            type: array
+                            items:
+                              type: string
+                          ltp-augment-1-0:ltp-augment-pac:
+                            type: object
+                            properties:
+                              external-label:
+                                type: string
+                              original-ltp-name:
+                                type: string
+                          layer-protocol:
+                            type: array
+                            x-key: local-id
+                            items:
+                              oneOf:
+                                - description: 'air-interface'
+                                  type: object
+                                  required:
+                                    - local-id
+                                    - layer-protocol-name
+                                    - air-interface-2-0:air-interface-pac
+                                  properties:
+                                    local-id:
+                                      type: string
+                                    layer-protocol-name:
+                                      type: string
+                                      enum:
+                                        - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                    air-interface-2-0:air-interface-pac:
+                                      type: object
+                                      properties:
+                                        air-interface-configuration:
+                                          type: object
+                                        air-interface-capability:
+                                          type: object
+                                        air-interface-historical-performances:
+                                          type: object
+                                          properties:
+                                            historical-performance-data-list:
+                                              type: array
+                                - description: 'ethernet-container'
+                                  type: object
+                                  required:
+                                    - local-id
+                                    - layer-protocol-name
+                                    - ethernet-container-2-0:ethernet-container-pac
+                                  properties:
+                                    local-id:
+                                      type: string
+                                    layer-protocol-name:
+                                      type: string
+                                      enum:
+                                        - 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                                    ethernet-container-2-0:ethernet-container-pac:
+                                      type: object
+                                      properties:
+                                        ethernet-container-historical-performances:
+                                          type: object
+                                          properties:
+                                            historical-performance-data-list:
+                                              type: array
+                  error:
+                    description: 'just for preventing an error in VSCode'
+                    # todo: description potentially to be deleted; behavior in case of errors to be described
+    processing:
+      readControlConstructFromEs:
+        url: #[dpmdpIpAddress]:[dpmdpPort][MWDI_ES_replica]
+          description: >
+            'The raw ControlConstruct data for the target mount-name is read directly from ElasticSearch'
+          input:
+            content:
+              required:
+                - mount-name
+              properties:
+                mount-name:
+                  type: string
+                  description: >
+                    'The target mount-name
+                    from {$input#mount-name}'
+          output:
+            success:
+              description: 'Raw ControlConstruct data read'
+              content:
+                application/json:
+                  schema:
+                    description: >
+                      'The data format follows ONF schema (but in MWDI core-model-1-4:control-construct is an array).
+                      Only relevant attributes and classes are listed here, classes may be listed without all sub-classes or attributes'
+                    required:
+                      - core-model-1-4:control-construct
+                    properties:
+                      core-model-1-4:control-construct:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - equipment-augment-1-0:control-construct-pac
+                            - logical-termination-point
+                          properties:
+                            equipment-augment-1-0:control-construct-pac:
+                              type: object
+                              required:
+                                - external-label
+                                - device-model-name
+                              properties:
+                                external-label:
+                                  type: string
+                                  description: >
+                                    'This value should match the input mount-name
+                                    from {$input#mount-name}'
+                                device-model-name:
+                                  type: string
+                                  description: >
+                                    'deviceType as available on the device'
+                            logical-termination-point:
+                              type: array
+                              x-key: uuid
+                              items:
+                                type: object
+                                required:
+                                  - uuid
+                                  - ltp-augment-1-0:ltp-augment-pac
+                                  - layer-protocol
+                                properties:
+                                  uuid:
+                                    type: string
+                                  client-ltp:
+                                    type: array
+                                    items:
+                                      type: string
+                                  server-ltp:
+                                    type: array
+                                    items:
+                                      type: string
+                                  ltp-augment-1-0:ltp-augment-pac:
+                                    type: object
+                                    properties:
+                                      external-label:
+                                        type: string
+                                        description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
+                                      original-ltp-name:
+                                        type: string
+                                        description: 'portName'
+                                  layer-protocol:
+                                    type: array
+                                    #x-key: local-id
+                                    items:
+                                      oneOf:
+                                        - description: 'air-interface'
+                                          type: object
+                                          required:
+                                            - local-id
+                                            - layer-protocol-name
+                                            - air-interface-2-0:air-interface-pac
+                                          properties:
+                                            local-id:
+                                              type: string
+                                            layer-protocol-name:
+                                              type: string
+                                              enum:
+                                                - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                            air-interface-2-0:air-interface-pac:
+                                              type: object
+                                              properties:
+                                                air-interface-configuration:
+                                                  type: object
+                                                air-interface-capability:
+                                                  type: object
+                                                  properties:
+                                                    transmission-mode-list:
+                                                      type: array
+                                                      #x-key: transmission-mode-name
+                                                      items:
+                                                        type: object
+                                                air-interface-historical-performances:
+                                                  type: object
+                                                  properties:
+                                                    historical-performance-data-list:
+                                                      type: array
+                                                      #x-key: period-end-time
+                                                      items:
+                                                        type: object
+                                                        required:
+                                                          - granularity-period
+                                                          - period-end-time
+                                                          - performance-data
+                                                        properties:
+                                                          granularity-period:
+                                                            type: string
+                                                            enum:
+                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                                          period-end-time:
+                                                            type: string
+                                                          performance-data:
+                                                            type: object
+                                        - description: 'ethernet-container'
+                                          type: object
+                                          required:
+                                            - local-id
+                                            - layer-protocol-name
+                                            - ethernet-container-2-0:ethernet-container-pac
+                                          properties:
+                                            local-id:
+                                              type: string
+                                            layer-protocol-name:
+                                              type: string
+                                              enum:
+                                                - 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                                            ethernet-container-2-0:ethernet-container-pac:
+                                              type: object
+                                              properties:
+                                                ethernet-container-historical-performances:
+                                                  type: object
+                                                  properties:
+                                                    historical-performance-data-list:
+                                                      type: array
+                                                      #x-key: period-end-time
+                                                      items:
+                                                        type: object
+                                                        required:
+                                                          - granularity-period
+                                                          - period-end-time
+                                                          - performance-data
+                                                        properties:
+                                                          granularity-period:
+                                                            type: string
+                                                            enum:
+                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                                          period-end-time:
+                                                            type: string
+                                                          performance-data:
+                                                            type: object
+                          error:
+                            description: 'todo'
+                            # todo: description potentially to be deleted; behavior in case of errors to be described
+      retrieveMostRecentPeriodEndTimesFromDs:
+        url: #[dpmdpIpAddress]:[dpmdpPort]
+          description: >
+            'This processing step reads the data-store item (from the DPMDP ES) where
+            [/data-store/device/mount-name](x-key) == {$input#mount-name},
+            it returns the [/data-store/device/ltp/most-recent-period-end-time] for all previously seen interfaces'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'The target mount-name
+                        from {$input#mount-name}'
+          output:
+            success:
+              description: 'List of most-recent-period-end-times provided'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      ltp:
+                        type: array
+                        items:
+                          properties:
+                            uuid:
+                              type: string
+                              description: 'The uuid of the LTP'
+                            lp:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  local-id:
+                                    type: string
+                                    description: 'The layerProtocol local-id, identifying the actual interface instance'
+                                  most-recent-period-end-time:
+                                    type: string
+                    example:
+                      ltp:
+                        - uuid: 'RF-819.1.1'
+                          lp:
+                            - local-id: '819.1.1'
+                              most-recent-period-end-time: '2025-11-19T18:33:43.813+01:00'
+                        - uuid: 'ETH-785.1.5'
+                          lp:
+                            - local-id: '765.1.5'
+                              most-recent-period-end-time: '2025-11-18T00:00:01+01:00'
+            error:
+              description: 'just for preventing an error in VSCode'
+              # todo: description potentially to be deleted; behavior in case of errors to be described
+      applyFilteringForLtpStructureAugmentAirIfAndEthContainer:
+        url: #[dpmdpIpAddress]:[dpmdpPort]
+          description: >
+            'Filters the ControlConstruct data from readControlConstructFromEs for relevant data and returns it.'
+          output:
+            success:
+              description: 'Filtered ControlConstruct data provided'
+              content:
+                application/json:
+                  schema:
+                    properties:
+                      core-model-1-4:control-construct:
+                        description: >
+                          'ControlConstruct data
+                          from {$readControlConstructFromEs.output#core-model-1-4:control-construct}'
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            equipment-augment-1-0:control-construct-pac:
+                              type: object
+                              properties:
+                                external-label:
+                                  type: string
+                                device-model-name:
+                                  type: string
+                            logical-termination-point:
+                              type: array
+                              x-key: uuid
+                              items:
+                                type: object
+                                properties:
+                                  uuid:
+                                    type: string
+                                  client-ltp:
+                                    type: array
+                                    items:
+                                      type: string
+                                  server-ltp:
+                                    type: array
+                                    items:
+                                      type: string
+                                  ltp-augment-1-0:ltp-augment-pac:
+                                    type: object
+                                    properties:
+                                      external-label:
+                                        type: string
+                                      original-ltp-name:
+                                        type: string
+                                  layer-protocol:
+                                    type: array
+                                    description: >
+                                      'Only keep layer-protocols
+                                      from {$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/layer-protocol}
+                                      where {$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER'
+                                    x-key: local-id
+                                    items:
+                                      oneOf:
+                                        - description: 'air-interface'
+                                          type: object
+                                          properties:
+                                            local-id:
+                                              type: string
+                                            layer-protocol-name:
+                                              type: string
+                                              enum:
+                                                - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                            air-interface-2-0:air-interface-pac:
+                                              type: object
+                                              properties:
+                                                air-interface-configuration:
+                                                  type: object
+                                                air-interface-capability:
+                                                  type: object
+                                                  properties:
+                                                    transmission-mode-list:
+                                                      type: array
+                                                      x-key: transmission-mode-name
+                                                      items:
+                                                        type: object
+                                                air-interface-historical-performances:
+                                                  type: object
+                                                  properties:
+                                                    historical-performance-data-list:
+                                                      type: array
+                                                      description: >
+                                                        'Only keep array items with 15min or 24h granularity, for which the period-end-time is newer that the most-recent-period-end-time from retrieveMostRecentPeriodEndTimesFromDs
+                                                        (if no most-recent-period-end-time is found for the respective interface instance the found PM data records are to be treated as newer).
+
+                                                        Thereby interface instances from readControlConstructFromEs and retrieveMostRecentPeriodEndTimesFromDs are matched as follows:
+                                                        IF ({$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
+                                                           AND {$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
+                                                        THEN it is the same interface instance.
+
+                                                        WITH inputSource == {$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list},
+                                                        keep only array items
+                                                        from {$inputSource}
+                                                        WHERE {$inputSource/granularity-period} indicates 15-MIN or 24-HOURS
+                                                              AND {$inputSource/period-end-time} is NEWER THAN {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/most-recent-period-end-time} for the current interface instance.
+                                                      x-key: period-end-time
+                                                      items:
+                                                        type: object
+                                                        required:
+                                                          - granularity-period
+                                                          - period-end-time
+                                                          - performance-data
+                                                        properties:
+                                                          granularity-period:
+                                                            type: string
+                                                            enum:
+                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                                          period-end-time:
+                                                            type: string
+                                                          performance-data:
+                                                            type: object
+                                        - description: 'ethernet-container'
+                                          type: object
+                                          required:
+                                            - local-id
+                                            - layer-protocol-name
+                                            - ethernet-container-2-0:ethernet-container-pac
+                                          properties:
+                                            local-id:
+                                              type: string
+                                            layer-protocol-name:
+                                              type: string
+                                              enum:
+                                                - 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                                            ethernet-container-2-0:ethernet-container-pac:
+                                              type: object
+                                              properties:
+                                                ethernet-container-historical-performances:
+                                                  type: object
+                                                  properties:
+                                                    historical-performance-data-list:
+                                                      type: array
+                                                      description: >
+                                                        'Only keep array items with 15min or 24h granularity, for which the period-end-time is newer that the most-recent-period-end-time from retrieveMostRecentPeriodEndTimesFromDs
+                                                        (if no most-recent-period-end-time is found for the respective interface instance the found PM data records are to be treated as newer).
+
+                                                        Thereby interface instances from readControlConstructFromEs and retrieveMostRecentPeriodEndTimesFromDs are matched as follows:
+                                                        IF ({$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
+                                                           AND {$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
+                                                        THEN it is the same interface instance.
+
+                                                        WITH inputSource == {$readControlConstructFromEs.output#core-model-1-4:control-construct/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list},
+                                                        keep only array items
+                                                        from {$inputSource}
+                                                        WHERE {$inputSource/granularity-period} indicates 15-MIN or 24-HOURS
+                                                              AND {$inputSource/period-end-time} is NEWER THAN {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/most-recent-period-end-time} for the current interface instance.
+                                                      x-key: period-end-time
+                                                      items:
+                                                        type: object
+                                                        properties:
+                                                          granularity-period:
+                                                            type: string
+                                                            enum:
+                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                                          period-end-time:
+                                                            type: string
+                                                          performance-data:
+                                                            type: object
+            error:
+              description: 'just for preventing an error in VSCode'
+              # todo: description potentially to be deleted; behavior in case of errors to be described
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

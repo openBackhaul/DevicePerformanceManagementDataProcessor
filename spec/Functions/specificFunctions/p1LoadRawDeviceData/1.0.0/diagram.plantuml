@@ -1,0 +1,65 @@
+@startuml p1LoadRawDeviceData
+skinparam responseMessageBelowArrow true
+
+title
+p1LoadRawDeviceData
+end title
+
+participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as requestor
+participant "p1LoadRawDeviceData" as cur #LightCyan
+database "MWDI ES\nreplica" as MwdiEs #LightCyan
+database "datastore" as datastore #LightCyan
+
+
+
+requestor -> cur: {mountName}
+activate cur #LightCyan
+
+'Read CC
+note over cur
+  <u>readControlConstructFromEs</u>
+  reads the complete ControlConstruct
+  for the mount-name from
+  MWDI ElasticSearch replica
+end note
+cur -> MwdiEs: {mountName}
+cur <-- MwdiEs: {raw ControlConstruct}
+
+'Read mostRecentTimestamps
+note over cur
+  <u>retrieveMostRecentPeriodEndTimesFromDs</u>
+  Reads mostRecentPeriodEndTimes for all previously
+  seen interfaces of the mountName from the
+  DPMDP dataStore.
+end note
+cur -> datastore: {mountName}
+cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime))}
+
+'Filter the data
+note over cur
+  <u>applyFilteringForLtpStructureAugmentAirIfAndEthContainer</u>
+  The complete ControlConstruct data from <i>readControlConstructFromEs</i>
+  is filtered. Only keep relevant information from equipmentAugment,
+  LTP structure and augment and layerProtocols, which are AirInterface
+  or EthernetContainer. 
+
+  Inside kept layerProtocols only keep historical PM data if
+  - granularity is 15min or 24h
+  - the period-end-time of a record is newer that
+    the mostRecentPeriodEndTime for the given interface instance
+
+  Note: it is possible that the filtered CC data contains
+  layer-protocols (AirInterfaces/EthernetContainers) where
+  no historical PM data records remain.
+end note
+
+note over cur #LightGray
+  <i>If future releases require additional data to be kept</i>
+  <i>or filtered out, execution of </i>applyFilteringForLtp
+  StructureAugmentAirIfAndEthContainer <i>could be swapped</i>
+  <i>for another filtering step</i>.
+end note
+
+requestor <-- cur: {filtered raw ControlConstruct data}
+
+deactivate cur

@@ -37,17 +37,13 @@ data-store:
                     required:
                       - local-id
                       - layer-protocol-name
-                      - most-recent-period-end-time
+                      - latest-period-end-time
                     properties:
                       local-id:
                         type: string
                       layer-protocol-name:
                         type: string
-                      # the most-recent-period-end-time is now stored inside the DSFP cc data, shall it also be stored here???
-                      # originally it was to be stored here -> this makes processing faster and easier, therefore decided to keep it
-                      # there must be a processing step, where this is added here, when a new dsfp item is added to the dsfp-list
-                      # newly seen interfaces are simply added, entries for existing interfaces are overwritten
-                      most-recent-period-end-time:
+                      latest-period-end-time:
                         type: string
           data-structure-for-processing-list:
             type: array
