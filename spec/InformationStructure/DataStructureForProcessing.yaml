@@ -9,7 +9,8 @@ data-structure-for-processing:
     raw-control-construct:
       type: object
       description: >
-        'The raw control construct data read from ES, following ONF structure. Only relevant classes and attributes listed.'
+        'The raw control construct data read from ES, following ONF structure. Only relevant classes and attributes listed.
+        Functions processing this data are not passed the data itself, but a reference to it instead.'
       required:
         - equipment-augment-1-0:control-construct-pac
         - logical-termination-point

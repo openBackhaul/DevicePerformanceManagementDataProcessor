@@ -60,6 +60,13 @@ note over cur #LightGray
   <i>for another filtering step</i>.
 end note
 
-requestor <-- cur: {filtered raw ControlConstruct data}
+note over cur
+  <u>returnReference</u>
+  The function returns a reference (indicated by preceeding "_")
+  pointing to where the filtered raw-ControlConstruct
+  data object is kept in the DPMDP runtime memory.
+end note
+
+requestor <-- cur: {_rawControlConstruct}
 
 deactivate cur
