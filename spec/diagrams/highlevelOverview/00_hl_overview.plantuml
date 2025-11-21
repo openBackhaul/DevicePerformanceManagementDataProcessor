@@ -114,6 +114,14 @@ activate p1ProOrch #LightCyan
       idea: in pre-release, _rawCC* instead of _resultCC gets passed
       -> {output} gets created from raw data instead of not yet calculated results
     end note
+    note over p1Output #LightCoral
+      Both the rawCC* [DSFP/raw-control-construct] and the resultCC [DSFP/control-construct]
+      follow ONF structure BUT the resultCC has some additional attributes (e.g. KPIs),
+      which the rawCC DOES NOT HAVE. So just passing _rawCC* instead of _resultCC,
+      will lead to some attributes not being there for mapping.
+      The target attributes in the generated output should be created, but filled with a default.
+      (This will not be specified in the function explicitly, as this is just done for the pre-release)
+    end note
 
     note over p1Output
       formatting the results
