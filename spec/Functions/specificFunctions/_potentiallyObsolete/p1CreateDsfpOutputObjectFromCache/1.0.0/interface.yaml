@@ -38,7 +38,7 @@ x-javascript-interface:
                         'List of relevant microwave air interfaces found in the given devices
                         from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces}.
                         A new array element is to be added for every item in {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces}
-                        where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data-list} contains entries'
+                        where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data-list} contains entries'
                       type: array
                       items:
                         type: object
@@ -164,7 +164,7 @@ x-javascript-interface:
                             type: array
                             description: >
                               'An own array item is added for every array item
-                              from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data}'
+                              from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data}'
                             items:
                               type: object
                               properties:
@@ -172,84 +172,84 @@ x-javascript-interface:
                                   type: string
                                   description: >
                                     'Time period between reset of the underlying counter
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/granularity-period}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/granularity-period}'
                                 period-end-time:
                                   type: string
                                   description: >
                                     'Time when the counter values have been recorded and the counter reset
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/period-end-time}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/period-end-time}'
                                 transmit-level-minimum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Minimum transmit power in dBm
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/tx-level-min}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/tx-level-min}'
                                 transmit-level-maximum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Maximum transmit power in dBm
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/tx-level-max}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/tx-level-max}'
                                 transmit-level-average:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Averaged transmit power in dBm
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/tx-level-avg}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/tx-level-avg}'
                                 receive-level-minimum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Minimum receive level in dBm
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/rx-level-min}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/rx-level-min}'
                                 receive-level-maximum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Maximum receive level in dBm
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/rx-level-max}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/rx-level-max}'
                                 receive-level-average:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Averaged receive level in dBm
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/rx-level-avg}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/rx-level-avg}'
                                 signal-to-noise-ratio-minimum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Minimum signal to noise + interference ratio (SNIR)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/snir-min}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/snir-min}'
                                 signal-to-noise-ratio-maximum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Maximum signal to noise + interference ratio (SNIR)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/snir-max}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/snir-max}'
                                 signal-to-noise-ratio-average:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Averaged signal to noise + interference ratio (SNIR)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/snir-avg}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/snir-avg}'
                                 cross-polarization-discrimination-minimum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Minimum cross polarization discrimination (XPD)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/xpd-min}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/xpd-min}'
                                 cross-polarization-discrimination-maximum:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Maximum cross polarization discrimination (XPD)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/xpd-max}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/xpd-max}'
                                 cross-polarization-discrimination-average:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Averaged cross polarization discrimination (XPD)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/xpd-avg}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/xpd-avg}'
                                 operated-transmission-modes-list: 
                                   description: 'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds are listed'
                                   type: array
@@ -260,12 +260,12 @@ x-javascript-interface:
                                         type: string
                                         description: >
                                           'Key attribute, name of the transmission mode
-                                          from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/time-xstates-list/transmission-mode}'
+                                          from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/time-xstates-list/transmission-mode}'
                                       modulation-scheme-name-at-lct:
                                         type: string
                                         description: >
                                           'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                          transmissionMode = {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/time-xstates-list/transmission-mode}'
+                                          transmissionMode = {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/time-xstates-list/transmission-mode}'
                                           from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}
                                           where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionMode'
                                       time:
@@ -273,7 +273,7 @@ x-javascript-interface:
                                         nullable: true
                                         description: >
                                           'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                          from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/time-xstates-list/time}'
+                                          from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/time-xstates-list/time}'
                                       capacity:
                                         type: integer
                                         nullable: true
@@ -289,37 +289,37 @@ x-javascript-interface:
                                   nullable: true
                                   description: >
                                     'Number of errored seconds
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/es}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/es}'
                                 severely-errorred-seconds:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Number of severily errored seconds
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/ses}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/ses}'
                                 consecutive-severely-errorred-seconds:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Number of consecutive severily errored seconds
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/cses}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/cses}'
                                 total-unavailability:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Total time of unavailability in seconds
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/unavailability}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/unavailability}'
                                 defect-blocks:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Total number of blocks that were defect after receiving and could not be corrected by the FEC
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/defect-blocks-sum}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/defect-blocks-sum}'
                                 time-period:
                                   type: integer
                                   nullable: true
                                   description: >
                                     'Total (actual) length of the measurement period
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/filtered-historical-performance-data/time-period}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-air-interfaces/historical-performance-data/time-period}'
                           transmission-mode-list:
                             description: 'List of supported Transmission Modes'
                             type: array
@@ -359,7 +359,7 @@ x-javascript-interface:
                         'List of relevant EthernetContainers found in the given devices
                         from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers}.
                         A new array element is to be added for every item in {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers}
-                        where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data-list} contains entries'
+                        where {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data-list} contains entries'
                       type: array
                       items:
                         type: object
@@ -385,7 +385,7 @@ x-javascript-interface:
                             type: array
                             description: >
                               'An own array item is added for every array item
-                              from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data}'
+                              from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data}'
                             items:
                               type: object
                               properties:
@@ -393,137 +393,137 @@ x-javascript-interface:
                                   type: string
                                   description: > 
                                     'Time period between reset of the underlying counter
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/granularity-period}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/granularity-period}'
                                 period-end-time:
                                   type: string
                                   description: > 
                                     'Time when the counter values have been recorded and the counter reset
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/period-end-time}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/period-end-time}'
                                 max-bytes-per-second-output:
                                   type: string
                                   description: > 
                                     'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/max-bytes-per-second-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/max-bytes-per-second-output}'
                                 total-bytes-input:
                                   type: string
                                   description: > 
                                     'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/total-bytes-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/total-bytes-input}'
                                 total-bytes-output:
                                   type: string
                                   description: > 
                                     'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/total-bytes-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/total-bytes-output}'
                                 total-frames-input:
                                   type: string
                                   description: > 
                                     'The total number of Ethernet frames received at this interface (including those received in error)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/total-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/total-frames-input}'
                                 total-frames-output:
                                   type: string
                                   description: > 
                                     'The total number of Ethernet frames sent at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/total-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/total-frames-output}'
                                 forwarded-frames-input:
                                   type: string
                                   description: > 
                                     'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/forwarded-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/forwarded-frames-input}'
                                 forwarded-frames-output:
                                   type: string
                                   description: > 
                                     'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/forwarded-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/forwarded-frames-output}'
                                 unicast-frames-input:
                                   type: string
                                   description: > 
                                     'Total number of unicast frames received at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/unicast-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/unicast-frames-input}'
                                 unicast-frames-output:
                                   type: string
                                   description: > 
                                     'Total number of unicast frames sent at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/unicast-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/unicast-frames-output}'
                                 multicast-frames-input:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total number of multicast frames received at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/multicast-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/multicast-frames-input}'
                                 multicast-frames-output:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total number of multicast frames sent at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/multicast-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/multicast-frames-output}'
                                 broadcast-frames-input:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total number of broadcast frames received at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/broadcast-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/broadcast-frames-input}'
                                 broadcast-frames-output:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total number of broadcast frames sent at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/broadcast-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/broadcast-frames-output}'
                                 fragmented-frames-input:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/fragmented-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/fragmented-frames-input}'
                                 errored-frames-input:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total number of errored frames received at this interface
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/errored-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/errored-frames-input}'
                                 errored-frames-output:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/errored-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/errored-frames-output}'
                                 dropped-frames-input:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/dropped-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/dropped-frames-input}'
                                 dropped-frames-output:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/dropped-frames-output}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/dropped-frames-output}'
                                 oversized-frames-ingress:
                                   type: string
                                   description: > 
                                     'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/oversized-frames-ingress}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/oversized-frames-ingress}'
                                 undersized-frames-ingress:
                                   type: string
                                   description: > 
                                     'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/undersized-frames-ingress}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/undersized-frames-ingress}'
                                 jabber-frames-ingress:
                                   type: string
                                   description: > 
                                     'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/jabber-frames-ingress}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/jabber-frames-ingress}'
                                 unknown-protocol-frames-input:
                                   type: string
                                   description: > 
                                     'Total number of received frames that were transporting an unknown protocol
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/unknown-protocol-frames-input}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/unknown-protocol-frames-input}'
                                 time-period:
                                   type: integer
                                   nullable: true
                                   description: > 
                                     'Total (actual) length of the measurement period
-                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/filtered-historical-performance-data/time-period:}'
+                                    from {$CreatingDsfpOutputCausesFilteringAndClusteringInputData.PrepInputData.response.body#list-of-filtered-ethernet-containers/historical-performance-data/time-period:}'
                                 transmit-traffic:
                                   type: number
                                   format: float
@@ -1126,7 +1126,7 @@ x-javascript-interface:
                                   'The local-id of the currently traversed LTP/layer-protocol
                                   from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol/local-id}
                                   where {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol/layer-protocol-name} indicates EthernetContainer'
-                              filtered-historical-performance-data-list:
+                              historical-performance-data-list:
                                 type: array
                                 description: >
                                   'This list contains only those historical PM records from the EthernetContainer instance identified by uuid/local-id, which have 15min granularity and which are newer than the newest record from previous retrievals
@@ -1221,7 +1221,7 @@ x-javascript-interface:
                                   'The local-id of the currently traversed LTP/layer-protocol
                                   from {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol/local-id}
                                   where {$CreatingDsfpOutputCausesReadingControlConstructFromCache.ReadCc.response.body#core-model-1-4:control-construct/logical-termination-point/layer-protocol/layer-protocol-name} indicates AirInterface'
-                              filtered-historical-performance-data-list:
+                              historical-performance-data-list:
                                 type: array
                                 description: >
                                   'This list contains only those historical PM records from the AirInterface instance identified by uuid/local-id, which have 15min granularity and which are newer than the newest record from previous retrievals
@@ -1360,7 +1360,7 @@ x-javascript-interface:
                       list-of-filtered-ethernet-containers:
                         - uuid: 'ETH-765.1.5'
                           local-id: '765.1.5'
-                          filtered-historical-performance-data-list:
+                          historical-performance-data-list:
                             - granularity-period: 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
                               period-end-time: '2024-03-07T00:15:00.0+00:00'
                               max-bytes-per-second-output: '10'
@@ -1389,7 +1389,7 @@ x-javascript-interface:
                       list-of-filtered-air-interfaces:
                         - uuid: '2146697744'
                           local-id: 'RF-2146697744'
-                          filtered-historical-performance-data-list:
+                          historical-performance-data-list:
                             - granularity-period: 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
                               period-end-time: '2024-03-06T13:00:00+01:00'
                               tx-level-min: 0
