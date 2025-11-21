@@ -19,6 +19,6 @@ The function executes the following steps:
       - which are of 15min or 24h granularity
       - and where the period-end-time is newer than the most-recent-period-end-time for this interface instance from step2
       - note: if in step2 no data was found for the mount-name at all, treat the historical PM record as newer; if data for the mount-name was found, but it does not contain the currently processed interface instance, also treat the historical PM record as newer (i.e. it shall be kept.)
+    - interface instances are only to be kept in the raw ControlConstruct if historical PM records remain after filtering has been applied
 
 The raw ControlConstruct data follows ONF format. Only relevant attributes and subclasses are kept.  
-Note that raw ControlConstruct data returned can contain AirInterface or EthernetContainer instances, where no PM data remained after filtering. During processing by p1ProcessingOrchestratorForHistoricalPmData these instances will be filtered out and not be included in the data delivered to customers. However, as it might be required to provide a more full picture about interfaces available at the device, this data is kept in the raw ControlConstruct data for now to allow for future extensions.  

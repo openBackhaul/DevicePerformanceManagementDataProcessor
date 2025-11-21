@@ -30,7 +30,7 @@ data-structure-for-processing:
               type: string
               description: >
                 'deviceType
-                from { ??? }'
+                from {$p1LoadRawDeviceData}'
         logical-termination-point:
           type: array
           x-key: uuid
@@ -58,12 +58,12 @@ data-structure-for-processing:
                     type: string
                     description: >
                       'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                      from { ??? }'
+                      from {$p1LoadRawDeviceData}'
                   original-ltp-name:
                     type: string
                     description: >
                       'portName
-                      from { ??? }'
+                      from {$p1LoadRawDeviceData}'
               layer-protocol:
                 type: array
                 x-key: local-id

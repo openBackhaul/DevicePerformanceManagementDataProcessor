@@ -289,6 +289,7 @@ x-javascript-interface:
                - the respective period-end-time is newer than the newest one seen during previous data retrievals for this mountName + interfaceInstance (most-recent-period-end-time)
                  (if no most-recent-period-end-time information is found in datastore for the mountName and/or interface instance, the data from CC is to be treated as newer data)
                - there may be interface instances without any remaining historical PM records. These are kept for possible future usage, but they will not be included in the data send out in APT format.'
+               - if no historical PM records remain, the interface instance is to be discarded and not kept in the raw-control-construct
           output:
             success:
               description: 'Filtered raw ControlConstruct data provided'
@@ -365,7 +366,8 @@ x-javascript-interface:
                                     description: >
                                       'The layer-protocol instances
                                       from {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol}
-                                      where {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER'
+                                      where {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
+                                      Only layer-protocols are to be kept where the size(historical-performance-data-list)>0 after filtering of PM data records has been applied.'
                                     oneOf:
                                       - description: 'air-interface'
                                         type: object

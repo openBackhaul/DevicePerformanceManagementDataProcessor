@@ -48,9 +48,9 @@ note over cur
   - the period-end-time of a record is newer that
     the mostRecentPeriodEndTime for the given interface instance
 
-  Note: it is possible that the filtered CC data contains
-  layer-protocols (AirInterfaces/EthernetContainers) where
-  no historical PM data records remain.
+  If for an interface instance no historical PM records remain
+  after the above filtering, this interface instance is also discarded
+  and not kept in the contents of the raw ControlConstruct.
 end note
 
 note over cur #LightGray
