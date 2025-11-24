@@ -1,0 +1,66 @@
+@startuml p1FormattingOutputApt
+skinparam responseMessageBelowArrow true
+
+title
+p1FormattingOutputApt
+end title
+
+participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as requestor
+participant "p1FormattingOutputApt" as cur #LightCyan
+participant "p1ComputeAirInterfaceNames" as airIfNames #LightCyan
+participant "p1ComputeEthContainerName" as ethName #LightCyan
+participant "p1ComputeAirIfLag" as airIfLag #LightCyan
+
+
+requestor -> cur: {_resultCC, {input}, {parameters}}
+activate cur #LightCyan
+
+note over cur
+  <u>ComputeIfIdentifiers</u>
+  The following IDs have to be computed from
+  LTP structure and augment information for each
+  AirInterface and EthernetContainer from _resultCC:
+  - AirInterface: linkEndpointId (= unitId), linkId, LAG
+  - EthContainer: interfaceName (= portName)
+end note
+
+loop For each _resultCC.airInterface
+  note over cur
+    Compute the IDs and LAG for
+  end note
+  cur -> airIfNames: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+  cur <-- airIfNames: {linkEndpointId, linkId}
+
+  cur -> airIfLag: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+  cur <-- airIfLag: {Lag} 
+
+end loop
+
+loop For each _resultCC.ethernetContainer
+  note over cur
+    Compute the IDs
+  end note
+  cur -> ethName: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+  cur <-- ethName: {interfaceName}
+end note
+
+note over cur
+  <u>TransformOnfFormatIntoAptOutputFormat</u>
+  The input CC data in ONF format is transformed
+  into the desired APT output format.
+
+  <u>ComputeIfIdentifiers</u>
+  This requires also computation of interfaceNames
+  from LTP structure and augment information:
+  - AirInterface: linkEndpointId (= unitId), linkId, LAG
+  - EthContainer: interfaceName (= portName)
+
+  This information is added to the generated output
+  data.
+end note
+
+
+requestor <-- cur: {output}
+
+deactivate cur
+

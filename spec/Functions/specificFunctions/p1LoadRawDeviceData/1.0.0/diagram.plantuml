@@ -38,26 +38,20 @@ cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime)
 'Filter the data
 note over cur
   <u>applyFilteringForLtpStructureAugmentAirIfAndEthContainer</u>
-  The complete ControlConstruct data from <i>readControlConstructFromEs</i>
-  is filtered. Only keep relevant information from equipmentAugment,
-  LTP structure and augment and layerProtocols, which are AirInterface
-  or EthernetContainer. 
+  Filter the complete ControlConstruct data from <i>readControlConstructFromEs</i>.
+  Only relevant information is kept: from equipmentAugment,
+  LTP structure and augment and layerProtocols (AirInterface
+  or EthernetContainer).
 
-  Inside kept layerProtocols only keep historical PM data if
+  Inside kept layerProtocols historical PM data is only kept, if
   - granularity is 15min or 24h
-  - the period-end-time of a record is newer that
+  - and the period-end-time of a record is newer that
     the mostRecentPeriodEndTime for the given interface instance
 
   If for an interface instance no historical PM records remain
-  after the above filtering, this interface instance is also discarded
-  and not kept in the contents of the raw ControlConstruct.
-end note
-
-note over cur #LightGray
-  <i>If future releases require additional data to be kept</i>
-  <i>or filtered out, execution of </i>applyFilteringForLtp
-  StructureAugmentAirIfAndEthContainer <i>could be swapped</i>
-  <i>for another filtering step</i>.
+  after the above filtering, this interface instance (layer-protocol) is discarded
+  entirely and not kept in the contents of the raw ControlConstruct
+  (The ltp the layer-protocol belongs to, is kept!).
 end note
 
 note over cur
@@ -70,3 +64,12 @@ end note
 requestor <-- cur: {_rawControlConstruct}
 
 deactivate cur
+
+
+
+footer
+
+
+  <i>If future releases require additional data to be kept or filtered out, execution of </i>applyFilteringForLtpStructureAugmentAirIfAndEthContainer
+  <i>could be swapped for another filtering step.</i>
+end footer

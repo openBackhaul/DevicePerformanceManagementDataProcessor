@@ -4,7 +4,7 @@ This function looks up AirInterface names (linkEndpointId, linkId) in LtpStructu
 
 ### Input
 Function inputs are:
-- either a reference to the data structure storing Ltps and LtpAugment information in ONF format (_raw-control-construct)
+- either a reference to the data structure storing Ltps and LtpAugment information in ONF format
 - or the Ltp and LtpAugment information directly (the format is the same as for the reference option)
 - the uuid for which the lookup shall be executed (it is not verified here, that the LTP is actually an AirInterface, this check has to be carried out on caller side)
 - optional input and function parameters (currently unused)

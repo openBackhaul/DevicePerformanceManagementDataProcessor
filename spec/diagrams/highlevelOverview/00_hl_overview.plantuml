@@ -121,6 +121,9 @@ activate p1ProOrch #LightCyan
       will lead to some attributes not being there for mapping.
       The target attributes in the generated output should be created, but filled with a default.
       (This will not be specified in the function explicitly, as this is just done for the pre-release)
+
+      Update: besser, wenn Felder im Input nicht da sind, das aber nur normale Attribute und keine Key-Felder sind:
+      einfach mit einem Default erzeugen. Dann bleibt man flexibel.
     end note
 
     note over p1Output

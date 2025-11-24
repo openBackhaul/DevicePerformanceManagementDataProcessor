@@ -1,12 +1,12 @@
-@startuml p1ComputeAirInterfaceNames
+@startuml p1ComputeEthContainerName
 skinparam responseMessageBelowArrow true
 
 title
-p1ComputeAirInterfaceNames
+p1ComputeEthContainerName
 end title
 
 participant "requestor" as requestor
-participant "p1ComputeAirInterfaceNames" as cur #LightCyan
+participant "p1ComputeEthContainerName" as cur #LightCyan
 
 note over requestor
   The requestor can hand over either of the following two
@@ -18,7 +18,7 @@ note over requestor
     for the input LTP (uuid)
 end note
 
-requestor -> cur: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+requestor -> cur: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
 activate cur #LightCyan
 
 note over cur
@@ -26,10 +26,9 @@ note over cur
   For the given uuid read the interface names
   from the Ltp/LtpAugment:
 
-  linkEndpointName = externalLabel
-  linkId = externalLabel.substring(0,9)
+  interfaceName = originalLtpName
 end note
 
-requestor <-- cur: {linkEndpointName, linkId}
+requestor <-- cur: {interfaceName}
 
 deactivate cur

@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: p1ComputeEthContainerNames
+  title: p1ComputeAirInterfaceNames
   version: 1.0.0
 
 x-javascript-interface:
   p1FormattingOutputApt: 
-    summary: 'This function provides the EthContainer names looked up from LtpAugment information'
+    summary: 'This function provides the AirInterface names looked up from LtpAugment information'
     input:
       required: true
       content:
@@ -15,11 +15,14 @@ x-javascript-interface:
               - description: 'data reference'
                 type: object
                 properties:
-                  _raw-control-construct:
+                  _control-construct:
                     type: object
                     description: >
-                      'The reference to the [/data-structure-for-processing/raw-control-construct] on which lookup shall be executed.
+                      'The reference to the Control-Construct object on which lookup shall be executed.
                       The data follows ONF schema. Option LtpStructureAndAugment lists the relevant attributes and subclasses.'
+                  uuid:
+                    type: string
+                    description: 'The uuid of the target AirInterface, for which the interfaceNames shall be computed'
                   function-input:
                     type: object
                     description: >
@@ -33,7 +36,7 @@ x-javascript-interface:
               - description: 'LtpStructureAndAugment'
                 type: object
                 properties:
-                  raw-control-construct:
+                  control-construct:
                     type: object
                     properties:
                       logical-termination-point:
@@ -47,10 +50,13 @@ x-javascript-interface:
                             ltp-augment-1-0:ltp-augment-pac:
                               type: object
                               properties:
-                                original-ltp-name:
+                                external-label:
                                   type: string
-                                  description: 'PortName'
-                                  example: 'WAN:1/5'
+                                  description: 'linkEndpointId - linkId+[AB]'
+                                  example: '102550001A'
+                  uuid:
+                    type: string
+                    description: 'The uuid of the target AirInterface, for which the interfaceNames shall be computed'
                   function-input:
                     type: object
                     description: >
@@ -63,17 +69,23 @@ x-javascript-interface:
                       Currently not used.'
     output:
       success:
-        description: 'OutputApt object provided'
+        description: 'AirInterfaceNames provided'
         content:
           application/json:
             schema:
               type: object
               properties:
-                interface-name:
+                link-endpoint-id:
                   type: string
                   description: >
-                    'The portName
-                    from {$input#raw-control-construct/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}
+                    'The linkEndpointId - linkId + [AB]
+                    from {$input#raw-control-construct/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}
+                    where {$input#raw-control-construct/logical-termination-point/uuid} == {$input#uuid}'
+                link-id:
+                  type: string
+                  description: >
+                    'The linkId
+                    from {$input#raw-control-construct/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label.substring(0,9)}
                     where {$input#raw-control-construct/logical-termination-point/uuid} == {$input#uuid}'
       error:
         description: 'just for preventing an error in VSCode'
