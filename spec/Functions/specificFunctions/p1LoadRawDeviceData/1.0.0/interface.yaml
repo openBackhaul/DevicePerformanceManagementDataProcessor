@@ -44,12 +44,15 @@ x-javascript-interface:
     processing:
       readControlConstructFromEs:
         url: #[dpmdpIpAddress]:[dpmdpPort][MWDI_ES_replica]
+          # comment Thorsten (to be deleted after reading): Wouldn't it be reasonable to state the exact location of IP address and port of the MWDI-ES-Replica in the configFile and the exact path here?
           description: >
             'The raw ControlConstruct data for the target mount-name is read directly from ElasticSearch'
           input:
             content:
               required:
                 - mount-name
+              # comment Thorsten (to be deleted after reading): The description looks a lot like a Function call, but it is just a request to the ES, or?
+              # comment Thorsten (to be deleted after reading): Wouldn't the mountName just be an in-line parameter of the path in the url statement?
               properties:
                 mount-name:
                   type: string
@@ -72,6 +75,8 @@ x-javascript-interface:
                         type: array
                         items:
                           type: object
+                          # comment Thorsten (to be deleted after reading): After stating that the data is as provided by the device/MWDI, it probably doesn't require to describe it in details?
+                          # comment Thorsten (to be deleted after reading): The details following here are important on the output of p1LoadRawDeviceData, but maybe not necessary here, or?
                           required:
                             - equipment-augment-1-0:control-construct-pac
                             - logical-termination-point
@@ -216,10 +221,13 @@ x-javascript-interface:
                                                           performance-data:
                                                             type: object
                           error:
+                            # comment Thorsten (to be deleted after reading): Indentation of the error statement may require correction
                             description: 'todo'
                             # todo: description potentially to be deleted; behavior in case of errors to be described
       retrieveMostRecentPeriodEndTimesFromDs:
         url: #[dpmdpIpAddress]:[dpmdpPort]
+          # comment Thorsten (to be deleted after reading): It is unclear, whether this is a data request to the ElasticSearch or a Function call
+          # comment Thorsten (to be deleted after reading): If it would be a data request: Wouldn't it be reasonable to state the exact location of IP address and port of the DPMDP-ES in the configFile and the exact path here?
           description: >
             'This processing step reads the data-store item (from the DPMDP ES) where
             [/data-store/device/mount-name](x-key) == {$input#mount-name},
@@ -231,6 +239,7 @@ x-javascript-interface:
                   type: object
                   required:
                     - mount-name
+                    # comment Thorsten (to be deleted after reading): If it would be a data request, wouldn't the mountName just be an in-line parameter of the path in the url statement?
                   properties:
                     mount-name:
                       type: string
