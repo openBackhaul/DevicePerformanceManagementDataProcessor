@@ -15,6 +15,24 @@ participant "p1ComputeAirIfLag" as airIfLag #LightCyan
 requestor -> cur: {_resultCC, {input}, {parameters}}
 activate cur #LightCyan
 
+note over cur #LightCoral
+  shall this be specific to DPMDP only?
+  in that case no CC data needs to be handed over,
+  only a reference
+end note
+
+
+note over cur
+  <u>TransformOnfFormatIntoAptOutputFormat</u>
+  The input CC data in ONF format is transformed
+  into the desired APT output format.
+  (Non-key) attributes that cannot be computed due to missing input data
+  are to be set to a default (-1 for integers).
+
+  Then the output is enriched with Identifiers
+  computed during the next steps.
+end note
+
 note over cur
   <u>ComputeIfIdentifiers</u>
   The following IDs have to be computed from
@@ -24,7 +42,7 @@ note over cur
   - EthContainer: interfaceName (= portName)
 end note
 
-loop For each _resultCC.airInterface
+loop For each airInterface uuid from output.air-interface-list
   note over cur
     Compute the IDs and LAG for
   end note
@@ -36,7 +54,7 @@ loop For each _resultCC.airInterface
 
 end loop
 
-loop For each _resultCC.ethernetContainer
+loop For each ethernetContainer uuid from output.ethernet-container-list
   note over cur
     Compute the IDs
   end note
@@ -44,20 +62,6 @@ loop For each _resultCC.ethernetContainer
   cur <-- ethName: {interfaceName}
 end note
 
-note over cur
-  <u>TransformOnfFormatIntoAptOutputFormat</u>
-  The input CC data in ONF format is transformed
-  into the desired APT output format.
-
-  <u>ComputeIfIdentifiers</u>
-  This requires also computation of interfaceNames
-  from LTP structure and augment information:
-  - AirInterface: linkEndpointId (= unitId), linkId, LAG
-  - EthContainer: interfaceName (= portName)
-
-  This information is added to the generated output
-  data.
-end note
 
 
 requestor <-- cur: {output}
