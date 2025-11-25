@@ -1,12 +1,12 @@
-@startuml p1ComputeEthContainerName
+@startuml diagram
 skinparam responseMessageBelowArrow true
 
 title
-p1ComputeEthContainerName
+p1ComputeAirInterfaceNames
 end title
 
 participant "requestor" as requestor
-participant "p1ComputeEthContainerName" as cur #LightCyan
+participant "p1ComputeAirInterfaceNames" as cur #LightCyan
 
 note over requestor
   The requestor can hand over either of the following two
@@ -26,9 +26,10 @@ note over cur
   For the given uuid read the interface names
   from the Ltp/LtpAugment:
 
-  interfaceName = originalLtpName
+  linkEndpointName = externalLabel
+  linkId = externalLabel.substring(0,9)
 end note
 
-requestor <-- cur: {interfaceName}
+requestor <-- cur: {linkEndpointName, linkId}
 
 deactivate cur

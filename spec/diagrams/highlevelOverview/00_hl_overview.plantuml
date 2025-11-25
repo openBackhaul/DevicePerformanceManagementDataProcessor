@@ -113,17 +113,10 @@ activate p1ProOrch #LightCyan
     note over p1Output #Orange
       idea: in pre-release, _rawCC* instead of _resultCC gets passed
       -> {output} gets created from raw data instead of not yet calculated results
-    end note
-    note over p1Output #LightCoral
-      Both the rawCC* [DSFP/raw-control-construct] and the resultCC [DSFP/control-construct]
-      follow ONF structure BUT the resultCC has some additional attributes (e.g. KPIs),
-      which the rawCC DOES NOT HAVE. So just passing _rawCC* instead of _resultCC,
-      will lead to some attributes not being there for mapping.
-      The target attributes in the generated output should be created, but filled with a default.
-      (This will not be specified in the function explicitly, as this is just done for the pre-release)
 
-      Update: besser, wenn Felder im Input nicht da sind, das aber nur normale Attribute und keine Key-Felder sind:
-      einfach mit einem Default erzeugen. Dann bleibt man flexibel.
+      Note: _resultCC does have some (non-ONF) attributes which _rawCC* does not have;
+      the function for output formatting specifies that if such a non-ONF attribute is not
+      found in the input data, the target output attribute shall be filled with a default value.
     end note
 
     note over p1Output

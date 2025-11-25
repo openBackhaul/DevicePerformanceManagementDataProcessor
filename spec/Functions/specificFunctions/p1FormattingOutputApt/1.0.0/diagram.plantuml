@@ -1,4 +1,4 @@
-@startuml p1FormattingOutputApt
+@startuml diagram
 skinparam responseMessageBelowArrow true
 
 title
@@ -8,56 +8,65 @@ end title
 participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as requestor
 participant "p1FormattingOutputApt" as cur #LightCyan
 participant "p1ComputeAirInterfaceNames" as airIfNames #LightCyan
-participant "p1ComputeEthContainerName" as ethName #LightCyan
 participant "p1ComputeAirIfLag" as airIfLag #LightCyan
+participant "p1ComputeEthContainerNames" as ethName #LightCyan
 
 
-requestor -> cur: {_resultCC, {input}, {parameters}}
+
+note over requestor #LightGray
+  The requestor hands over the reference to
+  a ControlConstruct object following ONF format.
+  The actual CC object may be enriched with additional
+  attributes (non-ONF). In case such additional attributes
+  are to be read in the further processing, but are not available
+  in the input CC object, (non-key) attributes in the output
+  that cannot be mapped shall be set to a default
+  (integer: -1, string: emptyString).
+end note
+
+requestor -> cur: {_CC, {input}, {parameters}}
+
+
 activate cur #LightCyan
 
-note over cur
-  <u>ComputeIfIdentifiers</u>
-  The following IDs have to be computed from
-  LTP structure and augment information for each
-  AirInterface and EthernetContainer from _resultCC:
-  - AirInterface: linkEndpointId (= unitId), linkId, LAG
-  - EthContainer: interfaceName (= portName)
-end note
+group CreateOutput
 
-loop For each _resultCC.airInterface
   note over cur
-    Compute the IDs and LAG for
+    The input CC data in ONF format is transformed
+    into the desired APT output format.
+
+    While adding AirInterface and EthernetContainer data
+    from the referenced CC data, interfaceNames and LinkAggregation
+    information is computed for each interface instance
+    by calling the respective generic functions. 
   end note
-  cur -> airIfNames: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+
+  note over cur
+    For the current airInterface, 
+    - compute interfaceNames (linkEndpointId, linkId)
+    - compute LAG information
+
+    Add both to air-interface-identifiers.
+  end note
+
+  cur -> airIfNames: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
   cur <-- airIfNames: {linkEndpointId, linkId}
 
-  cur -> airIfLag: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+  cur -> airIfLag: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
   cur <-- airIfLag: {Lag} 
 
-end loop
-
-loop For each _resultCC.ethernetContainer
   note over cur
-    Compute the IDs
+    For the current EthernetContainer, 
+    - compute interfaceName (i.e. the portName)
+    - compute LAG information
+
+    Add it to ethernet-container-identifiers.
   end note
-  cur -> ethName: {_rawCC* | LtpStructureAndAugment, uuid, {input}, {parameters}}
+  cur -> ethName: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
   cur <-- ethName: {interfaceName}
-end note
 
-note over cur
-  <u>TransformOnfFormatIntoAptOutputFormat</u>
-  The input CC data in ONF format is transformed
-  into the desired APT output format.
+end group
 
-  <u>ComputeIfIdentifiers</u>
-  This requires also computation of interfaceNames
-  from LTP structure and augment information:
-  - AirInterface: linkEndpointId (= unitId), linkId, LAG
-  - EthContainer: interfaceName (= portName)
-
-  This information is added to the generated output
-  data.
-end note
 
 
 requestor <-- cur: {output}

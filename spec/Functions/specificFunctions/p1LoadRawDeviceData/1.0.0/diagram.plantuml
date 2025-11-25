@@ -1,4 +1,4 @@
-@startuml p1LoadRawDeviceData
+@startuml diagram
 skinparam responseMessageBelowArrow true
 
 title
@@ -10,7 +10,10 @@ participant "p1LoadRawDeviceData" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
 database "datastore" as datastore #LightCyan
 
-
+note over cur #LightCoral
+  shall this function call also contain
+  function input and function parameters?
+end note
 
 requestor -> cur: {mountName}
 activate cur #LightCyan
@@ -52,6 +55,16 @@ note over cur
   after the above filtering, this interface instance (layer-protocol) is discarded
   entirely and not kept in the contents of the raw ControlConstruct
   (The ltp the layer-protocol belongs to, is kept!).
+end note
+
+note over cur #Orange
+  In the pre-release there is no mostRecentPeriodEndTime info
+  available.
+  This data will be found in the DataStore:
+  [/data-store/device/ltp/most-recent-period-end-time].
+  But storing anything in the datastore it out of scope for the pre-
+  release. Therefore: all 15min/24h historical PM records seen in the raw
+  data will be kept!
 end note
 
 note over cur

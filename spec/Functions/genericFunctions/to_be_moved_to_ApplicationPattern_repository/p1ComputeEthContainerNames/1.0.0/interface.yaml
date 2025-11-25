@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1ComputeEthContainerName
+  title: p1ComputeEthContainerNames
   version: 1.0.0
 
 x-javascript-interface:
-  p1FormattingOutputApt: 
+  p1ComputeEthContainerNames: 
     summary: 'This function provides the EthContainer names looked up from LtpAugment information'
     input:
       required: true

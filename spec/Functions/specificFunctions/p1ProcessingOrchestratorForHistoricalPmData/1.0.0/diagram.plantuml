@@ -6,60 +6,113 @@ title
 end title
 
 participant "requestor\ne.g. regardAttributeValueChange" as requestor
-participant "p1ProcessingOrchestratorForHistoricalPmData" as PO15 #LightBlue
-participant "MWDI:\n/v1/provide-device-status-metadata" as metadata
-participant "p1ProvideListOfInterfacesToBeProcessed" as ITBP
+participant "p1ProcessingOrchestratorForHistoricalPmData" as po #LightBlue
+participant "p1LoadRawDeviceData" as loadData #LightCyan
+participant "tb added later\n(not pre-release scope)" as tbd #LightGray
+participant "p1FormattingOutputApt" as outputApt #LightCyan
+participant "p1TransmittingKafka" as p1Trans #LightCyan
+participant "p1PrepareStoring\n(not pre-release scope)" as p1PrepStore #LightGray
+participant "p1Storing\n(not pre-release scope)" as p1Store #LightGray
 
 
-participant "destilliere neue PM Daten" as DesignedDomainBorderThickness
+requestor -> po : {mountName, processingStartTime}
+activate po
 
+== Creation of DSFP and adding rawCC data ==
 
-requestor -> PO15 : {mountName, processingStartTime}
-activate PO15
-note over PO15
+note over po
   Create DataStructureForProcessing (DSFP)
   incl. mountName and processingStartTime
 end note
 
-PO15 -> metadata : {MountName}
-PO15 <-- metadata : {..., deviceType, ...}
-note over PO15
-  Add deviceType to DSFP
+note over po
+  <u>RetrievalOfRawDeviceData</u>
+  The called function retrieves the ControlConstruct
+  data for the mountName from the ElasticSearch copy.
+  Thereby it ensures that only relevant data is kept.
+  It does not return the data itself, but a reference
+  to the raw ControlConstruct object in DPMDP runtime
+  memory. This object follows ONF format.
 end note
 
-PO15 -> ITBP : {MountName}
-  note over ITBP
-    Determines the new PM data for all 
-    AirInterfaces and all EthernetContainers
-  end note
-PO15 <-- ITBP : [ uuid, localId, [{newPmData}] ]
+po -> loadData: {mountName}
+po <-- loadData: {_rawCC*}
 
-note over PO15 #Orange
-  IF [].length == 0 (no interface with new PM data)
-    process to be terminated
+note over po
+  Determine if the CC in _rawCC* contains
+  any AirInterface or EthernetContainer layerProtocols.
+  If not, then no new PM data was seen and
+  the process is to be terminated.
 end note
 
+note over po
+  The rawCC* object referenced in the response
+  is stored in DSFP.
 
-
-note over PO15 #LightGray
-  Pre-Processing to be detailed
+  <i>The stored data contains information about </i>
+  <i>the deviceType (equipAugment/deviceModelName),</i>
+  <i>in case deviceType-specific processing is</i>
+  <i>required in subsequent steps.</i>
 end note
 
-note over PO15 #LightGray
-  Processing to be detailed
+== Creation of resultCC ==
+
+note over po #LightGray
+  The _rawCC* data is used to create the resultCC object.
+  This object is also in ONF schema, but extended by additional attributes
+  (e.g. for storing KPI values).
+  
+  Various functions will be executed here with _rawCC* as input.
+  Their output will be written to the resultCC.
+  
+  These steps are out of scope for the pre-release and
+  therefore not described in detail here.
 end note
 
-note over PO15 #LightGray
-  Sending to be detailed
+po --> tbd: <i>{_rawCC*}</i>
+po <-- tbd: <i>{_resultCC}</i>
+
+== Creation of Output object ==
+
+note over po
+  Create the OutputApt object from _resultCC data.
+  The returned output gets added to DSFP.
+end note
+note over po #Orange
+  In pre-release call with _rawCC* instead!
 end note
 
-note over PO15 #LightGray
-  Storing to be detailed
+po -> outputApt: {_resultCC, {input}, {parameters}}
+po <-- outputApt: {output}
+
+== Transmit to Kafka ==
+
+note over po
+  The output gets transmitted.
 end note
 
+po -> p1Trans: {_output, {input}, {parameters}}
+po <-- p1Trans
 
+== Storing of Data ==
 
-deactivate PO15
+note over po #LightGray
+  The DSFP object needs to be prepared
+  for data storing (e.g. delete {rawCC*}
+  and {output}).
+  This is out of scope for pre-release
+end note
+po -> p1PrepStore: {_DataStructureForProcessing}
+po <-- p1PrepStore
+
+note over po #LightGray
+  The prepared DSFP object gets stored.
+  This is out of scope for pre-release
+end note
+po -> p1Store: {_DataStructureForProcessing}
+po <-- p1Store
+
+deactivate po
 
 @enduml
 
