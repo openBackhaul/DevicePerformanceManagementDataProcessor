@@ -2,11 +2,11 @@
 skinparam responseMessageBelowArrow true
 
 title
-p1ComputeEthContainerName
+p1ComputeEthContainerNames
 end title
 
 participant "requestor" as requestor
-participant "p1ComputeEthContainerName" as cur #LightCyan
+participant "p1ComputeEthContainerNames" as cur #LightCyan
 
 note over requestor
   The requestor can hand over either of the following two

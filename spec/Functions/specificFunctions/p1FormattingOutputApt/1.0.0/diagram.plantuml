@@ -9,7 +9,7 @@ participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as reque
 participant "p1FormattingOutputApt" as cur #LightCyan
 participant "p1ComputeAirInterfaceNames" as airIfNames #LightCyan
 participant "p1ComputeAirIfLag" as airIfLag #LightCyan
-participant "p1ComputeEthContainerName" as ethName #LightCyan
+participant "p1ComputeEthContainerNames" as ethName #LightCyan
 
 
 
