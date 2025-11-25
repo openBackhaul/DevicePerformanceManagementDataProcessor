@@ -54,6 +54,16 @@ note over cur
   (The ltp the layer-protocol belongs to, is kept!).
 end note
 
+note over cur #LightCoral
+  In the pre-release there is no mostRecentPeriodEndTime info
+  available.
+  This data will be found in the DataStore:
+  [/data-store/device/ltp/most-recent-period-end-time].
+  But storing anything in the datastore it out of scope for the pre-
+  release. Therefore: all 15min/24h historical PM records seen in the raw
+  data will be kept!
+end note
+
 note over cur
   <u>returnReference</u>
   The function returns a reference (indicated by preceeding "_")
