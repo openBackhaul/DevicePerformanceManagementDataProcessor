@@ -6,6 +6,14 @@ The following generic functions are provided as a part of this application's imp
 
 - [newGenericFunction](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/newGenericFunction/1.0.0)  
 
+specs still in [DPMDP repo](./to_be_moved_to_ApplicationPattern_repository/), to be moved to AppPattern when done:
+- [p1ComputeAirInterfaceNames](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ComputeAirInterfaceNames/1.0.0)  
+- [p1ComputeAirInterfacePhysicalLag](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ComputeAirInterfaceLag/1.0.0)  
+- [p1ComputeEthContainerName](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ComputeEthernetContainerName/1.0.0)  
+
+
+
+
 
 ### Re-use
 
