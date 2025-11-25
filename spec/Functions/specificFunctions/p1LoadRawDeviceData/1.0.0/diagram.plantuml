@@ -1,4 +1,4 @@
-@startuml p1LoadRawDeviceData
+@startuml diagram
 skinparam responseMessageBelowArrow true
 
 title

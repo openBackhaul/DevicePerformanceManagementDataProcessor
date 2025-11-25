@@ -1,4 +1,4 @@
-@startuml p1ComputeAirInterfaceNames
+@startuml diagram
 skinparam responseMessageBelowArrow true
 
 title
