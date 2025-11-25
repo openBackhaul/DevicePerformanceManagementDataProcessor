@@ -13,6 +13,7 @@ participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
 
 participant "p1LoadRawDeviceData" as p1AddRaw #LightCyan
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
+participant "p1FieldsFilter" as p1FF #LightCyan
 
 participant "example\np1ProcessingSpecific" as p1Specific #LightBlue
 participant "example\np1ProcessingGeneric" as p1Generic #LightBlue
@@ -59,10 +60,20 @@ activate p1ProOrch #LightCyan
 
     p1AddRaw -> MwdiEs
     p1AddRaw <-- MwdiEs : {rawCC}
+
+    p1AddRaw -> p1FF
+    activate p1FF #LightCyan
+
+      note over p1FF
+        Structure of {rawCC} is reduced 
+      end note
+
+    p1AddRaw <-- p1FF : {rawCC'}
+    deactivate p1FF
+
     note over p1AddRaw
-      Content of {rawCC} is reduced 
-      to the necessary data
-      Sub-functions might be applied
+      Amount of data in reduced 
+      structure {rawCC'} is reduced 
     end note
 
   p1ProOrch <-- p1AddRaw : {rawCC*}
