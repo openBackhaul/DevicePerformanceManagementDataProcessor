@@ -38,9 +38,9 @@ x-javascript-interface:
                     description: >
                       'The reference to the raw-control-construct object in the DPMDP memory
                       from {$applyFilteringForLtpStructureAugmentAirIfAndEthContainer#output}'
-                  error:
-                    description: 'just for preventing an error in VSCode'
-                    # todo: description potentially to be deleted; behavior in case of errors to be described
+      error:
+        description: 'just for preventing an error in VSCode'
+        # todo: description potentially to be deleted; behavior in case of errors to be described
     processing:
       readControlConstructFromEs:
         url: #[dpmdpIpAddress]:[dpmdpPort][MWDI_ES_replica]
