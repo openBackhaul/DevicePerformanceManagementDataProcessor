@@ -10,7 +10,10 @@ participant "p1LoadRawDeviceData" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
 database "datastore" as datastore #LightCyan
 
-
+note over cur #LightCoral
+  shall this function call also contain
+  function input and function parameters?
+end note
 
 requestor -> cur: {mountName}
 activate cur #LightCyan
@@ -54,7 +57,7 @@ note over cur
   (The ltp the layer-protocol belongs to, is kept!).
 end note
 
-note over cur #LightCoral
+note over cur #Orange
   In the pre-release there is no mostRecentPeriodEndTime info
   available.
   This data will be found in the DataStore:
