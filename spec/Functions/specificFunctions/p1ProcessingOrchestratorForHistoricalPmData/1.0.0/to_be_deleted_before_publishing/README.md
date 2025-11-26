@@ -3,22 +3,29 @@
 Orchestrates the device-wise processing, formatting, sending and storing of PM data.  
 
 
-### Description  
-
-The p1ProcessingOrchestratorForHistoricalPmData starts with creating a data structure for holding raw data, results, and administrative information.  
-This data structure is called DataStructureForProcessing.  
-
-The p1ProcessingOrchestratorForHistoricalPmData executes a hard coded sequence of Functions.  
-Input to these Functions is taken from the DataStructureForProcessing.  
-Resulting data gets attached to the DataStructureForProcessing.  
-[Schema of the DataStructureForProcessing](./InformationStructure/DataStructureForProcessing.yaml)
 
 
-
-<!-- todo: Update required -->
-<!-- todo: It seems a lot of information should be located somewhere else -->
+<!-- todo: Potentially to be updated -->
 
 
+### Notification receipt
+
+    Übernommen aus übergeordnetem Readme:
+    Notification receipt:
+    - Upon receipt, DPMDP only processes the first notification for a device related to this ControlConstruct update, subsequent notifications are ignored
+    - DPMDP reads the complete ControlConstruct for the device from the respective notification directly from ElasticSearch
+ 
+
+The incoming notifications of relevance are created by MWDI when the *time-of-latest-change* attribute of and AirInterface or EthernetContainer changes.  
+The current specification contains two ways for receiving those notifications:
+- either from Kafka
+- or via subscribing to the MWDI
+
+MWDI cycically updates complete ControlConstructs - therefore multiple notifications for the same mount-name can be expected to be received everytime a complete ControlConstruct is uploaded to MWDI cache.  
+DPMDP shall only process the first notification for a given device and ignore other notifications for the same device for the time interval configured in integerProfile instance *waitingTimeForProcessingNotificationsForSameDevice*.  
+
+For the current release MWDI is supposed to only send notifications for update values of *time-of-latest-change*.  
+In future MWDI releases there may be more AVCN notifications created. If DPMDP is receiving them all via Webhook, it needs to ignore all those not related to *time-of-latest-change* for this processingOrchestrator (if other AVCN notifications are also to be processed, this will be done by a different processingOrchestrator!). If the DPMDP however fetches the notifications from Kafka, filtering can be applied before the notifications are made available to DPMDP. In that case, DPMDP does not need to carry out additional filtering by itself.
 
 ### Processing steps
 

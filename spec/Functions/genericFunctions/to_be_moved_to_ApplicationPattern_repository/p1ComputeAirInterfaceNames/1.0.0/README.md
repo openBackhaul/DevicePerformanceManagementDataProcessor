@@ -1,4 +1,4 @@
-# p1ComputeAifInterfaceNames
+# p1ComputeAirInterfaceNames
 
 This function looks up AirInterface names (linkEndpointId, linkId) in LtpStructureAndAugment information.
 
