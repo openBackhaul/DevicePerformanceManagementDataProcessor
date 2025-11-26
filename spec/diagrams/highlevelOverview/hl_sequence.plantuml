@@ -1,4 +1,4 @@
-@startuml 00_hl_overview
+@startuml hl_sequence
 skinparam responseMessageBelowArrow true
 
 title
@@ -15,8 +15,8 @@ participant "p1LoadRawDeviceData" as p1AddRaw #LightCyan
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
 participant "p1FieldsFilter" as p1FF #LightCyan
 
-participant "example\np1ProcessingSpecific" as p1Specific #LightBlue
-participant "example\np1ProcessingGeneric" as p1Generic #LightBlue
+participant "example\np1ProcessingSpecific" as p1Specific #LightGrey
+participant "example\np1ProcessingGeneric" as p1Generic #LightGrey
 
 participant "p1FormattingOutputApt" as p1Output #LightCyan
 participant "p1TransmittingKafka" as p1Trans #LightCyan
@@ -55,39 +55,43 @@ activate p1ProOrch #LightCyan
     gets created
   end note
 
-  p1ProOrch -> p1AddRaw
+  p1ProOrch -> p1AddRaw : {mountName}
   activate p1AddRaw #LightCyan
 
-    p1AddRaw -> MwdiEs
+    p1AddRaw -> MwdiEs : {mountName}
     p1AddRaw <-- MwdiEs : {rawCC}
 
-    p1AddRaw -> p1FF
+    p1AddRaw -> p1FF : {rawCC, fieldsFilterString}
     activate p1FF #LightCyan
 
       note over p1FF
         Structure of {rawCC} is reduced 
       end note
 
-    p1AddRaw <-- p1FF : {rawCC'}
+    p1AddRaw <-- p1FF : {rawCC}
     deactivate p1FF
 
+    p1AddRaw -> db : {mountName}
+    p1AddRaw <-- db : {[uuid, localId, mostRecentPeriodEndTime]}
+
     note over p1AddRaw
-      Amount of data in reduced 
-      structure {rawCC'} is reduced 
+      Delete PM data not younger than
+      mostRecentPeriodEndTime per
+      individual LTP (uuid, localId)
     end note
 
-  p1ProOrch <-- p1AddRaw : {rawCC*}
+  p1ProOrch <-- p1AddRaw : {rawCC}
   deactivate p1AddRaw
 
   note over p1ProOrch
-    Add {rawCC*} to
+    Add {rawCC} to
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Specific : {_rawCC*, {input}, {parameters}}
+  p1ProOrch -> p1Specific : {_rawCC, {input}, {parameters}}
   activate p1Specific
 
-    note over p1Specific
+    note over p1Specific #LightGray
       categorization into processes 
       in unclear, and undesigned
       potentially, 
@@ -99,7 +103,7 @@ activate p1ProOrch #LightCyan
     p1Specific -> p1Generic
     activate p1Generic
   
-      note over p1Generic
+      note over p1Generic  #LightGray
         e.g., 
           - capacity calculation
           - default value replacement
@@ -122,12 +126,8 @@ activate p1ProOrch #LightCyan
   activate p1Output #LightCyan
 
     note over p1Output #Orange
-      idea: in pre-release, _rawCC* instead of _resultCC gets passed
+      idea: in pre-release, _rawCC instead of _resultCC gets passed
       -> {output} gets created from raw data instead of not yet calculated results
-
-      Note: _resultCC does have some (non-ONF) attributes which _rawCC* does not have;
-      the function for output formatting specifies that if such a non-ONF attribute is not
-      found in the input data, the target output attribute shall be filled with a default value.
     end note
 
     note over p1Output
@@ -158,7 +158,7 @@ activate p1ProOrch #LightCyan
 
     note over p1PrepStore
       Prepare DataStructureForProcessing
-      for storing (e.g., delete {rawCC*}
+      for storing (e.g., delete {rawCC}
       and {output})
     end note
 

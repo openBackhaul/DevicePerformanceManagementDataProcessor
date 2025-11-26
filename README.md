@@ -1,23 +1,44 @@
 # DevicePerformanceManagementDataProcessor  
 
-Retrieves PM data from cache, processes it, and makes it available via Kafka.  
+Retrieves PM data from an MWDI database replica, processes it, formats it, transmits it via Kafka, and stores it in its own database.  
 
 
 ### Description  
 
 The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
 
-The DPMDP gets triggered by AttributeValueChanged (AVC) notifications (via Kafka consumer interface) that are indicating updated historical performance data.  
+The DPMDP receives AttributeValueChanged (AVC) notifications (via Kafka consumer interface) sent by the MWDI.  
 
-Whenever triggered, the DPMDP reads the raw performance data from the copied cache and prepares value added data that is streamed to out-of-domain tools (via Kafka provider interface).  
+If the AVC notification is indicating updated historical performance data, the DPMDP reads raw data from the MWDI database replica.  
 
-The DPMDP implements a hard coded workflow for processing the raw data, but it also facilitates to de-/activate individual processing modules.  
+The DPMDP processes the raw performance data, formats it, and streams value added data to out-of-domain tools (via Kafka provider interface).  
 
-The performance data, which has originally been retrieved from the devices, has to tbe processed in the following regards:
-  - Replacement and deletion of implausible data
-  - Harmonization in format and semantical meaning
-  - Completion by configuration information
-  - Completion by capability information
-  - Completion by calculated KPIs
+Furthermore, the DPMDP stores the processed performance data in its own database for further usage.  
 
-Please find the [list of provided modules](./spec/Functions/).
+
+### Data Processing  
+
+The DPMDP implements a hard coded workflow for processing the performance data, but it also facilitates to de-/activate individual processing Functions.  
+
+The performance data, which has originally been retrieved from the devices, is processed in the following regards:  
+  - Replacement and deletion of implausible data  
+  - Harmonization in format and semantical meaning  
+  - Completion by configuration information  
+  - Completion by capability information  
+  - Completion by calculated KPIs  
+
+
+### Relevance  
+
+The DPMDP provides input data to APT, Mycom and NetExplorer.  
+In case of failure, data will be missing in the long term monitoring of the microwave network in these tools.  
+
+
+### Resources  
+- [Specification](./spec/)  
+- [TestSuite](./testing/)  
+- [Implementation](./server/)  
+
+
+### Comments  
+This application is part of the ComarchOSS replacement project.  

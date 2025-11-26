@@ -1,32 +1,48 @@
 # DevicePerformanceManagementDataProcessor Specification
 
-### Diagrams  
-- [Collection of Diagrams](./diagrams)
 
-### ServiceList
-The following Functions shall be covered in the Pre-release:
-- regardAttributeValueChange
-- p1ProcessingOrchestratorForHistoricalPm
+    The following Functions shall be covered in the Pre-release:
+    - regardAttributeValueChange
+    - p1ProcessingOrchestratorForHistoricalPm
 
 
+### API  
 
-- [DevicePerformanceManagementDataProcessor+services](./DevicePerformanceManagementDataProcessor+services.yaml)
+**Diagrams:**  
+- [Collection of Diagrams](./diagrams)  
 
-### ProfileList and ProfileInstanceList
-- [DevicePerformanceManagementDataProcessor+profiles](./DevicePerformanceManagementDataProcessor+profiles.yaml)
-- [DevicePerformanceManagementDataProcessor+profileInstances](./DevicePerformanceManagementDataProcessor+profileInstances.yaml)
+**ServiceList:**  
+- [DevicePerformanceManagementDataProcessor+services](./DevicePerformanceManagementDataProcessor+services.yaml)  
 
-### ForwardingList
-- [DevicePerformanceManagementDataProcessor+forwardings](./DevicePerformanceManagementDataProcessor+forwardings.yaml)
+**ProfileList and ProfileInstanceList:**  
+- [DevicePerformanceManagementDataProcessor+profiles](./DevicePerformanceManagementDataProcessor+profiles.yaml)  
+- [DevicePerformanceManagementDataProcessor+profileInstances](./DevicePerformanceManagementDataProcessor+profileInstances.yaml)  
 
-### Open API specification (Swagger)
-- [DevicePerformanceManagementDataProcessor](./DevicePerformanceManagementDataProcessor.yaml)
+**ForwardingList:**  
+- [DevicePerformanceManagementDataProcessor+forwardings](./DevicePerformanceManagementDataProcessor+forwardings.yaml)  
 
-### CONFIGfile (JSON)
-- [DevicePerformanceManagementDataProcessor+config](./DevicePerformanceManagementDataProcessor+config.json)
+**Open API specification (Swagger):**  
+- [DevicePerformanceManagementDataProcessor](./DevicePerformanceManagementDataProcessor.yaml)  
 
-### Comments
-./.
+**CONFIGfile (JSON):**  
+- [DevicePerformanceManagementDataProcessor+config](./DevicePerformanceManagementDataProcessor+config.json)  
 
-### High Level Overview  
-![high level process](./diagrams/highlevelOverview/highlevel_process.png)
+**Comments:**  
+./.  
+
+
+### Internal Structure  
+
+**High Level Process:**  
+<p align="center">
+  <img src="./diagrams/highlevelOverview/hl_process.png" alt="High Level Process" width="400"/>
+</p>
+
+**High Level Sequence:**  
+<p align="center">
+  <img src="./diagrams/highlevelOverview/hl_sequence.png" alt="High Level Sequence" width="400"/>
+</p>
+
+**List of Functions:**  
+- [List of generic Functions](./Functions/genericFunctions)  
+- [List of specific Functions](./Functions/specificFunctions)  

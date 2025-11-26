@@ -1,7 +1,7 @@
 # p1ProcessingOrchestratorForHistoricalPmData  
 
 <!-- todo: Potentially to be updated -->
-
+Orchestrates the device-wise processing, sending and storing of PM data for 15 minutes periods 
 
 ### Notification receipt
 
