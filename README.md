@@ -6,26 +6,37 @@ Retrieves PM data from an MWDI database replica, processes it, formats it, trans
 ### Description  
 
 The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
+This ElasticSearch index replication is done by a cronjob.  
 
 The DPMDP receives AttributeValueChanged (AVC) notifications (via Kafka consumer interface) sent by the MWDI.  
+The DPMDP is creating a list of devices with updated performance data from these notifications.  
 
-If the AVC notification is indicating updated historical performance data, the DPMDP reads raw data from the MWDI database replica.  
+The DPMDP also receives AVC notifications sent by the cronjob that is creating the MWDI ElasticSearch index replica.  
+As soon as the cronjob notifies an updated replica, DPMDP starts processing the performance data for the listed devices.  
 
-The DPMDP processes the raw performance data, formats it, and streams value added data to out-of-domain tools (via Kafka provider interface).  
+The DPMDP reads the raw performance data, processes it, formats it, and streams the resulting data to out-of-domain tools (via Kafka provider interface).  
 
 Furthermore, the DPMDP stores the processed performance data in its own database for further usage.  
 
 
 ### Data Processing  
 
-The DPMDP implements a hard coded workflow for processing the performance data, but it also facilitates to de-/activate individual processing Functions.  
+**Coding Structure:**  
+The DPMDP implements a hard coded workflow for processing the performance data, but  
+  - the individual processing steps are structured into Functions  
+  - de-/activating individual processing Functions is facilitated.  
 
-The performance data, which has originally been retrieved from the devices, is processed in the following regards:  
+Adding or removing Functions for other processing steps, output formats or transmit protocols should be easy to implement.  
+
+**Types of Processing the Data:**  
+The performance data, which has originally been retrieved from the devices, is manipulated in the following regards:  
+  - Removal of already processed data  
   - Replacement and deletion of implausible data  
   - Harmonization in format and semantical meaning  
   - Completion by configuration information  
   - Completion by capability information  
   - Completion by calculated KPIs  
+  - Formatting according to the requirements of the out-of-domain tools  
 
 
 ### Relevance  
