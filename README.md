@@ -8,12 +8,10 @@ Retrieves PM data from an MWDI database replica, processes it, formats it, trans
 The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
 This ElasticSearch index replication is done by a cronjob.  
 
-The DPMDP receives AttributeValueChanged (AVC) notifications (via Kafka consumer interface) sent by the MWDI.  
-The DPMDP is creating a list of devices with updated performance data from these notifications.  
+The same cronjob sends notifications to the DPMDP.  
+These notifications contain a list of devices with an updated ControlConstruct in the MWDI ElasticSearch index replica.  
 
-The DPMDP also receives AVC notifications sent by the cronjob that is creating the MWDI ElasticSearch index replica.  
-As soon as the cronjob notifies an updated replica, DPMDP starts processing the performance data for the listed devices.  
-
+DPMDP starts processing the performance data for the listed devices.  
 The DPMDP reads the raw performance data, processes it, formats it, and streams the resulting data to out-of-domain tools (via Kafka provider interface).  
 
 Furthermore, the DPMDP stores the processed performance data in its own database for further usage.  
