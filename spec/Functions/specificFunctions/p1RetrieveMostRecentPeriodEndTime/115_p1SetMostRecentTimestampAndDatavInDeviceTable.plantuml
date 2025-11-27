@@ -1,0 +1,42 @@
+@startuml 115_p1SetMostRecentTimestampAndDatavInDeviceTable
+skinparam responseMessageBelowArrow true
+
+title
+p1SetMostRecentTimestampAndDatavInDeviceTable
+end title
+
+participant "requestor" as requestor
+participant "p1SetMostRecentTimestampAndDatavInDeviceTable" as mostRecentTimestamp #LightBlue
+participant "DPMDP\n(internal memory)" as data
+participant "DPMDP\n(deviceTable)" as deviceTable
+
+activate mostRecentTimestamp
+requestor -> mostRecentTimestamp: {dataHandle}
+
+note over mostRecentTimestamp
+<u>ReadDsfpOutputFromMemory</u>
+Read the DsfpOutput object the dataHandle
+is pointing directly from memory.
+end note
+mostRecentTimestamp -> data: {dataHandle}
+data --> mostRecentTimestamp: {DsfpOutput}
+
+note over mostRecentTimestamp
+<u>SetMostRecentTimestamp</u>
+  iterate over the AirInterfaces and EthernetContainers
+  in DsfpOutput and for each interface instance write
+  into the DPMDP deviceTable:
+  - the mount-name,
+  - the interface-id (LTP-id),
+  - the newest timestamp seen across all period-end-time values
+    for the current interface instance
+  - also updates the number-of-records seen for the
+    current interface instance for the date from
+    period-end-time (adds the counts from this DSFP object
+    to the overall entries in the deviceTable)
+end note
+
+mostRecentTimestamp -> deviceTable: {list-of(mountName, LtpId, mostRecentTimestamp, list-of(date, numberOfRecords))}
+mostRecentTimestamp --> requestor: 204
+
+deactivate mostRecentTimestamp

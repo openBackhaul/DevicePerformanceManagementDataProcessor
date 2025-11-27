@@ -1,0 +1,67 @@
+@startuml 114_p1ReplaceOnfDefaultValues
+skinparam responseMessageBelowArrow true
+
+title
+p1ReplaceOnfDefaultValues
+end title
+
+participant "requestor" as requestor
+participant "p1ReplaceOnfDefaultValues" as replace #LightBlue
+participant "DPMDP\n(internal memory)" as data
+
+activate replace
+
+note over replace
+<b>Rules for replacing ONF default values:</b>
+  replace ONF default values of counter attributes as follows:
+  - integer: -1 -> null
+  - string: "-1" -> emptyString
+
+  Note:
+  - some EthernetContainer counter attributes are provided as string
+  - default values not yet finally aligned with customers
+end note
+
+note over requestor
+  Requestor can hand over either of the two:
+  - <b>dataHandle</b>: [DPMDP] this points to the Dsfp.output
+    target object directly in the DPMDP memory
+  - <b>DsfpOutput</b>: [externalUsage] relevant
+    data in the same format as in Dsfp
+end note
+
+== case 1: DPMDP ==
+requestor -> replace: {dataHandle}
+
+note over replace
+<u>ReadInputFromMemory</u>
+end note
+replace -> data: {dataHandle}
+data --> replace: {DsfpOutput}
+
+note over replace
+<u>ReplaceOnfDefaultValuesInMemory</u>
+  Replace the ONF default values as
+  described above.
+  Write the changes into the memory.
+end note
+replace -> data: {modified DsfpOutput}
+replace --> requestor: 204
+
+== case 2: external usage == 
+
+requestor -> replace: {DsfpOutput}
+
+note over replace
+<u>ReplaceOnfDefaultsAndReturnData</u>
+  Replace the ONF default values as
+  described above.
+  Return the data with replace default values
+  to requestor.
+end note
+
+replace --> requestor: 200, {modified DsfpOutput}
+
+deactivate replace
+
+

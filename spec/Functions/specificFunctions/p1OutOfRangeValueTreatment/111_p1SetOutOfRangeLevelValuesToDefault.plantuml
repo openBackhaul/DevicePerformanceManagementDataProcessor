@@ -1,0 +1,80 @@
+@startuml 111_p1SetOutOfRangeLevelValuesToDefault
+skinparam responseMessageBelowArrow true
+
+title
+p1SetOutOfRangeLevelValuesToDefault
+end title
+
+participant "requestor" as requestor
+participant "p1SetOutOfRangeLevelValuesToDefault" as setLvl #LightBlue
+participant "DPMDP\n(internal memory)" as data
+
+activate setLvl
+
+note over setLvl
+  <b>Data modification rules to be applied by this function</b>:
+
+  Iterate over all items in the air-interface-list from the input.
+  If out-of-range values for any transmit-level or receive-level
+  attributes in input data are encountered,
+  the respective attribute value is set to default (-1):
+
+  <font face="monospace">IF NOT (transmit-level attribute within range [-30, 40])</font>
+  <font face="monospace">THEN replace with -1</font>
+  <font face="monospace">IF NOT (receive-level attribute within ranges (-129, -99.9) AND (-99.9, -10))</font>
+  <font face="monospace">THEN replace with -1</font>
+end note
+
+note over requestor
+  Requestor can hand over either of the two:
+  - <b>dataHandle</b>: this points to the Dsfp.output
+    target object directly in the DPMDP memory
+  - <b>DsfpOutput.air-interface-list</b>: relevant
+    data in the same format as in Dsfp
+
+  - <b>DPMDP</b>: ProcessingOrchestrator shall hand over the dataHandle.
+    Data will be read directly from DPMDP memory and
+    will also be written back directly into DPDMP memory (204).
+  - <b>ExternalUsage</b> If the function is to be re-used by another Application,
+    this application can hand over a complete set of data and
+    will also receive the complete set of data (200).
+end note
+
+
+== Case 1: DPMDP - dataHandle ==
+
+requestor -> setLvl: {dataHandle}
+
+note over setLvl
+<u>GetData</u>
+  read the relevant data
+  from DPMDP memory
+end note
+
+setLvl -> data: {dataHandle}
+data --> setLvl: {output/air-interface-list}
+
+note over setLvl
+<u>UpdateDataInMemory</u>
+  apply the data modification rules
+  to input data read from memory,
+  write changed attributes back to
+  DPMDP memory (patch)
+end note
+setLvl -> data: {dataHandle, changedData}
+setLvl --> requestor: 204
+
+== Case 2: External usage (no dataHandle) ==
+
+requestor -> setLvl: {DsfpOutput.air-interface-list}
+
+note over setLvl
+<u>ReturnDataNonHandle</u>
+  apply the data modification rules
+  to input data from requestBody,
+  return the changed data 
+end note
+
+setLvl --> requestor: 200, {modified DsfpOutput.air-interface-list}
+
+deactivate setLvl
