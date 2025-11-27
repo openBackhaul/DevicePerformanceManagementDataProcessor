@@ -1,0 +1,118 @@
+@startuml hl_sequence
+skinparam responseMessageBelowArrow true
+
+title
+  p1ProcessingOrchestratorForHistoricalPm
+end title
+
+participant "regardAttributeValueChange\n" as requestor #LightCyan
+participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
+participant "p1LoadRaw\nDeviceData" as p1AddRaw #LightCyan
+participant "p1CreateResultCc\n" as p1CRC #LightCyan
+participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+participant "p1Storing\n" as p1Store #LightBlue
+database "dataStore" as db #LightBlue
+
+
+activate requestor #LightCyan
+
+requestor -> p1ProOrch : {mountName}
+activate p1ProOrch #LightCyan
+
+  note over p1ProOrch
+    Create
+    DataStructureForProcessing
+  end note
+
+  note right p1ProOrch #White
+    Was ist mit Parametern?
+    - Sollen diese einmalig aus dem configFile geladen und am DSFP angehängt werden?
+    - Oder, sollen die Funktionen selbst ihre Parameter aus dem configFile laden?
+  end note
+
+  note right p1ProOrch #White
+    Was ist mit Flusssteuerung?
+    - Sollte eine Liste der de/aktivierten Funktionen am DSFP angehängt werden?
+  end note
+
+  p1ProOrch -> p1AddRaw : {mountName,\n {input}?,\n {parameters}?}
+  activate p1AddRaw #LightCyan
+
+    note over p1AddRaw
+      - Load rawCC from MWDI ES
+      - Reduce structure of rawCC
+      - Delete PM data that has
+        already been processed in past
+    end note
+
+  p1ProOrch <-- p1AddRaw : {rawCC}
+  deactivate p1AddRaw
+
+  note over p1ProOrch
+    Add rawCC to
+    DataStructureForProcessing
+  end note
+
+  p1ProOrch -> p1CRC : {_rawCC,\n {input}?,\n {parameters}?}
+  activate p1CRC #LightCyan
+
+    note over p1CRC
+      - Create resultCC from rawCC
+      - Process and complement resultCC
+    end note
+
+  p1ProOrch <-- p1CRC : {_resultCC}
+  deactivate p1CRC
+
+  note over p1AddRaw #White
+    Wäre es sinnvoll,
+    p1LoadRawDeviceData nach
+    p1LoadRawCc um zu benennen?
+  end note
+
+  note over p1ProOrch
+    Add resultCC to
+    DataStructureForProcessing
+  end note
+
+  p1ProOrch -> p1Output : {_resultCC,\n {input}?,\n {parameters}?}
+  activate p1Output #LightCyan
+
+    note over p1Output
+      Create aptOutputFormat from resultCC
+    end note
+
+  p1ProOrch <-- p1Output : {aptOutputFormat}
+  deactivate p1Output
+
+  note over p1ProOrch
+    Add aptOutputFormat to
+    DataStructureForProcessing
+  end note
+
+  p1ProOrch -> p1Trans : {_aptOutputFormat,\n {input}?,\n {parameters}?}
+  activate p1Trans #LightCyan
+
+    note over p1Trans
+      Transmit aptOutputFormat
+    end note
+
+  p1ProOrch <-- p1Trans
+  deactivate p1Trans
+
+  p1ProOrch -> p1Store : {_resultCC,\n {input}?,\n {parameters}?}
+  activate p1Store #LightBlue
+
+    note over p1Store
+      Store resultCC
+    end note
+
+    p1Store -> db
+
+  p1ProOrch <-- p1Store
+  deactivate p1Store
+
+deactivate p1ProOrch
+
+@enduml
