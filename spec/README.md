@@ -5,6 +5,12 @@
     - regardAttributeValueChange
     - p1ProcessingOrchestratorForHistoricalPm
 
+    Caution:
+      If the Pre-Release does not comprise p1Storing
+      the processing and sending cannot be limited to new PM data
+      It is recommended to configure a testing MWDI with
+      a very small sliding window to limit the amount of data 
+
 
 ### API  
 

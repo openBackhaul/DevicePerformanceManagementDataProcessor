@@ -5,179 +5,211 @@ title
   DevicePerformanceManagementDataProcessor
 end title
 
-participant "MWDI\n" as mwdi
 participant "cronjob\nin ES" as cjes
 participant "regardAttribute-\nValueChange" as rAVC #LightCyan
 
 participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
 
-participant "p1LoadRawDeviceData" as p1AddRaw #LightCyan
+participant "p1LoadRaw\nDeviceData" as p1AddRaw #LightCyan
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
-participant "p1FieldsFilter" as p1FF #LightCyan
+participant "p1FieldsFilter\n" as p1FF #LightCyan
 
-participant "example\np1ProcessingSpecific" as p1Specific #LightGrey
-participant "example\np1ProcessingGeneric" as p1Generic #LightGrey
+participant "p1CreateResultCc\n" as p1CRC #LightCyan
+participant "p1Default\nValueTreatment" as p1DVT #LightBlue
+participant "p1OutOfRange\nValueTreatment" as p1ORVT #LightBlue
 
-participant "p1FormattingOutputApt" as p1Output #LightCyan
-participant "p1TransmittingKafka" as p1Trans #LightCyan
+participant "p1AirInterface\nCapacityCalculation" as p1AiCC #LightBlue
+participant "p1Ethernet\nKpiCalculation" as p1EthKC #LightBlue
 
-participant "p1PrepareStoring" as p1PrepStore #LightBlue
+participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+participant "p1Compute\nAirInterfaceNames" as p1CompAiNames #LightCyan
+participant "p1Compute\nAirInterfacePhysicalLag" as p1CompPhyLag #LightCyan
+participant "p1Compute\nEthContainerNames" as p1CompEthContNames #LightCyan
 
-participant "p1Storing" as p1Store #LightBlue
+participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+
+participant "p1Storing\n" as p1Store #LightBlue
 database "dataStore" as db #LightBlue
 
-note right mwdi #Orange
-  If the Pre-Release does not comprise Storing
-  the processing and sending cannot be limited to new PM data
-  It is recommended to configure a testing MWDI with
-  a very small sliding window to limit the amount of data  
-end note
 
 activate rAVC #LightCyan
 
-mwdi -> rAVC
-note over rAVC
-  AVC notifications are collected
-  and categorized by MountName
-end note
-
 cjes -> rAVC
 note over rAVC
-  AVC notification from cronjob
-  is initiating processing
+  cronjob informs about new CCs
+  in MWDI ES Replica
 end note
 
-rAVC -> p1ProOrch : separate for every MountName
+rAVC -> p1ProOrch : separate for\nevery updated CC
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
+    Create
     DataStructureForProcessing
-    gets created
   end note
 
-  p1ProOrch -> p1AddRaw : {mountName}
+  p1ProOrch -> p1AddRaw
   activate p1AddRaw #LightCyan
 
-    p1AddRaw -> MwdiEs : {mountName}
-    p1AddRaw <-- MwdiEs : {rawCC}
+    p1AddRaw -> MwdiEs
+    p1AddRaw <-- MwdiEs
 
-    p1AddRaw -> p1FF : {rawCC, fieldsFilterString}
+    p1AddRaw -> p1FF
     activate p1FF #LightCyan
 
       note over p1FF
-        Structure of {rawCC} is reduced 
+        Reduce structure of rawCC
       end note
 
-    p1AddRaw <-- p1FF : {rawCC}
+    p1AddRaw <-- p1FF
     deactivate p1FF
 
-    p1AddRaw -> db : {mountName}
-    p1AddRaw <-- db : {[uuid, localId, mostRecentPeriodEndTime]}
+    p1AddRaw -> db
+    p1AddRaw <-- db
 
     note over p1AddRaw
-      Delete PM data not younger than
-      mostRecentPeriodEndTime per
-      individual LTP (uuid, localId)
+      Delete PM data that has
+      already been processed in past
     end note
 
-  p1ProOrch <-- p1AddRaw : {rawCC}
+  p1ProOrch <-- p1AddRaw
   deactivate p1AddRaw
 
   note over p1ProOrch
-    Add {rawCC} to
+    Add rawCC to
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Specific : {_rawCC, {input}, {parameters}}
-  activate p1Specific
+  p1ProOrch -> p1CRC
+  activate p1CRC #LightCyan
 
-    note over p1Specific #LightGray
-      categorization into processes 
-      in unclear, and undesigned
-      potentially, 
-        - adding capability, config, performance
-        - processing Ericsson, Huawei, SIAE
-        - processing AirInterface, EthernetContainer
+    note over p1CRC
+      Create resultCC
+      from rawCC
     end note
 
-    p1Specific -> p1Generic
-    activate p1Generic
-  
-      note over p1Generic  #LightGray
-        e.g., 
-          - capacity calculation
-          - default value replacement
-          - semantical harmonization
+    p1CRC -> p1DVT
+    activate p1DVT #LightBlue
+
+      note over p1DVT
+        Delete attributes with ONF
+        default value from resultCC
       end note
 
-    p1Specific <-- p1Generic
-    deactivate p1Generic
-    
-  p1ProOrch <-- p1Specific : {{result}, [responseCode]}
-  deactivate p1Specific
+    p1CRC <-- p1DVT
+    deactivate p1DVT
+
+    p1CRC -> p1ORVT
+    activate p1ORVT #LightBlue
+
+      note over p1ORVT
+        Delete attributes with value outside
+        pre-defined range from resultCC
+      end note
+
+    p1CRC <-- p1ORVT
+    deactivate p1ORVT
+
+    p1CRC -> p1AiCC
+    activate p1AiCC #LightBlue
+
+      note over p1AiCC
+        Add AirInterface capacity
+        to resultCC
+      end note
+
+    p1CRC <-- p1AiCC
+    deactivate p1AiCC
+
+    p1CRC -> p1EthKC
+    activate p1EthKC #LightBlue
+
+      note over p1EthKC
+        Add Ethernet KPIs
+        to resultCC
+      end note
+
+    p1CRC <-- p1EthKC
+    deactivate p1EthKC
+
+  p1ProOrch <-- p1CRC
+  deactivate p1CRC
 
   note over p1ProOrch
+    Add resultCC to
     DataStructureForProcessing
-    gets filled with results
-    and "responseCodes"
   end note
 
-  p1ProOrch -> p1Output : {_resultCC, {input}, {parameters}}
+  p1ProOrch -> p1Output
   activate p1Output #LightCyan
 
-    note over p1Output #Orange
-      idea: in pre-release, _rawCC instead of _resultCC gets passed
-      -> {output} gets created from raw data instead of not yet calculated results
+    note over p1Output
+      Create APT format
+      from resultCC
     end note
+
+    p1Output -> p1CompAiNames
+    activate p1CompAiNames #LightCyan
+
+      note over p1CompAiNames
+        Determine LinkId 
+        and LinkEndpointId
+      end note
+
+    p1Output <-- p1CompAiNames
+    deactivate p1CompAiNames
+
+    p1Output -> p1CompPhyLag
+    activate p1CompPhyLag #LightCyan
+
+      note over p1CompPhyLag
+        Determine LinkIds and
+        PortNames (WireInterfaces)
+        in aggregation group
+      end note
+
+    p1Output <-- p1CompPhyLag
+    deactivate p1CompPhyLag
+
+    p1Output -> p1CompEthContNames
+    activate p1CompEthContNames #LightCyan
+
+      note over p1CompEthContNames
+        Determine PortNames
+        of EthernetContainers
+      end note
+
+    p1Output <-- p1CompEthContNames
+    deactivate p1CompEthContNames
 
     note over p1Output
-      formatting the results
-      for transmitting
+      Consolidate data
+      into APT format
     end note
 
-  p1ProOrch <-- p1Output : {output}
+  p1ProOrch <-- p1Output
   deactivate p1Output
 
   note over p1ProOrch
-    {output} gets added to
+    Add APT format to
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Trans : {_output, {input}, {parameters}}
+  p1ProOrch -> p1Trans
   activate p1Trans #LightCyan
 
     note over p1Trans
-      {output} gets transmitted
+      Transmit APT format
     end note
 
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1PrepStore : {_DataStructureForProcessing}
-  activate p1PrepStore
-
-    note over p1PrepStore
-      Prepare DataStructureForProcessing
-      for storing (e.g., delete {rawCC}
-      and {output})
-    end note
-
-  p1ProOrch <-- p1PrepStore
-  deactivate p1PrepStore
-
-  p1ProOrch -> p1Store : {_DataStructureForProcessing}
-  activate p1Store
+  p1ProOrch -> p1Store
+  activate p1Store #LightBlue
 
     note over p1Store
-      DataStructureForProcessing
-      gets stored
-    end note
-
-    p1Store -> db
-
-    note over p1Store
-      Content elder than
-      48h gets deleted
+      Store resultCC
     end note
 
     p1Store -> db
