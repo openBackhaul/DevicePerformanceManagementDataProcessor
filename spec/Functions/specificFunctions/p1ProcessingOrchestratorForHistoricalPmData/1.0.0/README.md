@@ -18,6 +18,56 @@ Resulting data gets attached to the DataStructureForProcessing.
 <!-- todo: Update required -->
 <!-- todo: It seems a lot of information should be located somewhere else -->
 
+    ### p1CreateDsfpOutputObjectFromCache
+
+    This function reads the complete ControlConstruct data of a mount-name provided in the requestBody directly from ElasticSearch and creates the output object [/data-structure-for-processing/output] in the internal memory of DPMDP.  
+    When it reads the input data it directly applies some filtering logic and discards information which is irrelevant.  
+    It is possible that after having applied said filter logic, no relevant PM data remains. In that case, the output object is NOT created.  
+    Upon completion, the function returns the DsfpOutput object along with a unique dataHandle to where the object is stored in the DPMDP memory.
+
+    **Usage**: This function is for DPMDP internal usage only.  
+    With the dataHandle provided in the response, subsequent functions can read the output object directly from DPDMP memory, rather than it having to be handed over in the requestBody.  
+
+    #### Input
+    The function only receives a mount-name in its requestBody.
+
+    #### Steps
+    The function shall be processed as follows:  
+    - read ControlConstruct data directly from ElasticSearch
+    - read the mostRecentTimestamp for the mount-name's interfaces from the internal DPMDP deviceTable
+    - filter and cluster the input data
+      - only keep the following data for further processing:
+        - LTP structure and augment information
+        - AirInterface data
+        - EthernetContainer data
+      - for both AirInterface and EthernetContainer historical performances filter for records
+        - with 15 minute granularity,
+        - which are newer than the mostRecentTimestamp for the given interface instance
+        - if no records remain that interface is not going to be written to the output object; if no interface instance contains any relevant PM data, no output object is written at all
+      - from AirInterface data only keep those entries in:
+        - *time-xstates-list*, where *time*>0
+        - *air-interface-capability/transmission-mode-list*, where *code-rate* != -1
+    - from the LTP structure and augment information determine AirInterface and EthernetContainer identifier attributes
+    - all relevant information is added to the output schema from the various steps above
+      - note that KPIs are added as attributes with default value -1
+    - along with the output object the *dataHandle* is created; it allows to read the output object directly from DPMDP memory, rather than data having to be passed along via function requestBodies.
+
+    #### Callbacks
+    - `CreatingDsfpOutputCausesReadingControlConstructFromCache`:
+      - reads the ControlConstruct from ElasticSearch
+    - `CreatingDsfpOutputCausesReadingMostRecentTimestampsForDeviceInterfacesFromDeviceTable`
+      - reads the mostRecentTimestamp for every interface of the given mount-name found inside the DPMDP deviceTable
+    - `CreatingDsfpOutputCausesFilteringAndClusteringInputData`
+      - clusters input data into LTP structure and augment, lists of AirInterfaces and EthernetContainers
+      - discards unwanted data
+    - `CreatingDsfpOutputCausesComputingInterfaceNames`
+      - computes identifiers for AirInterface (link-id, link-endpoint-id) and EthernetContainer (interface-name) from LTP structure and augment information
+    - `CreatingDsfpOutputCausesComputingLagInformation`
+      - computes link-aggregation-identifiers for AirInterface from LTP structure and augment information
+
+    #### Output
+    In the case that relevant data is found in the ControlConstruct data, the function creates a [/data-structure-for-processing/output] object in DPMDP memory.  
+    For identifying the output object in the DPMDP memory in other functions an object id (*dataHandle*), which is not part of [/data-structure-for-processing/output] itself is also being created and returned.
 
 
 ### Processing steps

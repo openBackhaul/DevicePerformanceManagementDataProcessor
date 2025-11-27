@@ -1,0 +1,44 @@
+@startuml 020_ProvideDataStoreItemForDevice
+skinparam responseMessageBelowArrow true
+
+title
+PromptForProvidingDataStoreItemForDeviceCausesReadingDataStore
+end title
+
+participant "external" as requestor
+participant "DPMDP://v1/provide-data-store-item-from-device" as dpmdp
+participant "DMPDP\n([/processor-controller/data-store])" as dataStore
+
+
+note over dpmdp
+  The requestor can optionally
+  provide a timestamp.
+  Returned data is limited to
+  [/data-store/device/lot] items
+  newer than the timestamp.
+end note
+requestor -> dpmdp: {mountName, (optional) timestamp} (BasicAuth)
+activate dpmdp
+
+dpmdp -> dataStore: {mountName, (optional) timestamp} (apiAuthKey)
+note over dataStore
+  WITH <i>device.x-key</i> = [/processor-controller/data-store/device].x-key,
+  WITH <i>lot.x-key</i> = [/processor-controller/data-store/device/lot].x-key
+
+  Filtering:
+  (1) filter dataStore device items for those with
+    <i>device.x-key</i> == mountName
+  (2) IF (requestBody.timestamp provided):
+     In the device item from (1) filter for those lot items
+     where <i>lot.x-key</i> == newer than timestamp
+
+  Result: a single [/processor-controller/data-store/device]-item
+  item containing the relevant lots.
+end note
+dataStore --> dpmdp: (filtered) {[/processor-controller/data-store/device]-item}
+
+dpmdp --> requestor: (filtered) {[/processor-controller/data-store/device]-item}
+
+deactivate dpmdp
+
+@enduml
