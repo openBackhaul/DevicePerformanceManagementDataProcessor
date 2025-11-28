@@ -5,12 +5,12 @@ title
   DevicePerformanceManagementDataProcessor
 end title
 
-participant "cronjob\nin ES" as cjes
-participant "regardAttribute-\nValueChange" as rAVC #LightCyan
+participant "embedYourself\n" as embed
+participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
 
-participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
+participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 
-participant "p1LoadRaw\nDeviceData" as p1AddRaw #LightCyan
+participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
 participant "p1FieldsFilter\n" as p1FF #LightCyan
 
@@ -32,15 +32,21 @@ participant "p1Storing\n" as p1Store #LightBlue
 database "dataStore" as db #LightBlue
 
 
-activate rAVC #LightCyan
+activate p1RMWDI #LightCyan
 
-cjes -> rAVC
-note over rAVC
-  cronjob informs about new CCs
-  in MWDI ES Replica
+embed -> p1RMWDI
+
+note over p1RMWDI
+  Automatically start
+  p1ReplicateMwdiEs
 end note
 
-rAVC -> p1ProOrch : separate for\nevery updated CC
+note over p1RMWDI
+  Cyclically update
+  MWDI ES Replica
+end note
+
+p1RMWDI -> p1ProOrch : for every\nupdated CC
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch

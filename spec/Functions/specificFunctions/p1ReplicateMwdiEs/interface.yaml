@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: p1ReplicateMwdiEs
+  version: 1.0.0
+
+x-javascript-interface:
+  p1ReplicateMwdiEs:
+    summary: 'Replicates the MWDI ElasticSearch index'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+              # todo: add input parameters, or delete section
+    output:
+      success:
+        content:
+          application/json:
+            schema:
+              type: object
+                # todo: add output parameters, or delete section
+      error:
+        description: 'MWDI ElasticSearch index could not be replicated'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                # todo: add text that will be thrown
+    processing:
+      p1ProcessingPmData:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  # todo: further attributes to be added, if required
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      '
+                      '
+                  # todo: further attributes to be added, if required
+        output:
+          success:
+            description: 'PM data processed, sent and stored'
+          error:
+            description: 'MWDI ElasticSearch index could not be replicated'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    # todo: add text that shall be thrown, if reasonable
+
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

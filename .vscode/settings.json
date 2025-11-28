@@ -1,0 +1,10 @@
+{
+  "cSpell.customDictionaries": {
+    "custom-dictionary-folder-mediatormanager": {
+      "name": "custom-dictionary",
+      "path": "${workspaceFolder:DevicePerformanceManagementDataProcessor}/.cspell/custom-dictionary.txt",
+      "addWords": true,
+      "scope": "folder"
+    }
+  }
+}

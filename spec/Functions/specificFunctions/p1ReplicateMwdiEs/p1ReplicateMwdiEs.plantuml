@@ -1,0 +1,35 @@
+@startuml p1ReplicateMwdiEs
+skinparam responseMessageBelowArrow true
+
+title
+  p1ReplicateMwdiEs
+end title
+
+participant "embedYourself\n" as embed
+participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
+
+embed -> p1RMWDI
+activate p1RMWDI #LightCyan
+
+note over p1RMWDI
+  Automatically start
+  p1ReplicateMwdiEs
+end note
+
+group Cyclically update MWDI ES Replica
+  
+  group Trigger processing of updated CC
+    p1RMWDI -> p1ProOrch : {mountName}
+    activate p1ProOrch #LightCyan
+
+      note over p1ProOrch
+        Process PM data
+        of device
+      end note
+
+  end
+
+end
+
+@enduml
