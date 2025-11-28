@@ -25,7 +25,7 @@ data-structure-for-processing:
               type: string
               description: >
                 'mountName
-                from {$p1ProcessingOrchestratorForHistoricalPmData.request.body#/mount-name}'
+                from {$p1ProcessingPmData.request.body#/mount-name}'
             device-model-name:
               type: string
               description: >
@@ -311,7 +311,7 @@ data-structure-for-processing:
               type: string
               description: >
                 'mountName
-                from {$p1ProcessingOrchestratorForHistoricalPmData.request.body#/mount-name}'
+                from {$p1ProcessingPmData.request.body#/mount-name}'
             device-model-name:
               type: string
               description: >
@@ -638,7 +638,7 @@ data-structure-for-processing:
           type: string
           description: >
             'Processing has been initiated by an AVC notification sent by the cronjob for updating the DPMDP ES
-            from {$p1ProcessingOrchestratorForHistoricalPmData.request.body#/processing-start-time}'
+            from {$p1ProcessingPmData.request.body#/processing-start-time}'
         workflow:
           type: array
           items:

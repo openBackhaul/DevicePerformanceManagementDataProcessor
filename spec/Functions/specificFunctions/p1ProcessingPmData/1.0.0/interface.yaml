@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1ProcessingOrchestratorForHistoricalPmData
+  title: p1ProcessingPmData
   version: 1.0.0
 
 x-javascript-interface:
-  p1ProcessingOrchestratorForHistoricalPmData:
+  p1ProcessingPmData:
     summary: 'Creates DataStructureForProcessing and triggers the Functions that are processing the PM data provisioning'
     input:
       required: true

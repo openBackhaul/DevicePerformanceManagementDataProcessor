@@ -1,31 +1,74 @@
-# p1ProcessingOrchestratorForHistoricalPmData  
+# p1ProcessingPmData  
 
 Orchestrates the device-wise processing, formatting, sending and storing of PM data.  
 
 
+### Description  
+
+The p1ProcessingPmData starts with creating a data structure for holding raw data, results, and administrative information.  
+This data structure is called DataStructureForProcessing.  
+
+The p1ProcessingPmData executes a hard coded sequence of Functions.  
+Input to these Functions is taken from the DataStructureForProcessing.  
+Resulting data gets attached to the DataStructureForProcessing.  
+[Schema of the DataStructureForProcessing](./InformationStructure/DataStructureForProcessing.yaml)
 
 
-<!-- todo: Potentially to be updated -->
 
+<!-- todo: Update required -->
+<!-- todo: It seems a lot of information should be located somewhere else -->
 
-### Notification receipt
+    ### p1CreateDsfpOutputObjectFromCache
 
-    Übernommen aus übergeordnetem Readme:
-    Notification receipt:
-    - Upon receipt, DPMDP only processes the first notification for a device related to this ControlConstruct update, subsequent notifications are ignored
-    - DPMDP reads the complete ControlConstruct for the device from the respective notification directly from ElasticSearch
- 
+    This function reads the complete ControlConstruct data of a mount-name provided in the requestBody directly from ElasticSearch and creates the output object [/data-structure-for-processing/output] in the internal memory of DPMDP.  
+    When it reads the input data it directly applies some filtering logic and discards information which is irrelevant.  
+    It is possible that after having applied said filter logic, no relevant PM data remains. In that case, the output object is NOT created.  
+    Upon completion, the function returns the DsfpOutput object along with a unique dataHandle to where the object is stored in the DPMDP memory.
 
-The incoming notifications of relevance are created by MWDI when the *time-of-latest-change* attribute of and AirInterface or EthernetContainer changes.  
-The current specification contains two ways for receiving those notifications:
-- either from Kafka
-- or via subscribing to the MWDI
+    **Usage**: This function is for DPMDP internal usage only.  
+    With the dataHandle provided in the response, subsequent functions can read the output object directly from DPDMP memory, rather than it having to be handed over in the requestBody.  
 
-MWDI cycically updates complete ControlConstructs - therefore multiple notifications for the same mount-name can be expected to be received everytime a complete ControlConstruct is uploaded to MWDI cache.  
-DPMDP shall only process the first notification for a given device and ignore other notifications for the same device for the time interval configured in integerProfile instance *waitingTimeForProcessingNotificationsForSameDevice*.  
+    #### Input
+    The function only receives a mount-name in its requestBody.
 
-For the current release MWDI is supposed to only send notifications for update values of *time-of-latest-change*.  
-In future MWDI releases there may be more AVCN notifications created. If DPMDP is receiving them all via Webhook, it needs to ignore all those not related to *time-of-latest-change* for this processingOrchestrator (if other AVCN notifications are also to be processed, this will be done by a different processingOrchestrator!). If the DPMDP however fetches the notifications from Kafka, filtering can be applied before the notifications are made available to DPMDP. In that case, DPMDP does not need to carry out additional filtering by itself.
+    #### Steps
+    The function shall be processed as follows:  
+    - read ControlConstruct data directly from ElasticSearch
+    - read the mostRecentTimestamp for the mount-name's interfaces from the internal DPMDP deviceTable
+    - filter and cluster the input data
+      - only keep the following data for further processing:
+        - LTP structure and augment information
+        - AirInterface data
+        - EthernetContainer data
+      - for both AirInterface and EthernetContainer historical performances filter for records
+        - with 15 minute granularity,
+        - which are newer than the mostRecentTimestamp for the given interface instance
+        - if no records remain that interface is not going to be written to the output object; if no interface instance contains any relevant PM data, no output object is written at all
+      - from AirInterface data only keep those entries in:
+        - *time-xstates-list*, where *time*>0
+        - *air-interface-capability/transmission-mode-list*, where *code-rate* != -1
+    - from the LTP structure and augment information determine AirInterface and EthernetContainer identifier attributes
+    - all relevant information is added to the output schema from the various steps above
+      - note that KPIs are added as attributes with default value -1
+    - along with the output object the *dataHandle* is created; it allows to read the output object directly from DPMDP memory, rather than data having to be passed along via function requestBodies.
+
+    #### Callbacks
+    - `CreatingDsfpOutputCausesReadingControlConstructFromCache`:
+      - reads the ControlConstruct from ElasticSearch
+    - `CreatingDsfpOutputCausesReadingMostRecentTimestampsForDeviceInterfacesFromDeviceTable`
+      - reads the mostRecentTimestamp for every interface of the given mount-name found inside the DPMDP deviceTable
+    - `CreatingDsfpOutputCausesFilteringAndClusteringInputData`
+      - clusters input data into LTP structure and augment, lists of AirInterfaces and EthernetContainers
+      - discards unwanted data
+    - `CreatingDsfpOutputCausesComputingInterfaceNames`
+      - computes identifiers for AirInterface (link-id, link-endpoint-id) and EthernetContainer (interface-name) from LTP structure and augment information
+    - `CreatingDsfpOutputCausesComputingLagInformation`
+      - computes link-aggregation-identifiers for AirInterface from LTP structure and augment information
+
+    #### Output
+    In the case that relevant data is found in the ControlConstruct data, the function creates a [/data-structure-for-processing/output] object in DPMDP memory.  
+    For identifying the output object in the DPMDP memory in other functions an object id (*dataHandle*), which is not part of [/data-structure-for-processing/output] itself is also being created and returned.
+
 
 ### Processing steps
 
