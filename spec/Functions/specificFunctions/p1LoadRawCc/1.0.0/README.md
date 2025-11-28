@@ -1,4 +1,4 @@
-# p1LoadRawDeviceData
+# p1LoadRawCc
 
 The function receives the mount-name of a device as input.  
 It reads the raw ControlConstruct data for that mount-name from the MWDI ElasticSearch replica.  

@@ -67,7 +67,7 @@ activate p1ProOrch #LightCyan
 
   note over p1AddRaw #White
     Wäre es sinnvoll,
-    p1LoadRawDeviceData nach
+    p1LoadRawCc nach
     p1LoadRawCc um zu benennen?
   end note
 
