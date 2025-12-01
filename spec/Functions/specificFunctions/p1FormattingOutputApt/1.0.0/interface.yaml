@@ -42,7 +42,7 @@ x-javascript-interface:
                   type: object
                   description: >
                     'To compile the output object traverse the ControlConstruct the input reference
-                    from {$input#_control-construct}'
+                    from {$input#_control-construct}. Any non-key attribute that is not found in the input CC is to be omitted from the output.'
                   properties:
                     air-interface-list:
                       description: >
@@ -71,7 +71,7 @@ x-javascript-interface:
                               link-id:
                                 type: string
                                 description: >
-                                  'Identifier of the microwave link as used in the Telefonica planning tools, filled with empty string (default), execute p1ComputeAirInterfaceNames
+                                  'Identifier of the microwave link as used in the Telefonica planning tools, execute p1ComputeAirInterfaceNames
                                   from {$p1ComputeAirInterfaceNames.output#link-id}'
                               logical-termination-point-id:
                                 type: string
@@ -133,7 +133,6 @@ x-javascript-interface:
                                       transmissionModeMin = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
                                       from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
                                       where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
-                                      If {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity} does not exist (not an ONF attribute), then fill with -1'
                               configured-modulation-maximum:
                                 type: object
                                 description: >
@@ -161,7 +160,6 @@ x-javascript-interface:
                                       transmissionModeMax = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
                                       from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
                                       where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
-                                      If {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity} does not exist (not an ONF attribute), then fill with -1'
                           air-interface-performance-measurements-list:
                             type: array
                             items:
@@ -272,14 +270,12 @@ x-javascript-interface:
                                           'Channel capacity in kbps of the modulation scheme (KPI),
                                           transmissionMode = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode},
                                           from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
-                                          where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode} == transmissionMode
-                                          If {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity} does not exist (not an ONF attribute), then fill with -1'
+                                          where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode} == transmissionMode'
                                 interval-capacity:
                                   type: integer
                                   description: >
                                     'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/interval-capacity},
-                                    if it does not exist (not an ONF attribute), then fill with -1'
+                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/interval-capacity}'
                                 errorred-seconds:
                                   type: integer
                                   description: >
@@ -514,27 +510,23 @@ x-javascript-interface:
                                   format: float
                                   description: >
                                     'TX Traffic [Mbps] KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/transmit-traffic},
-                                    if attribute (non-ONF attribute) not existing, fill with default -1'
+                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/transmit-traffic}'
                                 receive-traffic:
                                   type: number
                                   format: float
                                   description: >
                                     'RX Traffic [Mbps] (KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/receive-traffic},
-                                    if attribute (non-ONF attribute) not existing, fill with default -1'
+                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/receive-traffic}'
                                 frame-loss-input:
                                   type: integer
                                   description: >
                                     'Sum of errored and dropped frames on the ingress (KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-input},
-                                    if attribute (non-ONF attribute) not existing, fill with default -1'
+                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-input}'
                                 frame-loss-output:
                                   type: integer
                                   description: >
                                     'Sum of errored and dropped frames on the egress (KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-output},
-                                    if attribute (non-ONF attribute) not existing, fill with default -1'
+                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-output}'
       error:
         description: 'just for preventing an error in VSCode'
         # todo: description potentially to be deleted; behavior in case of errors to be described

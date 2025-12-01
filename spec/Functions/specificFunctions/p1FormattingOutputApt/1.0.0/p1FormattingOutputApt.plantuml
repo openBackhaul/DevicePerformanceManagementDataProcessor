@@ -1,4 +1,4 @@
-@startuml diagram
+@startuml p1FormattingOutputApt
 skinparam responseMessageBelowArrow true
 
 title
@@ -13,15 +13,10 @@ participant "p1ComputeEthContainerNames" as ethName #LightCyan
 
 
 
-note over requestor #LightGray
-  The requestor hands over the reference to
-  a ControlConstruct object following ONF format.
-  The actual CC object may be enriched with additional
-  attributes (non-ONF). In case such additional attributes
-  are to be read in the further processing, but are not available
-  in the input CC object, (non-key) attributes in the output
-  that cannot be mapped shall be set to a default
-  (integer: -1, string: emptyString).
+note over cur #LightGray
+  Only reasonable data shall be provided.
+  Attributes for which no data is found
+  in the input CC are omitted from the output.
 end note
 
 requestor -> cur: {_CC, {input}, {parameters}}
@@ -58,7 +53,6 @@ group CreateOutput
   note over cur
     For the current EthernetContainer, 
     - compute interfaceName (i.e. the portName)
-    - compute LAG information
 
     Add it to ethernet-container-identifiers.
   end note
