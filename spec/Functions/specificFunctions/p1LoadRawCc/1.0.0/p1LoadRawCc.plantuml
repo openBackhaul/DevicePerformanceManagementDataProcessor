@@ -1,4 +1,4 @@
-@startuml diagram
+@startuml p1LoadRawCc
 skinparam responseMessageBelowArrow true
 
 title
