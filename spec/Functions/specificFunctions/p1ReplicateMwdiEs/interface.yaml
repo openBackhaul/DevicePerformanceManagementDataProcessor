@@ -6,29 +6,37 @@ info:
 x-javascript-interface:
   p1ReplicateMwdiEs:
     summary: 'Replicates the MWDI ElasticSearch index'
-    input:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-              # todo: add input parameters, or delete section
-    output:
-      success:
-        content:
-          application/json:
-            schema:
-              type: object
-                # todo: add output parameters, or delete section
-      error:
-        description: 'MWDI ElasticSearch index could not be replicated'
-        content:
-          application/json:
-            schema:
-              type: string
-              enum:
-                # todo: add text that will be thrown
     processing:
+      logging:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cronjob-name
+                  - last-replication-timestamp
+                  - status-message
+                properties:
+                  cronjob-name:
+                    type: string
+                    enum:
+                      - p1ReplicateMwdiEs
+                  last-replication-timestamp:
+                    type: string
+                    pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+                    description: >
+                      '
+                      '
+                  status-message:
+                    type: string
+                    description: >
+                      '
+                      '
+
+        # hier geht's weiter mit Karthikeyan
+
       p1ProcessingPmData:
         input:
           required: true

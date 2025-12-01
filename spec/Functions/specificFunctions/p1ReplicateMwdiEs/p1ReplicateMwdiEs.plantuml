@@ -7,6 +7,7 @@ end title
 
 participant "embedYourself\n" as embed
 participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+database "ReplicateMwdiEsLog" as log #LightCyan
 participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 
 embed -> p1RMWDI
@@ -18,6 +19,18 @@ note over p1RMWDI
 end note
 
 group Cyclically update MWDI ES Replica
+
+  note over p1RMWDI
+    Replicate MWDI ES index
+  end note
+
+  p1RMWDI -> log
+  note over log
+    Log the following information:
+    - Cronjob name
+    - Last replication timestamp
+    - Status message
+  end note
   
   group Trigger processing of updated CC
     p1RMWDI -> p1ProOrch : {mountName}

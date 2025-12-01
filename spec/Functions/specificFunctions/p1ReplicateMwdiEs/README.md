@@ -22,6 +22,9 @@ The p1ReplicateMwdiEs requires the following parameters:
 - Interface to MWDI ES Replica  
   ElasticSearchClientInterface in the configFile  
 
+- Interface to ReplicateMwdiEsLog
+  ElasticSearchClientInterface in the configFile  
+
 - replicationInterval  
   Time interval between two replications of the MWDI ES index  
   StringProfile in the configFile
