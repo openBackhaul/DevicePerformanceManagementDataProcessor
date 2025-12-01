@@ -1,0 +1,47 @@
+@startuml p1LoadParameters
+skinparam responseMessageBelowArrow true
+
+title
+  p1LoadParameters
+end title
+
+participant "requestor\n" as p1RMWDI #LightGrey
+participant "p1LoadParameters\n" as p1LP #LightCyan
+participant "configFile\n" as p1CF #LightCyan
+
+activate p1RMWDI #LightGrey
+
+p1RMWDI -> p1LP : {functionName}
+activate p1LP #LightCyan
+
+
+  note over p1LP #Orange
+    Ist die Lage des configFile immer gleich?
+    Oder muss dessen Inhalt als Json übergeben werden?
+  end note
+
+
+  note right p1LP
+    Find uuid
+    for /core-model-1-4:control-construct/profile-collection/profile=*/profile-name == functionName
+  end note
+  p1LP -> p1CF
+  p1LP <-- p1CF
+
+  loop
+    note right p1LP
+      Load /core-model-1-4:control-construct/profile-collection/profile=uuid
+      and translate into internal Functions format
+    end note
+    p1LP -> p1CF
+    p1LP <-- p1CF
+
+    note right p1LP
+      Iterate for /core-model-1-4:control-construct/profile-collection/profile=uuid/sub-function-list
+    end note
+  end
+
+p1RMWDI <-- p1LP : {{function}}
+deactivate p1LP
+
+

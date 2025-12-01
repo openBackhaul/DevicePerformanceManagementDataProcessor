@@ -1,6 +1,7 @@
 {
   "core-model-1-4:control-construct": {
     "uuid": "dpmdp-1-0-0",
+    "top-level-function": ["dpmdp-1-0-0-function-p-000"],
     "profile-collection": {
       "profile": [
         {

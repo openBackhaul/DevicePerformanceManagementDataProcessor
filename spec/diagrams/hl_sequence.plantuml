@@ -7,6 +7,7 @@ end title
 
 participant "embedYourself\n" as embed
 participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+participant "p1LoadParameters\n" as p1LP #LightCyan
 
 participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 
@@ -40,6 +41,17 @@ note over p1RMWDI
   Automatically start
   p1ReplicateMwdiEs
 end note
+
+p1RMWDI -> p1LP
+activate p1LP #LightCyan
+
+  note over p1LP
+    Load parameters
+    from configFile
+  end note
+
+p1RMWDI <-- p1LP
+deactivate p1LP
 
 note over p1RMWDI
   Cyclically update
