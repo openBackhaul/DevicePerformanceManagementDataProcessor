@@ -1,0 +1,76 @@
+@startuml p1CreateResultCc
+skinparam responseMessageBelowArrow true
+
+title
+p1CreateResultCc
+end title
+
+participant "requestor\n(e.g. p1ProcessingPmData)" as requestor
+participant "p1CreateResultCc" as cur #LightCyan
+
+participant "p1Default\nValueTreatment" as defaultValues #LightBlue
+participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
+participant "p1AirInterface\nCapacityCalculation" as airIfKpis #LightBlue
+participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
+
+requestor -> cur: {_rawCC}
+activate cur #LightCyan
+
+  note over cur
+    Create resultCC from rawCC.
+    It is referenced by _resultCC.
+  end note
+
+  ' ----- ONF default values --------------------------
+  note over cur #LightGray
+    Delete attributes with ONF
+    default values from resultCC
+  end note
+
+  cur -> defaultValues: {_resultCC}
+  activate defaultValues #LightBlue
+  cur <-- defaultValues
+  deactivate defaultValues
+
+
+  ' ----- OutOfRange values --------------------------
+  note over cur #LightGray
+    Delete attributes with values
+    outside of pre-defined range from
+    resultCC
+  end note
+
+  cur -> outOfRange: {_resultCC}
+  activate outOfRange #LightBlue
+  cur <-- outOfRange
+  deactivate outOfRange
+
+
+  ' ----- AirInterface KPIs --------------------------
+  note over cur #LightGray
+    Compute AirInterface KPIs
+    from _rawCC data.
+    Add them to the resultCC.
+  end note
+
+  cur -> airIfKpis: {_rawCC}
+  activate airIfKpis #LightBlue
+  cur <-- airIfKpis: {computed AirInterface KPIs}
+  deactivate airIfKpis
+
+  ' ----- EthContainer KPIs --------------------------
+  note over cur #LightGray
+    Compute EthernetContainer KPIs
+    from _rawCC data.
+    Add them to the resultCC.
+  end note
+  
+  cur -> ethKpis: {_rawCC}
+  activate ethKpis #LightBlue
+  cur <-- ethKpis: {computed EthernetContainer KPIs}
+  deactivate ethKpis
+
+requestor <-- cur: {_resultCC}
+
+deactivate cur
+
