@@ -1,4 +1,4 @@
-@startuml diagram
+@startuml p1ComputeAirInterfacePhysicalLag
 skinparam responseMessageBelowArrow true
 
 title
