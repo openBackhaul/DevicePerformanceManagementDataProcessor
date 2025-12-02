@@ -213,6 +213,7 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-001'
+        # also will require a function to cleanup datastore, with retention period in parameter-list (not in pre-release)
     configuration:
       is-active: true
 
@@ -235,3 +236,152 @@ profile-instances:
       purpose: '?? parameter of p1ReplicateMwdiEs'
     configuration:
       string-value: 'on'
+
+
+# ----
+  # ProcessingOrchestrator:
+  # subfunctions: p1LoadRawCc, p1CreateResultCc, p1FormattingOutputApt, p1TransmittingKafka, p1Storing
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-010'
+    capability:
+      function-name: 'p1ProcessingPmData'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-020'
+        - 'dpmdp-1-0-0-function-p-030'
+        - 'dpmdp-1-0-0-function-p-050'
+        - 'dpmdp-1-0-0-function-p-070'
+        - 'dpmdp-1-0-0-function-p-080'
+    configuration:
+      is-active: true
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-020'
+    capability:
+      function-name: 'p1LoadRawCc'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-021'
+    configuration:
+      is-active: true
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-021'
+    capability:
+      function-name: 'p1FieldsFilter'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  # createResultCC
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-030'
+    capability:
+      function-name: 'p1CreateResultCc'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-031'
+        - 'dpmdp-1-0-0-function-p-032'
+        - 'dpmdp-1-0-0-function-p-033'
+        - 'dpmdp-1-0-0-function-p-034'
+    configuration:
+      is-active: true
+
+  # subfunctions are inactive (not in pre-release)
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-031'
+    capability:
+      function-name: 'p1DefaultValueTreatment'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: false
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-032'
+    capability:
+      function-name: 'p1OutOfRangeTreatment'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: false
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-033'
+    capability:
+      function-name: 'p1AirInterfaceCapacityCalculation'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: false
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-034'
+    capability:
+      function-name: 'p1EthernetKpiCalculation'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: false
+
+
+  # Format output
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-050'
+    capability:
+      function-name: 'p1FormattingOutputApt'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-051'
+        - 'dpmdp-1-0-0-function-p-052'
+        - 'dpmdp-1-0-0-function-p-053'
+    configuration:
+      is-active: true
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-051'
+    capability:
+      function-name: 'p1ComputeAirInterfaceNames'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-052'
+    capability:
+      function-name: 'p1ComputeAirInterfacePhysicalLag'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-053'
+    capability:
+      function-name: 'p1ComputeEthContainerNames'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  # transmit
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-070'
+    capability:
+      function-name: 'p1TransmittingKafka'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  # storing: inactive
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-080'
+    capability:
+      function-name: 'p1Storing'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: false
