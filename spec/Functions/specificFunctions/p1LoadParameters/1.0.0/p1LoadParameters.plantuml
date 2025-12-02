@@ -14,34 +14,32 @@ activate p1RMWDI #LightGrey
 p1RMWDI -> p1LP : {functionName}
 activate p1LP #LightCyan
 
-
-  note over p1LP #Orange
-    Ist die Lage des configFile immer gleich?
-    Oder muss dessen Inhalt als Json übergeben werden?
-  end note
-
-
   note right p1LP
-    Find uuid
-    for /core-model-1-4:control-construct/profile-collection/profile=*/profile-name == functionName
+    load the application's
+    CC from configFile
   end note
+
   p1LP -> p1CF
   p1LP <-- p1CF
 
+  note right p1LP
+    Find uuid of FunctionProfile
+    instance with functionName
+  end note
+
+
   loop
     note right p1LP
-      Load /core-model-1-4:control-construct/profile-collection/profile=uuid
-      and translate into internal Functions format
+      Load instance of FunctionProfile and
+      translate into internal Functions format
     end note
     p1LP -> p1CF
     p1LP <-- p1CF
 
     note right p1LP
-      Iterate for /core-model-1-4:control-construct/profile-collection/profile=uuid/sub-function-list
+      Read uuids of SubFunctions
     end note
   end
 
 p1RMWDI <-- p1LP : {{function}}
 deactivate p1LP
-
-
