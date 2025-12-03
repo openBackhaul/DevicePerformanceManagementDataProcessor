@@ -8,6 +8,7 @@ end title
 participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as requestor
 participant "p1LoadRawCc" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
+database "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 
 requestor -> cur: {mountName, {parameters}}
@@ -23,6 +24,23 @@ end note
 cur -> MwdiEs: {mountName}
 cur <-- MwdiEs: {raw ControlConstruct}
 
+'Apply fields filter
+note over cur
+  <u>ApplyFieldsFilter</u>
+  Reduce the amount of data to relevant classes
+  and attributes. Information from ... is kept: 
+  - equipmentAugment
+  - ltp (structure) and augment
+  - layerProtocol (AirInterface, EthernetContainer)
+
+  The fieldsFilter is provided as function parameter/
+  stringProfile _todo_. 
+end note
+
+cur -> fieldsFilter: {raw ControlConstruct, fieldsFilter}
+cur <-- fieldsFilter: {filtered raw ControlConstruct}
+
+
 'Read mostRecentTimestamps
 note over cur
   <u>retrieveMostRecentPeriodEndTimesFromDs</u>
@@ -34,7 +52,8 @@ cur -> datastore: {mountName}
 cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime))}
 
 'Filter the data
-note over cur
+note over cur #LightPink
+THIS GETS REPLACED
   <u>applyFilteringForLtpStructureAugmentAirIfAndEthContainer</u>
   Filter the complete ControlConstruct data from <i>readControlConstructFromEs</i>.
   Only relevant information is kept: from equipmentAugment,
@@ -45,6 +64,26 @@ note over cur
   - granularity is 15min or 24h
   - and the period-end-time of a record is newer that
     the mostRecentPeriodEndTime for the given interface instance
+
+  If for an interface instance no historical PM records remain
+  after the above filtering, this interface instance (layer-protocol) is discarded
+  entirely and not kept in the contents of the raw ControlConstruct
+  (The LTP the layer-protocol belongs to, is kept!).
+end note
+
+note over cur
+  <u>applyFilteringForRelevantPmData</u>
+  The filtered raw ControlConstruct still contains "empty"
+  layer protocols (non AirInterface/EthernetContainer).
+  Those are filtered out.
+
+  Inside the kept AirInterface/EthernetContainer layerProtocols,
+  historical PM data is only kept if:
+  - granularity is 15min or 24h
+  - and the period-end-time of a record is newer that
+    the mostRecentPeriodEndTime for the given interface instance
+    (in case of missing mostRecentPeriodEndTime for the interface
+    instance all data is treated as newer)
 
   If for an interface instance no historical PM records remain
   after the above filtering, this interface instance (layer-protocol) is discarded
@@ -72,12 +111,3 @@ end note
 requestor <-- cur: {_rawControlConstruct}
 
 deactivate cur
-
-
-
-footer
-
-
-  <i>If future releases require additional data to be kept or filtered out, execution of </i>applyFilteringForLtpStructureAugmentAirIfAndEthContainer
-  <i>could be swapped for another filtering step.</i>
-end footer

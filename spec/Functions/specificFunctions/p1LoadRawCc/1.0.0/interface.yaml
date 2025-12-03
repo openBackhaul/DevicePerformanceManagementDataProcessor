@@ -73,6 +73,50 @@ x-javascript-interface:
                       - 'Data structure is missing or invalid'
                       - 'ElasticSearch read error'
                       - 'General processing error during reading'
+      applyFieldsFilter:
+        url: #[p1FieldsFilter]
+          description: >
+            'This function reduces the raw ControlConstruct data
+            from {#readControlConstructFromEs.output/core-model-1-4:control-construct}
+            according to the fields filter specified as a parameter of function p1LoadRawCc.'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data-structure:
+                      type: object
+                      description: >
+                        'The data structure to be filtered according to the provided fields filter string. It is the raw ControlConstruct
+                        from {$readControlConstruct.output#core-model-1-4:control-construct}'
+                    fields-filter-string:
+                      type: string
+                      description: >
+                        'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure,
+                        from function parameters.'
+                      #TODO: possibly this needs to be refined!
+            output:
+              success:
+                description: 'Data structure successfully filtered according to the provided fields filter string'
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                    properties:
+                      filtered-data-structure:
+                        type: object
+                        description: 'The data structure after filtering according to the provided fields filter string'
+              error:
+                description: 'Data structure could not be filtered according to the provided fields filter string'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'Data structure is missing or invalid'
+                        - 'Invalid fields filter string syntax'
+                        - 'General processing error during filtering'
       retrieveMostRecentPeriodEndTimesFromDs:
         url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/data-store/device/{mountName}]
           description: >
@@ -124,7 +168,7 @@ x-javascript-interface:
                     enum:
                       - 'ElasticSearch read error'
                       - 'General processing error'
-      applyFilteringForLtpStructureAugmentAirIfAndEthContainer:
+      applyFilteringForRelevantPmData:
         url: #[dpmdpIpAddress]:[dpmdpPort]
           description: >
             'Filters the ControlConstruct data from readControlConstructFromEs for relevant data. A reference to the object containing the remaining data is returned in the output of the function.
@@ -141,7 +185,7 @@ x-javascript-interface:
                - if no historical PM records remain, the interface instance is to be discarded and not kept in the raw-control-construct
           output:
             success:
-              description: 'Filtered raw ControlConstruct data provided'
+              description: 'Raw ControlConstruct object provided'
               content:
                 application/json:
                   schema:
@@ -149,7 +193,7 @@ x-javascript-interface:
                       raw-control-construct:
                         description: >
                           'ControlConstruct data
-                          from {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]}.
+                          from {$applyFieldsFilter.output#filtered-data-structure/core-model-1-4:control-construct[0]}.
                           (The input object is an array, the raw-control-construct is to be filled from the first entry in this array.)
                           Follows ONF schema, but includes only attributes and classes of relevance.'
                         type: object
@@ -160,7 +204,7 @@ x-javascript-interface:
                           equipment-augment-1-0:control-construct-pac:
                             description: >
                               'Relevant parts of equipment augment
-                              from {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/equipment-augment-1-0:control-construct-pac}'
+                              from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/equipment-augment-1-0:control-construct-pac}'
                             type: object
                             required:
                               - external-label
@@ -179,7 +223,7 @@ x-javascript-interface:
                           logical-termination-point:
                             description: >
                               'Relevant parts of logical-termination-point
-                              from {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point}'
+                              from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point}'
                             type: array
                             x-key: uuid
                             items:
@@ -214,8 +258,8 @@ x-javascript-interface:
                                   items:
                                     description: >
                                       'The layer-protocol instances
-                                      from {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol}
-                                      where {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
+                                      from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol}
+                                      where {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
                                       Only layer-protocols are to be kept where the size(historical-performance-data-list)>0 after filtering of PM data records has been applied.'
                                     oneOf:
                                       - description: 'air-interface'
@@ -279,12 +323,12 @@ x-javascript-interface:
                                                       'Only keep array items with 15min or 24h granularity, for which the period-end-time is newer that the most-recent-period-end-time from retrieveMostRecentPeriodEndTimesFromDs
                                                       (if no most-recent-period-end-time is found for the respective interface instance the found PM data records are to be treated as newer).
 
-                                                      Thereby interface instances from readControlConstructFromEs and retrieveMostRecentPeriodEndTimesFromDs are matched as follows:
-                                                      IF ({$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
-                                                          AND {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
+                                                      Thereby interface instances from applyFieldsFilter and retrieveMostRecentPeriodEndTimesFromDs are matched as follows:
+                                                      IF ({$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
+                                                          AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
                                                       THEN it is the same interface instance.
 
-                                                      WITH inputSource == {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list},
+                                                      WITH inputSource == {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list},
                                                       keep only array items
                                                       from {$inputSource}
                                                       WHERE {$inputSource/granularity-period} indicates 15-MIN or 24-HOURS
@@ -380,12 +424,12 @@ x-javascript-interface:
                                                       'Only keep array items with 15min or 24h granularity, for which the period-end-time is newer that the most-recent-period-end-time from retrieveMostRecentPeriodEndTimesFromDs
                                                       (if no most-recent-period-end-time is found for the respective interface instance the found PM data records are to be treated as newer).
 
-                                                      Thereby interface instances from readControlConstructFromEs and retrieveMostRecentPeriodEndTimesFromDs are matched as follows:
-                                                      IF ({$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
-                                                          AND {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
+                                                      Thereby interface instances from applyFieldsFilter and retrieveMostRecentPeriodEndTimesFromDs are matched as follows:
+                                                      IF ({$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
+                                                          AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
                                                       THEN it is the same interface instance.
 
-                                                      WITH inputSource == {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list},
+                                                      WITH inputSource == {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list},
                                                       keep only array items
                                                       from {$inputSource}
                                                       WHERE {$inputSource/granularity-period} indicates 15-MIN or 24-HOURS
