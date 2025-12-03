@@ -19,7 +19,7 @@ note over cur #LightGray
   in the input CC are omitted from the output.
 end note
 
-requestor -> cur: {_CC, {input}, {parameters}}
+requestor -> cur: {_CC, {parameters}}
 
 
 activate cur #LightCyan
@@ -36,34 +36,33 @@ group CreateOutput
     by calling the respective generic functions. 
   end note
 
+  group For the current AirInterface: compute and add info for identifiers
+    note over cur
+      Compute
+      - interfaceNames (linkEndpointId, linkId)
+      - LAG information
+
+      Add both to <i>air-interface-identifiers</i>.
+    end note
+
+    cur -> airIfNames: {_CC | LtpStructureAndAugment, uuid, {parameters}}
+    cur <-- airIfNames: {linkEndpointId, linkId}
+
+    cur -> airIfLag: {_CC | LtpStructureAndAugment, uuid, {parameters}}
+    cur <-- airIfLag: {Lag} 
+  end group
+
+  group For the current EthernetContainer: compute and add info for identifiers
   note over cur
-    For the current airInterface, 
-    - compute interfaceNames (linkEndpointId, linkId)
-    - compute LAG information
+    Compute interfaceName (i.e. the portName).
 
-    Add both to air-interface-identifiers.
+    Add it to <i>ethernet-container-identifiers</i>.
   end note
-
-  cur -> airIfNames: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
-  cur <-- airIfNames: {linkEndpointId, linkId}
-
-  cur -> airIfLag: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
-  cur <-- airIfLag: {Lag} 
-
-  note over cur
-    For the current EthernetContainer, 
-    - compute interfaceName (i.e. the portName)
-
-    Add it to ethernet-container-identifiers.
-  end note
-  cur -> ethName: {_CC | LtpStructureAndAugment, uuid, {input}, {parameters}}
+  cur -> ethName: {_CC | LtpStructureAndAugment, uuid, {parameters}}
   cur <-- ethName: {interfaceName}
 
 end group
 
-
-
 requestor <-- cur: {output}
 
 deactivate cur
-
