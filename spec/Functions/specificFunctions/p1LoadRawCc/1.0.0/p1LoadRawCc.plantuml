@@ -10,12 +10,7 @@ participant "p1LoadRawCc" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
 database "datastore" as datastore #LightCyan
 
-note over cur #LightCoral
-  shall this function call also contain
-  function input and function parameters?
-end note
-
-requestor -> cur: {mountName}
+requestor -> cur: {mountName, {parameters}}
 activate cur #LightCyan
 
 'Read CC
@@ -43,7 +38,7 @@ note over cur
   <u>applyFilteringForLtpStructureAugmentAirIfAndEthContainer</u>
   Filter the complete ControlConstruct data from <i>readControlConstructFromEs</i>.
   Only relevant information is kept: from equipmentAugment,
-  LTP structure and augment and layerProtocols (AirInterface
+  LTP structure and augment, and layerProtocols (AirInterface
   or EthernetContainer).
 
   Inside kept layerProtocols historical PM data is only kept, if
@@ -54,7 +49,7 @@ note over cur
   If for an interface instance no historical PM records remain
   after the above filtering, this interface instance (layer-protocol) is discarded
   entirely and not kept in the contents of the raw ControlConstruct
-  (The ltp the layer-protocol belongs to, is kept!).
+  (The LTP the layer-protocol belongs to, is kept!).
 end note
 
 note over cur #Orange

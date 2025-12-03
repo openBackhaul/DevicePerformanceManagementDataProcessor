@@ -3,9 +3,6 @@ info:
   title: p1LoadRawCc
   version: 1.0.0
 
-
-# todo: in readControlConstructFromEs: unclear whether x-key must already be provided in the related output schema
-
 x-javascript-interface:
   p1LoadRawCc:
     summary: 'Reads device ControlConstruct from MWDI ES replica, applies filtering and returns the remaining data to the caller'
@@ -39,26 +36,17 @@ x-javascript-interface:
                       'The reference to the raw-control-construct object in the DPMDP memory
                       from {$applyFilteringForLtpStructureAugmentAirIfAndEthContainer#output}'
       error:
-        description: 'just for preventing an error in VSCode'
-        # todo: description potentially to be deleted; behavior in case of errors to be described
+        description: 'Raw ControlConstruct object could not be created'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'Data structure is missing or invalid'
+                - 'General processing error'
     processing:
       readControlConstructFromEs:
-        url: #[dpmdpIpAddress]:[dpmdpPort][MWDI_ES_replica]
-          # comment Thorsten (to be deleted after reading): Wouldn't it be reasonable to state the exact location of IP address and port of the MWDI-ES-Replica in the configFile and the exact path here?
-          description: >
-            'The raw ControlConstruct data for the target mount-name is read directly from ElasticSearch'
-          input:
-            content:
-              required:
-                - mount-name
-              # comment Thorsten (to be deleted after reading): The description looks a lot like a Function call, but it is just a request to the ES, or?
-              # comment Thorsten (to be deleted after reading): Wouldn't the mountName just be an in-line parameter of the path in the url statement?
-              properties:
-                mount-name:
-                  type: string
-                  description: >
-                    'The target mount-name
-                    from {$input#mount-name}'
+        url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/control-construct={mountName}]
           output:
             success:
               description: 'Raw ControlConstruct data read'
@@ -67,7 +55,7 @@ x-javascript-interface:
                   schema:
                     description: >
                       'The data format follows ONF schema (but in MWDI core-model-1-4:control-construct is an array).
-                      Only relevant attributes and classes are listed here, classes may be listed without all sub-classes or attributes'
+                      As format follows MWDI, the schema is not explicitly stated here.'
                     required:
                       - core-model-1-4:control-construct
                     properties:
@@ -75,177 +63,23 @@ x-javascript-interface:
                         type: array
                         items:
                           type: object
-                          # comment Thorsten (to be deleted after reading): After stating that the data is as provided by the device/MWDI, it probably doesn't require to describe it in details?
-                          # comment Thorsten (to be deleted after reading): The details following here are important on the output of p1LoadRawCc, but maybe not necessary here, or?
-                          required:
-                            - equipment-augment-1-0:control-construct-pac
-                            - logical-termination-point
-                          properties:
-                            equipment-augment-1-0:control-construct-pac:
-                              type: object
-                              required:
-                                - external-label
-                                - device-model-name
-                              properties:
-                                external-label:
-                                  type: string
-                                  description: >
-                                    'This value should match the input mount-name
-                                    from {$input#mount-name}'
-                                device-model-name:
-                                  type: string
-                                  description: >
-                                    'deviceType as available on the device'
-                            logical-termination-point:
-                              type: array
-                              x-key: uuid
-                              items:
-                                type: object
-                                required:
-                                  - uuid
-                                  - ltp-augment-1-0:ltp-augment-pac
-                                  - layer-protocol
-                                properties:
-                                  uuid:
-                                    type: string
-                                  client-ltp:
-                                    type: array
-                                    items:
-                                      type: string
-                                  server-ltp:
-                                    type: array
-                                    items:
-                                      type: string
-                                  ltp-augment-1-0:ltp-augment-pac:
-                                    type: object
-                                    properties:
-                                      external-label:
-                                        type: string
-                                        description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
-                                      original-ltp-name:
-                                        type: string
-                                        description: 'portName'
-                                  layer-protocol:
-                                    type: array
-                                    #x-key: local-id
-                                    items:
-                                      oneOf:
-                                        - description: 'air-interface'
-                                          type: object
-                                          required:
-                                            - local-id
-                                            - layer-protocol-name
-                                            - air-interface-2-0:air-interface-pac
-                                          properties:
-                                            local-id:
-                                              type: string
-                                            layer-protocol-name:
-                                              type: string
-                                              enum:
-                                                - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
-                                            air-interface-2-0:air-interface-pac:
-                                              type: object
-                                              properties:
-                                                air-interface-configuration:
-                                                  type: object
-                                                air-interface-capability:
-                                                  type: object
-                                                  properties:
-                                                    transmission-mode-list:
-                                                      type: array
-                                                      #x-key: transmission-mode-name
-                                                      items:
-                                                        type: object
-                                                air-interface-historical-performances:
-                                                  type: object
-                                                  properties:
-                                                    historical-performance-data-list:
-                                                      type: array
-                                                      #x-key: period-end-time
-                                                      items:
-                                                        type: object
-                                                        required:
-                                                          - granularity-period
-                                                          - period-end-time
-                                                          - performance-data
-                                                        properties:
-                                                          granularity-period:
-                                                            type: string
-                                                            enum:
-                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
-                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
-                                                              - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
-                                                          period-end-time:
-                                                            type: string
-                                                          performance-data:
-                                                            type: object
-                                        - description: 'ethernet-container'
-                                          type: object
-                                          required:
-                                            - local-id
-                                            - layer-protocol-name
-                                            - ethernet-container-2-0:ethernet-container-pac
-                                          properties:
-                                            local-id:
-                                              type: string
-                                            layer-protocol-name:
-                                              type: string
-                                              enum:
-                                                - 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
-                                            ethernet-container-2-0:ethernet-container-pac:
-                                              type: object
-                                              properties:
-                                                ethernet-container-historical-performances:
-                                                  type: object
-                                                  properties:
-                                                    historical-performance-data-list:
-                                                      type: array
-                                                      #x-key: period-end-time
-                                                      items:
-                                                        type: object
-                                                        required:
-                                                          - granularity-period
-                                                          - period-end-time
-                                                          - performance-data
-                                                        properties:
-                                                          granularity-period:
-                                                            type: string
-                                                            enum:
-                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
-                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
-                                                              - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
-                                                          period-end-time:
-                                                            type: string
-                                                          performance-data:
-                                                            type: object
-                          error:
-                            # comment Thorsten (to be deleted after reading): Indentation of the error statement may require correction
-                            description: 'todo'
-                            # todo: description potentially to be deleted; behavior in case of errors to be described
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
       retrieveMostRecentPeriodEndTimesFromDs:
-        url: #[dpmdpIpAddress]:[dpmdpPort]
-          # comment Thorsten (to be deleted after reading): It is unclear, whether this is a data request to the ElasticSearch or a Function call
-          # comment Thorsten (to be deleted after reading): If it would be a data request: Wouldn't it be reasonable to state the exact location of IP address and port of the DPMDP-ES in the configFile and the exact path here?
+        url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/data-store/device/{mountName}]
           description: >
             'This processing step reads the data-store item (from the DPMDP ES) where
             [/data-store/device/mount-name](x-key) == {$input#mount-name},
-            it returns the [/data-store/device/ltp/most-recent-period-end-time] for all previously seen interfaces'
-          input:
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - mount-name
-                    # comment Thorsten (to be deleted after reading): If it would be a data request, wouldn't the mountName just be an in-line parameter of the path in the url statement?
-                  properties:
-                    mount-name:
-                      type: string
-                      description: >
-                        'The target mount-name
-                        from {$input#mount-name}'
+            it returns the [/data-store/device/ltp/most-recent-period-end-time] for all previously seen interfaces,
+            if no data is found, an empty ltp array is to be returned.'
           output:
             success:
               description: 'List of most-recent-period-end-times provided'
@@ -282,8 +116,14 @@ x-javascript-interface:
                             - local-id: '765.1.5'
                               most-recent-period-end-time: '2025-11-18T00:00:01+01:00'
             error:
-              description: 'just for preventing an error in VSCode'
-              # todo: description potentially to be deleted; behavior in case of errors to be described
+              description: 'MostRecentPeriodEndTimes could not be provided'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'ElasticSearch read error'
+                      - 'General processing error'
       applyFilteringForLtpStructureAugmentAirIfAndEthContainer:
         url: #[dpmdpIpAddress]:[dpmdpPort]
           description: >
@@ -311,7 +151,7 @@ x-javascript-interface:
                           'ControlConstruct data
                           from {$readControlConstructFromEs.output#core-model-1-4:control-construct[0]}.
                           (The input object is an array, the raw-control-construct is to be filled from the first entry in this array.)
-                          Follows ONF schema, but includes only attribtes and classes of relevance.'
+                          Follows ONF schema, but includes only attributes and classes of relevance.'
                         type: object
                         required:
                           - equipment-augment-1-0:control-construct-pac
@@ -615,9 +455,15 @@ x-javascript-interface:
                                                             unknown-protocol-frames-input:
                                                               type: string
             error:
-              description: 'just for preventing an error in VSCode'
-              # todo: description potentially to be deleted; behavior in case of errors to be described
-
+              description: 'Raw ControlConstruct object could not be created.'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Input data structure incomplete or invalid'
+                      - 'Error during filtering of raw data'
+                      - 'General processing error'
 paths:
   /:
     description: 'no rest path provided by this module'
