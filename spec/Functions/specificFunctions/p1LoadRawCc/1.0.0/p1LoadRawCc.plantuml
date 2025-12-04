@@ -10,34 +10,38 @@ participant "p1LoadRawCc" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
 database "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
+participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
 requestor -> cur: {mountName, {parameters}}
 activate cur #LightCyan
 
-'Read CC
+== Read CC and apply fieldsFilter ==
+ 'Read CC
 note over cur
   <u>readControlConstructFromEs</u>
-  reads the complete ControlConstruct
-  for the mount-name from
-  MWDI ElasticSearch replica
+  reads the complete ControlConstruct for the
+  mountName from MWDI ElasticSearch replica
 end note
 cur -> MwdiEs: {mountName}
-cur <-- MwdiEs: {raw ControlConstruct}
+cur <-- MwdiEs: {rawControlConstruct}
 
 'Apply fields filter
 note over cur
-  <u>ApplyFieldsFilter</u>
+  <u>applyFieldsFilter</u>
   Reduce the amount of data to relevant classes
   and attributes. Information from ... is kept: 
   - equipmentAugment
   - ltp (structure) and augment
   - layerProtocol (AirInterface, EthernetContainer)
+
+  Set rawControlConstruct := filtered rawControlConstruct
 end note
 
-cur -> fieldsFilter: {raw ControlConstruct, parameters.fieldsFilter}
-cur <-- fieldsFilter: {filtered raw ControlConstruct}
+cur -> fieldsFilter: {rawControlConstruct, {parameters#fieldsFilter}}
+cur <-- fieldsFilter: {filtered rawControlConstruct}
 
 
+== Read mostRecentPeriodEndTimes from dataStore ==
 'Read mostRecentTimestamps
 note over cur
   <u>retrieveMostRecentPeriodEndTimesFromDs</u>
@@ -52,48 +56,50 @@ cur -> datastore: {mountName}
 cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime, mostRecentPeriodEndTime24))}
 
 'Filter the data
-note over cur #LightCoral
-  Maybe add a own function here, which filters out data
-  from a list of PM records, which are not newer than a given timestamp (mostRecentPeriodEndTime).
-  Input would be:
-  - the list of PM records of an interface
-  - the mostRecentPeriodEndTime
-  Output would be
-  - the list of PM records that remain after filtering
 
-  This function could be useful as a generic function, if there are other services,
-  where we only want to return data which is newer than a given timestamp.
-end note
+== Apply filtering on interface level ==
 
-note over cur
-  <u>applyFilteringForRelevantPmData</u>
-  The filtered raw ControlConstruct still contains "empty"
-  layer protocols (non AirInterface/EthernetContainer).
-  Those are filtered out.
+group Filter remaining rawControlConstruct data
+  note over cur
+    <u>applyFilteringForRelevantPmData</u>
+    Discard any "empty" layer protocols (non AirInterface/EthernetContainer),
+    from rawControlConstruct.
 
-  Inside the kept AirInterface/EthernetContainer layerProtocols,
-  historical PM data is only kept if:
-  - granularity is 15min or 24h
-  - and the period-end-time of a record is newer that
-    the mostRecentPeriodEndTime for the given interface instance
-    (in case of missing mostRecentPeriodEndTime for the interface
-    instance all data is treated as newer)
+    For each AirInterface/EthernetContainer instance (currentInterface) apply
+    additional filtering by calling p1DiscardIrrelevantPmRecords.
+    IF the length(currentInterface.(filtered historicalPerformanceDataList)) == 0,
+    THEN discard the entire currentInterface instance (layerProtocol) from the rawControlConstruct,
+    ELSE replace the currentInterface.historicalPerformanceDataList with the filtered
+    historicalPerformanceDataList.
+  end note
 
-  If for an interface instance no historical PM records remain
-  after the above filtering, this interface instance (layer-protocol) is discarded
-  entirely and not kept in the contents of the raw ControlConstruct
-  (The LTP the layer-protocol belongs to, is kept!).
-end note
+  ' For each relevant interface filter the PM records
+  group For each AirInterface and EthernetContainer
+    note over cur, datastore
+      <u>DiscardIrrelevantPmRecords</u>
+      Send the historicalPerformanceDataList to the function, where all irrelevant PM records
+      are discarded. Overwrite the original list:
+      currentInterface.<i>historicalPerformanceDataList</i> := filtered historicalPerformanceDataList 
 
-note over cur #Orange
-  In the pre-release there is no mostRecentPeriodEndTime info
-  available.
-  This data will be found in the DataStore:
-  [/data-store/device/ltp/most-recent-period-end-time].
-  But storing anything in the datastore it out of scope for the pre-
-  release. Therefore: all 15min/24h historical PM records seen in the raw
-  data will be kept!
-end note
+      Records are considered irrelevant, if:
+      - their granularity is not 15min or 24h
+      - their periodEndTime is not newer than <i>mostRecentPeriodEndTime</i> (15min) or <i>mostRecentPeriodEndTime</i> (24h)
+      
+      (IF <i>mostRecentPeriodEndTime</i> or <i>mostRecentPeriodEndTime24</i>
+      are not available for the current interface, treat all seen records as newer.)
+    end note
+    cur -> filterPm: {historicalPerformanceDataList, mostRecentPeriodEndTime, mostRecentPeriodEndTime24, \n{parameters#p1LoadRawCc.historicalPmDataGranularitiesToBeKept}}
+    cur <-- filterPm: {filtered historicalPerformanceDataList}
+  end group
+
+  ' remove after pre-release
+  note over cur, filterPm #Orange
+    In the pre-release there is no mostRecentPeriodEndTime info available.
+    This data will be found in the DataStore: [/data-store/device/ltp/most-recent-period-end-time].
+    But storing anything in the datastore it out of scope for the pre-release. Therefore: all 15min/24h historical PM records seen in the raw
+    data will be kept!
+  end note
+end group
 
 note over cur
   <u>returnReference</u>
