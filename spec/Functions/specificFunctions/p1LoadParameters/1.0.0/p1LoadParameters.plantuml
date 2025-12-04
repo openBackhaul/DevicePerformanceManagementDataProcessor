@@ -41,5 +41,5 @@ activate p1LP #LightCyan
     end note
   end
 
-p1RMWDI <-- p1LP : {{function}}
+p1RMWDI <-- p1LP : {function}
 deactivate p1LP

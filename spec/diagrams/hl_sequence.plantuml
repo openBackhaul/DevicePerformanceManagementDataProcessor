@@ -9,7 +9,6 @@ participant "embedYourself\n" as embed
 participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LP #LightCyan
 database "configFile" as configFile #LightCyan
-participant "p1MaintainDs\n" as p1MDS #LightBlue
 
 participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 
@@ -32,6 +31,7 @@ participant "p1Compute\nEthContainerNames" as p1CompEthContNames #LightCyan
 participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 
 participant "p1Storing\n" as p1Store #LightBlue
+participant "p1MaintainDs\n" as p1MDS #LightBlue
 database "dataStore" as db #LightBlue
 
 
