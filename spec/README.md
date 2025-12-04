@@ -16,6 +16,7 @@
 
 **ServiceList:**  
 - [DevicePerformanceManagementDataProcessor+services](./DevicePerformanceManagementDataProcessor+services.yaml)  
+- [embedYourself](./embedYourself)  
 
 **ProfileList and ProfileInstanceList:**  
 - [DevicePerformanceManagementDataProcessor+profiles](./DevicePerformanceManagementDataProcessor+profiles.yaml)  

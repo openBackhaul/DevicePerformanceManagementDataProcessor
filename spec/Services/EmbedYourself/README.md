@@ -5,7 +5,7 @@
 
 The embedYourself Service is called by the RegistryOffice application.  
 It initiates the necessary steps to embed the new application into the MW SDN application layer.  
-It is also used to start Functions that shall run permanently during runtime of the new application.  
+It also starts Functions that run permanently during runtime of the new application.  
 
 
 ### Diagram  
@@ -22,5 +22,5 @@ Please find a detailed description of the interface in the [openAPI specificatio
 
 ### NPM Module  
 
-[onf-core-model-ap](https://www.npmjs.com/package/onf-core-model-ap)  
+[onf-core-model-ap](https://www.npmjs.com/package/onf-core-model-ap) to be complemented    
 
