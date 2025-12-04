@@ -43,12 +43,12 @@ data-store:
                         type: string
                       layer-protocol-name:
                         type: string
-                      # the most-recent-period-end-time is now stored inside the DSFP cc data, shall it also be stored here???
-                      # originally it was to be stored here -> this makes processing faster and easier, therefore decided to keep it
-                      # there must be a processing step, where this is added here, when a new dsfp item is added to the dsfp-list
-                      # newly seen interfaces are simply added, entries for existing interfaces are overwritten
                       most-recent-period-end-time:
                         type: string
+                        description: 'The newest seen periodEndTime for this interface in 15min data'
+                      most-recent-period-end-time-24:
+                        type: string
+                        description: 'The newest seen periodEndTime for this interface in 24h data'
           data-structure-for-processing-list:
             type: array
             x-key: processing-start-time

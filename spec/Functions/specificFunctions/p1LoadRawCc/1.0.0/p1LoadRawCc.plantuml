@@ -32,12 +32,9 @@ note over cur
   - equipmentAugment
   - ltp (structure) and augment
   - layerProtocol (AirInterface, EthernetContainer)
-
-  The fieldsFilter is provided as function parameter/
-  stringProfile _todo_. 
 end note
 
-cur -> fieldsFilter: {raw ControlConstruct, fieldsFilter}
+cur -> fieldsFilter: {raw ControlConstruct, parameters.fieldsFilter}
 cur <-- fieldsFilter: {filtered raw ControlConstruct}
 
 
@@ -47,9 +44,12 @@ note over cur
   Reads mostRecentPeriodEndTimes for all previously
   seen interfaces of the mountName from the
   DPMDP dataStore.
+  It retrieves the timestamps for ... granularity:
+  - 15min: mostRecentPeriodEndTime
+  - 24h: mostRecentPeriodEndTime24
 end note
 cur -> datastore: {mountName}
-cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime))}
+cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime, mostRecentPeriodEndTime24))}
 
 'Filter the data
 note over cur #LightCoral
