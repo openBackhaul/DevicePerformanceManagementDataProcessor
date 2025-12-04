@@ -6,6 +6,22 @@ info:
 x-javascript-interface:
   p1ReplicateMwdiEs:
     summary: 'Replicates the MWDI ElasticSearch index'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - function
+            properties:
+              function:
+                $ref: '#/components/schemas/function-schema'
+    output:
+      success:
+        description: ''
+      error:
+        description: ''
     processing:
       logging:
         input:
@@ -66,7 +82,94 @@ x-javascript-interface:
                   enum:
                     # todo: add text that shall be thrown, if reasonable
 
-
 paths:
   /:
     description: 'no rest path provided by this module'
+
+components:
+  schemas:
+    function-schema:
+      type: object
+      required:
+        - function-name
+        - description
+        - is-active
+        - parameter
+        - sub-function
+      properties:
+        function-name:
+          type: string
+          description: >
+            'operationId (from the OAS) as a unique and invariant identifier of the module
+            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-name]'
+        description:
+          type: string
+          description: >
+            'Human readable description of the Function
+            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-description]'
+        is-active:
+          type: boolean
+          description: >
+            'true = the Function shall be executed
+            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-configuration/is-active]'
+        parameter:
+          type: array
+          x-key: parameter-name
+          description: 'List of Parameters of the Function'
+          items:
+            type: object
+            required:
+              - parameter-name
+              - purpose
+              - owner
+              - value
+            properties:
+              parameter-name:
+                type: string
+                description: >
+                  'Locally unique and invariant name of the parameter
+                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
+                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/string-name]'
+              purpose:
+                type: string
+                description: >
+                  'Invariant description of the parameter
+                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
+                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/purpose]'
+              owner:
+                type: string
+                description: >
+                  'Owner of the parameter
+                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/owner]'
+                enum:
+                  - platform
+                  - engineering
+                  - user
+              value:
+                type: string
+                description: >
+                  'Configurable value of the parameter
+                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
+                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-configuration/string-value]'
+              enumeration:
+                type: array
+                description: >
+                  'Optional: List of valid values for the parameter
+                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
+                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/enumeration]'
+                items:
+                  type: string
+              pattern:
+                type: string
+                description: >
+                  'Optional: Regular expression defining valid values of the parameter
+                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
+                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/pattern]'
+        sub-function:
+          type: array
+          x-key: function-name
+          description: >
+            'List of sub-Functions incl. their parameter settings
+            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]'
+          items:
+            $ref: '#/components/schemas/function-schema'

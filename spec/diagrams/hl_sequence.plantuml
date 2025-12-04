@@ -8,6 +8,8 @@ end title
 participant "embedYourself\n" as embed
 participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LP #LightCyan
+database "configFile" as configFile #LightCyan
+participant "p1MaintainDs\n" as p1MDS #LightBlue
 
 participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 
@@ -33,208 +35,223 @@ participant "p1Storing\n" as p1Store #LightBlue
 database "dataStore" as db #LightBlue
 
 
-activate p1RMWDI #LightCyan
-
-embed -> p1RMWDI
-
-note over p1RMWDI
+note right embed
   Automatically start
   p1ReplicateMwdiEs
 end note
+embed -> p1RMWDI
+activate p1RMWDI #LightCyan
 
-p1RMWDI -> p1LP
-activate p1LP #LightCyan
+  p1RMWDI -> p1LP
+  activate p1LP #LightCyan
+    note right p1LP
+      Load parameters
+      from configFile
+    end note
+    p1LP -> configFile
+    p1LP <-- configFile
+  p1RMWDI <-- p1LP
+  deactivate p1LP
 
-  note over p1LP
-    Load parameters
-    from configFile
+  note right p1RMWDI
+    Load ES, HTTP and TCP client
+    interfaces from configFile
   end note
+  p1RMWDI -> configFile
+  p1RMWDI <-- configFile
 
-p1RMWDI <-- p1LP
-deactivate p1LP
-
-note over p1RMWDI
-  Cyclically update
-  MWDI ES Replica
-end note
-
-p1RMWDI -> p1ProOrch : for every\nupdated CC
-activate p1ProOrch #LightCyan
-
-  note over p1ProOrch
-    Create
-    DataStructureForProcessing
-  end note
-
-  p1ProOrch -> p1AddRaw
-  activate p1AddRaw #LightCyan
-
-    p1AddRaw -> MwdiEs
-    p1AddRaw <-- MwdiEs
-
-    p1AddRaw -> p1FF
-    activate p1FF #LightCyan
-
-      note over p1FF
-        Reduce structure of rawCC
+  p1RMWDI -> p1MDS
+  activate p1MDS #LightBlue
+    loop
+      note over p1MDS
+        Maintain DataStore
       end note
+    end
 
-    p1AddRaw <-- p1FF
-    deactivate p1FF
-
-    p1AddRaw -> db
-    p1AddRaw <-- db
-
-    note over p1AddRaw
-      Delete PM data that has
-      already been processed in past
+  loop 
+    note over p1RMWDI
+      Update MWDI ES Replica
     end note
 
-  p1ProOrch <-- p1AddRaw
-  deactivate p1AddRaw
+    p1RMWDI -> p1ProOrch : for every\nupdated CC
+    activate p1ProOrch #LightCyan
 
-  note over p1ProOrch
-    Add rawCC to
-    DataStructureForProcessing
-  end note
-
-  p1ProOrch -> p1CRC
-  activate p1CRC #LightCyan
-
-    note over p1CRC
-      Create resultCC
-      from rawCC
-    end note
-
-    p1CRC -> p1DVT
-    activate p1DVT #LightBlue
-
-      note over p1DVT
-        Delete attributes with ONF
-        default value from resultCC
+      note over p1ProOrch
+        Create
+        DataStructureForProcessing
       end note
 
-    p1CRC <-- p1DVT
-    deactivate p1DVT
+      p1ProOrch -> p1AddRaw
+      activate p1AddRaw #LightCyan
 
-    p1CRC -> p1ORVT
-    activate p1ORVT #LightBlue
+        p1AddRaw -> MwdiEs
+        p1AddRaw <-- MwdiEs
 
-      note over p1ORVT
-        Delete attributes with value outside
-        pre-defined range from resultCC
+        p1AddRaw -> p1FF
+        activate p1FF #LightCyan
+
+          note over p1FF
+            Reduce structure of rawCC
+          end note
+
+        p1AddRaw <-- p1FF
+        deactivate p1FF
+
+        p1AddRaw -> db
+        p1AddRaw <-- db
+
+        note over p1AddRaw
+          Delete PM data that has
+          already been processed in past
+        end note
+
+      p1ProOrch <-- p1AddRaw
+      deactivate p1AddRaw
+
+      note over p1ProOrch
+        Add rawCC to
+        DataStructureForProcessing
       end note
 
-    p1CRC <-- p1ORVT
-    deactivate p1ORVT
+      p1ProOrch -> p1CRC
+      activate p1CRC #LightCyan
 
-    p1CRC -> p1AiCC
-    activate p1AiCC #LightBlue
+        note over p1CRC
+          Create resultCC
+          from rawCC
+        end note
 
-      note over p1AiCC
-        Add AirInterface capacity
-        to resultCC
+        p1CRC -> p1DVT
+        activate p1DVT #LightBlue
+
+          note over p1DVT
+            Delete attributes with ONF
+            default value from resultCC
+          end note
+
+        p1CRC <-- p1DVT
+        deactivate p1DVT
+
+        p1CRC -> p1ORVT
+        activate p1ORVT #LightBlue
+
+          note over p1ORVT
+            Delete attributes with value outside
+            pre-defined range from resultCC
+          end note
+
+        p1CRC <-- p1ORVT
+        deactivate p1ORVT
+
+        p1CRC -> p1AiCC
+        activate p1AiCC #LightBlue
+
+          note over p1AiCC
+            Add AirInterface capacity
+            to resultCC
+          end note
+
+        p1CRC <-- p1AiCC
+        deactivate p1AiCC
+
+        p1CRC -> p1EthKC
+        activate p1EthKC #LightBlue
+
+          note over p1EthKC
+            Add Ethernet KPIs
+            to resultCC
+          end note
+
+        p1CRC <-- p1EthKC
+        deactivate p1EthKC
+
+      p1ProOrch <-- p1CRC
+      deactivate p1CRC
+
+      note over p1ProOrch
+        Add resultCC to
+        DataStructureForProcessing
       end note
 
-    p1CRC <-- p1AiCC
-    deactivate p1AiCC
+      p1ProOrch -> p1Output
+      activate p1Output #LightCyan
 
-    p1CRC -> p1EthKC
-    activate p1EthKC #LightBlue
+        note over p1Output
+          Create APT format
+          from resultCC
+        end note
 
-      note over p1EthKC
-        Add Ethernet KPIs
-        to resultCC
+        p1Output -> p1CompAiNames
+        activate p1CompAiNames #LightCyan
+
+          note over p1CompAiNames
+            Determine LinkId 
+            and LinkEndpointId
+          end note
+
+        p1Output <-- p1CompAiNames
+        deactivate p1CompAiNames
+
+        p1Output -> p1CompPhyLag
+        activate p1CompPhyLag #LightCyan
+
+          note over p1CompPhyLag
+            Determine LinkIds and
+            PortNames (WireInterfaces)
+            in aggregation group
+          end note
+
+        p1Output <-- p1CompPhyLag
+        deactivate p1CompPhyLag
+
+        p1Output -> p1CompEthContNames
+        activate p1CompEthContNames #LightCyan
+
+          note over p1CompEthContNames
+            Determine PortNames
+            of EthernetContainers
+          end note
+
+        p1Output <-- p1CompEthContNames
+        deactivate p1CompEthContNames
+
+        note over p1Output
+          Consolidate data
+          into APT format
+        end note
+
+      p1ProOrch <-- p1Output
+      deactivate p1Output
+
+      note over p1ProOrch
+        Add APT format to
+        DataStructureForProcessing
       end note
 
-    p1CRC <-- p1EthKC
-    deactivate p1EthKC
+      p1ProOrch -> p1Trans
+      activate p1Trans #LightCyan
 
-  p1ProOrch <-- p1CRC
-  deactivate p1CRC
+        note over p1Trans
+          Transmit APT format
+        end note
 
-  note over p1ProOrch
-    Add resultCC to
-    DataStructureForProcessing
-  end note
+      p1ProOrch <-- p1Trans
+      deactivate p1Trans
 
-  p1ProOrch -> p1Output
-  activate p1Output #LightCyan
+      p1ProOrch -> p1Store
+      activate p1Store #LightBlue
 
-    note over p1Output
-      Create APT format
-      from resultCC
-    end note
+        note over p1Store
+          Store resultCC
+        end note
 
-    p1Output -> p1CompAiNames
-    activate p1CompAiNames #LightCyan
+        p1Store -> db
 
-      note over p1CompAiNames
-        Determine LinkId 
-        and LinkEndpointId
-      end note
+      p1ProOrch <-- p1Store
+      deactivate p1Store
 
-    p1Output <-- p1CompAiNames
-    deactivate p1CompAiNames
+    deactivate p1ProOrch
 
-    p1Output -> p1CompPhyLag
-    activate p1CompPhyLag #LightCyan
-
-      note over p1CompPhyLag
-        Determine LinkIds and
-        PortNames (WireInterfaces)
-        in aggregation group
-      end note
-
-    p1Output <-- p1CompPhyLag
-    deactivate p1CompPhyLag
-
-    p1Output -> p1CompEthContNames
-    activate p1CompEthContNames #LightCyan
-
-      note over p1CompEthContNames
-        Determine PortNames
-        of EthernetContainers
-      end note
-
-    p1Output <-- p1CompEthContNames
-    deactivate p1CompEthContNames
-
-    note over p1Output
-      Consolidate data
-      into APT format
-    end note
-
-  p1ProOrch <-- p1Output
-  deactivate p1Output
-
-  note over p1ProOrch
-    Add APT format to
-    DataStructureForProcessing
-  end note
-
-  p1ProOrch -> p1Trans
-  activate p1Trans #LightCyan
-
-    note over p1Trans
-      Transmit APT format
-    end note
-
-  p1ProOrch <-- p1Trans
-  deactivate p1Trans
-
-  p1ProOrch -> p1Store
-  activate p1Store #LightBlue
-
-    note over p1Store
-      Store resultCC
-    end note
-
-    p1Store -> db
-
-  p1ProOrch <-- p1Store
-  deactivate p1Store
-
-deactivate p1ProOrch
+  end
 
 @enduml

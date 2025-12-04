@@ -1,0 +1,41 @@
+@startuml embedYourself
+skinparam responseMessageBelowArrow true
+
+title
+  embedYourself
+end title
+
+participant "RegistryOffice\n" as RO
+participant "embedYourself\n" as embed
+participant "bequeathYourDataAndDie\n" as bequeath
+
+participant "p1MaintainDs\n" as p1MDS #LightCyan
+participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+
+
+RO -> embed
+activate embed
+
+  embed -> bequeath
+  note over embed
+    [further steps of the embedding
+    process potentially to be added]
+  end note
+
+  note right embed
+    Automatically start
+    p1MaintainDataStore
+  end note
+  embed -> p1MDS
+  activate p1MDS #LightCyan
+
+  note right embed
+    Automatically start
+    p1ReplicateMwdiEs
+  end note
+  embed -> p1RMWDI
+  activate p1RMWDI #LightCyan
+
+deactivate embed
+
+@enduml
