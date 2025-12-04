@@ -6,22 +6,22 @@ title
 end title
 
 participant "embedYourself\n" as embed
-participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
-participant "p1LoadParameters\n" as p1LP #LightCyan
+participant "p1ReplicateMwdiEs\n" as p1ReplaceMwdiEs #LightCyan
+participant "p1LoadParameters\n" as p1LoadParams #LightCyan
 database "configFile" as configFile #LightCyan
 
-participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
+participant "p1ProcessingPmData\n" as p1ProcessPm #LightCyan
 
 participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
-participant "p1FieldsFilter\n" as p1FF #LightCyan
+participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
 
-participant "p1CreateResultCc\n" as p1CRC #LightCyan
-participant "p1Default\nValueTreatment" as p1DVT #LightBlue
-participant "p1OutOfRange\nValueTreatment" as p1ORVT #LightBlue
+participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
+participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
 
-participant "p1AirInterface\nCapacityCalculation" as p1AiCC #LightBlue
-participant "p1Ethernet\nKpiCalculation" as p1EthKC #LightBlue
+participant "p1AirInterface\nCapacityCalculation" as p1AirKpi #LightBlue
+participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 participant "p1Compute\nAirInterfaceNames" as p1CompAiNames #LightCyan
@@ -39,28 +39,28 @@ note right embed
   Automatically start
   p1ReplicateMwdiEs
 end note
-embed -> p1RMWDI
-activate p1RMWDI #LightCyan
+embed -> p1ReplaceMwdiEs
+activate p1ReplaceMwdiEs #LightCyan
 
-  p1RMWDI -> p1LP
-  activate p1LP #LightCyan
-    note right p1LP
+  p1ReplaceMwdiEs -> p1LoadParams
+  activate p1LoadParams #LightCyan
+    note right p1LoadParams
       Load parameters
       from configFile
     end note
-    p1LP -> configFile
-    p1LP <-- configFile
-  p1RMWDI <-- p1LP
-  deactivate p1LP
+    p1LoadParams -> configFile
+    p1LoadParams <-- configFile
+  p1ReplaceMwdiEs <-- p1LoadParams
+  deactivate p1LoadParams
 
-  note right p1RMWDI
+  note right p1ReplaceMwdiEs
     Load ES, HTTP and TCP client
     interfaces from configFile
   end note
-  p1RMWDI -> configFile
-  p1RMWDI <-- configFile
+  p1ReplaceMwdiEs -> configFile
+  p1ReplaceMwdiEs <-- configFile
 
-  p1RMWDI -> p1MDS
+  p1ReplaceMwdiEs -> p1MDS
   activate p1MDS #LightBlue
     loop
       note over p1MDS
@@ -69,33 +69,33 @@ activate p1RMWDI #LightCyan
     end
 
   loop 
-    note over p1RMWDI
+    note over p1ReplaceMwdiEs
       Update MWDI ES Replica
     end note
 
-    p1RMWDI -> p1ProOrch : for every\nupdated CC
-    activate p1ProOrch #LightCyan
+    p1ReplaceMwdiEs -> p1ProcessPm : for every\nupdated CC
+    activate p1ProcessPm #LightCyan
 
-      note over p1ProOrch
+      note over p1ProcessPm
         Create
         DataStructureForProcessing
       end note
 
-      p1ProOrch -> p1AddRaw
+      p1ProcessPm -> p1AddRaw
       activate p1AddRaw #LightCyan
 
         p1AddRaw -> MwdiEs
         p1AddRaw <-- MwdiEs
 
-        p1AddRaw -> p1FF
-        activate p1FF #LightCyan
+        p1AddRaw -> p1FieldsFilter
+        activate p1FieldsFilter #LightCyan
 
-          note over p1FF
+          note over p1FieldsFilter
             Reduce structure of rawCC
           end note
 
-        p1AddRaw <-- p1FF
-        deactivate p1FF
+        p1AddRaw <-- p1FieldsFilter
+        deactivate p1FieldsFilter
 
         p1AddRaw -> db
         p1AddRaw <-- db
@@ -105,75 +105,75 @@ activate p1RMWDI #LightCyan
           already been processed in past
         end note
 
-      p1ProOrch <-- p1AddRaw
+      p1ProcessPm <-- p1AddRaw
       deactivate p1AddRaw
 
-      note over p1ProOrch
+      note over p1ProcessPm
         Add rawCC to
         DataStructureForProcessing
       end note
 
-      p1ProOrch -> p1CRC
-      activate p1CRC #LightCyan
+      p1ProcessPm -> p1CreateResultCC
+      activate p1CreateResultCC #LightCyan
 
-        note over p1CRC
+        note over p1CreateResultCC
           Create resultCC
           from rawCC
         end note
 
-        p1CRC -> p1DVT
-        activate p1DVT #LightBlue
+        p1CreateResultCC -> p1DefaultValues
+        activate p1DefaultValues #LightBlue
 
-          note over p1DVT
+          note over p1DefaultValues
             Delete attributes with ONF
             default value from resultCC
           end note
 
-        p1CRC <-- p1DVT
-        deactivate p1DVT
+        p1CreateResultCC <-- p1DefaultValues
+        deactivate p1DefaultValues
 
-        p1CRC -> p1ORVT
-        activate p1ORVT #LightBlue
+        p1CreateResultCC -> p1OutOfRange
+        activate p1OutOfRange #LightBlue
 
-          note over p1ORVT
+          note over p1OutOfRange
             Delete attributes with value outside
             pre-defined range from resultCC
           end note
 
-        p1CRC <-- p1ORVT
-        deactivate p1ORVT
+        p1CreateResultCC <-- p1OutOfRange
+        deactivate p1OutOfRange
 
-        p1CRC -> p1AiCC
-        activate p1AiCC #LightBlue
+        p1CreateResultCC -> p1AirKpi
+        activate p1AirKpi #LightBlue
 
-          note over p1AiCC
+          note over p1AirKpi
             Add AirInterface capacity
             to resultCC
           end note
 
-        p1CRC <-- p1AiCC
-        deactivate p1AiCC
+        p1CreateResultCC <-- p1AirKpi
+        deactivate p1AirKpi
 
-        p1CRC -> p1EthKC
-        activate p1EthKC #LightBlue
+        p1CreateResultCC -> p1EthKpi
+        activate p1EthKpi #LightBlue
 
-          note over p1EthKC
+          note over p1EthKpi
             Add Ethernet KPIs
             to resultCC
           end note
 
-        p1CRC <-- p1EthKC
-        deactivate p1EthKC
+        p1CreateResultCC <-- p1EthKpi
+        deactivate p1EthKpi
 
-      p1ProOrch <-- p1CRC
-      deactivate p1CRC
+      p1ProcessPm <-- p1CreateResultCC
+      deactivate p1CreateResultCC
 
-      note over p1ProOrch
+      note over p1ProcessPm
         Add resultCC to
         DataStructureForProcessing
       end note
 
-      p1ProOrch -> p1Output
+      p1ProcessPm -> p1Output
       activate p1Output #LightCyan
 
         note over p1Output
@@ -220,25 +220,25 @@ activate p1RMWDI #LightCyan
           into APT format
         end note
 
-      p1ProOrch <-- p1Output
+      p1ProcessPm <-- p1Output
       deactivate p1Output
 
-      note over p1ProOrch
+      note over p1ProcessPm
         Add APT format to
         DataStructureForProcessing
       end note
 
-      p1ProOrch -> p1Trans
+      p1ProcessPm -> p1Trans
       activate p1Trans #LightCyan
 
         note over p1Trans
           Transmit APT format
         end note
 
-      p1ProOrch <-- p1Trans
+      p1ProcessPm <-- p1Trans
       deactivate p1Trans
 
-      p1ProOrch -> p1Store
+      p1ProcessPm -> p1Store
       activate p1Store #LightBlue
 
         note over p1Store
@@ -247,10 +247,10 @@ activate p1RMWDI #LightCyan
 
         p1Store -> db
 
-      p1ProOrch <-- p1Store
+      p1ProcessPm <-- p1Store
       deactivate p1Store
 
-    deactivate p1ProOrch
+    deactivate p1ProcessPm
 
   end
 
