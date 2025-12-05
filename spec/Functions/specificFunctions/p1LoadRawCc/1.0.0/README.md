@@ -1,5 +1,10 @@
 # p1LoadRawCc
 
+**TODO**:
+- update for usage of new generic function p1DiscardIrrelevantPm
+- consolidate parameter handover by function usage
+
+
 ### Overview  
 
 The p1LoadRawCc function receives the mountName of a device as input and reads the raw ControlConstruct data of this
