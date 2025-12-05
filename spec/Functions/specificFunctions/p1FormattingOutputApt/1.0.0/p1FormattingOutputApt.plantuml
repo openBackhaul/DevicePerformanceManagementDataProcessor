@@ -19,7 +19,7 @@ note over cur #LightGray
   in the input CC are omitted from the output.
 end note
 
-requestor -> cur: {_CC, {parameters}}
+requestor -> cur: {_CC, function}
 
 
 activate cur #LightCyan
@@ -45,10 +45,10 @@ group CreateOutput
       Add both to <i>air-interface-identifiers</i>.
     end note
 
-    cur -> airIfNames: {_CC | LtpStructureAndAugment, uuid, {parameters}}
+    cur -> airIfNames: {_CC | LtpStructureAndAugment, uuid}
     cur <-- airIfNames: {linkEndpointId, linkId}
 
-    cur -> airIfLag: {_CC | LtpStructureAndAugment, uuid, {parameters}}
+    cur -> airIfLag: {_CC | LtpStructureAndAugment, uuid}
     cur <-- airIfLag: {Lag} 
   end group
 
@@ -58,7 +58,7 @@ group CreateOutput
 
     Add it to <i>ethernet-container-identifiers</i>.
   end note
-  cur -> ethName: {_CC | LtpStructureAndAugment, uuid, {parameters}}
+  cur -> ethName: {_CC | LtpStructureAndAugment, uuid}
   cur <-- ethName: {interfaceName}
 
 end group
