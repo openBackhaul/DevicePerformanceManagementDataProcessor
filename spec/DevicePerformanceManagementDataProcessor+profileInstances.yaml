@@ -212,6 +212,7 @@ profile-instances:
     capability:
       string-name: 'mwdiEsClient'
       purpose: 'UUID of the MWDI ES ElasticsearchClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
       string-value: ''
 
@@ -220,6 +221,7 @@ profile-instances:
     capability:
       string-name: 'mwdiHttpClient'
       purpose: 'UUID of the MWDI ES HttpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -228,6 +230,7 @@ profile-instances:
     capability:
       string-name: 'mwdiTcpClient'
       purpose: 'UUID of the MWDI ES TcpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -236,6 +239,7 @@ profile-instances:
     capability:
       string-name: 'mwdiReplicaEsClient'
       purpose: 'UUID of the MWDI ES Replica ElasticsearchClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
       string-value: ''
 
@@ -244,6 +248,7 @@ profile-instances:
     capability:
       string-name: 'mwdiReplicaHttpClient'
       purpose: 'UUID of the MWDI ES Replica HttpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -252,6 +257,7 @@ profile-instances:
     capability:
       string-name: 'mwdiReplicaTcpClient'
       purpose: 'UUID of the MWDI ES Replica TcpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -260,6 +266,7 @@ profile-instances:
     capability:
       string-name: 'replicateMwdiEsLogEsClient'
       purpose: 'UUID of the ElasticsearchClient LTP of the database for logging the replication activities'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
       string-value: ''
 
@@ -268,6 +275,7 @@ profile-instances:
     capability:
       string-name: 'replicateMwdiEsLogHttpClient'
       purpose: 'UUID of the HttpClient LTP of the database for logging the replication activities'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -276,6 +284,7 @@ profile-instances:
     capability:
       string-name: 'replicateMwdiEsLogTcpClient'
       purpose: 'UUID of the TcpClient LTP of the database for logging the replication activities'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -284,6 +293,7 @@ profile-instances:
     capability:
       string-name: 'dataStoreEsClient'
       purpose: 'UUID of the DataStore ElasticsearchClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
       string-value: ''
 
@@ -292,6 +302,7 @@ profile-instances:
     capability:
       string-name: 'dataStoreHttpClient'
       purpose: 'UUID of the DataStore HttpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 
@@ -300,6 +311,7 @@ profile-instances:
     capability:
       string-name: 'dataStoreTcpClient'
       purpose: 'UUID of the DataStore TcpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
     configuration:
       string-value: ''
 

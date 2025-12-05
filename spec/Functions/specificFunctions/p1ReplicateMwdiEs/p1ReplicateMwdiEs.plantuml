@@ -24,7 +24,7 @@ end note
 embed -> p1RMWDI : {}
 activate p1RMWDI #LightCyan
 
-  p1RMWDI -> p1LP : {functionName=\np1ReplicateMwdiEs}
+  p1RMWDI -> p1LP : {functionName=\n"p1ReplicateMwdiEs"}
   activate p1LP #LightCyan
     note over p1LP
       Load parameters
@@ -69,7 +69,10 @@ activate p1RMWDI #LightCyan
   group Cyclically update MWDI ES Replica
 
     note right p1RMWDI
-      Read CCs with dates that indicate an updated
+      - read last-complete-control-construct-update-time-attempt attribute
+        for all devices in the MWDI ES index
+      - read entire CC for all devices with
+        last-complete-control-construct-update-time-attempt attribute > lastReplicationTimestamp
     end note
     p1RMWDI -> mwdiEs
     p1RMWDI <-- mwdiEs
@@ -84,6 +87,13 @@ activate p1RMWDI #LightCyan
       Log results of replication
     end note
     p1RMWDI -> log : {cronjobName,\nlastReplicationTimestamp,\nstatusMessage}
+
+
+    note over p1RMWDI #Orange
+      there is also some delete activity to be described here
+    end note
+
+
 
     group Trigger processing of updated CC
       p1RMWDI -> p1ProOrch : {mountName}
