@@ -30,11 +30,11 @@ activate p1LP #LightCyan
 
   loop
     note right p1LP
-      Load instance of FunctionProfile and
+      Load instance of FunctionProfile from
+      the internal copy of the configFile and
       translate into internal Functions format
     end note
-    p1LP -> p1CF
-    p1LP <-- p1CF
+    p1LP -> p1LP
 
     note right p1LP
       Read uuids of SubFunctions

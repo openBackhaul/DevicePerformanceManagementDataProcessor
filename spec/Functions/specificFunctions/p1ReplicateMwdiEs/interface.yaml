@@ -7,21 +7,13 @@ x-javascript-interface:
   p1ReplicateMwdiEs:
     summary: 'Replicates the MWDI ElasticSearch index'
     input:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - function
-            properties:
-              function:
-                $ref: '#/components/schemas/function-schema'
     output:
       success:
         description: ''
+        # todo: Does the Function return any output data on success? If yes, please define them here.
       error:
         description: ''
+        # todo: Does the Function return any output data on failure? If yes, please define them here.
     processing:
       logging:
         input:
@@ -38,21 +30,21 @@ x-javascript-interface:
                   cronjob-name:
                     type: string
                     enum:
-                      - p1ReplicateMwdiEs
+                      - 'p1ReplicateMwdiEs'
+                    description: 'Name of the cronjob'
                   last-replication-timestamp:
                     type: string
                     pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
-                    description: >
-                      '
-                      '
+                    description: 'Date and time of the last successful replication of the MWDI ES index'
                   status-message:
                     type: string
+                    # todo: add enum values, if reasonable
+                    enum:
+                      - ''
+                    # todo: add some information about the thing upon which the status is documented here
                     description: >
                       '
                       '
-
-        # hier geht's weiter mit Karthikeyan
-
       p1ProcessingPmData:
         input:
           required: true
@@ -62,25 +54,26 @@ x-javascript-interface:
                 type: object
                 required:
                   - mount-name
-                  # todo: further attributes to be added, if required
+                  - function
                 properties:
                   mount-name:
                     type: string
-                    description: >
-                      '
-                      '
-                  # todo: further attributes to be added, if required
+                    description: 'MountName of the device for which the PM data shall be processed'
+                  function:
+                    $ref: '#/components/schemas/function-schema'
         output:
           success:
             description: 'PM data processed, sent and stored'
+            # todo: Does the Function return any output data on success? If yes, please define them here.
           error:
             description: 'MWDI ElasticSearch index could not be replicated'
             content:
               application/json:
                 schema:
                   type: string
+                  # todo: add enum values for the errorMessages to be thrown, if reasonable
                   enum:
-                    # todo: add text that shall be thrown, if reasonable
+                    - ''
 
 paths:
   /:
