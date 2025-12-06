@@ -14,6 +14,7 @@ x-javascript-interface:
             type: object
             required:
               - mount-name
+              - function
             properties:
               mount-name:
                 type: string
@@ -23,21 +24,21 @@ x-javascript-interface:
                 $ref: '#/components/schemas/function-schema'
     output:
       success:
-        description: 'Reference to (filtered) raw ControlConstruct data provided.'
+        description: 'Raw CC data loaded'
         content:
           application/json:
             schema:
               type: object
               required:
-                - _raw-control-construct
+                - raw-control-construct
               properties:
-                  _raw-control-construct:
+                  raw-control-construct:
                     type: object
                     description: >
-                      'The reference to the raw-control-construct object in the DPMDP memory
+                      'raw-control-construct object
                       from {$applyFilteringForLtpStructureAugmentAirIfAndEthContainer#output}'
       error:
-        description: 'Raw ControlConstruct object could not be created'
+        description: 'Raw CC could not be loaded'
         content:
           application/json:
             schema:

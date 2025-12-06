@@ -58,7 +58,9 @@ x-javascript-interface:
                 properties:
                   mount-name:
                     type: string
-                    description: 'MountName of the device for which the PM data shall be processed'
+                    description: >
+                      'MountName from objectPath in AVC notification sent by MWDI indicating change in timeOfLatestChange
+                      from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
                   function:
                     $ref: '#/components/schemas/function-schema'
         output:

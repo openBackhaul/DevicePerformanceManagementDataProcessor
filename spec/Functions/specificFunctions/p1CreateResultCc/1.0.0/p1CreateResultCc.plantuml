@@ -5,8 +5,8 @@ title
 p1CreateResultCc
 end title
 
-participant "requestor\n(e.g. p1ProcessingPmData)" as requestor
-participant "p1CreateResultCc" as cur #LightCyan
+participant "p1ProcessingPmData\n" as requestor
+participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p1Default\nValueTreatment" as defaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
@@ -70,7 +70,7 @@ activate cur #LightCyan
   cur <-- ethKpis: {computed EthernetContainer KPIs}
   deactivate ethKpis
 
-requestor <-- cur: {_resultCC}
+requestor <-- cur: {{resultCC}}
 
 deactivate cur
 

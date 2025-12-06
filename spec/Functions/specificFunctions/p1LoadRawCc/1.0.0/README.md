@@ -10,7 +10,7 @@
 The p1LoadRawCc function receives the mountName of a device as input and reads the raw ControlConstruct data of this
 device from the MWDI ES replica.  
 It processes the raw ControlConstruct data and filters out unwanted data.  
-Its output is a reference pointing to the where the raw ControlConstruct object is kept in the DPMDP runtime memory. (I.e. not the data itself is passed back to the caller!)
+The filtered raw ControlConstruct is returned as output.  
 
 The following generic function is called to reduce the data of raw ControlConstruct:
 - [p1FieldsFilter](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1FieldsFilter/1.0.0)  

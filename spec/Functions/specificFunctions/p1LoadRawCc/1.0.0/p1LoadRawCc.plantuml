@@ -5,7 +5,7 @@ title
 p1LoadRawCc
 end title
 
-participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as requestor
+participant "p1ProcessingPmData)" as requestor
 participant "p1LoadRawCc" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
 database "p1FieldsFilter" as fieldsFilter #LightCyan
@@ -102,12 +102,9 @@ group Filter remaining rawControlConstruct data
 end group
 
 note over cur
-  <u>returnReference</u>
-  The function returns a reference (indicated by preceeding "_")
-  pointing to where the filtered raw-ControlConstruct
-  data object is kept in the DPMDP runtime memory.
+  <u>returnRawControlConstruct</u>
+  The function returns the filtered raw-ControlConstruct
 end note
 
-requestor <-- cur: {_rawControlConstruct}
-
+requestor <-- cur: {{rawControlConstruct}}
 deactivate cur

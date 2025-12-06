@@ -2,12 +2,12 @@
 skinparam responseMessageBelowArrow true
 
 title
-  p1ProcessingOrchestratorForHistoricalPm
+  p1ProcessingPmData
 end title
 
-participant "regardAttributeValueChange\n" as requestor #LightCyan
-participant "p1ProcessingOrchestrator\nForHistoricalPm" as p1ProOrch #LightCyan
-participant "p1LoadRaw\nDeviceData" as p1AddRaw #LightCyan
+participant "p1ReplicateMwdiEs\n" as requestor
+participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
+participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1CreateResultCc\n" as p1CRC #LightCyan
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 participant "p1Transmitting\nKafka" as p1Trans #LightCyan
@@ -15,9 +15,9 @@ participant "p1Storing\n" as p1Store #LightBlue
 database "dataStore" as db #LightBlue
 
 
-activate requestor #LightCyan
+activate requestor
 
-requestor -> p1ProOrch : {mountName}
+requestor -> p1ProOrch : {mountName,\n{function}}
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
@@ -25,18 +25,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  note right p1ProOrch #White
-    Was ist mit Parametern?
-    - Sollen diese einmalig aus dem configFile geladen und am DSFP angehängt werden?
-    - Oder, sollen die Funktionen selbst ihre Parameter aus dem configFile laden?
-  end note
-
-  note right p1ProOrch #White
-    Was ist mit Flusssteuerung?
-    - Sollte eine Liste der de/aktivierten Funktionen am DSFP angehängt werden?
-  end note
-
-  p1ProOrch -> p1AddRaw : {mountName,\n {input}?,\n {parameters}?}
+  p1ProOrch -> p1AddRaw : {mountName,\n{/function/sub-function=loadRawCc}}
   activate p1AddRaw #LightCyan
 
     note over p1AddRaw
@@ -54,7 +43,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1CRC : {_rawCC,\n {input}?,\n {parameters}?}
+  p1ProOrch -> p1CRC : {_rawCC,\n{/function/sub-function=createResultCc}}
   activate p1CRC #LightCyan
 
     note over p1CRC
@@ -65,22 +54,17 @@ activate p1ProOrch #LightCyan
   p1ProOrch <-- p1CRC : {_resultCC}
   deactivate p1CRC
 
-  note over p1AddRaw #White
-    Wäre es sinnvoll,
-    p1LoadRawCc nach
-    p1LoadRawCc um zu benennen?
-  end note
-
   note over p1ProOrch
     Add resultCC to
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Output : {_resultCC,\n {input}?,\n {parameters}?}
+  p1ProOrch -> p1Output : {_resultCC,\n{/function/sub-function=p1FormattingOutputApt}}
   activate p1Output #LightCyan
 
     note over p1Output
-      Create aptOutputFormat from resultCC
+      Create aptOutputFormat
+      from resultCC
     end note
 
   p1ProOrch <-- p1Output : {aptOutputFormat}
@@ -91,17 +75,18 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Trans : {_aptOutputFormat,\n {input}?,\n {parameters}?}
+  p1ProOrch -> p1Trans : {_[outputFormat],\n{/function/sub-function=p1TransmittingKafka}}
   activate p1Trans #LightCyan
 
     note over p1Trans
-      Transmit aptOutputFormat
+      Transmit list of output
+      formats via Kafka
     end note
 
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1Store : {_resultCC,\n {input}?,\n {parameters}?}
+  p1ProOrch -> p1Store : {_resultCC,\n{/function/sub-function=p1Storing}}
   activate p1Store #LightBlue
 
     note over p1Store

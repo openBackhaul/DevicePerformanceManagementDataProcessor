@@ -1,8 +1,6 @@
 # p1LoadParameters  
 
 
-### Overview  
-
 Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns it in the recursive Functions format.  
 
 
