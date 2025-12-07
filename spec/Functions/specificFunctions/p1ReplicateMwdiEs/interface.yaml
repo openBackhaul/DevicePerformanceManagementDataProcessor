@@ -54,15 +54,15 @@ x-javascript-interface:
                 type: object
                 required:
                   - mount-name
-                  - function
+                  - parameters
                 properties:
                   mount-name:
                     type: string
                     description: >
                       'MountName from objectPath in AVC notification sent by MWDI indicating change in timeOfLatestChange
                       from {$request.body#microwave-device-inventory-1-0:attribute-value-changed-notification/object-path}'
-                  function:
-                    $ref: '#/components/schemas/function-schema'
+                  parameters:
+                    $ref: '#/components/schemas/parameters-schema'
         output:
           success:
             description: 'PM data processed, sent and stored'
@@ -83,7 +83,7 @@ paths:
 
 components:
   schemas:
-    function-schema:
+    parameters-schema:
       type: object
       required:
         - function-name
@@ -167,4 +167,4 @@ components:
             'List of sub-Functions incl. their parameter settings
             from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]'
           items:
-            $ref: '#/components/schemas/function-schema'
+            $ref: '#/components/schemas/parameters-schema'

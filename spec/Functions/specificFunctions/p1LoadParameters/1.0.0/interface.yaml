@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p1LoadParameters:
-    summary: 'Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns it in the internal Functions format.'
+    summary: 'Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns it in the internal parameters format.'
     input:
       required: true
       content:
@@ -26,10 +26,10 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - function
+                - parameters
               properties:
-                function:
-                  $ref: '#/components/schemas/function-schema'
+                parameters:
+                  $ref: '#/components/schemas/parameters-schema'
       error:
         description: 'Parameters could not be loaded'
         content:
@@ -51,7 +51,7 @@ paths:
 
 components:
   schemas:
-    function-schema:
+    parameters-schema:
       type: object
       required:
         - function-name
@@ -135,4 +135,4 @@ components:
             'List of sub-Functions incl. their parameter settings
             from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]'
           items:
-            $ref: '#/components/schemas/function-schema'
+            $ref: '#/components/schemas/parameters-schema'

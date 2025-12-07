@@ -1,4 +1,4 @@
-@startuml hl_sequence
+@startuml p1ProcessingPmData
 skinparam responseMessageBelowArrow true
 
 title
@@ -17,7 +17,7 @@ database "dataStore" as db #LightBlue
 
 activate requestor
 
-requestor -> p1ProOrch : {mountName,\n{function}}
+requestor -> p1ProOrch : {mountName,\n{parameters}}
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
@@ -25,7 +25,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1AddRaw : {mountName,\n{/function/sub-function=loadRawCc}}
+  p1ProOrch -> p1AddRaw : {mountName,\n{/parameters/sub-function=loadRawCc}}
   activate p1AddRaw #LightCyan
 
     note over p1AddRaw
@@ -43,12 +43,12 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1CRC : {_rawCC,\n{/function/sub-function=createResultCc}}
+  p1ProOrch -> p1CRC : {_rawCC,\n{/parameters/sub-function=createResultCc}}
   activate p1CRC #LightCyan
 
     note over p1CRC
       - Create resultCC from rawCC
-      - Process and complement resultCC
+      - Process and complement PM data
     end note
 
   p1ProOrch <-- p1CRC : {_resultCC}
@@ -59,7 +59,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Output : {_resultCC,\n{/function/sub-function=p1FormattingOutputApt}}
+  p1ProOrch -> p1Output : {_resultCC,\n{/parameters/sub-function=p1FormattingOutputApt}}
   activate p1Output #LightCyan
 
     note over p1Output
@@ -75,18 +75,18 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Trans : {_[outputFormat],\n{/function/sub-function=p1TransmittingKafka}}
+  p1ProOrch -> p1Trans : {_outputFormat,\n{/parameters/sub-function=p1TransmittingKafka}}
   activate p1Trans #LightCyan
 
     note over p1Trans
-      Transmit list of output
-      formats via Kafka
+      Transmit outputFormat
+      via Kafka
     end note
 
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1Store : {_resultCC,\n{/function/sub-function=p1Storing}}
+  p1ProOrch -> p1Store : {_resultCC,\n{/parameters/sub-function=p1Storing}}
   activate p1Store #LightBlue
 
     note over p1Store

@@ -30,22 +30,22 @@ activate p1RMWDI #LightCyan
       Load parameters
       from configFile
     end note
-  p1RMWDI <-- p1LP : {function}
+  p1RMWDI <-- p1LP : {parameters}
   deactivate p1LP
 
   note over p1RMWDI
-    _mwdiEsClient = /function/parameter=mwdiEsClient/value
-    _mwdiHttpClient = /function/parameter=mwdiHttpClient/value
-    _mwdiTcpClient = /function/parameter=mwdiTcpClient/value
-    _mwdiReplicaEsClient = /function/parameter=mwdiReplicaEsClient/value
-    _mwdiReplicaHttpClient = /function/parameter=mwdiReplicaHttpClient/value
-    _mwdiReplicaTcpClient = /function/parameter=mwdiReplicaTcpClient/value
-    _replicateMwdiEsLogEsClient = /function/parameter=replicateMwdiEsLogEsClient/value
-    _replicateMwdiEsLogHttpClient = /function/parameter=replicateMwdiEsLogHttpClient/value
-    _replicateMwdiEsLogTcpClient = /function/parameter=replicateMwdiEsLogTcpClient/value
-    _dataStoreEsClient = /function/parameter=dataStoreEsClient/value
-    _dataStoreHttpClient = /function/parameter=dataStoreHttpClient/value
-    _dataStoreTcpClient = /function/parameter=dataStoreTcpClient/value
+    _mwdiEsClient = /parameters/parameter=mwdiEsClient/value
+    _mwdiHttpClient = /parameters/parameter=mwdiHttpClient/value
+    _mwdiTcpClient = /parameters/parameter=mwdiTcpClient/value
+    _mwdiReplicaEsClient = /parameters/parameter=mwdiReplicaEsClient/value
+    _mwdiReplicaHttpClient = /parameters/parameter=mwdiReplicaHttpClient/value
+    _mwdiReplicaTcpClient = /parameters/parameter=mwdiReplicaTcpClient/value
+    _replicateMwdiEsLogEsClient = /parameters/parameter=replicateMwdiEsLogEsClient/value
+    _replicateMwdiEsLogHttpClient = /parameters/parameter=replicateMwdiEsLogHttpClient/value
+    _replicateMwdiEsLogTcpClient = /parameters/parameter=replicateMwdiEsLogTcpClient/value
+    _dataStoreEsClient = /parameters/parameter=dataStoreEsClient/value
+    _dataStoreHttpClient = /parameters/parameter=dataStoreHttpClient/value
+    _dataStoreTcpClient = /parameters/parameter=dataStoreTcpClient/value
   end note
 
   note right p1RMWDI
@@ -60,7 +60,7 @@ activate p1RMWDI #LightCyan
   p1RMWDI -> configFile
   p1RMWDI <-- configFile
 
-  p1RMWDI -> p1MDS : {addressOfReplicateMwdiEsLog,\nfunction}
+  p1RMWDI -> p1MDS : {addressOfReplicateMwdiEsLog,\nparameters}
   activate p1MDS #LightBlue
     note over p1MDS
       Maintain DataStore

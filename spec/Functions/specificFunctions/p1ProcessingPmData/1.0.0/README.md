@@ -1,23 +1,30 @@
 # p1ProcessingPmData  
 
 Orchestrates the device-wise processing, formatting, sending and storing of PM data.  
-Calculating the PM data is separated from formatting and transmitting.  
-This allows to define multiple output formats from the same calculated PM data.  
-Transmitting is also separated, enabling the same output format to be sent through multiple transmission methods, or multiple output formats to be sent via the same transmission method.
 
 
 ### Description  
+
+#### Segmentation  
+
+Calculating the PM data is separated from formatting and transmitting.  
+
+Separating formatting from calculating allows composing multiple output formats from the same calculated PM data.  
+Separating transmitting from formatting allows ...  
+- ... sending the same output format through multiple transmission methods and  
+- ... sending multiple output formats via the same transmission method.  
+
+#### Processing  
 
 The p1ProcessingPmData starts with creating a data structure for holding raw data, results, and administrative information.  
 This data structure is called [DataStructureForProcessing](./InformationStructure/DataStructureForProcessing.yaml).  
 
 The p1ProcessingPmData executes a hard coded sequence of Functions.  
-Before calling a Sub-Function, it checks its parameters for the Sub-Function being activated.  
+Before calling a Sub-Function, it checks for the Sub-Function being activated in its parameters.  
 
-Parameters for these Functions are handed over by function object.  
-
-Variable Input to these Sub-Function is handed over as references into the DataStructureForProcessing.  
-**Sub-Functions are not allowed to alter data in the DataStructureForProcessing.**  
+Parameters for these Sub-Functions are handed over as sub-trees of the parameters object.  
+Variable Input is handed over as references into its own DataStructureForProcessing,  
+while Sub-Functions are not allowed to alter data in the DataStructureForProcessing.  
 
 Output of the Sub-Functions is handed over as data objects.  
 These data objects are attached to the DataStructureForProcessing.  

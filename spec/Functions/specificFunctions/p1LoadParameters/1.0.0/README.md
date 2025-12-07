@@ -1,7 +1,7 @@
 # p1LoadParameters  
 
 
-Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns it in the recursive Functions format.  
+Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns it in the recursive parameters format.  
 
 
 ### Diagram  

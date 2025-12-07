@@ -32,7 +32,7 @@ activate p1LP #LightCyan
     note right p1LP
       Load instance of FunctionProfile from
       the internal copy of the configFile and
-      translate into internal Functions format
+      translate into internal parameters format
     end note
     p1LP -> p1LP
 
@@ -41,5 +41,5 @@ activate p1LP #LightCyan
     end note
   end
 
-p1RMWDI <-- p1LP : {function}
+p1RMWDI <-- p1LP : {parameters}
 deactivate p1LP

@@ -13,34 +13,38 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - _control-construct
+              - _result-cc
+              - parameters
             properties:
-              _control-construct:
-                type: object
+              _result-cc:
+                type: reference
                 description: >
                   'The reference to the ControlConstruct object from which the output shall be generated.
-                  It points to [/data-structure-for-processing/control-construct]'
-              function:
-                $ref: '#/components/schemas/function-schema'
+                  /data-structure-for-processing/result-cc'
+              parameters:
+                type: object
+                description: >
+                  'Parameters object for p1FormattingOutputApt
+                  from {/data-structure-for-processing/parameters/sub-function=p1FormattingOutputApt}'
     output:
       success:
-        description: 'OutputApt object provided'
+        description: 'aptOutputFormat created from resultCC'
         content:
           application/json:
             schema:
               type: object
               properties:
-                output:
+                apt-output-format:
                   type: object
                   description: >
                     'To compile the output object traverse the ControlConstruct the input reference
-                    from {$input#_control-construct}. Any non-key attribute that is not found in the input CC is to be omitted from the output.'
+                    from {$input#_result-cc}. Any non-key attribute that is not found in the input CC is to be omitted from the output.'
                   properties:
                     air-interface-list:
                       description: >
                         'List of microwave air interfaces found in the given device ControlConstruct.
-                        Traverse {$input#_control-construct/logical-termination-point/layer-protocol} and create an array element for each layer-protocol
-                        where {$input#_control-construct/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER'
+                        Traverse {$input#_result-cc/logical-termination-point/layer-protocol} and create an array element for each layer-protocol
+                        where {$input#_result-cc/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER'
                       type: array
                       items:
                         type: object
@@ -54,7 +58,7 @@ x-javascript-interface:
                                 type: string
                                 description: >
                                   'Identifier of the device at the controller and in the Telefónica planning tools, to be filled
-                                  from {$input/_control-construct/equipment-augment-1-0:control-construct-pac/external-label}'
+                                  from {$input/_result-cc/equipment-augment-1-0:control-construct-pac/external-label}'
                               link-endpoint-id:
                                 type: string
                                 description: >
@@ -69,7 +73,7 @@ x-javascript-interface:
                                 type: string
                                 description: >
                                   'Identifier of currently traversed LTP, to be filled
-                                  from {$input#_control-construct/logical-termination-point/uuid} for the currently traversed layer-protocol'
+                                  from {$input#_result-cc/logical-termination-point/uuid} for the currently traversed layer-protocol'
                               link-aggregation-identifiers:
                                 type: array
                                 description: >
@@ -82,76 +86,76 @@ x-javascript-interface:
                                 type: boolean
                                 description: >
                                   'This configuration value is true, if automatic transmit power control (ATPC) is configured to be switched on
-                                  from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/atpc-is-on}'
+                                  from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/atpc-is-on}'
                               configured-atpc-threshold-upper:
                                 type: integer
                                 description: >
                                   'Configured upper automatic transmit power control (ATPC) threshold in dBm
-                                  from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/atpc-thresh-upper}'
+                                  from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/atpc-thresh-upper}'
                               configured-atpc-threshold-lower:
                                 type: integer
                                 description: >
                                   'Configured lower automatic transmit power control (ATPC) threshold in dBm
-                                  from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/atpc-tresh-lower}'
+                                  from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/atpc-tresh-lower}'
                               configured-tx-power:
                                 type: integer
                                 description: >
                                   'Configured transmit power that will be operated in maximum in dBm
-                                  from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/tx-power}'
+                                  from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/tx-power}'
                               configured-modulation-minimum:
                                 type: object
                                 description: >
                                   'Configured minimum modulation scheme
-                                  from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}'
+                                  from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}'
                                 properties:
                                   number-of-states:
                                     type: integer
                                     description: >
                                       'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
-                                      transmissionModeMin = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
-                                      from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
-                                      where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
+                                      transmissionModeMin = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
+                                      from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
+                                      where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
                                   name-at-lct:
                                     type: string
                                     description: >
                                       'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                      transmissionModeMin = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
-                                      from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
-                                      where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
+                                      transmissionModeMin = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
+                                      from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
+                                      where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
                                   configured-capacity-minimum:
                                     type: integer
                                     description: >
                                       'AirInterface capacity for the configured minimum modulation scheme calculated with ONF formula
-                                      transmissionModeMin = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
-                                      from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
-                                      where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
+                                      transmissionModeMin = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-min}
+                                      from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
+                                      where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMin'
                               configured-modulation-maximum:
                                 type: object
                                 description: >
                                   'Configured maximum modulation scheme
-                                  from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}'
+                                  from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}'
                                 properties:
                                   number-of-states:
                                     type: integer
                                     description: >
                                       'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
-                                      transmissionModeMax = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
-                                      from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
-                                      where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
+                                      transmissionModeMax = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
+                                      from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
+                                      where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
                                   name-at-lct:
                                     type: string
                                     description: >
                                       'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                      transmissionModeMax = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
-                                      from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
-                                      where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
+                                      transmissionModeMax = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
+                                      from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme}
+                                      where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
                                   configured-capacity-minimum:
                                     type: integer
                                     description: >
                                       'AirInterface capacity for the configured minimum modulation scheme calculated with ONF formula
-                                      transmissionModeMax = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
-                                      from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
-                                      where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
+                                      transmissionModeMax = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-configuration/transmission-mode-max}
+                                      from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
+                                      where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-name} == transmissionModeMax'
                           air-interface-performance-measurements-list:
                             type: array
                             items:
@@ -164,78 +168,78 @@ x-javascript-interface:
                                     - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                                   description: >
                                     'Time period between reset of the underlying counter
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/granularity-period}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/granularity-period}'
                                 period-end-time:
                                   type: string
                                   description: >
                                     'Time when the counter values have been recorded and the counter reset
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/period-end-time}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/period-end-time}'
                                 transmit-level-minimum:
                                   type: integer
                                   description: >
                                     'Minimum transmit power in dBm
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/tx-level-min}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/tx-level-min}'
                                 transmit-level-maximum:
                                   type: integer
                                   description: >
                                     'Maximum transmit power in dBm
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/tx-level-max}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/tx-level-max}'
                                 transmit-level-average:
                                   type: integer
                                   description: >
                                     'Averaged transmit power in dBm
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/tx-level-avg}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/tx-level-avg}'
                                 receive-level-minimum:
                                   type: integer
                                   description: >
                                     'Minimum receive level in dBm
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/rx-level-min}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/rx-level-min}'
                                 receive-level-maximum:
                                   type: integer
                                   description: >
                                     'Maximum receive level in dBm
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/rx-level-max}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/rx-level-max}'
                                 receive-level-average:
                                   type: integer
                                   description: >
                                     'Averaged receive level in dBm
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/rx-level-avg}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/rx-level-avg}'
                                 signal-to-noise-ratio-minimum:
                                   type: integer
                                   description: >
                                     'Minimum signal to noise + interference ratio (SNIR)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/snir-min}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/snir-min}'
                                 signal-to-noise-ratio-maximum:
                                   type: integer
                                   description: >
                                     'Maximum signal to noise + interference ratio (SNIR)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/snir-max}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/snir-max}'
                                 signal-to-noise-ratio-average:
                                   type: integer
                                   description: >
                                     'Averaged signal to noise + interference ratio (SNIR)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/snir-avg}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/snir-avg}'
                                 cross-polarization-discrimination-minimum:
                                   type: integer
                                   description: >
                                     'Minimum cross polarization discrimination (XPD)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/xpd-min}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/xpd-min}'
                                 cross-polarization-discrimination-maximum:
                                   type: integer
                                   description: >
                                     'Maximum cross polarization discrimination (XPD)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/xpd-max}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/xpd-max}'
                                 cross-polarization-discrimination-average:
                                   type: integer
                                   description: >
                                     'Averaged cross polarization discrimination (XPD)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/xpd-avg}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/xpd-avg}'
                                 operated-transmission-modes-list: 
                                   type: array
                                   description: >
                                     'List of operated transmission modes with respective operation time periods. Only those entries where operation time is greater than 0 seconds shall be listed
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list},
-                                    only add array items where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/time} > 0'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list},
+                                    only add array items where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/time} > 0'
                                   items:
                                     type: object
                                     properties:
@@ -243,67 +247,67 @@ x-javascript-interface:
                                         type: string
                                         description: >
                                           'Key attribute, name of the transmission mode
-                                          from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode}'
+                                          from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode}'
                                       modulation-scheme-name-at-lct:
                                         type: string
                                         description: >
                                           'Name identifying this transmission mode on the graphical user interface of the local craft terminal,
-                                          transmissionMode = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode},
-                                          from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}
-                                          where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode} = transmissionMode'
+                                          transmissionMode = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode},
+                                          from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme-name-at-lct}
+                                          where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode} = transmissionMode'
                                       time:
                                         type: integer
                                         description: >
                                           'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                          from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/time}'
+                                          from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/time}'
                                       capacity:
                                         type: integer
                                         description: >
                                           'Channel capacity in kbps of the modulation scheme (KPI),
-                                          transmissionMode = {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode},
-                                          from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
-                                          where {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode} == transmissionMode'
+                                          transmissionMode = {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-xstates-list/transmission-mode},
+                                          from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/capacity}
+                                          where {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode} == transmissionMode'
                                 interval-capacity:
                                   type: integer
                                   description: >
                                     'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/interval-capacity}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/interval-capacity}'
                                 errorred-seconds:
                                   type: integer
                                   description: >
                                     'Number of errored seconds
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/es}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/es}'
                                 severely-errorred-seconds:
                                   type: integer
                                   description: >
                                     'Number of severily errored seconds
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/ses}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/ses}'
                                 consecutive-severely-errorred-seconds:
                                   type: integer
                                   description: >
                                     'Number of consecutive severily errored seconds
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/cses}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/cses}'
                                 total-unavailability:
                                   type: integer
                                   description: >
                                     'Total time of unavailability in seconds
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/unavailability}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/unavailability}'
                                 defect-blocks:
                                   type: integer
                                   description: >
                                     'Total number of blocks that were defect after receiving and could not be corrected by the FEC
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/defect-blocks-sum}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/defect-blocks-sum}'
                                 time-period:
                                   type: integer
                                   description: >
                                     'Total (actual) length of the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-period}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/time-period}'
                           transmission-mode-list:
                             type: array
                             description: >
                                   'List of supported Transmission Modes
-                                  {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list},
-                                  array entries are only to be added, if {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/code-rate} != -1}'
+                                  {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list},
+                                  array entries are only to be added, if {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/code-rate} != -1}'
                             items:
                               type: object
                               properties:
@@ -311,37 +315,37 @@ x-javascript-interface:
                                   type: string
                                   description: >
                                     'Key attribute, name of the transmission mode
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-list}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/transmission-mode-list}'
                                 number-of-states:
                                   type: integer
                                   description: >
                                     'Number of states in the phase diagram (e.g. BPSK->2 or 256QAM->256)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/number-of-states}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/number-of-states}'
                                 modulation-scheme-name-at-lct:
                                   type: string
                                   description: >
                                     'Name identifying this transmission mode on the graphical user interface of the local craft terminal
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme-at-lct}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/modulation-scheme-at-lct}'
                                 channel-bandwidth:
                                   type: integer
                                   description: >
                                     'Bandwidth of the transmit channel in kHz
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/channel-bandwidth}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/channel-bandwidth}'
                                 code-rate:
                                   type: integer
                                   description: >
                                     'Code rate of the coding scheme in %
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/code-rate}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/code-rate}'
                                 symbol-rate-reduction-factor:
                                   type: integer
                                   description: >
                                     'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/symbol-rate-reduction-factor}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list/symbol-rate-reduction-factor}'
                     ethernet-container-list:
                       description: >
                         'List of EthernetContainers found in the given device ControlConstruct.
-                        Traverse {$input#_control-construct/logical-termination-point/layer-protocol} and create an array element for each layer-protocol
-                        where {$input#_control-construct/logical-termination-point/layer-protocol/layer-protocol-name} indicates ETHERNET_CONTAINER'
+                        Traverse {$input#_result-cc/logical-termination-point/layer-protocol} and create an array element for each layer-protocol
+                        where {$input#_result-cc/logical-termination-point/layer-protocol/layer-protocol-name} indicates ETHERNET_CONTAINER'
                       type: array
                       items:
                         type: object
@@ -353,7 +357,7 @@ x-javascript-interface:
                                 type: string
                                 description: >
                                   'Identifier of the device at the controller and in the Telefónica planning tools, to be filled
-                                  from {$input/_control-construct/equipment-augment-1-0:control-construct-pac/external-label}'
+                                  from {$input/_result-cc/equipment-augment-1-0:control-construct-pac/external-label}'
                               interface-name:
                                 type: string
                                 description: >
@@ -363,7 +367,7 @@ x-javascript-interface:
                                 type: string
                                 description: >
                                   'Identifier of currently traversed LTP, to be filled
-                                  from {$input#_control-construct/logical-termination-point/uuid} for the currently traversed layer-protocol'
+                                  from {$input#_result-cc/logical-termination-point/uuid} for the currently traversed layer-protocol'
                           ethernet-container-performance-measurements-list:
                             type: array
                             items:
@@ -376,151 +380,151 @@ x-javascript-interface:
                                     - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                                   description: >
                                     'Time period between reset of the underlying counter
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/granularity-period}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/granularity-period}'
                                 period-end-time:
                                   type: string
                                   description: >
                                     'Time when the counter values have been recorded and the counter reset
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/period-end-time}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/period-end-time}'
                                 max-bytes-per-second-output:
                                   type: string
                                   description: >
                                     'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/max-bytes-per-second-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/max-bytes-per-second-output}'
                                 total-bytes-input:
                                   type: string
                                   description: >
                                     'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-bytes-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-bytes-input}'
                                 total-bytes-output:
                                   type: string
                                   description: >
                                     'Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-bytes-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-bytes-output}'
                                 total-frames-input:
                                   type: string
                                   description: >
                                     'The total number of Ethernet frames received at this interface (including those received in error)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-frames-input}'
                                 total-frames-output:
                                   type: string
                                   description: >
                                     'The total number of Ethernet frames sent at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-frames-output}'
                                 forwarded-frames-input:
                                   type: string
                                   description: >
                                     'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/forwarded-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/forwarded-frames-input}'
                                 forwarded-frames-output:
                                   type: string
                                   description: >
                                     'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/forwarded-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/forwarded-frames-output}'
                                 unicast-frames-input:
                                   type: string
                                   description: >
                                     'Total number of unicast frames received at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/unicast-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/unicast-frames-input}'
                                 unicast-frames-output:
                                   type: string
                                   description: >
                                     'Total number of unicast frames sent at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/unicast-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/unicast-frames-output}'
                                 multicast-frames-input:
                                   type: integer
                                   description: >
                                     'Total number of multicast frames received at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/multicast-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/multicast-frames-input}'
                                 multicast-frames-output:
                                   type: integer
                                   description: >
                                     'Total number of multicast frames sent at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/multicast-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/multicast-frames-output}'
                                 broadcast-frames-input:
                                   type: integer
                                   description: >
                                     'Total number of broadcast frames received at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/broadcast-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/broadcast-frames-input}'
                                 broadcast-frames-output:
                                   type: integer
                                   description: >
                                     'Total number of broadcast frames sent at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/broadcast-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/broadcast-frames-output}'
                                 fragmented-frames-input:
                                   type: integer
                                   description: >
                                     'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/fragmented-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/fragmented-frames-input}'
                                 errored-frames-input:
                                   type: integer
                                   description: >
                                     'Total number of errored frames received at this interface
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/errored-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/errored-frames-input}'
                                 errored-frames-output:
                                   type: integer
                                   description: >
                                     'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/errored-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/errored-frames-output}'
                                 dropped-frames-input:
                                   type: integer
                                   description: >
                                     'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/dropped-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/dropped-frames-input}'
                                 dropped-frames-output:
                                   type: integer
                                   description: >
                                     'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/dropped-frames-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/dropped-frames-output}'
                                 oversized-frames-ingress:
                                   type: string
                                   description: >
                                     'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/oversized-frames-ingress}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/oversized-frames-ingress}'
                                 undersized-frames-ingress:
                                   type: string
                                   description: >
                                     'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/undersized-frames-ingress}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/undersized-frames-ingress}'
                                 jabber-frames-ingress:
                                   type: string
                                   description: >
                                     'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/jabber-frames-ingress}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/jabber-frames-ingress}'
                                 unknown-protocol-frames-input:
                                   type: string
                                   description: >
                                     'Total number of received frames that were transporting an unknown protocol
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/unknown-protocol-frames-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/unknown-protocol-frames-input}'
                                 time-period:
                                   type: integer
                                   description: >
                                     'Total (actual) length of the measurement period
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/time-period}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/time-period}'
                                 transmit-traffic:
                                   type: number
                                   format: float
                                   description: >
                                     'TX Traffic [Mbps] KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/transmit-traffic}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/transmit-traffic}'
                                 receive-traffic:
                                   type: number
                                   format: float
                                   description: >
                                     'RX Traffic [Mbps] (KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/receive-traffic}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/receive-traffic}'
                                 frame-loss-input:
                                   type: integer
                                   description: >
                                     'Sum of errored and dropped frames on the ingress (KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-input}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-input}'
                                 frame-loss-output:
                                   type: integer
                                   description: >
                                     'Sum of errored and dropped frames on the egress (KPI)
-                                    from {$input#_control-construct/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-output}'
+                                    from {$input#_result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/frame-loss-output}'
       error:
-        description: 'OutputApt object could not be created'
+        description: 'aptOutputFormat could not be created from resultCC'
         content:
           application/json:
             schema:
@@ -537,16 +541,16 @@ x-javascript-interface:
               schema:
                 type: object
                 properties:
-                  _control-construct:
+                  _result-cc:
                     type: object
                     description: >
                       'The reference to ControlConstruct object
-                      from {input#_control-construct}'
+                      from {input#_result-cc}'
                   uuid:
                     type: string
                     description: >
                       'The uuid of the currently processed LTP containing the AirInterface layer-protocol
-                      from {$input#_control-construct/logical-termination-point/uuid}'
+                      from {$input#_result-cc/logical-termination-point/uuid}'
         output:
           success:
             description: 'AirInterfaceNames provided'
@@ -581,16 +585,16 @@ x-javascript-interface:
               schema:
                 type: object
                 properties:
-                  _control-construct:
+                  _result-cc:
                     type: object
                     description: >
                       'The reference to ControlConstruct object
-                      from {input#_control-construct}'
+                      from {input#_result-cc}'
                   uuid:
                     type: string
                     description: >
                       'The uuid of the currently processed LTP containing the EthernetContainer layer-protocol
-                      from {$input#_control-construct/logical-termination-point/uuid}'
+                      from {$input#_result-cc/logical-termination-point/uuid}'
         output:
           success:
             description: 'AirInterfaceNames provided'
@@ -635,16 +639,16 @@ x-javascript-interface:
               schema:
                 type: object
                 properties:
-                  _control-construct:
+                  _result-cc:
                     type: object
                     description: >
                       'The reference to ControlConstruct object
-                      from {input#_control-construct}'
+                      from {input#_result-cc}'
                   uuid:
                     type: string
                     description: >
                       'The uuid of the currently processed LTP containing the EthernetContainer layer-protocol
-                      from {$input#_control-construct/logical-termination-point/uuid}'
+                      from {$input#_result-cc/logical-termination-point/uuid}'
         output:
           success:
             description: 'AirInterfaceNames provided'
@@ -669,91 +673,3 @@ x-javascript-interface:
 paths:
   /:
     description: 'no rest path provided by this module'
-
-components:
-  schemas:
-    function-schema:
-      type: object
-      required:
-        - function-name
-        - description
-        - is-active
-        - parameter
-        - sub-function
-      properties:
-        function-name:
-          type: string
-          description: >
-            'operationId (from the OAS) as a unique and invariant identifier of the module
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-name]'
-        description:
-          type: string
-          description: >
-            'Human readable description of the Function
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-description]'
-        is-active:
-          type: boolean
-          description: >
-            'true = the Function shall be executed
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-configuration/is-active]'
-        parameter:
-          type: array
-          x-key: parameter-name
-          description: 'List of Parameters of the Function'
-          items:
-            type: object
-            required:
-              - parameter-name
-              - purpose
-              - owner
-              - value
-            properties:
-              parameter-name:
-                type: string
-                description: >
-                  'Locally unique and invariant name of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/string-name]'
-              purpose:
-                type: string
-                description: >
-                  'Invariant description of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/purpose]'
-              owner:
-                type: string
-                description: >
-                  'Owner of the parameter
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/owner]'
-                enum:
-                  - platform
-                  - engineering
-                  - user
-              value:
-                type: string
-                description: >
-                  'Configurable value of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-configuration/string-value]'
-              enumeration:
-                type: array
-                description: >
-                  'Optional: List of valid values for the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/enumeration]'
-                items:
-                  type: string
-              pattern:
-                type: string
-                description: >
-                  'Optional: Regular expression defining valid values of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/pattern]'
-        sub-function:
-          type: array
-          x-key: function-name
-          description: >
-            'List of sub-Functions incl. their parameter settings
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]'
-          items:
-            $ref: '#/components/schemas/function-schema'

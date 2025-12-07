@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+  title: p1TransmittingKafka
+  version: 1.0.0
+
+x-javascript-interface:
+  p1TransmittingKafka:
+    summary: ''
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - _outputFormat
+              - parameters
+            properties:
+              _outputFormat:
+                type: reference
+                description: >
+                  'Reference to the content of an OutputFormat in DataStructureForProcessing'
+              parameters:
+                type: object
+                description: >
+                  'Parameters object for p1TransmittingKafka'
+    output:
+      success:
+        description: 'OutputFormats sent via Kafka'
+      error:
+        description: 'OutputFormats could not be sent via Kafka'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - ''
+                    # todo: error messages to be added
+                    # todo: same error messages to be added to the interface of p1ProcessingPmData, too
+
+    processing:
+      # todo: processing details to be added
+
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

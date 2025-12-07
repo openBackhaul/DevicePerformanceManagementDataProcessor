@@ -14,18 +14,18 @@ x-javascript-interface:
             type: object
             required:
               - mount-name
-              - function
+              - parameters
             properties:
               mount-name:
                 type: string
                 description: >
                   'MountName
                   to {/data-structure-for-processing/mount-name}'
-              function:
-                $ref: '#/components/schemas/function-schema'
+              parameters:
+                type: object
                 description: >
                   'Hierarchical object holding the parameter settings
-                  to {/data-structure-for-processing/function}'
+                  to {/data-structure-for-processing/parameters}'
     output:
       success:
         description: 'PM data processed, sent and stored'
@@ -41,18 +41,18 @@ x-javascript-interface:
                 type: object
                 required:
                   - mount-name
-                  - function
+                  - parameters
                 properties:
                   mount-name:
                     type: string
                     description: >
                       'MountName
                       from {/data-structure-for-processing/mount-name}'
-                  function:
+                  parameters:
                     type: object
                     description: >
-                      'Subtree of the Function object for p1LoadRawCc
-                      from {/data-structure-for-processing/function/sub-function=p1LoadRawCc}'
+                      'Subtree of the parameters object for p1LoadRawCc
+                      from {/data-structure-for-processing/parameters/sub-function=p1LoadRawCc}'
         output:
           success:
             description: 'Raw CC data loaded'
@@ -61,9 +61,9 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - raw-control-construct
+                    - raw-cc
                   properties:
-                    raw-control-construct:
+                    raw-cc:
                       type: object
                       description: >
                         'rawCc
@@ -86,18 +86,18 @@ x-javascript-interface:
                 type: object
                 required:
                   - _raw-cc
-                  - function
+                  - parameters
                 properties:
                   _raw-cc:
                     type: reference
                     description: >
                       'reference to rawCc in DataStructureForProcessing
                       /data-structure-for-processing/raw-cc'
-                  function:
+                  parameters:
                     type: object
                     description: >
-                      'Subtree of the Function object for p1CreateResultCc
-                      from {/data-structure-for-processing/function/sub-function=p1CreateResultCc}'
+                      'Subtree of the parameters object for p1CreateResultCc
+                      from {/data-structure-for-processing/parameters/sub-function=p1CreateResultCc}'
         output:
           success:
             description: 'Result CC data created'
@@ -106,9 +106,9 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - result-control-construct
+                    - result-cc
                   properties:
-                    result-control-construct:
+                    result-cc:
                       type: object
                       description: >
                         'resultCc
@@ -131,18 +131,18 @@ x-javascript-interface:
                 type: object
                 required:
                   - _result-cc
-                  - function
+                  - parameters
                 properties:
-                  result-cc:
+                  _result-cc:
                     type: reference
                     description: >
                       'reference to resultCc in DataStructureForProcessing
                       /data-structure-for-processing/result-cc'
-                  function:
+                  parameters:
                     type: object
                     description: >
-                      'Subtree of the Function object for p1FormattingOutputApt
-                      from {/data-structure-for-processing/function/sub-function=p1FormattingOutputApt}'
+                      'Subtree of the parameters object for p1FormattingOutputApt
+                      from {/data-structure-for-processing/parameters/sub-function=p1FormattingOutputApt}'
         output:
           success:
             description: 'aptOutputFormat created from resultCC'
@@ -157,7 +157,7 @@ x-javascript-interface:
                       type: object
                       description: >
                         'aptOutputFormat
-                        to {/data-structure-for-processing/output/apt-format}'
+                        to {/data-structure-for-processing/output-format=apt/content}'
           error:
             description: 'aptOutputFormat could not be created from resultCC'
             content:
@@ -165,8 +165,8 @@ x-javascript-interface:
                 schema:
                   type: string
                   enum:
-                    - ''
-                    # todo: error messages to be added after specifying p1FormattingOutputApt
+                    - 'Input data missing or invalid'
+                    - 'General processing error'
       p1TransmittingKafka:
         input:
           required: true
@@ -175,19 +175,19 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - _output-format
-                  - function
+                  - _outputFormat
+                  - parameters
                 properties:
-                  _output-format:
+                  _outputFormat:
                     type: reference
                     description: >
-                      'Reference to the list of OutputFormats in DataStructureForProcessing
-                      /data-structure-for-processing/output'
-                  function:
+                      'Reference to the content of an OutputFormat in DataStructureForProcessing
+                      /data-structure-for-processing/output-format=[parameter]/content'
+                  parameters:
                     type: object
                     description: >
-                      'Subtree of the Function object for p1TransmittingKafka
-                      from {/data-structure-for-processing/function/sub-function=p1TransmittingKafka}'
+                      'Subtree of the parameters object for p1TransmittingKafka
+                      from {/data-structure-for-processing/parameters/sub-function=p1TransmittingKafka}'
         output:
           success:
             description: 'OutputFormats sent via Kafka'
@@ -209,18 +209,18 @@ x-javascript-interface:
                 type: object
                 required:
                   - _result-cc
-                  - function
+                  - parameters
                 properties:
                   result-cc:
                     type: reference
                     description: >
                       'reference to resultCc in DataStructureForProcessing
                       /data-structure-for-processing/result-cc'
-                  function:
+                  parameters:
                     type: object
                     description: >
-                      'Subtree of the Function object for p1Storing
-                      from {/data-structure-for-processing/function/sub-function=p1Storing}'
+                      'Subtree of the parameters object for p1Storing
+                      from {/data-structure-for-processing/parameters/sub-function=p1Storing}'
         output:
           success:
             description: 'resultCC stored'
@@ -237,91 +237,3 @@ x-javascript-interface:
 paths:
   /:
     description: 'no rest path provided by this module'
-
-components:
-  schemas:
-    function-schema:
-      type: object
-      required:
-        - function-name
-        - description
-        - is-active
-        - parameter
-        - sub-function
-      properties:
-        function-name:
-          type: string
-          description: >
-            'operationId (from the OAS) as a unique and invariant identifier of the module
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-name]'
-        description:
-          type: string
-          description: >
-            'Human readable description of the Function
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-description]'
-        is-active:
-          type: boolean
-          description: >
-            'true = the Function shall be executed
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-configuration/is-active]'
-        parameter:
-          type: array
-          x-key: parameter-name
-          description: 'List of Parameters of the Function'
-          items:
-            type: object
-            required:
-              - parameter-name
-              - purpose
-              - owner
-              - value
-            properties:
-              parameter-name:
-                type: string
-                description: >
-                  'Locally unique and invariant name of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/string-name]'
-              purpose:
-                type: string
-                description: >
-                  'Invariant description of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/purpose]'
-              owner:
-                type: string
-                description: >
-                  'Owner of the parameter
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/owner]'
-                enum:
-                  - platform
-                  - engineering
-                  - user
-              value:
-                type: string
-                description: >
-                  'Configurable value of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-configuration/string-value]'
-              enumeration:
-                type: array
-                description: >
-                  'Optional: List of valid values for the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/enumeration]'
-                items:
-                  type: string
-              pattern:
-                type: string
-                description: >
-                  'Optional: Regular expression defining valid values of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
-                  from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/pattern]'
-        sub-function:
-          type: array
-          x-key: function-name
-          description: >
-            'List of sub-Functions incl. their parameter settings
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]'
-          items:
-            $ref: '#/components/schemas/function-schema'
