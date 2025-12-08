@@ -86,7 +86,7 @@ group Filter remaining rawControlConstruct data
   ' For each relevant interface filter the PM records
   group For each AirInterface and EthernetContainer
     note over cur, datastore
-      <u>DiscardIrrelevantPmRecords</u>
+      <u>p1DiscardIrrelevantPmRecords</u>
       Send the historicalPerformanceDataList to the function, where all irrelevant PM records
       are discarded. Overwrite the original list:
       currentInterface.<i>historicalPerformanceDataList</i> := filtered historicalPerformanceDataList 
@@ -98,7 +98,7 @@ group Filter remaining rawControlConstruct data
       (IF <i>mostRecentPeriodEndTime</i> or <i>mostRecentPeriodEndTime24</i>
       are not available for the current interface, treat all seen records as newer.)
     end note
-    cur -> filterPm: {historicalPerformanceDataList, mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularitiesToBeKept}
+    cur -> filterPm: {historicalPerformanceDataList,\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
     cur <-- filterPm: {filtered historicalPerformanceDataList}
   end group
 
