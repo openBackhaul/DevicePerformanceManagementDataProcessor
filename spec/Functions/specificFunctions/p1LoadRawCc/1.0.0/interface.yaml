@@ -593,10 +593,9 @@ x-javascript-interface:
                                                       from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
                                                       Inputs for {discardIrrelevantPmRecords} are:
                                                       - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list} for the currently processed interface instance
-                                                      - most-recent-period-end-time and most-recent-period-end-time-24, matched from {applyFieldsFilter} and {retrieveMostRecentPeriodEndTimesFromDs} as follows:
-                                                         IF ({$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
-                                                            AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
-                                                         THEN it is the same interface instance.
+                                                      - derive the relevant interface data from retrieveMostRecentPeriodEndTimesFromDs output as follows:
+                                                        where {$retrieveMostRecentPeriodEndTimesFromDs.output=={$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid}}
+                                                        for this instance use most-recent-period-end-time and most-recent-period-end-time-24
 
                                                       IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
                                                     x-key: period-end-time
@@ -700,10 +699,9 @@ x-javascript-interface:
                                                       from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
                                                       Inputs for p1DiscardIrrelevantPmRecords are:
                                                       - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list} for the currently processed interface instance
-                                                      - most-recent-period-end-time and most-recent-period-end-time-24, matched from {applyFieldsFilter} and {retrieveMostRecentPeriodEndTimesFromDs} as follows:
-                                                         IF ({$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
-                                                            AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
-                                                         THEN it is the same interface instance.
+                                                      - derive the relevant interface data from retrieveMostRecentPeriodEndTimesFromDs output as follows:
+                                                        where {$retrieveMostRecentPeriodEndTimesFromDs.output=={$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid}}
+                                                        for this instance use most-recent-period-end-time and most-recent-period-end-time-24
 
                                                       IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
                                                     x-key: period-end-time
