@@ -41,7 +41,7 @@ activate p1RMWDI #LightCyan
     - MWDI ES Replica
     - Logging of MWDI ES Replication
     - DataStore
-    from applying the references (uuids) in the
+    by applying the references (uuids) in the
     parameters on the content of the configFile
   end note
 

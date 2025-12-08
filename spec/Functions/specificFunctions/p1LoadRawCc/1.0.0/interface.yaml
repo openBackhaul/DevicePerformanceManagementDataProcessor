@@ -38,13 +38,6 @@ x-javascript-interface:
               properties:
                   raw-cc:
                     type: object
-
-
-                  # todo: could you please describe the rawCc object here
-                  # As it serves as input to further functions, it should be documented at an expected place
-                  # The following structure has been moved from the DataStructureForProcessing.yaml file to here.
-                  # Please verify that this is still correct
-
                     description: >
                       'The raw control construct data read from ES, following ONF structure.
                       Only relevant classes and attributes listed.'
@@ -62,14 +55,17 @@ x-javascript-interface:
                             type: string
                             description: >
                               'mountName
-                              from {$p1ProcessingPmData.request.body#/mount-name}'
+                              from {$input#/mount-name}'
                           device-model-name:
                             type: string
                             description: >
                               'deviceType
-                              from {$p1LoadRawCc}'
+                              from {$applyFilteringForRelevantPmData.output#equipment-augment-1-0:control-construct-pac/device-model-name}'
                       logical-termination-point:
                         type: array
+                        description: >
+                          'The filtered LTP data
+                          from {$applyFilteringForRelevantPmData.output#logical-termination-point}
                         x-key: uuid
                         items:
                           type: object
@@ -93,14 +89,10 @@ x-javascript-interface:
                               properties:
                                 external-label:
                                   type: string
-                                  description: >
-                                    'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                                    from {$p1LoadRawCc}'
+                                  description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
                                 original-ltp-name:
                                   type: string
-                                  description: >
-                                    'portName
-                                    from {$p1LoadRawCc}'
+                                  description: 'portName'
                             layer-protocol:
                               type: array
                               x-key: local-id
@@ -330,9 +322,6 @@ x-javascript-interface:
                                                         unknown-protocol-frames-input:
                                                           type: string
                                                           description: 'String representation of int64 value'
-
-                  # End of the structure that has been moved from the DataStructureForProcessing.yaml file to here.
-
       error:
         description: 'Raw CC could not be loaded'
         content:
@@ -344,8 +333,7 @@ x-javascript-interface:
                 - 'General processing error'
     processing:
       readControlConstructFromEs:
-        url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/control-construct={mountName}]
-          # TODO: url possibly to be composed somehow using function parameters?
+        url: #[/core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=mwdiReplicaTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=mwdiReplicaTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=mwdiReplicaTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=mwdiReplicaTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/control-construct={mountName}]
           output:
             success:
               description: 'Raw ControlConstruct data read'
@@ -393,8 +381,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure,
-                        from {$input#function/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}'
-                      #TODO: verify that this is correct
+                        from {$input#parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}'
             output:
               success:
                 description: 'Data structure successfully filtered according to the provided fields filter string'
@@ -417,51 +404,38 @@ x-javascript-interface:
                         - 'Invalid fields filter string syntax'
                         - 'General processing error during filtering'
       retrieveMostRecentPeriodEndTimesFromDs:
-        url: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-tcp-c-es-1-0-0-001/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/data-store/device/{mountName}]
-          description: >
-            'This processing step reads the data-store item (from the DPMDP ES) where
-            [/data-store/device/mount-name](x-key) == {$input#mount-name},
-            it returns the [/data-store/device/ltp/most-recent-period-end-time] (for 15min data) and [/data-store/device/ltp/most-recent-period-end-time-24] (for 24h data) for all previously seen interfaces,
-            if no data is found, an empty ltp array is to be returned.'
+        url: #[/core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=dataStoreTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=dataStoreTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address or /core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=dataStoreTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name]:[/core-model-1-4:control-construct/logical-termination-point={$parameters/parameter=dataStoreTcpClient/value}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/data-store/device={$input#mount-name}/interface]
+          description: 'Reads the timestamps of the most recent 15min and 24h PM data records of all interfaces.'
           output:
             success:
               description: 'List of most-recent-period-end-times provided'
               content:
                 application/json:
                   schema:
-                    type: object
-                    properties:
-                      ltp:
-                        type: array
-                        items:
-                          properties:
-                            uuid:
-                              type: string
-                              description: 'The uuid of the LTP'
-                            lp:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  local-id:
-                                    type: string
-                                    description: 'The layerProtocol local-id, identifying the actual interface instance'
-                                  most-recent-period-end-time:
-                                    type: string
-                                  most-recent-period-end-time-24:
-                                    type: string
+                    type: array
+                    x-key: uuid
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                        layer-protocol-name:
+                          type: string
+                        most-recent-period-end-time:
+                          type: string
+                          description: 'The newest seen periodEndTime for this interface in 15min data'
+                        most-recent-period-end-time-24:
+                          type: string
+                          description: 'The newest seen periodEndTime for this interface in 24h data'
                     example:
-                      ltp:
-                        - uuid: 'RF-819.1.1'
-                          lp:
-                            - local-id: '819.1.1'
-                              most-recent-period-end-time: '2025-11-19T18:33:43.813+01:00'
-                              most-recent-period-end-time-24: '2025-11-19T02:33:43.813+01:00'
-                        - uuid: 'ETH-785.1.5'
-                          lp:
-                            - local-id: '765.1.5'
-                              most-recent-period-end-time: '2025-11-18T00:00:01+01:00'
-                              most-recent-period-end-time-24: '2025-11-18T23:33:43.813+01:00'
+                      - uuid: 'RF-819.1.1'
+                        layer-protocol-name: 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                        most-recent-period-end-time: '2025-11-19T18:33:43.813+01:00'
+                        most-recent-period-end-time-24: '2025-11-19T02:33:43.813+01:00'
+                      - uuid: 'ETH-785.1.5'
+                        layer-protocol-name: 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                        most-recent-period-end-time: '2025-11-18T00:00:01+01:00'
+                        most-recent-period-end-time-24: '2025-11-18T23:33:43.813+01:00'
             error:
               description: 'MostRecentPeriodEndTimes could not be provided'
               content:
@@ -554,8 +528,8 @@ x-javascript-interface:
                                       'The layer-protocol instances
                                       from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol}
                                       where {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
-                                      For each layer protocol instance further filtering is applied, by executing step discardIrrelevantPmRecords.
-                                      Only those layer protocols are added as an array item, for which length({$discardIrrelevantPmRecords.output#historical-performance-data-list}) > 0.'
+                                      For each layer protocol instance further filtering is applied, by executing p1DiscardIrrelevantPmRecords.
+                                      Only those layer protocols are added as an array item, for which length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) > 0.'
                                     oneOf:
                                       - description: 'air-interface'
                                         type: object
@@ -616,7 +590,7 @@ x-javascript-interface:
                                                     type: array
                                                     description: >
                                                       'The filtered contents of historical-performance-data-list, which remain after executing processing step {discardIrrelevantPmRecords},
-                                                      from {$discardIrrelevantPmRecords.output#historical-performance-data-list}.
+                                                      from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
                                                       Inputs for {discardIrrelevantPmRecords} are:
                                                       - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list} for the currently processed interface instance
                                                       - most-recent-period-end-time and most-recent-period-end-time-24, matched from {applyFieldsFilter} and {retrieveMostRecentPeriodEndTimesFromDs} as follows:
@@ -624,7 +598,7 @@ x-javascript-interface:
                                                             AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
                                                          THEN it is the same interface instance.
 
-                                                      IF length({$discardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
+                                                      IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
                                                     x-key: period-end-time
                                                     items:
                                                       type: object
@@ -640,17 +614,17 @@ x-javascript-interface:
                                                             - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                                                           description: >
                                                             'The granularity-period
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
                                                         period-end-time:
                                                           type: string
                                                           description: >
                                                             'The period-end-time
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
                                                         performance-data:
                                                           type: object
                                                           description: >
                                                             'The performance-data
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
                                                           properties:
                                                             es:
                                                               type: integer
@@ -722,16 +696,16 @@ x-javascript-interface:
                                                   historical-performance-data-list:
                                                     type: array
                                                     description: >
-                                                      'The filtered contents of historical-performance-data-list, which remain after executing processing step {discardIrrelevantPmRecords},
-                                                      from {$discardIrrelevantPmRecords.output#historical-performance-data-list}.
-                                                      Inputs for {discardIrrelevantPmRecords} are:
+                                                      'The filtered contents of historical-performance-data-list, which remain after executing p1DiscardIrrelevantPmRecords,
+                                                      from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
+                                                      Inputs for p1DiscardIrrelevantPmRecords are:
                                                       - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list} for the currently processed interface instance
                                                       - most-recent-period-end-time and most-recent-period-end-time-24, matched from {applyFieldsFilter} and {retrieveMostRecentPeriodEndTimesFromDs} as follows:
                                                          IF ({$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
                                                             AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
                                                          THEN it is the same interface instance.
 
-                                                      IF length({$discardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
+                                                      IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
                                                     x-key: period-end-time
                                                     items:
                                                       type: object
@@ -747,17 +721,17 @@ x-javascript-interface:
                                                             - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                                                           description: >
                                                             'The granularity-period
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
                                                         period-end-time:
                                                           type: string
                                                           description: >
                                                             'The period-end-time
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
                                                         performance-data:
                                                           type: object
                                                           description: >
                                                             'The performance-data
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
                                                           properties:
                                                             max-bytes-per-second-output:
                                                               type: integer
@@ -815,7 +789,7 @@ x-javascript-interface:
                       - 'Input data structure incomplete or invalid'
                       - 'Error during filtering of raw data'
                       - 'General processing error'
-      discardIrrelevantPmRecords:
+      p1DiscardIrrelevantPmRecords:
         url: #[p1DiscardIrrelevantPmRecords]
         description: >
           'Called during execution of {applyFilteringForRelevantData} to filter the PM data records of a given interface instance'
@@ -852,12 +826,9 @@ x-javascript-interface:
                     properties:
                       relevant-granularities:
                         type: string
-                        enum:
-                          - '^[^:]+:GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
                         description: >
-                          'This parameter is a regex pattern, that indicates which granularity periods are relevant.'
-                        #TODO: shall this be a function parameter? -> if yes change to something like
-                        #from {$input#function/sub-function=p1FieldsFilter/parameter=relevant-granularities/value}'
+                          'This parameter is a regex pattern, that indicates which granularity periods are relevant
+                          from {$input#parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}'
         output:
           success:
             description: 'Filtered historicalPerformanceDataList provided'

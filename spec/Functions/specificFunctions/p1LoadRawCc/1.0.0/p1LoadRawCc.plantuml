@@ -5,15 +5,25 @@ title
   p1LoadRawCc
 end title
 
-participant "p1ProcessingPmData)" as requestor
+participant "p1ProcessingPmData" as requestor
 participant "p1LoadRawCc" as cur #LightCyan
-database "MWDI ES\nreplica" as MwdiEs #LightCyan
+database "MWDI ES replica" as MwdiEs #LightCyan
 participant "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
 requestor -> cur: {mountName,\n{parameters},\n{configFile}}
 activate cur #LightCyan
+
+  note over cur
+    Resolve detailed address information 
+    (incl. EsClient, HttpClient, TcpClient)
+    of ElasticSearch indexes for:
+    - MWDI ES Replica
+    - DataStore
+    by applying the references (uuids) in the
+    parameters on the content of the configFile
+  end note
 
 == Read CC and apply fieldsFilter ==
  'Read CC
@@ -53,7 +63,7 @@ note over cur
   - 24h: mostRecentPeriodEndTime24
 end note
 cur -> datastore: {mountName}
-cur <-- datastore: {listOf-(ltpUuid, listOf-(lpLocalId, mostRecentPeriodEndTime, mostRecentPeriodEndTime24))}
+cur <-- datastore: {[interface]}
 
 'Filter the data
 
