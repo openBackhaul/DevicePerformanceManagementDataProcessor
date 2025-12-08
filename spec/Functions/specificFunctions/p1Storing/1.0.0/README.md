@@ -1,5 +1,16 @@
 # p1Storing  
 
+The function shall execute the following steps:
+- store an input data-structure-for-processing object for a mount-name in the data-store under [/data-store/device=mount-name/data-structure-for-processing-list]  
+- traverse the resultCC from the input [/data-structure-for-processing/result-cc]. For each found AirInterface and EthernetContainer, uniquely identified by uuid and local-id:
+  - determine the most recent period-end-time for both 15min granularity and for 24h granularity
+  - store the found timestamps along with local-id and layer-protocol-name under:
+    - 15min: [/data-store/device=mount-name/ltp=uuid/lp=local-id/most-recent-period-end-time]
+    - 24h: [/data-store/device=mount-name/ltp=uuid/lp=local-id/most-recent-period-end-time-24]
+  - already existing entries for interfaces are overwritten
+    
+
+
 
     ### p1SetMostRecentTimestampAndDatavInDeviceTable
 
