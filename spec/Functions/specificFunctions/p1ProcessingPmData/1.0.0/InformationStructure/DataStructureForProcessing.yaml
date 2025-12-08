@@ -14,6 +14,11 @@ data-structure-for-processing:
       description: >
         'Hierarchical object holding the parameter settings
         from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
     raw-cc:
       type: object
       description: >

@@ -8,11 +8,11 @@ end title
 participant "p1ProcessingPmData)" as requestor
 participant "p1LoadRawCc" as cur #LightCyan
 database "MWDI ES\nreplica" as MwdiEs #LightCyan
-database "p1FieldsFilter" as fieldsFilter #LightCyan
+participant "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
-requestor -> cur: {mountName, parameters}
+requestor -> cur: {mountName,\n{parameters},\n{configFile}}
 activate cur #LightCyan
 
 == Read CC and apply fieldsFilter ==

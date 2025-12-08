@@ -23,6 +23,9 @@ x-javascript-interface:
               parameters:
                 type: object
                 description: 'Hierarchical object holding the parameter settings'
+              config-file:
+                type: object
+                description: 'configFile content'
     output:
       success:
         description: 'Raw CC data loaded'

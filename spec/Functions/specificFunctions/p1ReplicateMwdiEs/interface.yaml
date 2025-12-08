@@ -73,6 +73,9 @@ x-javascript-interface:
                     parameters:
                       type: object
                       description: 'Hierarchical object holding the parameter settings'
+                    config-file:
+                      type: object
+                      description: 'configFile content'
           error:
             description: 'Parameters could not be loaded'
             content:
@@ -95,6 +98,7 @@ x-javascript-interface:
                 required:
                   - mount-name
                   - parameters
+                  - config-file
                 properties:
                   mount-name:
                     type: string
@@ -106,6 +110,9 @@ x-javascript-interface:
                     description: >
                       'Hierarchical object holding the parameter settings
                       from {$p1LoadParameters.output#/parameters}'
+                  config-file:
+                    type: object
+                    description: 'configFile content'
         output:
           success:
             description: 'PM data processed, sent and stored'

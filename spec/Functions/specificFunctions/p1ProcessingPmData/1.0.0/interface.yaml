@@ -15,6 +15,7 @@ x-javascript-interface:
             required:
               - mount-name
               - parameters
+              - config-file
             properties:
               mount-name:
                 type: string
@@ -26,6 +27,11 @@ x-javascript-interface:
                 description: >
                   'Hierarchical object holding the parameter settings
                   to {/data-structure-for-processing/parameters}'
+              config-file:
+                type: object
+                description: >
+                  'configFile content
+                  to {/data-structure-for-processing/config-file}'
     output:
       success:
         description: 'PM data processed, sent and stored'
@@ -53,6 +59,11 @@ x-javascript-interface:
                     description: >
                       'Subtree of the parameters object for p1LoadRawCc
                       from {/data-structure-for-processing/parameters/sub-function=p1LoadRawCc}'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content
+                      from {/data-structure-for-processing/config-file}'
         output:
           success:
             description: 'Raw CC data loaded'

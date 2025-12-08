@@ -55,13 +55,6 @@ activate p1ReplaceMwdiEs #LightCyan
   p1ReplaceMwdiEs <-- p1LoadParams
   deactivate p1LoadParams
 
-  note right p1ReplaceMwdiEs
-    Load ES, HTTP and TCP client
-    interfaces from configFile
-  end note
-  p1ReplaceMwdiEs -> configFile
-  p1ReplaceMwdiEs <-- configFile
-
   p1ReplaceMwdiEs -> p1MDS
   activate p1MDS #LightBlue
     loop

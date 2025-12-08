@@ -27,9 +27,13 @@ x-javascript-interface:
               type: object
               required:
                 - parameters
+                - config-file
               properties:
                 parameters:
                   $ref: '#/components/schemas/parameters-schema'
+                config-file:
+                  type: object
+                  description: 'configFile content'
       error:
         description: 'Parameters could not be loaded'
         content:

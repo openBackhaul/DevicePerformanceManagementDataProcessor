@@ -17,7 +17,7 @@ database "dataStore" as db #LightBlue
 
 activate requestor
 
-requestor -> p1ProOrch : {mountName,\n{parameters}}
+requestor -> p1ProOrch : {mountName,\n{parameters},\n{configFile}}
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
@@ -25,7 +25,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1AddRaw : {mountName,\n{/parameters/sub-function=loadRawCc}}
+  p1ProOrch -> p1AddRaw : {mountName,\n{/parameters/sub-function=loadRawCc},\n{configFile}}
   activate p1AddRaw #LightCyan
 
     note over p1AddRaw
@@ -51,7 +51,7 @@ activate p1ProOrch #LightCyan
       - Process and complement PM data
     end note
 
-  p1ProOrch <-- p1CRC : {_resultCC}
+  p1ProOrch <-- p1CRC : {resultCC}
   deactivate p1CRC
 
   note over p1ProOrch
@@ -75,7 +75,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1Trans : {_outputFormat,\n{/parameters/sub-function=p1TransmittingKafka}}
+  p1ProOrch -> p1Trans : {_outputFormat,\n{/parameters/sub-function=p1TransmittingKafka},\n{configFile}}
   activate p1Trans #LightCyan
 
     note over p1Trans
@@ -86,7 +86,7 @@ activate p1ProOrch #LightCyan
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1Store : {_resultCC,\n{/parameters/sub-function=p1Storing}}
+  p1ProOrch -> p1Store : {_resultCC,\n{/parameters/sub-function=p1Storing},\n{configFile}}
   activate p1Store #LightBlue
 
     note over p1Store

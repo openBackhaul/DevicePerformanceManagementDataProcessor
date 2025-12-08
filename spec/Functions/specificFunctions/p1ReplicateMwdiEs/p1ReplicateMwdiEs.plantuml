@@ -30,37 +30,22 @@ activate p1RMWDI #LightCyan
       Load parameters
       from configFile
     end note
-  p1RMWDI <-- p1LP : {parameters}
+  p1RMWDI <-- p1LP : {{parameters},\n{configFile}}
   deactivate p1LP
 
-  note over p1RMWDI
-    _mwdiEsClient = /parameters/parameter=mwdiEsClient/value
-    _mwdiHttpClient = /parameters/parameter=mwdiHttpClient/value
-    _mwdiTcpClient = /parameters/parameter=mwdiTcpClient/value
-    _mwdiReplicaEsClient = /parameters/parameter=mwdiReplicaEsClient/value
-    _mwdiReplicaHttpClient = /parameters/parameter=mwdiReplicaHttpClient/value
-    _mwdiReplicaTcpClient = /parameters/parameter=mwdiReplicaTcpClient/value
-    _replicateMwdiEsLogEsClient = /parameters/parameter=replicateMwdiEsLogEsClient/value
-    _replicateMwdiEsLogHttpClient = /parameters/parameter=replicateMwdiEsLogHttpClient/value
-    _replicateMwdiEsLogTcpClient = /parameters/parameter=replicateMwdiEsLogTcpClient/value
-    _dataStoreEsClient = /parameters/parameter=dataStoreEsClient/value
-    _dataStoreHttpClient = /parameters/parameter=dataStoreHttpClient/value
-    _dataStoreTcpClient = /parameters/parameter=dataStoreTcpClient/value
-  end note
-
   note right p1RMWDI
-    Load detailed address information 
+    Resolve detailed address information 
     (incl. EsClient, HttpClient, TcpClient)
     of ElasticSearch indexes for:
     - MWDI ES
     - MWDI ES Replica
     - Logging of MWDI ES Replication
     - DataStore
+    from applying the references (uuids) in the
+    parameters on the content of the configFile
   end note
-  p1RMWDI -> configFile
-  p1RMWDI <-- configFile
 
-  p1RMWDI -> p1MDS : {addressOfReplicateMwdiEsLog,\nparameters}
+  p1RMWDI -> p1MDS : {{parameters}, {configFile}}
   activate p1MDS #LightBlue
     note over p1MDS
       Maintain DataStore
@@ -89,14 +74,8 @@ activate p1RMWDI #LightCyan
     p1RMWDI -> log : {cronjobName,\nlastReplicationTimestamp,\nstatusMessage}
 
 
-    note over p1RMWDI #Orange
-      there is also some delete activity to be described here
-    end note
-
-
-
     group Trigger processing of updated CC
-      p1RMWDI -> p1ProOrch : {mountName}
+      p1RMWDI -> p1ProOrch : {mountName, {parameters}, {configFile}}
       activate p1ProOrch #LightCyan
         note over p1ProOrch
           Process PM data
