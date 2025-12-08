@@ -2,7 +2,7 @@
 skinparam responseMessageBelowArrow true
 
 title
-p1LoadRawCc
+  p1LoadRawCc
 end title
 
 participant "p1ProcessingPmData)" as requestor
@@ -12,7 +12,7 @@ database "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
-requestor -> cur: {mountName, function}
+requestor -> cur: {mountName, parameters}
 activate cur #LightCyan
 
 == Read CC and apply fieldsFilter ==
@@ -37,7 +37,7 @@ note over cur
   Set rawControlConstruct := filtered rawControlConstruct
 end note
 
-cur -> fieldsFilter: {rawControlConstruct, {function#fieldsFilter}}
+cur -> fieldsFilter: {rawControlConstruct,\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
 cur <-- fieldsFilter: {filtered rawControlConstruct}
 
 

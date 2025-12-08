@@ -378,11 +378,20 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-function-p-020'
     capability:
       function-name: 'p1LoadRawCc'
-      parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-021'
     configuration:
       is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-201'
+    capability:
+      string-name: 'dataStoreRetentionPeriod'
+      purpose: 'Time period for which items are kept in the DataStore in hours; value range 1-96'
+    configuration:
+      string-value: '96'
+
+
 
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-021'
