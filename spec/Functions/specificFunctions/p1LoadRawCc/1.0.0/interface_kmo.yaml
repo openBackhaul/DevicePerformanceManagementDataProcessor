@@ -840,12 +840,9 @@ x-javascript-interface:
                     properties:
                       relevant-granularities:
                         type: string
-                        enum:
-                          - '^[^:]+:GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
                         description: >
-                          'This parameter is a regex pattern, that indicates which granularity periods are relevant.'
-                        #TODO: shall this be a function parameter? -> if yes change to something like
-                        #from {$input#function/sub-function=p1FieldsFilter/parameter=relevant-granularities/value}'
+                          'This parameter is a regex pattern, that indicates which granularity periods are relevant
+                          from {$input#parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}'
         output:
           success:
             description: 'Filtered historicalPerformanceDataList provided'
