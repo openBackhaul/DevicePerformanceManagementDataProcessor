@@ -542,8 +542,8 @@ x-javascript-interface:
                                       'The layer-protocol instances
                                       from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol}
                                       where {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
-                                      For each layer protocol instance further filtering is applied, by executing step discardIrrelevantPmRecords.
-                                      Only those layer protocols are added as an array item, for which length({$discardIrrelevantPmRecords.output#historical-performance-data-list}) > 0.'
+                                      For each layer protocol instance further filtering is applied, by executing p1DiscardIrrelevantPmRecords.
+                                      Only those layer protocols are added as an array item, for which length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) > 0.'
                                     oneOf:
                                       - description: 'air-interface'
                                         type: object
@@ -604,7 +604,7 @@ x-javascript-interface:
                                                     type: array
                                                     description: >
                                                       'The filtered contents of historical-performance-data-list, which remain after executing processing step {discardIrrelevantPmRecords},
-                                                      from {$discardIrrelevantPmRecords.output#historical-performance-data-list}.
+                                                      from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
                                                       Inputs for {discardIrrelevantPmRecords} are:
                                                       - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list} for the currently processed interface instance
                                                       - most-recent-period-end-time and most-recent-period-end-time-24, matched from {applyFieldsFilter} and {retrieveMostRecentPeriodEndTimesFromDs} as follows:
@@ -612,7 +612,7 @@ x-javascript-interface:
                                                             AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
                                                          THEN it is the same interface instance.
 
-                                                      IF length({$discardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
+                                                      IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
                                                     x-key: period-end-time
                                                     items:
                                                       type: object
@@ -628,17 +628,17 @@ x-javascript-interface:
                                                             - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                                                           description: >
                                                             'The granularity-period
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
                                                         period-end-time:
                                                           type: string
                                                           description: >
                                                             'The period-end-time
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
                                                         performance-data:
                                                           type: object
                                                           description: >
                                                             'The performance-data
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
                                                           properties:
                                                             es:
                                                               type: integer
@@ -710,16 +710,16 @@ x-javascript-interface:
                                                   historical-performance-data-list:
                                                     type: array
                                                     description: >
-                                                      'The filtered contents of historical-performance-data-list, which remain after executing processing step {discardIrrelevantPmRecords},
-                                                      from {$discardIrrelevantPmRecords.output#historical-performance-data-list}.
-                                                      Inputs for {discardIrrelevantPmRecords} are:
+                                                      'The filtered contents of historical-performance-data-list, which remain after executing p1DiscardIrrelevantPmRecords,
+                                                      from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
+                                                      Inputs for p1DiscardIrrelevantPmRecords are:
                                                       - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list} for the currently processed interface instance
                                                       - most-recent-period-end-time and most-recent-period-end-time-24, matched from {applyFieldsFilter} and {retrieveMostRecentPeriodEndTimesFromDs} as follows:
                                                          IF ({$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/uuid}
                                                             AND {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/local-id} == {$retrieveMostRecentPeriodEndTimesFromDs.output#ltp/lp/local-id})
                                                          THEN it is the same interface instance.
 
-                                                      IF length({$discardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
+                                                      IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
                                                     x-key: period-end-time
                                                     items:
                                                       type: object
@@ -735,17 +735,17 @@ x-javascript-interface:
                                                             - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
                                                           description: >
                                                             'The granularity-period
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/granularity-period} for this interface instance'
                                                         period-end-time:
                                                           type: string
                                                           description: >
                                                             'The period-end-time
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/period-end-time} for this interface instance'
                                                         performance-data:
                                                           type: object
                                                           description: >
                                                             'The performance-data
-                                                            from {$discardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
+                                                            from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list/performance} for this interface instance'
                                                           properties:
                                                             max-bytes-per-second-output:
                                                               type: integer
@@ -803,7 +803,7 @@ x-javascript-interface:
                       - 'Input data structure incomplete or invalid'
                       - 'Error during filtering of raw data'
                       - 'General processing error'
-      discardIrrelevantPmRecords:
+      p1DiscardIrrelevantPmRecords:
         url: #[p1DiscardIrrelevantPmRecords]
         description: >
           'Called during execution of {applyFilteringForRelevantData} to filter the PM data records of a given interface instance'
