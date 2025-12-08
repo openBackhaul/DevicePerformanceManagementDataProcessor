@@ -1,10 +1,5 @@
 # p1LoadRawCc
 
-**TODO**:
-- update for usage of new generic function p1DiscardIrrelevantPm
-- consolidate parameter handover by function usage
-
-
 ### Overview  
 
 The p1LoadRawCc function receives the mountName of a device as input and reads the raw ControlConstruct data of this
@@ -14,7 +9,7 @@ The filtered raw ControlConstruct is returned as output.
 
 The following generic function is called to reduce the data of raw ControlConstruct:
 - [p1FieldsFilter](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1FieldsFilter/1.0.0)  
-
+- [p1DiscardIrrelevantPmRecords](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1DiscardIrrelevantPmRecords/1.0.0)
 
 ### Diagram  
 
@@ -56,16 +51,15 @@ The fields filter currently looks as follows:
 3. read timestamp information about already previously gathered data:
    - from the DPDMP datastore read the device object, which matches the input mount-name
    - this object contains a list of ltp/lps with most-recent-period-end-time information (in case of a new device, the list will be empty)
-3. special filtering is applied to the data remaining from step2. This is done in step `applyFilteringForRe`.
-  If a different filtering should be applied in a future release, another filter step could be added and executed instead.  
+3. special filtering is applied to the data remaining from step2. This is done in step applyFilteringForRelevantPmData.  
+  (If a different filtering should be applied in a future release, another filter step could be added and executed instead.)  
   In this step irrelevant information is to be discarded. Therefore, only
   - keep relevant equipment-augment information
   - keep relevant information about LTP structure and augment
   - keep layer-protocol information, only if the layer-protocol is either an AirInterface or EthernetContainer instance
-    - inside the layer-protocol only keep historical PM records,
-      - which are of 15min or 24h granularity
-      - and where the period-end-time is newer than the most-recent-period-end-time for this interface instance from step2
-      - note: if in step2 no data was found for the mount-name at all, or if the found data does not contain an entry for a specific interface, all data for that mount-name/interface is treated as newer.
+    - for AirInterfaces and EthernetContainers function p1DiscardIrrelevantPmRecords is called to further reduce the records to new ones:
+      - PM records with unwanted granularity are filtered out. The desired granularities are configured by stringProfile *relevantGranularities* (15min, 24h)
+      - only records with newer period-end-times than the most-recent-period-end-times from step 3 are kept (if for an interface no most-recent-period-end-time/24 is found, all seen records are treated as newer).
     - interface instances (layer-protocols) are only to be kept in the raw ControlConstruct if historical PM records remain after filtering has been applied
 
 Note:
