@@ -12,10 +12,10 @@ database "configFile" as configFile #LightCyan
 
 participant "p1ProcessingPmData\n" as p1ProcessPm #LightCyan
 
-participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
+participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
 database  "MWDI ES\nReplica" as MwdiEs #LightCyan
-participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
+participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 
 participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
 participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue

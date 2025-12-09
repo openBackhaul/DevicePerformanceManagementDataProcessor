@@ -104,10 +104,8 @@ group Filter remaining rawControlConstruct data
 
   ' remove after pre-release
   note over cur, filterPm #Orange
-    In the pre-release there is no mostRecentPeriodEndTime info available.
-    This data will be found in the DataStore: [/data-store/device/ltp/most-recent-period-end-time].
-    But storing anything in the datastore it out of scope for the pre-release. Therefore: all 15min/24h historical PM records seen in the raw
-    data will be kept!
+    In the pre-release there is no mostRecentPeriodEndTime info available in the dataStore.
+    Therefore: all 15min/24h historical PM records seen in the raw data will be kept!
   end note
 end group
 
@@ -116,5 +114,5 @@ note over cur
   The function returns the filtered raw-ControlConstruct
 end note
 
-requestor <-- cur: {{rawControlConstruct}}
+requestor <-- cur: {rawControlConstruct}
 deactivate cur
