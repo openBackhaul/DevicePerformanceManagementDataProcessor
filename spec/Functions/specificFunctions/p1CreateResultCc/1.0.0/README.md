@@ -1,8 +1,18 @@
 # p1CreateResultCc
 
-[Thorsten 6.12.2025: Please don't handover _references as return values. Changed it in p1LoadRawCc already.]
+### Overview  
 
-    **Probably not yet covered:**  
-      - removes empty adaptive modulation counter records (device did not operate this modulation)  
-      - removes incomplete adaptive modulation capabilities (codeRate attribute has default value)  
+The p1CreateResultCc function reads data from an input reference to a raw-ControlConstruct and creates the resultCc from it .  
+It filters empty/incomplete adaptive modulation data from PM data and capabilities.  
+
+### Diagram  
+
+<p align="center">
+  <img src="./p1CreateResultCc.png" alt="p1CreateResultCc diagram" width="400" />
+</p>
+
+
+### Interface  
+
+Please find a detailed description of the [interface](./interface.yaml).  
 

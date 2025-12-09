@@ -19,6 +19,11 @@ activate cur #LightCyan
   note over cur
     Create resultCC from rawCC.
     It is referenced by _resultCC.
+
+    - Discard empty adaptive modulation counter records
+      (if time <= 0)
+    - Discard incomplete adaptive modulation capabilites
+      (if code-rate == -1)
   end note
 
   ' ----- ONF default values --------------------------

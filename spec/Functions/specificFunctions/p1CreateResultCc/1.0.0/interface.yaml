@@ -37,15 +37,9 @@ x-javascript-interface:
               properties:
                   result-cc:
                     type: object
-
-
-                  # todo: could you please describe the resultCc object here
-                  # As it serves as input to further functions, it should be documented at an expected place
-                  # The following structure has been moved from the DataStructureForProcessing.yaml file to here.
-                  # Please verify that this is still correct
-
                     description: >
-                      'The processed data. Following ONF structure (only relevant classes and attributes listed), but extended by additional attributes.'
+                      'The processed data. Following ONF structure (only relevant classes and attributes listed), but extended by additional attributes,
+                      from {$createResultFromRawCc.output#result-cc}'
                     required:
                       - equipment-augment-1-0:control-construct-pac
                       - logical-termination-point
@@ -58,14 +52,10 @@ x-javascript-interface:
                         properties:
                           external-label:
                             type: string
-                            description: >
-                              'mountName
-                              from {$p1ProcessingPmData.request.body#/mount-name}'
+                            description: 'mountName'
                           device-model-name:
                             type: string
-                            description: >
-                              'deviceType
-                              from { ??? }'
+                            description: 'deviceType'
                       logical-termination-point:
                         type: array
                         x-key: uuid
@@ -91,19 +81,13 @@ x-javascript-interface:
                               properties:
                                 external-label:
                                   type: string
-                                  description: >
-                                    'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                                    from { ??? }'
+                                  description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
                                 link-id:
                                   type: string
-                                  description: >
-                                    'linkId - Identifier of the microwave link as used in the Telefonica planing tools
-                                    from { ??? }'
+                                  description: 'linkId - Identifier of the microwave link as used in the Telefonica planing tools'
                                 original-ltp-name:
                                   type: string
-                                  description: >
-                                    'portName
-                                    from { ??? }'
+                                  description: 'portName'
                             layer-protocol:
                               type: array
                               x-key: local-id
@@ -146,6 +130,8 @@ x-javascript-interface:
                                               transmission-mode-list:
                                                 type: array
                                                 x-key: transmission-mode-name
+                                                description: >
+                                                  'Discard the complete array item, if (code-rate==-1)'
                                                 items:
                                                   type: object
                                                   properties:
@@ -159,22 +145,21 @@ x-javascript-interface:
                                                       type: string
                                                     code-rate:
                                                       type: integer
+                                                      description: 'If this attribute value is -1, the complete array item is to be discarded.'
                                                     symbol-rate-reduction-factor:
                                                       type: integer
                                                     capacity:
                                                       type: number
                                                       format: float
                                                       description: >
-                                                        'AirInterface capacity calculated with ONF formula
-                                                        from { ??? }'
+                                                        'AirInterface capacity calculated with ONF formula,
+                                                        value not yet available in pre-release, filled with default -1'
                                           air-interface-historical-performances:
                                             type: object
                                             properties:
                                               most-recent-period-end-time:
                                                 type: string
-                                                description: >
-                                                  'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list
-                                                  from { ??? }'
+                                                description: 'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list'
                                               historical-performance-data-list:
                                                 type: array
                                                 x-key: period-end-time
@@ -220,6 +205,8 @@ x-javascript-interface:
                                                         time-xstates-list:
                                                           type: array
                                                           x-key: transmission-mode
+                                                          description: >
+                                                            'Discard the complete array item, if time <= 0'
                                                           items:
                                                             type: object
                                                             required:
@@ -229,12 +216,13 @@ x-javascript-interface:
                                                                 type: string
                                                               time:
                                                                 type: integer
+                                                                description: 'If this attribute value is <= 0 discard the complete array item'
                                                         interval-capacity:
                                                           type: number
                                                           format: float
                                                           description: > 
                                                             'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period.
-                                                            from { ??? }'
+                                                            not already available in this step, filled with default -1'
                                                         snir-min:
                                                           type: integer
                                                         snir-max:
@@ -272,9 +260,7 @@ x-javascript-interface:
                                             properties:
                                               most-recent-period-end-time:
                                                 type: string
-                                                description: >
-                                                  'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list
-                                                  from { ??? }'
+                                                description: 'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list'
                                               historical-performance-data-list:
                                                 type: array
                                                 x-key: period-end-time
@@ -312,13 +298,13 @@ x-javascript-interface:
                                                           format: float
                                                           description: >
                                                             'TX Traffic [Mbps] KPI)
-                                                            from { ??? }'
+                                                            not already available in this step, filled with default -1'
                                                         receive-traffic:
                                                           type: number
                                                           format: float
                                                           description: >
                                                             'RX Traffic [Mbps] (KPI)
-                                                            from { ??? }'
+                                                            not already available in this step, filled with default -1'
                                                         total-frames-input:
                                                           type: string
                                                           description: 'String representation of int64 value'
@@ -359,12 +345,12 @@ x-javascript-interface:
                                                           type: integer
                                                           description: >
                                                             'Sum of errored and dropped frames on the ingress (KPI)
-                                                            from { ??? }'
+                                                            not already available in this step, filled with default -1'
                                                         frame-loss-output:
                                                           type: integer
                                                           description: >
                                                             'Sum of errored and dropped frames on the egress (KPI)
-                                                            from { ??? }'
+                                                            not already available in this step, filled with default -1'
                                                         oversized-frames-ingress:
                                                           type: string
                                                           description: 'String representation of int64 value'
@@ -377,10 +363,6 @@ x-javascript-interface:
                                                         unknown-protocol-frames-input:
                                                           type: string
                                                           description: 'String representation of int64 value'
-
-                  # End of the structure that has been moved from the DataStructureForProcessing.yaml file to here.
-
-
       error:
         description: 'Result CC data could not be created'
         content:
@@ -388,12 +370,311 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - ''
-                    # todo: error messages to be added
-                    # todo: same error messages to be added to the interface of p1ProcessingPmData, too
-
+                - 'Input data structure incomplete or invalid'
+                - 'General processing error'
     processing:
-      # todo: processing details to be added
+      createResultFromRawCc:
+          description: >
+            'This step creates the resultCC object and fills it from rawCC data'
+          input:
+            content:
+              application/json:
+                schema:
+                  properties:
+              raw-cc:
+                type: object
+                description: >
+                  'The actual data of the raw-cc when reading the reference
+                  from {$input#_raw-cc}
+          output:
+            success:
+              description: 'Result ControlConstruct object provided'
+              content:
+                application/json:
+                  schema:
+                    properties:
+                      schema:
+                        type: object
+                        properties:
+                            result-cc:
+                              type: object
+                              description: >
+                                'The processed data. Following ONF structure (only relevant classes and attributes listed), no additional attributes added in this step.'
+                              properties:
+                                equipment-augment-1-0:control-construct-pac:
+                                  description: >
+                                    'The equipment augment filled
+                                    from {$createResultFromRawCc.input#raw-cc/equipment-augment-1-0:control-construct-pac}'
+                                  type: object
+                                  properties:
+                                    external-label:
+                                      type: string
+                                    device-model-name:
+                                      type: string
+                                logical-termination-point:
+                                  type: array
+                                  x-key: uuid
+                                  description: >
+                                    'The logical-termination-point filled
+                                    from {$createResultFromRawCc.input#raw-cc/logical-termination-point}'
+                                  items:
+                                    type: object
+                                    properties:
+                                      uuid:
+                                        type: string
+                                      client-ltp:
+                                        type: array
+                                        items:
+                                          type: string
+                                      server-ltp:
+                                        type: array
+                                        items:
+                                          type: string
+                                      ltp-augment-1-0:ltp-augment-pac:
+                                        type: object
+                                        properties:
+                                          external-label:
+                                            type: string
+                                          link-id:
+                                            type: string
+                                          original-ltp-name:
+                                            type: string
+                                      layer-protocol:
+                                        type: array
+                                        x-key: local-id
+                                        items:
+                                          oneOf:
+                                            - description: 'air-interface'
+                                              type: object
+                                              properties:
+                                                local-id:
+                                                  type: string
+                                                layer-protocol-name:
+                                                  type: string
+                                                  enum:
+                                                    - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                                                air-interface-2-0:air-interface-pac:
+                                                  type: object
+                                                  properties:
+                                                    air-interface-configuration:
+                                                      type: object
+                                                      properties:
+                                                        transmission-mode-min:
+                                                          type: string
+                                                        transmission-mode-max:
+                                                          type: string
+                                                        tx-power:
+                                                          type: integer
+                                                        atpc-is-on:
+                                                          type: boolean
+                                                        atpc-thresh-upper:
+                                                          type: integer
+                                                        atpc-thresh-lower:
+                                                          type: integer
+                                                    air-interface-capability:
+                                                      type: object
+                                                      properties:
+                                                        transmission-mode-list:
+                                                          type: array
+                                                          x-key: transmission-mode-name
+                                                          items:
+                                                            type: object
+                                                            properties:
+                                                              transmission-mode-name:
+                                                                type: string
+                                                              channel-bandwidth:
+                                                                type: integer
+                                                              modulation-scheme:
+                                                                type: integer
+                                                              modulation-scheme-name-at-lct:
+                                                                type: string
+                                                              code-rate:
+                                                                type: integer
+                                                              symbol-rate-reduction-factor:
+                                                                type: integer
+                                                    air-interface-historical-performances:
+                                                      type: object
+                                                      properties:
+                                                        most-recent-period-end-time:
+                                                          type: string
+                                                          description: >
+                                                            'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list.
+                                                            from {{$createResultFromRawCc.input#raw-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/period-end-time} select the newest timestamp.'
+                                                        historical-performance-data-list:
+                                                          type: array
+                                                          x-key: period-end-time
+                                                          items:
+                                                            type: object
+                                                            properties:
+                                                              granularity-period:
+                                                                type: string
+                                                                enum:
+                                                                  - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                                                  - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                                                  - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                                                  - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                                              period-end-time:
+                                                                type: string
+                                                              performance-data:
+                                                                type: object
+                                                                properties:
+                                                                  es:
+                                                                    type: integer
+                                                                  ses:
+                                                                    type: integer
+                                                                  cses:
+                                                                    type: integer
+                                                                  unavailability:
+                                                                    type: integer
+                                                                  tx-level-min:
+                                                                    type: integer
+                                                                  tx-level-max:
+                                                                    type: integer
+                                                                  tx-level-avg:
+                                                                    type: integer
+                                                                  rx-level-min:
+                                                                    type: integer
+                                                                  rx-level-max:
+                                                                    type: integer
+                                                                  rx-level-avg:
+                                                                    type: integer
+                                                                  time-xstates-list:
+                                                                    type: array
+                                                                    x-key: transmission-mode
+                                                                    items:
+                                                                      type: object
+                                                                      required:
+                                                                        - transmission-mode
+                                                                      properties:
+                                                                        transmission-mode:
+                                                                          type: string
+                                                                        time:
+                                                                          type: integer
+                                                                  snir-min:
+                                                                    type: integer
+                                                                  snir-max:
+                                                                    type: integer
+                                                                  snir-avg:
+                                                                    type: integer
+                                                                  xpd-min:
+                                                                    type: integer
+                                                                  xpd-max:
+                                                                    type: integer
+                                                                  xpd-avg:
+                                                                    type: integer
+                                                                  defect-blocks-sum:
+                                                                    type: integer
+                                                                  time-period:
+                                                                    type: integer
+                                            - description: 'ethernet-container'
+                                              type: object
+                                              properties:
+                                                local-id:
+                                                  type: string
+                                                layer-protocol-name:
+                                                  type: string
+                                                  enum:
+                                                    - 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                                                ethernet-container-2-0:ethernet-container-pac:
+                                                  type: object
+                                                  properties:
+                                                    ethernet-container-historical-performances:
+                                                      type: object
+                                                      properties:
+                                                        most-recent-period-end-time:
+                                                          type: string
+                                                          description: >
+                                                            'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list.
+                                                            from {{$createResultFromRawCc.input#raw-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/period-end-time} select the newest timestamp.'
+                                                        historical-performance-data-list:
+                                                          type: array
+                                                          x-key: period-end-time
+                                                          items:
+                                                            type: object
+                                                            properties:
+                                                              granularity-period:
+                                                                type: string
+                                                                enum:
+                                                                  - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                                                  - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                                                  - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                                                  - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                                              period-end-time:
+                                                                type: string
+                                                              performance-data:
+                                                                type: object
+                                                                properties:
+                                                                  max-bytes-per-second-output:
+                                                                    type: integer
+                                                                  total-bytes-input:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  total-bytes-output:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  time-period:
+                                                                    type: integer
+                                                                  total-frames-input:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  total-frames-output:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  forwarded-frames-input:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  forwarded-frames-output:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  unicast-frames-input:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  unicast-frames-output:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  multicast-frames-input:
+                                                                    type: integer
+                                                                  multicast-frames-output:
+                                                                    type: integer
+                                                                  broadcast-frames-input:
+                                                                    type: integer
+                                                                  broadcast-frames-output:
+                                                                    type: integer
+                                                                  fragmented-frames-input:
+                                                                    type: integer
+                                                                  errored-frames-input:
+                                                                    type: integer
+                                                                  errored-frames-output:
+                                                                    type: integer
+                                                                  dropped-frames-input:
+                                                                    type: integer
+                                                                  dropped-frames-output:
+                                                                    type: integer
+                                                                  oversized-frames-ingress:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  undersized-frames-ingress:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  jabber-frames-ingress:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+                                                                  unknown-protocol-frames-input:
+                                                                    type: string
+                                                                    description: 'String representation of int64 value'
+            error:
+              description: 'Result ControlConstruct object could not be created.'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Input data structure incomplete or invalid'
+                      - 'General processing error'
+      #p1DefaultValueTreatment
+      #p1OutOfRangeValueTreatment
+      #p1AirInterfaceCapacityCalculation
+      #p1EthernetKpiCalculation
 
 
 paths:
