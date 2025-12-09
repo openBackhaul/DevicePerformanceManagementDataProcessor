@@ -33,7 +33,7 @@ note over cur
   mountName from MWDI ElasticSearch replica
 end note
 cur -> MwdiEs: {mountName}
-cur <-- MwdiEs: {rawControlConstruct}
+cur <-- MwdiEs: {{rawControlConstruct}}
 
 'Apply fields filter
 note over cur
@@ -47,8 +47,8 @@ note over cur
   Set rawControlConstruct := filtered rawControlConstruct
 end note
 
-cur -> fieldsFilter: {rawControlConstruct,\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
-cur <-- fieldsFilter: {filtered rawControlConstruct}
+cur -> fieldsFilter: {{rawControlConstruct},\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
+cur <-- fieldsFilter: {{filtered rawControlConstruct}}
 
 
 == Read mostRecentPeriodEndTimes from dataStore ==
@@ -98,8 +98,8 @@ group Filter remaining rawControlConstruct data
       (IF <i>mostRecentPeriodEndTime</i> or <i>mostRecentPeriodEndTime24</i>
       are not available for the current interface, treat all seen records as newer.)
     end note
-    cur -> filterPm: {historicalPerformanceDataList,\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
-    cur <-- filterPm: {filtered historicalPerformanceDataList}
+    cur -> filterPm: {[historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
+    cur <-- filterPm: {[filtered historicalPerformanceDataList]}
   end group
 
   ' remove after pre-release
@@ -114,5 +114,5 @@ note over cur
   The function returns the filtered raw-ControlConstruct
 end note
 
-requestor <-- cur: {rawControlConstruct}
+requestor <-- cur: {{rawControlConstruct}}
 deactivate cur

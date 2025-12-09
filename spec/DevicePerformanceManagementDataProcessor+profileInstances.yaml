@@ -419,8 +419,12 @@ profile-instances:
     capability:
       string-name: 'relevantGranularities'
       purpose: 'Pattern against which PM record granularity period values are to be matched. Indicates relevant granularities.'
+      enumeration:
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
     configuration:
-      string-value: '^[^:]+:GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+      string-value: ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
 
   # createResultCC
   - profile-name: 'FunctionProfile'

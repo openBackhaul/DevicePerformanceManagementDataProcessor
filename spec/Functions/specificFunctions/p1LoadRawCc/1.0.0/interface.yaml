@@ -817,15 +817,11 @@ x-javascript-interface:
                   most-recent-period-end-time-24:
                     type: string
                     description: 'The (optional) timestamp for filtering 24h PM records. If not provided a 24h record is treated as newer'
-                  parameters:
-                    type: object
-                    description: 'Parameters to configure this function.'
-                    properties:
-                      relevant-granularities:
-                        type: string
-                        description: >
-                          'This parameter is a regex pattern, that indicates which granularity periods are relevant
-                          from {$input#parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}'
+                  relevant-granularities:
+                    type: string
+                    description: >
+                      'This parameter is a regex pattern, that indicates which granularity periods are relevant
+                      from {$input#parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}'
         output:
           success:
             description: 'Filtered historicalPerformanceDataList provided'
