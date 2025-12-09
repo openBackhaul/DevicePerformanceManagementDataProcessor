@@ -7,7 +7,7 @@ end title
 
 participant "embedYourself\n" as embed
 participant "p1ReplicateMwdiEs\n" as p1ReplaceMwdiEs #LightCyan
-participant "p1LoadParameters\n" as p1LoadParams #LightCyan
+participant "p1LoadParameters\n" as p1LoadParams #LightGreen
 database "configFile" as configFile #LightCyan
 
 participant "p1ProcessingPmData\n" as p1ProcessPm #LightCyan
@@ -45,7 +45,7 @@ embed -> p1ReplaceMwdiEs
 activate p1ReplaceMwdiEs #LightCyan
 
   p1ReplaceMwdiEs -> p1LoadParams
-  activate p1LoadParams #LightCyan
+  activate p1LoadParams #LightGreen
     note right p1LoadParams
       Load parameters
       from configFile
