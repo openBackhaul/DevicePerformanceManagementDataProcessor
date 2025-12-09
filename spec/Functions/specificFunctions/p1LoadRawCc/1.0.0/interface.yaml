@@ -364,7 +364,7 @@ x-javascript-interface:
         url: #[p1FieldsFilter]
           description: >
             'This function reduces the raw ControlConstruct data
-            from {#readControlConstructFromEs.output/core-model-1-4:control-construct}
+            from {#readControlConstructFromEs.output/core-model-1-4:control-construct[0]}
             according to the fields filter specified as a parameter of function p1LoadRawCc.'
           input:
             content:
@@ -375,8 +375,8 @@ x-javascript-interface:
                     data-structure:
                       type: object
                       description: >
-                        'The data structure to be filtered according to the provided fields filter string. It is the raw ControlConstruct
-                        from {$readControlConstruct.output#core-model-1-4:control-construct}'
+                        'The data structure to be filtered according to the provided fields filter string. It is the raw ControlConstruct content (the object found in the first array element of core-model-1-4:control-construct, without the core-model-1-4:control-construct keyword itself)
+                        from {$readControlConstruct.output#core-model-1-4:control-construct[0]}'
                     fields-filter-string:
                       type: string
                       description: >
@@ -447,7 +447,7 @@ x-javascript-interface:
                       - 'General processing error'
       applyFilteringForRelevantPmData:
           description: >
-            'Applies additional filtering to the ControlConstruct data from {$applyFieldsFilter.output#filtered-data-structure/core-model-1-4:control-construct[0]}.
+            'Applies additional filtering to the ControlConstruct data from {$applyFieldsFilter.output#filtered-data-structure}.
             Filters each relevant layer-protocol (AirInterface or EthernetContainer) for new PM records with desired granularities. If no PM records remain for the respective layer-protocol,
             it is discarded from the raw ControlConstruct entirely; if records remain, only the filtered PM records are kept in the historical-performance-data-list of the respective layer-protocol.
             Filtering is done by executing {discardIrrelevantPmRecords} for each relevant layer-protocol separately.'
@@ -461,8 +461,7 @@ x-javascript-interface:
                       raw-cc:
                         description: >
                           'ControlConstruct data
-                          from {$applyFieldsFilter.output#filtered-data-structure/core-model-1-4:control-construct[0]}.
-                          (The input object is an array, the rawCc is to be filled from the first entry in this array.)
+                          from {$applyFieldsFilter.output#filtered-data-structure} (starting after the filtered-data-structure keyword).
                           Follows ONF schema, but includes only attributes and classes of relevance.'
                         type: object
                         required:
@@ -472,7 +471,7 @@ x-javascript-interface:
                           equipment-augment-1-0:control-construct-pac:
                             description: >
                               'Relevant parts of equipment augment
-                              from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/equipment-augment-1-0:control-construct-pac}'
+                              from {$applyFieldsFilter.output#filtered-data-structure/equipment-augment-1-0:control-construct-pac}'
                             type: object
                             required:
                               - external-label
@@ -491,7 +490,7 @@ x-javascript-interface:
                           logical-termination-point:
                             description: >
                               'Relevant parts of logical-termination-point
-                              from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point}'
+                              from {$applyFieldsFilter.output#filtered-data-structure/logical-termination-point}'
                             type: array
                             x-key: uuid
                             items:
@@ -526,8 +525,8 @@ x-javascript-interface:
                                   items:
                                     description: >
                                       'The layer-protocol instances
-                                      from {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol}
-                                      where {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
+                                      from {$applyFieldsFilter.output#filtered-data-structure/logical-termination-point/layer-protocol}
+                                      where {$applyFieldsFilter.output#filtered-data-structure/logical-termination-point/layer-protocol/layer-protocol-name} indicates AIR_LAYER or ETHERNET_CONTAINER.
                                       For each layer protocol instance further filtering is applied, by executing p1DiscardIrrelevantPmRecords.
                                       Only those layer protocols are added as an array item, for which length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) > 0.'
                                     oneOf:
@@ -592,9 +591,9 @@ x-javascript-interface:
                                                       'The filtered contents of historical-performance-data-list, which remain after executing processing step {discardIrrelevantPmRecords},
                                                       from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
                                                       Inputs for {discardIrrelevantPmRecords} are:
-                                                      - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list} for the currently processed interface instance
+                                                      - {$applyFieldsFilter.output#filtered-data-structure/logical-termination-point/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list} for the currently processed interface instance
                                                       - derive the relevant interface data from retrieveMostRecentPeriodEndTimesFromDs output as follows:
-                                                        where {$retrieveMostRecentPeriodEndTimesFromDs.output=={$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid}}
+                                                        where {$retrieveMostRecentPeriodEndTimesFromDs.output=={$applyFieldsFilter.output#filtered-data-structure/logical-termination-point/uuid}}
                                                         for this instance use most-recent-period-end-time and most-recent-period-end-time-24
 
                                                       IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
@@ -698,9 +697,9 @@ x-javascript-interface:
                                                       'The filtered contents of historical-performance-data-list, which remain after executing p1DiscardIrrelevantPmRecords,
                                                       from {$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}.
                                                       Inputs for p1DiscardIrrelevantPmRecords are:
-                                                      - {$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list} for the currently processed interface instance
+                                                      - {$applyFieldsFilter.output#filtered-data-structure/logical-termination-point/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list} for the currently processed interface instance
                                                       - derive the relevant interface data from retrieveMostRecentPeriodEndTimesFromDs output as follows:
-                                                        where {$retrieveMostRecentPeriodEndTimesFromDs.output=={$applyFieldsFilter.output#core-model-1-4:control-construct[0]/logical-termination-point/uuid}}
+                                                        where {$retrieveMostRecentPeriodEndTimesFromDs.output=={$applyFieldsFilter.output#filtered-data-structure/logical-termination-point/uuid}}
                                                         for this instance use most-recent-period-end-time and most-recent-period-end-time-24
 
                                                       IF length({$p1DiscardIrrelevantPmRecords.output#historical-performance-data-list}) == 0, THEN this interface instance (i.e. layer-protocol) is not added at all to {$output#raw-cc/logical-termination-point/layer-protocol}.'
