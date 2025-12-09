@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p1LoadParameters:
-    summary: 'Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns it in the internal parameters format.'
+    summary: 'Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns them in the internal parameters format.'
     input:
       required: true
       content:
@@ -30,6 +30,10 @@ x-javascript-interface:
                 - config-file
               properties:
                 parameters:
+                  description: >
+                    'search for uuid = [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/uuid]
+                    with [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-name] == {$input#/function-name}
+                    and start applying the following recursive schema'
                   $ref: '#/components/schemas/parameters-schema'
                 config-file:
                   type: object
@@ -82,7 +86,9 @@ components:
         parameter:
           type: array
           x-key: parameter-name
-          description: 'List of Parameters of the Function'
+          description: >
+            'List of Parameters of the Function
+            _StringProfile=[configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]'
           items:
             type: object
             required:
@@ -95,13 +101,11 @@ components:
                 type: string
                 description: >
                   'Locally unique and invariant name of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
                   from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/string-name]'
               purpose:
                 type: string
                 description: >
                   'Invariant description of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
                   from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/purpose]'
               owner:
                 type: string
@@ -116,13 +120,11 @@ components:
                 type: string
                 description: >
                   'Configurable value of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
                   from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-configuration/string-value]'
               enumeration:
                 type: array
                 description: >
                   'Optional: List of valid values for the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
                   from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/enumeration]'
                 items:
                   type: string
@@ -130,13 +132,13 @@ components:
                 type: string
                 description: >
                   'Optional: Regular expression defining valid values of the parameter
-                  for _StringProfile==[configFile://core-model-1-4:control-construct/profile-collection/profile=p1LoadParametersuuid/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]
                   from [configFile://core-model-1-4:control-construct/profile-collection/profile=_StringProfile/string-profile-1-0:string-profile-pac/string-profile-capability/pattern]'
         sub-function:
           type: array
           x-key: function-name
-          description: >
-            'List of sub-Functions incl. their parameter settings
-            from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]'
+          description: 'List of sub-Functions incl. their parameter settings'
           items:
+            description: >
+              'take next uuid from [configFile://core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list]
+              and again apply the same recursive schema'
             $ref: '#/components/schemas/parameters-schema'

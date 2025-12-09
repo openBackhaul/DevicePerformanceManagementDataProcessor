@@ -78,14 +78,14 @@ activate p1ReplaceMwdiEs #LightCyan
 
       ' create RawCC ->
       p1ProcessPm -> p1AddRaw
-      activate p1AddRaw #LightCyan
+      activate p1AddRaw #LightGreen
 
         p1AddRaw -> MwdiEs
         p1AddRaw <-- MwdiEs
 
         ' apply fieldsFilter ->
         p1AddRaw -> p1FieldsFilter
-        activate p1FieldsFilter #LightCyan
+        activate p1FieldsFilter #LightGreen
 
           note over p1FieldsFilter
             Reduce structure of rawCC
@@ -100,7 +100,7 @@ activate p1ReplaceMwdiEs #LightCyan
 
         ' discard irrelevant PM records
         p1AddRaw -> filterPm
-        activate filterPm #LightCyan
+        activate filterPm #LightGreen
 
           note over filterPm
             Delete PM data that has

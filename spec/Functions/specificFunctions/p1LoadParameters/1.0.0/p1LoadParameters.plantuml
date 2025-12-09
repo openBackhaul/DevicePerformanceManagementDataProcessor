@@ -41,5 +41,5 @@ activate p1LP #LightCyan
     end note
   end
 
-p1RMWDI <-- p1LP : {parameters,\n{configFile}}
+p1RMWDI <-- p1LP : {{parameters},\n{configFile}}
 deactivate p1LP
