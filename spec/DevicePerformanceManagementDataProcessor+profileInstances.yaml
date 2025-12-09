@@ -415,7 +415,7 @@ profile-instances:
 
   # parameter for p1DiscardIrrelevantPmRecords
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-021'
+    uuid: 'dpmdp-1-0-0-string-p-022'
     capability:
       string-name: 'relevantGranularities'
       purpose: 'Pattern against which PM record granularity period values are to be matched. Indicates relevant granularities.'
