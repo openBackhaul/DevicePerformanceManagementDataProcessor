@@ -38,18 +38,16 @@ cur <-- MwdiEs: {{rawControlConstruct}}
 'Apply fields filter
 note over cur
   <u>applyFieldsFilter</u>
-  Reduce the amount of data to relevant classes
-  and attributes. Information from ... is kept: 
-  - equipmentAugment
-  - ltp (structure) and augment
-  - layerProtocol (AirInterface, EthernetContainer)
-
-  Set rawControlConstruct := filtered rawControlConstruct
+  Apply configurable FieldsFilter for reducing 
+  rawCc to relevant classes and attributes.
 end note
 
 cur -> fieldsFilter: {{rawControlConstruct},\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
 cur <-- fieldsFilter: {{filtered rawControlConstruct}}
 
+note over cur
+  Set rawControlConstruct := filtered rawControlConstruct
+end note
 
 == Read mostRecentPeriodEndTimes from dataStore ==
 'Read mostRecentTimestamps

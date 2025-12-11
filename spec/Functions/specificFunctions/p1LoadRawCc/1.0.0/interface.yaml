@@ -61,6 +61,43 @@ x-javascript-interface:
                           description: >
                             'deviceType
                             from {$applyFilteringForRelevantPmData.output#equipment-augment-1-0:control-construct-pac/device-model-name}'
+                    equipment:
+                      type: array
+                      x-key: uuid
+                      items:
+                        type: object
+                        required:
+                          - uuid
+                          - actual-equipment
+                        properties:
+                          uuid:
+                            type: string
+                          actual-equipment:
+                            type: object
+                            required:
+                              - local-id
+                              - physical-properties
+                              - structure
+                            properties:
+                              local-id:
+                                type: string
+                              physical-properties:
+                                type: object
+                                required:
+                                  - temperature
+                                properties:
+                                  temperature:
+                                    type: string
+                              structure:
+                                type: object
+                                required:
+                                  - category
+                                properties:
+                                  category:
+                                    type: string
+                                    enum:
+                                      - 'core-model-1-4:EQUIPMENT_CATEGORY_SUBRACK'
+                                      - 'core-model-1-4:EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT'
                     logical-termination-point:
                       type: array
                       description: >

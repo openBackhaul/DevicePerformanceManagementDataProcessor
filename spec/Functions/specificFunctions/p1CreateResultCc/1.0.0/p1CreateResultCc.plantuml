@@ -7,58 +7,55 @@ end title
 
 participant "p1ProcessingPmData\n" as requestor
 participant "p1CreateResultCc\n" as cur #LightCyan
+
 participant "p1Cleanup\nTxModes" as cleanTxModes #LightCyan
+participant "p1Find\nLastTime" as lastTime #LightCyan
 participant "p1Cleanup\nAdmCounters" as cleanAdmCounters #LightCyan
 participant "p1Substring\nLinkId" as substrLinkId #LightCyan
 participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
 
-
-participant "p1Determine\nLatestPeriodEndTime" as addMostRecentPeriodEndTime #LightCyan
-
-              ' hier kürzeren Namen ausdenken
-
+participant "p1AirInterface\nCapacityCalculation" as airIfKpis #LightBlue
+participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
 
 participant "p1Default\nValueTreatment" as defaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
-participant "p1AirInterface\nCapacityCalculation" as airIfKpis #LightBlue
-participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
 
 requestor -> cur: {_rawCC,\n{parameters}}
 activate cur #LightCyan
 
-  note over cur
-    Create resultCC from rawCC.
-    It is referenced by _resultCC.
+  note over cur #LightCyan
+    Create resultCC from rawCC
   end note
 
-  loop for all AirInterfaces
+  loop for all AirInterfaces in resultCC
 
-    ' ----- Incomplete Transmission Modes --------------------------
-    note over cur
-      Discard incomplete adaptive
-      modulation capabilities
-      (if code-rate == -1)
+  ' ----- Reduce Data --------------------------
+    note over cur #LightGray
+      Liste der timeXStatesList in PM Daten durchgehen
+        IF time==0 THEN
+          - Eintrag löschen
+        ELSE
+          - Name notieren
+      
+      Alle TxModes aus Capability durchgehen
+        IF Name not in notierteNamen THEN
+          - Eintrag löschen
     end note
 
-    cur -> cleanTxModes : {}
-    activate cleanTxModes #LightCyan
-    cur <-- cleanTxModes : {}
-    deactivate cleanTxModes
+  ' ----- OutOfRange TxLevel --------------------------
+  note over cur #LightGray
+    Delete TxLevel and RxLevel attributes
+    with values outside of pre-defined
+    range from PM data
+  end note
 
-    ' ----- Incomplete Counter Records --------------------------
-    note over cur
-      Discard empty adaptive 
-      modulation counter records
-      (if code-rate == -1)
-    end note
-
-    cur -> cleanAdmCounters : {}
-    activate cleanAdmCounters #LightCyan
-    cur <-- cleanAdmCounters : {}
-    deactivate cleanAdmCounters
+  cur -> outOfRange: {_resultCC}
+  activate outOfRange #LightBlue
+  cur <-- outOfRange
+  deactivate outOfRange
 
     ' ----- Link ID --------------------------
-    note over cur
+    note over cur #LightCyan
       Derive LinkId from LinkEndpointId
     end note
 
@@ -68,7 +65,7 @@ activate cur #LightCyan
     deactivate substrLinkId
 
     ' ----- Aggregation Group --------------------------
-    note over cur
+    note over cur #White
       Derive aggregation grouping
       from hierarchy of LTPs
     end note
@@ -79,10 +76,8 @@ activate cur #LightCyan
     deactivate computePhyLag
 
     ' ----- AirInterface KPIs --------------------------
-    note over cur #LightGray
-      Compute AirInterface KPIs
-      from _rawCC data.
-      Add them to the resultCC.
+    note over cur #White
+      Add AirInterfaceCapacity
     end note
 
     cur -> airIfKpis: {_rawCC}
@@ -92,26 +87,11 @@ activate cur #LightCyan
 
   end
 
-  loop for all EthernetContainers
-
-    ' ----- Most Recent PeriodEndTimes --------------------------
-    note over cur
-      Find most recent values of 
-      period-end-time attributes
-      for 15minutes and 24hours
-      and add explicit attributes
-    end note
-
-    cur -> cleanTxModes : {}
-    activate cleanTxModes #LightCyan
-    cur <-- cleanTxModes : {}
-    deactivate cleanTxModes
+  loop for all EthernetContainers in resultCC
 
     ' ----- EthContainer KPIs --------------------------
-    note over cur #LightGray
-      Compute EthernetContainer KPIs
-      from _rawCC data.
-      Add them to the resultCC.
+    note over cur #White
+      Add EthernetContainer KPIs
     end note
     
     cur -> ethKpis: {_rawCC}
@@ -121,10 +101,10 @@ activate cur #LightCyan
 
   end
 
-  ' ----- ONF default values --------------------------
-  note over cur #LightGray
-    Delete attributes with ONF
-    default values from resultCC
+  ' ----- Temperature --------------------------
+  note over cur #White
+    Derive IDU temperature by
+    device type specific method
   end note
 
   cur -> defaultValues: {_resultCC}
@@ -132,18 +112,16 @@ activate cur #LightCyan
   cur <-- defaultValues
   deactivate defaultValues
 
-
-  ' ----- OutOfRange values --------------------------
+  ' ----- ONF default values --------------------------
   note over cur #LightGray
-    Delete attributes with values
-    outside of pre-defined range from
-    resultCC
+    Delete attributes with ONF
+    default values
   end note
 
-  cur -> outOfRange: {_resultCC}
-  activate outOfRange #LightBlue
-  cur <-- outOfRange
-  deactivate outOfRange
+  cur -> defaultValues: {_resultCC}
+  activate defaultValues #LightBlue
+  cur <-- defaultValues
+  deactivate defaultValues
 
 requestor <-- cur: {{resultCC}}
 
