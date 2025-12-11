@@ -2,29 +2,124 @@
 skinparam responseMessageBelowArrow true
 
 title
-p1CreateResultCc
+  p1CreateResultCc
 end title
 
 participant "p1ProcessingPmData\n" as requestor
 participant "p1CreateResultCc\n" as cur #LightCyan
+participant "p1Cleanup\nTxModes" as cleanTxModes #LightCyan
+participant "p1Cleanup\nAdmCounters" as cleanAdmCounters #LightCyan
+participant "p1Substring\nLinkId" as substrLinkId #LightCyan
+participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
+
+
+participant "p1Determine\nLatestPeriodEndTime" as addMostRecentPeriodEndTime #LightCyan
+
+              ' hier kürzeren Namen ausdenken
+
 
 participant "p1Default\nValueTreatment" as defaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
 participant "p1AirInterface\nCapacityCalculation" as airIfKpis #LightBlue
 participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
 
-requestor -> cur: {_rawCC}
+requestor -> cur: {_rawCC,\n{parameters}}
 activate cur #LightCyan
 
   note over cur
     Create resultCC from rawCC.
     It is referenced by _resultCC.
-
-    - Discard empty adaptive modulation counter records
-      (if time <= 0)
-    - Discard incomplete adaptive modulation capabilites
-      (if code-rate == -1)
   end note
+
+  loop for all AirInterfaces
+
+    ' ----- Incomplete Transmission Modes --------------------------
+    note over cur
+      Discard incomplete adaptive
+      modulation capabilities
+      (if code-rate == -1)
+    end note
+
+    cur -> cleanTxModes : {}
+    activate cleanTxModes #LightCyan
+    cur <-- cleanTxModes : {}
+    deactivate cleanTxModes
+
+    ' ----- Incomplete Counter Records --------------------------
+    note over cur
+      Discard empty adaptive 
+      modulation counter records
+      (if code-rate == -1)
+    end note
+
+    cur -> cleanAdmCounters : {}
+    activate cleanAdmCounters #LightCyan
+    cur <-- cleanAdmCounters : {}
+    deactivate cleanAdmCounters
+
+    ' ----- Link ID --------------------------
+    note over cur
+      Derive LinkId from LinkEndpointId
+    end note
+
+    cur -> substrLinkId : {}
+    activate substrLinkId #LightCyan
+    cur <-- substrLinkId : {}
+    deactivate substrLinkId
+
+    ' ----- Aggregation Group --------------------------
+    note over cur
+      Derive aggregation grouping
+      from hierarchy of LTPs
+    end note
+
+    cur -> computePhyLag : {}
+    activate computePhyLag #LightCyan
+    cur <-- computePhyLag : {}
+    deactivate computePhyLag
+
+    ' ----- AirInterface KPIs --------------------------
+    note over cur #LightGray
+      Compute AirInterface KPIs
+      from _rawCC data.
+      Add them to the resultCC.
+    end note
+
+    cur -> airIfKpis: {_rawCC}
+    activate airIfKpis #LightBlue
+    cur <-- airIfKpis: {computed AirInterface KPIs}
+    deactivate airIfKpis
+
+  end
+
+  loop for all EthernetContainers
+
+    ' ----- Most Recent PeriodEndTimes --------------------------
+    note over cur
+      Find most recent values of 
+      period-end-time attributes
+      for 15minutes and 24hours
+      and add explicit attributes
+    end note
+
+    cur -> cleanTxModes : {}
+    activate cleanTxModes #LightCyan
+    cur <-- cleanTxModes : {}
+    deactivate cleanTxModes
+
+    ' ----- EthContainer KPIs --------------------------
+    note over cur #LightGray
+      Compute EthernetContainer KPIs
+      from _rawCC data.
+      Add them to the resultCC.
+    end note
+    
+    cur -> ethKpis: {_rawCC}
+    activate ethKpis #LightBlue
+    cur <-- ethKpis: {computed EthernetContainer KPIs}
+    deactivate ethKpis
+
+  end
 
   ' ----- ONF default values --------------------------
   note over cur #LightGray
@@ -49,31 +144,6 @@ activate cur #LightCyan
   activate outOfRange #LightBlue
   cur <-- outOfRange
   deactivate outOfRange
-
-
-  ' ----- AirInterface KPIs --------------------------
-  note over cur #LightGray
-    Compute AirInterface KPIs
-    from _rawCC data.
-    Add them to the resultCC.
-  end note
-
-  cur -> airIfKpis: {_rawCC}
-  activate airIfKpis #LightBlue
-  cur <-- airIfKpis: {computed AirInterface KPIs}
-  deactivate airIfKpis
-
-  ' ----- EthContainer KPIs --------------------------
-  note over cur #LightGray
-    Compute EthernetContainer KPIs
-    from _rawCC data.
-    Add them to the resultCC.
-  end note
-  
-  cur -> ethKpis: {_rawCC}
-  activate ethKpis #LightBlue
-  cur <-- ethKpis: {computed EthernetContainer KPIs}
-  deactivate ethKpis
 
 requestor <-- cur: {{resultCC}}
 

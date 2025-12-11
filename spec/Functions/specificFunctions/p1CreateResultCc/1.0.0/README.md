@@ -2,8 +2,15 @@
 
 ### Overview  
 
-The p1CreateResultCc function reads data from an input reference to a raw-ControlConstruct and creates the resultCc from it .  
-It filters empty/incomplete adaptive modulation data from PM data and capabilities.  
+The p1CreateResultCc function receives raw data (rawCc) that has already been filtered after retrieving it from the device.  
+It creates a copy from that (resultCc) and executes several processing steps on it.  
+The processing steps can be activated/deactivated independently from each other.  
+Further processing steps can be added in future without changing the existing ones.  
+Of course the order of the processing steps is important, if they are altering the same attributes of the resultCc. 
+Finally the resultCc is returned.  
+
+The following processing steps are currently implemented:
+- Filtering empty/incomplete adaptive modulation data from PM data and capabilities  
 
 ### Diagram  
 

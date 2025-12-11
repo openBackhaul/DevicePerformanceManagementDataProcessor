@@ -35,7 +35,7 @@ activate p1ProOrch #LightCyan
         already been processed in past
     end note
 
-  p1ProOrch <-- p1AddRaw : {rawCC}
+  p1ProOrch <-- p1AddRaw : {{rawCC}}
   deactivate p1AddRaw
 
   note over p1ProOrch
@@ -51,7 +51,7 @@ activate p1ProOrch #LightCyan
       - Process and complement PM data
     end note
 
-  p1ProOrch <-- p1CRC : {resultCC}
+  p1ProOrch <-- p1CRC : {{resultCC}}
   deactivate p1CRC
 
   note over p1ProOrch
@@ -67,7 +67,7 @@ activate p1ProOrch #LightCyan
       from resultCC
     end note
 
-  p1ProOrch <-- p1Output : {aptOutputFormat}
+  p1ProOrch <-- p1Output : {{aptOutputFormat}}
   deactivate p1Output
 
   note over p1ProOrch
