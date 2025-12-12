@@ -8,14 +8,15 @@ end title
 participant "embedYourself\n" as embed
 participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LP #LightCyan
-database "configFile" as configFile #LightCyan
 
 database "MwdiEs" as mwdiEs #LightCyan
-database "MwdiEsReplica" as mwdiEsReplica #LightCyan
+database "MwdiReplicaEs" as MwdiReplicaEs #LightCyan
+database "SynchState" as synchState #LightCyan
 database "ReplicateMwdiEsLog" as log #LightCyan
 
 participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 participant "p1MaintainDs\n" as p1MDS #LightBlue
+database "DataStore" as dataStore #LightBlue
 
 note right embed
   Automatically start
@@ -37,15 +38,16 @@ activate p1RMWDI #LightCyan
     Resolve detailed address information 
     (incl. EsClient, HttpClient, TcpClient)
     of ElasticSearch indexes for:
-    - MWDI ES
-    - MWDI ES Replica
-    - Logging of MWDI ES Replication
+    - MWDI
+    - MWDI Replica
+    - SynchState
+    - Logging
     - DataStore
     by applying the references (uuids) in the
     parameters on the content of the configFile
   end note
 
-  p1RMWDI -> p1MDS : {{parameters}, {configFile}}
+  p1RMWDI -> p1MDS : {{parameters}, {dataStoreAddress}}
   activate p1MDS #LightBlue
     note over p1MDS
       Maintain DataStore
@@ -68,6 +70,7 @@ activate p1RMWDI #LightCyan
       on last-complete-control-construct-update-time-attempt
     end note
 
+    ' todo: Please, double check the design, it might not be necessary to clean up the Replica on every run
     note right p1RMWDI
       Delete reconciliation within the same replication run:
       - read IDs of all CCs from MWDI ES and MWDI ES Replica
@@ -75,8 +78,8 @@ activate p1RMWDI #LightCyan
       - issue bulk delete for those IDs against MWDI ES Replica
       so that CCs removed from MWDI ES are also removed from the replica.
     end note
-    p1RMWDI -> mwdiEsReplica
-    p1RMWDI <-- mwdiEsReplica
+    p1RMWDI -> MwdiReplicaEs
+    p1RMWDI <-- MwdiReplicaEs
 
     note right p1RMWDI
       Log results of replication

@@ -185,21 +185,29 @@ profile-instances:
           owner: 'platform'
         - parameter: 'dpmdp-1-0-0-string-p-101'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-102'
-          owner: 'platform'
         - parameter: 'dpmdp-1-0-0-string-p-105'
           owner: 'platform'
         - parameter: 'dpmdp-1-0-0-string-p-106'
           owner: 'platform'
         - parameter: 'dpmdp-1-0-0-string-p-107'
           owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-108'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-109'
+          owner: 'platform'
         - parameter: 'dpmdp-1-0-0-string-p-110'
           owner: 'platform'
         - parameter: 'dpmdp-1-0-0-string-p-111'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-112'
+        - parameter: 'dpmdp-1-0-0-string-p-115'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-120'
+        - parameter: 'dpmdp-1-0-0-string-p-116'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-117'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-118'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-119'
           owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-002'
@@ -210,118 +218,131 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-100'
     capability:
-      string-name: 'mwdiEsClient'
-      purpose: 'UUID of the MWDI ES ElasticsearchClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      string-name: 'jobName'
+      # todo: please add a description of the parameter into the purpose field
+      purpose: ''
     configuration:
-      string-value: ''
+      string-value: 'mw-to-dp-sync-dev'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-101'
     capability:
-      string-name: 'mwdiHttpClient'
-      purpose: 'UUID of the MWDI ES HttpClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+      string-name: 'synchPeriod'
+      purpose: 'Duration between two replications of the MWDI ES in seconds'
     configuration:
-      string-value: ''
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-102'
-    capability:
-      string-name: 'mwdiTcpClient'
-      purpose: 'UUID of the MWDI ES TcpClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
-    configuration:
-      string-value: ''
+      string-value: '30'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-105'
+    capability:
+      string-name: 'mwdiEsClient'
+      purpose: 'UUID of the MWDI ES ElasticsearchClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-106'
     capability:
       string-name: 'mwdiReplicaEsClient'
       purpose: 'UUID of the MWDI ES Replica ElasticsearchClient LTP'
       pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
-      string-value: ''
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-106'
-    capability:
-      string-name: 'mwdiReplicaHttpClient'
-      purpose: 'UUID of the MWDI ES Replica HttpClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
-    configuration:
-      string-value: ''
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-018'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-107'
     capability:
-      string-name: 'mwdiReplicaTcpClient'
-      purpose: 'UUID of the MWDI ES Replica TcpClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+      string-name: 'synchStateEsClient'
+      purpose: 'UUID of the ElasticsearchClient LTP for storing the synchronization state'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
-      string-value: ''
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-019'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-110'
+    uuid: 'dpmdp-1-0-0-string-p-108'
     capability:
       string-name: 'replicateMwdiEsLogEsClient'
       purpose: 'UUID of the ElasticsearchClient LTP of the database for logging the replication activities'
       pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
-      string-value: ''
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-020'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-111'
-    capability:
-      string-name: 'replicateMwdiEsLogHttpClient'
-      purpose: 'UUID of the HttpClient LTP of the database for logging the replication activities'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
-    configuration:
-      string-value: ''
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-112'
-    capability:
-      string-name: 'replicateMwdiEsLogTcpClient'
-      purpose: 'UUID of the TcpClient LTP of the database for logging the replication activities'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
-    configuration:
-      string-value: ''
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-115'
+    uuid: 'dpmdp-1-0-0-string-p-109'
     capability:
       string-name: 'dataStoreEsClient'
       purpose: 'UUID of the DataStore ElasticsearchClient LTP'
       pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:
-      string-value: ''
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-021'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-110'
+    capability:
+      string-name: 'mwdiHttpClient'
+      purpose: 'UUID of the MWDI ES HttpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-http-c-es-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-111'
+    capability:
+      string-name: 'mwdiTcpClient'
+      purpose: 'UUID of the MWDI ES TcpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-tcp-c-es-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-115'
+    capability:
+      string-name: 'lastUpdatedField'
+      # todo: please add a description of the parameter into the purpose field
+      purpose: ''
+    configuration:
+      string-value: 'lastUpdated'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-116'
     capability:
-      string-name: 'dataStoreHttpClient'
-      purpose: 'UUID of the DataStore HttpClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      string-name: 'overlapMs'
+      # todo: please add a description of the parameter into the purpose field
+      purpose: ' ... in milliseconds'
     configuration:
-      string-value: ''
+      string-value: '60000'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-117'
     capability:
-      string-name: 'dataStoreTcpClient'
-      purpose: 'UUID of the DataStore TcpClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      string-name: 'reqPerSec'
+      # todo: please add a description of the parameter into the purpose field
+      purpose: ''
     configuration:
-      string-value: ''
+      string-value: '2'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-120'
+    uuid: 'dpmdp-1-0-0-string-p-118'
     capability:
-      string-name: 'periodicity'
-      purpose: 'Duration between two replications of the MWDI ES in seconds'
+      string-name: 'scrollSize'
+      # todo: please add a description of the parameter into the purpose field
+      purpose: ''
     configuration:
-      string-value: '30'
+      string-value: '200'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-119'
+    capability:
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      string-name: 'scrollTtl'
+      # todo: please add a description of the parameter into the purpose field
+      purpose: ''
+    configuration:
+      string-value: '2'
 
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
