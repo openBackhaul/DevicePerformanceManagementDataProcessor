@@ -10,6 +10,13 @@ participant "p1FormattingOutputApt" as cur #LightCyan
 
 requestor -> cur: {_resultCC}
 
+  note over cur #LightCoral
+    REMINDER:
+    LAG information not yet included in schema of resultCC,
+    therefore in interface.yaml mapping needs to be once
+    this info becomes available in resultCC!
+  end note
+
   note over cur
     Transform resultCC data into
     APT output format.
