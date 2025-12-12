@@ -247,7 +247,8 @@ activate p1ReplaceMwdiEs #LightCyan
       activate p1Trans #LightCyan
 
         note over p1Trans
-          Transmit APT format
+          Transmit output
+          format to Kafka
         end note
 
       p1ProcessPm <-- p1Trans
