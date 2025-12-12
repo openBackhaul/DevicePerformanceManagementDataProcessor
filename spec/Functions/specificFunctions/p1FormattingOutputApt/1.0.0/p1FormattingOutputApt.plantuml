@@ -7,61 +7,18 @@ end title
 
 participant "requestor\n(e.g. p1ProcessingOrchestratorForHistoricalPm)" as requestor
 participant "p1FormattingOutputApt" as cur #LightCyan
-participant "p1ComputeAirInterfaceNames" as airIfNames #LightCyan
-participant "p1ComputeAirIfLag" as airIfLag #LightCyan
-participant "p1ComputeEthContainerNames" as ethName #LightCyan
 
-
-
-note over cur #LightGray
-  Only reasonable data shall be provided.
-  Attributes for which no data is found
-  in the input CC are omitted from the output.
-end note
-
-requestor -> cur: {_CC, function}
-
-
-activate cur #LightCyan
-
-group CreateOutput
+requestor -> cur: {_resultCC}
 
   note over cur
-    The input CC data in ONF format is transformed
-    into the desired APT output format.
+    Transform resultCC data into
+    APT output format.
 
-    While adding AirInterface and EthernetContainer data
-    from the referenced CC data, interfaceNames and LinkAggregation
-    information is computed for each interface instance
-    by calling the respective generic functions. 
+    Only reasonable data to be provided.
+    Attributes missing in input will
+    be omitted in output.
   end note
-
-  group For the current AirInterface: compute and add info for identifiers
-    note over cur
-      Compute
-      - interfaceNames (linkEndpointId, linkId)
-      - LAG information
-
-      Add both to <i>air-interface-identifiers</i>.
-    end note
-
-    cur -> airIfNames: {_CC | LtpStructureAndAugment, uuid}
-    cur <-- airIfNames: {linkEndpointId, linkId}
-
-    cur -> airIfLag: {_CC | LtpStructureAndAugment, uuid}
-    cur <-- airIfLag: {Lag} 
-  end group
-
-  group For the current EthernetContainer: compute and add info for identifiers
-  note over cur
-    Compute interfaceName (i.e. the portName).
-
-    Add it to <i>ethernet-container-identifiers</i>.
-  end note
-  cur -> ethName: {_CC | LtpStructureAndAugment, uuid}
-  cur <-- ethName: {interfaceName}
-
-end group
+  activate cur #LightCyan
 
 requestor <-- cur: {output}
 
