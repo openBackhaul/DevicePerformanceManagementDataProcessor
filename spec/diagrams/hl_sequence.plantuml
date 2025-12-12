@@ -25,9 +25,6 @@ participant "p1AirInterface\nCapacityCalculation" as p1AirKpi #LightBlue
 participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
-participant "p1Compute\nAirInterfaceNames" as p1CompAiNames #LightCyan
-participant "p1Compute\nAirInterfacePhysicalLag" as p1CompPhyLag #LightCyan
-participant "p1Compute\nEthContainerNames" as p1CompEthContNames #LightCyan
 
 participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 
@@ -190,48 +187,6 @@ activate p1ReplaceMwdiEs #LightCyan
         note over p1Output
           Create APT format
           from resultCC
-        end note
-
-        ' compute AirIf names ->
-        p1Output -> p1CompAiNames
-        activate p1CompAiNames #LightCyan
-
-          note over p1CompAiNames
-            Determine LinkId 
-            and LinkEndpointId
-          end note
-
-        p1Output <-- p1CompAiNames
-        deactivate p1CompAiNames
-
-        ' compute AirIf LAG ->
-        p1Output -> p1CompPhyLag
-        activate p1CompPhyLag #LightCyan
-
-          note over p1CompPhyLag
-            Determine LinkIds and
-            PortNames (WireInterfaces)
-            in aggregation group
-          end note
-
-        p1Output <-- p1CompPhyLag
-        deactivate p1CompPhyLag
-
-        ' compute EthContainer names ->
-        p1Output -> p1CompEthContNames
-        activate p1CompEthContNames #LightCyan
-
-          note over p1CompEthContNames
-            Determine PortNames
-            of EthernetContainers
-          end note
-
-        p1Output <-- p1CompEthContNames
-        deactivate p1CompEthContNames
-
-        note over p1Output
-          Consolidate data
-          into APT format
         end note
 
       p1ProcessPm <-- p1Output
