@@ -63,7 +63,17 @@ activate p1RMWDI #LightCyan
     p1RMWDI <-- mwdiEs
 
     note right p1RMWDI
-      Replicate updated CCs
+      Replicate updated CCs from MWDI ES into MWDI ES Replica
+      using ElasticSearch _reindex with a range filter
+      on last-complete-control-construct-update-time-attempt
+    end note
+
+    note right p1RMWDI
+      Delete reconciliation within the same replication run:
+      - read IDs of all CCs from MWDI ES and MWDI ES Replica
+      - compute IDs that exist only in the replica
+      - issue bulk delete for those IDs against MWDI ES Replica
+      so that CCs removed from MWDI ES are also removed from the replica.
     end note
     p1RMWDI -> mwdiEsReplica
     p1RMWDI <-- mwdiEsReplica
@@ -71,7 +81,7 @@ activate p1RMWDI #LightCyan
     note right p1RMWDI
       Log results of replication
     end note
-    p1RMWDI -> log : {cronjobName,\nlastReplicationTimestamp,\nstatusMessage}
+    p1RMWDI -> log : {cronjobName,\nlastReplicationTimestamp,\nupdatedMountNames,\nstatusMessage}
 
 
     group Trigger processing of updated CC

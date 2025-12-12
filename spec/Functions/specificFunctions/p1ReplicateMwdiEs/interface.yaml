@@ -7,13 +7,61 @@ x-javascript-interface:
   p1ReplicateMwdiEs:
     summary: 'Replicates the MWDI ElasticSearch index'
     input:
+      # no explicit input parameters; the function reads its configuration
+      # (replicationInterval, index names, clients) from the configFile
     output:
       success:
-        description: ''
-        # todo: Does the Function return any output data on success? If yes, please define them here.
+        description: 'The MWDI ES Replica has been brought in sync with the MWDI ES index
+          for the current replication window. All ControlConstructs whose
+          last-complete-control-construct-update-time-attempt (field
+          `lastUpdated`) is within the replication window have been copied from
+          MWDI ES to the MWDI ES Replica using the ElasticSearch `_reindex`
+          API. ControlConstructs that have been deleted in the MWDI ES index
+          during the same window have been removed from the MWDI ES Replica
+          using a bulk delete operation. The function also records the
+          replication window, statistics (number of replicated and deleted CCs)
+          and a status message in the ReplicateMwdiEsLog, and updates the
+          lastReplicationTimestamp in the DataStore.'
+        schema:
+          type: object
+          properties:
+            cronjobName:
+              type: string
+            lastReplicationTimestamp:
+              type: integer
+              format: int64
+              description: "Timestamp marking the end of the completed replication window."
+            updatedMountNames:
+              type: array
+              description: "List of mountNames whose ControlConstructs changed in this replication cycle."
+              items:
+                type: string
+            statusMessage:
+              type: string
       error:
-        description: ''
-        # todo: Does the Function return any output data on failure? If yes, please define them here.
+        description: 'Replication of the MWDI ES index has failed. The function writes an
+          error entry to the ReplicateMwdiEsLog including the replication
+          window and an error description. The lastReplicationTimestamp is not
+          advanced so that the next successful run can repeat the same
+          replication window (with a small overlap) to avoid data loss'
+        schema:
+          type: object
+          properties:
+            cronjobName:
+              type: string
+            statusMessage:
+              type: string
+            error:
+              type: string
+            window:
+              type: object
+              properties:
+                fromTs:
+                  type: integer
+                  format: int64
+                toTs:
+                  type: integer
+                  format: int64
     processing:
       logging:
         input:
