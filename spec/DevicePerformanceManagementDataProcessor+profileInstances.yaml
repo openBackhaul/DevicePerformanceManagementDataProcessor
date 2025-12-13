@@ -374,11 +374,11 @@ profile-instances:
     configuration:
       string-value: '96'
 
-  # p1ProcessingPmData
+  # p1ProcessDevice
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-003'
     capability:
-      function-name: 'p1ProcessingPmData'
+      function-name: 'p1ProcessDevice'
       parameter-list:
         - parameter: ''
           owner: 'platform'

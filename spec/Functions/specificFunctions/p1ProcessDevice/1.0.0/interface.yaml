@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1ProcessingPmData
+  title: p1ProcessDevice
   version: 1.0.0
 
 x-javascript-interface:
-  p1ProcessingPmData:
+  p1ProcessDevice:
     summary: 'Orchestrates the device-wise processing, formatting, sending and storing of PM data.'
     input:
       required: true

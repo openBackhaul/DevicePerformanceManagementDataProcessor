@@ -36,7 +36,7 @@ x-javascript-interface:
               enum:
                 - ''
                     # todo: error messages to be added
-                    # todo: same error messages to be added to the interface of p1ProcessingPmData, too
+                    # todo: same error messages to be added to the interface of p1ProcessDevice, too
 
     processing:
       # todo: processing details to be added

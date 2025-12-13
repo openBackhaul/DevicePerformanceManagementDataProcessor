@@ -63,8 +63,8 @@ For each execution the function:
     - Stores the replication window (fromTs, toTs), the number of replicated CCs and deleted CCs, and a status message in the ReplicateMwdiEsLog  
     - Persists the new lastReplicationTimestamp = toTs in the SynchStateEs to be used as the starting point for the next replication run  
 
-After updating the MWDI ES Replica has completed successfully, the p1ProcessingPmData Function is called for every MountName in the list of updated ControlConstructs.  
-<!-- todo: Please consider how to avoid a load peaks caused by calling p1ProcessingPmData for all devices in the list. Approximately 4 devices per second are updated in MWDI. What is a reasonable length of the synchPeriod? Would it make sense to distributed the calls of p1ProcessingPmData over time? -->  
+After updating the MWDI ES Replica has completed successfully, the p1ProcessDevice Function is called for every MountName in the list of updated ControlConstructs.  
+<!-- todo: Please consider how to avoid a load peaks caused by calling p1ProcessDevice for all devices in the list. Approximately 4 devices per second are updated in MWDI. What is a reasonable length of the synchPeriod? Would it make sense to distributed the calls of p1ProcessDevice over time? -->  
 
 The update interval is configurable.  
 

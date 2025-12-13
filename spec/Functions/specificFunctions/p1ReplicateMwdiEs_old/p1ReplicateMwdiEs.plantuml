@@ -14,7 +14,7 @@ database "MwdiReplicaEs" as MwdiReplicaEs #LightCyan
 database "SynchState" as synchState #LightCyan
 database "ReplicateMwdiEsLog" as log #LightCyan
 
-participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
+participant "p1ProcessDevice\n" as p1ProOrch #LightCyan
 participant "p1MaintainDs\n" as p1MDS #LightBlue
 database "DataStore" as dataStore #LightBlue
 

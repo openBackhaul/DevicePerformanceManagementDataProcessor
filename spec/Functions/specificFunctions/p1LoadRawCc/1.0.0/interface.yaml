@@ -518,7 +518,7 @@ x-javascript-interface:
                                 type: string
                                 description: >
                                   'mountName
-                                  from {$p1ProcessingPmData.request.body#/mount-name}'
+                                  from {$p1ProcessDevice.request.body#/mount-name}'
                               device-model-name:
                                 type: string
                                 description: >

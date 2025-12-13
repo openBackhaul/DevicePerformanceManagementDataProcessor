@@ -1,4 +1,4 @@
-# p1ProcessingPmData  
+# p1ProcessDevice  
 
 Orchestrates the device-wise processing, formatting, sending and storing of PM data.  
 
@@ -16,10 +16,10 @@ Separating transmitting from formatting allows ...
 
 #### Processing  
 
-The p1ProcessingPmData starts with creating a data structure for holding raw data, results, and administrative information.  
+The p1ProcessDevice starts with creating a data structure for holding raw data, results, and administrative information.  
 This data structure is called [DataStructureForProcessing](./InformationStructure/DataStructureForProcessing.yaml).  
 
-The p1ProcessingPmData executes a hard coded sequence of Functions.  
+The p1ProcessDevice executes a hard coded sequence of Functions.  
 Before calling a Sub-Function, it checks for the Sub-Function being activated in its parameters.  
 
 Parameters for these Sub-Functions are handed over as sub-trees of the parameters object.  
@@ -33,7 +33,7 @@ These data objects are attached to the DataStructureForProcessing.
 ### Diagram  
 
 <p align="center">  
-  <img src="./p1ProcessingPmData.png" alt="p1ProcessingPmData diagram" width="400" />
+  <img src="./p1ProcessDevice.png" alt="p1ProcessDevice diagram" width="400" />
 </p>  
 
 

@@ -1,12 +1,12 @@
-@startuml p1ProcessingPmData
+@startuml p1ProcessDevice
 skinparam responseMessageBelowArrow true
 
 title
-  p1ProcessingPmData
+  p1ProcessDevice
 end title
 
 participant "p1StreamPmData\n" as requestor
-participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
+participant "p1ProcessDevice\n" as p1ProOrch #LightCyan
 participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1CreateResultCc\n" as p1CRC #LightCyan
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan

@@ -2,11 +2,11 @@
 skinparam responseMessageBelowArrow true
 
 title
-  p1ProcessingPmData
+  p1ProcessDevice
 end title
 
 participant "requestor\ne.g. regardAttributeValueChange" as requestor
-participant "p1ProcessingPmData" as po #LightBlue
+participant "p1ProcessDevice" as po #LightBlue
 participant "p1LoadRawCc" as loadData #LightCyan
 participant "tb added later\n(not pre-release scope)" as tbd #LightGray
 participant "p1FormattingOutputApt" as outputApt #LightCyan

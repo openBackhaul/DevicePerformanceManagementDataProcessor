@@ -11,7 +11,7 @@ participant "p1LoadParameters\n" as p1LoadParams #LightGreen
 participant "p1ResolveEsAddress\n" as p1REA #LightCyan
 participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
 
-participant "p1ProcessingPmData\n" as p1ProcessPm #LightCyan
+participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 
 participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen

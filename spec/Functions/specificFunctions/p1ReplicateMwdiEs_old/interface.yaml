@@ -140,7 +140,7 @@ x-javascript-interface:
                     description: >
                       '
                       '
-      p1ProcessingPmData:
+      p1ProcessDevice:
         input:
           required: true
           content:

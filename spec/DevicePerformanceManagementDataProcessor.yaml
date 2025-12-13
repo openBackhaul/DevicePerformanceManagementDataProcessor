@@ -659,9 +659,9 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        NotifiedValueChangeInTimeOfLatestChangeAttributeTriggersp1ProcessingPmData:
+        NotifiedValueChangeInTimeOfLatestChangeAttributeTriggersp1ProcessDevice:
           x-javascript-interface:
-            p1ProcessingPmData:
+            p1ProcessDevice:
               summary: 'Creates DataStructureForProcessing and triggers the Functions that are processing the PM data provisioning'
               input:
                 required: true
