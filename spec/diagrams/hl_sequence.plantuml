@@ -6,14 +6,14 @@ title
 end title
 
 participant "embedYourself\n" as embed
-participant "p1ReplicateMwdiEs\n" as p1ReplaceMwdiEs #LightCyan
+participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LoadParams #LightGreen
-database "configFile" as configFile #LightCyan
+participant "p1ResolveEsAddress\n" as p1REA #LightCyan
+participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
 
 participant "p1ProcessingPmData\n" as p1ProcessPm #LightCyan
 
 participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
-database  "MWDI ES\nReplica" as MwdiEs #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 
@@ -30,200 +30,214 @@ participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 
 participant "p1Storing\n" as p1Store #LightBlue
 participant "p1MaintainDs\n" as p1MDS #LightBlue
-database "dataStore" as db #LightBlue
 
 note right embed
   Automatically start
   p1ReplicateMwdiEs
 end note
-embed -> p1ReplaceMwdiEs
+embed -> p1RMWDI
 
 ' replicate MWDI ES ->
-activate p1ReplaceMwdiEs #LightCyan
+activate p1RMWDI #LightCyan
 
-  p1ReplaceMwdiEs -> p1LoadParams
+  p1RMWDI -> p1LoadParams
   activate p1LoadParams #LightGreen
-    note right p1LoadParams
+    note over p1LoadParams
       Load parameters
       from configFile
     end note
-    p1LoadParams -> configFile
-    p1LoadParams <-- configFile
-  p1ReplaceMwdiEs <-- p1LoadParams
+  p1RMWDI <-- p1LoadParams
   deactivate p1LoadParams
 
-  p1ReplaceMwdiEs -> p1MDS
-  activate p1MDS #LightBlue
-    loop
-      note over p1MDS
-        Maintain DataStore
+  Loop FOR all esName
+    p1RMWDI -> p1REA
+    activate p1REA #LightCyan
+      note over p1REA
+        Resolve ES address
       end note
-    end
+    p1RMWDI <-- p1REA
+    deactivate p1REA
+  end Loop
 
-  loop 
-    note over p1ReplaceMwdiEs
-      Update MWDI ES Replica
+  p1RMWDI -> p1MDS
+  activate p1MDS #LightBlue
+    note over p1MDS
+      Maintain DataStore
     end note
 
-    p1ReplaceMwdiEs -> p1ProcessPm : for every\nupdated CC
-    activate p1ProcessPm #LightCyan
+  Loop endless
 
-      note over p1ProcessPm
-        Create
-        DataStructureForProcessing
+    p1RMWDI -> p1UMR
+    activate p1UMR #LightCyan
+      note over p1UMR
+        Replicate updated CCs
       end note
+    p1RMWDI <-- p1UMR
+    deactivate p1UMR
 
-      ' create RawCC ->
-      p1ProcessPm -> p1AddRaw
-      activate p1AddRaw #LightGreen
+    Loop for every updated CC
 
-        p1AddRaw -> MwdiEs
-        p1AddRaw <-- MwdiEs
+      p1RMWDI -> p1ProcessPm
+      activate p1ProcessPm #LightCyan
 
-        ' apply fieldsFilter ->
-        p1AddRaw -> p1FieldsFilter
-        activate p1FieldsFilter #LightGreen
-
-          note over p1FieldsFilter
-            Reduce structure of rawCC
-          end note
-
-        p1AddRaw <-- p1FieldsFilter
-        deactivate p1FieldsFilter
-
-        ' get mostRecentPeriodEndTimes
-        p1AddRaw -> db
-        p1AddRaw <-- db
-
-        ' discard irrelevant PM records
-        p1AddRaw -> filterPm
-        activate filterPm #LightGreen
-
-          note over filterPm
-            Delete PM data that has
-            already been processed in past
-          end note
-
-        p1AddRaw <-- filterPm
-        deactivate filterPm
-
-      p1ProcessPm <-- p1AddRaw
-      deactivate p1AddRaw
-
-      note over p1ProcessPm
-        Add rawCC to
-        DataStructureForProcessing
-      end note
-
-      ' create resultCC ->
-      p1ProcessPm -> p1CreateResultCC
-      activate p1CreateResultCC #LightCyan
-
-        note over p1CreateResultCC
-          Create resultCC
-          from rawCC
+        note over p1ProcessPm
+          Create
+          DataStructureForProcessing
         end note
 
-        ' process default values ->
-        p1CreateResultCC -> p1DefaultValues
-        activate p1DefaultValues #LightBlue
+        ' create RawCC ->
+        p1ProcessPm -> p1AddRaw
+        activate p1AddRaw #LightGreen
 
-          note over p1DefaultValues
-            Delete attributes with ONF
-            default value from resultCC
+          note over p1AddRaw
+            Load raw data to rawCC
           end note
 
-        p1CreateResultCC <-- p1DefaultValues
-        deactivate p1DefaultValues
+          ' apply fieldsFilter ->
+          p1AddRaw -> p1FieldsFilter
+          activate p1FieldsFilter #LightGreen
 
-        ' process outOfRange values ->
-        p1CreateResultCC -> p1OutOfRange
-        activate p1OutOfRange #LightBlue
+            note over p1FieldsFilter
+              Reduce structure of rawCC
+            end note
 
-          note over p1OutOfRange
-            Delete attributes with value outside
-            pre-defined range from resultCC
+          p1AddRaw <-- p1FieldsFilter
+          deactivate p1FieldsFilter
+
+          note over p1AddRaw
+            Get mostRecentPeriodEndTimes
           end note
 
-        p1CreateResultCC <-- p1OutOfRange
-        deactivate p1OutOfRange
+          ' discard irrelevant PM records
+          p1AddRaw -> filterPm
+          activate filterPm #LightGreen
 
-        ' get AirIf KPIs ->
-        p1CreateResultCC -> p1AirKpi
-        activate p1AirKpi #LightBlue
+            note over filterPm
+              Delete PM data that has
+              already been processed in past
+            end note
 
-          note over p1AirKpi
-            Add AirInterface capacity
-            to resultCC
-          end note
+          p1AddRaw <-- filterPm
+          deactivate filterPm
 
-        p1CreateResultCC <-- p1AirKpi
-        deactivate p1AirKpi
+        p1ProcessPm <-- p1AddRaw
+        deactivate p1AddRaw
 
-        ' get EthContainer KPIs ->
-        p1CreateResultCC -> p1EthKpi
-        activate p1EthKpi #LightBlue
-
-          note over p1EthKpi
-            Add Ethernet KPIs
-            to resultCC
-          end note
-
-        p1CreateResultCC <-- p1EthKpi
-        deactivate p1EthKpi
-
-      p1ProcessPm <-- p1CreateResultCC
-      deactivate p1CreateResultCC
-
-      note over p1ProcessPm
-        Add resultCC to
-        DataStructureForProcessing
-      end note
-
-      ' Format OutputAPT ->
-      p1ProcessPm -> p1Output
-      activate p1Output #LightCyan
-
-        note over p1Output
-          Create APT format
-          from resultCC
+        note over p1ProcessPm
+          Add rawCC to
+          DataStructureForProcessing
         end note
 
-      p1ProcessPm <-- p1Output
-      deactivate p1Output
+        ' create resultCC ->
+        p1ProcessPm -> p1CreateResultCC
+        activate p1CreateResultCC #LightCyan
 
-      note over p1ProcessPm
-        Add APT format to
-        DataStructureForProcessing
-      end note
+          note over p1CreateResultCC
+            Create resultCC
+            from rawCC
+          end note
 
-      ' transmit data ->
-      p1ProcessPm -> p1Trans
-      activate p1Trans #LightCyan
+          ' process default values ->
+          p1CreateResultCC -> p1DefaultValues
+          activate p1DefaultValues #LightBlue
 
-        note over p1Trans
-          Transmit output
-          format to Kafka
+            note over p1DefaultValues
+              Delete attributes with ONF
+              default value from resultCC
+            end note
+
+          p1CreateResultCC <-- p1DefaultValues
+          deactivate p1DefaultValues
+
+          ' process outOfRange values ->
+          p1CreateResultCC -> p1OutOfRange
+          activate p1OutOfRange #LightBlue
+
+            note over p1OutOfRange
+              Delete attributes with value outside
+              pre-defined range from resultCC
+            end note
+
+          p1CreateResultCC <-- p1OutOfRange
+          deactivate p1OutOfRange
+
+          ' get AirIf KPIs ->
+          p1CreateResultCC -> p1AirKpi
+          activate p1AirKpi #LightBlue
+
+            note over p1AirKpi
+              Add AirInterface capacity
+              to resultCC
+            end note
+
+          p1CreateResultCC <-- p1AirKpi
+          deactivate p1AirKpi
+
+          ' get EthContainer KPIs ->
+          p1CreateResultCC -> p1EthKpi
+          activate p1EthKpi #LightBlue
+
+            note over p1EthKpi
+              Add Ethernet KPIs
+              to resultCC
+            end note
+
+          p1CreateResultCC <-- p1EthKpi
+          deactivate p1EthKpi
+
+        p1ProcessPm <-- p1CreateResultCC
+        deactivate p1CreateResultCC
+
+        note over p1ProcessPm
+          Add resultCC to
+          DataStructureForProcessing
         end note
 
-      p1ProcessPm <-- p1Trans
-      deactivate p1Trans
+        ' Format OutputAPT ->
+        p1ProcessPm -> p1Output
+        activate p1Output #LightCyan
 
-      ' storing ->
-      p1ProcessPm -> p1Store
-      activate p1Store #LightBlue
+          note over p1Output
+            Create APT format
+            from resultCC
+          end note
 
-        note over p1Store
-          Store resultCC
+        p1ProcessPm <-- p1Output
+        deactivate p1Output
+
+        note over p1ProcessPm
+          Add APT format to
+          DataStructureForProcessing
         end note
 
-        p1Store -> db
+        ' transmit data ->
+        p1ProcessPm -> p1Trans
+        activate p1Trans #LightCyan
 
-      p1ProcessPm <-- p1Store
-      deactivate p1Store
+          note over p1Trans
+            Transmit output
+            format to Kafka
+          end note
 
-    deactivate p1ProcessPm
+        p1ProcessPm <-- p1Trans
+        deactivate p1Trans
 
-  end
+        ' storing ->
+        p1ProcessPm -> p1Store
+        activate p1Store #LightBlue
+
+          note over p1Store
+            Store resultCC
+            to DataStore
+          end note
+
+        p1ProcessPm <-- p1Store
+        deactivate p1Store
+
+      deactivate p1ProcessPm
+
+    end Loop
+
+  end Loop
 
 @enduml

@@ -1,0 +1,101 @@
+@startuml p1ReplicateMwdiEs
+skinparam responseMessageBelowArrow true
+
+title
+  p1ReplicateMwdiEs
+end title
+
+participant "embedYourself\n" as embed
+participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+participant "p1LoadParameters\n" as p1LP #LightCyan
+
+database "MwdiEs" as mwdiEs #LightCyan
+database "MwdiReplicaEs" as MwdiReplicaEs #LightCyan
+database "SynchState" as synchState #LightCyan
+database "ReplicateMwdiEsLog" as log #LightCyan
+
+participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
+participant "p1MaintainDs\n" as p1MDS #LightBlue
+database "DataStore" as dataStore #LightBlue
+
+note right embed
+  Automatically start
+  p1ReplicateMwdiEs
+end note
+embed -> p1RMWDI : {}
+activate p1RMWDI #LightCyan
+
+  p1RMWDI -> p1LP : {functionName=\n"p1ReplicateMwdiEs"}
+  activate p1LP #LightCyan
+    note over p1LP
+      Load parameters
+      from configFile
+    end note
+  p1RMWDI <-- p1LP : {{parameters},\n{configFile}}
+  deactivate p1LP
+
+  note right p1RMWDI
+    Resolve detailed address information 
+    (incl. EsClient, HttpClient, TcpClient)
+    of ElasticSearch indexes for:
+    - MWDI
+    - MWDI Replica
+    - SynchState
+    - Logging
+    - DataStore
+    by applying the references (uuids) in the
+    parameters on the content of the configFile
+  end note
+
+  p1RMWDI -> p1MDS : {{parameters}, {dataStoreAddress}}
+  activate p1MDS #LightBlue
+    note over p1MDS
+      Maintain DataStore
+    end note
+
+  group Cyclically update MWDI ES Replica
+
+    note right p1RMWDI
+      - read last-complete-control-construct-update-time-attempt attribute
+        for all devices in the MWDI ES index
+      - read entire CC for all devices with
+        last-complete-control-construct-update-time-attempt attribute > lastReplicationTimestamp
+    end note
+    p1RMWDI -> mwdiEs
+    p1RMWDI <-- mwdiEs
+
+    note right p1RMWDI
+      Replicate updated CCs from MWDI ES into MWDI ES Replica
+      using ElasticSearch _reindex with a range filter
+      on last-complete-control-construct-update-time-attempt
+    end note
+
+    ' todo: Please, double check the design, it might not be necessary to clean up the Replica on every run
+    note right p1RMWDI
+      Delete reconciliation within the same replication run:
+      - read IDs of all CCs from MWDI ES and MWDI ES Replica
+      - compute IDs that exist only in the replica
+      - issue bulk delete for those IDs against MWDI ES Replica
+      so that CCs removed from MWDI ES are also removed from the replica.
+    end note
+    p1RMWDI -> MwdiReplicaEs
+    p1RMWDI <-- MwdiReplicaEs
+
+    note right p1RMWDI
+      Log results of replication
+    end note
+    p1RMWDI -> log : {cronjobName,\nlastReplicationTimestamp,\nupdatedMountNames,\nstatusMessage}
+
+
+    group Trigger processing of updated CC
+      p1RMWDI -> p1ProOrch : {mountName, {parameters}, {configFile}}
+      activate p1ProOrch #LightCyan
+        note over p1ProOrch
+          Process PM data
+          of device
+        end note
+    end
+
+  end
+
+@enduml
