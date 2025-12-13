@@ -1,12 +1,12 @@
-@startuml p1ReplicateMwdiEs
+@startuml p1StreamPmData
 skinparam responseMessageBelowArrow true
 
 title
-  p1ReplicateMwdiEs
+  p1StreamPmData
 end title
 
 participant "embedYourself\n" as embed
-participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+participant "p1StreamPmData\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LP #LightCyan
 
 database "MwdiEs" as mwdiEs #LightCyan
@@ -20,12 +20,12 @@ database "DataStore" as dataStore #LightBlue
 
 note right embed
   Automatically start
-  p1ReplicateMwdiEs
+  p1StreamPmData
 end note
 embed -> p1RMWDI : {}
 activate p1RMWDI #LightCyan
 
-  p1RMWDI -> p1LP : {functionName=\n"p1ReplicateMwdiEs"}
+  p1RMWDI -> p1LP : {functionName=\n"p1StreamPmData"}
   activate p1LP #LightCyan
     note over p1LP
       Load parameters

@@ -5,7 +5,7 @@ title
   p1ProcessingPmData
 end title
 
-participant "p1ReplicateMwdiEs\n" as requestor
+participant "p1StreamPmData\n" as requestor
 participant "p1ProcessingPmData\n" as p1ProOrch #LightCyan
 participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1CreateResultCc\n" as p1CRC #LightCyan

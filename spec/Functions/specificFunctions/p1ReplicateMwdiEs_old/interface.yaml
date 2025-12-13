@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1ReplicateMwdiEs
+  title: p1StreamPmData
   version: 1.0.0
 
 x-javascript-interface:
-  p1ReplicateMwdiEs:
+  p1StreamPmData:
     summary: 'Replicates the MWDI ElasticSearch index'
     processing:
       p1LoadParameters:
@@ -20,7 +20,7 @@ x-javascript-interface:
                   function-name:
                     type: string
                     enum:
-                      - 'p1ReplicateMwdiEs'
+                      - 'p1StreamPmData'
                     description: 'Name of the Function whose parameters are to be loaded from the configFile'
         output:
           success:
@@ -125,7 +125,7 @@ x-javascript-interface:
                   cronjob-name:
                     type: string
                     enum:
-                      - 'p1ReplicateMwdiEs'
+                      - 'p1StreamPmData'
                     description: 'Name of the cronjob'
                   last-replication-timestamp:
                     type: string

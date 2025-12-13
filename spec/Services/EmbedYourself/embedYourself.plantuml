@@ -9,7 +9,7 @@ participant "RegistryOffice\n" as RO
 participant "embedYourself\n" as embed
 participant "bequeathYourDataAndDie\n" as bequeath
 
-participant "p1ReplicateMwdiEs\n" as p1RMWDI #LightCyan
+participant "p1StreamPmData\n" as p1RMWDI #LightCyan
 
 
 RO -> embed
@@ -31,7 +31,7 @@ activate embed
 
   note right embed
     Automatically start
-    p1ReplicateMwdiEs
+    p1StreamPmData
   end note
   embed -> p1RMWDI
   activate p1RMWDI #LightCyan

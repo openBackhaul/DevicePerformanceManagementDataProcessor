@@ -1,6 +1,6 @@
-# p1ReplicateMwdiEs  
+# p1StreamPmData  
 
-The p1ReplicateMwdiEs implements a cyclic process.  
+The p1StreamPmData implements a cyclic process.  
 The main tasks of this process are:  
 - Replicating updated ControlConstructs from the MWDI ES index into the MWDI ES Replica index (which holds the raw data for processing PM data in the DPMDP)  
 - Initiating the processing of PM data for the updated ControlConstructs  
@@ -8,7 +8,7 @@ The main tasks of this process are:
 
 ### Overview  
 
-After getting started by the embedYourself function, the p1ReplicateMwdiEs ...  
+After getting started by the embedYourself function, the p1StreamPmData ...  
   - loads the parameter values for the entire cyclic PM data processing from the configFile  
   - composes the address information of all the involved ElasticSearch indices  
   - triggers the cyclic execution of the DataStore cleanup  
@@ -18,7 +18,7 @@ After getting started by the embedYourself function, the p1ReplicateMwdiEs ...
 ### Diagram  
 
 <p align="center">
-  <img src="./p1ReplicateMwdiEs.png" alt="p1ReplicateMwdiEs diagram" width="400" />
+  <img src="./p1StreamPmData.png" alt="p1StreamPmData diagram" width="400" />
 </p>
 
 

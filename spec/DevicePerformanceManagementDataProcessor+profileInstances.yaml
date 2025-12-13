@@ -175,11 +175,11 @@ profile-instances:
     configuration:
       is-active: true
 
-  # p1ReplicateMwdiEs
+  # p1StreamPmData
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-001'
     capability:
-      function-name: 'p1ReplicateMwdiEs'
+      function-name: 'p1StreamPmData'
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-100'
           owner: 'platform'
@@ -218,7 +218,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-100'
     capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
       string-name: 'jobName'
       # todo: please add a description of the parameter into the purpose field
       purpose: ''
@@ -308,7 +308,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-116'
     capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
       string-name: 'overlapMs'
       # todo: please add a description of the parameter into the purpose field
       purpose: ' ... in milliseconds'
@@ -318,7 +318,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-117'
     capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
       string-name: 'reqPerSec'
       # todo: please add a description of the parameter into the purpose field
       purpose: ''
@@ -337,7 +337,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-119'
     capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1ReplicateMwdiEs folder)
+      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
       string-name: 'scrollTtl'
       # todo: please add a description of the parameter into the purpose field
       purpose: ''
