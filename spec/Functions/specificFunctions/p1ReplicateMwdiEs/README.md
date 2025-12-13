@@ -8,7 +8,7 @@ The resulting MWDI ES Replica provides the raw data for processing PM data in th
 
 The p1ReplicateMwdiEs function performs an incremental replication of the MWDI
 ElasticSearch index into the MWDI ES Replica.  
-A new value of the ControlConstruct::lastCompleteControlConstructUpdateTimeAttempt attribute triggers the replication.  
+A new value of the lastCompleteControlConstructUpdateTimeAttempt attribute at a ControlConstruct in the MWDI ES index triggers the same ControlConstruct being replicated into the MWDI ES Replica.  
 
 For each execution the function:  
 
