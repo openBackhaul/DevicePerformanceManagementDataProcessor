@@ -11,6 +11,7 @@ The following generic Functions are provided as a part of this application's imp
 - [p1DiscardIrrelevantPmRecords](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1DiscardIrrelevantPmRecords/1.0.0)  
 - [p1FieldsFilter](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1FieldsFilter/1.0.0)  
 - [p1LoadParameters](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1LoadParameters/1.0.0)  
+- [p1ResolveEsAddress](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ResolveEsAddress/1.0.0)  
 
 
 ### Re-use

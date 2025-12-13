@@ -1,0 +1,40 @@
+@startuml p1UpdateMwdiReplica
+skinparam responseMessageBelowArrow true
+
+title
+  p1UpdateMwdiReplica
+end title
+
+participant "p1StreamPmData\n" as p1SPMD
+participant "p1UpdateMwdiReplica\n" as p1UMWR #LightCyan
+database "MwdiEs" as mwdiEs #LightCyan
+database "MwdiReplicaEs" as mwdiReplicaEs #LightCyan
+database "LoggingEs" as log #LightCyan
+
+p1SPMD -> p1UMWR : {{parameters},\nlastReplicaTime,\n{mwdiEsClient},\n{mwdiReplicaEsClient},\n{loggingEsClient}}
+activate p1UMWR #LightCyan
+
+  note over p1UMWR
+    Calculate periodStartTime
+    and periodEndTime
+  end note
+
+  note right p1UMWR
+    Replicate updated CCs from MWDI ES into MWDI ES Replica
+    using ElasticSearch _reindex with a range filter
+    on lastCompleteControlConstructUpdateTimeAttempt
+  end note
+  p1UMWR -> mwdiEs
+  p1UMWR <-- mwdiEs
+  p1UMWR -> mwdiReplicaEs
+
+  note right p1UMWR
+    Log results of replication
+  end note
+  p1UMWR -> log : {cronjobName,\nlastReplicationTimestamp,\nupdatedMountNames,\nstatusMessage}
+
+
+p1SPMD <-- p1UMWR : {[updatedMountNames],\ntimestamp}
+deactivate p1UMWR
+
+@enduml

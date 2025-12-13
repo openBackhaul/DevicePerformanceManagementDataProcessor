@@ -1,9 +1,8 @@
 # p1StreamPmData  
 
-The p1StreamPmData implements a cyclic process.  
-The main tasks of this process are:  
-- Replicating updated ControlConstructs from the MWDI ES index into the MWDI ES Replica index (which holds the raw data for processing PM data in the DPMDP)  
-- Initiating the processing of PM data for the updated ControlConstructs  
+The p1StreamPmData is cyclically processing:  
+- Replicate updated ControlConstructs from the MWDI ES index into the MWDI ES Replica index (which holds the raw data for processing PM data in the DPMDP)  
+- Initiate the processing of PM data of the updated ControlConstructs  
 
 
 ### Overview  
@@ -22,7 +21,12 @@ After getting started by the embedYourself function, the p1StreamPmData ...
 </p>
 
 
+### Variables  
+
+Detailed description of the [internal variables](./variables.yaml).  
+
+
 ### Interface  
 
-Please find a detailed description of the [interface](./interface.yaml).  
+Detailed description of the [interface](./interface.yaml).  
 

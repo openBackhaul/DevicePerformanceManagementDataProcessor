@@ -30,7 +30,7 @@ activate p1RMWDI #LightCyan
   deactivate p1LP
 
   Loop FOR all esName
-    p1RMWDI -> p1REA : {esName,\n{configFile}}
+    p1RMWDI -> p1REA : {esName,\n{parameters},\n{configFile}}
     activate p1REA #LightCyan
       note over p1REA
         Resolve ES address
@@ -47,12 +47,12 @@ activate p1RMWDI #LightCyan
 
   Loop endless
 
-    p1RMWDI -> p1UMR : {{parameters},\n{mwdiAddress},\n{mwdiReplicaAddress},\n{synchStateAddress},\n{loggingAddress}}
+    p1RMWDI -> p1UMR : {{parameters},\nlastReplicaTime,\n{mwdiEsClient},\n{mwdiReplicaEsClient},\n{loggingEsClient}}
     activate p1UMR #LightCyan
       note over p1UMR
         Replicate updated CCs
       end note
-    p1RMWDI <-- p1UMR
+    p1RMWDI <-- p1UMR : {[updatedMountNames],\ntimestamp}
     deactivate p1UMR
 
     p1RMWDI -> p1ProcessPm : {mountName,\n{parameters},\n{configFile}}

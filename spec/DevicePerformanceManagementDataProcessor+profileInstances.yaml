@@ -252,18 +252,9 @@ profile-instances:
       string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-018'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-107'
-    capability:
-      string-name: 'synchStateEsClient'
-      purpose: 'UUID of the ElasticsearchClient LTP for storing the synchronization state'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
-    configuration:
-      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-019'
-
-  - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-108'
     capability:
-      string-name: 'replicateMwdiEsLogEsClient'
+      string-name: 'loggingEsClient'
       purpose: 'UUID of the ElasticsearchClient LTP of the database for logging the replication activities'
       pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
     configuration:

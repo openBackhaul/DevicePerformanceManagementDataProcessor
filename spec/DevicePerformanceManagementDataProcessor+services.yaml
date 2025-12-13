@@ -124,8 +124,6 @@ clients:
         index-alias: 7
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-018
         index-alias: 18
-      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-019
-        index-alias: 19
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-020
         index-alias: 20
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-021

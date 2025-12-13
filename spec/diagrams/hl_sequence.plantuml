@@ -8,8 +8,8 @@ end title
 participant "embedYourself\n" as embed
 participant "p1StreamPmData\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LoadParams #LightGreen
-participant "p1ResolveEsAddress\n" as p1REA #LightCyan
-participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
+participant "p1ResolveEsAddress\n" as p1REA #LightGreen
+participant "p1UpdateMwdiReplica\n" as p1UMR #LightGreen
 
 participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 
@@ -51,7 +51,7 @@ activate p1RMWDI #LightCyan
 
   Loop FOR all esName
     p1RMWDI -> p1REA
-    activate p1REA #LightCyan
+    activate p1REA #LightGreen
       note over p1REA
         Resolve ES address
       end note
@@ -68,7 +68,7 @@ activate p1RMWDI #LightCyan
   Loop endless
 
     p1RMWDI -> p1UMR
-    activate p1UMR #LightCyan
+    activate p1UMR #LightGreen
       note over p1UMR
         Replicate updated CCs
       end note

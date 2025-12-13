@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: p1UpdateMwdiReplica
+  version: 1.0.0
+
+x-javascript-interface:
+  p1UpdateMwdiReplica:
+    summary: 'Replicates updated CCs from MWDI Es to MWDI Es Replica'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - last-replica-time
+              - mwdi-es-client
+              - mwdi-replica-es-client
+              - logging-es-client
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Hierarchical object holding the parameter settings'
+              last-replica-time:
+                type: string
+                pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+                description: >
+                  'Timestamp of the last successful replication'
+              mwdi-es-client:
+                type: object
+                description: >
+                  'MWDI ElasticSearch address'
+              mwdi-replica-es-client:
+                type: object
+                description: >
+                  'MWDI Replica ElasticSearch address'
+              logging-es-client:
+                type: object
+                description: >
+                  'MWDI Replica ElasticSearch address'
+    output:
+      success:
+        description: 'Updated CCs successfully replicated'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - updated-mount-names
+                - timestamp
+              properties:
+                updated-mount-names:
+                  type: array
+                  description: >
+                    'List of MountNames of updated ControlConstructs
+                    from [/update-mwdi-replica/to-be-processed-mount-names]'
+                  items:
+                    type: string
+                timestamp:
+                  type: string
+                  description: >
+                    'Timestamp marking the end of the replication period
+                    from [/update-mwdi-replica/period-end-time]'
+      error:
+        description: 'Updated CCs could not be replicated'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'connection to MWDI ES failed'
+                - 'connection to MWDI Replica ES failed'
+                - 'connection to Logging ES failed'
+                - 'data replication failed'
+                - 'unknown error occurred'
+    processing:
+      _reindex:
+        input:
+          schema:
+            type: object
+            required:
+              - requests_per_second
+              - source 
+              - dest
+              - conflicts
+            properties:
+              requests_per_second:
+                type: integer
+                description: >
+                  'Throttle for reindexing requests per second
+                  from [/update-mwdi-replica/req-per-sec]'
+              source:
+                type: object
+                required:
+                  - index
+                  - gt
+                  - lte
+                properties:
+                  index:
+                    type: string
+                    description: >
+                      'ElasticSearch index of MWDI ES
+                      from [/update-mwdi-replica/mwdi-es-client/index-alias]'
+                  gt:
+                    type: string
+                    description: >
+                      'Start timestamp of the replication period (exclusive)
+                      from [/update-mwdi-replica/period-start-time]'
+                  lte:
+                    type: string
+                    description: >
+                      'End timestamp of the replication period (inclusive)
+                      from [/update-mwdi-replica/period-end-time]'
+              dest:
+                type: object
+                required:
+                  - index
+                properties:
+                  index:
+                    type: string
+                    description: >
+                      'ElasticSearch index of MWDI Replica ES
+                      from [/update-mwdi-replica/mwdi-replica-es-client/index-alias]'
+              conflicts:
+                type: string
+                description: 'Conflict resolution strategy'
+                enum:
+                  - 'proceed'
+        output:
+          success:
+            description: 'Updated CCs have been reindexed successfully'
+            schema:
+              type: object
+              properties:
+                updated-mount-names:
+                  type: array
+                  description: "List of MountNames of updated ControlConstructs"
+                  items:
+                    type: string
+                status-message:
+                  type: string
+          error:
+            description: 'Updated CCs could not be reindexed'
+            schema:
+              type: object
+              properties:
+                status-message:
+                  type: string
+      logging:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cronjob-name
+                  - last-replication-timestamp
+                  - updated-mount-names
+                  - status-message
+                properties:
+                  cronjob-name:
+                    type: string
+                    description: >
+                      'Name of the cronjob
+                      from [/update-mwdi-replica/job-name]'
+                  last-replication-timestamp:
+                    type: string
+                    description: >
+                      'Date and time of the last successful replication
+                      from [/update-mwdi-replica/period-end-time]'
+                  status-message:
+                    type: string
+                    description: >
+                      'Status message describing the result of the replication
+                      from {$_reindex.output#/status-message}'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
