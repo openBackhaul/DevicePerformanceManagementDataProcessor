@@ -110,9 +110,8 @@ servers:
 
 clients:
 
-  # update ES clients in forwardings & configFile
   - http-client:
-      application-name: ElasticSearchMwdiReplica
+      application-name: ElasticSearch
       release-number: 1.0.0
       uuid: dpmdp-1-0-0-http-c-es-1-0-0-000
     tcp-client:
@@ -121,23 +120,16 @@ clients:
       tcp-port: 3015
       uuid: dpmdp-1-0-0-tcp-c-es-1-0-0-000
     elasticsearch-client:
-      uuid: dpmdp-1-0-0-es-c-es-1-0-0-000
-      index-alias: 15
-
-  - http-client:
-      application-name: ElasticSearchDpmdp
-      release-number: 1.0.0
-      uuid: dpmdp-1-0-0-http-c-es-1-0-0-001
-    tcp-client:
-      remote-protocol: http
-      ip-address: 127.0.0.1
-      tcp-port: 3015
-      uuid: dpmdp-1-0-0-tcp-c-es-1-0-0-000
-    elasticsearch-client:
-      uuid: dpmdp-1-0-0-es-c-es-1-0-0-000
-      index-alias: 16
-
-
+      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-007
+        index-alias: 7
+      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-018
+        index-alias: 18
+      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-019
+        index-alias: 19
+      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-020
+        index-alias: 20
+      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-021
+        index-alias: 21
 
   # update Kafka client in forwardings & configFile; only Kafka for provisioning
   - http-client:
@@ -336,23 +328,3 @@ clients:
         basic:
         individual:
 
-  - http-client:
-      application-name: MicroWaveDeviceInventory
-      release-number: 2.0.1
-      uuid: dpmdp-1-0-0-http-c-mwdi-2-0-1-000
-    tcp-client:
-      remote-protocol: http
-      ip-address: 127.0.0.1
-      tcp-port: 4024
-      uuid: dpmdp-1-0-0-tcp-c-mwdi-2-0-1-000
-    operation-clients:
-      own-oam:
-        basic:
-        individual:
-      service:
-        basic:
-        individual:
-          - operation-name: /v1/notify-attribute-value-changes
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-000
-          - operation-name: /v1/end-subscription
-            uuid: dpmdp-1-0-0-op-c-is-mwdi-2-0-1-001
