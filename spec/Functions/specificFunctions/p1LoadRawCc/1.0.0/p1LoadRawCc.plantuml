@@ -12,18 +12,8 @@ participant "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
-requestor -> cur: {mountName,\n{parameters},\n{configFile}}
+requestor -> cur: {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
 activate cur #LightCyan
-
-  note over cur
-    Resolve detailed address information 
-    (incl. EsClient, HttpClient, TcpClient)
-    of ElasticSearch indexes for:
-    - MWDI ES Replica
-    - DataStore
-    by applying the references (uuids) in the
-    parameters on the content of the configFile
-  end note
 
 == Read CC and apply fieldsFilter ==
  'Read CC

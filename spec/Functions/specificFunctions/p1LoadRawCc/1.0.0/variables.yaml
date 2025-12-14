@@ -1,0 +1,72 @@
+load-raw-cc:
+  type: object
+  required:
+    - mount-name
+    - parameters
+    - mwdi-replica-es-client
+    - data-store-es-client
+    - config-file
+  properties:
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    mwdi-replica-es-client:
+      type: object
+      description: >
+        'MWDI Replica ElasticSearch address
+        from {$input#/mwdi-replica-es-client}'
+    mwdi-replica-url:
+      type: string
+      description: >
+        'ElasticSearch URL of MWDI Replica ES
+        from [/load-raw-cc/mwdi-replica-es-client/url]'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/load-raw-cc/data-store-es-client/url]'
+    # todo : check if config-file still required after providing the es clients
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+    raw-cc:
+      type: object
+      description: >
+        'The raw control construct data read from ES, following ONF structure
+        from {$readControlConstructFromEs.output#/core-model-1-4:control-construct=[/load-raw-cc/mount-name]}
+        overwritten by {$p1FieldsFilter.output#/filtered-data-structure}
+        overwritten by {$applyFilteringForRelevantPmData.output#/raw-cc}'
+    fields-filter:
+      type: string
+      description: >
+        'Fields filter to be applied to reduce the raw ControlConstruct data
+        from [/load-raw-cc/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
+    interface:
+      type: array
+      description: >
+        'MostRecentPeriodEndTimes for all interfaces to be processed
+        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
+    relevant-granularities:
+      type: string
+      enum:
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+      description: >
+        'Pattern against which PM record granularity period values are to be matched. Indicates relevant granularities.
+        from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
+    

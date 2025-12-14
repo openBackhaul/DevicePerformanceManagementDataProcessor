@@ -147,12 +147,6 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-                  enum:
-                    - 'connection to MWDI ES failed'
-                    - 'connection to MWDI Replica ES failed'
-                    - 'connection to Logging ES failed'
-                    - 'data replication failed'
-                    - 'unknown error occurred'
       p1ProcessDevice:
         input:
           required: true
@@ -163,6 +157,8 @@ x-javascript-interface:
                 required:
                   - mount-name
                   - parameters
+                  - mwdi-replica-es-client
+                  - data-store-es-client
                   - config-file
                 properties:
                   mount-name:
@@ -175,6 +171,17 @@ x-javascript-interface:
                     description: >
                       'Hierarchical object holding the parameter settings
                       from [/stream-pm-data/parameters]'
+                  mwdi-replica-es-client:
+                    type: object
+                    description: >
+                      'MWDI Replica ElasticSearch address
+                      from [/stream-pm-data/es-address=mwdiReplicaEsClient/address]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'Data Store ElasticSearch address
+                      from [/stream-pm-data/es-address=dataStoreEsClient/address]'
+                  # todo : check if config-file still required after providing the es clients
                   config-file:
                     type: object
                     description: >

@@ -3,6 +3,8 @@ data-structure-for-processing:
   required:
     - mount-name
     - parameters
+    - mwdi-replica-es-client
+    - data-store-es-client
   properties:
     mount-name:
       type: string
@@ -14,6 +16,17 @@ data-structure-for-processing:
       description: >
         'Hierarchical object holding the parameter settings
         from {$input#/parameters}'
+    mwdi-replica-es-client:
+      type: object
+      description: >
+        'MWDI Replica ElasticSearch address
+        from {$input#/mwdi-replica-es-client}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+    # todo : check if config-file still required after providing the es clients
     config-file:
       type: object
       description: >

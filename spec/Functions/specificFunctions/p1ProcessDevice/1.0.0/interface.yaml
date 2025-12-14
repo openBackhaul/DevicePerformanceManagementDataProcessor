@@ -15,28 +15,51 @@ x-javascript-interface:
             required:
               - mount-name
               - parameters
+              - mwdi-replica-es-client
+              - data-store-es-client
               - config-file
             properties:
               mount-name:
                 type: string
                 description: >
-                  'MountName
-                  to {/data-structure-for-processing/mount-name}'
+                  'MountName'
               parameters:
                 type: object
                 description: >
-                  'Hierarchical object holding the parameter settings
-                  to {/data-structure-for-processing/parameters}'
+                  'Hierarchical object holding the parameter settings'
+              mwdi-replica-es-client:
+                type: object
+                description: >
+                  'MWDI Replica ElasticSearch address'
+              data-store-es-client:
+                type: object
+                description: >
+                  'Data Store ElasticSearch address'
+              # todo : check if config-file still required after providing the es clients
               config-file:
                 type: object
                 description: >
-                  'configFile content
-                  to {/data-structure-for-processing/config-file}'
+                  'configFile content'
     output:
       success:
         description: 'PM data processed, sent and stored'
       error:
         description: 'Processing of PM data failed'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'Input data missing or invalid'
+                - 'Mount name not found'
+                - 'Parameters missing or invalid'
+                - 'Config file missing or invalid'
+                - 'Raw CC data missing or invalid'
+                - 'Result CC data missing or invalid'
+                - 'Output format missing or invalid'
+                - 'Kafka transmission failed'
+                - 'Storing resultCC failed'
+                - 'General processing error'
     processing:
       p1LoadRawCc:
         input:
@@ -48,22 +71,35 @@ x-javascript-interface:
                 required:
                   - mount-name
                   - parameters
+                  - mwdi-replica-es-client
+                  - data-store-es-client
                 properties:
                   mount-name:
                     type: string
                     description: >
                       'MountName
-                      from {/data-structure-for-processing/mount-name}'
+                      from [/data-structure-for-processing/mount-name]'
                   parameters:
                     type: object
                     description: >
                       'Subtree of the parameters object for p1LoadRawCc
-                      from {/data-structure-for-processing/parameters/sub-function=p1LoadRawCc}'
+                      from [/data-structure-for-processing/parameters/sub-function=p1LoadRawCc]'
+                  mwdi-replica-es-client:
+                    type: object
+                    description: >
+                      'MWDI Replica ElasticSearch address
+                      from [/data-structure-for-processing/mwdi-replica-es-client]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'Data Store ElasticSearch address
+                      from [/data-structure-for-processing/data-store-es-client]'
+                  # todo : check if config-file still required after providing the es clients
                   config-file:
                     type: object
                     description: >
                       'configFile content
-                      from {/data-structure-for-processing/config-file}'
+                      from [/data-structure-for-processing/config-file]'
         output:
           success:
             description: 'Raw CC data loaded'
@@ -78,7 +114,7 @@ x-javascript-interface:
                       type: object
                       description: >
                         'rawCc
-                        to {/data-structure-for-processing/raw-cc}'
+                        to [/data-structure-for-processing/raw-cc]'
           error:
             description: 'Raw CC could not be loaded'
             content:
@@ -108,7 +144,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Subtree of the parameters object for p1CreateResultCc
-                      from {/data-structure-for-processing/parameters/sub-function=p1CreateResultCc}'
+                      from [/data-structure-for-processing/parameters/sub-function=p1CreateResultCc]'
         output:
           success:
             description: 'Result CC data created'
@@ -123,7 +159,7 @@ x-javascript-interface:
                       type: object
                       description: >
                         'resultCc
-                        to {/data-structure-for-processing/result-cc}'
+                        to [/data-structure-for-processing/result-cc]'
           error:
             description: 'Result CC data could not be created'
             content:
@@ -153,7 +189,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Subtree of the parameters object for p1FormattingOutputApt
-                      from {/data-structure-for-processing/parameters/sub-function=p1FormattingOutputApt}'
+                      from [/data-structure-for-processing/parameters/sub-function=p1FormattingOutputApt]'
         output:
           success:
             description: 'aptOutputFormat created from resultCC'
@@ -168,7 +204,7 @@ x-javascript-interface:
                       type: object
                       description: >
                         'aptOutputFormat
-                        to {/data-structure-for-processing/output-format=apt/content}'
+                        to [/data-structure-for-processing/output-format=apt/content]'
           error:
             description: 'aptOutputFormat could not be created from resultCC'
             content:
@@ -198,7 +234,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Subtree of the parameters object for p1TransmittingKafka
-                      from {/data-structure-for-processing/parameters/sub-function=p1TransmittingKafka}'
+                      from [/data-structure-for-processing/parameters/sub-function=p1TransmittingKafka]'
         output:
           success:
             description: 'OutputFormats sent via Kafka'
@@ -221,6 +257,7 @@ x-javascript-interface:
                 required:
                   - _result-cc
                   - parameters
+                  - data-store-es-client
                 properties:
                   result-cc:
                     type: reference
@@ -231,7 +268,12 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Subtree of the parameters object for p1Storing
-                      from {/data-structure-for-processing/parameters/sub-function=p1Storing}'
+                      from [/data-structure-for-processing/parameters/sub-function=p1Storing]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'Data Store ElasticSearch address
+                      from [/data-structure-for-processing/data-store-es-client]'
         output:
           success:
             description: 'resultCC stored'

@@ -12,12 +12,11 @@ participant "p1CreateResultCc\n" as p1CRC #LightCyan
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 participant "p1Storing\n" as p1Store #LightBlue
-database "dataStore" as db #LightBlue
 
 
 activate requestor
 
-requestor -> p1ProOrch : {mountName,\n{parameters},\n{configFile}}
+requestor -> p1ProOrch : {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
@@ -25,7 +24,7 @@ activate p1ProOrch #LightCyan
     DataStructureForProcessing
   end note
 
-  p1ProOrch -> p1AddRaw : {mountName,\n{/parameters/sub-function=loadRawCc},\n{configFile}}
+  p1ProOrch -> p1AddRaw : {mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
   activate p1AddRaw #LightCyan
 
     note over p1AddRaw
@@ -86,14 +85,12 @@ activate p1ProOrch #LightCyan
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1Store : {_resultCC,\n{/parameters/sub-function=p1Storing},\n{configFile}}
+  p1ProOrch -> p1Store : {_resultCC,\n{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile}}
   activate p1Store #LightBlue
 
     note over p1Store
       Store resultCC
     end note
-
-    p1Store -> db
 
   p1ProOrch <-- p1Store
   deactivate p1Store
