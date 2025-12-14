@@ -17,7 +17,7 @@ Separating transmitting from formatting allows ...
 #### Processing  
 
 The p1ProcessDevice starts with creating a data structure for holding raw data, results, and administrative information.  
-This data structure is called [DataStructureForProcessing](./InformationStructure/DataStructureForProcessing.yaml).  
+This data structure is called [DataStructureForProcessing](./dataStructureForProcessing.yaml).  
 
 The p1ProcessDevice executes a hard coded sequence of Functions.  
 Before calling a Sub-Function, it checks for the Sub-Function being activated in its parameters.  
