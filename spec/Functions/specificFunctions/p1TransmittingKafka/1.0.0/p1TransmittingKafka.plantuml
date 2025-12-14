@@ -1,0 +1,87 @@
+@startuml p1TransmittingKafka
+skinparam responseMessageBelowArrow true
+
+title
+p1TransmittingKafka
+end title
+
+participant "embedYourself" as embed
+participant "p1ProcessDevice" as p1ProPm #LightCyan
+participant "p1TransmittingKafka" as p1Trans #LightCyan
+participant "p1KafkaProducer" as p1KafkaP #LightGreen
+queue "kafka" as kafka #LightSkyBlue
+
+== Initialization Stage ==
+note right embed
+Initialize Connection
+to Kafka
+end note
+
+embed -> p1Trans
+
+activate p1Trans #LightCyan
+
+note over p1Trans
+establishInitialConnection
+end note
+
+note over p1Trans
+extract clientId, brokerList 
+from parameters and configFile
+end note
+
+p1Trans -> p1KafkaP : {clientId, brokerList, \nfuncttionName=connect}
+activate p1KafkaP #LightGreen
+
+note over p1KafkaP
+establish session to
+kafka as producer
+end note
+p1KafkaP -> kafka : {CONNECT event}
+kafka --> p1KafkaP
+p1KafkaP --> p1Trans : success
+
+deactivate p1KafkaP
+
+deactivate p1Trans
+
+== Payload Transmit Stage - request-based invokation == 
+p1ProPm -> p1Trans : {_outputFormat, parameters}
+activate p1Trans #LightCyan
+
+note over p1Trans#LightPink
+  Messages are only pushed to Kafka,
+  while profileInstance
+  <i>kafkaNotificationProvisioningSwitch</i> == on
+end note
+
+note over p1Trans
+extract 
+topicName=(output-format/format-name 
+              match config-file/topic-name)
+payload=(output-format/content)
+end note
+
+p1Trans -> p1KafkaP : {topicName, payload \n functionName=sendMessage}
+activate p1KafkaP #LightGreen
+note over p1KafkaP
+send payload 
+to kafka
+end note
+
+p1KafkaP -> kafka : {message}
+note over kafka
+stores in 
+given topic
+end note
+
+kafka --> p1KafkaP
+
+p1KafkaP --> p1Trans : {sucess/error}
+
+deactivate p1KafkaP
+
+p1Trans --> p1ProPm : {sucess/error}
+deactivate p1Trans
+
+@enduml

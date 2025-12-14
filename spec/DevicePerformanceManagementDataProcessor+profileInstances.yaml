@@ -536,9 +536,43 @@ profile-instances:
     capability:
       function-name: 'p1TransmittingKafka'
       parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-700'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-701'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-702'
+          owner: 'platform'
+        # Parameters can be extended to reference new Kafka topics when introduced
       sub-function-list:
     configuration:
       is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-700'
+    capability:
+      string-name: 'kafkaProducerClientForAPT'
+      purpose: 'UUID of the Kafka Producer client LTP to APT'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-kmb-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-701'
+    capability:
+      string-name: 'kafkaHttpClient'
+      purpose: 'UUID of Kafka HttpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-http-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-http-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-702'
+    capability:
+      string-name: 'kafkaTcpClient'
+      purpose: 'UUID of Kafka TcpClient LTP'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-tcp-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-000$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-tcp-c-kmb-1-0-0-000'
 
   # storing: inactive
   - profile-name: 'FunctionProfile'

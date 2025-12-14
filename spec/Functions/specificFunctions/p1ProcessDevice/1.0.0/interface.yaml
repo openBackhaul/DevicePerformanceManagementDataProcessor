@@ -224,6 +224,7 @@ x-javascript-interface:
                 required:
                   - _outputFormat
                   - parameters
+                  - config-file
                 properties:
                   _outputFormat:
                     type: reference
@@ -235,6 +236,10 @@ x-javascript-interface:
                     description: >
                       'Subtree of the parameters object for p1TransmittingKafka
                       from [/data-structure-for-processing/parameters/sub-function=p1TransmittingKafka]'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content'
         output:
           success:
             description: 'OutputFormats sent via Kafka'
@@ -245,8 +250,8 @@ x-javascript-interface:
                 schema:
                   type: string
                   enum:
-                    - ''
-                    # todo: error messages to be added after specifying p1TransmittingKafka
+                    - 'Failed to connect to Kafka'
+                    - 'Unknown topic or partition'
       p1Storing:
         input:
           required: true
