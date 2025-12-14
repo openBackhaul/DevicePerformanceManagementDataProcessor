@@ -73,7 +73,6 @@ x-javascript-interface:
                   - parameters
                   - mwdi-replica-es-client
                   - data-store-es-client
-                  - config-file
                 properties:
                   mount-name:
                     type: string
@@ -114,13 +113,17 @@ x-javascript-interface:
                     raw-cc:
                       type: object
                       description: >
-                        'rawCc'
+                        'rawCc
+                        to [/data-structure-for-processing/raw-cc]'
           error:
             description: 'Raw CC could not be loaded'
             content:
               application/json:
                 schema:
                   type: string
+                  enum:
+                    - 'Data structure is missing or invalid'
+                    - 'General processing error'
       p1CreateResultCc:
         input:
           required: true
@@ -129,19 +132,19 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
+                  - _raw-cc
                   - parameters
-                  - raw-cc
                 properties:
+                  _raw-cc:
+                    type: reference
+                    description: >
+                      'reference to rawCc in DataStructureForProcessing
+                      /data-structure-for-processing/raw-cc'
                   parameters:
                     type: object
                     description: >
                       'Subtree of the parameters object for p1CreateResultCc
                       from [/data-structure-for-processing/parameters/sub-function=p1CreateResultCc]'
-                  raw-cc:
-                    type: object
-                    description: >
-                      'rawCc
-                      from [/data-structure-for-processing/raw-cc]'
         output:
           success:
             description: 'Result CC data created'
@@ -149,17 +152,23 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: object
+                  required:
+                    - result-cc
                   properties:
                     result-cc:
                       type: object
                       description: >
-                        'resultCc'
+                        'resultCc
+                        to [/data-structure-for-processing/result-cc]'
           error:
             description: 'Result CC data could not be created'
             content:
               application/json:
                 schema:
                   type: string
+                  enum:
+                    - ''
+                    # todo: error messages to be added after specifying p1CreateResultCc
       p1FormattingOutputApt:
         input:
           required: true

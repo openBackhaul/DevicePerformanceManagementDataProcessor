@@ -13,17 +13,18 @@ x-javascript-interface:
           schema:
             type: object
             required:
+              - _raw-cc
               - parameters
-              - raw-cc
             properties:
+              _raw-cc:
+                type: reference
+                description: >
+                  'reference to rawCc in DataStructureForProcessing
+                  /data-structure-for-processing/raw-cc'
               parameters:
                 type: object
                 description: >
                   'parameters object for p1CreateResultCc'
-              raw-cc:
-                type: object
-                description: >
-                  'rawCc'
     output:
       success:
         description: 'Result CC data created'
@@ -38,7 +39,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'The result control construct data created from the raw control construct data, following ONF structure.
-                      from [/create-result-cc/result-cc]'
+                      from [/result-cc]'
       error:
         description: 'Result CC data could not be created'
         content:
@@ -62,7 +63,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'RawCc
-                      from [/create-result-cc/_raw-cc]'
+                      from {$p1CreateResultCc.input#/_raw-cc}'
         output:
           success:
             description: 'Result ControlConstruct object provided'
@@ -76,7 +77,8 @@ x-javascript-interface:
                         result-cc:
                           type: object
                           description: >
-                            'ResultCc'
+                            'ResultCc
+                            to [/result-cc]'
         error:
           description: 'Result ControlConstruct object could not be created.'
           content:
@@ -87,10 +89,6 @@ x-javascript-interface:
                   # todo: reasonable error messages to be added
                   - 'RawCc could not be copied to ResultCc'
                   - 'General processing error'
-      
-      # Following Functions might be obsolete after latest discussions
-      # please regard plantuml content as latest state of discussions
-
       p1CleanupTxModes:
         description: >
           'Clears incomplete transmission mode definitions'
