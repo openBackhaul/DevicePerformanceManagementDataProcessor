@@ -51,7 +51,7 @@ load-raw-cc:
     interface:
       type: array
       description: >
-        'MostRecentPeriodEndTimes for all interfaces to be processed
+        'MostRecentPeriodEndTimes for all already known interfaces of the device
         from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
     relevant-granularities:
       type: string

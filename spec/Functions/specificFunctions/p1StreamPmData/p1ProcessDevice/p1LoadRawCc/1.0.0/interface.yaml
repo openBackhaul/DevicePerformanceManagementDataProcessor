@@ -493,8 +493,8 @@ x-javascript-interface:
                       - 'General processing error'
       applyFilteringForRelevantPmData:
         description: >
-          'Filters each relevant layerProtocol (AirInterface or EthernetContainer) of the rawCC for new PM records with desired granularities. 
-          If no PM records remain for the respective layerProtocol, it is discarded from the rawCC entirely; 
+          'Filters each relevant layerProtocol (AirInterface or EthernetContainer) of the rawCC for new PM records with desired granularities.
+          If no PM records remain for the respective layerProtocol, it is discarded from the rawCC entirely;
           if records remain, only the filtered PM records are kept in the historicalPerformanceDataList of the respective layerProtocol.
           Filtering is done by executing {p1DiscardIrrelevantPmRecords} for each relevant layerProtocol separately.'
         input:
