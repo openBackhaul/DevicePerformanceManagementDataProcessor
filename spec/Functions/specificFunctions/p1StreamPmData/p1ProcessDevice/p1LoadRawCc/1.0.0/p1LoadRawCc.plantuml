@@ -12,7 +12,7 @@ participant "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
-requestor -> cur: {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
+requestor -> cur: {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient}}
 activate cur #LightCyan
 
 == Read CC and apply fieldsFilter ==

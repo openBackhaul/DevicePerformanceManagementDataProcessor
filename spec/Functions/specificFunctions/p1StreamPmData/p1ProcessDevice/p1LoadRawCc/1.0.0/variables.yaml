@@ -5,7 +5,6 @@ load-raw-cc:
     - parameters
     - mwdi-replica-es-client
     - data-store-es-client
-    - config-file
   properties:
     mount-name:
       type: string
@@ -37,12 +36,6 @@ load-raw-cc:
       description: >
         'ElasticSearch URL of Data Store ES
         from [/load-raw-cc/data-store-es-client/url]'
-    # todo : check if config-file still required after providing the es clients
-    config-file:
-      type: object
-      description: >
-        'configFile content
-        from {$input#/config-file}'
     raw-cc:
       type: object
       description: >

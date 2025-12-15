@@ -17,7 +17,6 @@ x-javascript-interface:
               - parameters
               - mwdi-replica-es-client
               - data-store-es-client
-              - config-file
             properties:
               mount-name:
                 type: string
@@ -32,10 +31,6 @@ x-javascript-interface:
               data-store-es-client:
                 type: object
                 description: 'Data Store ElasticSearch address'
-              # todo : check if config-file still required after providing the es clients
-              config-file:
-                type: object
-                description: 'configFile content'
     output:
       success:
         description: 'Raw CC data loaded'
