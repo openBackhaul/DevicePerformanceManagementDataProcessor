@@ -14,20 +14,20 @@ create-es:
       description: >
         'MWDI ElasticSearch address
         from {$input#/es-client}'
-    source-url:
+    es-url:
       type: string
       description: >
-        'ElasticSearch URL of MWDI ES
+        'ElasticSearch URL
         from [/create-es/es-client/url]'
-    source-index:
+    es-index:
       type: string
       description: >
-        'ElasticSearch index of MWDI ES
+        'ElasticSearch index
         from [/create-es/es-client/index-alias]'
-    source-api-key:
+    es-api-key:
       type: string
       description: >
-        'ElasticSearch API key of MWDI ES
+        'ElasticSearch API key
         from [/create-es/es-client/api-key]'
 
-    # todo: add more variables as needed
+    # todo: add more variables, if needed

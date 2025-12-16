@@ -11,7 +11,7 @@ Creates an ElasticSearch instance/index, if it does not already exist.
 ### Diagram
 
 <p align="center">
-  <img src="p1CreateEs.png" alt="p1CreateEs" width="400" />
+  <img src="p1CreateEs.png" alt="p1CreateEs" width="200" />
 </p>
 
 

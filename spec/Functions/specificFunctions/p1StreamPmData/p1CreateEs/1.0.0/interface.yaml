@@ -33,6 +33,7 @@ x-javascript-interface:
           application/json:
             schema:
               type: string
+              # todo: enum statement with expected error messages to be added here
     processing:
       checkEsForExistence:
         description: 'Check if ES already exists'
@@ -47,7 +48,7 @@ x-javascript-interface:
                 description: >
                   'ElasticSearch index of MWDI ES
                   from [/create-es/es-client/index-alias]'
-              # todo: add more attributes as needed for checking existence
+              # todo: add more attributes that are needed for checking existence
         output:
           success:
             description: 'ES exists'
@@ -67,7 +68,7 @@ x-javascript-interface:
                 description: >
                   'ElasticSearch index of MWDI ES
                   from [/create-es/es-client/index-alias]'
-              # todo: add more attributes as needed for creating ES instance/index
+              # todo: add more attributes that are needed for creating ES instance/index
         output:
           success:
             description: 'ES exists'
