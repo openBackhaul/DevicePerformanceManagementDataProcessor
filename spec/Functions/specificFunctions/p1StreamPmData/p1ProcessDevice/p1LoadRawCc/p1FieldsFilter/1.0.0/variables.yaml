@@ -1,0 +1,20 @@
+fields-filter:
+  type: object
+  required:
+    - data-structure
+    - fields-filter-string
+  properties:
+    data-structure:
+      type: object
+      description: >
+        'The data structure to be filtered according to the provided fields filter string
+        from {$input#/data-structure}'
+    fields-filter-string:
+      type: string
+      description: >
+        'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure
+        from {$input#/fields-filter-string}'
+    filtered-data-structure:
+      type: object
+      description: >
+        'The data structure after filtering according to the provided fields filter string'

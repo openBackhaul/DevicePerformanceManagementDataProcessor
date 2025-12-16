@@ -12,7 +12,7 @@ participant "p1FieldsFilter" as fieldsFilter #LightCyan
 database "datastore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
-requestor -> cur: {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
+requestor -> cur: {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient}}
 activate cur #LightCyan
 
 == Read CC and apply fieldsFilter ==
@@ -20,10 +20,15 @@ activate cur #LightCyan
 note over cur
   <u>readControlConstructFromEs</u>
   reads the complete ControlConstruct for the
-  mountName from MWDI ElasticSearch replica
+  mountName from MWDI ElasticSearch replica.
 end note
 cur -> MwdiEs: {mountName}
 cur <-- MwdiEs: {{rawControlConstruct}}
+
+note over cur #LightSteelBlue
+  [/load-raw-cc/raw-cc]
+    := rawControlConstruct[mountName]
+end note
 
 'Apply fields filter
 note over cur
@@ -35,8 +40,9 @@ end note
 cur -> fieldsFilter: {{rawControlConstruct},\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
 cur <-- fieldsFilter: {{filtered rawControlConstruct}}
 
-note over cur
-  Set rawControlConstruct := filtered rawControlConstruct
+note over cur #LightSteelBlue
+  [/load-raw-cc/raw-cc]
+    := filtered rawControlConstruct
 end note
 
 == Read mostRecentPeriodEndTimes from dataStore ==
@@ -90,17 +96,28 @@ group Filter remaining rawControlConstruct data
     cur <-- filterPm: {[filtered historicalPerformanceDataList]}
   end group
 
+  note over cur #LightSteelBlue
+    [/load-raw-cc/raw-cc]
+      := rawCC with filtered
+         historicalPerformanceDataLists
+  end note
+
   ' remove after pre-release
   note over cur, filterPm #Orange
     In the pre-release there is no mostRecentPeriodEndTime info available in the dataStore.
     Therefore: all 15min/24h historical PM records seen in the raw data will be kept!
   end note
+
 end group
+
+
+
 
 note over cur
   <u>returnRawControlConstruct</u>
   The function returns the filtered raw-ControlConstruct
 end note
+
 
 requestor <-- cur: {{rawControlConstruct}}
 deactivate cur

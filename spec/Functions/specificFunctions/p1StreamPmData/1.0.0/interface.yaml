@@ -56,12 +56,12 @@ x-javascript-interface:
                     type: string
                     description: >
                       'ElasticSearch name
-                      from [/stream-pm-data/es-address/name]'
+                      from [/stream-pm-data/es-address=*/name]'
                   parameters:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/stream-pm-data/parameters]'
+                      from [/stream-pm-data/parameters/sub-function=p1ResolveEsAddress]'
                   config-file:
                     type: object
                     description: >
@@ -79,6 +79,37 @@ x-javascript-interface:
                       type: object
           error:
             description: 'ES address could not be resolved'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1CreateEs:
+        description: 'The ES address which has just been resolved by p1ResolveEsAddress shall now be created.'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - es-client
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1CreateEs]'
+                  es-client:
+                    type: object
+                    description: >
+                      'MWDI ElasticSearch address
+                      from [/stream-pm-data/es-address=*/address]'
+        output:
+          success:
+            description: 'ES created'
+          error:
+            description: 'ES could not be created'
             content:
               application/json:
                 schema:
