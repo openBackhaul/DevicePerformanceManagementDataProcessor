@@ -139,6 +139,9 @@ x-javascript-interface:
                   description: "List of MountNames of updated ControlConstructs"
                   items:
                     type: string
+                last-replication-timestamp:
+                  type: string
+                  description: "End timestamp of the replication period"
                 status-message:
                   type: string
           error:
@@ -171,6 +174,9 @@ x-javascript-interface:
                     description: >
                       'Date and time of the last successful replication
                       from [/update-mwdi-replica/period-end-time]'
+                  updated-mount-names:
+                    type: string
+                    description: "Coma seperated string of MountNames of updated ControlConstructs"
                   status-message:
                     type: string
                     description: >
