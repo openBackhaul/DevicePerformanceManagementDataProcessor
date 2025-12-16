@@ -25,8 +25,7 @@ activate p1UMWR #LightCyan
     on lastCompleteControlConstructUpdateTimeAttempt
   end note
   p1UMWR -> mwdiEs
-  p1UMWR <-- mwdiEs
-  p1UMWR -> mwdiReplicaEs
+  p1UMWR <-- mwdiReplicaEs : {[updatedMountNames],\nlastReplicationTimestamp,\nstatusMessage}
 
   note right p1UMWR
     Log results of replication
@@ -34,7 +33,7 @@ activate p1UMWR #LightCyan
   p1UMWR -> log : {cronjobName,\nlastReplicationTimestamp,\nupdatedMountNames,\nstatusMessage}
 
 
-p1SPMD <-- p1UMWR : {[updatedMountNames],\nlastReplicationTimestamp}
+p1SPMD <-- p1UMWR : {[updatedMountNames],\ntimestamp}
 deactivate p1UMWR
 
 @enduml

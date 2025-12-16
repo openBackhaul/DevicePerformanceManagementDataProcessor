@@ -1,0 +1,55 @@
+@startuml p1CreateEs
+skinparam responseMessageBelowArrow true
+
+title
+  p1CreateEs
+end title
+
+participant "p1StreamPmData\n" as p1RMWDI
+participant "p1CreateEs\n" as p1CMR #LightCyan
+database "ES" as Es #LightCyan
+
+
+  p1RMWDI -> p1CMR : {{parameters},\n{esAddress}}
+  activate p1CMR #LightCyan
+
+    note over p1CMR
+      Attempt to 
+      connect to ES 
+    end note
+    p1CMR -> Es
+
+    note over p1CMR
+      IF already exists?
+    end note
+
+    note left p1CMR
+      THEN terminate
+      and indicate success
+    end note
+    p1RMWDI <-- p1CMR
+
+    note over p1CMR
+      ELSE create ES
+    end note
+    p1CMR -> Es
+
+    note over p1CMR
+      IF successfully created?
+    end note
+
+    note left p1CMR
+      THEN terminate
+      and indicate success
+    end note
+    p1RMWDI <-- p1CMR
+
+    note over p1CMR
+      ELSE terminate
+      and indicate error
+    end note
+    p1RMWDI <-- p1CMR
+
+  deactivate p1CMR
+
+@enduml

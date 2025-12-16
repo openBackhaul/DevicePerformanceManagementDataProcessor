@@ -1,0 +1,33 @@
+create-es:
+  type: object
+  required:
+    - parameters
+    - es-client
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    es-client:
+      type: object
+      description: >
+        'MWDI ElasticSearch address
+        from {$input#/es-client}'
+    source-url:
+      type: string
+      description: >
+        'ElasticSearch URL of MWDI ES
+        from [/create-es/es-client/url]'
+    source-index:
+      type: string
+      description: >
+        'ElasticSearch index of MWDI ES
+        from [/create-es/es-client/index-alias]'
+    source-api-key:
+      type: string
+      description: >
+        'ElasticSearch API key of MWDI ES
+        from [/create-es/es-client/api-key]'
+
+    # todo: add more variables as needed

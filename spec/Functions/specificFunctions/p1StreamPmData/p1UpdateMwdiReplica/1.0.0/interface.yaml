@@ -55,14 +55,14 @@ x-javascript-interface:
                   type: array
                   description: >
                     'List of MountNames of updated ControlConstructs
-                    from [/update-mwdi-replica/to-be-processed-mount-names]'
+                    from [/update-mwdi-replica/updated-mount-names]'
                   items:
                     type: string
                 timestamp:
                   type: string
                   description: >
                     'Timestamp marking the end of the replication period
-                    from [/update-mwdi-replica/period-end-time]'
+                    from [/update-mwdi-replica/last-replication-timestamp]'
       error:
         description: 'Updated CCs could not be replicated'
         content:
@@ -136,12 +136,12 @@ x-javascript-interface:
               properties:
                 updated-mount-names:
                   type: array
-                  description: "List of MountNames of updated ControlConstructs"
+                  description: 'List of MountNames of updated ControlConstructs'
                   items:
                     type: string
                 last-replication-timestamp:
                   type: string
-                  description: "End timestamp of the replication period"
+                  description: 'End timestamp of the replication period'
                 status-message:
                   type: string
           error:
@@ -173,15 +173,17 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Date and time of the last successful replication
-                      from [/update-mwdi-replica/period-end-time]'
+                      from [/update-mwdi-replica/last-replication-timestamp]'
                   updated-mount-names:
                     type: string
-                    description: "Coma seperated string of MountNames of updated ControlConstructs"
+                    description: >
+                      'Comma separated string of MountNames of updated ControlConstructs
+                      from [/update-mwdi-replica/updated-mount-names]'
                   status-message:
                     type: string
                     description: >
                       'Status message describing the result of the replication
-                      from {$_reindex.output#/status-message}'
+                      from [/update-mwdi-replica/status-message]'
 
 paths:
   /:
