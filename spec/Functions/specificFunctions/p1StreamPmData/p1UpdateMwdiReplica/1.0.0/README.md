@@ -51,21 +51,21 @@ Detailed description of the [interface](./interface.yaml).
 es.reindex({
   refresh: false,
   wait_for_completion: true,
-  requests_per_second: config.es.requestsPerSecond,
+  requests_per_second: 5, //Throttles reindexing to 5 copy operations per second, preventing high load on the cluster.
   body: {
   source: {
-    index: config.es.mwIndex,
+    index: sourceIndex,
     query: {
       range: {
-      [config.es.lastUpdatedField]: {
-        gt: fromTs,
-        lte: toTs
+      lastUpdated: {
+        gt: periodStartTime, //Reindex documents whose lastUpdated timestamp is 'greater than' (gt) the previous sync start.
+        lte: periodEndTime //Reindex documents whose lastUpdated timestamp is 'less than or equal' (lte) to the current sync end.
       }
       }
     }
   },
   dest: {
-    index: config.es.dpIndex,
+    index: destinationIndex,
     op_type: "index"
   },
   conflicts: "proceed"

@@ -105,19 +105,19 @@ update-mwdi-replica:
       type: string
       # todo: please add a description of the parameter into the purpose field of the configFile and here
       description: >
-        '?
+        'Throttles reindexing to number of copy operations per second, preventing high load on the server
         from [/parameters/parameter=reqPerSec/value]'
     scroll-size:
       type: string
       # todo: please add a description of the parameter into the purpose field of the configFile and here
       description: >
-        '?
+        'Number of documents returned per “page” when Elasticsearch performs a scroll search
         from [/parameters/parameter=scrollSize/value]'
     scroll-ttl:
       type: string
       # todo: please add a description of the parameter into the purpose field of the configFile and here
       description: >
-        '?
+        'How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window.
         from [/parameters/parameter=scrollTtl/value]'
 
     period-start-time:
