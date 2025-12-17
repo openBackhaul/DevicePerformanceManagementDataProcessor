@@ -1,3 +1,48 @@
+<<<<<<< HEAD
+transmit-kafka:
+  type: object
+  required:
+    - _output-format
+    - parameters
+    - config-file
+  properties:
+    _output-format:
+      type: reference
+      description: >
+        'Reference to the content of an OutputFormat object in DataStructureForProcessing'
+        from {$input/_output-format}'
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+    # processing
+    client-id:
+      type: string
+      description: >
+        'Identifier of the producer application.
+        from [/transmit-kafka/input/config-file/] where string-name=kafkaProducerClientFor*'
+    broker-list:
+      type: array
+      description: >
+        'List of [address:port] endpoints where kafka is deployed.
+        from [/transmit-kafka/input/config-file/] where string-name=kafkaTcpClient'
+    topic-name:
+      type: string
+      description: >
+        'Name of target kafka topic to which the payload shall be sent
+        from [/transmit-kafka/input/_output-format/format-name] matched against [/transmit-kafka/input/config-file/kafka-client/topic-name] through string-name=kafkaProducerClientFor*'
+    message:
+      type: object
+      description: >
+        'Payload to be transmitted to kafka
+        from /transmit-kafka/input/_output-format/content}'
+=======
 transmitting-kafka:
   type: object
   required:
@@ -30,3 +75,4 @@ transmitting-kafka:
 
     # No explicit output variables are defined in the interface.yaml for success, only error strings
     # You may add additional variables here as needed for implementation
+>>>>>>> 27cab00dffb7563e0be1f772d03b7ff4c1ac0eb1
