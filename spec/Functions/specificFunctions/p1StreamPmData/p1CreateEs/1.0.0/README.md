@@ -1,25 +1,11 @@
 # p1CreateEs
 
-Creates an ElasticSearch instance/index, if it does not already exist.
+Ensures that the required ES index is available before accessing it.
 
 
 ### Overview
 
-The `p1CreateEs` function is a small utility function that is used by other
-functions (e.g. `p1UpdateMwdiReplica`) to ensure that all required
-ElasticSearch indices are available before they are accessed.
-
-The function receives:
-- a hierarchical `parameters` object, and
-- an `es-client` object describing the concrete ElasticSearch endpoint
-  (URL, index alias, API key, etc.).
-
-From these inputs it derives:
-- the ElasticSearch URL (`es-url`)
-- the target index name / alias (`es-index`)
-- the API key (`es-api-key`, if used)
-
-The function then performs the following steps:
+The function performs the following steps:
 
 1. **Check if index exists**
     - Calls ElasticSearch using a HEAD/GET request on `/{es-index}`
@@ -38,6 +24,8 @@ The function then performs the following steps:
       etc.).
     - If index creation succeeds, the function returns successfully.
     - Sample code:
+
+  <!--- todo: the exact code to create the ES with all the required attributes to be added here --->
    ```
    await es.indices.create({
       index: indexName,

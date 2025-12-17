@@ -23,58 +23,112 @@ x-javascript-interface:
               es-client:
                 type: object
                 description: >
-                  'MWDI ElasticSearch address'
+                  'ElasticSearch interface'
     output:
       success:
-        description: 'ES created'
+        description: 'The ElasticSearch index exists and is ready for use'
       error:
-        description: 'ES could not be created'
+        description: 'The ElasticSearch index could not be verified or created'
         content:
           application/json:
             schema:
               type: string
-              # todo: enum statement with expected error messages to be added here
+              enum:
+                - 'ES not reachable'
+                - 'Authentication failure'
+                - 'Invalid index settings'
+                - 'Index creation error'
+                - 'Other error'
     processing:
-      checkEsForExistence:
-        description: 'Check if ES already exists'
+      headGetRequest:
+        description: 'Check if the ElasticSearch index already exists'
         input:
           schema:
             type: object
             required:
-              - index
+              - url
+              - apiKey
+              - indexName
             properties:
-              index:
+              url:
+                type: string
+                description: >
+                  'ElasticSearch URL
+                  from [/create-es/es-url]'
+              apiKey:
+                type: string
+                description: >
+                  'ElasticSearch API key
+                  from [/create-es/es-api-key]'
+              indexName:
                 type: string
                 description: >
                   'ElasticSearch index of MWDI ES
-                  from [/create-es/es-client/index-alias]'
-              # todo: add more attributes that are needed for checking existence
+                  from [/create-es/es-index]'
         output:
           success:
-            description: 'ES exists'
+            description: 'The index exists and ElasticSearch responded successfully'
           error:
             description: 'ES does not exist'
-            # todo: add more attributes or error messages indicating the root cause of failure
-      createEs:
+            enum:
+              - 'ES not reachable'
+              - 'Index does not exist'
+              - 'Authentication failure'
+              - 'Other error'
+      put:
         description: 'Create ES if it does not exist'
         input:
           schema:
-            type: object
             required:
-              - index
+              - url
+              - apiKey
+              - indexName
             properties:
-              index:
+              url:
+                type: string
+                description: >
+                  'ElasticSearch URL
+                  from [/create-es/es-url]'
+              apiKey:
+                type: string
+                description: >
+                  'ElasticSearch API key
+                  from [/create-es/es-api-key]'
+              indexName:
                 type: string
                 description: >
                   'ElasticSearch index of MWDI ES
-                  from [/create-es/es-client/index-alias]'
-              # todo: add more attributes that are needed for creating ES instance/index
+                  from [/create-es/es-index]'
+              ?:
+                type: integer
+                description: >
+                  'Number of shards
+                  from '
+              ??:
+                type: integer
+                description: >
+                  'Number of replicas
+                  from '
+              ???:
+                type: Array
+                description: >
+                  'Field types
+                  from '
+              # todo: all attributes that are needed for creating ES instance/index to be added here
+              # include datatype and description for each attribute
+              # I will complement the source description afterwards
         output:
           success:
-            description: 'ES exists'
+            description: 'The index exists now'
           error:
-            description: 'ES does not exist'
-            # todo: add more attributes or error messages indicating the root cause of failure
+            description: 'The index could not be created'
+            enum:
+              - 'ES not reachable'
+              - 'Authentication failure'
+              - 'Missing privileges'
+              - 'Invalid index settings'
+              - 'Index creation error'
+              - 'Other error'
 
 paths:
   /:
