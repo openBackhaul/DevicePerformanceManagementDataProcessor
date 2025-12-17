@@ -62,7 +62,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'RawCc
-                      from [/create-result-cc/_raw-cc]'
+                      from [/create-result-cc/raw-cc]'
         output:
           success:
             description: 'Result ControlConstruct object provided'

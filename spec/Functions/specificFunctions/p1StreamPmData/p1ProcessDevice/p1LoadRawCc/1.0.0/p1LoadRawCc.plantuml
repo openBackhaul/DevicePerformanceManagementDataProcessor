@@ -63,6 +63,31 @@ cur <-- datastore: {[interface]}
 
 == Apply filtering on interface level ==
 
+
+' Thorsten: mir ist nicht klar was die Funktion genau macht, und ob sie das alles "darf"; 
+' bitte prüfe noch einmal, ob applyFilteringForRelevantPmData nicht einfach eine Schleife (wie nachfolgenden beispielhaft dargestellt) ist
+
+loop for all instances of LTP
+
+  note over cur
+    IF ( LayerProtocolName == 'AirInterface' OR
+          LayerProtocolName == 'EthernetContainer' )
+  end note
+
+  note left cur
+    ELSE restart loop
+  end note
+
+  note over cur
+    THEN
+  end note
+  cur -> filterPm: {[historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
+  cur <-- filterPm: {[filtered historicalPerformanceDataList]}
+
+end loop
+
+' Thorsten: Ende meines Beispiels
+
 group Filter remaining rawControlConstruct data
   note over cur
     <u>applyFilteringForRelevantPmData</u>

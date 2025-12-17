@@ -21,6 +21,9 @@ create-result-cc:
         It follows the ONF structure, but it is also extended by additional attributes.
         All attributes without information about their origin were taken 1:1 from the rawCc.
         from {$createResultCcFromRawCc.output#/result-cc}'
+
+
+
       required:
         - equipment-augment-1-0:control-construct-pac
         - logical-termination-point
