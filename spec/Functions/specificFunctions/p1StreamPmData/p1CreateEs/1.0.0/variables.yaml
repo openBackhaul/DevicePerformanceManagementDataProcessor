@@ -29,5 +29,3 @@ create-es:
       description: >
         'ElasticSearch API key
         from [/create-es/es-client/api-key]'
-
-    # todo: add more variables, if needed
