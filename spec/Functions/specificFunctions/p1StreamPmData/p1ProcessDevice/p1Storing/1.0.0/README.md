@@ -1,8 +1,8 @@
 # p1Storing  
 
 The function shall execute the following steps:
-- store an input data-structure-for-processing object for a mount-name in the data-store under [/data-store/device=mount-name/data-structure-for-processing-list]  
-- traverse the resultCC from the input [/data-structure-for-processing/result-cc]. For each found AirInterface and EthernetContainer, uniquely identified by uuid and local-id:
+- store an input process-device object for a mount-name in the data-store under [/data-store/device=mount-name/process-device-list]  
+- traverse the resultCC from the input [/process-device/result-cc]. For each found AirInterface and EthernetContainer, uniquely identified by uuid and local-id:
   - determine the most recent period-end-time for both 15min granularity and for 24h granularity
   - store the found timestamps along with local-id and layer-protocol-name under:
     - 15min: [/data-store/device=mount-name/ltp=uuid/lp=local-id/most-recent-period-end-time]
@@ -14,7 +14,7 @@ The function shall execute the following steps:
 
     ### p1SetMostRecentTimestampAndDatavInDeviceTable
 
-    This function is for internal use in DMPMD only. It traverses all AirInterface and EthernetContainer instances in a specific [/data-structure-for-processing/output] object and records for each mount-name and LTP-id combination the newest period-end-time it has seen in the list of associated historical-performances. This information is written to the DPMDP deviceTable. Already existing entries are overwritten.  
+    This function is for internal use in DMPMD only. It traverses all AirInterface and EthernetContainer instances in a specific [/process-device/output] object and records for each mount-name and LTP-id combination the newest period-end-time it has seen in the list of associated historical-performances. This information is written to the DPMDP deviceTable. Already existing entries are overwritten.  
     It also counts the number of records seen for every traversed interface instance for the respective date from period-end-time and records it in the data-availability-statistics of the deviceTable.
     Thereby it either adds a new (date, numberOfRecords)-entry, if there is none already existing for the respective date, or - if the date has already been added, the numberOfRecords in the deviceTable is increased by the number of records seen in the currently processed DSFP object.   
 

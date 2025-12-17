@@ -42,7 +42,7 @@ note over dataStore
 In the dataStore item direct interface filtering is not possible.
 Traverse each lot in the previously derived [/processor-controller/data-store/device]-item.
 
-In each [/data-structure-for-processing/output] traverse the data until the target
+In each [/process-device/output] traverse the data until the target
 interface is found (or all interfaces have been traversed):
 
 IF (output/air-interface-list/air-interface-identifiers/

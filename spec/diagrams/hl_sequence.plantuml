@@ -91,8 +91,8 @@ activate p1RMWDI #LightCyan
       activate p1ProcessPm #LightCyan
 
         note over p1ProcessPm
-          Create
-          DataStructureForProcessing
+          Create data structure
+          for processing
         end note
 
         ' create RawCC ->
@@ -134,8 +134,8 @@ activate p1RMWDI #LightCyan
         deactivate p1AddRaw
 
         note over p1ProcessPm
-          Add rawCC to
-          DataStructureForProcessing
+          Add rawCC to data structure
+          for processing
         end note
 
         ' create resultCC ->
@@ -199,8 +199,8 @@ activate p1RMWDI #LightCyan
         deactivate p1CreateResultCC
 
         note over p1ProcessPm
-          Add resultCC to
-          DataStructureForProcessing
+          Add resultCC to data 
+          structure for processing
         end note
 
         ' Format OutputAPT ->
@@ -216,8 +216,8 @@ activate p1RMWDI #LightCyan
         deactivate p1Output
 
         note over p1ProcessPm
-          Add APT format to
-          DataStructureForProcessing
+          Add APT format to data
+          structure for processing
         end note
 
         ' transmit data ->

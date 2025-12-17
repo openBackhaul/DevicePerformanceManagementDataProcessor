@@ -17,7 +17,7 @@ data-store:
             type: string
             description: >
               'mountName indicated in the objectPath of the original notification and read
-              from [/data-structure-for-processing/mount-name].'
+              from [/process-device/mount-name].'
           interface:
             type: array
             x-key: uuid

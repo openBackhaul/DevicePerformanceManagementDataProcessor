@@ -12,10 +12,10 @@
     This function can be called from within DPMDP or can be used externally.  
     - DPMDP usage:
       - the dataHandle has to be provided in the requestBody
-      - the function reads data from the [/data-structure-for-processing/output] object associated with the dataHandle directly from DPMDP memory
-      - the manipulated attribute values are also written directly back into [/data-structure-for-processing/output]
+      - the function reads data from the [/process-device/output] object associated with the dataHandle directly from DPMDP memory
+      - the manipulated attribute values are also written directly back into [/process-device/output]
     - external usage:
-      - the required input data has to be provided in the requestBody; it follows the schema of [/data-structure-for-processing/output] but only contains the relevant attributes
+      - the required input data has to be provided in the requestBody; it follows the schema of [/process-device/output] but only contains the relevant attributes
       - the manipulated attribute values are returned in the response
 
     #### Input
@@ -23,10 +23,10 @@
 
     #### Steps
     The function shall be processed as follows:  
-    - for internal usage read the [/data-structure-for-processing/output] data associated with the dataHandle directly from DPMDP memory; for external usage this data is provided in the requestBody.
+    - for internal usage read the [/process-device/output] data associated with the dataHandle directly from DPMDP memory; for external usage this data is provided in the requestBody.
     - check for all AirInterfaces in air-interface-list, whether the transmit-level and receive-level attributes contain out-of-range-values
       - if the value is out-of-range then set to respective attribute to -1
-    - the changed attribute values then are either written directly to [/data-structure-for-processing/output] (internal usage) or returned in the response (external usage)
+    - the changed attribute values then are either written directly to [/process-device/output] (internal usage) or returned in the response (external usage)
 
     #### Callbacks
     - `SettingOutOfRangeLevelValuesToDefaultCausesReadingFromDsfpOutput`
@@ -36,4 +36,4 @@
       - *updateDataInMemory*: [internal usage] the level values are checked and replaced where necessary, but written directly to memory
 
     #### Output
-    Changes are either directly written to [/data-structure-for-processing/output] (internal usage) or the modified input data is returned in the response (external usage).
+    Changes are either directly written to [/process-device/output] (internal usage) or the modified input data is returned in the response (external usage).

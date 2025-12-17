@@ -15,14 +15,14 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - _result-cc
+              - result-cc
               # - parameters
             properties:
-              _result-cc:
+              result-cc:
                 type: reference
                 description: >
-                  'reference to resultCc in DataStructureForProcessing
-                  /data-structure-for-processing/result-cc'
+                  'ResultCc
+                  from [/process-device/result-cc]'
               # parameters:
               #   type: object
               #   description: >
@@ -65,7 +65,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'ResultCc
-                      from {$p1FormattingOutputApt.input#/_result-cc}'
+                      from {$p1FormattingOutputApt.input#/result-cc}'
         output:
           success:
             description: 'Output object provided'

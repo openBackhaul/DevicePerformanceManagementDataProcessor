@@ -26,7 +26,7 @@ paths:
                 data-handle:
                   type: string
                   description: >
-                    'This dataHandle points directly to the [/data-structure-for-processing/output]
+                    'This dataHandle points directly to the [/process-device/output]
                     from where the required data from output is read.'
       responses:
         '204':
@@ -45,7 +45,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         SettingMostRecentTimestampsAndDatavInDeviceTableCausesReadingDsfpOutput:
-          ReadDsfpOutputFromMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
+          ReadDsfpOutputFromMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/process-device/output]]
             description: >
               'Directly read the data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle}'
