@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: p1CreateEs
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CreateEs:
+    summary: 'Creates an ElasticSearch instance/index, if it does not already exist.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - es-client
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Hierarchical object holding the parameter settings'
+              es-client:
+                type: object
+                description: >
+                  'ElasticSearch connection configuration. Contains, at least,
+                   the ElasticSearch URL, the index alias/name and
+                   the API key / authentication data.'
+    output:
+      success:
+        description: 'The ElasticSearch index exists and is ready for use. If the index
+          was missing, it has been created successfully using the configuration
+          provided by `parameters` and `es-client`'
+      error:
+        description: 'The ElasticSearch index could not be verified or created. The
+          error response contains a description of the root cause (e.g.
+          ES not reachable, authentication failure, invalid index settings,
+          or index creation error).'
+        content:
+          application/json:
+            schema:
+              type: string
+              # todo: enum statement with expected error messages to be added here
+    processing:
+      checkEsForExistence:
+        description: 'Check if the ElasticSearch index already exists'
+        input:
+          schema:
+            type: object
+            required:
+              - index
+              - url
+            properties:
+              index:
+                type: string
+                description: >
+                  'ElasticSearch index of MWDI ES
+                  from [/create-es/es-client/index-alias]'
+              url:
+                type: string
+                description: >
+                  'ElasticSearch base URL from [/create-es/es-client/url]'
+              api-key:
+                type: string
+                nullable: true
+                description: >
+                  ElasticSearch API key used for authentication from
+                  [/create-es/es-client/api-key]. Optional if ES does not
+                  require API key based authentication.
+        output:
+          success:
+            description: 'The index exists and ElasticSearch responded successfully
+              (HEAD/GET on the index returned a success status code).'
+          error:
+            description: 'The index does not exist or ElasticSearch is not reachable.
+              The error should indicate whether the index is missing (404)
+              or there was a technical problem (e.g. connection/authentication).'
+      createEs:
+        description: 'Create the ElasticSearch index if it does not exist'
+        input:
+          schema:
+            type: object
+            required:
+              - index
+              - url
+            properties:
+              index:
+                type: string
+                description: >
+                  'ElasticSearch index of MWDI ES
+                  from [/create-es/es-client/index-alias]'
+              url:
+                type: string
+                description: >
+                  'ElasticSearch base URL from [/create-es/es-client/url]'
+              api-key:
+                type: string
+                nullable: true
+                description: >
+                  'ElasticSearch API key used for authentication from
+                  [/create-es/es-client/api-key]. Optional if ES does not
+                  require API key based authentication'
+              mappings:
+                type: object
+                nullable: true
+                description: >
+                  'Optional index mappings to be applied when creating the
+                  index (e.g. field types). Derived from the `parameters`
+                  object, if provided'
+        output:
+          success:
+            description: 'The index now exists. If it was missing, it has been created
+              using the provided URL, index name, api-key(optional) and mappings(optional)s. If it
+              already existed, the function returns success without modifying it'
+          error:
+            description: 'The index could not be created. The error message should indicate whether
+              the failure was caused by invalid settings/mappings, missing
+              privileges, or another ElasticSearch error.'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
