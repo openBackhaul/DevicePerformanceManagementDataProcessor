@@ -506,7 +506,7 @@ paths:
                         type: array
                         x-key: new-value
                         description: >
-                          'The lots contain the processed [/data-structure-for-processing] objects for the given mountName'
+                          'The lots contain the processed [/process-device] objects for the given mountName'
                         items:
                           type: object
                           description: >

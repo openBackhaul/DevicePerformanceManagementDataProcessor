@@ -31,7 +31,7 @@ paths:
                     data-handle:
                       type: string
                       description: >
-                        'This dataHandle points directly to the [/data-structure-for-processing/output] from where the required data is read.'
+                        'This dataHandle points directly to the [/process-device/output] from where the required data is read.'
                 - description: 'required data for external usage (no direct read/write)'
                   properties:
                     output:
@@ -615,7 +615,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         FunctionForReplacingOnfDefaultValuesCausesReadingDsfpOutput:
-          readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
+          readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/process-device/output]
             description: >
               'Directly read the data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle} (in case data-handle instead of data was provided in {$request.body})'
@@ -1338,15 +1338,15 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-          replaceOnfDefaultValuesInMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
+          replaceOnfDefaultValuesInMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/process-device/output]]
             description: >
               'This is carried out for the dataHandle option.
               The attributes contained in the output object are updated according to {$FunctionForReplacingOnfDefaultValuesCausesWritingOrReturningData.ReplaceOnfDefaultsAndReturnData.response.body#output}.
-              The changes are to be written directly to the [/data-structure-for-processing/output] in memory identified by {$request.body#data-handle}'
+              The changes are to be written directly to the [/process-device/output] in memory identified by {$request.body#data-handle}'
             put:
               responses:
                 '204':
-                  description: 'Computed AirInterface KPI values written directly to [/data-structure-for-processing/output]'
+                  description: 'Computed AirInterface KPI values written directly to [/process-device/output]'
                 '400':
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 '401':

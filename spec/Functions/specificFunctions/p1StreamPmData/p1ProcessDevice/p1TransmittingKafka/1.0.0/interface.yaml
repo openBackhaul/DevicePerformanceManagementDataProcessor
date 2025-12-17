@@ -13,14 +13,14 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - _outputFormat
+              - output-format
               - parameters
               - config-file
             properties:
-              _outputFormat:
+              output-format:
                 type: reference
                 description: >
-                  'Reference to the content of an OutputFormat in DataStructureForProcessing'
+                  'OutputFormat object to be sent via Kafka'
               parameters:
                 type: object
                 description: >
@@ -94,12 +94,12 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Name of target kafka topic to which the payload shall be sent
-                      from [/transmit-kafka/input/_outputFormat/format-name] matched against [/transmit-kafka/input/config-file/kafka-client/topic-name] through string-name=kafkaProducerClientFor*'
+                      from [/transmitting-kafka/output-format/format-name] matched against [/transmitting-kafka/input/config-file/kafka-client/topic-name] through string-name=kafkaProducerClientFor*'
                   message:
                     type: object
                     description: >
                       'Payload to be transmitted to kafka
-                      from /transmit-kafka/input/_outputFormat/content}'
+                      from [/transmitting-kafka/output-format/content]'
         output:
           success:
             description: 'Payload transmition successfull'

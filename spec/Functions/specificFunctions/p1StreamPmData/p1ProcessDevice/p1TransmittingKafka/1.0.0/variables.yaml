@@ -1,0 +1,32 @@
+transmitting-kafka:
+  type: object
+  required:
+    - output-format
+    - parameters
+    - config-file
+  properties:
+    outputFormat:
+      type: reference
+      description: >
+        'OutputFormat object to be sent via Kafka
+        from {$input#/outputFormat}'
+    parameters:
+      type: object
+      description: >
+        'Parameters object for p1TransmittingKafka
+        from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+
+    topic-name:
+      type: string
+      description: >
+        'Name of the Kafka topic to which the OutputFormat will be transmitted
+        from '
+      # todo: complete the source path
+
+    # No explicit output variables are defined in the interface.yaml for success, only error strings
+    # You may add additional variables here as needed for implementation

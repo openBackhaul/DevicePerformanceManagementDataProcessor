@@ -20,8 +20,8 @@ requestor -> p1ProOrch : {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{da
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
-    Create
-    DataStructureForProcessing
+    Create data structure
+    for processing
   end note
 
   p1ProOrch -> p1AddRaw : {mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
@@ -39,10 +39,10 @@ activate p1ProOrch #LightCyan
 
   note over p1ProOrch
     Add rawCC to
-    DataStructureForProcessing
+    data structure
   end note
 
-  p1ProOrch -> p1CRC : {_rawCC,\n{/parameters/sub-function=createResultCc}}
+  p1ProOrch -> p1CRC : {rawCC,\n{/parameters/sub-function=createResultCc}}
   activate p1CRC #LightCyan
 
     note over p1CRC
@@ -55,10 +55,10 @@ activate p1ProOrch #LightCyan
 
   note over p1ProOrch
     Add resultCC to
-    DataStructureForProcessing
+    data structure
   end note
 
-  p1ProOrch -> p1Output : {_resultCC,\n{/parameters/sub-function=p1FormattingOutputApt}}
+  p1ProOrch -> p1Output : {resultCC,\n{/parameters/sub-function=p1FormattingOutputApt}}
   activate p1Output #LightCyan
 
     note over p1Output
@@ -70,11 +70,11 @@ activate p1ProOrch #LightCyan
   deactivate p1Output
 
   note over p1ProOrch
-    Add aptOutputFormat to
-    DataStructureForProcessing
+    Add aptOutputFormat
+    to data structure
   end note
 
-  p1ProOrch -> p1Trans : {_outputFormat,\n{/parameters/sub-function=p1TransmittingKafka},\n{configFile}}
+  p1ProOrch -> p1Trans : {outputFormat,\n{/parameters/sub-function=p1TransmittingKafka},\n{configFile}}
   activate p1Trans #LightCyan
 
     note over p1Trans
@@ -85,7 +85,7 @@ activate p1ProOrch #LightCyan
   p1ProOrch <-- p1Trans
   deactivate p1Trans
 
-  p1ProOrch -> p1Store : {_resultCC,\n{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile}}
+  p1ProOrch -> p1Store : {resultCC,\n{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile}}
   activate p1Store #LightBlue
 
     note over p1Store

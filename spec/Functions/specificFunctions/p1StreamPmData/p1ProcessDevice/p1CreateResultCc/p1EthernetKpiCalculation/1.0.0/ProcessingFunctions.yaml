@@ -30,13 +30,13 @@ paths:
                     data-handle:
                       type: string
                       description: >
-                        'This dataHandle points directly to the [/data-structure-for-processing/output] from where the required data from output.ethernet-container-list is read.'
+                        'This dataHandle points directly to the [/process-device/output] from where the required data from output.ethernet-container-list is read.'
                 - description: 'required data for external usage (no direct read/write)'
                   properties:
                     output:
                       description: >
                         'If the function shall not run on the data in the memory directly, the required data has to be provided as input.
-                        Note that input data follows the schema of [/data-structure-for-processing/output], but only relevant attributes are listed.' 
+                        Note that input data follows the schema of [/process-device/output], but only relevant attributes are listed.' 
                       type: object
                       properties:
                         ethernet-container-list:
@@ -105,7 +105,7 @@ paths:
                                 description: 'Computed number of lost frames KPI, -1 if no value could be computed'
 
         '204':
-          description: 'EthernetContainer KPIs written to [/data-structure-for-processing/output]'
+          description: 'EthernetContainer KPIs written to [/process-device/output]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -120,7 +120,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         InquiringFor15minEthContainerKpiCalculationCausesReadingFromDsfpOutput:
-          readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/data-structure-for-processing/output]
+          readInputFromMemory: #[dpmdpIpAddress][dpmdpPort][/process-device/output]
             description: >
               'Directly read the relevant data from DPMDP memory for the output object identified by id
               from {$request.body#data-handle} (in case data-handle instead of data was provided in {$request.body})'
@@ -277,15 +277,15 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-          updateDataInMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/data-structure-for-processing/output]]
+          updateDataInMemory: #[dpmdpIpAddress][dpmdpPort][dataHandle.[/process-device/output]]
             description: >
               'This is carried out for the dataHandle option. Changes are written directly to the attributes.
               The attribute values are to be updated according to attributes in {$InquiringForEthernetContainerKpiCalculationCausesCallingCacaAndWritingOrReturningData.getKPIs.response.body}.
-              The changes are to be written directly into the [/data-structure-for-processing/output] object in memory identified by {$request.body#data-handle}'
+              The changes are to be written directly into the [/process-device/output] object in memory identified by {$request.body#data-handle}'
             patch:
               responses:
                 '204':
-                  description: 'Computed EthernetContainer KPI values written directly to [/data-structure-for-processing/output]'
+                  description: 'Computed EthernetContainer KPI values written directly to [/process-device/output]'
                 '400':
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 '401':

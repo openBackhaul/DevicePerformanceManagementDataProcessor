@@ -27,10 +27,10 @@ Please find a detailed description of the [interface](./interface.yaml).
     This function can be called from within DPMDP or can be used externally.  
     - DPMDP usage:
       - the dataHandle has to be provided in the requestBody
-      - the function reads the complete output object from the [/data-structure-for-processing/output] object associated with the dataHandle directly from DPMDP memory
-      - the modified output object with replaced values is written directly back into [/data-structure-for-processing/output]
+      - the function reads the complete output object from the [/process-device/output] object associated with the dataHandle directly from DPMDP memory
+      - the modified output object with replaced values is written directly back into [/process-device/output]
     - external usage:
-      - the required input data has to be provided in the requestBody; it follows the schema of [/data-structure-for-processing/output]
+      - the required input data has to be provided in the requestBody; it follows the schema of [/process-device/output]
       - the modified output object with replaced values is returned in the response
 
 
@@ -39,7 +39,7 @@ Please find a detailed description of the [interface](./interface.yaml).
 
     #### Steps
     The function shall be processed as follows:
-    - read the output object from [/data-structure-for-processing/output] directly
+    - read the output object from [/process-device/output] directly
     - for each counter attribute check whether it has an ONF default value of -1 (or "-1"), if it does, replace its value as follows:
       - for number attributes: with *null*
       - for string attributes: with empty string
@@ -48,12 +48,12 @@ Please find a detailed description of the [interface](./interface.yaml).
 
     #### Callbacks
     - `FunctionForReplacingOnfDefaultValuesCausesReadingDsfpOutput`
-      - reads the data associated with the dataHandle directly from [/data-structure-for-processing/output]
+      - reads the data associated with the dataHandle directly from [/process-device/output]
     - `FunctionForReplacingOnfDefaultValuesCausesWritingOrReturningData`:
       - *replaceOnfDefaultsAndReturnData*: replaces ONF default values in the data from requestBody and returs it in the response
-      - *replaceOnfDefaultValuesInMemory*: applies the same rules for ONF default value replacement as in *replaceOnfDefaultsAndReturnData*, but to the data read from memory. Then writes back the modified data to [/data-structure-for-processing/output]
+      - *replaceOnfDefaultValuesInMemory*: applies the same rules for ONF default value replacement as in *replaceOnfDefaultsAndReturnData*, but to the data read from memory. Then writes back the modified data to [/process-device/output]
 
     #### Output
-    Changes are either directly written to [/data-structure-for-processing/output] (internal usage) or the modified input data is returned in the response (external usage).
+    Changes are either directly written to [/process-device/output] (internal usage) or the modified input data is returned in the response (external usage).
 
 

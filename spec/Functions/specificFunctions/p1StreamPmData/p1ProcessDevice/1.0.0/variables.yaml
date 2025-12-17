@@ -1,4 +1,4 @@
-data-structure-for-processing:
+process-device:
   type: object
   required:
     - mount-name
