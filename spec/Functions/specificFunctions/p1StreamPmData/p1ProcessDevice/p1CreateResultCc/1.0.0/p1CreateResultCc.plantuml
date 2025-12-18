@@ -20,7 +20,7 @@ participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
 participant "p1Default\nValueTreatment" as defaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
 
-requestor -> cur: {{parameters},\nrawCC}
+requestor -> cur: {{parameters},\n{rawCC}}
 activate cur #LightCyan
 
   note over cur #LightCyan

@@ -17,40 +17,68 @@ create-result-cc:
     result-cc:
       type: object
       description: >
-        'The resultCc represents the PM data after processing.
-        It follows the ONF structure, but it is also extended by additional attributes.
-        All attributes without information about their origin were taken 1:1 from the rawCc.
+        'ResultCc represents PM data after processing; follows ONF structure, but extended by additional attributes
         from {$createResultCcFromRawCc.output#/result-cc}'
-
-
-
       required:
         - equipment-augment-1-0:control-construct-pac
         - logical-termination-point
       properties:
         equipment-augment-1-0:control-construct-pac:
           type: object
-          description: >
-            'EquipmentAugment
-            from {$p1CreateResultCc.output#/result-cc/equipment-augment-1-0:control-construct-pac}'
           required:
             - external-label
             - device-model-name
           properties:
             external-label:
               type: string
-              description: 'mountName'
             device-model-name:
               type: string
-              description: 'deviceType'
-        logical-termination-point:
+        equipment:
           type: array
-          description: >
-            'LogicalTerminationPoint
-            from {$p1CreateResultCc.output#/result-cc/logical-termination-point}'
           x-key: uuid
           items:
             type: object
+            required:
+              - uuid
+              - actual-equipment
+            properties:
+              uuid:
+                type: string
+              actual-equipment:
+                type: object
+                required:
+                  - local-id
+                  - physical-properties
+                  - structure
+                properties:
+                  local-id:
+                    type: string
+                  physical-properties:
+                    type: object
+                    required:
+                      - temperature
+                    properties:
+                      temperature:
+                        type: string
+                  structure:
+                    type: object
+                    required:
+                      - category
+                    properties:
+                      category:
+                        type: string
+                        enum:
+                          - 'core-model-1-4:EQUIPMENT_CATEGORY_SUBRACK'
+                          - 'core-model-1-4:EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT'
+        logical-termination-point:
+          type: array
+          x-key: uuid
+          items:
+            type: object
+            required:
+              - uuid
+              - ltp-augment-1-0:ltp-augment-pac
+              - layer-protocol
             properties:
               uuid:
                 type: string
@@ -68,11 +96,10 @@ create-result-cc:
                   external-label:
                     type: string
                     description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
-                  # todo: link-id attribute not in rawCc. Origin to be explained, or attribute to be removed.
+                  # todo: linkId not in rawCc; origin to be explained
                   link-id:
                     type: string
                     description: 'linkId - Identifier of the microwave link as used in the Telefonica planing tools'
-                  #
                   original-ltp-name:
                     type: string
                     description: 'portName'
@@ -118,8 +145,6 @@ create-result-cc:
                                 transmission-mode-list:
                                   type: array
                                   x-key: transmission-mode-name
-                                  description: >
-                                    'Discard the complete array item, if (code-rate==-1)'
                                   items:
                                     type: object
                                     properties:
@@ -133,9 +158,9 @@ create-result-cc:
                                         type: string
                                       code-rate:
                                         type: integer
-                                        description: 'If this attribute value is -1, the complete array item is to be discarded.'
                                       symbol-rate-reduction-factor:
                                         type: integer
+                                      # todo: capacity not in rawCc; origin to be explained
                                       capacity:
                                         type: number
                                         format: float
@@ -145,16 +170,18 @@ create-result-cc:
                             air-interface-historical-performances:
                               type: object
                               properties:
-                                # todo: most-recent-period-end-time attribute not in rawCc. Origin to be explained, or attribute to be removed.
-                                1most-recent-period-end-time:
+                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
+                                most-recent-period-end-time:
                                   type: string
-                                  description: 'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list'
-                                2most-recent-period-end-time:
+                                  description: >
+                                    'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list
+                                    '
+                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
+                                most-recent-period-end-time-24:
                                   type: string
                                   description: >
                                     'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list.
-                                    from {{$createResultFromRawCc.input#raw-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/period-end-time} select the newest timestamp.'
-                                #
+                                    '
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
@@ -200,8 +227,6 @@ create-result-cc:
                                           time-xstates-list:
                                             type: array
                                             x-key: transmission-mode
-                                            description: >
-                                              'Discard the complete array item, if time <= 0'
                                             items:
                                               type: object
                                               required:
@@ -211,7 +236,7 @@ create-result-cc:
                                                   type: string
                                                 time:
                                                   type: integer
-                                                  description: 'If this attribute value is <= 0 discard the complete array item'
+                                          # todo: intervalCapacity not in rawCc; origin to be explained
                                           interval-capacity:
                                             type: number
                                             format: float
@@ -253,16 +278,18 @@ create-result-cc:
                             ethernet-container-historical-performances:
                               type: object
                               properties:
-                                # todo: most-recent-period-end-time attribute not in rawCc. Origin to be explained, or attribute to be removed.
-                                1most-recent-period-end-time:
+                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
+                                most-recent-period-end-time:
                                   type: string
-                                  description: 'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list'
-                                2most-recent-period-end-time:
+                                  description: >
+                                    'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list
+                                    '
+                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
+                                most-recent-period-end-time-24:
                                   type: string
                                   description: >
                                     'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list.
-                                    from {{$createResultFromRawCc.input#raw-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/period-end-time} select the newest timestamp.'
-                                #
+                                    '
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
@@ -295,12 +322,14 @@ create-result-cc:
                                             description: 'String representation of int64 value'
                                           time-period:
                                             type: integer
+                                          # todo: transmitTraffic not in rawCc; origin to be explained
                                           transmit-traffic:
                                             type: number
                                             format: float
                                             description: >
                                               'TX Traffic [Mbps] KPI)
                                               not already available in this step, filled with default -1'
+                                          # todo: receiveTraffic not in rawCc; origin to be explained
                                           receive-traffic:
                                             type: number
                                             format: float
@@ -343,11 +372,13 @@ create-result-cc:
                                             type: integer
                                           dropped-frames-output:
                                             type: integer
+                                          # todo: frameLossInput not in rawCc; origin to be explained
                                           frame-loss-input:
                                             type: integer
                                             description: >
                                               'Sum of errored and dropped frames on the ingress (KPI)
                                               not already available in this step, filled with default -1'
+                                          # todo: frameLossOutput not in rawCc; origin to be explained
                                           frame-loss-output:
                                             type: integer
                                             description: >

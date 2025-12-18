@@ -37,7 +37,7 @@ x-javascript-interface:
                   result-cc:
                     type: object
                     description: >
-                      'The result control construct data created from the raw control construct data, following ONF structure.
+                      'The result control construct, following ONF structure.
                       from [/create-result-cc/result-cc]'
       error:
         description: 'Result CC data could not be created'
@@ -52,7 +52,7 @@ x-javascript-interface:
     processing:
       createResultCcFromRawCc:
         description: >
-          'Creates the resultCc object as a variable of the p1CreateResultCc function and fills it from rawCc data'
+          'Creates the resultCc object and fills it from rawCc data'
         input:
           content:
             application/json:
@@ -65,7 +65,7 @@ x-javascript-interface:
                       from [/create-result-cc/raw-cc]'
         output:
           success:
-            description: 'Result ControlConstruct object provided'
+            description: 'ResultCc provided'
             content:
               application/json:
                 schema:
@@ -78,18 +78,20 @@ x-javascript-interface:
                           description: >
                             'ResultCc'
         error:
-          description: 'Result ControlConstruct object could not be created.'
+          description: 'ResultCc could not be provided'
           content:
             application/json:
               schema:
                 type: string
                 enum:
-                  # todo: reasonable error messages to be added
+                  - 'RawCc missing'
+                  - 'RawCc incomplete or invalid'
                   - 'RawCc could not be copied to ResultCc'
                   - 'General processing error'
-      
-      # Following Functions might be obsolete after latest discussions
-      # please regard plantuml content as latest state of discussions
+
+
+
+
 
       p1CleanupTxModes:
         description: >
