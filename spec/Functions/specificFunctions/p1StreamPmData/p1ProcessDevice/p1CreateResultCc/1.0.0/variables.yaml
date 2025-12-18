@@ -14,6 +14,22 @@ create-result-cc:
       description: >
         'rawCc
         from {$input#/raw-cc}'
+    air-interface-uuid:
+      type: array
+      description: >
+        'List of UUIDs of AirInterface LTPs to be processed
+        from [/create-result-cc/result-cc/logical-termination-point={air-interface-uuid[n]}/uuid]
+          with [/create-result-cc/result-cc/logical-termination-point={air-interface-uuid[n]}/layer-protocol=*/layer-protocol-name] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"]'
+      items:
+        type: string
+    ethernet-container-uuid:
+      type: array
+      description: >
+        'List of UUIDs of EthernetContainer LTPs to be processed
+        from [/create-result-cc/result-cc/logical-termination-point={ethernet-container-uuid[n]}/uuid]
+          with [/create-result-cc/result-cc/logical-termination-point={ethernet-container-uuid[n]}/layer-protocol=*/layer-protocol-name] == "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER"]'
+      items:
+        type: string
     result-cc:
       type: object
       description: >
@@ -21,6 +37,7 @@ create-result-cc:
         from {$createResultCcFromRawCc.output#/result-cc}'
       required:
         - equipment-augment-1-0:control-construct-pac
+        # todo: hier könnte equipment fehlen
         - logical-termination-point
       properties:
         equipment-augment-1-0:control-construct-pac:
@@ -96,10 +113,11 @@ create-result-cc:
                   external-label:
                     type: string
                     description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
-                  # todo: linkId not in rawCc; origin to be explained
                   link-id:
                     type: string
-                    description: 'linkId - Identifier of the microwave link as used in the Telefonica planing tools'
+                    description: >
+                      'linkId
+                      from {$substringLinkId.output#/link-id}'
                   original-ltp-name:
                     type: string
                     description: 'portName'
@@ -160,13 +178,11 @@ create-result-cc:
                                         type: integer
                                       symbol-rate-reduction-factor:
                                         type: integer
-                                      # todo: capacity not in rawCc; origin to be explained
                                       capacity:
-                                        type: number
-                                        format: float
+                                        type: integer
                                         description: >
-                                          'AirInterface capacity calculated with ONF formula,
-                                          value not yet available in pre-release, filled with default -1'
+                                          'AirInterface capacity (according to chapter 6.5 of TR-532 v2.0) in kbps
+                                          from {$p1CalculateAiCapacity.output#/air-interface-capacity}'
                             air-interface-historical-performances:
                               type: object
                               properties:

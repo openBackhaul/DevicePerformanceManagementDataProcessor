@@ -70,13 +70,12 @@ x-javascript-interface:
               application/json:
                 schema:
                   properties:
-                    schema:
-                      type: object
-                      properties:
-                        result-cc:
-                          type: object
-                          description: >
-                            'ResultCc'
+                    type: object
+                    properties:
+                      result-cc:
+                        type: object
+                        description: >
+                          'ResultCc'
         error:
           description: 'ResultCc could not be provided'
           content:
@@ -88,60 +87,131 @@ x-javascript-interface:
                   - 'RawCc incomplete or invalid'
                   - 'RawCc could not be copied to ResultCc'
                   - 'General processing error'
-
-
-
-
-
       p1CleanupTxModes:
         description: >
-          'Clears incomplete transmission mode definitions'
-        input:
-          content:
-            application/json:
-              schema:
-                # todo: define input schema
-        output:
-          success:
-            description: 'Result ControlConstruct object provided'
-            content:
-              application/json:
-                schema:
-                  # todo: define output schema
-        error:
-          description: 'Transmission mode definition could not be processed'
-          content:
-            application/json:
-              schema:
-                type: string
-                enum:
-                  - 'Input data structure incomplete or invalid'
-                  - 'General processing error'
+          'Removes transmissionModeList entries not referenced in Configuration or timeXstatesList'
+        # Will be added in next release
       p1CleanupAdmCounters:
         description: >
-          'Removes empty adaptive modulation counter records from resultCc'
+          'Removes timeXstatesList entries with time==0'
+        # Will be added in next release
+      substringLinkId:
+        description: >
+          'Creates the linkId from linkEndpointId'
         input:
           content:
             application/json:
               schema:
-                # todo: define input schema
+                type: object
+                required:
+                  - link-endpoint-id
+                properties:
+                  link-endpoint-id:
+                    type: object
+                    pattern: '^[0-9]{9}[AB]$'
+                    description: >
+                      'linkEndpointId
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/ltp-augment-1-0:ltp-augment-pac/external-label]'
         output:
           success:
-            description: 'Empty adaptive modulation counter records removed'
+            description: 'linkId provided'
             content:
               application/json:
                 schema:
-                  # todo: define output schema
+                  type: object
+                  required:
+                    - link-id
+                  properties:
+                    link-id:
+                      type: string
+                      description: >
+                        'linkId = input.link-endpoint-id.substring(0, 9)'
         error:
-          description: 'Empty adaptive modulation counter records could not be removed'
+          description: 'ResultCc could not be provided'
           content:
             application/json:
               schema:
                 type: string
                 enum:
-                  # todo: reasonable error messages to be added
-      #p1SubstringLinkId
-      #p1ComputePhysicalLag
+                  - 'linkEndpointId missing'
+                  - 'linkEndpointId invalid'
+                  - 'linkId could not be created'
+                  - 'General processing error'
+      p1ComputePhysicalLag:
+        description: >
+          '
+          '
+        # Nicht klar, was hier gemacht werden soll
+        # Die AggregationGroup ist im Layer1AggregationProfile beschrieben
+        # d.h. eigentlich muss die Gruppe nicht aus clientLtp/serverLtp gebildet werden
+        # sondern nur das Layer1AggregationProfile mit ins radCC aufgenommen werden
+
+      p1CalculateAiCapacity:
+        description: >
+          'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - channel-bandwidth
+                  - symbol-rate-reduction-factor
+                  - number-of-states-in-modulation
+                  - code-rate
+                properties:
+                  channel-bandwidth:
+                    type: integer
+                    description: >
+                      'Channel bandwidth in kHz
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/channel-bandwidth]'
+                  symbol-rate-reduction-factor:
+                    type: integer
+                    description: >
+                      'Symbol rate reduction factor
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/symbol-rate-reduction-factor]'
+                  number-of-states-in-modulation:
+                    type: integer
+                    description: >
+                      'Number of states in modulation
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/modulation-scheme]'
+                  code-rate:
+                    type: integer
+                    description: >
+                      'Code rate in percent
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/code-rate]'
+        output:
+          success:
+            description: 'AirInterface capacity calculated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - air-interface-capacity
+                  properties:
+                    air-interface-capacity:
+                      type: integer
+                      description: >
+                        'airInterfaceCapacity'
+          error:
+            description: 'AirInterface capacity could not be calculated'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'Input parameters missing'
+                    - 'Input parameters invalid'
+                    - 'General processing error'
+
+
+
+
+
+
+
+
       addMostRecentPeriodEndTime:
         description: >
           'Adds mostRecentPeriodEndTime attribute to HistoricalPerformances'
@@ -171,7 +241,7 @@ x-javascript-interface:
 
       #p1DefaultValueTreatment
       #p1OutOfRangeValueTreatment
-      #p1AirInterfaceCapacityCalculation
+      #p1CalculateAiCapacity
       #p1EthernetKpiCalculation
 
 

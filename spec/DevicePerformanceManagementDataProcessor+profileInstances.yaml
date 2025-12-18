@@ -474,7 +474,7 @@ profile-instances:
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-033'
     capability:
-      function-name: 'p1AirInterfaceCapacityCalculation'
+      function-name: 'p1CalculateAiCapacity'
       parameter-list:
       sub-function-list:
     configuration:

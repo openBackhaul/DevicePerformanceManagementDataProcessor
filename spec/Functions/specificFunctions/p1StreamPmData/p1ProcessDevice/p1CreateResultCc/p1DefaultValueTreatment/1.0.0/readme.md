@@ -16,7 +16,7 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ### NPM Module  
 
-[mw-sdn-p1DefaultValueTreatment](https://www.npmjs.com/package/mw-sdn-p1DefaultValueTreatment)  
+[mw-sdn-p1-default-value-treatment](https://www.npmjs.com/package/mw-sdn-p1-default-value-treatment)  
 
 
     ### p1ReplaceOnfDefaultValues

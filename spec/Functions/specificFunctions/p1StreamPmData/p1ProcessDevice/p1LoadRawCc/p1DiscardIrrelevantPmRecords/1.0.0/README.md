@@ -42,5 +42,5 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ### NPM Module  
 
-[mw-sdn-p1DiscardIrrelevantPmRecords](https://www.npmjs.com/package/mw-sdn-p1DiscardIrrelevantPmRecords)  
+[mw-sdn-p1-discard-irrelevant-pm-records](https://www.npmjs.com/package/mw-sdn-p1-discard-irrelevant-pm-records)  
 

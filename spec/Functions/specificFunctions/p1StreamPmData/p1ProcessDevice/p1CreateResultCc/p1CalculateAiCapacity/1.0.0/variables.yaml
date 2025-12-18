@@ -1,0 +1,33 @@
+calculate-ai-capacity:
+  type: object
+  required:
+    - channel-bandwidth
+    - symbol-rate-reduction-factor
+    - number-of-states-in-modulation
+    - code-rate
+  properties:
+    channel-bandwidth:
+      type: integer
+      description: >
+        'Channel bandwidth in kHz
+        from {$input#/channel-bandwidth}'
+    symbol-rate-reduction-factor:
+      type: integer
+      description: >
+        'Symbol rate reduction factor
+        from {$input#/symbol-rate-reduction-factor}'
+    number-of-states-in-modulation:
+      type: integer
+      description: >
+        'Number of states in modulation
+        from {$input#/number-of-states-in-modulation}'
+    code-rate:
+      type: integer
+      description: >
+        'Code rate in percent
+        from {$input#/code-rate}'
+    air-interface-capacity:
+      type: integer
+      description: >
+        'airInterfaceCapacity in kbps
+        calculated according to ONF TR-532 v2.0 Chapter 6.5 Capacity Calculation'
