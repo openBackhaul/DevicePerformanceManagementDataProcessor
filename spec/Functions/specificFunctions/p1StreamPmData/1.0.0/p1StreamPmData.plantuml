@@ -9,7 +9,6 @@ participant "embedYourself\n" as embed
 participant "p1StreamPmData\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LP #LightCyan
 participant "p1ResolveEsAddress\n" as p1REA #LightCyan
-participant "p1CreateEs\n" as p1CMR #LightCyan
 participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
 participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 participant "p1MaintainDs\n" as p1MDS #LightBlue
@@ -31,7 +30,6 @@ activate p1RMWDI #LightCyan
   deactivate p1LP
 
   Loop FOR all esName
-
     p1RMWDI -> p1REA : {{parameters},\n{configFile},\nesName}
     activate p1REA #LightCyan
       note over p1REA
@@ -39,15 +37,6 @@ activate p1RMWDI #LightCyan
       end note
     p1RMWDI <-- p1REA : {{esAddress}}
     deactivate p1REA
-
-    p1RMWDI -> p1CMR : {{parameters},\n{esAddress}}
-    activate p1CMR #LightCyan
-      note over p1CMR
-        Create ES
-      end note
-    p1RMWDI <-- p1CMR
-    deactivate p1CMR
-
   end Loop
 
   p1RMWDI -> p1MDS : {{parameters},\n{dataStoreAddress}}
