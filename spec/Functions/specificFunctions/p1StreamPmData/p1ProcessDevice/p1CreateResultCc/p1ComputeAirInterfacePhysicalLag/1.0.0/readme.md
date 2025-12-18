@@ -32,5 +32,5 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ### NPM Module  
 
-[mw-sdn-p1ComputeAirInterfacePhysicalLag](https://www.npmjs.com/package/mw-sdn-p1ComputeAirInterfacePhysicalLag)  
+[mw-sdn-p1-compute-air-interface-physical-lag](https://www.npmjs.com/package/mw-sdn-p1-compute-air-interface-physical-lag)  
 

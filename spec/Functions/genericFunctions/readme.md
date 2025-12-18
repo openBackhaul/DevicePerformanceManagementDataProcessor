@@ -5,6 +5,7 @@
 
 The following generic Functions are provided as a part of this application's implementation (NPM packages have been created and published under the given reference):  
 
+- [p1CalculateAiCapacity](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1CalculateAiCapacity/1.0.0)
 - [p1ComputeAirInterfaceNames](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ComputeAirInterfaceNames/1.0.0)  
 - [p1ComputeAirInterfacePhysicalLag](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ComputeAirInterfaceLag/1.0.0)  
 - [p1ComputeEthContainerNames](https://github.com/openBackhaul/ApplicationPattern/tree/develop/spec/genericFunctions/p1ComputeEthernetContainerName/1.0.0)  
