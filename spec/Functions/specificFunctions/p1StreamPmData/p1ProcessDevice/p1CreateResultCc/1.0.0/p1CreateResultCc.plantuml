@@ -9,12 +9,10 @@ participant "p1ProcessDevice\n" as requestor
 participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p1Cleanup\nTxModes" as cleanTxModes #LightCyan
-participant "p1Find\nLastTime" as lastTime #LightCyan
 participant "p1Cleanup\nAdmCounters" as cleanAdmCounters #LightCyan
-participant "p1Substring\nLinkId" as substrLinkId #LightCyan
 participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
 
-participant "p1AirInterface\nCapacityCalculation" as airIfKpis #LightBlue
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
 
 participant "p1Default\nValueTreatment" as defaultValues #LightBlue
@@ -81,14 +79,9 @@ activate cur #LightCyan
   deactivate outOfRange
 
     ' ----- Link ID --------------------------
-    note over cur #LightCyan
-      Derive LinkId from LinkEndpointId
+    note over cur
+      Add linkId to resultCC
     end note
-
-    cur -> substrLinkId : {}
-    activate substrLinkId #LightCyan
-    cur <-- substrLinkId : {}
-    deactivate substrLinkId
 
     ' ----- Aggregation Group --------------------------
     note over cur #White
@@ -102,14 +95,27 @@ activate cur #LightCyan
     deactivate computePhyLag
 
     ' ----- AirInterface KPIs --------------------------
-    note over cur #White
-      Add AirInterfaceCapacity
+    cur -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
+    activate aiCC #LightCyan
+
+      note over aiCC
+        Calculate AirInterfaceCapacity
+        according to ONF TR-532 v2.0 Chapter 6.5
+      end note
+
+    cur <-- aiCC: {airInterfaceCapacity}
+    deactivate aiCC
+
+    ' ----- mostRecentPeriodEndTime --------------------------
+    note over cur
+      Add mostRecentPeriodEndTime
+      to resultCC
     end note
 
-    cur -> airIfKpis: {_rawCC}
-    activate airIfKpis #LightBlue
-    cur <-- airIfKpis: {computed AirInterface KPIs}
-    deactivate airIfKpis
+    note over cur
+      Add mostRecentPeriodEndTime24
+      to resultCC
+    end note
 
   end
 

@@ -21,7 +21,7 @@ participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
 participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
 
-participant "p1AirInterface\nCapacityCalculation" as p1AirKpi #LightBlue
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
@@ -138,6 +138,10 @@ activate p1RMWDI #LightCyan
             from rawCC
           end note
 
+          note over p1CreateResultCC #Orange
+            Update required !
+          end note
+
           ' process default values ->
           p1CreateResultCC -> p1DefaultValues
           activate p1DefaultValues #LightBlue
@@ -162,17 +166,25 @@ activate p1RMWDI #LightCyan
           p1CreateResultCC <-- p1OutOfRange
           deactivate p1OutOfRange
 
-          ' get AirIf KPIs ->
-          p1CreateResultCC -> p1AirKpi
-          activate p1AirKpi #LightBlue
+          note over p1CreateResultCC
+            Add linkId to resultCC
+          end note
 
-            note over p1AirKpi
-              Add AirInterface capacity
-              to resultCC
+          ' get AirIf KPIs ->
+          p1CreateResultCC -> aiCC
+          activate aiCC #LightCyan
+
+            note over aiCC
+              Calculate AirInterfaceCapacity
             end note
 
-          p1CreateResultCC <-- p1AirKpi
-          deactivate p1AirKpi
+          p1CreateResultCC <-- aiCC
+          deactivate aiCC
+
+          note over p1CreateResultCC
+            Add mostRecentPeriodEndTime
+            and mostRecentPeriodEndTime24
+          end note
 
           ' get EthContainer KPIs ->
           p1CreateResultCC -> p1EthKpi

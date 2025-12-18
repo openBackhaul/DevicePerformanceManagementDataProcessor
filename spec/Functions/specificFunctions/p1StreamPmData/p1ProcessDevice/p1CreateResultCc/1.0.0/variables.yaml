@@ -37,7 +37,7 @@ create-result-cc:
         from {$createResultCcFromRawCc.output#/result-cc}'
       required:
         - equipment-augment-1-0:control-construct-pac
-        # todo: hier könnte equipment fehlen
+        - equipment
         - logical-termination-point
       properties:
         equipment-augment-1-0:control-construct-pac:
@@ -186,18 +186,16 @@ create-result-cc:
                             air-interface-historical-performances:
                               type: object
                               properties:
-                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
                                 most-recent-period-end-time:
                                   type: string
                                   description: >
-                                    'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list
-                                    '
-                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
+                                    'Most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList
+                                    from {$findMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
                                 most-recent-period-end-time-24:
                                   type: string
                                   description: >
-                                    'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list.
-                                    '
+                                    'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
+                                    from {$findMostRecentPeriodEndTime24.output#/most-recent-period-end-time-24}'
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
@@ -294,18 +292,16 @@ create-result-cc:
                             ethernet-container-historical-performances:
                               type: object
                               properties:
-                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
                                 most-recent-period-end-time:
                                   type: string
                                   description: >
-                                    'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list
-                                    '
-                                # todo: mostRecentPeriodEndTime not in rawCc; origin to be explained
+                                    'Most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList
+                                    from {$findMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
                                 most-recent-period-end-time-24:
                                   type: string
                                   description: >
-                                    'The most recent date in the period-end-time attribute of all instances in the historical-performance-data-list.
-                                    '
+                                    'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
+                                    from {$findMostRecentPeriodEndTime24.output#/most-recent-period-end-time-24}'
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time

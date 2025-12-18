@@ -144,7 +144,7 @@ x-javascript-interface:
         # Nicht klar, was hier gemacht werden soll
         # Die AggregationGroup ist im Layer1AggregationProfile beschrieben
         # d.h. eigentlich muss die Gruppe nicht aus clientLtp/serverLtp gebildet werden
-        # sondern nur das Layer1AggregationProfile mit ins radCC aufgenommen werden
+        # sondern nur das Layer1AggregationProfile mit ins rawCC aufgenommen werden
 
       p1CalculateAiCapacity:
         description: >
@@ -204,44 +204,96 @@ x-javascript-interface:
                     - 'Input parameters missing'
                     - 'Input parameters invalid'
                     - 'General processing error'
-
-
-
-
-
-
-
-
-      addMostRecentPeriodEndTime:
+      findMostRecentPeriodEndTime:
         description: >
-          'Adds mostRecentPeriodEndTime attribute to HistoricalPerformances'
+          'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
         input:
           content:
             application/json:
               schema:
-                # todo: define input schema
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list
+                              or /create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
         output:
           success:
-            description: 'mostRecentPeriodEndTime attributes added'
+            description: 'mostRecentPeriodEndTime provided'
             content:
               application/json:
                 schema:
-                  # todo: define output schema
+                  type: object
+                  required:
+                    - most-recent-period-end-time
+                  properties:
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime
+                        from max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period}=={"air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN" OR "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} )'
         error:
-          description: 'mostRecentPeriodEndTime attributes could not be added'
+          description: 'mostRecentPeriodEndTime could not be provided'
           content:
             application/json:
               schema:
                 type: string
                 enum:
-                  # todo: reasonable error messages to be added
+                  - 'historicalPerformanceDataList missing'
+                  - 'historicalPerformanceDataList invalid'
+                  - 'mostRecentPeriodEndTime could not be determined'
+                  - 'General processing error'
+      findMostRecentPeriodEndTime24:
+        description: >
+          'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list
+                              or /create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'MostRecentPeriodEndTime24 provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - most-recent-period-end-time-24
+                  properties:
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24
+                        from max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period}=={"air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS" OR "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} )'
+        error:
+          description: 'mostRecentPeriodEndTime24 could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'historicalPerformanceDataList missing'
+                  - 'historicalPerformanceDataList invalid'
+                  - 'mostRecentPeriodEndTime24 could not be determined'
+                  - 'General processing error'
 
-      #addLinkId:
-      #addAggregationGroup:
 
       #p1DefaultValueTreatment
       #p1OutOfRangeValueTreatment
-      #p1CalculateAiCapacity
       #p1EthernetKpiCalculation
 
 
