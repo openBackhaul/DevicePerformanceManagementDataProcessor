@@ -38,9 +38,7 @@ note over cur
 end note
 
 cur -> fieldsFilter: {{rawControlConstruct},\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
-activate fieldsFilter #LightCyan
 cur <-- fieldsFilter: {{filtered rawControlConstruct}}
-deactivate fieldsFilter #LightCyan
 
 note over cur #LightSteelBlue
   [/load-raw-cc/raw-cc]
@@ -57,10 +55,6 @@ note over cur
   It retrieves the timestamps for ... granularity:
   - 15min: mostRecentPeriodEndTime
   - 24h: mostRecentPeriodEndTime24
-
-  The interfaces are matched against layerProtocols
-  by the uuid of the respective LTP a layerProtocol
-  belongs to.
 end note
 cur -> datastore: {mountName}
 cur <-- datastore: {[interface]}
@@ -69,36 +63,68 @@ cur <-- datastore: {[interface]}
 
 == Apply filtering on interface level ==
 
-loop fpr all instances of LTP
+
+' Thorsten: mir ist nicht klar was die Funktion genau macht, und ob sie das alles "darf"; 
+' bitte prüfe noch einmal, ob applyFilteringForRelevantPmData nicht einfach eine Schleife (wie nachfolgenden beispielhaft dargestellt) ist
+
+loop for all instances of LTP
 
   note over cur
-    IF (ltp.layerProtocol != (AirInterface | EthernetContainer))
-      skip
-    ELSE
-      THEN execute <u>p1DiscardIrrelevantPmRecords</u>
+    IF ( LayerProtocolName == 'AirInterface' OR
+          LayerProtocolName == 'EthernetContainer' )
   end note
 
-  cur -> filterPm: {[historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
-  activate filterPm #LightCyan
-  note over filterPm
-    Discards all irrelevant records from
-    the historicalPerformanceDataList and returns the
-    filtered list.
+  note left cur
+    ELSE restart loop
+  end note
 
-    Relevant records are those with relevant granularity
-    and period-end-time newer than
-    <i>mostRecentPeriodEndTime</i> (15min), or
-    <i>mostRecentPeriodEndTime</i> (24h)
-    (in case of missing mostRecentPeriodEndTimes all
-    related records are treated as newer).
-  end note 
+  note over cur
+    THEN
+  end note
+  cur -> filterPm: {[historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
   cur <-- filterPm: {[filtered historicalPerformanceDataList]}
-  deactivate filterPm
+
+end loop
+
+' Thorsten: Ende meines Beispiels
+
+group Filter remaining rawControlConstruct data
+  note over cur
+    <u>applyFilteringForRelevantPmData</u>
+    Discard any "empty" layer protocols (non AirInterface/EthernetContainer),
+    from rawControlConstruct.
+
+    For each AirInterface/EthernetContainer instance (currentInterface) apply
+    additional filtering by calling p1DiscardIrrelevantPmRecords.
+    IF the length(currentInterface.(filtered historicalPerformanceDataList)) == 0,
+    THEN discard the entire currentInterface instance (layerProtocol) from the rawControlConstruct,
+    ELSE replace the currentInterface.historicalPerformanceDataList with the filtered
+    historicalPerformanceDataList.
+  end note
+
+  ' For each relevant interface filter the PM records
+  group For each AirInterface and EthernetContainer
+    note over cur, datastore
+      <u>p1DiscardIrrelevantPmRecords</u>
+      Send the historicalPerformanceDataList to the function, where all irrelevant PM records
+      are discarded. Overwrite the original list:
+      currentInterface.<i>historicalPerformanceDataList</i> := filtered historicalPerformanceDataList 
+
+      Records are considered irrelevant, if:
+      - their granularity is not 15min or 24h
+      - their periodEndTime is not newer than <i>mostRecentPeriodEndTime</i> (15min) or <i>mostRecentPeriodEndTime</i> (24h)
+      
+      (IF <i>mostRecentPeriodEndTime</i> or <i>mostRecentPeriodEndTime24</i>
+      are not available for the current interface, treat all seen records as newer.)
+    end note
+    cur -> filterPm: {[historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
+    cur <-- filterPm: {[filtered historicalPerformanceDataList]}
+  end group
 
   note over cur #LightSteelBlue
-    for relevant Ltp.layerProtocols replace
-    original historicalPerformancesDataList
-    with the filtered one.
+    [/load-raw-cc/raw-cc]
+      := rawCC with filtered
+         historicalPerformanceDataLists
   end note
 
   ' remove after pre-release
@@ -108,6 +134,9 @@ loop fpr all instances of LTP
   end note
 
 end group
+
+
+
 
 note over cur
   <u>returnRawControlConstruct</u>

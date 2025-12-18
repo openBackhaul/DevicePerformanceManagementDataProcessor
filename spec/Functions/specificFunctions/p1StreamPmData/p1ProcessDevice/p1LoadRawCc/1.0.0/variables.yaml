@@ -61,7 +61,7 @@ load-raw-cc:
         'RawCc read from Replica ES, but reduced by irrelevant data
         from {$readControlConstructFromEs.output#/core-model-1-4:control-construct=[/load-raw-cc/mount-name]}
         overwritten by {$p1FieldsFilter.output#/filtered-data-structure}
-        overwritten by {$applyFilteringForRelevantPmData.output#/raw-cc}'
+        updated by {$applyFilteringForRelevantPmData.output#/historical-performances-data-list} for each layerProtocol'
       required:
         - equipment-augment-1-0:control-construct-pac
         - logical-termination-point
@@ -214,6 +214,9 @@ load-raw-cc:
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
+                                  description: >
+                                    'HistoricalPerformancesDataList containing only relevant PM data records, after filtering
+                                    from {$p1DiscardIrrelevantPmRecords.output/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
@@ -303,6 +306,9 @@ load-raw-cc:
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
+                                  description: >
+                                    'HistoricalPerformancesDataList containing only relevant PM data records, after filtering
+                                    from {$p1DiscardIrrelevantPmRecords.output/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
