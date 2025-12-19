@@ -18,10 +18,12 @@ participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 
 participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
+
 participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
 
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
@@ -142,6 +144,27 @@ activate p1RMWDI #LightCyan
             Update required !
           end note
 
+          p1CreateResultCC -> prepTxModes
+          activate prepTxModes #LightCyan
+
+            note over prepTxModes
+              Prepare TxModes
+            end note
+
+            prepTxModes -> aiCC
+            activate aiCC #LightCyan
+
+              note over aiCC
+                Calculate
+                AirInterfaceCapacity
+              end note
+
+            prepTxModes <-- aiCC
+            deactivate aiCC
+
+          p1CreateResultCC <-- prepTxModes
+          deactivate prepTxModes
+
           ' process default values ->
           p1CreateResultCC -> p1DefaultValues
           activate p1DefaultValues #LightBlue
@@ -170,16 +193,6 @@ activate p1RMWDI #LightCyan
             Add linkId to resultCC
           end note
 
-          ' get AirIf KPIs ->
-          p1CreateResultCC -> aiCC
-          activate aiCC #LightCyan
-
-            note over aiCC
-              Calculate AirInterfaceCapacity
-            end note
-
-          p1CreateResultCC <-- aiCC
-          deactivate aiCC
 
           note over p1CreateResultCC
             Add mostRecentPeriodEndTime

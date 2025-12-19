@@ -51,12 +51,13 @@ x-javascript-interface:
                 - 'General processing error'
     processing:
       createResultCcFromRawCc:
-        description: >
-          'Creates the resultCc object and fills it from rawCc data'
+        summary: 'Creates the resultCc object and fills it from rawCc data'
         input:
           content:
             application/json:
               schema:
+                required:
+                  - raw-cc
                 properties:
                   raw-cc:
                     type: object
@@ -87,17 +88,28 @@ x-javascript-interface:
                   - 'RawCc incomplete or invalid'
                   - 'RawCc could not be copied to ResultCc'
                   - 'General processing error'
-      p1CleanupTxModes:
-        description: >
-          'Removes transmissionModeList entries not referenced in Configuration or timeXstatesList'
-        # Will be added in next release
-      p1CleanupAdmCounters:
-        description: >
-          'Removes timeXstatesList entries with time==0'
-        # Will be added in next release
+      p1PrepareTxModes:
+        summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
+        input:
+          content:
+            application/json:
+              schema:
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+
+
+
+        hier geht's weiter
+
+
+
+
+
       substringLinkId:
-        description: >
-          'Creates the linkId from linkEndpointId'
+        summary: 'Creates the linkId from linkEndpointId'
         input:
           content:
             application/json:
@@ -138,17 +150,13 @@ x-javascript-interface:
                   - 'linkId could not be created'
                   - 'General processing error'
       p1ComputePhysicalLag:
-        description: >
-          '
-          '
+        summary: ''
         # Nicht klar, was hier gemacht werden soll
         # Die AggregationGroup ist im Layer1AggregationProfile beschrieben
         # d.h. eigentlich muss die Gruppe nicht aus clientLtp/serverLtp gebildet werden
         # sondern nur das Layer1AggregationProfile mit ins rawCC aufgenommen werden
-
       p1CalculateAiCapacity:
-        description: >
-          'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
+        summary: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
         input:
           content:
             application/json:
@@ -205,8 +213,7 @@ x-javascript-interface:
                     - 'Input parameters invalid'
                     - 'General processing error'
       findMostRecentPeriodEndTime:
-        description: >
-          'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
+        summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
         input:
           content:
             application/json:
@@ -248,8 +255,7 @@ x-javascript-interface:
                   - 'mostRecentPeriodEndTime could not be determined'
                   - 'General processing error'
       findMostRecentPeriodEndTime24:
-        description: >
-          'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
+        summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
         input:
           content:
             application/json:
@@ -290,8 +296,6 @@ x-javascript-interface:
                   - 'historicalPerformanceDataList invalid'
                   - 'mostRecentPeriodEndTime24 could not be determined'
                   - 'General processing error'
-
-
       #p1DefaultValueTreatment
       #p1OutOfRangeValueTreatment
       #p1EthernetKpiCalculation

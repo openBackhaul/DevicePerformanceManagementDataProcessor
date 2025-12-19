@@ -8,13 +8,11 @@ end title
 participant "p1ProcessDevice\n" as requestor
 participant "p1CreateResultCc\n" as cur #LightCyan
 
-participant "p1Cleanup\nTxModes" as cleanTxModes #LightCyan
-participant "p1Cleanup\nAdmCounters" as cleanAdmCounters #LightCyan
+participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
 
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
-
 participant "p1Default\nValueTreatment" as defaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
 
@@ -27,7 +25,7 @@ activate cur #LightCyan
 
 
 
-  note over cleanAdmCounters #LightCoral
+  note over aiCC #LightCoral
     Priority: Facilitate generating the APT output format
       - create resultCC structure
       - add additional attributes to structure
@@ -53,18 +51,48 @@ activate cur #LightCyan
 
   loop for all AirInterfaces in resultCC
 
-  ' ----- Reduce Data --------------------------
-    note over cur #LightGray
-      Liste der timeXStatesList in PM Daten durchgehen
-        IF time==0 THEN
-          - Eintrag löschen
-        ELSE
-          - Name notieren
-      
-      Alle TxModes aus Capability durchgehen
-        IF Name not in notierteNamen THEN
-          - Eintrag löschen
-    end note
+    cur -> prepTxModes : {[performanceDataList],\n[transmissionModeList]}
+    activate prepTxModes
+
+      loop for all entries of [performanceDataList]
+        loop for all entries in [timeXStatesList]
+          note over prepTxModes
+            IF time > 0
+              THEN add transmissionMode to
+                   [usedTransmissionModesList]
+              ELSE delete transmissionMode 
+                    from [timeXStatesList]
+          end note
+        end loop
+      end loop
+
+      loop for all entries of [transmissionModeList]
+
+        note over prepTxModes
+          IF transmissionMode NOT IN 
+              [usedTransmissionModesList]
+            THEN 
+              - Delete transmissionMode
+                from [transmissionModeList]
+            ELSE
+              - Complement entry in
+                [transmissionModeList]
+                with AirInterfaceCapacity
+        end note
+
+        prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
+        activate aiCC #LightCyan
+          note over aiCC
+            Calculate AirInterfaceCapacity
+            according to ONF TR-532 v2.0 Chapter 6.5
+          end note
+        prepTxModes <-- aiCC: {airInterfaceCapacity}
+        deactivate aiCC
+
+      end loop
+
+    cur <-- prepTxModes : {[performanceDataList],\n[transmissionModeList]}
+    deactivate prepTxModes
 
   ' ----- OutOfRange TxLevel --------------------------
   note over cur #LightGray
@@ -73,7 +101,7 @@ activate cur #LightCyan
     range from PM data
   end note
 
-  cur -> outOfRange: {_resultCC}
+  cur -> outOfRange: {{resultCC}}
   activate outOfRange #LightBlue
   cur <-- outOfRange
   deactivate outOfRange
@@ -93,18 +121,6 @@ activate cur #LightCyan
     activate computePhyLag #LightCyan
     cur <-- computePhyLag : {}
     deactivate computePhyLag
-
-    ' ----- AirInterface KPIs --------------------------
-    cur -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
-    activate aiCC #LightCyan
-
-      note over aiCC
-        Calculate AirInterfaceCapacity
-        according to ONF TR-532 v2.0 Chapter 6.5
-      end note
-
-    cur <-- aiCC: {airInterfaceCapacity}
-    deactivate aiCC
 
     ' ----- mostRecentPeriodEndTime --------------------------
     note over cur
@@ -126,7 +142,7 @@ activate cur #LightCyan
       Add EthernetContainer KPIs
     end note
     
-    cur -> ethKpis: {_rawCC}
+    cur -> ethKpis: {{rawCC}}
     activate ethKpis #LightBlue
     cur <-- ethKpis: {computed EthernetContainer KPIs}
     deactivate ethKpis
@@ -139,7 +155,7 @@ activate cur #LightCyan
     device type specific method
   end note
 
-  cur -> defaultValues: {_resultCC}
+  cur -> defaultValues: {{resultCC}}
   activate defaultValues #LightBlue
   cur <-- defaultValues
   deactivate defaultValues
@@ -150,7 +166,7 @@ activate cur #LightCyan
     default values
   end note
 
-  cur -> defaultValues: {_resultCC}
+  cur -> defaultValues: {{resultCC}}
   activate defaultValues #LightBlue
   cur <-- defaultValues
   deactivate defaultValues
