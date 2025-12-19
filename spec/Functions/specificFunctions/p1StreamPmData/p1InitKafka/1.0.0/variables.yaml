@@ -1,0 +1,84 @@
+init-kafka:
+  type: object
+  required:
+    - parameters
+    - config-file
+    - kafka-client-name
+    - kafka-client-type
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+    kafka-client-name:
+      type: string
+      description: >
+        'kafkaClientName
+        from {$input#/kafka-client-name}'
+    kafka-client-type:
+      type: string
+      description: >
+        'kafkaClientType
+        from {$input#/kafka-client-type}'
+
+    kafka-client-uuid:
+      type: string
+      description: >
+        'Kafka client UUID
+        find [/init-kafka/parameters/parameter=*/parameter-name]==[init-kafka/kafka-client-name]
+        from [/init-kafka/parameters/parameter=*/value]'
+    kafka-client:
+      type: object
+      description: >
+        'Kafka client LTP object
+        from [/init-kafka/config-file/core-model-1-4:control-construct/logical-termination-point=kafka-client-uuid]'
+    http-client-uuid:
+      type: string
+      description: >
+        'HTTP client UUID
+        from [/init-kafka/kafka-client/logical-termination-point/server-ltp[0]]'
+    http-client:
+      type: object
+      description: >
+        'HTTP client LTP object
+        from [/init-kafka/config-file/core-model-1-4:control-construct/logical-termination-point=http-client-uuid]'
+    tcp-client-uuid:
+      type: string
+      description: >
+        'TCP client UUID
+        from [/init-kafka/http-client/logical-termination-point/server-ltp[0]]'
+    tcp-client:
+      type: object
+      description: >
+        'TCP client LTP object
+        from [/init-kafka/config-file/core-model-1-4:control-construct/logical-termination-point=tcp-client-uuid]'
+    url:
+      type: string
+      description: > 
+        'Kafka URL
+        from [/init-kafka/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/init-kafka/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /init-kafka/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/init-kafka/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
+
+    group-id:
+      type: string
+      description: >
+        'Identifier of group to be sent to kafka broker
+        from [/init-kafka/kafka-client/logical-termination-point/layer-protocol=0/kafka-client-interface-1-0:kafka-client-interface-pac/kafka-client-interface-configuration/group-id]'
+    client-id:
+      type: string
+      description: >
+        'Identifier of client to be sent to kafka broker
+        from [/init-kafka/kafka-client/logical-termination-point/layer-protocol=0/kafka-client-interface-1-0:kafka-client-interface-pac/kafka-client-interface-configuration/client-id]'
+    brokers:
+      type: array
+      items:
+        type: string
+        description: >
+          'List of brokers for kafka to be connected
+          URL composed from IP address or domain name and port
+          from [/init-kafka/url]'

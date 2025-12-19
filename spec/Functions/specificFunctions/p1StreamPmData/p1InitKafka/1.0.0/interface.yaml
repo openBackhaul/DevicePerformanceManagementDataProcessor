@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: p1InitKafka
+  version: 1.0.0
+
+x-javascript-interface:
+  p1InitKafka:
+    summary: 'Resolves Kafka address and initializes the Kafka producer session'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - config-file
+              - kafka-client-name
+              - kafka-client-type
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Hierarchical object holding the parameter settings'
+              config-file:
+                type: object
+                description: >
+                  'configFile content'
+              kafka-client-name:
+                type: string
+                description: >
+                  'kafkaClientName'
+              kafka-client-type:
+                type: string
+                description: >
+                  'kafkaClientType'
+                enum:
+                  - 'producer'
+                  - 'consumer'
+    output:
+      success:
+        description: 'Kafka session successfully established'
+      error:
+        description: 'Kafka session could not be established'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'kafkaClientName parameter missing'
+                - 'kafkaClientName not found'
+                - 'kafkaClientType parameter missing'
+                - 'kafkaClientType invalid'
+                - 'parameters parameter missing'
+                - 'parameters invalid'
+                - 'config-file parameter missing'
+                - 'config-file invalid'
+                - 'Kafka address could not be resolved'
+                - 'Kafka session initialization failed'
+                - 'Producer connection to kafka failed'
+                - 'Consumer connection to kafka failed'
+                - 'General processing error'
+    processing:
+      kafkaProducerService.connect:
+        summary: 'This function connects to kafka broker'
+        input:
+          content:
+            application/json:
+              schema:
+                required:
+                  - clientId
+                  - brokers
+                properties:
+                  clientId:
+                    type: string
+                    description: >
+                      'Identifier of client to be sent to kafka broker
+                      from [/init-kafka/client-id]'
+                  brokers:
+                    type: array
+                    description: >
+                      'List of brokers for kafka to be connected
+                      from [/init-kafka/brokers]'
+                    items:
+                      type: string
+                      description: >
+                        'URL composed from IP address or domain name and port'
+        output:
+          success:
+            description: 'Producer successfully connected to kafka client'
+            content:
+              application/json:
+                schema:
+                  type: boolean
+                  description: 'true'
+          error:
+            description: 'Producer connection to kafka failed'
+            content:
+              application/json:
+                schema:
+                  type: boolean
+                  description: 'false'
+      kafkaConsumerService.connect:
+        summary: 'This function connects to kafka broker'
+        input:
+          content:
+            application/json:
+              schema:
+                required:
+                  - groupId
+                  - clientId
+                  - brokers
+                properties:
+                  groupId:
+                    type: string
+                    description: >
+                      'Identifier of consumer group to be sent to kafka broker
+                      from [/init-kafka/group-id]'
+                  clientId:
+                    type: string
+                    description: >
+                      'Identifier of client to be sent to kafka broker
+                      from [/init-kafka/client-id]'
+                  brokers:
+                    type: array
+                    description: >
+                      'List of brokers for kafka to be connected
+                      from [/init-kafka/brokers]'
+                    items:
+                      type: string
+                      description: >
+                        'URL composed from IP address or domain name and port'
+        output:
+          success:
+            description: 'Consumer successfully connected to kafka broker'
+            content:
+              application/json:
+                schema:
+                  type: boolean
+                  description: 'true'
+        error:
+          description: 'Consumer connection to kafka failed'
+          content:
+            application/json:
+              schema:
+                type: boolean
+                description: 'false'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

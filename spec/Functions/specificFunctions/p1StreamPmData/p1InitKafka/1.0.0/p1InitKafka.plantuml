@@ -1,0 +1,44 @@
+@startuml p1InitKafka
+skinparam responseMessageBelowArrow true
+
+title
+  p1InitKafka
+end title
+
+participant "requestor\n" as requestor
+participant "p1InitKafka\n" as p1Init #LightCyan
+participant "kafkaProducerService.\nconnect" as p1KafkaP #LightCyan
+queue "kafka\n" as kafka
+
+requestor -> p1Init : {{parameters},\n{configFile},\nkafkaClientName,\nkafkaClientType}
+activate p1Init #LightCyan
+
+  note over p1Init
+    Resolve Kafka address
+    and connection parameters
+  end note
+
+  note over p1Init
+    IF kafkaClientType == 'producer'
+  end note
+
+  note right p1Init
+    THEN
+  end note
+
+  p1Init -> p1KafkaP : {clientId, brokerList, \nfuncttionName=connect}
+  activate p1KafkaP #LightCyan
+
+    note over p1KafkaP
+      Establish producer
+      session to Kafka
+    end note
+    p1KafkaP -> kafka : {CONNECT event}
+    p1KafkaP <-- kafka
+
+  p1Init <-- p1KafkaP
+
+requestor <-- p1Init
+deactivate p1Init
+
+@enduml

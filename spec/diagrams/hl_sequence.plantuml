@@ -70,17 +70,18 @@ activate p1RMWDI #LightCyan
   activate p1InitKafka #Pink
 
     note over p1InitKafka
-      Kafka Initialization
+      Resolve Kafka
+      address
     end note
 
     p1InitKafka -> p1KafkaP
     activate p1KafkaP #Pink
 
+      note over p1KafkaP
+        Establish session
+      end note
       p1KafkaP -> kafka
       p1KafkaP <-- kafka
-      note over p1KafkaP
-        Session established
-      end note
 
     p1InitKafka <-- p1KafkaP
 
