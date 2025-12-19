@@ -17,7 +17,7 @@ Initialize Connection
 to Kafka
 end note
 
-embed -> p1Trans
+p1ProPm -> p1Trans : {/kafka-client-interface-configuration/client-id,\ntcp-client-interface-configuration/remote-address\ntcp-client-interface-configuration/remote-port}
 
 activate p1Trans #LightCyan
 
@@ -41,12 +41,10 @@ p1KafkaP -> kafka : {CONNECT event}
 kafka --> p1KafkaP
 p1KafkaP --> p1Trans : success
 
-deactivate p1KafkaP
-
 deactivate p1Trans
 
 == Payload Transmit Stage - request-based invokation == 
-p1ProPm -> p1Trans : {_outputFormat, parameters}
+p1ProPm -> p1Trans : { [{transmitObject}],\n[{kafkaClient}] (only topic actually required),\n{parameters}}
 activate p1Trans #LightCyan
 
 note over p1Trans#LightPink
@@ -63,7 +61,7 @@ payload=(output-format/content)
 end note
 
 p1Trans -> p1KafkaP : {topicName, payload \n functionName=sendMessage}
-activate p1KafkaP #LightGreen
+
 note over p1KafkaP
 send payload 
 to kafka
@@ -79,7 +77,6 @@ kafka --> p1KafkaP
 
 p1KafkaP --> p1Trans : {sucess/error}
 
-deactivate p1KafkaP
 
 p1Trans --> p1ProPm : {sucess/error}
 deactivate p1Trans

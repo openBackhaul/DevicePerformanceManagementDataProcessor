@@ -107,6 +107,14 @@ create-result-cc:
                 type: array
                 items:
                   type: string
+              parallel-ltp:
+                # todo: translate info about Layer1AggregationGroups into info about parallel LTPs
+                type: array
+                items:
+                  type: string
+                description: >
+                  'List of UUIDs of parallel LTPs (AirInterfaces or WireInterfaces of AggregationGroups)
+                  from '
               ltp-augment-1-0:ltp-augment-pac:
                 type: object
                 properties:
