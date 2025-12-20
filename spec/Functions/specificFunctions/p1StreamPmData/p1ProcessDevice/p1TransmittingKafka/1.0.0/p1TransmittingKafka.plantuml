@@ -2,83 +2,36 @@
 skinparam responseMessageBelowArrow true
 
 title
-p1TransmittingKafka
+  p1TransmittingKafka
 end title
 
-participant "embedYourself" as embed
-participant "p1ProcessDevice" as p1ProPm #LightCyan
-participant "p1TransmittingKafka" as p1Trans #LightCyan
-participant "p1KafkaProducer" as p1KafkaP #LightGreen
-queue "kafka" as kafka #LightSkyBlue
+participant "requestor\n" as requestor
+participant "p1TransmittingKafka\n" as p1Trans #LightCyan
+participant "kafkaProducerService.\nsendMessage" as p1KafkaP #LightCyan
+queue "kafka\n" as kafka
 
-== Initialization Stage ==
-note right embed
-Initialize Connection
-to Kafka
-end note
+activate p1KafkaP #LightCyan
 
-p1ProPm -> p1Trans : {/kafka-client-interface-configuration/client-id,\ntcp-client-interface-configuration/remote-address\ntcp-client-interface-configuration/remote-port}
-
+requestor -> p1Trans : {{parameters},\n{configFile},\nkafkaClientName,\n{messageObject}}
 activate p1Trans #LightCyan
 
-note over p1Trans
-establishInitialConnection
-end note
+  note over p1Trans
+    Resolve connection parameters
+  end note
 
-note over p1Trans
-extract clientId, brokerList 
-from parameters and configFile
-end note
+  p1Trans -> p1KafkaP : {topicName,\n{messageObject}}
 
-p1Trans -> p1KafkaP : {clientId, brokerList, \nfuncttionName=connect}
-activate p1KafkaP #LightGreen
+    note over p1KafkaP
+      Send object 
+      to Kafka
+    end note
 
-note over p1KafkaP
-establish session to
-kafka as producer
-end note
-p1KafkaP -> kafka : {CONNECT event}
-kafka --> p1KafkaP
-p1KafkaP --> p1Trans : success
+    p1KafkaP -> kafka : {SEND_MESSAGE event}
+    p1KafkaP <-- kafka
 
-deactivate p1Trans
+  p1Trans <-- p1KafkaP
 
-== Payload Transmit Stage - request-based invokation == 
-p1ProPm -> p1Trans : { [{transmitObject}],\n[{kafkaClient}] (only topic actually required),\n{parameters}}
-activate p1Trans #LightCyan
-
-note over p1Trans#LightPink
-  Messages are only pushed to Kafka,
-  while profileInstance
-  <i>kafkaNotificationProvisioningSwitch</i> == on
-end note
-
-note over p1Trans
-extract 
-topicName=(output-format/format-name 
-              match config-file/topic-name)
-payload=(output-format/content)
-end note
-
-p1Trans -> p1KafkaP : {topicName, payload \n functionName=sendMessage}
-
-note over p1KafkaP
-send payload 
-to kafka
-end note
-
-p1KafkaP -> kafka : {message}
-note over kafka
-stores in 
-given topic
-end note
-
-kafka --> p1KafkaP
-
-p1KafkaP --> p1Trans : {sucess/error}
-
-
-p1Trans --> p1ProPm : {sucess/error}
+requestor <-- p1Trans
 deactivate p1Trans
 
 @enduml

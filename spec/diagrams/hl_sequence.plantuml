@@ -9,7 +9,7 @@ participant "embedYourself\n" as embed
 participant "p1StreamPmData\n" as p1RMWDI #LightCyan
 participant "p1LoadParameters\n" as p1LoadParams #LightGreen
 participant "p1ResolveEsAddress\n" as p1REA #LightGreen
-participant "p1InitKafka\n" as p1InitKafka #Pink
+participant "p1InitKafka\n" as p1InitKafka #LightGreen
 participant "p1UpdateMwdiReplica\n" as p1UMR #LightGreen
 
 participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
@@ -34,8 +34,7 @@ participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 participant "p1Storing\n" as p1Store #LightBlue
 participant "p1MaintainDs\n" as p1MDS #LightBlue
 
-participant "p1KafkaProducer\n" as p1KafkaP #Pink
-queue "kafka" as kafka #Pink
+participant "kafkaProducer\nService" as kafkaProd #LightGreen
 
 note right embed
   Automatically start
@@ -67,23 +66,19 @@ activate p1RMWDI #LightCyan
   end Loop
 
   p1RMWDI -> p1InitKafka
-  activate p1InitKafka #Pink
+  activate p1InitKafka #LightGreen
 
     note over p1InitKafka
       Resolve Kafka
       address
     end note
 
-    p1InitKafka -> p1KafkaP
-    activate p1KafkaP #Pink
-
-      note over p1KafkaP
+    p1InitKafka -> kafkaProd
+    activate kafkaProd #LightGreen
+      note over kafkaProd
         Establish session
       end note
-      p1KafkaP -> kafka
-      p1KafkaP <-- kafka
-
-    p1InitKafka <-- p1KafkaP
+    p1InitKafka <-- kafkaProd
 
   p1RMWDI <-- p1InitKafka
   deactivate p1InitKafka
@@ -270,9 +265,11 @@ activate p1RMWDI #LightCyan
             Transmit output
             format to Kafka
           end note
-          p1Trans -> p1KafkaP
-            p1KafkaP -> kafka
-          p1Trans <-- p1KafkaP
+          p1Trans -> kafkaProd
+            note over kafkaProd
+              Send message
+            end note
+          p1Trans <-- kafkaProd
 
         p1ProcessPm <-- p1Trans
         deactivate p1Trans

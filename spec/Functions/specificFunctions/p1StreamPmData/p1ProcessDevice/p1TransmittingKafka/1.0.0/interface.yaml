@@ -13,14 +13,14 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - output-format
+              - message-object
               - parameters
               - config-file
             properties:
-              output-format:
+              message-object:
                 type: reference
                 description: >
-                  'OutputFormat object to be sent via Kafka'
+                  'Object to be sent via Kafka'
               parameters:
                 type: object
                 description: >
@@ -31,87 +31,67 @@ x-javascript-interface:
                   'configFile content'
     output:
       success:
-        description: 'OutputFormats sent via Kafka'
+        description: 'Object sent via Kafka'
       error:
-        description: 'OutputFormats could not be sent via Kafka'
+        description: 'Object could not be sent via Kafka'
         content:
           application/json:
             schema:
               type: string
               enum:
-                - 'Connection to kafka failed'
-                - 'Unknown topic or partition'
+                - 'Producer connection error'
+                - 'Other transmission error'
     processing:
-      initialize:
-        description: >
-          'Establish connection to kafka as producer once application is started. 
-          Once session is created, all messages transmit using the same session.'
+      kafkaProducerService.sendMessage:
+        summary: 'This function sends message to provided topic'
         input:
-          required: true
-          content:  
-            application/json:
-              schema:
-                type: object
-                required: 
-                  - client-id
-                  - broker-list
-                properties:
-                  client-id:
-                    type: string
-                    description: >
-                      'Identifier of the producer application.
-                      from [/transmit-kafka/input/config-file/] where string-name=kafkaProducerClientFor*'
-                  broker-list:
-                    type: array
-                    description: >
-                     'List of [address:port] endpoints where kafka is deployed.
-                     from [/transmit-kafka/input/config-file/] where string-name=kafkaTcpClient'
-        output:
-          success:
-            description: 'Kafka Connection successfully established'
-          error:
-            description: 'Connection could not be established'
-            content:
-              application/json:
-                schema:
-                  type: string
-                  enum:
-                    - 'Connection to kafka failed'
-                    - 'Connection to kafka request timeout'
-      payloadTransmit:
-        description: 'Send each payload to kafka - request-based invokation'
-        input:
-          required: true  
           content:
             application/json:
               schema:
-                type: object
-                required: 
-                  - topic-name
+                required:
+                  - topic
                   - message
                 properties:
-                  topic-name:
+                  topic:
                     type: string
                     description: >
-                      'Name of target kafka topic to which the payload shall be sent
-                      from [/transmitting-kafka/output-format/format-name] matched against [/transmitting-kafka/input/config-file/kafka-client/topic-name] through string-name=kafkaProducerClientFor*'
+                      'Target topic in Kafka broker where the messages shall be sent
+                      from [/transmitting-kafka/topic-name]'
                   message:
                     type: object
                     description: >
-                      'Payload to be transmitted to kafka
-                      from [/transmitting-kafka/output-format/content]'
+                      'The object that shall be sent
+                      from [/transmitting-kafka/message-object]'
         output:
           success:
-            description: 'Payload transmition successfull'
-          error:
-            description: 'Payload transmission failed'
+            description: 'Message successfully sent'
             content:
               application/json:
                 schema:
-                  type: string
-                  enum:
-                    - 'Unknown topic or partition'
-                    - 'Connection to kafka failed'
+                  type: object
+                  properties:
+                    response:
+                      type: object
+                      properties:
+                        status:
+                          type: integer
+                          minimum: 200
+                          maximum: 200
+          error:
+            description: 'Message could not be sent to Kafka'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    response:
+                      type: object
+                      properties:
+                        status:
+                          type: integer
+                          minimum: 532
+                          maximum: 532
+
 paths:
   /:
     description: 'no rest path provided by this module'

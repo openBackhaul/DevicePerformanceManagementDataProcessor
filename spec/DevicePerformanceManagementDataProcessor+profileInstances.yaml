@@ -313,6 +313,27 @@ profile-instances:
     configuration:
       string-value: '2'
 
+  # p1InitKafka
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-005'
+    capability:
+      function-name: 'p1InitKafka'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-120'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-120'
+    capability:
+      string-name: 'kafkaProducerClientForAptFormat'
+      purpose: 'UUID of the Kafka Producer client LTP to APT'
+      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-kmb-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-002'

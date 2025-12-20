@@ -83,8 +83,8 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1CreateEs:
-        description: 'The ES address which has just been resolved by p1ResolveEsAddress shall now be created.'
+      p1InitKafka:
+        summary: 'Resolves Kafka address and initializes the Kafka producer session'
         input:
           required: true
           content:
@@ -93,23 +93,37 @@ x-javascript-interface:
                 type: object
                 required:
                   - parameters
-                  - es-client
+                  - config-file
+                  - kafka-client-name
+                  - kafka-client-type
                 properties:
                   parameters:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/stream-pm-data/parameters/sub-function=p1CreateEs]'
-                  es-client:
+                      from [/stream-pm-data/parameters/sub-function=p1InitKafka]'
+                  config-file:
                     type: object
                     description: >
-                      'MWDI ElasticSearch address
-                      from [/stream-pm-data/es-address=*/address]'
+                      'configFile content
+                      from [/stream-pm-data/config-file]'
+                  kafka-client-name:
+                    type: string
+                    description: >
+                      'kafkaClientName'
+                    enum:
+                      - 'kafkaProducerClientForAptFormat'
+                  kafka-client-type:
+                    type: string
+                    description: >
+                      'kafkaClientType'
+                    enum:
+                      - 'producer'
         output:
           success:
-            description: 'ES created'
+            description: 'Kafka session successfully established'
           error:
-            description: 'ES could not be created'
+            description: 'Kafka session could not be established'
             content:
               application/json:
                 schema:
