@@ -30,6 +30,39 @@ create-result-cc:
           with [/create-result-cc/result-cc/logical-termination-point={ethernet-container-uuid[n]}/layer-protocol=*/layer-protocol-name] == "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER"]'
       items:
         type: string
+    aggregation-group-list:
+      type: array
+      description: >
+        'List of Layer1AggregationGroups at the device'
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+            description: >
+              'UUID of Layer1AggregationGroup
+              from [/create-result-cc/raw-cc/profile-collection/profile=*/uuid]
+                with [/create-result-cc/raw-cc/profile-collection/profile=*/profile-name] == "PROFILE_NAME_TYPE_LAYER_1_AGGREGATION_PROFILE"'
+          client-ltp:
+            type: string
+            description: >
+              'UUID of transported EthernetContainer LTP
+              from [/create-result-cc/raw-cc/profile-collection/profile=*/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/client-ltp]'
+          server-ltp-list:
+            type: array
+            description: >
+              'List of UUIDs of transporting PureEthernetStructure or HybridMwStructure LTPs
+              from [/create-result-cc/raw-cc/profile-collection/profile=*/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/server-ltp-list]'
+            items:
+              type: string
+          physical-server-ltp-list:
+            type: array
+            description: >
+              'List of UUIDs of transporting AirInterface and WireInterface LTPs
+              for every structure-ltp in [./server-ltp-list]
+              from [/create-result-cc/raw-cc/logical-termination-point={structure-ltp}/server-ltp]'
+            items:
+              type: string
     result-cc:
       type: object
       description: >
@@ -108,13 +141,12 @@ create-result-cc:
                 items:
                   type: string
               parallel-ltp:
-                # todo: translate info about Layer1AggregationGroups into info about parallel LTPs
                 type: array
                 items:
                   type: string
                 description: >
-                  'List of UUIDs of parallel LTPs (AirInterfaces or WireInterfaces of AggregationGroups)
-                  from '
+                  'List of UUIDs of parallel LTPs (AirInterfaces or WireInterfaces in the same Layer1AggregationGroup)
+                  from {$findParallelPhysic.output#/physical-server-ltp-list}'
               ltp-augment-1-0:ltp-augment-pac:
                 type: object
                 properties:

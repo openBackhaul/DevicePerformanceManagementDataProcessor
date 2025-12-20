@@ -10,11 +10,11 @@ participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
-participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
 
-participant "p1Ethernet\nKpiCalculation" as ethKpis #LightBlue
-participant "p1Default\nValueTreatment" as defaultValues #LightBlue
-participant "p1OutOfRange\nValueTreatment" as outOfRange #LightBlue
+participant "p1OutOfRange\nValueTreatment" as outOfRange
+participant "p1Ethernet\nKpiCalculation" as ethKpis #White
+participant "p1Harmonize\nTemperature" as harmTemp #White
+participant "p1Default\nValueTreatment" as defaultValues
 
 requestor -> cur: {{parameters},\n{rawCC}}
 activate cur #LightCyan
@@ -26,15 +26,6 @@ activate cur #LightCyan
 
 
   note over aiCC #LightCoral
-    Priority: Facilitate generating the APT output format
-      - create resultCC structure
-      - add additional attributes to structure
-
-    Categories of comments below:
-      - LightCyan: Attribute with correct value needed
-      - White: Attribute needed, but might contain default value
-      - LightGray: fine tuning that is postponed to next release
-
     Proceeding:
       - Explicitly (in detail) represent resultCC in variable.yaml
       - Create sub-folders in /p1CreateResultCc for required sub-functions (even if category is white)
@@ -94,33 +85,15 @@ activate cur #LightCyan
     cur <-- prepTxModes : {[performanceDataList],\n[transmissionModeList]}
     deactivate prepTxModes
 
-  ' ----- OutOfRange TxLevel --------------------------
-  note over cur #LightGray
-    Delete TxLevel and RxLevel attributes
-    with values outside of pre-defined
-    range from PM data
-  end note
-
-  cur -> outOfRange: {{resultCC}}
-  activate outOfRange #LightBlue
-  cur <-- outOfRange
-  deactivate outOfRange
-
     ' ----- Link ID --------------------------
     note over cur
       Add linkId to resultCC
     end note
 
     ' ----- Aggregation Group --------------------------
-    note over cur #White
-      Derive aggregation grouping
-      from hierarchy of LTPs
+    note over cur
+      Add list of parallel LTPs
     end note
-
-    cur -> computePhyLag : {}
-    activate computePhyLag #LightCyan
-    cur <-- computePhyLag : {}
-    deactivate computePhyLag
 
     ' ----- mostRecentPeriodEndTime --------------------------
     note over cur
@@ -133,7 +106,18 @@ activate cur #LightCyan
       to resultCC
     end note
 
-  end
+  ' ----- OutOfRange TxLevel --------------------------
+  note over cur #LightGray
+    Delete attributes with 
+    values outside range
+  end note
+
+  cur -> outOfRange: {{resultCC}}
+  activate outOfRange #LightGray
+  cur <-- outOfRange
+  deactivate outOfRange
+
+ end
 
   loop for all EthernetContainers in resultCC
 
@@ -155,19 +139,19 @@ activate cur #LightCyan
     device type specific method
   end note
 
-  cur -> defaultValues: {{resultCC}}
-  activate defaultValues #LightBlue
-  cur <-- defaultValues
-  deactivate defaultValues
+  cur -> harmTemp: {{resultCC}}
+  activate harmTemp #LightBlue
+  cur <-- harmTemp
+  deactivate harmTemp
 
   ' ----- ONF default values --------------------------
   note over cur #LightGray
-    Delete attributes with ONF
-    default values
+    Delete attributes with 
+    ONF default values
   end note
 
   cur -> defaultValues: {{resultCC}}
-  activate defaultValues #LightBlue
+  activate defaultValues #LightGray
   cur <-- defaultValues
   deactivate defaultValues
 

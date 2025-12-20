@@ -119,6 +119,34 @@ load-raw-cc:
                         enum:
                           - 'core-model-1-4:EQUIPMENT_CATEGORY_SUBRACK'
                           - 'core-model-1-4:EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT'
+        profile-collection:
+          type: object
+          properties:
+            profile:
+              type: array
+              x-key: uuid
+              items:
+                type: object
+                required:
+                  - uuid
+                  - profile-name
+                properties:
+                  uuid:
+                    type: string
+                  profile-name:
+                    type: string
+                  layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac:
+                    type: object
+                    properties:
+                      l1-aggregation-profile-configuration:
+                        type: object
+                        properties:
+                          client-ltp:
+                            type: string
+                          server-ltp-list:
+                            type: array
+                            items:
+                              type: string
         logical-termination-point:
           type: array
           description: >

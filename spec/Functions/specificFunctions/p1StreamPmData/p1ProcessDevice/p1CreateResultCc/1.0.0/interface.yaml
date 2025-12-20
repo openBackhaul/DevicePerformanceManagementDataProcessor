@@ -149,12 +149,47 @@ x-javascript-interface:
                   - 'linkEndpointId invalid'
                   - 'linkId could not be created'
                   - 'General processing error'
-      p1ComputePhysicalLag:
-        summary: ''
-        # Nicht klar, was hier gemacht werden soll
-        # Die AggregationGroup ist im Layer1AggregationProfile beschrieben
-        # d.h. eigentlich muss die Gruppe nicht aus clientLtp/serverLtp gebildet werden
-        # sondern nur das Layer1AggregationProfile mit ins rawCC aufgenommen werden
+      findParallelPhysic:
+        summary: 'Finds parallel physical LTPs'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ltp-uuid
+                  - aggregation-group-list
+                properties:
+                  ltp-uuid:
+                    type: string
+                    description: >
+                      'UUID of the LTP to find parallel physical LTPs for
+                      from [/create-result-cc/result-cc/logical-termination-point=*/uuid]'
+                  aggregation-group-list:
+                    type: array
+                    description: >
+                      'List of Layer1AggregationGroups
+                      from [/create-result-cc/aggregation-group-list]'
+        output:
+          success:
+            description: 'List of parallel physical LTPs provided, might be empty'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - physical-server-ltp-list
+                  properties:
+                    physical-server-ltp-list:
+                      type: array
+                      items:
+                        type: string
+                      description: >
+                        'List of UUIDs of parallel LTPs (AirInterfaces or WireInterfaces in the same Layer1AggregationGroup)
+                        IF {$findParallelPhysic.input#ltp-uuid} is part of any {$findParallelPhysic.input#/aggregation-group-list=*/physical-server-ltp-list}
+                        THEN all other members of same {$findParallelPhysic.input#/aggregation-group-list=*/physical-server-ltp-list}'
+        error:
+          description: 'List of parallel physical LTPs could not be provided'
       p1CalculateAiCapacity:
         summary: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
         input:

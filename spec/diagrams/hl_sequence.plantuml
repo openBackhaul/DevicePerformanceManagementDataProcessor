@@ -21,11 +21,11 @@ participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
-
-participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
-participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
+participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
 
 participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
+participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
+participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
