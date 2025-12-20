@@ -96,18 +96,43 @@ x-javascript-interface:
               schema:
                 required:
                   - historical-performance-data-list
+                  - transmission-mode-list
                 properties:
                   historical-performance-data-list:
                     type: array
-
-
-
-        hier geht's weiter
-
-
-
-
-
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+                  transmission-mode-list:
+                    type: array
+                    description: >
+                      'transmissionModeList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list]'
+        output:
+          success:
+            description: 'transmissionModeList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                    - transmission-mode-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+                    transmission-mode-list:
+                      type: array
+                      description: >
+                        'transmissionModeList'
+          error:
+            description: 'transmissionModeList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
       substringLinkId:
         summary: 'Creates the linkId from linkEndpointId'
         input:
@@ -190,63 +215,6 @@ x-javascript-interface:
                         THEN all other members of same {$findParallelPhysic.input#/aggregation-group-list=*/physical-server-ltp-list}'
         error:
           description: 'List of parallel physical LTPs could not be provided'
-      p1CalculateAiCapacity:
-        summary: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
-        input:
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - channel-bandwidth
-                  - symbol-rate-reduction-factor
-                  - number-of-states-in-modulation
-                  - code-rate
-                properties:
-                  channel-bandwidth:
-                    type: integer
-                    description: >
-                      'Channel bandwidth in kHz
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/channel-bandwidth]'
-                  symbol-rate-reduction-factor:
-                    type: integer
-                    description: >
-                      'Symbol rate reduction factor
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/symbol-rate-reduction-factor]'
-                  number-of-states-in-modulation:
-                    type: integer
-                    description: >
-                      'Number of states in modulation
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/modulation-scheme]'
-                  code-rate:
-                    type: integer
-                    description: >
-                      'Code rate in percent
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/air-interface-augment-1-0:air-interface-augment-pac/air-interface-capability/transmission-mode-list={transmission-mode-name}/code-rate]'
-        output:
-          success:
-            description: 'AirInterface capacity calculated'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - air-interface-capacity
-                  properties:
-                    air-interface-capacity:
-                      type: integer
-                      description: >
-                        'airInterfaceCapacity'
-          error:
-            description: 'AirInterface capacity could not be calculated'
-            content:
-              application/json:
-                schema:
-                  type: string
-                  enum:
-                    - 'Input parameters missing'
-                    - 'Input parameters invalid'
-                    - 'General processing error'
       findMostRecentPeriodEndTime:
         summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
         input:
@@ -331,6 +299,7 @@ x-javascript-interface:
                   - 'historicalPerformanceDataList invalid'
                   - 'mostRecentPeriodEndTime24 could not be determined'
                   - 'General processing error'
+
       #p1DefaultValueTreatment
       #p1OutOfRangeValueTreatment
       #p1EthernetKpiCalculation

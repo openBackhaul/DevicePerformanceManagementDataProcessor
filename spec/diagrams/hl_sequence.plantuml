@@ -19,13 +19,14 @@ participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 
 participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
-participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
-participant "p1Compute\nPhysicalLag" as computePhyLag #LightCyan
+participant "p1Prepare\nTxModes" as prepTxModes #LightGreen
+participant "p1Calculate\nAiCapacity" as aiCC #LightGreen
+participant "p1Calculate\nIntervalCapacity" as intCC #LightGreen
 
-participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
-participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
 participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
+participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
+participant "p1Harmonize\nTemperature" as p1HarmTemp #LightBlue
+participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
@@ -161,19 +162,15 @@ activate p1RMWDI #LightCyan
             from rawCC
           end note
 
-          note over p1CreateResultCC #Orange
-            Update required !
-          end note
-
           p1CreateResultCC -> prepTxModes
-          activate prepTxModes #LightCyan
+          activate prepTxModes #LightGreen
 
             note over prepTxModes
               Prepare TxModes
             end note
 
             prepTxModes -> aiCC
-            activate aiCC #LightCyan
+            activate aiCC #LightGreen
 
               note over aiCC
                 Calculate
@@ -183,20 +180,35 @@ activate p1RMWDI #LightCyan
             prepTxModes <-- aiCC
             deactivate aiCC
 
+            prepTxModes -> intCC
+            activate intCC #LightGreen
+
+              note over intCC
+                Calculate
+                IntervalCapacity
+              end note
+
+            prepTxModes <-- intCC
+            deactivate intCC
+
           p1CreateResultCC <-- prepTxModes
           deactivate prepTxModes
 
-          ' process default values ->
-          p1CreateResultCC -> p1DefaultValues
-          activate p1DefaultValues #LightBlue
+          note over p1CreateResultCC
+            Add linkId
+          end note
 
-            note over p1DefaultValues
-              Delete attributes with ONF
-              default value from resultCC
-            end note
+          note over p1CreateResultCC
+            Add list of parallel LTPs
+          end note
 
-          p1CreateResultCC <-- p1DefaultValues
-          deactivate p1DefaultValues
+          note over p1CreateResultCC
+            Add mostRecentPeriodEndTime
+          end note
+
+          note over p1CreateResultCC
+            Add mostRecentPeriodEndTime24
+          end note
 
           ' process outOfRange values ->
           p1CreateResultCC -> p1OutOfRange
@@ -210,16 +222,6 @@ activate p1RMWDI #LightCyan
           p1CreateResultCC <-- p1OutOfRange
           deactivate p1OutOfRange
 
-          note over p1CreateResultCC
-            Add linkId to resultCC
-          end note
-
-
-          note over p1CreateResultCC
-            Add mostRecentPeriodEndTime
-            and mostRecentPeriodEndTime24
-          end note
-
           ' get EthContainer KPIs ->
           p1CreateResultCC -> p1EthKpi
           activate p1EthKpi #LightBlue
@@ -231,6 +233,30 @@ activate p1RMWDI #LightCyan
 
           p1CreateResultCC <-- p1EthKpi
           deactivate p1EthKpi
+
+          ' harmonize Temperature ->
+          p1CreateResultCC -> p1HarmTemp
+          activate p1HarmTemp #LightBlue
+
+            note over p1HarmTemp
+              Harmonize temperature
+              values
+            end note
+
+          p1CreateResultCC <-- p1HarmTemp
+          deactivate p1HarmTemp
+
+          ' process default values ->
+          p1CreateResultCC -> p1DefaultValues
+          activate p1DefaultValues #LightBlue
+
+            note over p1DefaultValues
+              Delete attributes with ONF
+              default value from resultCC
+            end note
+
+          p1CreateResultCC <-- p1DefaultValues
+          deactivate p1DefaultValues
 
         p1ProcessPm <-- p1CreateResultCC
         deactivate p1CreateResultCC

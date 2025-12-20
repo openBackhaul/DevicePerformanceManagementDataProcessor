@@ -1,0 +1,19 @@
+@startuml p1CalculateIntervalCapacity
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateIntervalCapacity
+end title
+
+participant "p1Prepare\nTxModes" as prepTxModes
+participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+
+  prepTxModes -> intCC : {[time-xstates-list],\n[transmission-mode-list]}
+  activate intCC #LightCyan
+    note over intCC
+      Calculate intervalCapacity
+    end note
+  prepTxModes <-- intCC: {intervalCapacity}
+  deactivate intCC
+
+@enduml

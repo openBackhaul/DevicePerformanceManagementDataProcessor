@@ -9,7 +9,6 @@ participant "p1ProcessDevice\n" as requestor
 participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 
 participant "p1OutOfRange\nValueTreatment" as outOfRange
 participant "p1Ethernet\nKpiCalculation" as ethKpis #White
@@ -25,7 +24,7 @@ activate cur #LightCyan
 
 
 
-  note over aiCC #LightCoral
+  note over outOfRange #LightCoral
     Proceeding:
       - Explicitly (in detail) represent resultCC in variable.yaml
       - Create sub-folders in /p1CreateResultCc for required sub-functions (even if category is white)
@@ -42,47 +41,30 @@ activate cur #LightCyan
 
   loop for all AirInterfaces in resultCC
 
-    cur -> prepTxModes : {[performanceDataList],\n[transmissionModeList]}
-    activate prepTxModes
+    cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+    activate prepTxModes #LightCyan
 
-      loop for all entries of [performanceDataList]
-        loop for all entries in [timeXStatesList]
-          note over prepTxModes
-            IF time > 0
-              THEN add transmissionMode to
-                   [usedTransmissionModesList]
-              ELSE delete transmissionMode 
-                    from [timeXStatesList]
-          end note
-        end loop
-      end loop
+      note over prepTxModes
+        Removes unused transmission modes
+        from historicalPerformanceDataList
+      end note
 
-      loop for all entries of [transmissionModeList]
+      note over prepTxModes
+        Removes unused transmission modes
+        from transmissionModeList
+      end note
 
-        note over prepTxModes
-          IF transmissionMode NOT IN 
-              [usedTransmissionModesList]
-            THEN 
-              - Delete transmissionMode
-                from [transmissionModeList]
-            ELSE
-              - Complement entry in
-                [transmissionModeList]
-                with AirInterfaceCapacity
-        end note
+      note over prepTxModes
+        Adds AirInterfaceCapacity to
+        used transmission modes
+      end note
 
-        prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
-        activate aiCC #LightCyan
-          note over aiCC
-            Calculate AirInterfaceCapacity
-            according to ONF TR-532 v2.0 Chapter 6.5
-          end note
-        prepTxModes <-- aiCC: {airInterfaceCapacity}
-        deactivate aiCC
+      note over prepTxModes
+        Adds IntervalCapacity to
+        performance data slices
+      end note
 
-      end loop
-
-    cur <-- prepTxModes : {[performanceDataList],\n[transmissionModeList]}
+    cur <-- prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
     deactivate prepTxModes
 
     ' ----- Link ID --------------------------
