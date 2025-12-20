@@ -74,12 +74,12 @@ activate p1ProOrch #LightCyan
     to data structure
   end note
 
-  p1ProOrch -> p1Trans : {{/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n{aptOutputFormat}}
+  p1ProOrch -> p1Trans : {{/parameters/sub-function=p1TransmittingKafka},\n{configFile},\nkafkaClientName,\n{messageObject}}
   activate p1Trans #LightCyan
 
     note over p1Trans
-      Transmit outputFormat
-      via Kafka
+      Transmit object
+      to Kafka
     end note
 
   p1ProOrch <-- p1Trans

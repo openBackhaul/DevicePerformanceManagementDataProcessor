@@ -15,9 +15,9 @@ x-javascript-interface:
             required:
               - mount-name
               - parameters
+              - config-file
               - mwdi-replica-es-client
               - data-store-es-client
-              - config-file
             properties:
               mount-name:
                 type: string
@@ -27,6 +27,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'Hierarchical object holding the parameter settings'
+              config-file:
+                type: object
+                description: >
+                  'configFile content'
               mwdi-replica-es-client:
                 type: object
                 description: >
@@ -35,11 +39,6 @@ x-javascript-interface:
                 type: object
                 description: >
                   'Data Store ElasticSearch address'
-              # todo : check if config-file still required after providing the es clients
-              config-file:
-                type: object
-                description: >
-                  'configFile content'
     output:
       success:
         description: 'PM data processed, sent and stored'
@@ -172,7 +171,7 @@ x-javascript-interface:
                   - parameters
                 properties:
                   result-cc:
-                    type: reference
+                    type: object
                     description: >
                       'resultCc
                       from [/process-device/result-cc]'
@@ -212,15 +211,10 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - outputFormat
                   - parameters
                   - config-file
+                  - message-object
                 properties:
-                  outputFormat:
-                    type: reference
-                    description: >
-                      'OutputFormat
-                      from [/process-device/output-format=[parameter]/content]'
                   parameters:
                     type: object
                     description: >
@@ -229,19 +223,25 @@ x-javascript-interface:
                   config-file:
                     type: object
                     description: >
-                      'configFile content'
+                      'configFile content
+                      from [/process-device/config-file]'
+                  message-object:
+                    type: object
+                    description: >
+                      'Object to be sent via Kafka
+                      from [/process-device/output-format=apt/content]'
         output:
           success:
-            description: 'OutputFormats sent via Kafka'
+            description: 'Object sent via Kafka'
           error:
-            description: 'OutputFormats could not be sent via Kafka'
+            description: 'Object could not be sent via Kafka'
             content:
               application/json:
                 schema:
                   type: string
                   enum:
-                    - 'Failed to connect to Kafka'
-                    - 'Unknown topic or partition'
+                    - 'Producer connection error'
+                    - 'Other transmission error'
       p1Storing:
         input:
           required: true
@@ -255,7 +255,7 @@ x-javascript-interface:
                   - data-store-es-client
                 properties:
                   result-cc:
-                    type: reference
+                    type: object
                     description: >
                       'resultCc
                       from [/process-device/result-cc]'

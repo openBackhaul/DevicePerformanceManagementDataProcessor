@@ -262,8 +262,8 @@ activate p1RMWDI #LightCyan
         activate p1Trans #LightCyan
 
           note over p1Trans
-            Transmit output
-            format to Kafka
+            Transmit object
+            to Kafka
           end note
           p1Trans -> kafkaProd
             note over kafkaProd

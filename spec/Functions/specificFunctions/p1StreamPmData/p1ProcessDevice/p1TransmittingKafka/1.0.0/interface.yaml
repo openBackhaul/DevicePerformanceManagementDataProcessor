@@ -13,14 +13,10 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - message-object
               - parameters
               - config-file
+              - message-object
             properties:
-              message-object:
-                type: reference
-                description: >
-                  'Object to be sent via Kafka'
               parameters:
                 type: object
                 description: >
@@ -29,6 +25,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'configFile content'
+              message-object:
+                type: object
+                description: >
+                  'Object to be sent via Kafka'
     output:
       success:
         description: 'Object sent via Kafka'
