@@ -3,6 +3,7 @@ process-device:
   required:
     - mount-name
     - parameters
+    - config-file
     - mwdi-replica-es-client
     - data-store-es-client
   properties:
@@ -16,6 +17,11 @@ process-device:
       description: >
         'Hierarchical object holding the parameter settings
         from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
     mwdi-replica-es-client:
       type: object
       description: >
@@ -26,12 +32,7 @@ process-device:
       description: >
         'Data Store ElasticSearch address
         from {$input#/data-store-es-client}'
-    # todo : check if config-file still required after providing the es clients
-    config-file:
-      type: object
-      description: >
-        'configFile content
-        from {$input#/config-file}'
+
     raw-cc:
       type: object
       description: >
