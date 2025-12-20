@@ -304,6 +304,11 @@ output:
                   description: >
                     'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK
                     from {$p1FormattingOutputApt.output}'
+          idu-cpu-tempetature:
+            type: string
+            description: >
+              'Real-time temperature reading from the indoor unit's CPU package or core sensor, captured at the time of the query
+              from {$p1FormattingOutputApt.output}'
     ethernet-container-list:
       description: >
         'List of ethernet containers found in the given devices
