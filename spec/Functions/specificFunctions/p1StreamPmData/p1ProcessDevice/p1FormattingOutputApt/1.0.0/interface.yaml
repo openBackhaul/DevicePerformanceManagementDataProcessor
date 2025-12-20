@@ -119,11 +119,31 @@ x-javascript-interface:
                                       link-aggregation-identifiers:
                                         type: array
                                         description: >
-                                          'To be filled
-                                          from {$createOutputFromResultCc.input#result-cc/??}'
-                                        # TODO: has to be added somewhere in resultCC schema first
+                                          ' ParallelLtp = {$createOutputFromResultCc.input#result-cc/logical-termination-point/parallel-ltp}
+                                          IF {$createOutputFromResultCc.input#result-cc/logical-termination-point/uuid=ParallelLtp/layer-protocol/local-id/layer-protocol-name} == AIR_LAYER'
+                                            then 'AirInterfaces'
+                                          ELSE IF {$createOutputFromResultCc.input#result-cc/logical-termination-point/uuid=ParallelLtp/layer-protocol/local-id/layer-protocol-name} == WIRE_INTERFACE
+                                            then 'WireInterface'  '              
                                         items:
-                                          type: object
+                                          oneOf:
+                                            - description: 'AirInterfaces'
+                                              type: object
+                                              required:
+                                                - link-id
+                                              properties:
+                                                link-id:
+                                                  type: string
+                                                  description: >
+                                                    'To be filled from {$createOutputFromResultCc.input#result-cc/logical-termination-point/uuid=ParallelLtp/ltp-augment-1-0:ltp-augment-pac/link-id}'
+                                            - description: 'WireInterface'
+                                              type: object
+                                              required:
+                                                - interface-name
+                                              properties:
+                                                interface-name:
+                                                  type: string
+                                                  description: >
+                                                    'To be filled from {$createOutputFromResultCc.input#result-cc/logical-termination-point/uuid=ParallelLtp/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}'
                                   air-interface-configuration:
                                     type: object
                                     properties:
@@ -357,6 +377,11 @@ x-javascript-interface:
                                           type: integer
                                         symbol-rate-reduction-factor:
                                           type: integer
+                                  idu-cpu-temperature:
+                                    type: string
+                                    description: >
+                                      'To be filled from
+                                      {$createOutputFromResultCc.input#result-cc/equipment/actual-equipment/physical-properties/temperature}'
                             ethernet-container-list:
                               description: >
                                 'List of EthernetContainers found in the resultCc.
