@@ -51,9 +51,14 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'historicalPerformanceDataList missing'
-                - 'transmissionModeList missing'
-                - 'transmissionModeList could not be prepared'
+                - 'historicalPerformanceDataList not provided'
+                - 'historicalPerformanceDataList incomplete'
+                - 'historicalPerformanceDataList invalid'
+                - 'transmissionModeList not provided'
+                - 'transmissionModeList incomplete'
+                - 'transmissionModeList invalid'
+                - 'historicalPerformanceDataList could not be provided'
+                - 'transmissionModeList could not be provided'
                 - 'General processing error'
     processing:
       p1CalculateAiCapacity:

@@ -88,9 +88,10 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'Input object incomplete or invalid'
-                - 'Input parameters missing or invalid'
-                - 'General processing error during filtering'
+                - 'historicalPerformanceDataList not provided'
+                - 'historicalPerformanceDataList invalid'
+                - 'historicalPerformanceDataList could not be provided'
+                - 'General processing error'
     processing:
       description: 'No requests or calls to other Functions'
 

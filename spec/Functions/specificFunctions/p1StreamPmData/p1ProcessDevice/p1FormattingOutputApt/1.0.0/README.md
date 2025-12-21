@@ -3,8 +3,9 @@
 
 ### Overview  
 
-The p1FormattingOutputApt function transforms the result ControlConstruct from ONF format into the [APT output format](./InformationStructure/OutputApt.yaml).  
-As only reasonable data shall be provided, attributes not found in the input (resultCC) are also omitted from the generated output.
+p1FormattingOutputApt transforms the processed performance data (resultCc) from ONF format to the [aptOutputFormat](./InformationStructure/OutputApt.yaml).  
+Attributes not found in the resultCc are also omitted from the aptOutputFormat.
+
 
 ### Diagram  
 
@@ -16,3 +17,9 @@ As only reasonable data shall be provided, attributes not found in the input (re
 ### Interface  
 
 Please find a detailed description of the [interface](./interface.yaml).  
+Please find a detailed description of the [existing APT interface format](./Output_AptpLegacy.yaml).
+
+
+### Variables
+
+Please find a detailed description of the [variables](variables.yaml).

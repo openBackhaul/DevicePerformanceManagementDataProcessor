@@ -45,8 +45,10 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'performance data incomplete or missing'
-                - 'transmissionModeList incomplete or missing'
+                - 'timeXstatesList not provided'
+                - 'timeXstatesList invalid'
+                - 'transmissionModeList not provided'
+                - 'transmissionModeList invalid'
                 - 'General processing error'
 
 paths:

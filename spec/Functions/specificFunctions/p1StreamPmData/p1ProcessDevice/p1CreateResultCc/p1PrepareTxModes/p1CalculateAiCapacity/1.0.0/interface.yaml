@@ -21,19 +21,19 @@ x-javascript-interface:
               channel-bandwidth:
                 type: integer
                 description: >
-                  'Channel bandwidth in kHz'
+                  'channelBandwidth in kHz'
               symbol-rate-reduction-factor:
                 type: integer
                 description: >
-                  'Symbol rate reduction factor'
+                  'symbolRateReductionFactor'
               number-of-states-in-modulation:
                 type: integer
                 description: >
-                  'Number of states in modulation'
+                  'numberOfStatesInModulation'
               code-rate:
                 type: integer
                 description: >
-                  'Code rate in percent'
+                  'codeRate in percent'
     output:
       success:
         description: 'AirInterface capacity calculated'
@@ -56,9 +56,14 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'Input parameters missing'
-                - 'Input parameters invalid'
-                - 'Calculation error'
+                - 'channelBandwidth not provided'
+                - 'channelBandwidth invalid'
+                - 'symbolRateReductionFactor not provided'
+                - 'symbolRateReductionFactor invalid'
+                - 'numberOfStatesInModulation not provided'
+                - 'numberOfStatesInModulation invalid'
+                - 'codeRate not provided'
+                - 'codeRate invalid'
                 - 'General processing error'
 
 paths:

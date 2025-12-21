@@ -168,18 +168,12 @@ x-javascript-interface:
                 type: object
                 required:
                   - result-cc
-                  - parameters
                 properties:
                   result-cc:
                     type: object
                     description: >
                       'resultCc
                       from [/process-device/result-cc]'
-                  parameters:
-                    type: object
-                    description: >
-                      'Subtree of the parameters object for p1FormattingOutputApt
-                      from [/process-device/parameters/sub-function=p1FormattingOutputApt]'
         output:
           success:
             description: 'aptOutputFormat created from resultCC'

@@ -58,7 +58,7 @@ activate p1ProOrch #LightCyan
     data structure
   end note
 
-  p1ProOrch -> p1Output : {{/parameters/sub-function=p1FormattingOutputApt},\n{resultCC}}
+  p1ProOrch -> p1Output : {{resultCC}}
   activate p1Output #LightCyan
 
     note over p1Output

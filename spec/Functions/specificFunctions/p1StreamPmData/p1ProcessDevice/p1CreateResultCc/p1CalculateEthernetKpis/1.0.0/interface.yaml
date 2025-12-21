@@ -40,48 +40,18 @@ x-javascript-interface:
           application/json:
             schema:
               type: string
+              enum:
+                - 'historicalPerformanceDataList not provided'
+                - 'historicalPerformanceDataList incomplete'
+                - 'historicalPerformanceDataList invalid'
+                - 'transmitTraffic could not be provided'
+                - 'receiveTraffic could not be provided'
+                - 'frameLossInput could not be provided'
+                - 'frameLossOutput could not be provided'
+                - 'General processing error'
     processing:
       calculateTransmitTraffic:
         summary: 'Calculates the averaged transmit traffic in Mbps'
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - total-bytes-input
-                  - time-period
-                properties:
-                  total-bytes-input:
-                    type: string
-                    description: >
-                      'totalBytesInput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/total-bytes-input]'
-                  time-period:
-                    type: integer
-                    description: >
-                      'timePeriod in seconds
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/time-period]'
-        output:
-          success:
-            description: 'transmitTraffic provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - transmit-traffic
-                  properties:
-                    transmit-traffic:
-                      type: integer
-                      description: >
-                        'Averaged transmit traffic in Mbps
-                        from [ {$input#/total-bytes-input} / {$input#/time-period} ]'
-        error:
-          description: 'transmitTraffic could not be provided'
-      calculateReceiveTraffic:
-        summary: 'Calculates the averaged receive traffic in Mbps'
         input:
           required: true
           content:
@@ -104,6 +74,55 @@ x-javascript-interface:
                       from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/time-period]'
         output:
           success:
+            description: 'transmitTraffic provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - transmit-traffic
+                  properties:
+                    transmit-traffic:
+                      type: integer
+                      description: >
+                        'Averaged transmit traffic in Mbps
+                        from [ {$input#/total-bytes-output} / {$input#/time-period} ]'
+        error:
+          description: 'transmitTraffic could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'totalBytesOutput not provided'
+                  - 'totalBytesOutput invalid'
+                  - 'timePeriod not provided'
+                  - 'timePeriod invalid'
+                  - 'General processing error'
+      calculateReceiveTraffic:
+        summary: 'Calculates the averaged receive traffic in Mbps'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - total-bytes-input
+                  - time-period
+                properties:
+                  total-bytes-input:
+                    type: string
+                    description: >
+                      'totalBytesInput
+                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/total-bytes-input]'
+                  time-period:
+                    type: integer
+                    description: >
+                      'timePeriod in seconds
+                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/time-period]'
+        output:
+          success:
             description: 'receiveTraffic provided'
             content:
               application/json:
@@ -116,9 +135,19 @@ x-javascript-interface:
                       type: integer
                       description: >
                         'Averaged receive traffic in Mbps
-                        from [ {$input#/total-bytes-output} / {$input#/time-period} ]'
+                        from [ {$input#/total-bytes-input} / {$input#/time-period} ]'
         error:
           description: 'receiveTraffic could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'totalBytesInput not provided'
+                  - 'totalBytesInput invalid'
+                  - 'timePeriod not provided'
+                  - 'timePeriod invalid'
+                  - 'General processing error'
       calculateFrameLossInput:
         summary: 'Calculates the total frame loss on ingress'
         input:
@@ -158,6 +187,16 @@ x-javascript-interface:
                         from [ {$input#/errored-frames-input} + {$input#/dropped-frames-input} ]'
         error:
           description: 'Total frameLossInput could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'erroredFramesInput not provided'
+                  - 'erroredFramesInput invalid'
+                  - 'droppedFramesInput not provided'
+                  - 'droppedFramesInput invalid'
+                  - 'General processing error'
       calculateFrameLossOutput:
         summary: 'Calculates the total frame loss on egress'
         input:
@@ -197,6 +236,16 @@ x-javascript-interface:
                         from [ {$input#/errored-frames-output} + {$input#/dropped-frames-output} ]'
         error:
           description: 'Total frameLossOutput could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'erroredFramesOutput not provided'
+                  - 'erroredFramesOutput invalid'
+                  - 'droppedFramesOutput not provided'
+                  - 'droppedFramesOutput invalid'
+                  - 'General processing error'
 
 paths:
   /:

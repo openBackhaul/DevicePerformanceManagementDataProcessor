@@ -14,9 +14,9 @@ participant "p1UpdateMwdiReplica\n" as p1UMR #LightGreen
 
 participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 
-participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
+participant "p1LoadRawCc\n\ncleanup\nbf interface" as p1AddRaw #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
+participant "p1DiscardIrrelevant\nPmRecords\n\nvariables" as filterPm #LightCyan
 
 participant "p1CreateResultCc\n" as p1CreateResultCC #LightGreen
 participant "p1Prepare\nTxModes" as prepTxModes #LightGreen
@@ -24,7 +24,7 @@ participant "p1Calculate\nAiCapacity" as aiCC #LightGreen
 participant "p1Calculate\nIntervalCapacity" as intCC #LightGreen
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightGreen
 
-participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+participant "p1Formatting\nOutputApt" as p1Output #LightGreen
 
 participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 
@@ -246,7 +246,7 @@ activate p1RMWDI #LightCyan
 
         ' Format OutputAPT ->
         p1ProcessPm -> p1Output
-        activate p1Output #LightCyan
+        activate p1Output #LightGreen
 
           note over p1Output
             Create APT format

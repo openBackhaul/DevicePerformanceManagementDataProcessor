@@ -22,3 +22,8 @@ The following generic functions are called to reduce the data of raw ControlCons
 ### Interface  
 
 Please find a detailed description of the [interface](./interface.yaml).  
+
+
+### Variables
+
+Please find a detailed description of the [variables](variables.yaml).

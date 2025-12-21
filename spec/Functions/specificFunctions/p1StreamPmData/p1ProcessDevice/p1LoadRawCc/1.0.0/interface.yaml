@@ -20,7 +20,7 @@ x-javascript-interface:
             properties:
               mount-name:
                 type: string
-                description: 'The mount-name of the device for which ControlConstruct data shall be read'
+                description: 'mountName of the device for which ControlConstruct data shall be read'
                 mount-name: '100250001'
               parameters:
                 type: object
@@ -33,7 +33,7 @@ x-javascript-interface:
                 description: 'Data Store ElasticSearch address'
     output:
       success:
-        description: 'Raw CC data loaded'
+        description: 'rawCc data loaded'
         content:
           application/json:
             schema:
@@ -44,16 +44,24 @@ x-javascript-interface:
                 raw-cc:
                   type: object
                   description: >
-                    'RawCc read from Replica ES, but reduced by irrelevant data
+                    'rawCc read from Replica ES, but reduced by irrelevant data
                     from [/load-raw-cc/raw-cc]'
       error:
-        description: 'Raw CC could not be loaded'
+        description: 'rawCc could not be loaded'
         content:
           application/json:
             schema:
               type: string
               enum:
-                - 'Data structure is missing or invalid'
+                - 'mountName not provided'
+                - 'mountName invalid'
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'mwdiReplicaEsClient not provided'
+                - 'mwdiReplicaEsClient invalid'
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'rawCc could not be provided'
                 - 'General processing error'
     processing:
       readControlConstructFromEs:
@@ -123,10 +131,6 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-                  enum:
-                    - 'Data structure is missing or invalid'
-                    - 'Invalid fields filter string syntax'
-                    - 'General processing error during filtering'
       retrieveMostRecentPeriodEndTimesFromDs:
         url: # [{/load-raw-cc/data-store-url}][/data-store/device={/load-raw-cc/mount-name}/interface]
           description: 'Reads the timestamps of the most recent 15min and 24h PM data records of all interfaces.'

@@ -42,9 +42,12 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'Data structure is missing or invalid'
-                - 'Invalid fields filter string syntax'
-                - 'General processing error during filtering'
+                - 'dataStructure not provided'
+                - 'dataStructure invalid'
+                - 'fieldsFilterString not provided'
+                - 'fieldsFilterString invalid'
+                - 'filteredDataStructure could not be provided'
+                - 'General processing error'
     processing:
       description: 'No requests or calls to other Functions'
 

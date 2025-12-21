@@ -46,8 +46,11 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                # todo: reasonable error messages to be added
-                - 'Input data structure incomplete or invalid'
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'rawCc not provided'
+                - 'rawCc invalid'
+                - 'resultCc could not be provided'
                 - 'General processing error'
     processing:
       createResultCcFromRawCc:
@@ -85,9 +88,9 @@ x-javascript-interface:
               schema:
                 type: string
                 enum:
-                  - 'RawCc missing'
-                  - 'RawCc incomplete or invalid'
-                  - 'RawCc could not be copied to ResultCc'
+                  - 'rawCc not provided'
+                  - 'rawCc invalid'
+                  - 'resultCc could not be provided'
                   - 'General processing error'
       p1PrepareTxModes:
         summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
@@ -173,9 +176,9 @@ x-javascript-interface:
               schema:
                 type: string
                 enum:
-                  - 'linkEndpointId missing'
+                  - 'linkEndpointId not provided'
                   - 'linkEndpointId invalid'
-                  - 'linkId could not be created'
+                  - 'linkId could not be provided'
                   - 'General processing error'
       findParallelPhysic:
         summary: 'Finds parallel physical LTPs'
@@ -219,6 +222,16 @@ x-javascript-interface:
                         THEN all other members of same {$findParallelPhysic.input#/aggregation-group-list=*/physical-server-ltp-list}'
         error:
           description: 'List of parallel physical LTPs could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'ltpUuid not provided'
+                  - 'ltpUuid invalid'
+                  - 'aggregationGroupList not provided'
+                  - 'aggregationGroupList invalid'
+                  - 'General processing error'
       findMostRecentPeriodEndTime:
         summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
         input:
@@ -258,9 +271,9 @@ x-javascript-interface:
               schema:
                 type: string
                 enum:
-                  - 'historicalPerformanceDataList missing'
+                  - 'historicalPerformanceDataList not provided'
                   - 'historicalPerformanceDataList invalid'
-                  - 'mostRecentPeriodEndTime could not be determined'
+                  - 'mostRecentPeriodEndTime could not be provided'
                   - 'General processing error'
       findMostRecentPeriodEndTime24:
         summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
@@ -301,9 +314,9 @@ x-javascript-interface:
               schema:
                 type: string
                 enum:
-                  - 'historicalPerformanceDataList missing'
+                  - 'historicalPerformanceDataList not provided'
                   - 'historicalPerformanceDataList invalid'
-                  - 'mostRecentPeriodEndTime24 could not be determined'
+                  - 'mostRecentPeriodEndTime24 could not be provided'
                   - 'General processing error'
       p1CalculateEthernetKpis:
         summary: 'Adds Ethernet KPIs to historicalPerformanceDataList'
