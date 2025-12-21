@@ -5,137 +5,35 @@ title
   p1CreateResultCc
 end title
 
-participant "p1ProcessDevice\n" as requestor
-participant "p1CreateResultCc\n" as cur #LightCyan
+participant "p1CreateResultCc\n" as requestor #LightGrey
+participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
 
-participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
-participant "p1Calculate\nEthernetKpis" as ethKpis #White
+requestor -> ethKpis : {[historicalPerformanceDataList]}
+activate ethKpis #LightCyan
 
-requestor -> cur: {{parameters},\n{rawCC}}
-activate cur #LightCyan
+  loop for all entries of [historicalPerformanceDataList]
 
-  note over cur #LightCyan
-    Create resultCC from rawCC
-  end note
-
-
-
-  note right cur #LightCoral
-    Proceeding:
-      - Explicitly (in detail) represent resultCC in variable.yaml
-      - Create sub-folders in /p1CreateResultCc for required sub-functions (even if category is white)
-        - add readme file with overview chapter describing purpose of sub-function
-        - add interface.yaml with input/output description
-        - if category=white set output value by enum with one value or min=max for int
-      - Add entries in processing section of interface.yaml
-        - Reference ("from [/create-result-cc/result-cc/...]") at input
-      - Identify source of value in variable.yaml ("from {$p1ComputePhysicalLag.output#/...}")
-      until all required attributes are covered
-  end note
-
-
-
-  loop for all AirInterfaces in resultCC
-
-    cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
-    activate prepTxModes #LightCyan
-
-      note over prepTxModes
-        Removes unused transmission modes
-        from historicalPerformanceDataList
-      end note
-
-      note over prepTxModes
-        Removes unused transmission modes
-        from transmissionModeList
-      end note
-
-      note over prepTxModes
-        Adds AirInterfaceCapacity to
-        used transmission modes
-      end note
-
-      note over prepTxModes
-        Adds IntervalCapacity to
-        performance data slices
-      end note
-
-    cur <-- prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
-    deactivate prepTxModes
-
-    ' ----- Link ID --------------------------
-    note over cur
-      Add linkId to resultCC
+    note over ethKpis
+      Add transmitTraffic
     end note
 
-    ' ----- Aggregation Group --------------------------
-    note over cur
-      Add list of parallel LTPs
+    note over ethKpis
+      Add receiveTraffic
     end note
 
-    ' ----- mostRecentPeriodEndTime --------------------------
-    note over cur
-      Add mostRecentPeriodEndTime
-      to resultCC
+    note over ethKpis
+      Add frameLossInput
     end note
 
-    note over cur
-      Add mostRecentPeriodEndTime24
-      to resultCC
+    note over ethKpis
+      Add frameLossOutput
     end note
-
-    ' ----- OutOfRange TxLevel --------------------------
-    note over cur #LightGray
-      Delete attributes with 
-      values outside range
-    end note
-
-  end
-
-  loop for all EthernetContainers in resultCC
-
-    ' ----- EthContainer KPIs --------------------------
-    cur -> ethKpis : {[historicalPerformanceDataList]}
-    activate ethKpis #White
-
-      loop for all pm slices
-
-        note over ethKpis #White
-          Add transmitTraffic
-        end note
-
-        note over ethKpis #White
-          Add receiveTraffic
-        end note
-
-        note over ethKpis #White
-          Add frameLossInput
-        end note
-
-        note over ethKpis #White
-          Add frameLossOutput
-        end note
-
-      end loop
-
-    cur <-- ethKpis : {[historicalPerformanceDataList]}
-    deactivate ethKpis
 
   end loop
 
-  ' ----- Temperature --------------------------
-  note over cur #LightGray
-    Harmonize temperature
-    values over device types
-  end note
+requestor <-- ethKpis : {[historicalPerformanceDataList]}
+deactivate ethKpis
 
-  ' ----- ONF default values --------------------------
-  note over cur #LightGray
-    Delete attributes with 
-    ONF default values
-  end note
+deactivate requestor
 
-requestor <-- cur: {{resultCC}}
-
-deactivate cur
-
+@enduml

@@ -22,7 +22,7 @@ participant "p1CreateResultCc\n" as p1CreateResultCC #LightGreen
 participant "p1Prepare\nTxModes" as prepTxModes #LightGreen
 participant "p1Calculate\nAiCapacity" as aiCC #LightGreen
 participant "p1Calculate\nIntervalCapacity" as intCC #LightGreen
-participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightBlue
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightGreen
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
@@ -214,7 +214,7 @@ activate p1RMWDI #LightCyan
 
           ' get EthContainer KPIs ->
           p1CreateResultCC -> p1EthKpi
-          activate p1EthKpi #LightBlue
+          activate p1EthKpi #LightGreen
 
             note over p1EthKpi
               Add Ethernet KPIs

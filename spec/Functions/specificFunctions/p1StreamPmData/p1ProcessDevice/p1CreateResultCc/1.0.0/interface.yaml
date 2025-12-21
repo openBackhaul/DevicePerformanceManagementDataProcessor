@@ -53,6 +53,7 @@ x-javascript-interface:
       createResultCcFromRawCc:
         summary: 'Creates the resultCc object and fills it from rawCc data'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -91,6 +92,7 @@ x-javascript-interface:
       p1PrepareTxModes:
         summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -136,6 +138,7 @@ x-javascript-interface:
       substringLinkId:
         summary: 'Creates the linkId from linkEndpointId'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -177,6 +180,7 @@ x-javascript-interface:
       findParallelPhysic:
         summary: 'Finds parallel physical LTPs'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -218,6 +222,7 @@ x-javascript-interface:
       findMostRecentPeriodEndTime:
         summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -260,6 +265,7 @@ x-javascript-interface:
       findMostRecentPeriodEndTime24:
         summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -302,6 +308,7 @@ x-javascript-interface:
       p1CalculateEthernetKpis:
         summary: 'Adds Ethernet KPIs to historicalPerformanceDataList'
         input:
+          required: true
           content:
             application/json:
               schema:
@@ -329,7 +336,7 @@ x-javascript-interface:
                       description: >
                         'historicalPerformanceDataList'
         error:
-          description: 'Ethernet KPIs could not be calculated'
+          description: 'Ethernet KPIs could not be added'
           content:
             application/json:
               schema:
