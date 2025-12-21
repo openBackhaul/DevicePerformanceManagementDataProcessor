@@ -299,11 +299,41 @@ x-javascript-interface:
                   - 'historicalPerformanceDataList invalid'
                   - 'mostRecentPeriodEndTime24 could not be determined'
                   - 'General processing error'
-
-      #p1DefaultValueTreatment
-      #p1OutOfRangeValueTreatment
-      #p1EthernetKpiCalculation
-
+      p1CalculateEthernetKpis:
+        summary: 'Adds Ethernet KPIs to historicalPerformanceDataList'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'Ethernet KPIs added'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+        error:
+          description: 'Ethernet KPIs could not be calculated'
+          content:
+            application/json:
+              schema:
+                type: string
 
 paths:
   /:

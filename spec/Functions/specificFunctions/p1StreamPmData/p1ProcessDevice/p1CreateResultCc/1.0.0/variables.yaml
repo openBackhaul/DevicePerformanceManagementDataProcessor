@@ -201,6 +201,9 @@ create-result-cc:
                               type: object
                               properties:
                                 transmission-mode-list:
+                                  description: >
+                                    'List of supported transmission modes
+                                    overwritten from {$prepareTxModes.output#/transmission-mode-list}'
                                   type: array
                                   x-key: transmission-mode-name
                                   items:
@@ -221,8 +224,8 @@ create-result-cc:
                                       capacity:
                                         type: integer
                                         description: >
-                                          'AirInterface capacity (according to chapter 6.5 of TR-532 v2.0) in kbps
-                                          from {$p1CalculateAiCapacity.output#/air-interface-capacity}'
+                                          'AirInterface capacity in kbps
+                                          requires {$p1PrepareTxModes}'
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -239,6 +242,9 @@ create-result-cc:
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
+                                  description: >
+                                    'List of historical performance data slices
+                                    overwritten by {$prepareTxModes.output#/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
@@ -291,11 +297,10 @@ create-result-cc:
                                                 time:
                                                   type: integer
                                           interval-capacity:
-                                            type: number
-                                            format: float
-                                            description: > 
-                                              'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period.
-                                              not already available in this step, filled with default -1'
+                                            type: integer
+                                            description: >
+                                              'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
+                                              requires {$p1PrepareTxModes}'
                                           snir-min:
                                             type: integer
                                           snir-max:
@@ -344,6 +349,9 @@ create-result-cc:
                                 historical-performance-data-list:
                                   type: array
                                   x-key: period-end-time
+                                  description: >
+                                    'List of historical performance data slices
+                                    overwritten by {$p1CalculateEthernetKpis.output#/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
@@ -373,20 +381,16 @@ create-result-cc:
                                             description: 'String representation of int64 value'
                                           time-period:
                                             type: integer
-                                          # todo: transmitTraffic not in rawCc; origin to be explained
                                           transmit-traffic:
-                                            type: number
-                                            format: float
+                                            type: integer
                                             description: >
-                                              'TX Traffic [Mbps] KPI)
-                                              not already available in this step, filled with default -1'
-                                          # todo: receiveTraffic not in rawCc; origin to be explained
+                                              'transmitTraffic in Mbps
+                                              requires {$p1CalculateEthernetKpis}'
                                           receive-traffic:
-                                            type: number
-                                            format: float
+                                            type: integer
                                             description: >
-                                              'RX Traffic [Mbps] (KPI)
-                                              not already available in this step, filled with default -1'
+                                              'receiveTraffic in Mbps
+                                              requires {$p1CalculateEthernetKpis}'
                                           total-frames-input:
                                             type: string
                                             description: 'String representation of int64 value'
@@ -423,18 +427,16 @@ create-result-cc:
                                             type: integer
                                           dropped-frames-output:
                                             type: integer
-                                          # todo: frameLossInput not in rawCc; origin to be explained
                                           frame-loss-input:
                                             type: integer
                                             description: >
-                                              'Sum of errored and dropped frames on the ingress (KPI)
-                                              not already available in this step, filled with default -1'
-                                          # todo: frameLossOutput not in rawCc; origin to be explained
+                                              'Sum of errored and dropped frames on the ingress
+                                              requires {$p1CalculateEthernetKpis}'
                                           frame-loss-output:
                                             type: integer
                                             description: >
-                                              'Sum of errored and dropped frames on the egress (KPI)
-                                              not already available in this step, filled with default -1'
+                                              'Sum of errored and dropped frames on the egress
+                                              requires {$p1CalculateEthernetKpis}'
                                           oversized-frames-ingress:
                                             type: string
                                             description: 'String representation of int64 value'

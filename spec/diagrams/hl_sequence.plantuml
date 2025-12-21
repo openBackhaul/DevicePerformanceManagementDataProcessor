@@ -18,15 +18,11 @@ participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 
-participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1CreateResultCc\n" as p1CreateResultCC #LightGreen
 participant "p1Prepare\nTxModes" as prepTxModes #LightGreen
 participant "p1Calculate\nAiCapacity" as aiCC #LightGreen
 participant "p1Calculate\nIntervalCapacity" as intCC #LightGreen
-
-participant "p1OutOfRange\nValueTreatment" as p1OutOfRange #LightBlue
-participant "p1Ethernet\nKpiCalculation" as p1EthKpi #LightBlue
-participant "p1Harmonize\nTemperature" as p1HarmTemp #LightBlue
-participant "p1Default\nValueTreatment" as p1DefaultValues #LightBlue
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightBlue
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
@@ -155,7 +151,7 @@ activate p1RMWDI #LightCyan
 
         ' create resultCC ->
         p1ProcessPm -> p1CreateResultCC
-        activate p1CreateResultCC #LightCyan
+        activate p1CreateResultCC #LightGreen
 
           note over p1CreateResultCC
             Create resultCC
@@ -211,16 +207,10 @@ activate p1RMWDI #LightCyan
           end note
 
           ' process outOfRange values ->
-          p1CreateResultCC -> p1OutOfRange
-          activate p1OutOfRange #LightBlue
-
-            note over p1OutOfRange
-              Delete attributes with value outside
-              pre-defined range from resultCC
-            end note
-
-          p1CreateResultCC <-- p1OutOfRange
-          deactivate p1OutOfRange
+          note over p1CreateResultCC #LightGray
+            Delete attributes with value outside
+            pre-defined range from resultCC
+          end note
 
           ' get EthContainer KPIs ->
           p1CreateResultCC -> p1EthKpi
@@ -235,28 +225,16 @@ activate p1RMWDI #LightCyan
           deactivate p1EthKpi
 
           ' harmonize Temperature ->
-          p1CreateResultCC -> p1HarmTemp
-          activate p1HarmTemp #LightBlue
-
-            note over p1HarmTemp
-              Harmonize temperature
-              values
-            end note
-
-          p1CreateResultCC <-- p1HarmTemp
-          deactivate p1HarmTemp
+          note over p1CreateResultCC #LightGray
+            Harmonize temperature
+            across device types
+          end note
 
           ' process default values ->
-          p1CreateResultCC -> p1DefaultValues
-          activate p1DefaultValues #LightBlue
-
-            note over p1DefaultValues
-              Delete attributes with ONF
-              default value from resultCC
-            end note
-
-          p1CreateResultCC <-- p1DefaultValues
-          deactivate p1DefaultValues
+          note over p1CreateResultCC #LightGray
+            Delete attributes with ONF
+            default value from resultCC
+          end note
 
         p1ProcessPm <-- p1CreateResultCC
         deactivate p1CreateResultCC

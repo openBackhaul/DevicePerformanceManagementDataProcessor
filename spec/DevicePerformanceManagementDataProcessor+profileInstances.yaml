@@ -482,7 +482,7 @@ profile-instances:
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-034'
     capability:
-      function-name: 'p1EthernetKpiCalculation'
+      function-name: 'p1CalculateEthernetKpis'
       parameter-list:
       sub-function-list:
     configuration:

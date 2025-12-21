@@ -31,7 +31,6 @@ prepare-tx-modes:
                       type: string
                     time:
                       type: integer
-              # todo: intervalCapacity not in rawCc; origin to be explained; or attribute to be removed here
               interval-capacity:
                 type: integer
                 description: >

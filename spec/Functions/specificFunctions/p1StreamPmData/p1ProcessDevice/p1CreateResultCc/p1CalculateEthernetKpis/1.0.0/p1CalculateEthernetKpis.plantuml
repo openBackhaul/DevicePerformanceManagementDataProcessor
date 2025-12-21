@@ -9,7 +9,7 @@ participant "p1ProcessDevice\n" as requestor
 participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
-participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
+participant "p1Calculate\nEthernetKpis" as ethKpis #White
 
 requestor -> cur: {{parameters},\n{rawCC}}
 activate cur #LightCyan
@@ -17,6 +17,23 @@ activate cur #LightCyan
   note over cur #LightCyan
     Create resultCC from rawCC
   end note
+
+
+
+  note right cur #LightCoral
+    Proceeding:
+      - Explicitly (in detail) represent resultCC in variable.yaml
+      - Create sub-folders in /p1CreateResultCc for required sub-functions (even if category is white)
+        - add readme file with overview chapter describing purpose of sub-function
+        - add interface.yaml with input/output description
+        - if category=white set output value by enum with one value or min=max for int
+      - Add entries in processing section of interface.yaml
+        - Reference ("from [/create-result-cc/result-cc/...]") at input
+      - Identify source of value in variable.yaml ("from {$p1ComputePhysicalLag.output#/...}")
+      until all required attributes are covered
+  end note
+
+
 
   loop for all AirInterfaces in resultCC
 
@@ -79,23 +96,27 @@ activate cur #LightCyan
 
     ' ----- EthContainer KPIs --------------------------
     cur -> ethKpis : {[historicalPerformanceDataList]}
-    activate ethKpis #LightCyan
+    activate ethKpis #White
 
-        note over ethKpis
+      loop for all pm slices
+
+        note over ethKpis #White
           Add transmitTraffic
         end note
 
-        note over ethKpis
+        note over ethKpis #White
           Add receiveTraffic
         end note
 
-        note over ethKpis
+        note over ethKpis #White
           Add frameLossInput
         end note
 
-        note over ethKpis
+        note over ethKpis #White
           Add frameLossOutput
         end note
+
+      end loop
 
     cur <-- ethKpis : {[historicalPerformanceDataList]}
     deactivate ethKpis
