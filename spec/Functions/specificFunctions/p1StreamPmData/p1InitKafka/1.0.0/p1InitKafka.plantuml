@@ -13,6 +13,12 @@ queue "kafka\n" as kafka
 requestor -> p1Init : {{parameters},\n{configFile},\nkafkaClientName,\nkafkaClientType}
 activate p1Init #LightCyan
 
+  note over p1Init #Orange
+    Anstatt von kafkaClientName und kafkaClientType
+    sollte nur kafkaClientName übergeben werden
+    kafkaClientType sollte ein Attribut des kafkaClient im configFile/ApplicationPattern sein
+  end note
+
   note over p1Init
     Resolve Kafka address
     and connection parameters
