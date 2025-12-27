@@ -63,6 +63,12 @@ activate p1RMWDI #LightCyan
   end Loop
 
   p1RMWDI -> p1InitKafka
+    note over p1RMWDI #Orange
+      Dieses Interface noch einmal ansehen:
+      - Wie gut ist die Parametrisierbarkeit?
+      - Könnte gemäß Transmit verbessert werden?
+    end note
+  
   activate p1InitKafka #LightGreen
 
     note over p1InitKafka

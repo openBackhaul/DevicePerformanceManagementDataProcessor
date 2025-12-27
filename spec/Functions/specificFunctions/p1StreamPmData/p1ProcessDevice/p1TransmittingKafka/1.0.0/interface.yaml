@@ -15,25 +15,31 @@ x-javascript-interface:
             required:
               - parameters
               - config-file
-              - message-object
+              - output-format
+              - kafka-transmitter
             properties:
               parameters:
                 type: object
                 description: >
-                  'Parameters object for p1TransmittingKafka'
+                  'Subtree of the parameters object for p1TransmittingKafka'
               config-file:
                 type: object
                 description: >
                   'configFile content'
-              message-object:
-                type: object
+              output-format:
+                type: array
+                x-key: format-name
                 description: >
-                  'Object to be sent via Kafka'
+                  'Array of output formats to be transmitted'
+              kafka-transmitter:
+                type: string
+                description: >
+                  'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka'
     output:
       success:
-        description: 'Object sent via Kafka'
+        description: 'Objects sent via Kafka'
       error:
-        description: 'Object could not be sent via Kafka'
+        description: 'Objects could not be sent via Kafka'
         content:
           application/json:
             schema:

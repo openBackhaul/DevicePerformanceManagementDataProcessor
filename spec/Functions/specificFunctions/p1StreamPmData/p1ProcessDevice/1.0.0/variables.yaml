@@ -32,7 +32,15 @@ process-device:
       description: >
         'Data Store ElasticSearch address
         from {$input#/data-store-es-client}'
-
+    kafka-transmitter:
+      type: array
+      description: >
+        'Array of Kafka transmitters to be used for transmitting output formats
+        from [/parameters/parameter=*/value] for all [/parameters/parameter=*/purpose] == kafkaTransmitter'
+      items:
+        type: string
+      example:
+        - 'aptFormat'
     raw-cc:
       type: object
       description: >

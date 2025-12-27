@@ -207,7 +207,8 @@ x-javascript-interface:
                 required:
                   - parameters
                   - config-file
-                  - message-object
+                  - output-format
+                  - kafka-transmitter
                 properties:
                   parameters:
                     type: object
@@ -219,23 +220,26 @@ x-javascript-interface:
                     description: >
                       'configFile content
                       from [/process-device/config-file]'
-                  message-object:
-                    type: object
+                  output-format:
+                    type: array
+                    x-key: format-name
                     description: >
-                      'Object to be sent via Kafka
-                      from [/process-device/output-format=apt/content]'
+                      'Array of output formats to be transmitted
+                      from [/process-device/output-format]'
+                  kafka-transmitter:
+                    type: string
+                    description: >
+                      'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka
+                      from [/process-device/kafka-transmitter[n]]'
         output:
           success:
-            description: 'Object sent via Kafka'
+            description: 'Objects sent via Kafka'
           error:
-            description: 'Object could not be sent via Kafka'
+            description: 'Objects could not be sent via Kafka'
             content:
               application/json:
                 schema:
                   type: string
-                  enum:
-                    - 'Producer connection error'
-                    - 'Other transmission error'
       p1Storing:
         input:
           required: true

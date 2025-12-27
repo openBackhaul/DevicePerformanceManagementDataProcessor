@@ -3,38 +3,47 @@ transmitting-kafka:
   required:
     - parameters
     - config-file
-    - kafka-client-name
-    - message-object
+    - output-format
+    - kafka-transmitter
   properties:
     parameters:
       type: object
       description: >
-        'Parameters object for p1TransmittingKafka
+        'Subtree of the parameters object for p1TransmittingKafka
         from {$input#/parameters}'
     config-file:
       type: object
       description: >
         'configFile content
         from {$input#/config-file}'
-    message-object:
-      type: reference
+    output-format:
+      type: array
       description: >
-        'Object to be sent via Kafka
-        from {$input#/message-object}'
+        'Array of all output formats to be somehow transmitted
+        from {$input#/output-format}'
+    kafka-transmitter:
+      type: string
+      description: >
+        'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka'
+        from {$input#/kafka-transmitter}'
 
     kafka-client-uuid:
       type: string
       description: >
         'Kafka client UUID
-        find [/transmitting-kafka/parameters/parameter=*/parameter-name]==[transmitting-kafka/kafka-client-name]
-        from [/transmitting-kafka/parameters/parameter=*/value]'
+        from [/transmitting-kafka/parameters/parameter={[/transmitting-kafka/kafka-transmitter]}/value]'
     kafka-client:
       type: object
       description: >
         'Kafka client LTP object
-        from [/transmitting-kafka/config-file/core-model-1-4:control-construct/logical-termination-point=kafka-client-uuid]'
+        from [/transmitting-kafka/config-file/core-model-1-4:control-construct/logical-termination-point={[/transmitting-kafka/kafka-client-uuid]}]'
     topic-name:
       type: string
       description: >
         'Name of the Kafka topic to which the OutputFormat will be transmitted
         from [/transmitting-kafka/kafka-client/logical-termination-point/layer-protocol=0/kafka-client-interface-1-0:kafka-client-interface-pac/kafka-client-interface-configuration/topic-name]'
+    message-object:
+      type: reference
+      description: >
+        'Object to be sent via Kafka
+        from [/transmitting-kafka/output-format={[/transmitting-kafka/kafka-transmitter]}/content]'

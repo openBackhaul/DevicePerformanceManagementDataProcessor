@@ -11,7 +11,7 @@ participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
 requestor -> ethKpis : {[historicalPerformanceDataList]}
 activate ethKpis #LightCyan
 
-  loop for all entries of [historicalPerformanceDataList]
+  loop FOR all [historicalPerformanceDataList]
 
     note over ethKpis
       Add transmitTraffic

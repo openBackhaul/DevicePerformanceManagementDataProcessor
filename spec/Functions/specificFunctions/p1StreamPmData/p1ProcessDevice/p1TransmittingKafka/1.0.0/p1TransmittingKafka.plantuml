@@ -12,24 +12,24 @@ queue "kafka\n" as kafka
 
 activate p1KafkaP #LightCyan
 
-requestor -> p1Trans : {{parameters},\n{configFile},\nkafkaClientName,\n{messageObject}}
+requestor -> p1Trans : {{parameters},\n{configFile},\n[outputFormat],\nkafkaTransmitter}
 activate p1Trans #LightCyan
 
   note over p1Trans
     Resolve connection parameters
   end note
 
-  p1Trans -> p1KafkaP : {topicName,\n{messageObject}}
+    p1Trans -> p1KafkaP : {topicName,\n{messageObject}}
 
-    note over p1KafkaP
-      Send object 
-      to Kafka
-    end note
+      note over p1KafkaP
+        Send object 
+        to Kafka
+      end note
 
-    p1KafkaP -> kafka : {SEND_MESSAGE event}
-    p1KafkaP <-- kafka
+      p1KafkaP -> kafka : {SEND_MESSAGE event}
+      p1KafkaP <-- kafka
 
-  p1Trans <-- p1KafkaP
+    p1Trans <-- p1KafkaP
 
 requestor <-- p1Trans
 deactivate p1Trans

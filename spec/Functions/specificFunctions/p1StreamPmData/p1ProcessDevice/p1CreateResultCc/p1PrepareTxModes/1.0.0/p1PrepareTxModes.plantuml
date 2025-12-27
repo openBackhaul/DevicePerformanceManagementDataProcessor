@@ -15,8 +15,8 @@ participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
 cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
 activate prepTxModes #LightCyan
 
-  loop for all entries of [historicalPerformanceDataList]
-    loop for all entries in [timeXStatesList]
+  loop FOR all [historicalPerformanceDataList]
+    loop FOR all [timeXStatesList]
       note over prepTxModes
         IF time > 0
           THEN add transmissionMode to
@@ -27,7 +27,7 @@ activate prepTxModes #LightCyan
     end loop
   end loop
 
-  loop for all entries of [transmissionModeList]
+  loop FOR all [transmissionModeList]
 
     note over prepTxModes
       IF transmissionMode NOT IN 
@@ -52,7 +52,7 @@ activate prepTxModes #LightCyan
 
   end loop
 
-  loop for all entries of [historicalPerformanceDataList]
+  loop FOR all [historicalPerformanceDataList]
     prepTxModes -> intCC : {[time-xstates-list],\n[transmission-mode-list]}
     activate intCC #LightCyan
       note over intCC

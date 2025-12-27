@@ -18,7 +18,7 @@ activate cur #LightCyan
     Create resultCC from rawCC
   end note
 
-  loop for all AirInterfaces in resultCC
+  loop FOR all AirInterfaces in resultCC
 
     cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
     activate prepTxModes #LightCyan
@@ -75,7 +75,7 @@ activate cur #LightCyan
 
   end
 
-  loop for all EthernetContainers in resultCC
+  loop FOR all EthernetContainers in resultCC
 
     ' ----- EthContainer KPIs --------------------------
     cur -> ethKpis : {[historicalPerformanceDataList]}

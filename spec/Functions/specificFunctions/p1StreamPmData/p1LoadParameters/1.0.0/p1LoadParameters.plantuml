@@ -39,7 +39,7 @@ activate p1LP #LightCyan
     note right p1LP
       Read uuids of SubFunctions
     end note
-  end
+  end loop
 
 p1RMWDI <-- p1LP : {{parameters},\n{configFile}}
 deactivate p1LP

@@ -74,16 +74,20 @@ activate p1ProOrch #LightCyan
     to data structure
   end note
 
-  p1ProOrch -> p1Trans : {{/parameters/sub-function=p1TransmittingKafka},\n{configFile},\nkafkaClientName,\n{messageObject}}
-  activate p1Trans #LightCyan
+  loop FOR all [kafkaTransmitter]
 
-    note over p1Trans
-      Transmit object
-      to Kafka
-    end note
+    p1ProOrch -> p1Trans : {{/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat],\nkafkaTransmitter[n]}
+    activate p1Trans #LightCyan
 
-  p1ProOrch <-- p1Trans
-  deactivate p1Trans
+      note over p1Trans
+        Transmit object
+        to Kafka
+      end note
+
+    p1ProOrch <-- p1Trans
+    deactivate p1Trans
+
+  end loop
 
   p1ProOrch -> p1Store : {{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile},\n{resultCC}}
   activate p1Store #LightBlue

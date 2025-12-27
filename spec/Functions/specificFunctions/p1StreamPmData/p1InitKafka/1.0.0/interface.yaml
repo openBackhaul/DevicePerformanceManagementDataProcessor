@@ -21,7 +21,7 @@ x-javascript-interface:
               parameters:
                 type: object
                 description: >
-                  'Hierarchical object holding the parameter settings'
+                  'Subtree of the parameters object for p1InitKafka'
               config-file:
                 type: object
                 description: >
