@@ -15,8 +15,6 @@ x-javascript-interface:
             required:
               - parameters
               - config-file
-              - kafka-client-name
-              - kafka-client-type
             properties:
               parameters:
                 type: object
@@ -26,17 +24,6 @@ x-javascript-interface:
                 type: object
                 description: >
                   'configFile content'
-              kafka-client-name:
-                type: string
-                description: >
-                  'kafkaClientName'
-              kafka-client-type:
-                type: string
-                description: >
-                  'kafkaClientType'
-                enum:
-                  - 'producer'
-                  - 'consumer'
     output:
       success:
         description: 'Kafka session successfully established'
@@ -47,10 +34,6 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'kafkaClientName parameter missing'
-                - 'kafkaClientName not found'
-                - 'kafkaClientType parameter missing'
-                - 'kafkaClientType invalid'
                 - 'parameters parameter missing'
                 - 'parameters invalid'
                 - 'config-file parameter missing'
@@ -75,16 +58,14 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Identifier of client to be sent to kafka broker
-                      from [/init-kafka/client-id]'
+                      from [/init-kafka/client={kafkaClientName}/client-id]'
                   brokers:
                     type: array
-                    description: >
-                      'List of brokers for kafka to be connected
-                      from [/init-kafka/brokers]'
                     items:
                       type: string
                       description: >
-                        'URL composed from IP address or domain name and port'
+                        'URL composed from IP address or domain name and port
+                        from [/init-kafka/client={kafkaClientName}/url]'
         output:
           success:
             description: 'Producer successfully connected to kafka client'
@@ -115,21 +96,17 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Identifier of consumer group to be sent to kafka broker
-                      from [/init-kafka/group-id]'
+                      from [/init-kafka/client={kafkaClientName}/group-id]'
                   clientId:
                     type: string
                     description: >
                       'Identifier of client to be sent to kafka broker
-                      from [/init-kafka/client-id]'
+                      from [/init-kafka/client={kafkaClientName}/client-id]'
                   brokers:
                     type: array
                     description: >
                       'List of brokers for kafka to be connected
-                      from [/init-kafka/brokers]'
-                    items:
-                      type: string
-                      description: >
-                        'URL composed from IP address or domain name and port'
+                      from [/init-kafka/client={kafkaClientName}/brokers]'
         output:
           success:
             description: 'Consumer successfully connected to kafka broker'

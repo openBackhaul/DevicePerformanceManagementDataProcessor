@@ -94,8 +94,6 @@ x-javascript-interface:
                 required:
                   - parameters
                   - config-file
-                  - kafka-client-name
-                  - kafka-client-type
                 properties:
                   parameters:
                     type: object
@@ -107,18 +105,6 @@ x-javascript-interface:
                     description: >
                       'configFile content
                       from [/stream-pm-data/config-file]'
-                  kafka-client-name:
-                    type: string
-                    description: >
-                      'kafkaClientName'
-                    enum:
-                      - 'kafkaProducerClientForAptFormat'
-                  kafka-client-type:
-                    type: string
-                    description: >
-                      'kafkaClientType'
-                    enum:
-                      - 'producer'
         output:
           success:
             description: 'Kafka session successfully established'

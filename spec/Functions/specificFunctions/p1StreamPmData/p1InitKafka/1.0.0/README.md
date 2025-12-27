@@ -3,6 +3,13 @@
 Resolves Kafka address and initializes the Kafka session.
 
 
+### Parameter Handling
+
+<p align="center">  
+  <img src="./parameterHandling.png" alt="Parameter Handling diagram" width="800" />
+</p>  
+
+
 ### Diagram  
 
 <p align="center">  

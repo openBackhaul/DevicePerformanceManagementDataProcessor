@@ -26,7 +26,7 @@ participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightGreen
 
 participant "p1Formatting\nOutputApt" as p1Output #LightGreen
 
-participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+participant "p1Transmitting\nKafka" as p1Trans #LightGreen
 
 participant "p1Storing\n" as p1Store #LightBlue
 participant "p1MaintainDs\n" as p1MDS #LightBlue
@@ -63,12 +63,6 @@ activate p1RMWDI #LightCyan
   end Loop
 
   p1RMWDI -> p1InitKafka
-    note over p1RMWDI #Orange
-      Dieses Interface noch einmal ansehen:
-      - Wie gut ist die Parametrisierbarkeit?
-      - Könnte gemäß Transmit verbessert werden?
-    end note
-  
   activate p1InitKafka #LightGreen
 
     note over p1InitKafka
@@ -269,7 +263,7 @@ activate p1RMWDI #LightCyan
 
         ' transmit data ->
         p1ProcessPm -> p1Trans
-        activate p1Trans #LightCyan
+        activate p1Trans #LightGreen
 
           note over p1Trans
             Transmit object

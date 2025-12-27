@@ -40,14 +40,7 @@ activate p1RMWDI #LightCyan
     deactivate p1REA
   end Loop
 
-  loop FOR all [kafkaClient]
-
-    note right p1RMWDI #Orange
-      kafkaClient sollte wie in p1ProcessDevice als Parameter gegeben sein
-      Purpose = "kafkaClient"
-    end note
-
-    p1RMWDI -> p1InitKafka : {{parameters},\n{configFile},\nkafkaClientName,\nkafkaClientType}
+    p1RMWDI -> p1InitKafka : {{parameters},\n{configFile}}
     activate p1InitKafka #LightCyan
 
       note over p1InitKafka
@@ -57,8 +50,6 @@ activate p1RMWDI #LightCyan
 
     p1RMWDI <-- p1InitKafka
     deactivate p1InitKafka
-
-  end loop
 
   p1RMWDI -> p1MDS : {{parameters},\n{dataStoreAddress}}
   activate p1MDS #LightBlue
