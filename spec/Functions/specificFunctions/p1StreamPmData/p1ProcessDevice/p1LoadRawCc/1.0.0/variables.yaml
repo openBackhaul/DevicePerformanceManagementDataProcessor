@@ -21,31 +21,28 @@ load-raw-cc:
       description: >
         'MWDI Replica ElasticSearch address
         from {$input#/mwdi-replica-es-client}'
-    mwdi-replica-url:
-      type: string
-      description: >
-        'ElasticSearch URL of MWDI Replica ES
-        from [/load-raw-cc/mwdi-replica-es-client/url]'
     data-store-es-client:
       type: object
       description: >
         'Data Store ElasticSearch address
         from {$input#/data-store-es-client}'
+
+    mwdi-replica-url:
+      type: string
+      description: >
+        'ElasticSearch URL of MWDI Replica ES
+        from [/load-raw-cc/mwdi-replica-es-client/url]'
     data-store-url:
       type: string
       description: >
         'ElasticSearch URL of Data Store ES
         from [/load-raw-cc/data-store-es-client/url]'
+
     fields-filter:
       type: string
       description: >
         'Fields filter to be applied to reduce the raw ControlConstruct data
         from [/load-raw-cc/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
-    interface:
-      type: array
-      description: >
-        'MostRecentPeriodEndTimes for all already known interfaces of the device
-        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
     relevant-granularities:
       type: string
       enum:
@@ -53,72 +50,68 @@ load-raw-cc:
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
       description: >
-        'Pattern against which PM record granularity period values are to be matched. Indicates relevant granularities.
+        'An regex pattern indicating which data granularities are to be kept.
         from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
+
+    interface:
+      type: array
+      x-key: uuid
+      description: >
+        'MostRecentPeriodEndTimes for all already known interfaces of the device
+        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+          layer-protocol-name:
+            type: string
+          most-recent-period-end-time:
+            type: string
+            description: 'The newest seen periodEndTime for this interface in 15min data'
+          most-recent-period-end-time-24:
+            type: string
+            description: 'The newest seen periodEndTime for this interface in 24h data'
+
     raw-cc:
       type: object
       description: >
-        'RawCc read from Replica ES, but reduced by irrelevant data
-        from {$readControlConstructFromEs.output#/core-model-1-4:control-construct=[/load-raw-cc/mount-name]}
-        overwritten by {$p1FieldsFilter.output#/filtered-data-structure}
-        updated by {$applyFilteringForRelevantPmData.output#/historical-performances-data-list} for each layerProtocol'
-      required:
-        - equipment-augment-1-0:control-construct-pac
-        - logical-termination-point
+        'rawCc read from Replica ES, but stripped to the content of the object inside the array
+        from {$readControlConstructFromReplica.output#/core-model-1-4:control-construct={[/load-raw-cc/mount-name]}}
+        overwritten by {$p1FieldsFilter.output#/filtered-data-structure}'
       properties:
         equipment-augment-1-0:control-construct-pac:
           type: object
-          required:
-            - external-label
-            - device-model-name
           properties:
             external-label:
               type: string
               description: >
-                'mountName
-                from {$input#/mount-name}'
+                'mountName'
             device-model-name:
               type: string
-              description: >
-                'deviceType
-                from {$applyFilteringForRelevantPmData.output#equipment-augment-1-0:control-construct-pac/device-model-name}'
         equipment:
           type: array
           x-key: uuid
           items:
             type: object
-            required:
-              - uuid
-              - actual-equipment
             properties:
               uuid:
                 type: string
               actual-equipment:
                 type: object
-                required:
-                  - local-id
-                  - physical-properties
-                  - structure
                 properties:
                   local-id:
                     type: string
                   physical-properties:
                     type: object
-                    required:
-                      - temperature
                     properties:
                       temperature:
                         type: string
                   structure:
                     type: object
-                    required:
-                      - category
                     properties:
                       category:
                         type: string
-                        enum:
-                          - 'core-model-1-4:EQUIPMENT_CATEGORY_SUBRACK'
-                          - 'core-model-1-4:EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT'
         profile-collection:
           type: object
           properties:
@@ -127,9 +120,6 @@ load-raw-cc:
               x-key: uuid
               items:
                 type: object
-                required:
-                  - uuid
-                  - profile-name
                 properties:
                   uuid:
                     type: string
@@ -150,15 +140,11 @@ load-raw-cc:
         logical-termination-point:
           type: array
           description: >
-            'The filtered LTP data
-            from {$applyFilteringForRelevantPmData.output#logical-termination-point}
+            'instance to be deleted, 
+              if [./layer-protocol=*/layer-protocol-name] != [air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER OR ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER]'
           x-key: uuid
           items:
             type: object
-            required:
-              - uuid
-              - ltp-augment-1-0:ltp-augment-pac
-              - layer-protocol
             properties:
               uuid:
                 type: string
@@ -175,10 +161,8 @@ load-raw-cc:
                 properties:
                   external-label:
                     type: string
-                    description: 'linkEndpointId - linkId+[AB] - Identifier of the microwave link endpoint as used in the Telefonica planning tools'
                   original-ltp-name:
                     type: string
-                    description: 'portName'
               layer-protocol:
                 type: array
                 x-key: local-id
@@ -186,10 +170,6 @@ load-raw-cc:
                   oneOf:
                     - description: 'air-interface'
                       type: object
-                      required:
-                        - local-id
-                        - layer-protocol-name
-                        - air-interface-2-0:air-interface-pac
                       properties:
                         local-id:
                           type: string
@@ -243,22 +223,13 @@ load-raw-cc:
                                   type: array
                                   x-key: period-end-time
                                   description: >
-                                    'HistoricalPerformancesDataList containing only relevant PM data records, after filtering
-                                    from {$p1DiscardIrrelevantPmRecords.output/historical-performance-data-list}'
+                                    'HistoricalPerformancesDataList
+                                    overwritten by {$p1DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
                                   items:
                                     type: object
-                                    required:
-                                      - granularity-period
-                                      - period-end-time
-                                      - performance-data
                                     properties:
                                       granularity-period:
                                         type: string
-                                        enum:
-                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
-                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
-                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
                                       period-end-time:
                                         type: string
                                       performance-data:
@@ -289,8 +260,6 @@ load-raw-cc:
                                             x-key: transmission-mode
                                             items:
                                               type: object
-                                              required:
-                                                - transmission-mode
                                               properties:
                                                 transmission-mode:
                                                   type: string
@@ -314,10 +283,6 @@ load-raw-cc:
                                             type: integer
                     - description: 'ethernet-container'
                       type: object
-                      required:
-                        - local-id
-                        - layer-protocol-name
-                        - ethernet-container-2-0:ethernet-container-pac
                       properties:
                         local-id:
                           type: string
@@ -335,22 +300,13 @@ load-raw-cc:
                                   type: array
                                   x-key: period-end-time
                                   description: >
-                                    'HistoricalPerformancesDataList containing only relevant PM data records, after filtering
-                                    from {$p1DiscardIrrelevantPmRecords.output/historical-performance-data-list}'
+                                    'HistoricalPerformancesDataList
+                                    overwritten by {$p1DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
                                   items:
                                     type: object
-                                    required:
-                                      - granularity-period
-                                      - period-end-time
-                                      - performance-data
                                     properties:
                                       granularity-period:
                                         type: string
-                                        enum:
-                                          - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
-                                          - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
-                                          - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
-                                          - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
                                       period-end-time:
                                         type: string
                                       performance-data:

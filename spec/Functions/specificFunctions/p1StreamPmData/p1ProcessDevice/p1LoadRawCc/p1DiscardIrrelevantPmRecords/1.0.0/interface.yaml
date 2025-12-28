@@ -36,7 +36,7 @@ x-javascript-interface:
                 description: '24h PM records not newer than this timestamp are to be discarded. If not provided, any 24h record passes.'
     output:
       success:
-        description: 'Filtered historicalPerformanceDataList provided'
+        description: 'filteredHistoricalPerformanceDataList provided'
         content:
           application/json:
             schema:
@@ -50,7 +50,7 @@ x-javascript-interface:
                     'Filtered list of historical PM records
                     from [/discard-irrelevant-pm-records/filtered-historical-performance-data-list]'
       error:
-        description: 'Filtered historicalPerformanceDataList could not be provided'
+        description: 'filteredHistoricalPerformanceDataList could not be provided'
         content:
           application/json:
             schema:

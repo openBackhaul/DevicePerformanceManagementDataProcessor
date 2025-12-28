@@ -14,7 +14,7 @@ participant "p1UpdateMwdiReplica\n" as p1UMR #LightGreen
 
 participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 
-participant "p1LoadRawCc\n\ncleanup\nbf interface" as p1AddRaw #LightCyan
+participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 

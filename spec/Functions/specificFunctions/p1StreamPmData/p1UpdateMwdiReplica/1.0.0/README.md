@@ -18,7 +18,7 @@ After getting called, the p1UpdateMwdiReplica ...
       periodStartTime < lastCompleteControlConstructUpdateTimeAttempt <= periodEndTime  
     - Source index: sourceIndex  
     - Destination index: destinationIndex  
-    - Existing documents in the replica are overwritten with the latest version  
+    - Existing documents in the Replica are overwritten with the latest version  
 
   - Updates the replication log in the LoggingEs with  
     - periodStartTime

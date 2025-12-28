@@ -7,105 +7,61 @@ end title
 
 participant "p1ProcessDevice" as requestor
 participant "p1LoadRawCc" as cur #LightCyan
-database "MWDI ES replica" as MwdiEs #LightCyan
+database "MWDI ES Replica" as MwdiEs #LightCyan
 participant "p1FieldsFilter" as fieldsFilter #LightCyan
-database "datastore" as datastore #LightCyan
+database "DataStore" as datastore #LightBlue
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
 
 requestor -> cur: {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient}}
 activate cur #LightCyan
 
-== Read CC and apply fieldsFilter ==
- 'Read CC
-note over cur
-  <u>readControlConstructFromEs</u>
-  reads the complete ControlConstruct for the
-  mountName from MWDI ElasticSearch replica.
-end note
-cur -> MwdiEs: {mountName}
-cur <-- MwdiEs: {{rawControlConstruct}}
-
-note over cur #LightSteelBlue
-  [/load-raw-cc/raw-cc]
-    := rawControlConstruct[mountName]
-end note
-
-'Apply fields filter
-note over cur
-  <u>applyFieldsFilter</u>
-  Apply configurable FieldsFilter for reducing 
-  rawCc to relevant classes and attributes.
-end note
-
-cur -> fieldsFilter: {{rawControlConstruct},\n/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value}
-activate fieldsFilter #LightCyan
-cur <-- fieldsFilter: {{filtered rawControlConstruct}}
-deactivate fieldsFilter #LightCyan
-
-note over cur #LightSteelBlue
-  [/load-raw-cc/raw-cc]
-    := filtered rawControlConstruct
-end note
-
-== Read mostRecentPeriodEndTimes from dataStore ==
-'Read mostRecentTimestamps
-note over cur
-  <u>retrieveMostRecentPeriodEndTimesFromDs</u>
-  Reads mostRecentPeriodEndTimes for all previously
-  seen interfaces of the mountName from the
-  DPMDP dataStore.
-  It retrieves the timestamps for ... granularity:
-  - 15min: mostRecentPeriodEndTime
-  - 24h: mostRecentPeriodEndTime24
-
-  The interfaces are matched against layerProtocols
-  by the uuid of the respective LTP a layerProtocol
-  belongs to.
-end note
-cur -> datastore: {mountName}
-cur <-- datastore: {[interface]}
-
-'Filter the data
-
-== Apply filtering on interface level ==
-
-loop fpr all instances of LTP
-
   note over cur
-    IF (ltp.layerProtocol != (AirInterface | EthernetContainer))
-      skip
-    ELSE
-      THEN execute <u>p1DiscardIrrelevantPmRecords</u>
+    readControlConstructFromReplica
   end note
+  cur -> MwdiEs: {mountName}
+  cur <-- MwdiEs: {{rawControlConstruct}}
 
-  cur -> filterPm: {[historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24,\n/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value}
-  activate filterPm #LightCyan
-  note over filterPm
-    Discards all irrelevant records from
-    the historicalPerformanceDataList 
-  end note 
-  cur <-- filterPm: {[filtered historicalPerformanceDataList]}
-  deactivate filterPm
+  cur -> fieldsFilter: {{rawControlConstruct}\nfieldsFilter}
+  activate fieldsFilter #LightCyan
+    note over fieldsFilter
+      Apply FieldsFilter
+    end note
+  cur <-- fieldsFilter: {{filtered rawControlConstruct}}
+  deactivate fieldsFilter #LightCyan
 
-  note over cur #LightSteelBlue
-    for relevant Ltp.layerProtocols replace
-    original historicalPerformancesDataList
-    with the filtered one.
+  note over cur #LightBlue
+    retrieveMostRecentPeriodEndTimesFromDs
   end note
+  cur -> datastore: {mountName}
+  cur <-- datastore: {[interface]}
 
-  ' remove after pre-release
-  note over cur, filterPm #Orange
-    In the pre-release there is no mostRecentPeriodEndTime info available in the dataStore.
-    Therefore: all 15min/24h historical PM records seen in the raw data will be kept!
-  end note
+    note right cur #LightBlue
+      In the pre-release there is no mostRecentPeriodEndTime info available
+      Both 15min and 24h records will be kept by default
+    end note
 
-end group
+  loop FOR all [/raw-cc/logical-termination-point]
 
-note over cur
-  <u>returnRawControlConstruct</u>
-  The function returns the filtered raw-ControlConstruct
-end note
+    note over cur
+      IF layerProtocolName == AirInterface OR EthernetContainer
+    end note
 
+    note over cur
+      THEN
+    end note
 
-requestor <-- cur: {{rawControlConstruct}}
+    cur -> filterPm: {[historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color>}
+    activate filterPm #LightCyan
+    note over filterPm
+      Discards records that are
+      of wrong granularity or
+      already processed from 
+      historicalPerformanceDataList 
+    end note 
+    cur <-- filterPm: {[filteredHistoricalPerformanceDataList]}
+    deactivate filterPm
+
+  end group
+
+requestor <-- cur: {{rawCc}}
 deactivate cur
