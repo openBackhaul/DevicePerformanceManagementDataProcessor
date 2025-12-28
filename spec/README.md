@@ -27,7 +27,7 @@
 - [DevicePerformanceManagementDataProcessor+config](./DevicePerformanceManagementDataProcessor+config.json)  
 
 **Details about Services:**
-- [More detailed information about Services (available via REST API)](./Services)
+- [embedYourself](./Services/embedYourself/1.0.0)  
 
 
 ### Internal Structure  
@@ -43,7 +43,23 @@
 </p>
 
 **Details about Functions:**  
-More detailed information about  
-- [GenericFunctions that might be used in multiple applications](./Functions/genericFunctions)  
-- [SpecificFunctions that are exclusive to this application](./Functions/specificFunctions)  
+
+- [p1StreamPmData](./Functions/p1StreamPmData/1.0.0)  
+  - [p1LoadParameters*](./Functions/p1StreamPmData/p1LoadParameters/1.0.0)  
+  - [p1ResolveEsAddress*](./Functions/p1StreamPmData/p1ResolveEsAddress/1.0.0)  
+  - [p1InitKafka*](./Functions/p1StreamPmData/p1InitKafka/1.0.0)  
+  - [p1UpdateMwdiReplica](./Functions/p1StreamPmData/p1UpdateMwdiReplica/1.0.0)  
+  - [p1ProcessDevice](./Functions/p1StreamPmData/p1ProcessDevice/1.0.0)  
+    - [p1LoadRawCc](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/1.0.0)  
+      - [p1FieldsFilter*](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1FieldsFilter/1.0.0)  
+      - [p1DiscardIrrelevantPmRecords*](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1DiscardIrrelevantPmRecords/1.0.0)  
+    - [p1CreateResultCc](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.0.0)  
+      - [p1PrepareTxModes](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/1.0.0)  
+        - [p1CalculateAiCapacity*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/p1CalculateAiCapacity/1.0.0)  
+        - [p1CalculateIntervalCapacity*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/p1CalculateIntervalCapacity/1.0.0)  
+      - [p1CalculateEthernetKpis](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/1.0.0)  
+    - [p1FormattingOutputApt](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.0.0)  
+    - [p1TransmittingKafka](./Functions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/1.0.0)  
+
+*) Indicates a Generic Function that is part of the DPMDP's implementation.  
 
