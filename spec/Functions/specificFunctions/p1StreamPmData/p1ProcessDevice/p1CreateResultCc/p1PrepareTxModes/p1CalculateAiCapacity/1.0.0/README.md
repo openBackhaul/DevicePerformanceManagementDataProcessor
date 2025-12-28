@@ -1,4 +1,3 @@
-
 # p1CalculateAiCapacity
 
 Calculates the AirInterface capacity according to ONF TR-532 v2.0.

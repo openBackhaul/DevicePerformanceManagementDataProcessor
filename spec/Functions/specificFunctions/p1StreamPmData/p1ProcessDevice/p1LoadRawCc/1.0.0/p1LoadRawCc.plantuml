@@ -82,15 +82,7 @@ loop fpr all instances of LTP
   activate filterPm #LightCyan
   note over filterPm
     Discards all irrelevant records from
-    the historicalPerformanceDataList and returns the
-    filtered list.
-
-    Relevant records are those with relevant granularity
-    and period-end-time newer than
-    <i>mostRecentPeriodEndTime</i> (15min), or
-    <i>mostRecentPeriodEndTime</i> (24h)
-    (in case of missing mostRecentPeriodEndTimes all
-    related records are treated as newer).
+    the historicalPerformanceDataList 
   end note 
   cur <-- filterPm: {[filtered historicalPerformanceDataList]}
   deactivate filterPm

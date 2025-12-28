@@ -16,7 +16,7 @@ participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 
 participant "p1LoadRawCc\n\ncleanup\nbf interface" as p1AddRaw #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
-participant "p1DiscardIrrelevant\nPmRecords\n\nvariables" as filterPm #LightCyan
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
 
 participant "p1CreateResultCc\n" as p1CreateResultCC #LightGreen
 participant "p1Prepare\nTxModes" as prepTxModes #LightGreen

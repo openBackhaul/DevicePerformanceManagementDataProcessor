@@ -177,15 +177,7 @@ x-javascript-interface:
                     enum:
                       - 'ElasticSearch read error'
                       - 'General processing error'
-      applyFilteringForRelevantPmData:
-
-      # Thorsten: mir ist nicht klar was diese Funktion genau macht, und ob sie das alles "darf"; 
-      # bitte prüfe noch einmal, ob applyFilteringForRelevantPmData nicht einfach eine Schleife ist
-      # Falls applyFilteringForRelevantPmData nur eine Schleife sein sollte, dann würde der Eintrag hier 
-      # entfallen, und p1DiscardIrrelevantPmRecords nur auf /../../historical-performance-data-list wirken
-      # Entgegen meiner Überzeugung habe ich die Änderung in Zeile 210-522 wieder rückgängig gemacht,
-      # und das raw-cc hier belassen, damit die Änderungen nachvollziehbar bleiben.
-
+      p1DiscardIrrelevantPmRecords:
         description: >
           'Filters each relevant layerProtocol (AirInterface or EthernetContainer) of the rawCC for new PM records with desired granularities.
           If no PM records remain for the respective layerProtocol, it is discarded from the rawCC entirely;
