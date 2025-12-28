@@ -48,15 +48,10 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - es-name
                   - parameters
                   - config-file
+                  - es-name
                 properties:
-                  es-name:
-                    type: string
-                    description: >
-                      'ElasticSearch name
-                      from [/stream-pm-data/es-address=*/name]'
                   parameters:
                     type: object
                     description: >
@@ -67,6 +62,11 @@ x-javascript-interface:
                     description: >
                       'configFile content
                       from [/stream-pm-data/config-file]'
+                  es-name:
+                    type: string
+                    description: >
+                      'ElasticSearch name
+                      from [/stream-pm-data/es-address=*/name]'
         output:
           success:
             description: 'ES address successfully resolved'
@@ -114,7 +114,36 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      # p1MaintainDs:
+      p1MaintainDs:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - data-store-es-client
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1MaintainDs]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'DataStore ElasticSearch address
+                      from [/stream-pm-data/es-address=dataStoreEsClient/address]'
+        output:
+          success:
+            description: 'DataStore maintenance processed'
+          error:
+            description: 'DataStore maintenance could not be processed'
+            content:
+              application/json:
+                schema:
+                  type: string
       p1UpdateMwdiReplica:
         input:
           required: true
@@ -179,6 +208,7 @@ x-javascript-interface:
                 schema:
                   type: string
       p1ProcessDevice:
+        description: 'Number of parallel processes to be managed for avoiding massive peak loads'
         input:
           required: true
           content:
@@ -186,27 +216,27 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - mount-name
                   - parameters
                   - config-file
+                  - mount-name
                   - mwdi-replica-es-client
                   - data-store-es-client
                 properties:
-                  mount-name:
-                    type: string
-                    description: >
-                      'MountName
-                      from [/stream-pm-data/to-be-processed-mount-names[n]]'
                   parameters:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/stream-pm-data/parameters]'
+                      from [/stream-pm-data/parameters/sub-function=p1ProcessDevice]'
                   config-file:
                     type: object
                     description: >
                       'configFile content
                       from [/stream-pm-data/config-file]'
+                  mount-name:
+                    type: string
+                    description: >
+                      'MountName
+                      from [/stream-pm-data/to-be-processed-mount-names[n]]'
                   mwdi-replica-es-client:
                     type: object
                     description: >

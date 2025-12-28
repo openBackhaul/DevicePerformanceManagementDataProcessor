@@ -5,15 +5,6 @@ The p1StreamPmData is cyclically processing:
 - Initiate the processing of PM data of the updated ControlConstructs  
 
 
-### Overview  
-
-After getting started by the embedYourself function, the p1StreamPmData ...  
-  - loads the parameter values for the entire cyclic PM data processing from the configFile  
-  - composes the address information of all the involved ElasticSearch indices  
-  - triggers the cyclic execution of the DataStore cleanup  
-  - cyclically triggers the replication of the MWDI ES index and the subsequent processing of PM data  
-
-
 ### Diagram  
 
 <p align="center">
@@ -21,12 +12,11 @@ After getting started by the embedYourself function, the p1StreamPmData ...
 </p>
 
 
-### Variables  
-
-Detailed description of the [internal variables](./variables.yaml).  
-
-
 ### Interface  
 
 Detailed description of the [interface](./interface.yaml).  
 
+
+### Variables  
+
+Detailed description of the [internal variables](./variables.yaml).  

@@ -13,14 +13,10 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - es-name
               - parameters
               - config-file
+              - es-name
             properties:
-              es-name:
-                type: string
-                description: >
-                  'ElasticSearch name'
               parameters:
                 type: object
                 description: >
@@ -29,6 +25,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'configFile content'
+              es-name:
+                type: string
+                description: >
+                  'ElasticSearch name'
     output:
       success:
         description: 'ES address successfully resolved'

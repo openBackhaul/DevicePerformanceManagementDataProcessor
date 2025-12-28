@@ -27,11 +27,11 @@ activate p1RMWDI #LightCyan
       Load parameters
       from configFile
     end note
-  p1RMWDI <-- p1LP : {{parameters},\n{configFile}}
+  p1RMWDI <-- p1LP : {{parameters}\n{configFile}}
   deactivate p1LP
 
   Loop FOR all esName
-    p1RMWDI -> p1REA : {{parameters},\n{configFile},\nesName}
+    p1RMWDI -> p1REA : {{parameters}\n{configFile}\nesName}
     activate p1REA #LightCyan
       note over p1REA
         Resolve ES address
@@ -40,7 +40,7 @@ activate p1RMWDI #LightCyan
     deactivate p1REA
   end Loop
 
-    p1RMWDI -> p1InitKafka : {{parameters},\n{configFile}}
+    p1RMWDI -> p1InitKafka : {{parameters}\n{configFile}}
     activate p1InitKafka #LightCyan
 
       note over p1InitKafka
@@ -51,30 +51,32 @@ activate p1RMWDI #LightCyan
     p1RMWDI <-- p1InitKafka
     deactivate p1InitKafka
 
-  p1RMWDI -> p1MDS : {{parameters},\n{dataStoreAddress}}
+  p1RMWDI -> p1MDS : {{parameters}\n{dataStoreEsClient}}
   activate p1MDS #LightBlue
     note over p1MDS
       Maintain DataStore
     end note
 
-  Loop endless
+  loop endless
 
-    p1RMWDI -> p1UMR : {{parameters},\nlastReplicaTime,\n{mwdiEsClient},\n{mwdiReplicaEsClient},\n{loggingEsClient}}
+    p1RMWDI -> p1UMR : {{parameters}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient}}
     activate p1UMR #LightCyan
       note over p1UMR
         Replicate updated CCs
       end note
-    p1RMWDI <-- p1UMR : {[updatedMountNames],\ntimestamp}
+    p1RMWDI <-- p1UMR : {[updatedMountNames]\ntimestamp}
     deactivate p1UMR
 
-    p1RMWDI -> p1ProcessPm : {mountName,\n{parameters},\n{configFile}}
-    activate p1ProcessPm #LightCyan
-      note over p1ProcessPm
-        Process PM data
-      end note
-    p1RMWDI <-- p1ProcessPm
-    deactivate p1ProcessPm
+    loop FOR all [updatedMountNames]
+      p1RMWDI -> p1ProcessPm : {{parameters}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
+      activate p1ProcessPm #LightCyan
+        note over p1ProcessPm
+          Process PM data
+        end note
+      p1RMWDI <-- p1ProcessPm
+      deactivate p1ProcessPm
+    end loop
 
-  end Loop
+  end loop
 
 @enduml

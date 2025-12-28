@@ -7,31 +7,31 @@ end title
 
 participant "embedYourself\n" as embed
 participant "p1StreamPmData\n" as p1RMWDI #LightCyan
-participant "p1LoadParameters\n" as p1LoadParams #LightGreen
-participant "p1ResolveEsAddress\n" as p1REA #LightGreen
-participant "p1InitKafka\n" as p1InitKafka #LightGreen
-participant "p1UpdateMwdiReplica\n" as p1UMR #LightGreen
+participant "p1LoadParameters\n" as p1LoadParams #LightCyan
+participant "p1ResolveEsAddress\n" as p1REA #LightCyan
+participant "p1InitKafka\n" as p1InitKafka #LightCyan
+participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
 
-participant "p1ProcessDevice\n" as p1ProcessPm #LightGreen
+participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
 
-participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
-participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightGreen
+participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
+participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
 
-participant "p1CreateResultCc\n" as p1CreateResultCC #LightGreen
-participant "p1Prepare\nTxModes" as prepTxModes #LightGreen
-participant "p1Calculate\nAiCapacity" as aiCC #LightGreen
-participant "p1Calculate\nIntervalCapacity" as intCC #LightGreen
-participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightGreen
+participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
+participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightCyan
 
-participant "p1Formatting\nOutputApt" as p1Output #LightGreen
+participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
-participant "p1Transmitting\nKafka" as p1Trans #LightGreen
+participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 
 participant "p1Storing\n" as p1Store #LightBlue
 participant "p1MaintainDs\n" as p1MDS #LightBlue
 
-participant "kafkaProducer\nService" as kafkaProd #LightGreen
+participant "kafkaProducer\nService" as kafkaProd #LightCyan
 
 note right embed
   Automatically start
@@ -43,7 +43,7 @@ embed -> p1RMWDI
 activate p1RMWDI #LightCyan
 
   p1RMWDI -> p1LoadParams
-  activate p1LoadParams #LightGreen
+  activate p1LoadParams #LightCyan
     note over p1LoadParams
       Load parameters
       from configFile
@@ -53,7 +53,7 @@ activate p1RMWDI #LightCyan
 
   Loop FOR all esName
     p1RMWDI -> p1REA
-    activate p1REA #LightGreen
+    activate p1REA #LightCyan
       note over p1REA
         Resolve ES address
       end note
@@ -63,7 +63,7 @@ activate p1RMWDI #LightCyan
   end Loop
 
   p1RMWDI -> p1InitKafka
-  activate p1InitKafka #LightGreen
+  activate p1InitKafka #LightCyan
 
     note over p1InitKafka
       Resolve Kafka
@@ -71,7 +71,7 @@ activate p1RMWDI #LightCyan
     end note
 
     p1InitKafka -> kafkaProd
-    activate kafkaProd #LightGreen
+    activate kafkaProd #LightCyan
       note over kafkaProd
         Establish session
       end note
@@ -89,7 +89,7 @@ activate p1RMWDI #LightCyan
   Loop endless
 
     p1RMWDI -> p1UMR
-    activate p1UMR #LightGreen
+    activate p1UMR #LightCyan
       note over p1UMR
         Replicate updated CCs
       end note
@@ -99,7 +99,7 @@ activate p1RMWDI #LightCyan
     Loop for every updated CC
 
       p1RMWDI -> p1ProcessPm
-      activate p1ProcessPm #LightGreen
+      activate p1ProcessPm #LightCyan
 
         note over p1ProcessPm
           Create data structure
@@ -108,7 +108,7 @@ activate p1RMWDI #LightCyan
 
         ' create RawCC ->
         p1ProcessPm -> p1AddRaw
-        activate p1AddRaw #LightGreen
+        activate p1AddRaw #LightCyan
 
           note over p1AddRaw
             Load raw data to rawCC
@@ -116,7 +116,7 @@ activate p1RMWDI #LightCyan
 
           ' apply fieldsFilter ->
           p1AddRaw -> p1FieldsFilter
-          activate p1FieldsFilter #LightGreen
+          activate p1FieldsFilter #LightCyan
 
             note over p1FieldsFilter
               Reduce structure of rawCC
@@ -131,7 +131,7 @@ activate p1RMWDI #LightCyan
 
           ' discard irrelevant PM records
           p1AddRaw -> filterPm
-          activate filterPm #LightGreen
+          activate filterPm #LightCyan
 
             note over filterPm
               Delete PM data that has
@@ -151,7 +151,7 @@ activate p1RMWDI #LightCyan
 
         ' create resultCC ->
         p1ProcessPm -> p1CreateResultCC
-        activate p1CreateResultCC #LightGreen
+        activate p1CreateResultCC #LightCyan
 
           note over p1CreateResultCC
             Create resultCC
@@ -159,14 +159,14 @@ activate p1RMWDI #LightCyan
           end note
 
           p1CreateResultCC -> prepTxModes
-          activate prepTxModes #LightGreen
+          activate prepTxModes #LightCyan
 
             note over prepTxModes
               Prepare TxModes
             end note
 
             prepTxModes -> aiCC
-            activate aiCC #LightGreen
+            activate aiCC #LightCyan
 
               note over aiCC
                 Calculate
@@ -177,7 +177,7 @@ activate p1RMWDI #LightCyan
             deactivate aiCC
 
             prepTxModes -> intCC
-            activate intCC #LightGreen
+            activate intCC #LightCyan
 
               note over intCC
                 Calculate
@@ -214,7 +214,7 @@ activate p1RMWDI #LightCyan
 
           ' get EthContainer KPIs ->
           p1CreateResultCC -> p1EthKpi
-          activate p1EthKpi #LightGreen
+          activate p1EthKpi #LightCyan
 
             note over p1EthKpi
               Add Ethernet KPIs
@@ -246,7 +246,7 @@ activate p1RMWDI #LightCyan
 
         ' Format OutputAPT ->
         p1ProcessPm -> p1Output
-        activate p1Output #LightGreen
+        activate p1Output #LightCyan
 
           note over p1Output
             Create APT format
@@ -263,7 +263,7 @@ activate p1RMWDI #LightCyan
 
         ' transmit data ->
         p1ProcessPm -> p1Trans
-        activate p1Trans #LightGreen
+        activate p1Trans #LightCyan
 
           note over p1Trans
             Transmit object

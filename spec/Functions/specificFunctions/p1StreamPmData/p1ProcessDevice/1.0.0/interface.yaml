@@ -13,16 +13,12 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - mount-name
               - parameters
               - config-file
+              - mount-name
               - mwdi-replica-es-client
               - data-store-es-client
             properties:
-              mount-name:
-                type: string
-                description: >
-                  'MountName'
               parameters:
                 type: object
                 description: >
@@ -31,6 +27,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'configFile content'
+              mount-name:
+                type: string
+                description: >
+                  'MountName'
               mwdi-replica-es-client:
                 type: object
                 description: >

@@ -1,13 +1,11 @@
 stream-pm-data:
   type: object
-  required:
-    - function-name
-    - last-replica-time
   properties:
     function-name:
       type: string
       enum:
         - p1StreamPmData
+
     parameters:
       type: object
       description: >
@@ -18,6 +16,7 @@ stream-pm-data:
       description: >
         'configFile content
         from {$p1LoadParameters.output#/config-file}'
+
     es-address:
       type: array
       x-key: name
@@ -40,13 +39,7 @@ stream-pm-data:
             description: >
               'ElasticSearch address
               from {$p1ResolveEsAddress.output#/es-address}'
-    to-be-processed-mount-names:
-      type: array
-      items:
-        type: string
-      description: >
-        'Array of mount names to be processed
-        from {$p1UpdateMwdiReplica.output#/updated-mount-names}'
+
     last-replica-time:
       type: string
       pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
@@ -54,3 +47,12 @@ stream-pm-data:
         'Timestamp of the last successful replication
         initial value: {2010-11-20T14:00:00+01:00}
         later from {$p1UpdateMwdiReplica.output#/timestamp}'
+
+    to-be-processed-mount-names:
+      type: array
+      description: >
+        'Array of mount names to be processed
+        new values to be added from {$p1UpdateMwdiReplica.output#/updated-mount-names}
+        existing value to be removed after initiating p1ProcessDevice with it'
+      items:
+        type: string
