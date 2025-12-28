@@ -16,7 +16,7 @@ participant "p1Storing\n" as p1Store #LightBlue
 
 activate requestor
 
-requestor -> p1ProOrch : {mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile}}
+requestor -> p1ProOrch : {mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient}}
 activate p1ProOrch #LightCyan
 
   note over p1ProOrch
@@ -24,46 +24,46 @@ activate p1ProOrch #LightCyan
     for processing
   end note
 
-  p1ProOrch -> p1AddRaw : {{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n{configFile},\nmountName}
+  p1ProOrch -> p1AddRaw : {mountName\n{/parameters/sub-function=loadRawCc}\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
   activate p1AddRaw #LightCyan
 
     note over p1AddRaw
-      - Load rawCC from MWDI ES
-      - Reduce structure of rawCC
+      - Load rawCc from MWDI ES
+      - Reduce structure of rawCc
       - Delete PM data that has
         already been processed in past
     end note
 
-  p1ProOrch <-- p1AddRaw : {{rawCC}}
+  p1ProOrch <-- p1AddRaw : {{rawCc}}
   deactivate p1AddRaw
 
   note over p1ProOrch
-    Add rawCC to
+    Add rawCc to
     data structure
   end note
 
-  p1ProOrch -> p1CRC : {{/parameters/sub-function=createResultCc},\n{rawCC}}
+  p1ProOrch -> p1CRC : {{/parameters/sub-function=createResultCc},\n{rawCc}}
   activate p1CRC #LightCyan
 
     note over p1CRC
-      - Create resultCC from rawCC
+      - Create resultCc from rawCc
       - Process and complement PM data
     end note
 
-  p1ProOrch <-- p1CRC : {{resultCC}}
+  p1ProOrch <-- p1CRC : {{resultCc}}
   deactivate p1CRC
 
   note over p1ProOrch
-    Add resultCC to
+    Add resultCc to
     data structure
   end note
 
-  p1ProOrch -> p1Output : {{resultCC}}
+  p1ProOrch -> p1Output : {{resultCc}}
   activate p1Output #LightCyan
 
     note over p1Output
       Create aptOutputFormat
-      from resultCC
+      from resultCc
     end note
 
   p1ProOrch <-- p1Output : {{aptOutputFormat}}
@@ -89,11 +89,11 @@ activate p1ProOrch #LightCyan
 
   end loop
 
-  p1ProOrch -> p1Store : {{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile},\n{resultCC}}
+  p1ProOrch -> p1Store : {{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile},\n{resultCc}}
   activate p1Store #LightBlue
 
     note over p1Store
-      Store resultCC
+      Store resultCc
     end note
 
   p1ProOrch <-- p1Store

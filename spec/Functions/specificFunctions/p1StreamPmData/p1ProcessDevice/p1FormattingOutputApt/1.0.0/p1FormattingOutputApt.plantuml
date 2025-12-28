@@ -8,11 +8,11 @@ end title
 participant "requestor\n(e.g. p1ProcessDevice)" as requestor
 participant "p1FormattingOutputApt" as cur #LightCyan
 
-requestor -> cur: {{resultCC}}
+requestor -> cur: {{resultCc}}
 activate cur #LightCyan
 
   note over cur
-    Transform resultCC data into
+    Transform resultCc data into
     aptOutputFormat.
   end note
 

@@ -33,7 +33,7 @@ x-javascript-interface:
                 description: 'Data Store ElasticSearch address'
     output:
       success:
-        description: 'rawCc data loaded'
+        description: 'rawCc loaded'
         content:
           application/json:
             schema:

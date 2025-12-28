@@ -16,7 +16,7 @@ x-javascript-interface:
               - result-cc
             properties:
               result-cc:
-                type: reference
+                type: object
                 description: >
                   'resultCc'
     output:

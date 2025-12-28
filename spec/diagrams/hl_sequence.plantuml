@@ -12,7 +12,7 @@ participant "p1ResolveEsAddress\n" as p1REA #LightGreen
 participant "p1InitKafka\n" as p1InitKafka #LightGreen
 participant "p1UpdateMwdiReplica\n" as p1UMR #LightGreen
 
-participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
+participant "p1ProcessDevice\n" as p1ProcessPm #LightGreen
 
 participant "p1LoadRawCc\n" as p1AddRaw #LightGreen
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightGreen
@@ -99,7 +99,7 @@ activate p1RMWDI #LightCyan
     Loop for every updated CC
 
       p1RMWDI -> p1ProcessPm
-      activate p1ProcessPm #LightCyan
+      activate p1ProcessPm #LightGreen
 
         note over p1ProcessPm
           Create data structure

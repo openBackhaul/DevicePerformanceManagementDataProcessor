@@ -72,7 +72,6 @@ x-javascript-interface:
                   - parameters
                   - mwdi-replica-es-client
                   - data-store-es-client
-                  - config-file
                 properties:
                   mount-name:
                     type: string
@@ -94,15 +93,9 @@ x-javascript-interface:
                     description: >
                       'Data Store ElasticSearch address
                       from [/process-device/data-store-es-client]'
-                  # todo : check if config-file still required after providing the es clients
-                  config-file:
-                    type: object
-                    description: >
-                      'configFile content
-                      from [/process-device/config-file]'
         output:
           success:
-            description: 'Raw CC data loaded'
+            description: 'rawCc loaded'
             content:
               application/json:
                 schema:
@@ -115,7 +108,7 @@ x-javascript-interface:
                       description: >
                         'rawCc'
           error:
-            description: 'Raw CC could not be loaded'
+            description: 'rawCc could not be loaded'
             content:
               application/json:
                 schema:
@@ -176,7 +169,7 @@ x-javascript-interface:
                       from [/process-device/result-cc]'
         output:
           success:
-            description: 'aptOutputFormat created from resultCC'
+            description: 'aptOutputFormat created'
             content:
               application/json:
                 schema:
@@ -189,14 +182,11 @@ x-javascript-interface:
                       description: >
                         'aptOutputFormat'
           error:
-            description: 'aptOutputFormat could not be created from resultCC'
+            description: 'aptOutputFormat could not be created'
             content:
               application/json:
                 schema:
                   type: string
-                  enum:
-                    - 'Input data missing or invalid'
-                    - 'General processing error'
       p1TransmittingKafka:
         input:
           required: true
@@ -276,9 +266,6 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-                  enum:
-                    - ''
-                    # todo: error messages to be added after specifying p1Storing
 
 paths:
   /:

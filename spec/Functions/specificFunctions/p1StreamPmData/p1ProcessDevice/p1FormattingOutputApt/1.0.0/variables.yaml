@@ -4,7 +4,7 @@ formatting-output-apt:
     - result-cc
   properties:
     result-cc:
-      type: reference
+      type: object
       description: >
         'ResultCc'
     apt-output-format:

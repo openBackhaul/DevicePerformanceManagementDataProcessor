@@ -3,9 +3,6 @@
 Orchestrates the device-wise processing, formatting, sending and storing of PM data.  
 
 
-### Description  
-
-
 #### Segmentation  
 
 Calculating the PM data is separated from formatting and transmitting.  
@@ -18,7 +15,7 @@ Separating transmitting from formatting allows ...
 
 #### Processing  
 
-The p1ProcessDevice starts with creating a data structure for holding raw data, results, and administrative information.  
+The p1ProcessDevice starts with creating a data structure for holding raw data, results, output formats and administrative information.  
 
 The p1ProcessDevice executes a hard coded sequence of Functions.  
 Before calling a Sub-Function, it checks for the Sub-Function being activated in its parameters.  

@@ -11,14 +11,14 @@ participant "p1CreateResultCc\n" as cur #LightCyan
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
 
-requestor -> cur: {{parameters},\n{rawCC}}
+requestor -> cur: {{parameters},\n{rawCc}}
 activate cur #LightCyan
 
   note over cur #LightCyan
-    Create resultCC from rawCC
+    Create resultCc from rawCc
   end note
 
-  loop FOR all AirInterfaces in resultCC
+  loop FOR all AirInterfaces in resultCc
 
     cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
     activate prepTxModes #LightCyan
@@ -48,7 +48,7 @@ activate cur #LightCyan
 
     ' ----- Link ID --------------------------
     note over cur
-      Add linkId to resultCC
+      Add linkId to resultCc
     end note
 
     ' ----- Aggregation Group --------------------------
@@ -59,12 +59,12 @@ activate cur #LightCyan
     ' ----- mostRecentPeriodEndTime --------------------------
     note over cur
       Add mostRecentPeriodEndTime
-      to resultCC
+      to resultCc
     end note
 
     note over cur
       Add mostRecentPeriodEndTime24
-      to resultCC
+      to resultCc
     end note
 
     ' ----- OutOfRange TxLevel --------------------------
@@ -75,7 +75,7 @@ activate cur #LightCyan
 
   end
 
-  loop FOR all EthernetContainers in resultCC
+  loop FOR all EthernetContainers in resultCc
 
     ' ----- EthContainer KPIs --------------------------
     cur -> ethKpis : {[historicalPerformanceDataList]}
@@ -114,7 +114,7 @@ activate cur #LightCyan
     ONF default values
   end note
 
-requestor <-- cur: {{resultCC}}
+requestor <-- cur: {{resultCc}}
 
 deactivate cur
 

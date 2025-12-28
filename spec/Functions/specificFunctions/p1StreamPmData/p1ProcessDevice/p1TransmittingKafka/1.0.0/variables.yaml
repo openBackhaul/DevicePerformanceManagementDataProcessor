@@ -43,7 +43,7 @@ transmitting-kafka:
         'Name of the Kafka topic to which the OutputFormat will be transmitted
         from [/transmitting-kafka/kafka-client/logical-termination-point/layer-protocol=0/kafka-client-interface-1-0:kafka-client-interface-pac/kafka-client-interface-configuration/topic-name]'
     message-object:
-      type: reference
+      type: object
       description: >
         'Object to be sent via Kafka
         from [/transmitting-kafka/output-format={[/transmitting-kafka/kafka-transmitter]}/content]'

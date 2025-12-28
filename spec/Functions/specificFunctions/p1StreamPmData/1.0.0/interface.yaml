@@ -188,9 +188,9 @@ x-javascript-interface:
                 required:
                   - mount-name
                   - parameters
+                  - config-file
                   - mwdi-replica-es-client
                   - data-store-es-client
-                  - config-file
                 properties:
                   mount-name:
                     type: string
@@ -202,6 +202,11 @@ x-javascript-interface:
                     description: >
                       'Hierarchical object holding the parameter settings
                       from [/stream-pm-data/parameters]'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content
+                      from [/stream-pm-data/config-file]'
                   mwdi-replica-es-client:
                     type: object
                     description: >
@@ -212,12 +217,6 @@ x-javascript-interface:
                     description: >
                       'Data Store ElasticSearch address
                       from [/stream-pm-data/es-address=dataStoreEsClient/address]'
-                  # todo : check if config-file still required after providing the es clients
-                  config-file:
-                    type: object
-                    description: >
-                      'configFile content
-                      from [/stream-pm-data/config-file]'
         output:
           success:
             description: 'PM data processed, sent and stored'
