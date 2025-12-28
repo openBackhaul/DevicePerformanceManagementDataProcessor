@@ -8,7 +8,7 @@ end title
 participant "p1StreamPmData\n" as p1RMWDI
 participant "p1ResolveEsAddress\n" as p1REA #LightCyan
 
-  p1RMWDI -> p1REA : {esName,\n{parameters},\n{configFile}}
+  p1RMWDI -> p1REA : {{parameters}\n{configFile}\nesName}
   activate p1REA #LightCyan
     note over p1REA
       Resolve ES address

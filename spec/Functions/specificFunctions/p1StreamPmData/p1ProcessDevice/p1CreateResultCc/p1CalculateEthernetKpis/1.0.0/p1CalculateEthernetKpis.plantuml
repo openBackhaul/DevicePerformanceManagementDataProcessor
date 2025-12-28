@@ -1,8 +1,8 @@
-@startuml p1CreateResultCc
+@startuml p1CalculateEthernetKpis
 skinparam responseMessageBelowArrow true
 
 title
-  p1CreateResultCc
+  p1CalculateEthernetKpis
 end title
 
 participant "p1CreateResultCc\n" as requestor #LightGrey

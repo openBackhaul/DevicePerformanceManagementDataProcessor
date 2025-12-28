@@ -1,15 +1,10 @@
 resolve-es-address:
   type: object
   required:
-    - es-name
     - parameters
     - config-file
+    - es-name
   properties:
-    es-name:
-      type: string
-      description: >
-        'ElasticSearch name
-        from {$input#/es-name}'
     parameters:
       type: object
       description: >
@@ -20,6 +15,11 @@ resolve-es-address:
       description: >
         'configFile content
         from {$input#/config-file}'
+    es-name:
+      type: string
+      description: >
+        'ElasticSearch name
+        from {$input#/es-name}'
     es-client-uuid:
       type: string
       description: >

@@ -1,15 +1,10 @@
 # DevicePerformanceManagementDataProcessor Specification
 
-
-    The following Functions shall be covered in the Pre-release:
-    - regardAttributeValueChange
-    - p1ProcessingOrchestratorForHistoricalPm
-
     Caution:
-      If the Pre-Release does not comprise p1Storing
-      the processing and sending cannot be limited to new PM data
-      It is recommended to configure a testing MWDI with
-      a very small sliding window to limit the amount of data 
+      The Pre-Release does not support the DataStore.  
+      It is recommended to configure a testing MWDI with a
+      small sliding window size to limit the number of 
+      updated ControlConstructs.
 
 
 ### API  
@@ -48,6 +43,7 @@
 </p>
 
 **Details about Functions:**  
-- [More detailed information about Functions that are used in multiple applications](./Functions/genericFunctions)  
-- [More detailed information about Functions that are specific to this application](./Functions/specificFunctions)  
+More detailed information about  
+- [GenericFunctions that might be used in multiple applications](./Functions/genericFunctions)  
+- [SpecificFunctions that are exclusive to this application](./Functions/specificFunctions)  
 

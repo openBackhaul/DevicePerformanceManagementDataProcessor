@@ -26,3 +26,8 @@ Detailed description of the [internal variables](./variables.yaml).
 
 Detailed description of the [interface](./interface.yaml).  
 
+
+### NPM Module  
+
+[mw-sdn-p1-resolve-es-address](https://www.npmjs.com/package/mw-sdn-p1-resolve-es-address)  
+
