@@ -37,24 +37,6 @@ servers:
       individual:
         - operation-name: /v1/bequeath-your-data-and-die
           uuid: dpmdp-1-0-0-op-s-im-000
-#        - operation-name: /list-functions
-#          uuid: dpmdp-1-0-0-op-s-im-001
-#          operation-key: n.a.
-#        - operation-name: /provide-config-of-function
-#          uuid: dpmdp-1-0-0-op-s-im-002
-#          operation-key: n.a.
-#        - operation-name: /update-function
-#          uuid: dpmdp-1-0-0-op-s-im-003
-#          operation-key: n.a.
-#        - operation-name: /list-processing-sequences
-#          uuid: dpmdp-1-0-0-op-s-im-004
-#          operation-key: n.a.
-#        - operation-name: /provide-processing-sequence
-#          uuid: dpmdp-1-0-0-op-s-im-005
-#          operation-key: n.a.
-#        - operation-name: /update-processing-sequence
-#          uuid: dpmdp-1-0-0-op-s-im-006
-#          operation-key: n.a.
     service:
       basic:
         - operation-name: /v1/start-application-in-generic-representation
@@ -76,29 +58,16 @@ servers:
           uuid: dpmdp-1-0-0-op-s-bs-005
           operation-key: n.a.
       individual:
-        # receipt of MWDI AVC notifications trigger processing
-        - operation-name: /regard-attribute-value-change
-          uuid: dpmdp-1-0-0-op-s-is-000
-          operation-key: n.a.
-
-        # read data from DPMDP data store
-#        - operation-name: /v1/provide-data-store-item-for-device
-#          uuid: dpdmp-1-0-0-op-s-is-020
-#          operation-key: n.a.
-#        - operation-name: /v1/provide-data-store-item-for-device-interface
-#          uuid: dpdmp-1-0-0-op-s-is-021
-#          operation-key: n.a.
-
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor
     own-release-number: 1.0.0
     uuid: dpmdp-1-0-0-http-s-000
-# todo: change to    application-purpose: This application collects and processes historical device performance data and streams it to customers
-    owner-name: Katharina Mohr
-    owner-email-address: Katharina.Mohr.external@telefonica.com
+    application-purpose: This application collects and processes historical device performance data and streams it to consumers
+    owner-name: Thorsten Heinze
+    owner-email-address: Thorsten.Heinze@telefonica.com
     release-list:
       - release-number: 1.0.0
-# todo: change to        release-date: 28.11.2025
+        release-date: 29.12.2025
         changes: Initial version
   tcp-server:
     - description: Without TLS layer
@@ -122,14 +91,17 @@ clients:
     elasticsearch-client:
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-007
         index-alias: 7
+        # MWDI
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-018
         index-alias: 18
+        # MWDI Replica
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-020
         index-alias: 20
+        # Logging
       - uuid: dpmdp-1-0-0-es-c-es-1-0-0-021
         index-alias: 21
+        # DataStore
 
-  # update Kafka client in forwardings & configFile; only Kafka for provisioning
   - http-client:
       application-name: KafkaMessageBus
       release-number: 1.0.0
@@ -141,17 +113,17 @@ clients:
       uuid: dpmdp-1-0-0-tcp-c-kmb-1-0-0-000
     kafka-client:
       - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-010
-        topic-name: provisioned_historical_pm_data
+        topic-name: apt_format
         type: provider
 
   - http-client:
       application-name: OldRelease
-      release-number: 1.0.0
+      release-number:
       uuid: dpmdp-1-0-0-http-c-or-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 4031
+      tcp-port:
       uuid: dpmdp-1-0-0-tcp-c-or-1-0-0-000
     operation-clients:
       own-oam:
@@ -165,12 +137,12 @@ clients:
 
   - http-client:
       application-name: NewRelease
-      release-number: 1.0.0
+      release-number:
       uuid: dpmdp-1-0-0-http-c-nr-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 4031
+      tcp-port:
       uuid: dpmdp-1-0-0-tcp-c-nr-1-0-0-000
     operation-clients:
       own-oam:
@@ -182,12 +154,12 @@ clients:
 
   - http-client:
       application-name: RegistryOffice
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-ro-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3024
+      tcp-port: 3031
       uuid: dpmdp-1-0-0-tcp-c-ro-2-1-2-000
     operation-clients:
       own-oam:
@@ -207,12 +179,12 @@ clients:
 
   - http-client:
       application-name: TypeApprovalRegister
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-tar-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3025
+      tcp-port: 3032
       uuid: dpmdp-1-0-0-tcp-c-tar-2-1-2-000
     operation-clients:
       own-oam:
@@ -224,12 +196,12 @@ clients:
 
   - http-client:
       application-name: ExecutionAndTraceLog
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-eatl-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3026
+      tcp-port: 3033
       uuid: dpmdp-1-0-0-tcp-c-eatl-2-1-2-000
     operation-clients:
       own-oam:
@@ -244,12 +216,12 @@ clients:
 
   - http-client:
       application-name: OamLog
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-ol-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3027
+      tcp-port: 3034
       uuid: dpmdp-1-0-0-tcp-c-ol-2-1-2-000
     operation-clients:
       own-oam:
@@ -263,12 +235,12 @@ clients:
 
   - http-client:
       application-name: AccessAdministration
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-aa-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3028
+      tcp-port: 3035
       uuid: dpmdp-1-0-0-tcp-c-aa-2-1-2-000
     operation-clients:
       own-oam:
@@ -282,12 +254,12 @@ clients:
 
   - http-client:
       application-name: ApplicationLayerTopology
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-alt-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3029
+      tcp-port: 3036
       uuid: dpmdp-1-0-0-tcp-c-alt-2-1-2-000
     operation-clients:
       own-oam:
@@ -311,12 +283,12 @@ clients:
 
   - http-client:
       application-name: OperationKeyManagement
-      release-number: 2.1.0
+      release-number: 2.1.2
       uuid: dpmdp-1-0-0-http-c-okm-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3030
+      tcp-port: 3037
       uuid: dpmdp-1-0-0-tcp-c-okm-2-1-2-000
     operation-clients:
       own-oam:
@@ -325,4 +297,3 @@ clients:
       service:
         basic:
         individual:
-
