@@ -1,6 +1,6 @@
 # p1PrepareTxModes
 
-This function prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity.  
+Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity.  
 
 
 ### Diagram
