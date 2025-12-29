@@ -42,8 +42,11 @@
   <img src="./diagrams/hl_sequence.png" alt="High Level Sequence" width="400"/>
 </p>
 
-**Details about Functions:**  
+**Parameters:**  
+Although the sequence of function calls is hard-coded, actually calling a function can be enabled/disabled using a parameter.  
+[More details about parameters](./Functions/p1StreamPmData/p1LoadParameters/1.0.0)
 
+**Details about Functions:**  
 - [p1StreamPmData](./Functions/p1StreamPmData/1.0.0)  
   - [p1LoadParameters*](./Functions/p1StreamPmData/p1LoadParameters/1.0.0)  
   - [p1ResolveEsAddress*](./Functions/p1StreamPmData/p1ResolveEsAddress/1.0.0)  
