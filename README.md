@@ -1,46 +1,48 @@
 # DevicePerformanceManagementDataProcessor  
 
-Retrieves PM data from an MWDI database replica, processes it, formats it, transmits it via Kafka, and stores it in its own database.  
+
+### Location
+
+The DevicePerformanceManagementDataProcessor belongs to the Network Management Interface.
 
 
-### Description  
+### Description
 
-The DevicePerformanceManagementDataProcessor (DPMDP) requires a replica of the ElasticSearch index of the MicroWaveDeviceInventory (MWDI).  
-This ElasticSearch index replication is done by a cronjob.  
+It retrieves PM data from MWDI, processes it, formats it, transmits it via Kafka, and stores it in its own database.  
 
-The same cronjob sends notifications to the DPMDP.  
-These notifications contain a list of devices with an updated ControlConstruct in the MWDI ElasticSearch index replica.  
+The DPMDP implements a hard coded workflow.  
+The individual processing steps are structured into Functions.  
+Individually de-/activating the calling of Functions is facilitated.  
+Future changes to the processing means adding/removing Functions.  
 
-DPMDP starts processing the performance data for the listed devices.  
-The DPMDP reads the raw performance data, processes it, formats it, and streams the resulting data to out-of-domain tools (via Kafka provider interface).  
+Preparing the performance data is separated from formatting the output.  
+=> Same data can be provided in diverse output formats, if required.  
+Formatting the output is separated from transmitting it.  
+=> Same output format can be transmitted via diverse protocols, if required.  
+Internal data structure of prepared performance data follows ONF information model.  
+=> Further processing and services can be added independently from customer-specific output formats.  
 
-Furthermore, the DPMDP stores the processed performance data in its own database for further usage.  
+The data is manipulated in the following regards:  
+  - Release 1.0.0:
+    - Complement capability information  
+    - Complement configuration information  
+    - Add LinkId
+    - Add AirInterface capacity
+    - Add AirInterface interval capacity
+    - Add list of parallel physics
+    - Add three aggregated Ethernet KPIs
+  - Future releases:
+    - Remove already processed data
+    - Remove attributes with default value
+    - Remove attributes with implausible values
+    - Harmonize temperature values
 
-
-### Data Processing  
-
-**Coding Structure:**  
-The DPMDP implements a hard coded workflow for processing the performance data, but  
-  - the individual processing steps are structured into Functions  
-  - de-/activating individual processing Functions is facilitated.  
-
-Adding or removing Functions for other processing steps, output formats or transmit protocols should be easy to implement.  
-
-**Types of Processing the Data:**  
-The performance data, which has originally been retrieved from the devices, is manipulated in the following regards:  
-  - Removal of already processed data  
-  - Replacement and deletion of implausible data  
-  - Harmonization in format and semantical meaning  
-  - Completion by configuration information  
-  - Completion by capability information  
-  - Completion by calculated KPIs  
-  - Formatting according to the requirements of the out-of-domain tools  
-
+See further [details](./spec/).  
 
 ### Relevance  
 
 The DPMDP provides input data to APT, Mycom and NetExplorer.  
-In case of failure, data will be missing in the long term monitoring of the microwave network in these tools.  
+In case of failure, data will be missing in the long term monitoring of the microwave network.  
 
 
 ### Resources  

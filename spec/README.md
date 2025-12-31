@@ -1,11 +1,5 @@
 # DevicePerformanceManagementDataProcessor Specification
 
-    Caution:
-      The Pre-Release does not support the DataStore.  
-      It is recommended to configure a testing MWDI with a
-      small sliding window size to limit the number of 
-      updated ControlConstructs.
-
 
 ### API  
 
