@@ -110,246 +110,132 @@ profile-instances:
     configuration:
       value-reference: '/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/changes'
 
-# Todo: Double check and sort profile instances from here ...
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-000'
-    capability:
-      string-name: 'kafkaNotificationConsumptionSwitch'
-      enumeration:
-        - 'on'
-        - 'off'
-      #description: 'This profileInstance allows toggeling the receipt of notifications from Kafka on/off. Default is off.'
-    configuration:
-      string-value: 'off'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-001'
-    capability:
-      string-name: 'kafkaDataProvisioningSwitch'
-      enumeration:
-        - 'on'
-        - 'off'
-      #description: 'This profileInstance allows toggeling the sending of processed PM data to Kafka on/off. Default is on.'
-    configuration:
-      string-value: 'on'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-003'
-    capability:
-      string-name: 'PromptForProvidingInterfaceDataOnDemandCausesReadingMwdiLtpStructureAndAugment'
-      #description: 'This profileInstance configures the fields filter for retrieving LtpStructureAndAugment data from MWDI'
-    configuration:
-      string-value: 'logical-termination-point(uuid;layer-protocol(local-id;layer-protocol-name);ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name))'
-
-  - profile-name: 'IntegerProfile'
-    uuid: 'dpmdp-1-0-0-integer-p-001'
-    capability:
-      integer-name: 'deviceTableCleanupPeriod'
-      purpose: 'Time period for cleaning up expired entries in the DPMDP deviceTable'
-      unit: hour
-      minimum: 1
-      maximum: 24
-    configuration:
-      integer-value: 24
-
-  - profile-name: 'IntegerProfile'
-    uuid: 'dpmdp-1-0-0-integer-p-002'
-    capability:
-      integer-name: 'deviceTableRetentionPeriod'
-      purpose: 'Time period for which entries are kept in the deviceTable without an update of mostRecentTimestamp'
-      unit: hour
-      minimum: 1
-      maximum: 48
-    configuration:
-      integer-value: 48
-# Todo: ... to here 
-
-  # embedYourself
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-000'
-    capability:
-      function-name: 'embedYourself'
-      parameter-list:
-      sub-function-list:
-        - 'dpmdp-1-0-0-function-p-001'
-    configuration:
-      is-active: true
 
   # p1StreamPmData
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-001'
+    uuid: 'dpmdp-1-0-0-function-p-000'
     capability:
       function-name: 'p1StreamPmData'
+      function-description: 'Cyclically triggers the replication of MWDI and initiates the processing of the PM data'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-100'
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-030'
+        - 'dpmdp-1-0-0-function-p-060'
+        - 'dpmdp-1-0-0-function-p-090'
+        - 'dpmdp-1-0-0-function-p-120'
+        - 'dpmdp-1-0-0-function-p-150'
+    configuration:
+      is-active: true
+
+
+  # p1LoadParameters
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-030'
+    capability:
+      function-name: 'p1LoadParameters'
+      function-description: 'Loads the parameters from the configFile'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1ResolveEsAddress
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-060'
+    capability:
+      function-name: 'p1ResolveEsAddress'
+      function-description: 'Composes the address information of an ElasticSearchClient'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-061'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-101'
+        - parameter: 'dpmdp-1-0-0-string-p-062'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-105'
+        - parameter: 'dpmdp-1-0-0-string-p-063'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-106'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-107'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-108'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-109'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-115'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-116'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-117'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-118'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-119'
+        - parameter: 'dpmdp-1-0-0-string-p-064'
           owner: 'platform'
       sub-function-list:
-        - 'dpmdp-1-0-0-function-p-002'
-        - 'dpmdp-1-0-0-function-p-003'
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-100'
-    capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
-      string-name: 'jobName'
-      # todo: please add a description of the parameter into the purpose field
-      purpose: ''
-    configuration:
-      string-value: 'mw-to-dp-sync-dev'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-101'
-    capability:
-      string-name: 'synchPeriod'
-      purpose: 'Duration between two replications of the MWDI ES in seconds'
-    configuration:
-      string-value: '30'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-105'
+    uuid: 'dpmdp-1-0-0-string-p-061'
     capability:
       string-name: 'mwdiEsClient'
       purpose: 'UUID of the MWDI ES ElasticsearchClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
-      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'  
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-106'
+    uuid: 'dpmdp-1-0-0-string-p-062'
     capability:
       string-name: 'mwdiReplicaEsClient'
       purpose: 'UUID of the MWDI ES Replica ElasticsearchClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-018'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-108'
+    uuid: 'dpmdp-1-0-0-string-p-063'
     capability:
       string-name: 'loggingEsClient'
-      purpose: 'UUID of the ElasticsearchClient LTP of the database for logging the replication activities'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      purpose: 'UUID of the ElasticsearchClient LTP for logging the replication activities'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-020'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-109'
+    uuid: 'dpmdp-1-0-0-string-p-064'
     capability:
       string-name: 'dataStoreEsClient'
-      purpose: 'UUID of the DataStore ElasticsearchClient LTP'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-es-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      purpose: 'UUID of the ElasticsearchClient LTP for storing the resultCc'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-021'
 
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-115'
-    capability:
-      string-name: 'lastUpdatedField'
-      # todo: please add a description of the parameter into the purpose field
-      purpose: ''
-    configuration:
-      string-value: 'lastUpdated'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-116'
-    capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
-      string-name: 'overlapMs'
-      # todo: please add a description of the parameter into the purpose field
-      purpose: ' ... in milliseconds'
-    configuration:
-      string-value: '60000'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-117'
-    capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
-      string-name: 'reqPerSec'
-      # todo: please add a description of the parameter into the purpose field
-      purpose: ''
-    configuration:
-      string-value: '2'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-118'
-    capability:
-      string-name: 'scrollSize'
-      # todo: please add a description of the parameter into the purpose field
-      purpose: ''
-    configuration:
-      string-value: '200'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-119'
-    capability:
-      # todo: please replace by a more meaningful parameter name (findAndReplace in p1StreamPmData folder)
-      string-name: 'scrollTtl'
-      # todo: please add a description of the parameter into the purpose field
-      purpose: ''
-    configuration:
-      string-value: '2'
 
   # p1InitKafka
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-005'
+    uuid: 'dpmdp-1-0-0-function-p-090'
     capability:
       function-name: 'p1InitKafka'
+      function-description: 'Resolves Kafka address and initializes the Kafka session'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-120'
+        - parameter: 'dpmdp-1-0-0-string-p-091'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-120'
+    uuid: 'dpmdp-1-0-0-string-p-091'
     capability:
-      string-name: 'kafkaProducerClientForAptFormat'
-      purpose: 'UUID of the Kafka Producer client LTP to APT'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-kmb-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      string-name: 'aptProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
-      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
 
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-002'
+    uuid: 'dpmdp-1-0-0-function-p-100'
     capability:
       function-name: 'p1MaintainDs'
+      function-description: 'Cyclically cleans up old entries in the DataStore'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-200'
+        - parameter: 'dpmdp-1-0-0-string-p-101'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-201'
+        - parameter: 'dpmdp-1-0-0-string-p-102'
           owner: 'platform'
       sub-function-list:
     configuration:
-      is-active: true
+      is-active: false
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-200'
+    uuid: 'dpmdp-1-0-0-string-p-101'
     capability:
       string-name: 'dataStoreCleanupPeriod'
       purpose: 'Time period for cleaning up expired entries in the DataStore in hours; value range 1-24'
@@ -357,79 +243,177 @@ profile-instances:
       string-value: '24'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-201'
+    uuid: 'dpmdp-1-0-0-string-p-102'
     capability:
       string-name: 'dataStoreRetentionPeriod'
       purpose: 'Time period for which items are kept in the DataStore in hours; value range 1-96'
     configuration:
       string-value: '96'
 
-  # p1ProcessDevice
+
+  # p1UpdateMwdiReplica
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-003'
+    uuid: 'dpmdp-1-0-0-function-p-120'
     capability:
-      function-name: 'p1ProcessDevice'
+      function-name: 'p1UpdateMwdiReplica'
+      function-description: 'Replicates updated ControlConstructs from MWDI to MWDI Replica'
       parameter-list:
-        - parameter: ''
+        - parameter: 'dpmdp-1-0-0-string-p-121'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-122'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-123'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-124'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-125'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-126'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-127'
           owner: 'platform'
       sub-function-list:
-
-# Todo: Double check and update from here 
-
-        # subfunctions: p1LoadRawCc, p1CreateResultCc, p1FormattingOutputApt, p1TransmittingKafka, p1Storing
-        - 'dpmdp-1-0-0-function-p-020'
-        - 'dpmdp-1-0-0-function-p-030'
-        - 'dpmdp-1-0-0-function-p-050'
-        - 'dpmdp-1-0-0-function-p-070'
-        - 'dpmdp-1-0-0-function-p-080'
     configuration:
       is-active: true
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-121'
+    capability:
+      string-name: 'jobName'
+      purpose: 'Name of the replication job'
+    configuration:
+      string-value: 'mwdi-replica-update-job'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-122'
+    capability:
+      string-name: 'synchPeriod'
+      purpose: 'Duration between two replications of the MWDI ES in seconds'
+    configuration:
+      string-value: '480'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-123'
+    capability:
+      string-name: 'lastUpdatedField'
+      purpose: '?'
+    configuration:
+      string-value: 'lastUpdated'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-124'
+    capability:
+      string-name: 'overlapMs'
+      purpose: 'Overlap in milliseconds to avoid missing updates at period boundaries'
+    configuration:
+      string-value: '60000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-125'
+    capability:
+      string-name: 'reqPerSec'
+      purpose: 'Throttles re-indexing to number of copy operations per second, preventing high load on the server'
+    configuration:
+      string-value: '2'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-126'
+    capability:
+      string-name: 'scrollSize'
+      purpose: 'Number of documents returned per page when Elasticsearch performs a scroll search'
+    configuration:
+      string-value: '200'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-127'
+    capability:
+      string-name: 'scrollTtl'
+      purpose: 'How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window'
+    configuration:
+      string-value: '2'
+
+
+  # p1ProcessDevice
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-020'
+    uuid: 'dpmdp-1-0-0-function-p-150'
+    capability:
+      function-name: 'p1ProcessDevice'
+      function-description: 'Orchestrates the device-wise processing, formatting, sending and storing of PM data'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-151'
+          owner: 'platform'
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-180'
+        - 'dpmdp-1-0-0-function-p-270'
+        - 'dpmdp-1-0-0-function-p-420'
+        - 'dpmdp-1-0-0-function-p-450'
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-151'
+    capability:
+      string-name: 'aptFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+
+  # p1LoadRawCc
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-180'
     capability:
       function-name: 'p1LoadRawCc'
+      function-description: 'Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data'
+      parameter-list:
       sub-function-list:
-        - 'dpmdp-1-0-0-function-p-021'
-        - 'dpmdp-1-0-0-function-p-022'
+        - 'dpmdp-1-0-0-function-p-210'
+        - 'dpmdp-1-0-0-function-p-240'
     configuration:
       is-active: true
 
+
+  # p1FieldsFilter
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-021'
+    uuid: 'dpmdp-1-0-0-function-p-210'
     capability:
       function-name: 'p1FieldsFilter'
+      function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
       parameter-list:
-        - 'dpmdp-1-0-0-string-p-021'
+        - parameter: 'dpmdp-1-0-0-string-p-211'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
-  
-  # the fields filter string
+
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-021'
+    uuid: 'dpmdp-1-0-0-string-p-211'
     capability:
       string-name: 'fieldsFilter'
       purpose: 'Fields filter to be applied to reduce the raw ControlConstruct data'
     configuration:
       string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
 
+
+  # p1DiscardIrrelevantPmRecords
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-022'
+    uuid: 'dpmdp-1-0-0-function-p-240'
     capability:
       function-name: 'p1DiscardIrrelevantPmRecords'
+      function-description: 'Discards irrelevant records from historical performance data list'
       parameter-list:
-        - 'dpmdp-1-0-0-string-p-022'
+        - parameter: 'dpmdp-1-0-0-string-p-241'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
-  # parameter for p1DiscardIrrelevantPmRecords
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-022'
+    uuid: 'dpmdp-1-0-0-string-p-241'
     capability:
       string-name: 'relevantGranularities'
-      purpose: 'Pattern against which PM record granularity period values are to be matched. Indicates relevant granularities.'
+      purpose: 'An regex pattern indicating which data granularities are to be kept'
       enumeration:
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
@@ -437,125 +421,111 @@ profile-instances:
     configuration:
       string-value: ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
 
-  # createResultCC
+
+  # p1CreateResultCc
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-030'
+    uuid: 'dpmdp-1-0-0-function-p-270'
     capability:
       function-name: 'p1CreateResultCc'
+      function-description: 'Composes the resultCc from the rawCc'
       parameter-list:
       sub-function-list:
-        - 'dpmdp-1-0-0-function-p-031'
-        - 'dpmdp-1-0-0-function-p-032'
-        - 'dpmdp-1-0-0-function-p-033'
-        - 'dpmdp-1-0-0-function-p-034'
+        - 'dpmdp-1-0-0-function-p-300'
+        - 'dpmdp-1-0-0-function-p-390'
     configuration:
       is-active: true
 
-  # subfunctions are inactive (not in pre-release)
+  # p1PrepareTxModes
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-031'
+    uuid: 'dpmdp-1-0-0-function-p-300'
     capability:
-      function-name: 'p1DefaultValueTreatment'
+      function-name: 'p1PrepareTxModes'
+      function-description: 'Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity'
       parameter-list:
       sub-function-list:
+        - 'dpmdp-1-0-0-function-p-330'
+        - 'dpmdp-1-0-0-function-p-360'
     configuration:
-      is-active: false
+      is-active: true
 
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-032'
-    capability:
-      function-name: 'p1OutOfRangeTreatment'
-      parameter-list:
-      sub-function-list:
-    configuration:
-      is-active: false
 
+  # p1CalculateAiCapacity
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-033'
+    uuid: 'dpmdp-1-0-0-function-p-330'
     capability:
       function-name: 'p1CalculateAiCapacity'
+      function-description: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
       parameter-list:
       sub-function-list:
     configuration:
-      is-active: false
+      is-active: true
 
+
+  # p1CalculateIntervalCapacity
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-034'
+    uuid: 'dpmdp-1-0-0-function-p-360'
+    capability:
+      function-name: 'p1CalculateIntervalCapacity'
+      function-description: 'Calculates the average capacity provided by an AirInterface within a given interval'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1CalculateEthernetKpis
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-390'
     capability:
       function-name: 'p1CalculateEthernetKpis'
+      function-description: 'Adds Ethernet KPIs to the historicalPerformanceDataList'
       parameter-list:
       sub-function-list:
     configuration:
-      is-active: false
+      is-active: true
 
 
-  # Format output
+  # p1FormattingOutputApt
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-050'
+    uuid: 'dpmdp-1-0-0-function-p-420'
     capability:
       function-name: 'p1FormattingOutputApt'
-      parameter-list:
-      sub-function-list:
-        - 'dpmdp-1-0-0-function-p-051'
-        - 'dpmdp-1-0-0-function-p-052'
-        - 'dpmdp-1-0-0-function-p-053'
-    configuration:
-      is-active: true
-
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-051'
-    capability:
-      function-name: 'p1ComputeAirInterfaceNames'
+      function-description: 'Transforms the resultCc into aptOutputFormat'
       parameter-list:
       sub-function-list:
     configuration:
       is-active: true
 
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-052'
-    capability:
-      function-name: 'p1ComputeAirInterfacePhysicalLag'
-      parameter-list:
-      sub-function-list:
-    configuration:
-      is-active: true
 
+  # p1TransmittingKafka
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-053'
-    capability:
-      function-name: 'p1ComputeEthContainerNames'
-      parameter-list:
-      sub-function-list:
-    configuration:
-      is-active: true
-
-  # transmit
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-070'
+    uuid: 'dpmdp-1-0-0-function-p-450'
     capability:
       function-name: 'p1TransmittingKafka'
+      function-description: 'Transfers output data to Kafka transmitter'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-700'
+        - parameter: 'dpmdp-1-0-0-string-p-451'
           owner: 'platform'
-        # Parameters can be extended to reference new Kafka topics when introduced
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-700'
+    uuid: 'dpmdp-1-0-0-string-p-451'
     capability:
-      string-name: 'kafkaProducerClientForAptFormat'
-      purpose: 'UUID of the Kafka Producer client LTP to APT'
-      pattern: '^([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-kmb-c-([a-z]{2,6})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{1,2})-([0-9]{3})$'
+      string-name: 'aptFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
-      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
 
-  # storing: inactive
+
+  # p1Storing
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-080'
+    uuid: 'dpmdp-1-0-0-function-p-480'
     capability:
       function-name: 'p1Storing'
+      function-description: 'Stores the resultCc into the DataStore'
       parameter-list:
       sub-function-list:
     configuration:

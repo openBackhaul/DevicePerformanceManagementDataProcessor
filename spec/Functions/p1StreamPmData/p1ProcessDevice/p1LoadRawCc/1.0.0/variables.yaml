@@ -50,7 +50,7 @@ load-raw-cc:
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
       description: >
-        'An regex pattern indicating which data granularities are to be kept.
+        'An regex pattern indicating which data granularities are to be kept
         from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
 
     interface:

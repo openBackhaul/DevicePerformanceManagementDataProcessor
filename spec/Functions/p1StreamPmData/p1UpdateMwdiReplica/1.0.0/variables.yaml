@@ -96,8 +96,7 @@ update-mwdi-replica:
         '?
         from [/parameters/parameter=lastUpdatedField/value]'
     overlap-ms:
-      type: integer
-      format: int64
+      type: string
       description: >
         'Overlap in milliseconds to avoid missing updates at period boundaries
         from [/parameters/parameter=overlapMs/value]'

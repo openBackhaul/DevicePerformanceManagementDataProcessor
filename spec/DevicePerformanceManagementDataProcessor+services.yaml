@@ -62,7 +62,7 @@ servers:
     own-application-name: DevicePerformanceManagementDataProcessor
     own-release-number: 1.0.0
     uuid: dpmdp-1-0-0-http-s-000
-    application-purpose: This application collects and processes historical device performance data and streams it to consumers
+    application-purpose: Collects and processes historical device performance data and streams it to consumers
     owner-name: Thorsten Heinze
     owner-email-address: Thorsten.Heinze@telefonica.com
     release-list:
@@ -112,7 +112,7 @@ clients:
       tcp-port: 3017
       uuid: dpmdp-1-0-0-tcp-c-kmb-1-0-0-000
     kafka-client:
-      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-010
+      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-000
         topic-name: apt_format
         type: provider
 
