@@ -1,0 +1,84 @@
+openapi: 3.0.0
+info:
+  title: p1LoadParameters
+  version: 1.0.0
+
+x-javascript-interface:
+  p1LoadParameters:
+    summary: 'Loads the parameters of the defined Function (input) and its sub-Functions from the configFile and returns them in the internal parameters format.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - function-name
+            properties:
+              function-name:
+                type: string
+                description: 'Name of the Function whose parameters are to be loaded from the configFile'
+    output:
+      success:
+        description: 'Parameters successfully loaded'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - parameters
+                - config-file
+              properties:
+                parameters:
+                  description: >
+                    'Parameters of the Function
+                    from [/load-parameters/parameters]'
+                config-file:
+                  type: object
+                  description: >
+                    'configFile content
+                    from [/load-parameters/config-file]'
+      error:
+        description: 'Parameters could not be loaded'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'configFile not found or not accessible'
+                - 'configFile is not valid JSON'
+                - 'configFile does not conform to the expected schema'
+                - 'functionName not found in configFile'
+                - 'unknown error occurred'
+    processing:
+      description: 'No requests or calls to other Functions'
+      file-access:
+        description: 'Reads the configFile from the local file system'
+        output:
+          success:
+            description: 'configFile successfully loaded'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - config-file
+                  properties:
+                    config-file:
+                      type: object
+                      description: 'configFile content'
+          error:
+            description: 'configFile could not be loaded'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'configFile not found or not accessible'
+                    - 'configFile is not valid JSON'
+                    - 'configFile does not conform to the expected schema'
+                    - 'unknown error occurred'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

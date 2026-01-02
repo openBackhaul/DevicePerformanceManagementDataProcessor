@@ -1,0 +1,14 @@
+formatting-output-apt:
+  type: object
+  required:
+    - result-cc
+  properties:
+    result-cc:
+      type: object
+      description: >
+        'ResultCc'
+    apt-output-format:
+      type: object
+      description: >
+        'aptOutputFormat
+        from {$createOutputFromResultCc.output#/output}'

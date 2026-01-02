@@ -1,0 +1,272 @@
+openapi: 3.0.0
+info:
+  title: p1ProcessDevice
+  version: 1.0.0
+
+x-javascript-interface:
+  p1ProcessDevice:
+    summary: 'Orchestrates the device-wise processing, formatting, sending and storing of PM data.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - config-file
+              - mount-name
+              - mwdi-replica-es-client
+              - data-store-es-client
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Hierarchical object holding the parameter settings'
+              config-file:
+                type: object
+                description: >
+                  'configFile content'
+              mount-name:
+                type: string
+                description: >
+                  'MountName'
+              mwdi-replica-es-client:
+                type: object
+                description: >
+                  'MWDI Replica ElasticSearch address'
+              data-store-es-client:
+                type: object
+                description: >
+                  'Data Store ElasticSearch address'
+    output:
+      success:
+        description: 'PM data processed, sent and stored'
+      error:
+        description: 'Processing of PM data failed'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'Input data missing or invalid'
+                - 'Mount name not found'
+                - 'Parameters missing or invalid'
+                - 'Config file missing or invalid'
+                - 'Raw CC data missing or invalid'
+                - 'Result CC data missing or invalid'
+                - 'Output format missing or invalid'
+                - 'Kafka transmission failed'
+                - 'Storing resultCC failed'
+                - 'General processing error'
+    processing:
+      p1LoadRawCc:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  - parameters
+                  - mwdi-replica-es-client
+                  - data-store-es-client
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'MountName
+                      from [/process-device/mount-name]'
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p1LoadRawCc
+                      from [/process-device/parameters/sub-function=p1LoadRawCc]'
+                  mwdi-replica-es-client:
+                    type: object
+                    description: >
+                      'MWDI Replica ElasticSearch address
+                      from [/process-device/mwdi-replica-es-client]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'Data Store ElasticSearch address
+                      from [/process-device/data-store-es-client]'
+        output:
+          success:
+            description: 'rawCc loaded'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - raw-cc
+                  properties:
+                    raw-cc:
+                      type: object
+                      description: >
+                        'rawCc'
+          error:
+            description: 'rawCc could not be loaded'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1CreateResultCc:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - raw-cc
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p1CreateResultCc
+                      from [/process-device/parameters/sub-function=p1CreateResultCc]'
+                  raw-cc:
+                    type: object
+                    description: >
+                      'rawCc
+                      from [/process-device/raw-cc]'
+        output:
+          success:
+            description: 'Result CC data created'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    result-cc:
+                      type: object
+                      description: >
+                        'resultCc'
+          error:
+            description: 'Result CC data could not be created'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1FormattingOutputApt:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - result-cc
+                properties:
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc
+                      from [/process-device/result-cc]'
+        output:
+          success:
+            description: 'aptOutputFormat created'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - apt-output-format
+                  properties:
+                    apt-output-format:
+                      type: object
+                      description: >
+                        'aptOutputFormat'
+          error:
+            description: 'aptOutputFormat could not be created'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1TransmittingKafka:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - config-file
+                  - output-format
+                  - kafka-transmitter
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p1TransmittingKafka
+                      from [/process-device/parameters/sub-function=p1TransmittingKafka]'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content
+                      from [/process-device/config-file]'
+                  output-format:
+                    type: array
+                    x-key: format-name
+                    description: >
+                      'Array of output formats to be transmitted
+                      from [/process-device/output-format]'
+                  kafka-transmitter:
+                    type: string
+                    description: >
+                      'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka
+                      from [/process-device/kafka-transmitter[n]]'
+        output:
+          success:
+            description: 'Objects sent via Kafka'
+          error:
+            description: 'Objects could not be sent via Kafka'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1Storing:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - result-cc
+                  - parameters
+                  - data-store-es-client
+                properties:
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc
+                      from [/process-device/result-cc]'
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p1Storing
+                      from [/process-device/parameters/sub-function=p1Storing]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'Data Store ElasticSearch address
+                      from [/process-device/data-store-es-client]'
+        output:
+          success:
+            description: 'resultCC stored'
+          error:
+            description: 'resultCC could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

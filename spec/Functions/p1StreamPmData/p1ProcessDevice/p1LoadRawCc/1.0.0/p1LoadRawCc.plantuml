@@ -1,0 +1,67 @@
+@startuml p1LoadRawCc
+skinparam responseMessageBelowArrow true
+
+title
+  p1LoadRawCc
+end title
+
+participant "p1ProcessDevice" as requestor
+participant "p1LoadRawCc" as cur #LightCyan
+database "MWDI ES Replica" as MwdiEs #LightCyan
+participant "p1FieldsFilter" as fieldsFilter #LightCyan
+database "DataStore" as datastore #LightBlue
+participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
+
+requestor -> cur: {mountName\n{parameters}\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
+activate cur #LightCyan
+
+  note over cur
+    readControlConstructFromReplica
+  end note
+  cur -> MwdiEs: {mountName}
+  cur <-- MwdiEs: {{rawControlConstruct}}
+
+  cur -> fieldsFilter: {{rawControlConstruct}\nfieldsFilter}
+  activate fieldsFilter #LightCyan
+    note over fieldsFilter
+      Apply FieldsFilter
+    end note
+  cur <-- fieldsFilter: {{filtered rawControlConstruct}}
+  deactivate fieldsFilter #LightCyan
+
+  note over cur #LightBlue
+    retrieveMostRecentPeriodEndTimesFromDs
+  end note
+  cur -> datastore: {mountName}
+  cur <-- datastore: {[interface]}
+
+    note right cur #LightBlue
+      In the pre-release there is no mostRecentPeriodEndTime info available
+      Both 15min and 24h records will be kept by default
+    end note
+
+  loop FOR all [/raw-cc/logical-termination-point]
+
+    note over cur
+      IF layerProtocolName == AirInterface OR EthernetContainer
+    end note
+
+    note over cur
+      THEN
+    end note
+
+    cur -> filterPm: {[historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color>}
+    activate filterPm #LightCyan
+    note over filterPm
+      Discards records that are
+      of wrong granularity or
+      already processed from 
+      historicalPerformanceDataList 
+    end note 
+    cur <-- filterPm: {[filteredHistoricalPerformanceDataList]}
+    deactivate filterPm
+
+  end group
+
+requestor <-- cur: {{rawCc}}
+deactivate cur

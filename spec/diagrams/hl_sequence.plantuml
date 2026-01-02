@@ -1,0 +1,299 @@
+@startuml hl_sequence
+skinparam responseMessageBelowArrow true
+
+title
+  DevicePerformanceManagementDataProcessor
+end title
+
+participant "embedYourself\n" as embed
+participant "p1StreamPmData\n" as p1RMWDI #LightCyan
+participant "p1LoadParameters\n" as p1LoadParams #LightCyan
+participant "p1ResolveEsAddress\n" as p1REA #LightCyan
+participant "p1InitKafka\n" as p1InitKafka #LightCyan
+participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
+
+participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
+
+participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
+participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
+
+participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
+participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightCyan
+
+participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+
+participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+
+participant "p1Storing\n" as p1Store #LightBlue
+participant "p1MaintainDs\n" as p1MDS #LightBlue
+
+participant "kafkaProducer\nService" as kafkaProd #LightCyan
+
+note right embed
+  Automatically start
+  p1StreamPmData
+end note
+embed -> p1RMWDI
+
+' replicate MWDI ES ->
+activate p1RMWDI #LightCyan
+
+  p1RMWDI -> p1LoadParams
+  activate p1LoadParams #LightCyan
+    note over p1LoadParams
+      Load parameters
+      from configFile
+    end note
+  p1RMWDI <-- p1LoadParams
+  deactivate p1LoadParams
+
+  Loop FOR all esName
+    p1RMWDI -> p1REA
+    activate p1REA #LightCyan
+      note over p1REA
+        Resolve ES address
+      end note
+    p1RMWDI <-- p1REA
+    deactivate p1REA
+
+  end Loop
+
+  p1RMWDI -> p1InitKafka
+  activate p1InitKafka #LightCyan
+
+    note over p1InitKafka
+      Resolve Kafka
+      address
+    end note
+
+    p1InitKafka -> kafkaProd
+    activate kafkaProd #LightCyan
+      note over kafkaProd
+        Establish session
+      end note
+    p1InitKafka <-- kafkaProd
+
+  p1RMWDI <-- p1InitKafka
+  deactivate p1InitKafka
+
+  p1RMWDI -> p1MDS
+  activate p1MDS #LightBlue
+    note over p1MDS
+      Maintain DataStore
+    end note
+
+  Loop endless
+
+    p1RMWDI -> p1UMR
+    activate p1UMR #LightCyan
+      note over p1UMR
+        Replicate updated CCs
+      end note
+    p1RMWDI <-- p1UMR
+    deactivate p1UMR
+
+    Loop for every updated CC
+
+      p1RMWDI -> p1ProcessPm
+      activate p1ProcessPm #LightCyan
+
+        note over p1ProcessPm
+          Create data structure
+          for processing
+        end note
+
+        ' create RawCC ->
+        p1ProcessPm -> p1AddRaw
+        activate p1AddRaw #LightCyan
+
+          note over p1AddRaw
+            Load raw data to rawCC
+          end note
+
+          ' apply fieldsFilter ->
+          p1AddRaw -> p1FieldsFilter
+          activate p1FieldsFilter #LightCyan
+
+            note over p1FieldsFilter
+              Reduce structure of rawCC
+            end note
+
+          p1AddRaw <-- p1FieldsFilter
+          deactivate p1FieldsFilter
+
+          note over p1AddRaw
+            Get mostRecentPeriodEndTimes
+          end note
+
+          ' discard irrelevant PM records
+          p1AddRaw -> filterPm
+          activate filterPm #LightCyan
+
+            note over filterPm
+              Delete PM data that has
+              already been processed in past
+            end note
+
+          p1AddRaw <-- filterPm
+          deactivate filterPm
+
+        p1ProcessPm <-- p1AddRaw
+        deactivate p1AddRaw
+
+        note over p1ProcessPm
+          Add rawCC to data structure
+          for processing
+        end note
+
+        ' create resultCC ->
+        p1ProcessPm -> p1CreateResultCC
+        activate p1CreateResultCC #LightCyan
+
+          note over p1CreateResultCC
+            Create resultCC
+            from rawCC
+          end note
+
+          p1CreateResultCC -> prepTxModes
+          activate prepTxModes #LightCyan
+
+            note over prepTxModes
+              Prepare TxModes
+            end note
+
+            prepTxModes -> aiCC
+            activate aiCC #LightCyan
+
+              note over aiCC
+                Calculate
+                AirInterfaceCapacity
+              end note
+
+            prepTxModes <-- aiCC
+            deactivate aiCC
+
+            prepTxModes -> intCC
+            activate intCC #LightCyan
+
+              note over intCC
+                Calculate
+                IntervalCapacity
+              end note
+
+            prepTxModes <-- intCC
+            deactivate intCC
+
+          p1CreateResultCC <-- prepTxModes
+          deactivate prepTxModes
+
+          note over p1CreateResultCC
+            Add linkId
+          end note
+
+          note over p1CreateResultCC
+            Add list of parallel LTPs
+          end note
+
+          note over p1CreateResultCC
+            Add mostRecentPeriodEndTime
+          end note
+
+          note over p1CreateResultCC
+            Add mostRecentPeriodEndTime24
+          end note
+
+          ' process outOfRange values ->
+          note over p1CreateResultCC #LightGray
+            Delete attributes with value outside
+            pre-defined range from resultCC
+          end note
+
+          ' get EthContainer KPIs ->
+          p1CreateResultCC -> p1EthKpi
+          activate p1EthKpi #LightCyan
+
+            note over p1EthKpi
+              Add Ethernet KPIs
+              to resultCC
+            end note
+
+          p1CreateResultCC <-- p1EthKpi
+          deactivate p1EthKpi
+
+          ' harmonize Temperature ->
+          note over p1CreateResultCC #LightGray
+            Harmonize temperature
+            across device types
+          end note
+
+          ' process default values ->
+          note over p1CreateResultCC #LightGray
+            Delete attributes with ONF
+            default value from resultCC
+          end note
+
+        p1ProcessPm <-- p1CreateResultCC
+        deactivate p1CreateResultCC
+
+        note over p1ProcessPm
+          Add resultCC to data 
+          structure for processing
+        end note
+
+        ' Format OutputAPT ->
+        p1ProcessPm -> p1Output
+        activate p1Output #LightCyan
+
+          note over p1Output
+            Create APT format
+            from resultCC
+          end note
+
+        p1ProcessPm <-- p1Output
+        deactivate p1Output
+
+        note over p1ProcessPm
+          Add APT format to data
+          structure for processing
+        end note
+
+        ' transmit data ->
+        p1ProcessPm -> p1Trans
+        activate p1Trans #LightCyan
+
+          note over p1Trans
+            Transmit object
+            to Kafka
+          end note
+          p1Trans -> kafkaProd
+            note over kafkaProd
+              Send message
+            end note
+          p1Trans <-- kafkaProd
+
+        p1ProcessPm <-- p1Trans
+        deactivate p1Trans
+
+        ' storing ->
+        p1ProcessPm -> p1Store
+        activate p1Store #LightBlue
+
+          note over p1Store
+            Store resultCC
+            to DataStore
+          end note
+
+        p1ProcessPm <-- p1Store
+        deactivate p1Store
+
+      deactivate p1ProcessPm
+
+    end Loop
+
+  end Loop
+
+@enduml

@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  title: p1CalculateAiCapacity
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CalculateAiCapacity:
+    summary: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - channel-bandwidth
+              - symbol-rate-reduction-factor
+              - number-of-states-in-modulation
+              - code-rate
+            properties:
+              channel-bandwidth:
+                type: integer
+                description: >
+                  'channelBandwidth in kHz'
+              symbol-rate-reduction-factor:
+                type: integer
+                description: >
+                  'symbolRateReductionFactor'
+              number-of-states-in-modulation:
+                type: integer
+                description: >
+                  'numberOfStatesInModulation'
+              code-rate:
+                type: integer
+                description: >
+                  'codeRate in percent'
+    output:
+      success:
+        description: 'AirInterface capacity calculated'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - air-interface-capacity
+              properties:
+                air-interface-capacity:
+                  type: integer
+                  description: >
+                    'airInterfaceCapacity
+                    from [/calculate-ai-capacity/air-interface-capacity]'
+      error:
+        description: 'AirInterface capacity could not be calculated'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'channelBandwidth not provided'
+                - 'channelBandwidth invalid'
+                - 'symbolRateReductionFactor not provided'
+                - 'symbolRateReductionFactor invalid'
+                - 'numberOfStatesInModulation not provided'
+                - 'numberOfStatesInModulation invalid'
+                - 'codeRate not provided'
+                - 'codeRate invalid'
+                - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
