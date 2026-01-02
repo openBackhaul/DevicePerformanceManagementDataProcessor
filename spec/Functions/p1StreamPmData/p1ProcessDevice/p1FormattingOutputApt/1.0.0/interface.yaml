@@ -113,7 +113,7 @@ x-javascript-interface:
                                       'Name of the physically aggregated resources, of type AirInterface or WireInterface, that are transporting fragments of the same Ethernet frames'
                                     items:
                                       oneOf:
-                                        - description: 'AirInterfaces'
+                                        - description: 'AirInterfaces - if {$p1FormattingOutputApt.input#/result-cc/logical-termination-point/uuid={uuid}/layer-protocol/local-id/layer-protocol-name} == LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
                                           type: object
                                           required:
                                             - uuid
@@ -128,8 +128,8 @@ x-javascript-interface:
                                               type: string
                                               description: >
                                                 'Identifier of the microwave link as used in the Telefonica planing tools
-                                                from {$p1FormattingOutputApt.output}'
-                                        - description: 'WireInterface'
+                                                from {$p1FormattingOutputApt.input#/result-cc/logical-termination-point/uuid={uuid}/ltp-augment-1-0:ltp-augment-pac/link-id}'
+                                        - description: 'WireInterface - if {$p1FormattingOutputApt.input#/result-cc/logical-termination-point/uuid={uuid}/layer-protocol/local-id/layer-protocol-name} == LAYER_PROTOCOL_NAME_TYPE_WIRE_LAYER'
                                           type: object
                                           required:
                                             - uuid
@@ -144,7 +144,7 @@ x-javascript-interface:
                                               type: string
                                               description: >
                                                 'Interface name as it is represented at the own management interface of the vendor
-                                                from {$p1FormattingOutputApt.output}'
+                                                from {$p1FormattingOutputApt.input#/result-cc/logical-termination-point/uuid={uuid}/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}'
                               air-interface-configuration:
                                 type: object
                                 properties:
@@ -419,6 +419,11 @@ x-javascript-interface:
                                       description: >
                                         'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK
                                         from {$p1FormattingOutputApt.output}'
+                              idu-cpu-temperature:
+                                type: string
+                                description: >
+                                  'Real-time temperature reading from the indoor unit's CPU package or core sensor, captured at the time of the query
+                                  from {$p1FormattingOutputApt.input#result-cc/equipment/actual-equipment/physical-properties/temperature}'
                         ethernet-container-list:
                           description: >
                             'List of EthernetContainers found in the resultCc.
