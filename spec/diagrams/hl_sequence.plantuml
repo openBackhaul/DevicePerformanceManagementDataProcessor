@@ -18,7 +18,7 @@ participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
 
-participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
 participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
@@ -150,15 +150,15 @@ activate p1RMWDI #LightCyan
         end note
 
         ' create resultCC ->
-        p1ProcessPm -> p1CreateResultCC
-        activate p1CreateResultCC #LightCyan
+        p1ProcessPm -> p1CreateResultCc
+        activate p1CreateResultCc #LightCyan
 
-          note over p1CreateResultCC
+          note over p1CreateResultCc
             Create resultCC
             from rawCC
           end note
 
-          p1CreateResultCC -> prepTxModes
+          p1CreateResultCc -> prepTxModes
           activate prepTxModes #LightCyan
 
             note over prepTxModes
@@ -187,33 +187,33 @@ activate p1RMWDI #LightCyan
             prepTxModes <-- intCC
             deactivate intCC
 
-          p1CreateResultCC <-- prepTxModes
+          p1CreateResultCc <-- prepTxModes
           deactivate prepTxModes
 
-          note over p1CreateResultCC
+          note over p1CreateResultCc
             Add linkId
           end note
 
-          note over p1CreateResultCC
+          note over p1CreateResultCc
             Add list of parallel LTPs
           end note
 
-          note over p1CreateResultCC
+          note over p1CreateResultCc
             Add mostRecentPeriodEndTime
           end note
 
-          note over p1CreateResultCC
+          note over p1CreateResultCc
             Add mostRecentPeriodEndTime24
           end note
 
           ' process outOfRange values ->
-          note over p1CreateResultCC #LightGray
+          note over p1CreateResultCc #LightGray
             Delete attributes with value outside
             pre-defined range from resultCC
           end note
 
           ' get EthContainer KPIs ->
-          p1CreateResultCC -> p1EthKpi
+          p1CreateResultCc -> p1EthKpi
           activate p1EthKpi #LightCyan
 
             note over p1EthKpi
@@ -221,23 +221,23 @@ activate p1RMWDI #LightCyan
               to resultCC
             end note
 
-          p1CreateResultCC <-- p1EthKpi
+          p1CreateResultCc <-- p1EthKpi
           deactivate p1EthKpi
 
           ' harmonize Temperature ->
-          note over p1CreateResultCC #LightGray
+          note over p1CreateResultCc #LightGray
             Harmonize temperature
             across device types
           end note
 
           ' process default values ->
-          note over p1CreateResultCC #LightGray
+          note over p1CreateResultCc #LightGray
             Delete attributes with ONF
             default value from resultCC
           end note
 
-        p1ProcessPm <-- p1CreateResultCC
-        deactivate p1CreateResultCC
+        p1ProcessPm <-- p1CreateResultCc
+        deactivate p1CreateResultCc
 
         note over p1ProcessPm
           Add resultCC to data 

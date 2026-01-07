@@ -72,17 +72,6 @@ prepare-tx-modes:
       items:
         type: string
 
-
-
-
-
-
-
-
-
-
-
-
     air-interface-uuid:
       type: array
       description: >
