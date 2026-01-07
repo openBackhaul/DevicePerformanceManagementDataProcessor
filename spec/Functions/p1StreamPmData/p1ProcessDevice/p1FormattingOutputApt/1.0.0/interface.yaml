@@ -46,10 +46,10 @@ x-javascript-interface:
                 - 'resultCc invalid'
                 - 'aptOutputFormat could not be provided'
                 - 'General processing error'
-      processing:
-        createOutputFromResultCc:
-          description: >
-            'Creates the output object as a variable of the p1FormattingOutputApt function and fills it from resultCc data'
+    processing:
+      createOutputFromResultCc:
+        description: >
+          'Creates the output object as a variable of the p1FormattingOutputApt function and fills it from resultCc data'
         input:
           content:
             application/json:
