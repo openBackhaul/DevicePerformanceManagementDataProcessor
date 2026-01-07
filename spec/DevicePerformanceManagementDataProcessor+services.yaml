@@ -119,12 +119,12 @@ clients:
 
   - http-client:
       application-name: OldRelease
-      release-number:
+      release-number: 1.0.0
       uuid: dpmdp-1-0-0-http-c-or-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port:
+      tcp-port: 4031
       uuid: dpmdp-1-0-0-tcp-c-or-1-0-0-000
     operation-clients:
       own-oam:
