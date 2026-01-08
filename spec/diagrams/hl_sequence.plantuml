@@ -18,7 +18,7 @@ participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
 
-participant "p1CreateResultCc\n" as p1CreateResultCC #LightCyan
+participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
 participant "p1Prepare\nTxModes" as p1prepTxModes #Brown
 participant "p2Prepare\nTxModes" as p2prepTxModes #Yellow
 participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
@@ -29,6 +29,7 @@ participant "p1RemoveDefault\nPerfValues" as p1RDPV #Yellow
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #Brown
 participant "p1IterateEc\nPmSlices" as ecSlices #Yellow
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #Yellow
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #Yellow
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
@@ -170,7 +171,7 @@ activate p1RMWDI #LightCyan
 
           loop FOR all AirInterfaces in resultCc
 
-            p1CreateResultCC -> p1prepTxModes
+            p1CreateResultCc -> p1prepTxModes
             activate p1prepTxModes #Brown
 
               note over p1prepTxModes
@@ -199,10 +200,10 @@ activate p1RMWDI #LightCyan
               p1prepTxModes <-- intCC
               deactivate intCC
 
-            p1CreateResultCC <-- p1prepTxModes
+            p1CreateResultCc <-- p1prepTxModes
             deactivate p1prepTxModes
 
-            p1CreateResultCC -> p2prepTxModes
+            p1CreateResultCc -> p2prepTxModes
             activate p2prepTxModes #Yellow
 
               note over p2prepTxModes
@@ -220,10 +221,10 @@ activate p1RMWDI #LightCyan
               p2prepTxModes <-- aiCC
               deactivate aiCC
 
-            p1CreateResultCC <-- p2prepTxModes
+            p1CreateResultCc <-- p2prepTxModes
             deactivate p2prepTxModes
 
-            p1CreateResultCC -> aiSlices
+            p1CreateResultCc -> aiSlices
             activate aiSlices #Yellow
 
               Loop FOR historicalPerformanceDataList
@@ -243,8 +244,9 @@ activate p1RMWDI #LightCyan
                 activate p1RORL #Yellow
 
                   note over p1RORL
-                    Delete RxLevel and TxLevel attributes
-                    with values outside pre-defined range
+                    Delete RxLevel and TxLevel
+                    attributes with values
+                    outside pre-defined range
                   end note
 
                 aiSlices <-- p1RORL
@@ -263,37 +265,33 @@ activate p1RMWDI #LightCyan
 
               end loop 
 
-            p1CreateResultCC <-- aiSlices
+            p1CreateResultCc <-- aiSlices
             deactivate aiSlices
 
 
-            note over p1CreateResultCC
+            note over p1CreateResultCc
               Add linkId
             end note
 
-            note over p1CreateResultCC
+            note over p1CreateResultCc
               Add list of parallel LTPs
             end note
 
-            note over p1CreateResultCC
+            note over p1CreateResultCc
               Add mostRecentPeriodEndTime
+              (AirInterface)
             end note
 
-            note over p1CreateResultCC
+            note over p1CreateResultCc
               Add mostRecentPeriodEndTime24
-            end note
-
-            ' process outOfRange values ->
-            note over p1CreateResultCC #LightGray
-              Delete temperature attributes with values outside
-              pre-defined range from resultCC
+              (AirInterface)
             end note
 
           end loop
 
           loop FOR all EthernetContainers in resultCc
 
-            p1CreateResultCC -> p1EthKpi
+            p1CreateResultCc -> p1EthKpi
             activate p1EthKpi #Brown
 
               note over p1EthKpi
@@ -301,10 +299,10 @@ activate p1RMWDI #LightCyan
                 to resultCC
               end note
 
-            p1CreateResultCC <-- p1EthKpi
+            p1CreateResultCc <-- p1EthKpi
             deactivate p1EthKpi
 
-            p1CreateResultCC -> ecSlices
+            p1CreateResultCc -> ecSlices
             activate ecSlices #Yellow
 
               Loop FOR historicalPerformanceDataList
@@ -333,25 +331,41 @@ activate p1RMWDI #LightCyan
 
               end loop 
 
-            p1CreateResultCC <-- ecSlices
+            p1CreateResultCc <-- ecSlices
             deactivate ecSlices
+
+            note over p1CreateResultCc
+              Add mostRecentPeriodEndTime
+              (EthernetContainer)
+            end note
+
+            note over p1CreateResultCc
+              Add mostRecentPeriodEndTime24
+              (EthernetContainer)
+            end note
 
           end loop
 
-          ' harmonize Temperature ->
-          note over p1CreateResultCc #LightGray
-            Harmonize temperature
-            across device types
-          end note
+          p1CreateResultCc -> p1ROoRT
+          activate p1ROoRT #Yellow
+
+            note over p1ROoRT
+              Delete temperature attributes 
+              with values outside pre-defined
+              range from resultCC
+            end note
+
+          p1CreateResultCc <-- p1ROoRT
+          deactivate p1ROoRT
 
           ' process default values ->
-          note over p1CreateResultCC #LightGray
+          note over p1CreateResultCc #LightGray
             Delete attributes with ONF
             default value from resultCC
           end note
 
-        p1ProcessPm <-- p1CreateResultCC
-        deactivate p1CreateResultCC
+        p1ProcessPm <-- p1CreateResultCc
+        deactivate p1CreateResultCc
 
         note over p1ProcessPm
           Add resultCC to data 
