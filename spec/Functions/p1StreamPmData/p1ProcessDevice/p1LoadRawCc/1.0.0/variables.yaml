@@ -216,6 +216,11 @@ load-raw-cc:
                                         type: integer
                                       symbol-rate-reduction-factor:
                                         type: integer
+                            air-interface-current-performance:
+                              type: object
+                              properties:
+                                timestamp:
+                                  type: string
                             air-interface-historical-performances:
                               type: object
                               properties:
