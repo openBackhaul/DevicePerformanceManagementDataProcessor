@@ -6,23 +6,23 @@ title
 end title
 
 participant "embedYourself\n" as embed
-participant "p1StreamPmData\n" as p1RMWDI #LightCyan
-participant "p1LoadParameters\n" as p1LoadParams #LightCyan
-participant "p1ResolveEsAddress\n" as p1REA #LightCyan
-participant "p1InitKafka\n" as p1InitKafka #LightCyan
-participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
+participant "p1StreamPmData\n" as p1RMWDI #LightBlue
+participant "p1LoadParameters\n" as p1LoadParams #LightBlue
+participant "p1ResolveEsAddress\n" as p1REA #LightBlue
+participant "p1InitKafka\n" as p1InitKafka #LightBlue
+participant "p1UpdateMwdiReplica\n" as p1UMR #LightBlue
 
-participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
+participant "p1ProcessDevice\n" as p1ProcessPm #LightBlue
 
 participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
-participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
+participant "p1FieldsFilter\n" as p1FieldsFilter #LightBlue
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightBlue
 
-participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
+participant "p1CreateResultCc\n" as p1CreateResultCc #LightBlue
 participant "p1Prepare\nTxModes" as p1prepTxModes #Brown
 participant "p2Prepare\nTxModes" as p2prepTxModes #Yellow
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
-participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
+participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 participant "p1IterateAi\nPmSlices" as aiSlices #Yellow
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL #Yellow
 participant "p1RemoveDefault\nPerfValues" as p1RDPV #Yellow
@@ -31,14 +31,14 @@ participant "p1IterateEc\nPmSlices" as ecSlices #Yellow
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #Yellow
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #Yellow
 
-participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+participant "p1Formatting\nOutputApt" as p1Output #LightBlue
 
-participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
-participant "p1Storing\n" as p1Store #LightBlue
-participant "p1MaintainDs\n" as p1MDS #LightBlue
+participant "p1Storing\n" as p1Store #Yellow
+participant "p1MaintainDs\n" as p1MDS #Yellow
 
-participant "kafkaProducer\nService" as kafkaProd #LightCyan
+participant "kafkaProducer\nService" as kafkaProd #LightBlue
 
 note right embed
   Automatically start
@@ -47,10 +47,10 @@ end note
 embed -> p1RMWDI
 
 ' replicate MWDI ES ->
-activate p1RMWDI #LightCyan
+activate p1RMWDI #LightBlue
 
   p1RMWDI -> p1LoadParams
-  activate p1LoadParams #LightCyan
+  activate p1LoadParams #LightBlue
     note over p1LoadParams
       Load parameters
       from configFile
@@ -60,7 +60,7 @@ activate p1RMWDI #LightCyan
 
   Loop FOR all esName
     p1RMWDI -> p1REA
-    activate p1REA #LightCyan
+    activate p1REA #LightBlue
       note over p1REA
         Resolve ES address
       end note
@@ -70,7 +70,7 @@ activate p1RMWDI #LightCyan
   end Loop
 
   p1RMWDI -> p1InitKafka
-  activate p1InitKafka #LightCyan
+  activate p1InitKafka #LightBlue
 
     note over p1InitKafka
       Resolve Kafka
@@ -78,7 +78,7 @@ activate p1RMWDI #LightCyan
     end note
 
     p1InitKafka -> kafkaProd
-    activate kafkaProd #LightCyan
+    activate kafkaProd #LightBlue
       note over kafkaProd
         Establish session
       end note
@@ -88,7 +88,7 @@ activate p1RMWDI #LightCyan
   deactivate p1InitKafka
 
   p1RMWDI -> p1MDS
-  activate p1MDS #LightBlue
+  activate p1MDS #Black
     note over p1MDS
       Maintain DataStore
     end note
@@ -96,7 +96,7 @@ activate p1RMWDI #LightCyan
   Loop endless
 
     p1RMWDI -> p1UMR
-    activate p1UMR #LightCyan
+    activate p1UMR #LightBlue
       note over p1UMR
         Replicate updated CCs
       end note
@@ -106,7 +106,7 @@ activate p1RMWDI #LightCyan
     Loop for every updated CC
 
       p1RMWDI -> p1ProcessPm
-      activate p1ProcessPm #LightCyan
+      activate p1ProcessPm #LightBlue
 
         note over p1ProcessPm
           Create data structure
@@ -123,7 +123,7 @@ activate p1RMWDI #LightCyan
 
           ' apply fieldsFilter ->
           p1AddRaw -> p1FieldsFilter
-          activate p1FieldsFilter #LightCyan
+          activate p1FieldsFilter #LightBlue
 
             note over p1FieldsFilter
               Reduce structure of rawCC
@@ -138,7 +138,7 @@ activate p1RMWDI #LightCyan
 
           ' discard irrelevant PM records
           p1AddRaw -> filterPm
-          activate filterPm #LightCyan
+          activate filterPm #LightBlue
 
             note over filterPm
               Delete PM data that has
@@ -162,7 +162,7 @@ activate p1RMWDI #LightCyan
 
         ' create resultCC ->
         p1ProcessPm -> p1CreateResultCc
-        activate p1CreateResultCc #LightCyan
+        activate p1CreateResultCc #LightBlue
 
           note over p1CreateResultCc
             Create resultCC
@@ -179,7 +179,7 @@ activate p1RMWDI #LightCyan
               end note
 
               p1prepTxModes -> aiCC
-              activate aiCC #LightCyan
+              activate aiCC #LightBlue
 
                 note over aiCC
                   Calculate
@@ -190,7 +190,7 @@ activate p1RMWDI #LightCyan
               deactivate aiCC
 
               p1prepTxModes -> intCC
-              activate intCC #LightCyan
+              activate intCC #LightBlue
 
                 note over intCC
                   Calculate
@@ -211,7 +211,7 @@ activate p1RMWDI #LightCyan
               end note
 
               p2prepTxModes -> aiCC
-              activate aiCC #LightCyan
+              activate aiCC #LightBlue
 
                 note over aiCC
                   Calculate
@@ -230,7 +230,7 @@ activate p1RMWDI #LightCyan
               Loop FOR historicalPerformanceDataList
 
                 aiSlices -> intCC
-                activate intCC #LightCyan
+                activate intCC #LightBlue
 
                   note over intCC
                     Calculate
@@ -374,7 +374,7 @@ activate p1RMWDI #LightCyan
 
         ' Format OutputAPT ->
         p1ProcessPm -> p1Output
-        activate p1Output #LightCyan
+        activate p1Output #LightBlue
 
           note over p1Output
             Create APT format
@@ -391,7 +391,7 @@ activate p1RMWDI #LightCyan
 
         ' transmit data ->
         p1ProcessPm -> p1Trans
-        activate p1Trans #LightCyan
+        activate p1Trans #LightBlue
 
           note over p1Trans
             Transmit object
@@ -408,7 +408,7 @@ activate p1RMWDI #LightCyan
 
         ' storing ->
         p1ProcessPm -> p1Store
-        activate p1Store #LightBlue
+        activate p1Store #Black
 
           note over p1Store
             Store resultCC

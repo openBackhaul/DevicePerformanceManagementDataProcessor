@@ -265,6 +265,13 @@ x-javascript-interface:
                         from [$input#batch-timestamp]'
             error:
               description: 'batchTimestamp could not be provided'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'currentPerformanceTimestamp missing or invalid'
+                      - 'General processing error'
 
 paths:
   /:

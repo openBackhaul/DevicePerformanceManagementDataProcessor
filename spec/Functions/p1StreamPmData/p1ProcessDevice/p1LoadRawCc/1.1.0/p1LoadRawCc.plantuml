@@ -6,14 +6,14 @@ title
 end title
 
 participant "p1ProcessDevice" as requestor
-participant "p1LoadRawCc" as cur #LightCyan
-database "MWDI ES Replica" as MwdiEs #LightCyan
-participant "p1FieldsFilter" as fieldsFilter #LightCyan
+participant "p1LoadRawCc" as cur #LightBlue
+database "MWDI ES Replica" as MwdiEs #LightBlue
+participant "p1FieldsFilter" as fieldsFilter #LightBlue
 database "DataStore" as datastore #LightBlue
-participant "p1DiscardIrrelevantPmRecords" as filterPm #LightCyan
+participant "p1DiscardIrrelevantPmRecords" as filterPm #LightBlue
 
 requestor -> cur: {mountName\n{parameters}\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
-activate cur #LightCyan
+activate cur #LightBlue
 
   note over cur
     readControlConstructFromReplica
@@ -22,23 +22,18 @@ activate cur #LightCyan
   cur <-- MwdiEs: {{rawControlConstruct}}
 
   cur -> fieldsFilter: {{rawControlConstruct}\nfieldsFilter}
-  activate fieldsFilter #LightCyan
+  activate fieldsFilter #LightBlue
     note over fieldsFilter
       Apply FieldsFilter
     end note
   cur <-- fieldsFilter: {{filtered rawControlConstruct}}
-  deactivate fieldsFilter #LightCyan
+  deactivate fieldsFilter #LightBlue
 
   note over cur #LightBlue
     retrieveMostRecentPeriodEndTimesFromDs
   end note
   cur -> datastore: {mountName}
   cur <-- datastore: {[interface]}
-
-    note right cur #LightBlue
-      In the pre-release there is no mostRecentPeriodEndTime info available
-      Both 15min and 24h records will be kept by default
-    end note
 
   loop FOR all [/raw-cc/logical-termination-point]
 
@@ -51,7 +46,7 @@ activate cur #LightCyan
     end note
 
     cur -> filterPm: {[historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color>}
-    activate filterPm #LightCyan
+    activate filterPm #LightBlue
     note over filterPm
       Discards records that are
       of wrong granularity or
