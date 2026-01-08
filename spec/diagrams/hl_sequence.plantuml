@@ -141,6 +141,10 @@ activate p1RMWDI #LightCyan
           p1AddRaw <-- filterPm
           deactivate filterPm
 
+          note over p1AddRaw #Yellow
+            addBatchTimestamp
+          end note
+
         p1ProcessPm <-- p1AddRaw
         deactivate p1AddRaw
 

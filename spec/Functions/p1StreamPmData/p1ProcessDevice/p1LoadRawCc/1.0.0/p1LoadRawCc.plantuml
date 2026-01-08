@@ -61,7 +61,12 @@ activate cur #LightCyan
     cur <-- filterPm: {[filteredHistoricalPerformanceDataList]}
     deactivate filterPm
 
-  end group
+    note over cur #Yellow
+      IF layerProtocolName == AirInterface
+        THEN addBatchTimestamp
+    end note
+
+  end loop
 
 requestor <-- cur: {{rawCc}}
 deactivate cur

@@ -216,6 +216,11 @@ load-raw-cc:
                                         type: integer
                                       symbol-rate-reduction-factor:
                                         type: integer
+                            air-interface-current-performance:
+                              type: object
+                              properties:
+                                timestamp:
+                                  type: string
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -370,3 +375,8 @@ load-raw-cc:
                                           unknown-protocol-frames-input:
                                             type: string
                                             description: 'String representation of int64 value'
+        batch-timestamp:
+          type: string
+          description: >
+            'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
+            from {$addBatchTimestamp.output#/batch-timestamp}'

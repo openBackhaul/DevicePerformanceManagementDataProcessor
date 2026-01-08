@@ -227,6 +227,44 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
+      addBatchTimestamp:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - current-performance-timestamp
+                properties:
+                  current-performance-timestamp:
+                    type: string
+                    description: >
+                      'Timestamp of current performance data
+                      from [/load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-current-performance/timestamp'
+                  batch-timestamp:
+                    type: string
+                    description: >
+                      'Timestamp when the CC was read from the device
+                      from [/load-raw-cc/raw-cc/batch-timestamp], if not already existing 2010-11-20T14:00:00+01:00 to be used'
+        output:
+          success:
+            description: 'batchTimestamp provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - batch-timestamp
+                  properties:
+                    batch-timestamp:
+                      type: string
+                      description: >
+                        'Timestamp when the CC was read from the device
+                        if [$input#current-performance-timestamp] > [$input#batch-timestamp]
+                        from [$input#batch-timestamp]'
+            error:
+              description: 'batchTimestamp could not be provided'
 
 paths:
   /:

@@ -449,3 +449,7 @@ create-result-cc:
                                           unknown-protocol-frames-input:
                                             type: string
                                             description: 'String representation of int64 value'
+        batch-timestamp:
+          type: string
+          description: >
+            'Timestamp when the CC was read from the device (actually youngest air interface current performance data)'
