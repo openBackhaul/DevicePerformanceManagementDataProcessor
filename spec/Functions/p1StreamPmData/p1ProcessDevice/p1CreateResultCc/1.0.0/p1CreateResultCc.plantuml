@@ -100,6 +100,17 @@ activate cur #LightCyan
     cur <-- ethKpis : {[historicalPerformanceDataList]}
     deactivate ethKpis
 
+    ' ----- mostRecentPeriodEndTime --------------------------
+    note over cur
+      Add mostRecentPeriodEndTime
+      to resultCc
+    end note
+
+    note over cur
+      Add mostRecentPeriodEndTime24
+      to resultCc
+    end note
+
   end loop
 
   ' ----- Temperature --------------------------
