@@ -200,10 +200,12 @@ activate p1RMWDI #LightCyan
 
           note over p1CreateResultCc
             Add mostRecentPeriodEndTime
+            (AirInterface)
           end note
 
           note over p1CreateResultCc
             Add mostRecentPeriodEndTime24
+            (AirInterface)
           end note
 
           ' process outOfRange values ->
@@ -223,6 +225,16 @@ activate p1RMWDI #LightCyan
 
           p1CreateResultCc <-- p1EthKpi
           deactivate p1EthKpi
+
+          note over p1CreateResultCc
+            Add mostRecentPeriodEndTime
+            (EthernetContainer)
+          end note
+
+          note over p1CreateResultCc
+            Add mostRecentPeriodEndTime24
+            (EthernetContainer)
+          end note
 
           ' harmonize Temperature ->
           note over p1CreateResultCc #LightGray
