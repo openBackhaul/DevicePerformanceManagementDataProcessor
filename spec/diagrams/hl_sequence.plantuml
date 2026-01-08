@@ -160,10 +160,10 @@ activate p1RMWDI #LightCyan
         end note
 
         ' create resultCC ->
-        p1ProcessPm -> p1CreateResultCC
-        activate p1CreateResultCC #LightCyan
+        p1ProcessPm -> p1CreateResultCc
+        activate p1CreateResultCc #LightCyan
 
-          note over p1CreateResultCC
+          note over p1CreateResultCc
             Create resultCC
             from rawCC
           end note
@@ -339,9 +339,15 @@ activate p1RMWDI #LightCyan
           end loop
 
           ' harmonize Temperature ->
-          note over p1CreateResultCC #LightGray
+          note over p1CreateResultCc #LightGray
             Harmonize temperature
             across device types
+          end note
+
+          ' process default values ->
+          note over p1CreateResultCC #LightGray
+            Delete attributes with ONF
+            default value from resultCC
           end note
 
         p1ProcessPm <-- p1CreateResultCC
