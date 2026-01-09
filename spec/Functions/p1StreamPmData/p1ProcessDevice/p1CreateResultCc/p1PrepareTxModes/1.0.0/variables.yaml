@@ -348,13 +348,11 @@ prepare-tx-modes:
                                                   type: string
                                                 time:
                                                   type: integer
-                                          # todo: intervalCapacity not in rawCc; origin to be explained
                                           interval-capacity:
-                                            type: number
-                                            format: float
-                                            description: > 
-                                              'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period.
-                                              not already available in this step, filled with default -1'
+                                            type: integer
+                                            description: >
+                                              'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
+                                              from {$p1CalculateIntervalCapacity.output#/interval-capacity}'
                                           snir-min:
                                             type: integer
                                           snir-max:
@@ -432,20 +430,6 @@ prepare-tx-modes:
                                             description: 'String representation of int64 value'
                                           time-period:
                                             type: integer
-                                          # todo: transmitTraffic not in rawCc; origin to be explained
-                                          transmit-traffic:
-                                            type: number
-                                            format: float
-                                            description: >
-                                              'TX Traffic [Mbps] KPI)
-                                              not already available in this step, filled with default -1'
-                                          # todo: receiveTraffic not in rawCc; origin to be explained
-                                          receive-traffic:
-                                            type: number
-                                            format: float
-                                            description: >
-                                              'RX Traffic [Mbps] (KPI)
-                                              not already available in this step, filled with default -1'
                                           total-frames-input:
                                             type: string
                                             description: 'String representation of int64 value'
@@ -482,18 +466,6 @@ prepare-tx-modes:
                                             type: integer
                                           dropped-frames-output:
                                             type: integer
-                                          # todo: frameLossInput not in rawCc; origin to be explained
-                                          frame-loss-input:
-                                            type: integer
-                                            description: >
-                                              'Sum of errored and dropped frames on the ingress (KPI)
-                                              not already available in this step, filled with default -1'
-                                          # todo: frameLossOutput not in rawCc; origin to be explained
-                                          frame-loss-output:
-                                            type: integer
-                                            description: >
-                                              'Sum of errored and dropped frames on the egress (KPI)
-                                              not already available in this step, filled with default -1'
                                           oversized-frames-ingress:
                                             type: string
                                             description: 'String representation of int64 value'
