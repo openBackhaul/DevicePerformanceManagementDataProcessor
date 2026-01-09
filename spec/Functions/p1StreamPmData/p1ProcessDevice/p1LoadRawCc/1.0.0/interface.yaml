@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: p1LoadRawCc
+  version: 1.0.0
+
+x-javascript-interface:
+  p1LoadRawCc:
+    summary: 'Reads device ControlConstruct from MWDI ES replica, applies filtering and returns the remaining data to the caller'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - mount-name
+              - parameters
+              - mwdi-replica-es-client
+              - data-store-es-client
+            properties:
+              mount-name:
+                type: string
+                description: 'mountName of the device for which ControlConstruct data shall be read'
+                mount-name: '100250001'
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              mwdi-replica-es-client:
+                type: object
+                description: 'MWDI Replica ElasticSearch address'
+              data-store-es-client:
+                type: object
+                description: 'Data Store ElasticSearch address'
+    output:
+      success:
+        description: 'rawCc loaded'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - raw-cc
+              properties:
+                raw-cc:
+                  type: object
+                  description: >
+                    'rawCc read from Replica ES, but reduced by irrelevant data
+                    from [/load-raw-cc/raw-cc]'
+      error:
+        description: 'rawCc could not be loaded'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'mountName not provided'
+                - 'mountName invalid'
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'mwdiReplicaEsClient not provided'
+                - 'mwdiReplicaEsClient invalid'
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'rawCc could not be provided'
+                - 'General processing error'
+    processing:
+      readControlConstructFromReplica:
+        url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
+          description: 'Reads the complete ControlConstruct for the [/load-raw-cc/mount-name] from MWDI ElasticSearch replica.'
+          output:
+            success:
+              description: 'Raw ControlConstruct data read'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    required:
+                      - core-model-1-4:control-construct
+                    properties:
+                      core-model-1-4:control-construct:
+                        type: array
+                        x-key: uuid
+                        items:
+                          type: object
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
+      p1FieldsFilter:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data-structure
+                  - fields-filter-string
+                properties:
+                  data-structure:
+                    type: object
+                    description: >
+                      'The data structure to be filtered according to the provided fields filter string.
+                      It is the raw ControlConstruct content (the object found in the first array element of core-model-1-4:control-construct, without the core-model-1-4:control-construct keyword itself)
+                      from [/load-raw-cc/raw-cc]'
+                  fields-filter-string:
+                    type: string
+                    description: >
+                      'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure,
+                      from [/load-raw-cc/fields-filter]'
+        output:
+          success:
+            description: 'Data structure successfully filtered according to the provided fields filter string'
+            content:
+              application/json:
+                schema:
+                  type: object
+                properties:
+                  filtered-data-structure:
+                    type: object
+                    description: 'The data structure after filtering according to the provided fields filter string'
+          error:
+            description: 'Data structure could not be filtered according to the provided fields filter string'
+            content:
+              application/json:
+                schema:
+                  type: string
+      retrieveMostRecentPeriodEndTimesFromDs:
+        url: # [{/load-raw-cc/data-store-url}][/data-store/device={/load-raw-cc/mount-name}/interface]
+          description: 'Reads the timestamps of the most recent 15min and 24h PM data records of all interfaces.'
+          output:
+            success:
+              description: 'List of mostRecentPeriodEndTimes provided'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      interface:
+                        type: array
+                        x-key: uuid
+                        items:
+                          type: object
+                          properties:
+                            uuid:
+                              type: string
+                            layer-protocol-name:
+                              type: string
+                            most-recent-period-end-time:
+                              type: string
+                              description: 'The newest seen periodEndTime for this interface in 15min data'
+                            most-recent-period-end-time-24:
+                              type: string
+                              description: 'The newest seen periodEndTime for this interface in 24h data'
+                        example:
+                          interface:
+                            - uuid: 'RF-819.1.1'
+                              layer-protocol-name: 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                              most-recent-period-end-time: '2025-11-19T18:33:43.813+01:00'
+                              most-recent-period-end-time-24: '2025-11-19T02:33:43.813+01:00'
+                            - uuid: 'ETH-785.1.5'
+                              layer-protocol-name: 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                              most-recent-period-end-time: '2025-11-18T00:00:01+01:00'
+                              most-recent-period-end-time-24: '2025-11-18T23:33:43.813+01:00'
+            error:
+              description: 'MostRecentPeriodEndTimes could not be provided'
+      p1DiscardIrrelevantPmRecords:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'The list of historical PM records, that shall be filtered
+                      from '
+                  relevant-granularities:
+                    type: string
+                    enum:
+                      - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
+                      - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
+                      - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+                    description: >
+                      'An (optional) regex pattern indicating which data granularities are to be kept.
+                      If not provided as input, both 15min and 24h are kept.
+                      from '
+                  most-recent-period-end-time:
+                    type: string
+                    description: >
+                      '15min PM records not newer than this timestamp are to be discarded.
+                      If not provided, any 15min record passes.
+                      from '
+                  most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      '24h PM records not newer than this timestamp are to be discarded.
+                      If not provided, any 24h record passes.
+                      from '
+        output:
+          success:
+            description: 'filteredHistoricalPerformanceDataList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - filtered-historical-performance-data-list
+                  properties:
+                    filtered-historical-performance-data-list:
+                      type: array
+                      description: >
+                        'Filtered list of historical PM records'
+          error:
+            description: 'filteredHistoricalPerformanceDataList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
