@@ -431,9 +431,11 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-300'
+        - 'dpmdp-1-0-0-function-p-301'
         - 'dpmdp-1-0-0-function-p-390'
     configuration:
       is-active: true
+
 
   # p1PrepareTxModes
   - profile-name: 'FunctionProfile'
@@ -446,9 +448,23 @@ profile-instances:
         - 'dpmdp-1-0-0-function-p-330'
         - 'dpmdp-1-0-0-function-p-360'
     configuration:
+      is-active: false
+
+
+  # p2PrepareTxModes
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-301'
+    capability:
+      function-name: 'p2PrepareTxModes'
+      function-description: 'Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-330'
+        - 'dpmdp-1-0-0-function-p-360'
+    configuration:
       is-active: true
 
-
+      
   # p1CalculateAiCapacity
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-330'

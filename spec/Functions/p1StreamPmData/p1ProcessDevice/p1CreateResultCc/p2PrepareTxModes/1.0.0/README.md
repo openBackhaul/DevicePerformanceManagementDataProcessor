@@ -1,4 +1,4 @@
-# p1PrepareTxModes
+# p2PrepareTxModes
 
 Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity.  
 
@@ -6,7 +6,7 @@ Prepares the transmission mode list by removing unused transmission modes and co
 ### Diagram
 
 <p align="center">
-  <img src="p1PrepareTxModes.png" alt="p1PrepareTxModes" width="400"/>
+  <img src="p2PrepareTxModes.png" alt="p2PrepareTxModes" width="400"/>
 </p>
 
 

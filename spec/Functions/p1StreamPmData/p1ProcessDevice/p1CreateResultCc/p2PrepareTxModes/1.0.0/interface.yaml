@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1PrepareTxModes
+  title: p2PrepareTxModes
   version: 1.0.0
 
 x-javascript-interface:
-  p1PrepareTxModes:
+  p2PrepareTxModes:
     summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
     input:
       required: true

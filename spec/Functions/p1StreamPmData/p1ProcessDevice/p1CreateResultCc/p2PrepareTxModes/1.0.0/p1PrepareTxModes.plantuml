@@ -1,8 +1,8 @@
-@startuml p1PrepareTxModes
+@startuml p2PrepareTxModes
 skinparam responseMessageBelowArrow true
 
 title
-  p1PrepareTxModes
+  p2PrepareTxModes
 end title
 
 participant "p1CreateResultCc\n" as cur
