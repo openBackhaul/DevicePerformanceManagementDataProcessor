@@ -9,10 +9,6 @@ Further processing steps can be added in future without changing the existing on
 Of course the order of the processing steps is important, particularly if they are altering the same attributes of the resultCc. 
 Finally the resultCc is returned.  
 
-The following processing steps are currently implemented:
-<!-- TODO: List of processing steps to be completed -->
-- Filtering empty/incomplete adaptive modulation data from PM data and capabilities  
-
 
 ### Diagram  
 
