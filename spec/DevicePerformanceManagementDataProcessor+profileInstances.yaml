@@ -545,16 +545,184 @@ profile-instances:
       string-value: '-129'
 
 
-  # p1RemoveDefaultPerfValues
+  # p1RemoveDefaultValues
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
-      function-name: 'p1RemoveDefaultPerfValues'
+      function-name: 'p1RemoveDefaultValues'
       function-description: ''
       parameter-list:
       sub-function-list:
     configuration:
       is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'es'
+      purpose: 'Number of errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'ses'
+      purpose: 'Number of severely errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'cses'
+      purpose: 'Number of consecutive severely errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'unavailability'
+      purpose: 'Total time of unavailability in seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'txLevelMin'
+      purpose: 'Minimum transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'txLevelMax'
+      purpose: 'Maximum transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'txLevelAvg'
+      purpose: 'Averaged transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rxLevelMin'
+      purpose: 'Minimum receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rxLevelMax'
+      purpose: 'Maximum receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rxLevelAvg'
+      purpose: 'Averaged receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'snirMin'
+      purpose: 'Minimum signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'snirMax'
+      purpose: 'Maximum signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'snirAvg'
+      purpose: 'Averaged signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'xpdMin'
+      purpose: 'Minimum cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'xpdMax'
+      purpose: 'Maximum cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'xpdAvg'
+      purpose: 'Averaged cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rfTempMin'
+      purpose: 'Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rfTempMax'
+      purpose: 'Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rfTempAvg'
+      purpose: 'Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'defectBlocksSum'
+      purpose: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'timePeriod'
+      purpose: 'Total length of the measurement period in seconds'
+    configuration:
+      string-value: '-1'
 
 
   # p1CalculateEthernetKpis

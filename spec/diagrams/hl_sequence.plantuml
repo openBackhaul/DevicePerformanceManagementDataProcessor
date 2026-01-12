@@ -25,7 +25,7 @@ participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
 participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 participant "p1IterateAi\nPmSlices" as aiSlices #Yellow
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
-participant "p1RemoveDefault\nPerfValues" as p1RDPV #Yellow
+participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #Brown
 participant "p1IterateEc\nPmSlices" as ecSlices #Yellow
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #Yellow
@@ -252,16 +252,16 @@ activate p1RMWDI #LightBlue
                 aiSlices <-- p1RORL
                 deactivate p1RORL        
 
-                aiSlices -> p1RDPV
-                activate p1RDPV #Yellow
+                aiSlices -> p1RemDefault
+                activate p1RemDefault #LightCyan
 
-                  note over p1RDPV
+                  note over p1RemDefault
                     Delete attributes with
                     ONF default value
                   end note
 
-                aiSlices <-- p1RDPV
-                deactivate p1RDPV        
+                aiSlices <-- p1RemDefault
+                deactivate p1RemDefault        
 
               end loop 
 
@@ -318,16 +318,16 @@ activate p1RMWDI #LightBlue
                 ecSlices <-- p2EthKpi
                 deactivate p2EthKpi
 
-                ecSlices -> p1RDPV
-                activate p1RDPV #Yellow
+                ecSlices -> p1RemDefault
+                activate p1RemDefault #Yellow
 
-                  note over p1RDPV
+                  note over p1RemDefault
                     Delete attributes with
                     ONF default value
                   end note
 
-                ecSlices <-- p1RDPV
-                deactivate p1RDPV        
+                ecSlices <-- p1RemDefault
+                deactivate p1RemDefault        
 
               end loop 
 

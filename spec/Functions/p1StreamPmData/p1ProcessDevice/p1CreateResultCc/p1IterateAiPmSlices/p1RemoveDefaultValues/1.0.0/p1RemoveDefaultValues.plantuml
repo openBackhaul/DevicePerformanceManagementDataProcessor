@@ -1,0 +1,32 @@
+@startuml p1RemoveDefaultValues
+skinparam responseMessageBelowArrow true
+
+title
+  p1RemoveDefaultValues
+end title
+
+participant "p1IterateAiPmSlices\n" as requestor
+participant "p1RemoveDefaultValues\n" as removeDefault #LightCyan
+
+
+  requestor -> removeDefault : {performanceData}
+  activate removeDefault #LightCyan
+
+    note over removeDefault
+      Create [default-value-list]
+      from parameters
+    end note
+
+    loop FOR [/remove-default-values/default-value-list]
+
+      note over removeDefault
+        IF { [/remove-default-values/input-object/{[/remove-default-values/default-value-list[*]/attribute-name]}] } == { [/remove-default-values/default-value-list[*]/attribute-value] }
+          THEN delete [/remove-default-values/input-object/{[/remove-default-values/default-value-list[*]/attribute-name]}] attribute from [/remove-default-values/input-object]
+      end note
+
+    end loop
+
+  requestor <-- removeDefault: {performanceData}
+  deactivate removeDefault
+
+@enduml

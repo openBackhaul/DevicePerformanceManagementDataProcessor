@@ -1,0 +1,35 @@
+remove-default-values:
+  type: object
+  required:
+    - parameters
+    - input-object
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    input-object:
+      type: object
+      description: >
+        'Data object from which attributes with default values are to be removed
+        from {$input#/input-object}
+        Search this object for attribute named [/remove-default-values/default-value-list[*]/attribute-name]
+          if such attribute exists, compare its value with [/remove-default-values/default-value-list[*]/attribute-value]
+            if value matches, remove the attribute from this object'
+
+    default-value-list:
+      type: array
+      items:
+        type: object
+        properties:
+          attribute-name:
+            type: string
+            description: >
+              'attributeName
+              from [/remove-default-values/parameters/parameter=*/parameter-name]'
+          attribute-value:
+            type: string
+            description: >
+              'attributeValue
+              from [/remove-default-values/parameters/parameter=*/value]'
