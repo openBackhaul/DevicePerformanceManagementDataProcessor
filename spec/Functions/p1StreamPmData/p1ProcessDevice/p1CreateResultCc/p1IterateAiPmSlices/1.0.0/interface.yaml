@@ -12,9 +12,13 @@ x-javascript-interface:
         application/json:
           schema:
             required:
+              - parameters
               - historical-performance-data-list
               - transmission-mode-list
             properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
               historical-performance-data-list:
                 type: array
                 description: >

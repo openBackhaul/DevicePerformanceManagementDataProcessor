@@ -477,12 +477,80 @@ profile-instances:
       is-active: true
 
 
+  # p1IterateAiPmSlices
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1IterateAiPmSlices'
+      function-description: ''
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
   # p1CalculateIntervalCapacity
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-360'
     capability:
       function-name: 'p1CalculateIntervalCapacity'
       function-description: 'Calculates the average capacity provided by an AirInterface within a given interval'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1RemoveOutOfRangeLevels
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveOutOfRangeLevels'
+      function-description: ''
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'lowerTxLevelLimit'
+      purpose: 'Lower bound of valid values of the transmit level'
+    configuration:
+      string-value: '-30'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'upperTxLevelLimit'
+      purpose: 'Upper bound of valid values of the transmit level'
+    configuration:
+      string-value: '40'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'lowerRxLevelLimit'
+      purpose: 'Lower bound of valid values of the receive level'
+    configuration:
+      string-value: '-10'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'upperRxLevelLimit'
+      purpose: 'Upper bound of valid values of the receive level'
+    configuration:
+      string-value: '-129'
+
+
+  # p1RemoveDefaultPerfValues
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveDefaultPerfValues'
+      function-description: ''
       parameter-list:
       sub-function-list:
     configuration:

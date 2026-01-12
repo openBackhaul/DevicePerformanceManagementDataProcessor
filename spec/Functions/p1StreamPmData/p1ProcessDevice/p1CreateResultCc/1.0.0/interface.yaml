@@ -18,8 +18,7 @@ x-javascript-interface:
             properties:
               parameters:
                 type: object
-                description: >
-                  'parameters object for p1CreateResultCc'
+                description: 'Hierarchical object holding the parameter settings'
               raw-cc:
                 type: object
                 description: >

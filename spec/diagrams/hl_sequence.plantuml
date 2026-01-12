@@ -24,7 +24,7 @@ participant "p2Prepare\nTxModes" as p2prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
 participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 participant "p1IterateAi\nPmSlices" as aiSlices #Yellow
-participant "p1RemoveOutOf\nRangeLevels" as p1RORL #Yellow
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
 participant "p1RemoveDefault\nPerfValues" as p1RDPV #Yellow
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #Brown
 participant "p1IterateEc\nPmSlices" as ecSlices #Yellow
@@ -241,7 +241,7 @@ activate p1RMWDI #LightBlue
                 deactivate intCC
 
                 aiSlices -> p1RORL
-                activate p1RORL #Yellow
+                activate p1RORL #LightCyan
 
                   note over p1RORL
                     Delete RxLevel and TxLevel
