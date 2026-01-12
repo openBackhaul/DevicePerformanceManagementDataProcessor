@@ -18,9 +18,9 @@ participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightBlue
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightBlue
 
-participant "p1CreateResultCc\n" as p1CreateResultCc #LightBlue
+participant "p1CreateResultCc\n" as p1CreateResultCc #Yellow
 participant "p1Prepare\nTxModes" as p1prepTxModes #Brown
-participant "p2Prepare\nTxModes" as p2prepTxModes #Yellow
+participant "p2Prepare\nTxModes" as p2prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
 participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 participant "p1IterateAi\nPmSlices" as aiSlices #Yellow
@@ -162,7 +162,7 @@ activate p1RMWDI #LightBlue
 
         ' create resultCC ->
         p1ProcessPm -> p1CreateResultCc
-        activate p1CreateResultCc #LightBlue
+        activate p1CreateResultCc #Yellow
 
           note over p1CreateResultCc
             Create resultCC
@@ -204,7 +204,7 @@ activate p1RMWDI #LightBlue
             deactivate p1prepTxModes
 
             p1CreateResultCc -> p2prepTxModes
-            activate p2prepTxModes #Yellow
+            activate p2prepTxModes #LightCyan
 
               note over p2prepTxModes
                 Prepare TxModes

@@ -5,15 +5,15 @@ title
   p1CalculateIntervalCapacity
 end title
 
-participant "p1Prepare\nTxModes" as prepTxModes
-participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+participant "p1IterateAi\nPmSlices" as requestor
+participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 
-  prepTxModes -> intCC : {[time-xstates-list],\n[transmission-mode-list]}
-  activate intCC #LightCyan
+  requestor -> intCC : {[time-xstates-list],\n[transmission-mode-list]}
+  activate intCC #LightBlue
     note over intCC
       Calculate intervalCapacity
     end note
-  prepTxModes <-- intCC: {intervalCapacity}
+  requestor <-- intCC: {intervalCapacity}
   deactivate intCC
 
 @enduml
