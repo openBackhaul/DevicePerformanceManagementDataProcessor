@@ -376,6 +376,10 @@ activate p1RMWDI #LightBlue
             from resultCC
           end note
 
+          note over p1Output #Yellow
+            Add temperature
+          end note
+
         p1ProcessPm <-- p1Output
         deactivate p1Output
 

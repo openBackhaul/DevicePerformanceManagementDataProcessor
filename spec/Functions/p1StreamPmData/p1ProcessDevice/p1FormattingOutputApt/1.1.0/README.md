@@ -23,3 +23,9 @@ Please find a detailed description of the [existing APT interface format](./Outp
 ### Variables
 
 Please find a detailed description of the [variables](variables.yaml).
+
+
+### Remarks
+
+Selecting the CPU temperature from resultCc has been added with version 1.1.0.
+
