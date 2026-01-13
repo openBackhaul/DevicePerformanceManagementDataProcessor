@@ -58,7 +58,7 @@ Although the sequence of function calls is hard-coded, actually calling a functi
         - [p1RemoveOutOfRangeLevels](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveOutOfRangeLevels/1.0.0)  
         - [p1RemoveDefaultValues*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveDefaultValues/1.0.0)  
       - [p1CalculateEthernetKpis](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/1.0.0)  
-    - [p1FormattingOutputApt](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.0.0)  
+    - [p1FormattingOutputApt](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.1.0)  
     - [p1TransmittingKafka](./Functions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/1.0.0)  
 
 *) Indicates a Generic Function that is part of the DPMDP's implementation.  

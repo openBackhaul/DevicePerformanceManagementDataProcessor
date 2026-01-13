@@ -79,7 +79,8 @@ x-javascript-interface:
                       result-cc:
                         type: object
                         description: >
-                          'ResultCc'
+                          'ResultCc
+                          from {$input#/raw-cc}'
         error:
           description: 'ResultCc could not be provided'
           content:

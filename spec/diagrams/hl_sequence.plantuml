@@ -31,7 +31,7 @@ participant "p1IterateEc\nPmSlices" as ecSlices #Yellow
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #Yellow
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #Yellow
 
-participant "p1Formatting\nOutputApt" as p1Output #LightBlue
+participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
 participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
@@ -369,15 +369,12 @@ activate p1RMWDI #LightBlue
 
         ' Format OutputAPT ->
         p1ProcessPm -> p1Output
-        activate p1Output #LightBlue
-
-          note over p1Output
-            Create APT format
-            from resultCC
-          end note
+        activate p1Output #LightCyan
 
           note over p1Output #Yellow
-            Add temperature
+            Create APT format
+            from resultCC
+            (incl. batchTimestamp)
           end note
 
         p1ProcessPm <-- p1Output
