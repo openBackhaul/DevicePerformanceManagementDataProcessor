@@ -133,7 +133,7 @@ x-javascript-interface:
                     type: array
                     description: >
                       'timeXStatesList
-                      from [/prepare-tx-modes/historical-performance-data-list=*/time-xstates-list]'
+                      from [/prepare-tx-modes/historical-performance-data-list=*/performance-data/time-xstates-list]'
                   transmission-mode-list:
                     type: array
                     description: >
