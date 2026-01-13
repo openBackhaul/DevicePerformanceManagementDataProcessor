@@ -9,7 +9,7 @@ participant "p1IterateAiPmSlices\n" as requestor
 participant "p1RemoveOutOfRangeLevels\n" as removeLevels #LightCyan
 
 
-  requestor -> removeLevels : {performanceData}
+  requestor -> removeLevels : {parameters,\nperformanceData}
   activate removeLevels #LightCyan
 
     note over removeLevels

@@ -36,7 +36,7 @@ x-javascript-interface:
                 input-object:
                   type: object
                   description: >
-                    'Data object from which attributes with default values are to be removed
+                    'Data object from which attributes with default values have been removed
                     from [/remove-default-values/input-object]'
       error:
         description: 'Input object could not be cleaned from attributes with default values'

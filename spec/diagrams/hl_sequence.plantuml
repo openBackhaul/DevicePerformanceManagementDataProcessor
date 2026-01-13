@@ -23,7 +23,7 @@ participant "p1Prepare\nTxModes" as p1prepTxModes #Brown
 participant "p2Prepare\nTxModes" as p2prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
 participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
-participant "p1IterateAi\nPmSlices" as aiSlices #Yellow
+participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
 participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #Brown
@@ -225,9 +225,7 @@ activate p1RMWDI #LightBlue
             deactivate p2prepTxModes
 
             p1CreateResultCc -> aiSlices
-            activate aiSlices #Yellow
-
-              Loop FOR historicalPerformanceDataList
+            activate aiSlices #LightCyan
 
                 aiSlices -> intCC
                 activate intCC #LightBlue
@@ -263,11 +261,8 @@ activate p1RMWDI #LightBlue
                 aiSlices <-- p1RemDefault
                 deactivate p1RemDefault        
 
-              end loop 
-
             p1CreateResultCc <-- aiSlices
             deactivate aiSlices
-
 
             note over p1CreateResultCc
               Add linkId
