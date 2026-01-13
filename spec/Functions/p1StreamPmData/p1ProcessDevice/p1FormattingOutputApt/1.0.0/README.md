@@ -17,7 +17,7 @@ Attributes not found in the resultCc are also omitted from the aptOutputFormat.
 ### Interface  
 
 Please find a detailed description of the [interface](./interface.yaml).  
-Please find a detailed description of the [existing APT interface format](./Output_AptpLegacy.yaml).
+Please find a detailed description of the [existing APT interface format](./Output_AptpLegacy.yaml).  
 
 
 ### Variables
