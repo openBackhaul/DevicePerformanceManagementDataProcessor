@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1CalculateEthernetKpis
+  title: p2CalculateEthernetKpis
   version: 1.0.0
 
 x-javascript-interface:
-  p1CalculateEthernetKpis:
+  p2CalculateEthernetKpis:
     summary: 'Adds Ethernet KPIs to historicalPerformanceDataList'
     input:
       required: true

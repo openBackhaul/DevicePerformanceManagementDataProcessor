@@ -1,4 +1,4 @@
-# p1CalculateEthernetKpis
+# p2CalculateEthernetKpis
 
 Adds Ethernet KPIs to the historicalPerformanceDataList. 
 
@@ -15,7 +15,7 @@ This function processes each performance measurement data slice and adds:
 ### Diagram
 
 <p align="center">
-  <img src="p1CalculateEthernetKpis.png" alt="p1CalculateEthernetKpis" width="400"/>
+  <img src="p2CalculateEthernetKpis.png" alt="p2CalculateEthernetKpis" width="400"/>
 </p>
 
 
