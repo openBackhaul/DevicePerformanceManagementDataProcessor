@@ -422,7 +422,9 @@ x-javascript-interface:
                                 type: string
                                 description: >
                                   'Real-time temperature reading from the indoor unit's CPU package or core sensor, captured at the time of the query
-                                  from {$input#result-cc/equipment/actual-equipment/physical-properties/temperature}'
+                                  cpuTemperature = [ {$input#result-cc/equipment=*/actual-equipment=*/physical-properties/temperature} for {$input#result-cc/equipment=*/actual-equipment=*/structure/category}=='CENTRAL_PROCESSING_UNIT' ]
+                                  iduTemperature = [ {$input#result-cc/equipment=*/actual-equipment=*/physical-properties/temperature} for {$input#result-cc/equipment=*/actual-equipment=*/structure/category}=='SUBRACK' ]
+                                  from [ cpuTemperature if existing, otherwise iduTemperature ]'
                         ethernet-container-list:
                           description: >
                             'List of EthernetContainers found in the resultCc.
