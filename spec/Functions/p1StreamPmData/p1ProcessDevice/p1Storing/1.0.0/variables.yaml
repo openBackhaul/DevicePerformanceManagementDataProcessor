@@ -1,0 +1,65 @@
+storing:
+  type: object
+  required:
+    - mount-name
+    - parameters
+    - config-file
+    - data-store-es-client
+  properties:
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+    result-cc:
+      type: object
+      description: >
+        'The result control construct data created from the raw control construct data, following ONF structure.
+        from {$input#/result-cc}'
+    extracted-data-from-result-cc:
+      type: object
+      description: >
+        'Extracted information for storing from resultCc
+        from {$extractDataFromResultCc.output}'
+      required:
+        - mount-name
+        - batch-timestamp
+        - interface
+      properties:
+        mount-name:
+          type: string
+        batch-timestamp:
+          type: string
+        interface:
+          type: array
+          items:
+            type: object
+            required:
+              - uuid
+              - layer-protocol-name
+              - most-recent-period-end-time
+              - most-recent-period-end-time-24
+            properties:
+              uuid:
+                type: string
+              layer-protocol-name:
+                type: string
+              most-recent-period-end-time:
+                type: string
+              most-recent-period-end-time-24:
+                type: string
