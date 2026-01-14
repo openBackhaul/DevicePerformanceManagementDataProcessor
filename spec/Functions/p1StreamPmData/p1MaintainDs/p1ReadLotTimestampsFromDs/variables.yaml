@@ -31,3 +31,17 @@ read-lot-timestamps-from-ds:
       description: >
         'MountName
         from {$input#/mount-name}'
+    lot-timestamp-list:
+      type: array
+      items:
+        type: string
+      description: >
+        'Unsorted list of lot timestamps read from dataStore for input mountName
+        from {$ReadTimestampsFromDs.output/lot-timestamp-list}'
+    sorted-lot-timestamp-list:
+      type: array
+      items:
+        type: string
+      description: >
+        'Sorted list of lot timestamps for input mountName
+        from {$sortTimestamps.output/sorted-lot-timestamp-list}'

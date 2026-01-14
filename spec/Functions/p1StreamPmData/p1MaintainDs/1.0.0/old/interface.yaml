@@ -1,0 +1,257 @@
+openapi: 3.0.0
+info:
+  title: p1MaintainDs
+  version: 1.0.0
+
+#todo: input/outputs noch nach hinsichtlich variables.yaml konsolidieren
+
+x-javascript-interface:
+  p1MaintainDs:
+    summary: 'Maintains the dataStore by cleaning up expired data'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - config-file
+              - data-store-es-client
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Hierarchical object holding the parameter settings'
+              config-file:
+                type: object
+                description: >
+                  'configFile content'
+              data-store-es-client:
+                type: object
+                description: >
+                  'Data Store ElasticSearch address'
+    output:
+      error:
+        description: 'DataStore could not be maintained'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'configFile not provided'
+                - 'configFile invalid'
+                - 'dataStoreEsClient invalid'
+                - 'General processing error'
+    processing:
+      readDeviceListFromDataStore:
+        url: # [{/maintain-ds/data-store-url}][/data-store]
+        description: 'Reads the list of all mountNames in the dataStore'
+        output:
+          success:
+            description: 'List of mountNames read'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data-store-device-list:
+                      type: array
+                      description: >
+                        'The list of mountNames in the dataStore
+                        from [/maintain-ds/data-store-device-list]'
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
+      readListOfInterfaces:
+        url: # [{/maintain-ds/data-store-url}][/data-store/device=input.mount-name/interface]
+        description: >
+          'Iterate over the mountNames in [/maintain-ds/data-store-device-list] and fetch the interface,
+          the currently traversed mountName is written
+          to [/maintain-ds/current-mount-name]'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The currently traversed item (mountName) from [/maintain-ds/data-store-device-list]'
+        output:
+          success:
+            description: 'Interface of mountName read'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    interface:
+                      type: array
+                      x-key: uuid
+                      description: >
+                        'The currently read interface list
+                        from [/maintain-ds/interface]'
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
+      deleteInterfaceFromDs:
+        url: # [{/maintain-ds/data-store-url}][/data-store/device=input.mount-name/interface=input.uuid]
+        description: >
+          'Iterate over each interface (key=uuid) of the currently processed mountName and delete the interface from
+          [/data-store/device=input.mountName] if expired, i.e.
+          IF ([/data-store/device=input.mountName/interface=input.uuid/most-recent-period-end-time] is older than parameters.retentionPeriod
+             AND [/data-store/device=input.mountName/interface=input.uuid/most-recent-period-end-time-24] is older than parameters.retentionPeriod)'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  - uuid
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The currently traversed mountName
+                      from [/maintain-ds/current-mount-name]'
+                  uuid:
+                    type: string
+                    description: >
+                      'The currently processed interface of the currently traversed mountName
+                      from [/maintain-ds/interface/uuid]'
+        output:
+          success:
+            description: 'Interface item processed'
+            content:
+              application/json:
+                schema:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Interface instance is kept (not expired)'
+                      - 'Expired interface instance deleted'
+            error:
+              description: 'Data structure could not be deleted from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
+      readListOfInterfaceIds:
+        url: # [{/maintain-ds/data-store-url}][/data-store/device=input.mount-name/interface/uuid]
+        description: >
+          'For the mountName
+          from [/maintain-ds/current-mount-name] read the list of interface uuids from the dataStore'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The currently traversed mountName
+                      from [/maintain-ds/current-mount-name]'
+        output:
+          success:
+            description: 'List of uuids read from device/interface'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    list-of-interface-uuids:
+                      type: array
+                      description: >
+                        'The list of all uuids from the read interface object'
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
+        deleteDeviceFromDs:
+          url: # [{/maintain-ds/data-store-url}][/data-store/device=input.mount-name]
+          description: >
+            'For the currently traversed mountName, delete the complete device from the dataStore
+            IF (length(list-of-interface-uuids)==0)'
+          input:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                  - list-of-interface-uuids
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'The currently traversed mountName
+                      from [/maintain-ds/current-mount-name]'
+                  list-of-interface-uuids:
+                    type: array
+                    description: >
+                      'The list of interface uuids for the currently traversed mountName
+                      from [/maintain-ds/list-of-interface-uuids]'
+          output:
+            success:
+              description: 'Device deletion processing completed'
+              content:
+                application/json:
+                  schema:
+                    schema:
+                      type: string
+                      enum:
+                        - 'Device is kept (has not-expired data)'
+                        - 'Device without recent data deleted'
+              error:
+                description: 'Data structure could not be deleted from ElasticSearch'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'Data structure is missing or invalid'
+                        - 'ElasticSearch read error'
+                        - 'General processing error during reading'
+        
+
+        ## TODO: die lots noch löschen
+
+#URL bsp:
+#[{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/mount-name}/interface]
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
