@@ -5,13 +5,11 @@ title
   p2CalculateEthernetKpis
 end title
 
-participant "p1CreateResultCc\n" as requestor #LightGrey
-participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
+participant "p1IterateEc\nPmSlices" as requestor #LightCyan
+participant "p2Calculate\nEthernetKpis" as ethKpis #LightCyan
 
-requestor -> ethKpis : {[historicalPerformanceDataList]}
+requestor -> ethKpis : {historicalPerformanceData}
 activate ethKpis #LightCyan
-
-  loop FOR all [historicalPerformanceDataList]
 
     note over ethKpis
       Add transmitTraffic
@@ -29,9 +27,7 @@ activate ethKpis #LightCyan
       Add frameLossOutput
     end note
 
-  end loop
-
-requestor <-- ethKpis : {[historicalPerformanceDataList]}
+requestor <-- ethKpis : {historicalPerformanceData}
 deactivate ethKpis
 
 deactivate requestor

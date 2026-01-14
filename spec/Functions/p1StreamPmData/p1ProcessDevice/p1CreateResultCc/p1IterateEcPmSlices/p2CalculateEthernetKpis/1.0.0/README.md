@@ -1,11 +1,11 @@
 # p2CalculateEthernetKpis
 
-Adds Ethernet KPIs to the historicalPerformanceDataList. 
+Adds Ethernet KPIs to the historicalPerformanceData set. 
 
   
 ### Overview
 
-This function processes each performance measurement data slice and adds:  
+This function processes a single PM data slice and adds:  
 - transmitTraffic
 - receiveTraffic
 - frameLossInput
