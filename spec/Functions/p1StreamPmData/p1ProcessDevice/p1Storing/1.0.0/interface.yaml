@@ -141,6 +141,7 @@ x-javascript-interface:
                     - 'Result CC data missing or invalid'
                     - 'General processing error'
       updateInterfaceInfo:
+        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}] 
         input:
           required: true
           content:
@@ -187,6 +188,7 @@ x-javascript-interface:
                     - 'Writing to dataStore error'
                     - 'General processing error'
         storeResultCcInLot:
+          url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/lot] 
           input:
             required: true
             content:
@@ -232,3 +234,4 @@ x-javascript-interface:
 paths:
   /:
     description: 'no rest path provided by this module'
+
