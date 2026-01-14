@@ -27,7 +27,7 @@ participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
 participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #Brown
-participant "p1IterateEc\nPmSlices" as ecSlices #Yellow
+participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #LightCyan
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #Yellow
 
@@ -298,7 +298,7 @@ activate p1RMWDI #LightBlue
             deactivate p1EthKpi
 
             p1CreateResultCc -> ecSlices
-            activate ecSlices #Yellow
+            activate ecSlices #LightCyan
 
               Loop FOR historicalPerformanceDataList
 
@@ -314,7 +314,7 @@ activate p1RMWDI #LightBlue
                 deactivate p2EthKpi
 
                 ecSlices -> p1RemDefault
-                activate p1RemDefault #Yellow
+                activate p1RemDefault #LightCyan
 
                   note over p1RemDefault
                     Delete attributes with

@@ -5,11 +5,13 @@ title
   p1RemoveDefaultValues
 end title
 
-participant "p1IterateAiPmSlices\n" as requestor
+participant "p1IterateAi\nPmSlices" as requestor1 #LightCyan
+participant "p1IterateEc\nPmSlices" as requestor2 #LightCyan
+
 participant "p1RemoveDefaultValues\n" as removeDefault #LightCyan
 
 
-  requestor -> removeDefault : {parameters,\nperformanceData}
+  requestor1 -> removeDefault : {parameters,\nperformanceData}
   activate removeDefault #LightCyan
 
     note over removeDefault
@@ -26,7 +28,19 @@ participant "p1RemoveDefaultValues\n" as removeDefault #LightCyan
 
     end loop
 
-  requestor <-- removeDefault: {performanceData}
+  requestor1 <-- removeDefault: {performanceData}
+  deactivate removeDefault
+
+
+  requestor2 -> removeDefault : {parameters,\nperformanceData}
+  activate removeDefault #LightCyan
+
+    note over removeDefault
+      Same as above, but
+      with different parameters
+    end note
+
+  requestor2 <-- removeDefault: {performanceData}
   deactivate removeDefault
 
 @enduml

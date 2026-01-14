@@ -1,0 +1,49 @@
+iterate-ec-pm-slices:
+  type: object
+  required:
+    - parameters
+    - historical-performance-data-list
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    historical-performance-data-list:
+      type: array
+      x-key: period-end-time
+      description: >
+        'historicalPerformanceDataList
+        from {$input#/historical-performance-data-list}
+        simplified listing here'
+      items:
+        type: object
+        properties:
+          performance-data:
+            type: object
+            description: >
+              'historicalPerformanceData
+              overwritten by {$p2CalculateEthernetKpis.output#/historical-performance-data}
+              overwritten by {$p1RemoveDefaultValues.output#/input-object}
+              simplified listing here'
+            properties:
+              transmit-traffic:
+                type: integer
+                description: >
+                  'transmitTraffic in Mbps
+                  requires {$p2CalculateEthernetKpis}'
+              receive-traffic:
+                type: integer
+                description: >
+                  'receiveTraffic in Mbps
+                  requires {$p2CalculateEthernetKpis}'
+              frame-loss-input:
+                type: integer
+                description: >
+                  'Sum of errored and dropped frames on the ingress
+                  requires {$p2CalculateEthernetKpis}'
+              frame-loss-output:
+                type: integer
+                description: >
+                  'Sum of errored and dropped frames on the egress
+                  requires {$p2CalculateEthernetKpis}'
