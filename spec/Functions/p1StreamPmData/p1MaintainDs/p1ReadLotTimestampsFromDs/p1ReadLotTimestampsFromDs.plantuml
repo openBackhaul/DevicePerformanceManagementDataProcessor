@@ -1,0 +1,39 @@
+@startuml p1ReadLotTimestampsFromDs
+skinparam responseMessageBelowArrow true
+skinparam SequenceDividerBackgroundColor #LightSalmon
+
+title
+  p1ReadLotTimestampsFromDs
+end title
+
+participant "requestor" as requestor
+participant "p1ReadLotTimestampsFromDs\n" as cur #LightCyan
+database "DataStore" as ds #LightCyan
+
+
+activate requestor
+
+requestor -> cur : {mountName,\n{parameters},\n{configFile},\n{dataStoreEsClient}}
+activate cur #LightCyan
+
+  note over cur
+    <u>ReadTimestampsFromDs</u>
+    Read the timestamp of each lot
+    in the dataStore for the input device
+    from [/data-store/device=mountName/lot/timestamp]
+  end note
+  cur -> ds: {mountName}
+  cur <-- ds: {{timestampList}}
+
+  note over cur
+    <u>SortTimestamps</u>
+    Sort the timestamps in the list
+    from old to new.
+
+    Return the sorted list.
+  end note
+  requestor <-- cur: {{sortedTimestampList}}
+
+deactivate cur
+
+@enduml
