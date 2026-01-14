@@ -15,7 +15,7 @@ iterate-ec-pm-slices:
       description: >
         'historicalPerformanceDataList
         from {$input#/historical-performance-data-list}
-        simplified listing here'
+        ! simplified representation !'
       items:
         type: object
         properties:
@@ -25,7 +25,7 @@ iterate-ec-pm-slices:
               'historicalPerformanceData
               overwritten by {$p2CalculateEthernetKpis.output#/historical-performance-data}
               overwritten by {$p1RemoveDefaultValues.output#/input-object}
-              simplified listing here'
+              ! simplified representation !'
             properties:
               transmit-traffic:
                 type: integer

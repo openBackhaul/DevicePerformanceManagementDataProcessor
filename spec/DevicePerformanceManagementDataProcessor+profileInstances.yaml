@@ -957,6 +957,34 @@ profile-instances:
       string-value: '-1'
 
 
+  # p1RemoveOutOfRangeTemperature
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveOutOfRangeTemperature'
+      function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'lowerTemperatureLimit'
+      purpose: 'Lower bound of valid values of the temperature'
+    configuration:
+      string-value: '-30'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'upperTemperatureLimit'
+      purpose: 'Upper bound of valid values of the temperature'
+    configuration:
+      string-value: '130'
+
+
   # p1FormattingOutputApt
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-420'

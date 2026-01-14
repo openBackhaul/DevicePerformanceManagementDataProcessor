@@ -29,7 +29,7 @@ participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #Brown
 participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #LightCyan
-participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #Yellow
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
@@ -342,12 +342,11 @@ activate p1RMWDI #LightBlue
           end loop
 
           p1CreateResultCc -> p1ROoRT
-          activate p1ROoRT #Yellow
+          activate p1ROoRT #LightCyan
 
             note over p1ROoRT
-              Delete temperature attributes 
-              with values outside pre-defined
-              range from resultCC
+              Delete temperature attributes with
+              values outside pre-defined range
             end note
 
           p1CreateResultCc <-- p1ROoRT
