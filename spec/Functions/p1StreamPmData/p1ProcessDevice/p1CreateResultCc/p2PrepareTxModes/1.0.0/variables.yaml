@@ -9,7 +9,8 @@ prepare-tx-modes:
       x-key: period-end-time
       description: >
         'historicalPerformanceDataList
-        from {$input#/historical-performance-data-list}'
+        from {$input#/historical-performance-data-list}
+        ! simplified representation !'
       items:
         type: object
         properties:

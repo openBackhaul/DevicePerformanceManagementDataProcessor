@@ -41,7 +41,7 @@ x-javascript-interface:
                   type: array
                   description: >
                     'historicalPerformanceDataList
-                    from [/iterate-ai-pm-slices/historical-performance-data-list]
+                    from [/iterate-ai-pm-slices/historical-performance-data-list]'
       error:
         description: 'historicalPerformanceDataList could not be processed'
         content:

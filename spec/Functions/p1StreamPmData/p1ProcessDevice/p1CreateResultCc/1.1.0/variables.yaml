@@ -86,6 +86,9 @@ create-result-cc:
         equipment:
           type: array
           x-key: uuid
+          description: >
+            'List of equipment at the device
+            overwritten from {$p1RemoveOutOfRangeTemperature.output#/equipment}'
           items:
             type: object
             required:
@@ -244,7 +247,8 @@ create-result-cc:
                                   x-key: period-end-time
                                   description: >
                                     'List of historical performance data slices
-                                    overwritten by {$prepareTxModes.output#/historical-performance-data-list}'
+                                    overwritten by {$p1PrepareTxModes.output#/historical-performance-data-list} (deprecated)
+                                    overwritten by {$p1IterateAiPmSlices.output#/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
@@ -351,7 +355,8 @@ create-result-cc:
                                   x-key: period-end-time
                                   description: >
                                     'List of historical performance data slices
-                                    overwritten by {$p1CalculateEthernetKpis.output#/historical-performance-data-list}'
+                                    overwritten by {$p1CalculateEthernetKpis.output#/historical-performance-data-list} (deprecated)
+                                    overwritten by {$p1IterateEcPmSlices.output#/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:

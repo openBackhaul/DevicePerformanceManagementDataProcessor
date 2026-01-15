@@ -57,7 +57,7 @@ x-javascript-interface:
                 - 'Result CC data missing or invalid'
                 - 'Output format missing or invalid'
                 - 'Kafka transmission failed'
-                - 'Storing resultCC failed'
+                - 'Storing resultCc failed'
                 - 'General processing error'
     processing:
       p1LoadRawCc:
@@ -259,9 +259,9 @@ x-javascript-interface:
                       from [/process-device/data-store-es-client]'
         output:
           success:
-            description: 'resultCC stored'
+            description: 'resultCc stored'
           error:
-            description: 'resultCC could not be stored'
+            description: 'resultCc could not be stored'
             content:
               application/json:
                 schema:
