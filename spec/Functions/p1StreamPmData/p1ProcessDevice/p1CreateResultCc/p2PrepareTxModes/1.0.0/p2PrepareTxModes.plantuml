@@ -5,7 +5,7 @@ title
   p2PrepareTxModes
 end title
 
-participant "p1CreateResultCc\n" as cur
+participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p2Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightBlue

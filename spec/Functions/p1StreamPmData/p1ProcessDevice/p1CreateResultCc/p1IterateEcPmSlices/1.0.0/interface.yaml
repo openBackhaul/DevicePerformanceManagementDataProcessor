@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: p1IterateAiPmSlices
+  title: p1IterateEcPmSlices
   version: 1.0.0
 
 x-javascript-interface:
-  p1IterateAiPmSlices:
-    summary: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
+  p1IterateEcPmSlices:
+    summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
     input:
       required: true
       content:
@@ -14,7 +14,6 @@ x-javascript-interface:
             required:
               - parameters
               - historical-performance-data-list
-              - transmission-mode-list
             properties:
               parameters:
                 type: object
@@ -23,10 +22,6 @@ x-javascript-interface:
                 type: array
                 description: >
                   'historicalPerformanceDataList'
-              transmission-mode-list:
-                type: array
-                description: >
-                  'transmissionModeList'
     output:
       success:
         description: 'historicalPerformanceDataList processed'
@@ -41,7 +36,7 @@ x-javascript-interface:
                   type: array
                   description: >
                     'historicalPerformanceDataList
-                    from [/iterate-ai-pm-slices/historical-performance-data-list]'
+                    from [/iterate-ec-pm-slices/historical-performance-data-list]'
       error:
         description: 'historicalPerformanceDataList could not be processed'
         content:
@@ -55,58 +50,13 @@ x-javascript-interface:
                 - 'historicalPerformanceDataList not provided'
                 - 'historicalPerformanceDataList incomplete'
                 - 'historicalPerformanceDataList invalid'
-                - 'transmissionModeList not provided'
-                - 'transmissionModeList incomplete'
-                - 'transmissionModeList invalid'
-                - 'interval capacity could not be calculated'
-                - 'out of range levels could not be removed'
+                - 'Ethernet KPIs could not be calculated'
                 - 'default values could not be removed'
                 - 'historicalPerformanceDataList could not be processed'
                 - 'General processing error'
     processing:
-      p1CalculateIntervalCapacity:
-        summary: 'Calculates the AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps'
-        input:
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - time-xstates-list
-                  - transmission-mode-list
-                properties:
-                  time-xstates-list:
-                    type: array
-                    description: >
-                      'timeXStatesList
-                      from [/iterate-ai-pm-slices/historical-performance-data-list=*/performance-data/time-xstates-list]'
-                  transmission-mode-list:
-                    type: array
-                    description: >
-                      'transmissionModeList
-                      from [/iterate-ai-pm-slices/transmission-mode-list]'
-        output:
-          success:
-            description: 'Interval capacity provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - interval-capacity
-                  properties:
-                    interval-capacity:
-                      type: integer
-                      description: >
-                        'intervalCapacity'
-          error:
-            description: 'Interval capacity could not be provided'
-            content:
-              application/json:
-                schema:
-                  type: string
-      p1RemoveOutOfRangeLevels:
-        summary: 'Removes out-of-range level attributes from a performance data slice'
+      p2CalculateEthernetKpis:
+        summary: 'Adds Ethernet KPIs to a historicalPerformanceData set'
         input:
           required: true
           content:
@@ -114,35 +64,29 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - parameters
-                  - performance-data
+                  - historical-performance-data
                 properties:
-                  parameters:
-                    type: object
+                  historical-performance-data:
+                    type: array
                     description: >
-                      'Hierarchical object holding the parameter settings
-                      from [/iterate-ai-pm-slices/parameters/sub-function=p1RemoveOutOfRangeLevels]'
-                  performance-data:
-                    type: object
-                    description: >
-                      'performanceData set of a single time period
-                      from [/iterate-ai-pm-slices/historical-performance-data-list=*/performance-data]'
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
         output:
           success:
-            description: 'Performance data slice cleaned from out-of-range level attributes'
+            description: 'Ethernet KPIs added'
             content:
               application/json:
                 schema:
                   type: object
                   required:
-                    - performance-data
+                    - historical-performance-data
                   properties:
-                    performance-data:
-                      type: object
+                    historical-performance-data:
+                      type: array
                       description: >
-                        'performanceData set of a single time period'
+                        'historicalPerformanceData'
           error:
-            description: 'Performance data slice could not be cleaned from out-of-range level attributes'
+            description: 'Ethernet KPIs could not be added'
             content:
               application/json:
                 schema:
@@ -163,12 +107,12 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/iterate-ai-pm-slices/parameters/sub-function=p1RemoveDefaultValues]'
+                      from [/iterate-ec-pm-slices/parameters/sub-function=p1RemoveDefaultValues]'
                   input-object:
                     type: object
                     description: >
                       'performanceData set of a single time period
-                      from [/iterate-ai-pm-slices/historical-performance-data-list=*/performance-data]'
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
         output:
           success:
             description: 'Input object cleaned from attributes with default values'

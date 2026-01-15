@@ -22,25 +22,11 @@ iterate-ai-pm-slices:
           performance-data:
             type: object
             description: >
-              'historicalPerformanceDataList
+              'historicalPerformanceData
               overwritten by {$p1RemoveOutOfRangeLevels.output#/performance-data}
-              overwritten by {$p1RemoveDefaultValues.output#/input-object}'
+              overwritten by {$p1RemoveDefaultValues.output#/input-object}
+              ! simplified representation !'
             properties:
-              time-xstates-list:
-                type: array
-                x-key: transmission-mode
-                items:
-                  type: object
-                  description: >
-                    'timeXstateEntry
-                    entry to be deleted, if time == 0'
-                  required:
-                    - transmission-mode
-                  properties:
-                    transmission-mode:
-                      type: string
-                    time:
-                      type: integer
               interval-capacity:
                 type: integer
                 description: >

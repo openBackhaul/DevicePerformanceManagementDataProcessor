@@ -5,15 +5,15 @@ title
   p1LoadRawCc
 end title
 
-participant "p1ProcessDevice" as requestor
-participant "p1LoadRawCc" as cur #LightBlue
+participant "p1ProcessDevice" as requestor #LightBlue
+participant "p1LoadRawCc" as cur #LightCyan
 database "MWDI ES Replica" as MwdiEs #LightBlue
 participant "p1FieldsFilter" as fieldsFilter #LightBlue
-database "DataStore" as datastore #LightBlue
+database "DataStore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightBlue
 
 requestor -> cur: {mountName\n{parameters}\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
-activate cur #LightBlue
+activate cur #LightCyan
 
   note over cur
     readControlConstructFromReplica
@@ -29,7 +29,7 @@ activate cur #LightBlue
   cur <-- fieldsFilter: {{filtered rawControlConstruct}}
   deactivate fieldsFilter #LightBlue
 
-  note over cur #LightBlue
+  note over cur
     retrieveMostRecentPeriodEndTimesFromDs
   end note
   cur -> datastore: {mountName}
@@ -56,7 +56,7 @@ activate cur #LightBlue
     cur <-- filterPm: {[filteredHistoricalPerformanceDataList]}
     deactivate filterPm
 
-    note over cur #Yellow
+    note over cur
       IF layerProtocolName == AirInterface
         THEN addBatchTimestamp
     end note
