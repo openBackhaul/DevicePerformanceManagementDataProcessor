@@ -21,6 +21,10 @@ activate cur #LightCyan
     Copies rawCc to resultCc
   end note
 
+  note over cur
+    Creates AggregationGroupList
+  end note
+
   loop FOR all AirInterfaces in resultCc
 
     cur -> p1PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }

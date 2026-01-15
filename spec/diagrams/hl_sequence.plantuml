@@ -18,7 +18,7 @@ participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1FieldsFilter\n" as p1FieldsFilter #LightBlue
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightBlue
 
-participant "p1CreateResultCc\n" as p1CreateResultCc #Yellow
+participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
 participant "p1Prepare\nTxModes" as p1prepTxModes #BurlyWood
 participant "p2Prepare\nTxModes" as p2prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
@@ -162,11 +162,14 @@ activate p1RMWDI #LightBlue
 
         ' create resultCc ->
         p1ProcessPm -> p1CreateResultCc
-        activate p1CreateResultCc #Yellow
+        activate p1CreateResultCc #LightCyan
 
           note over p1CreateResultCc
-            Create resultCc
-            from rawCc
+            Copies rawCc to resultCc
+          end note
+
+          note over p1CreateResultCc
+            Creates aggregationGroupList
           end note
 
           loop FOR all AirInterfaces in resultCc
@@ -300,31 +303,27 @@ activate p1RMWDI #LightBlue
             p1CreateResultCc -> ecSlices
             activate ecSlices #LightCyan
 
-              Loop FOR historicalPerformanceDataList
+              ecSlices -> p2EthKpi
+              activate p2EthKpi #LightCyan
 
-                ecSlices -> p2EthKpi
-                activate p2EthKpi #LightCyan
+                note over p2EthKpi
+                  Add Ethernet KPIs to
+                  historicalPerformanceData
+                end note
 
-                  note over p2EthKpi
-                    Add Ethernet KPIs to
-                    historicalPerformanceData
-                  end note
+              ecSlices <-- p2EthKpi
+              deactivate p2EthKpi
 
-                ecSlices <-- p2EthKpi
-                deactivate p2EthKpi
+              ecSlices -> p1RemDefault
+              activate p1RemDefault #LightCyan
 
-                ecSlices -> p1RemDefault
-                activate p1RemDefault #LightCyan
+                note over p1RemDefault
+                  Delete attributes with
+                  ONF default value
+                end note
 
-                  note over p1RemDefault
-                    Delete attributes with
-                    ONF default value
-                  end note
-
-                ecSlices <-- p1RemDefault
-                deactivate p1RemDefault        
-
-              end loop 
+              ecSlices <-- p1RemDefault
+              deactivate p1RemDefault        
 
             p1CreateResultCc <-- ecSlices
             deactivate ecSlices

@@ -33,36 +33,8 @@ create-result-cc:
     aggregation-group-list:
       type: array
       description: >
-        'List of Layer1AggregationGroups at the device'
-      items:
-        type: object
-        properties:
-          uuid:
-            type: string
-            description: >
-              'UUID of Layer1AggregationGroup
-              from [/create-result-cc/raw-cc/profile-collection/profile=*/uuid]
-                with [/create-result-cc/raw-cc/profile-collection/profile=*/profile-name] == "PROFILE_NAME_TYPE_LAYER_1_AGGREGATION_PROFILE"'
-          client-ltp:
-            type: string
-            description: >
-              'UUID of transported EthernetContainer LTP
-              from [/create-result-cc/raw-cc/profile-collection/profile=*/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/client-ltp]'
-          server-ltp-list:
-            type: array
-            description: >
-              'List of UUIDs of transporting PureEthernetStructure or HybridMwStructure LTPs
-              from [/create-result-cc/raw-cc/profile-collection/profile=*/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/server-ltp-list]'
-            items:
-              type: string
-          physical-server-ltp-list:
-            type: array
-            description: >
-              'List of UUIDs of transporting AirInterface and WireInterface LTPs
-              for every structure-ltp in [./server-ltp-list]
-              from [/create-result-cc/raw-cc/logical-termination-point={structure-ltp}/server-ltp]'
-            items:
-              type: string
+        'List of Layer1AggregationGroups at the device
+        from {$createAggregationGroupList.output#/aggregation-group-list}'
     result-cc:
       type: object
       description: >

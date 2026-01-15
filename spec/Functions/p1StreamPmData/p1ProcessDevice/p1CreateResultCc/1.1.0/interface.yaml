@@ -92,6 +92,75 @@ x-javascript-interface:
                   - 'rawCc invalid'
                   - 'resultCc could not be provided'
                   - 'General processing error'
+      createAggregationGroupList:
+        summary: 'Creates the aggregation-group-list from rawCc data'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - raw-cc
+                properties:
+                  raw-cc:
+                    type: object
+                    description: >
+                      'RawCc
+                      from [/create-result-cc/raw-cc]'
+        output:
+          success:
+            description: 'aggregationGroupList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - aggregation-group-list
+                  properties:
+                    aggregation-group-list:
+                      type: array
+                      description: >
+                        'List of Layer1AggregationGroups at the device'
+                      items:
+                        type: object
+                        properties:
+                          uuid:
+                            type: string
+                            description: >
+                              'UUID of Layer1AggregationGroup
+                              from {$input#/raw-cc/profile-collection/profile=*/uuid}
+                                with {$input#/raw-cc/profile-collection/profile={uuid}/profile-name} == "PROFILE_NAME_TYPE_LAYER_1_AGGREGATION_PROFILE"'
+                          client-ltp:
+                            type: string
+                            description: >
+                              'UUID of transported EthernetContainer LTP
+                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/client-ltp}'
+                          server-ltp-list:
+                            type: array
+                            description: >
+                              'List of UUIDs of transporting PureEthernetStructure or HybridMwStructure LTPs
+                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/server-ltp-list}'
+                            items:
+                              type: string
+                          physical-server-ltp-list:
+                            type: array
+                            description: >
+                              'List of UUIDs of transporting AirInterface and WireInterface LTPs
+                              for every PureEthernetStructure or HybridMwStructure LTP in {server-ltp-list}
+                              from [all {$input#/raw-cc/logical-termination-point={structure-ltp[*]}/server-ltp]'
+                            items:
+                              type: string
+        error:
+          description: 'aggregationGroupList could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'rawCc not provided'
+                  - 'rawCc invalid'
+                  - 'aggregationGroupList could not be provided'
+                  - 'General processing error'
       p1PrepareTxModes:
         summary: 'Deprecated!'
         input:
@@ -273,11 +342,6 @@ x-javascript-interface:
                   - 'linkEndpointId invalid'
                   - 'linkId could not be provided'
                   - 'General processing error'
-
-# hier geht es weiter mit dem Review gegen variables.yaml
-# wo kommen die Werte in [/create-result-cc/aggregation-group-list] her?
-# Wäre ein zusätzlicher Prozessschritt hierfür sinnvoll?
-
       findParallelPhysic:
         summary: 'Finds parallel physical LTPs'
         input:
@@ -316,8 +380,8 @@ x-javascript-interface:
                         type: string
                       description: >
                         'List of UUIDs of parallel LTPs (AirInterfaces or WireInterfaces in the same Layer1AggregationGroup)
-                        IF {$findParallelPhysic.input#ltp-uuid} is part of any {$findParallelPhysic.input#/aggregation-group-list=*/physical-server-ltp-list}
-                        THEN all other members of same {$findParallelPhysic.input#/aggregation-group-list=*/physical-server-ltp-list}'
+                        IF {$input#ltp-uuid} is part of any {$input#/aggregation-group-list=*/physical-server-ltp-list}
+                          THEN from [all other members of same {$input#/aggregation-group-list=*/physical-server-ltp-list}]'
         error:
           description: 'List of parallel physical LTPs could not be provided'
           content:
@@ -360,7 +424,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'mostRecentPeriodEndTime
-                        from max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} )'
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} ) ]'
         error:
           description: 'mostRecentPeriodEndTime could not be provided'
           content:
@@ -402,7 +466,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'mostRecentPeriodEndTime24
-                        from max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} )'
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} ) ]'
         error:
           description: 'mostRecentPeriodEndTime24 could not be provided'
           content:
@@ -521,7 +585,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'mostRecentPeriodEndTime
-                        from max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} )'
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} ) ]'
         error:
           description: 'mostRecentPeriodEndTime could not be provided'
           content:
@@ -563,7 +627,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'mostRecentPeriodEndTime24
-                        from max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} )'
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} ) ]'
         error:
           description: 'mostRecentPeriodEndTime24 could not be provided'
           content:
