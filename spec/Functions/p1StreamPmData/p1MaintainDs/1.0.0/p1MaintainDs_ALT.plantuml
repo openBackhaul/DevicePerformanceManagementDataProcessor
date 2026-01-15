@@ -1,0 +1,148 @@
+@startuml p1MaintainDs
+skinparam responseMessageBelowArrow true
+skinparam SequenceDividerBackgroundColor #LightSalmon
+
+title
+  p1MaintainDs
+end title
+
+participant "p1StreamPmData\n" as requestor
+participant "p1MaintainDs\n" as cur #LightCyan
+participant "p1ReadLotTimestampsFromDs" as lotTs #LightCyan
+database "DataStore" as ds #LightCyan
+
+
+activate requestor
+
+requestor -> cur : {{parameters},\n{configFile},\n{dataStoreEsClient}}
+activate cur #LightCyan
+
+loop endless
+  note over cur
+    Cycically cleanup the dataStore
+    according to time interval configured
+    in parameters.<i>dataStoreCleanupPeriod</i>.
+
+    With <i>retentionPeriod</i> from
+    parameters.<i>dataStoreRetentionPeriod</i>.
+  end note
+
+  note over cur
+    <u>ReadMountNamesInDs</u>
+      Get a list of mountNames
+      for all devices in the dataStore.
+  end note
+  cur -> ds
+  cur <-- ds: {{mountNameList}}
+
+  'iterate over each device
+  loop FOR EACH mountName in mountNameList
+    
+    note over cur #LightSalmon
+      Remove expired device interfaces
+    end note
+
+    note over cur
+      <u>GetDeviceInterfaces</u>
+        Read the interface list for the mountName
+        from [/data-store/device=mountName/interface]
+    end note
+    cur -> ds: {mountName}
+    cur <-- ds: {{interface}}
+
+    'iterate over the device interfaces
+    loop FOR EACH array item intf in interface
+      note over cur
+        <u>DeleteExpiredInterface</u>
+          IF (newest(intf.most-recent-period-end-time,
+                     intf.most-recent-period-end-time-24)
+              is older than allowed <i>retentionPeriod</i>)
+          THEN delete the interface instance
+            [/data-store/device=mountName/interface=intf.uuid]
+          from the datastore
+      end note
+      cur -> ds: {mountName, uuid}
+      cur <-- ds
+    end loop
+
+    'now the device if there are no interfaces left
+    note over cur #LightSalmon
+      Remove expired devices
+    end note
+
+    note over cur #LightCoral
+      klären: kann ElasticSearch auch einfach nur die Anzahl der Interfaces direkt zurückliefern?
+      dann muss man nicht alles nochmal auslesen, sondern bekommt direkt die Anzahl zurück.
+      Prathiba gefragt
+    end note
+
+    'Der zweite Aufruf überschreibt die Daten vom ersten Aufruf im variables
+    'Generell werden die DAten sowieso für jedes Device erneut überschrieben
+    note over cur #Yellow
+      <u>GetDeviceInterfaces</u>
+        Read the interface list again, to
+        see if the device no longer has any
+        interfaces.
+        Count the number of records in interface.
+    end note
+    cur -> ds: {mountName}
+    cur <-- ds: {{interface}}
+    
+    'oder:
+    note over cur #Yellow
+      <u>GetNumberOfDeviceInterfaces</u>
+        Read the number of interfaces under
+        the device from dataStore.
+    end note
+    cur -> ds: {mountName}
+    cur <-- ds: {interfaceCount}
+
+    note over cur
+      <u>DeleteExpiredDevice</u>
+      IF (interfaceCount == 0)
+      THEN delete complete device from 
+        dataStore: [/data-store/device=mountName]
+        and CONTINUE (i.e. skip to next device)
+    end note
+    cur -> ds: {mountName}
+    cur <-- ds
+
+    'now remove expired lots, if the device was not deleted
+    note over cur #LightSalmon
+      Remove expired lots
+    end note
+    
+    note over cur
+      <u>p1ReadLotTimestampsFromDs</u>
+        Read the lot timestamps from dataStore.
+        They are sorted from oldest to newest date.
+    end note
+    cur -> lotTs: {mountName,\n{{parameters=/sub-function=p1ReadLotTimestampsFromDs}},\n{dataStoreEsClient},\n{configFile}}
+    cur <-- lotTs: {{sortedLotTimestamps}}
+
+    note over cur
+      <u>DeleteExpiredLots</u>
+        Iterate over the sorted timestamps and delete the expired lots.
+        Once a still valid timestamp is seen, iteration can be stopped.
+
+        FOR EACH ts in sortedLotTimestamps
+          IF (ts is older than allowed by <i>retentionPeriod</i>)
+          THEN delete the lot from the dataStore, identified by
+            [/data-store/device=mountName/lot=ts]
+          ELSE
+            BREAK
+    end note
+    cur -> ds: {mountName, timestamp=ts}
+    cur <--ds
+
+  end loop
+end loop
+
+deactivate cur
+
+footer
+
+end footer
+
+
+@enduml
