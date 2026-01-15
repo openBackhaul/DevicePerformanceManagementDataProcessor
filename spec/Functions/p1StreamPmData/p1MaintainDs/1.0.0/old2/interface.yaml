@@ -3,8 +3,6 @@ info:
   title: p1MaintainDs
   version: 1.0.0
 
-#REDO
-
 x-javascript-interface:
   p1MaintainDs:
     summary: 'Maintains the dataStore by cleaning up expired data.'

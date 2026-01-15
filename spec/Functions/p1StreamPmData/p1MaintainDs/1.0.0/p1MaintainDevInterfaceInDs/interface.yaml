@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: p1MaintainDevInterfaceInDs
+  version: 1.0.0
+
+x-javascript-interface:
+  p1MaintainDevInterfaceInDs:
+    summary: 'Maintains the target interface instance in the dataStore by cleaning up expired data.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - config-file
+              - data-store-es-client
+              - mount-name
+              - interface-instance
+              - retention-period
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Hierarchical object holding the parameter settings'
+              config-file:
+                type: object
+                description: >
+                  'configFile content'
+              data-store-es-client:
+                type: object
+                description: >
+                  'Data Store ElasticSearch address'
+              mount-name:
+                type: string
+                description: >
+                  'MountName, the x-key of the device the target interface belongs to'
+              interface-instance:
+                type: object
+                required:
+                  - uuid
+                  - most-recent-period-end-time
+                  - most-recent-period-end-time-24
+                properties:
+                  uuid:
+                    type: string
+                    description: >
+                      'The uuid identifies the target interface instance in the datastore: [/data-store/device={$input.mount-name}/interface={uuid}]'
+                  layer-protocol-name:
+                    type: string
+                  most-recent-period-end-time:
+                    type: string
+                  most-recent-period-end-time-24:
+                    type: string
+                description: >
+                  'The data of the target interface instance.'
+    output:
+      success:
+        description: 'Device interface instance maintained'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'Expired interface instance deleted from dataStore'
+                - 'Not-expired interface instance kept in dataStore'
+      error:
+        description: 'Maintenance of device interface instance failed'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'Parameters missing or invalid'
+                - 'Config file missing or invalid'
+                - 'DataStoreEsClient missing or invalid'
+                - 'MountName missing or invalid'
+                - 'InterfaceInstance missing or invalid'
+                - 'RetentionPeriod missing or invalid'
+                - 'DataStore error'
+                - 'General processing error'
+    processing:
+      deleteExpiredInterface:
+        url: #  [{/maintain-dev-interface-in-ds/data-store-url}][/data-store/device={/maintain-dev-interface-in-ds/mount-name}/interface={/maintain-dev-interface-in-ds/uuid}]
+        description: >
+          'IF (most-recent-period-end-time && most-recent-period-end-time-24) both are older than allowed by retention-period,
+          THEN DELETE the interface instance from the dataStore identified by mountName and uuid.
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - mount-name
+                  - uuid
+                  - retention-period
+                  - most-recent-period-end-time
+                  - most-recent-period-end-time-24
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'MountName to identify the target device in dataStore
+                      from [/maintain-dev-interface-in-ds/mount-name]'
+                  uuid:
+                    type: string
+                    description: >
+                      'Uuid to identify the target interface in dataStore
+                      from [/maintain-dev-interface-in-ds/uuid]'
+                  retention-period:
+                    type: string
+                    description: >
+                      'The retention period
+                      from [/maintain-dev-interface-in-ds/retention-period]'
+                  most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'The mostRecentPeriodEndTime for 15min to be compared to the retentionPeriod
+                      from [/maintain-dev-interface-in-ds/interface-instance/most-recent-period-end-time]'
+                  most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'The mostRecentPeriodEndTime for 24hours to be compared to the retentionPeriod
+                      from [/maintain-dev-interface-in-ds/interface-instance/most-recent-period-end-time-24]'
+        output:
+          success:
+            description: 'Expired interface deleted'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'Expired interface instance deleted from dataStore'
+          error:
+            description: 'Deleting expired interface instance failed'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'MountName missing or invalid'
+                    - 'Uuid missing or invalid'
+                    - 'Input data missing or invalid'
+                    - 'DataStore access error'
+                    - 'General processing error'
+
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
