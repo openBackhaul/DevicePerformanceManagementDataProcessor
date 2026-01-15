@@ -148,7 +148,7 @@ activate p1RMWDI #LightBlue
           p1AddRaw <-- filterPm
           deactivate filterPm
 
-          note over p1AddRaw #Yellow
+          note over p1AddRaw
             addBatchTimestamp
           end note
 
@@ -363,10 +363,8 @@ activate p1RMWDI #LightBlue
         p1ProcessPm -> p1Output
         activate p1Output #LightCyan
 
-          note over p1Output #Yellow
+          note over p1Output
             Create APT format
-            from resultCc
-            (incl. batchTimestamp)
           end note
 
         p1ProcessPm <-- p1Output

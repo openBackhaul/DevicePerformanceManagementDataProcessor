@@ -1,0 +1,132 @@
+@startuml p1CreateResultCc
+skinparam responseMessageBelowArrow true
+
+title
+  p1CreateResultCc
+end title
+
+participant "p1ProcessDevice\n" as requestor
+participant "p1CreateResultCc\n" as cur #LightCyan
+
+participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
+participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
+
+requestor -> cur: {{parameters},\n{rawCc}}
+activate cur #LightCyan
+
+  note over cur #LightCyan
+    Create resultCc from rawCc
+  end note
+
+  loop FOR all AirInterfaces in resultCc
+
+    cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+    activate prepTxModes #LightCyan
+
+      note over prepTxModes
+        Removes unused transmission modes
+        from historicalPerformanceDataList
+      end note
+
+      note over prepTxModes
+        Removes unused transmission modes
+        from transmissionModeList
+      end note
+
+      note over prepTxModes
+        Adds AirInterfaceCapacity to
+        used transmission modes
+      end note
+
+      note over prepTxModes
+        Adds IntervalCapacity to
+        performance data slices
+      end note
+
+    cur <-- prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+    deactivate prepTxModes
+
+    ' ----- Link ID --------------------------
+    note over cur
+      Add linkId to resultCc
+    end note
+
+    ' ----- Aggregation Group --------------------------
+    note over cur
+      Add list of parallel LTPs
+    end note
+
+    ' ----- mostRecentPeriodEndTime --------------------------
+    note over cur
+      Add mostRecentPeriodEndTime
+      to resultCc
+    end note
+
+    note over cur
+      Add mostRecentPeriodEndTime24
+      to resultCc
+    end note
+
+    ' ----- OutOfRange TxLevel --------------------------
+    note over cur #LightGray
+      Delete attributes with 
+      values outside range
+    end note
+
+  end
+
+  loop FOR all EthernetContainers in resultCc
+
+    ' ----- EthContainer KPIs --------------------------
+    cur -> ethKpis : {[historicalPerformanceDataList]}
+    activate ethKpis #LightCyan
+
+        note over ethKpis
+          Add transmitTraffic
+        end note
+
+        note over ethKpis
+          Add receiveTraffic
+        end note
+
+        note over ethKpis
+          Add frameLossInput
+        end note
+
+        note over ethKpis
+          Add frameLossOutput
+        end note
+
+    cur <-- ethKpis : {[historicalPerformanceDataList]}
+    deactivate ethKpis
+
+    ' ----- mostRecentPeriodEndTime --------------------------
+    note over cur
+      Add mostRecentPeriodEndTime
+      to resultCc
+    end note
+
+    note over cur
+      Add mostRecentPeriodEndTime24
+      to resultCc
+    end note
+
+  end loop
+
+  ' ----- Temperature --------------------------
+  note over cur #LightGray
+    Harmonize temperature
+    values over device types
+  end note
+
+  ' ----- ONF default values --------------------------
+  note over cur #LightGray
+    Delete attributes with 
+    ONF default values
+  end note
+
+requestor <-- cur: {{resultCc}}
+
+deactivate cur
+
+@enduml
