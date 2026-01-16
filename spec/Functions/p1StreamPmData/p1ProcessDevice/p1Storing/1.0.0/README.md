@@ -1,6 +1,7 @@
 # p1Storing  
 
-Stores the resultCc for a device in the dataStore.  
+Stores the resultCc of a device in the dataStore.  
+
 
 ### Diagram  
 

@@ -5,14 +5,12 @@ title
   p1Storing
 end title
 
-participant "p1ProcessDevice" as requestor
+participant "p1ProcessDevice" as requestor #LightBlue
 participant "p1Storing" as cur #LightCyan
 database "DataStore" as ds #LightCyan
 
 
-activate requestor
-
-requestor -> cur : {mountName,\n{parameters},\n{configFile},\n{dataStoreEsClient},\n{resultCc}}
+requestor -> cur : { mountName,\n{parameters},\n{configFile},\n{dataStoreEsClient},\n{resultCc} }
 activate cur #LightCyan
 
   note over cur
