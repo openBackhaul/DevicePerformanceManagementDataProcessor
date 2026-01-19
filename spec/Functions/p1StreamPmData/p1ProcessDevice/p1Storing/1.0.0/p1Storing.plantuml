@@ -10,43 +10,25 @@ participant "p1Storing" as cur #LightCyan
 database "DataStore" as ds #LightCyan
 
 
-requestor -> cur : { mountName,\n{parameters},\n{configFile},\n{dataStoreEsClient},\n{resultCc} }
+requestor -> cur : { {dataStoreEsClient},\n{resultCc} }
 activate cur #LightCyan
 
-  note over cur
-    <u>ExtractDataFromResultCc</u>
-      read data:
-      - batchTimestamp (= lot timestamp)
-      - for each interface in the resultCc
-        - uuid, layerProtocolName
-        - mostRecentPeriodEndTime, mostRecentPeriodEndTime24
-  end note
+  loop FOR all [/result-cc/logical-termination-point]
+    note over cur
+      extractInterfaceMetadata
+    end note
+  end loop
 
   note over cur
-    <u>UpdateInterfaceInfo</u>
-      Update interface list for the device in dataStore
-      with data from ExtractDataFromResultCc:
-      - add new interfaces
-      - overwrite existing interfaces
-      Interfaces identified by:
-      [/data-store/device=mountName/interface=uuid]
-
-      If the device did not yet exist in the dataStore,
-      the device is added. The lot is initially added
-      as an empty list.
+    storeInterfaceMetadataList
   end note
-  cur -> ds: {mountName, uuid, {interface}}
+  cur -> ds: { [interface-metadata] }
   cur <-- ds
 
   note over cur
-    <u>StoreResultCcInLot</u>
-      Store resultCc in datastore at
-      [/data-store/device=mountName/lot]
-      by adding {timestamp, {resultCc}}
-      to the lot array
-      (timestamp := batchTimestamp).
+    storeResultCc
   end note
-  cur -> ds: {mountName, timestamp, {resultCc}}
+  cur -> ds: { {batch} }
   cur <-- ds
 
 requestor <-- cur

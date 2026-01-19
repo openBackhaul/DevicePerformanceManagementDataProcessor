@@ -12,7 +12,7 @@ participant "p1FieldsFilter" as fieldsFilter #LightBlue
 database "DataStore" as datastore #LightCyan
 participant "p1DiscardIrrelevantPmRecords" as filterPm #LightBlue
 
-requestor -> cur: { mountName,\n{parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\nmountName }
 activate cur #LightCyan
 
   note over cur

@@ -17,4 +17,10 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ### Variables
 
-Please find a detailed description of the [variables](./variables.yaml).
+Please find a detailed description of the [variables](./variables.yaml).  
+
+
+### Schema of the Data Store
+
+Please find a detailed description of the [schema](./data-store-schema/dataStore.yaml).  
+

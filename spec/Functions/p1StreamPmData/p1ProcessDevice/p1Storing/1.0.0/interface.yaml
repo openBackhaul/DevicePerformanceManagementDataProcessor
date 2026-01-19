@@ -13,223 +13,149 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - parameters
-              - config-file
-              - mount-name
               - data-store-es-client
               - result-cc
             properties:
-              parameters:
-                type: object
-                description: >
-                  'Hierarchical object holding the parameter settings'
-              config-file:
-                type: object
-                description: >
-                  'configFile content'
-              mount-name:
-                type: string
-                description: >
-                  'MountName'
               data-store-es-client:
                 type: object
                 description: >
-                  'Data Store ElasticSearch address'
+                  'DataStore ElasticSearch address'
               result-cc:
                 type: object
                 description: >
                   'The resultCc to be stored'
     output:
       success:
-        description: 'ResultCc stored'
+        description: 'resultCc stored'
       error:
-        description: 'Processing of PM data failed'
+        description: 'resultCc could not be stored'
         content:
           application/json:
             schema:
               type: string
               enum:
-                - 'Input data missing or invalid'
-                - 'Mount name not found'
-                - 'Parameters missing or invalid'
-                - 'Config file missing or invalid'
-                - 'Result CC data missing or invalid'
-                - 'Storing resultCC failed'
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'resultCc could not be stored'
                 - 'General processing error'
     processing:
-      extractDataFromResultCc:
+      extractInterfaceMetadata:
         input:
           required: true
           content:
             application/json:
               schema:
                 required:
-                  - result-cc
+                  - logical-termination-point
                 properties:
-                  result-cc:
+                  logical-termination-point:
                     type: object
                     description: >
-                      'ResultCc
-                      from [/storing/result-cc]'
+                      'logicalTerminationPoint
+                      from [/storing/result-cc/logical-termination-point=*]'
         output:
           success:
-            description: 'Extracted data from resultCc'
+            description: 'interfaceMetadata extracted'
             content:
               application/json:
                 schema:
+                  type: object
                   required:
-                    - extracted-data-from-result-cc
+                    - uuid
+                    - layer-protocol-name
+                    - most-recent-period-end-time
+                    - most-recent-period-end-time-24
                   properties:
-                    extracted-data-from-result-cc:
-                      type: object
-                      required:
-                        - mount-name
-                        - batch-timestamp
-                        - interface
-                      properties:
-                        mount-name:
-                          type: string
-                          description: >
-                            'Identifier of the device at the controller and in the Telefónica planning tools
-                            from {$input#/result-cc/equipment-augment-1-0:control-construct-pac/external-label}'
-                        batch-timestamp:
-                          type: string
-                          description: >
-                            'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
-                            from {$input#/result-cc/batch-timestamp}'
-                        interface:
-                          type: array
-                          description: >
-                            'The interface list contains one record for each layer-protocol in the resultCc'
-                          items:
-                            type: object
-                            required:
-                              - uuid
-                              - layer-protocol-name
-                              - most-recent-period-end-time
-                              - most-recent-period-end-time-24
-                            properties:
-                              uuid:
-                                type: string
-                                description: >
-                                  'Interface uuid
-                                  from {$input#/result-cc/logical-termination-point/uuid}'
-                              layer-protocol-name:
-                                type: string
-                                description: >
-                                  'LayerProtocolName
-                                  from {$input#/result-cc/logical-termination-point/layer-protocol/layer-protocol-name}'
-                              most-recent-period-end-time:
-                                type: string
-                                description: >
-                                  'Most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList
-                                  from {$input#/result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/most-recent-period-end-time} where layerProtocolName indicates AIR_LAYER,
-                                  from {$input#/result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/most-recent-period-end-time} where layerProtocolName indicates ETHERNET_CONTAINER'
-                              most-recent-period-end-time-24:
-                                type: string
-                                description: >
-                                  'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
-                                  from {$input#/result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/most-recent-period-end-time-24} where layerProtocolName indicates AIR_LAYER,
-                                  from {$input#/result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/most-recent-period-end-time-24} where layerProtocolName indicates ETHERNET_CONTAINER'
+                    uuid:
+                      type: string
+                      description: >
+                        'ltpUuid
+                        from {$input#/logical-termination-point/uuid}'
+                    layer-protocol-name:
+                      type: string
+                      description: >
+                        'layerProtocolName
+                        from {$input#/logical-termination-point/layer-protocol=*/layer-protocol-name}'
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'Most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList
+                        from [ {$input#/logical-termination-point/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/most-recent-period-end-time where layerProtocolName indicates AIR_LAYER} or {$input#/logical-termination-point/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/most-recent-period-end-time where layerProtocolName indicates ETHERNET_CONTAINER} ]'
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
+                        from [ {$input#/logical-termination-point/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/most-recent-period-end-time-24 where layerProtocolName indicates AIR_LAYER} or {$input#/logical-termination-point/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/most-recent-period-end-time-24 where layerProtocolName indicates ETHERNET_CONTAINER} ]'
           error:
-            description: 'Processing of PM data failed'
+            description: 'interfaceMetadata could not be extracted'
             content:
               application/json:
                 schema:
                   type: string
                   enum:
-                    - 'Result CC data missing or invalid'
+                    - 'logicalTerminationPoint not provided'
+                    - 'logicalTerminationPoint invalid'
+                    - 'interfaceMetadata could not be extracted'
                     - 'General processing error'
-      updateInterfaceInfo:
-        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}] 
+      storeInterfaceMetadataList:
+        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/interface-metadata]
         input:
           required: true
           content:
             application/json:
               schema:
+                type: array
+                x-key: uuid
                 description: >
-                  'The dataStore is to be updated for the device identified by mountName.
-                  For each interface from the interfaceList identified by uuid, existing entries are overwritten, new entries are added
-                  to the device interfaceList in the dataStore.
-                  If the dataStore did not contain an entry for the device yet, a new device is to be added (the lot is initialized with an empty list).'
-                required:
-                  - mount-name
-                  - uuid
-                  - interface
-                properties:
-                  mount-name:
-                    type: string
-                    description: >
-                      'mountName = x-key for addressing the target device object in dataStore [/data-store/device=mountName]
-                      from [/storing/extracted-data-from-result-cc/mount-name]'
-                  uuid:
-                    type: string
-                    description: >
-                      'uuid = x-key for the interface in the dataStore [/data-store/device=mountName/interface=uuid]
-                      from [/storing/extracted-data-from-result-cc/interface/uuid]'
-                  interface:
-                    type: array
-                    items:
-                      type: object
-                      description: >
-                        'interface list
-                        from [/storing/extracted-data-from-result-cc/interface]'
+                  'Performs a bare write operation on the entire interfaceMetadata as a block
+                  interfaceMetadata of existing devices is overwritten, interfaceMetadata of non-existing mountName is created
+                  from [/storing/interface-metadata-list]'
         output:
           success:
-            description: 'InterfaceList in dataStore updated'
+            description: 'interfaceMetadata stored'
           error:
-            description: 'Updating interfaceList in dataStore failed'
+            description: 'interfaceMetadata could not be stored'
             content:
               application/json:
                 schema:
                   type: string
                   enum:
-                    - 'Input data missing or invalid'
-                    - 'Writing to dataStore error'
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'interfaceMetadataList not provided'
+                    - 'interfaceMetadataList invalid'
+                    - 'Writing to dataStore failed'
                     - 'General processing error'
-        storeResultCcInLot:
-          url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/lot] 
-          input:
-            required: true
+      storeResultCc:
+        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/batch={/storing/batch-timestamp}] 
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >
+                  'Writes the entire batch as a block
+                  assuming that the value of the batchTimestamp is always unique, a new entry is created with every storing operation
+                  from [/storing/batch]'
+        output:
+          success:
+            description: 'resultCc stored'
+          error:
+            description: 'resultCc could not be stored'
             content:
               application/json:
                 schema:
-                  required:
-                    - mount-name
-                    - timestamp
-                    - result-cc
-                  properties:
-                    mount-name:
-                      type: string
-                      description: >
-                        'mountName = x-key for addressing the target device object in dataStore [/data-store/device=mountName]
-                        from [/storing/extracted-data-from-result-cc/mount-name]'
-                    timestamp:
-                      type: string
-                      description: >
-                        'The timestamp to be written
-                        from [/storing/extracted-data-from-result-cc/batch-timestamp]
-                        to [/data-store/device=mountName/lot/timestamp]'
-                    result-cc:
-                      type: object
-                      description: >
-                        'The resultCC to be written
-                        from [/storing/result-cc]
-                        to [/data-store/device=mountName/lot/result-cc]'
-          output:
-            success:
-              description: 'ResultCC written to dataStore'
-            error:
-              description: 'Writing resultCC to dataStore failed'
-              content:
-                application/json:
-                  schema:
-                    type: string
-                    enum:
-                      - 'Input data missing or invalid'
-                      - 'Writing to dataStore error'
-                      - 'General processing error'
-
+                  type: string
+                  enum:
+                    - 'batchTimestamp not provided'
+                    - 'batchTimestamp invalid'
+                    - 'resultCc not provided'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
 
 paths:
   /:
