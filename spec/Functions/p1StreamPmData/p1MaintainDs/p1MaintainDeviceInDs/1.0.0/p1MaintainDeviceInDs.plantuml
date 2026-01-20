@@ -15,7 +15,7 @@ database "DataStore" as ds #LightCyan
 
 activate requestor
 
-requestor -> cur : {{parameters},\n{configFile},\n{dataStoreEsClient},\nmountName,\nretentionPeriod}
+requestor -> cur : {{dataStoreEsClient},\nretentionPeriod,\nmountName}
 activate cur #LightCyan
 
   note over cur #LightGray
@@ -36,23 +36,21 @@ activate cur #LightCyan
   == Maintain device interfaces ==
 
   note over cur
-    <u>GetDeviceInterfaces</u>
-      Read the interface list for the mountName
+    <u>GetDeviceInterfaceMetadata</u>
+      Read the interface metadata for the mountName
       from [/data-store/device=mountName]
   end note
   cur -> ds: {mountName}
   note over ds #WhiteSmoke
     read
   end note
-  cur <-- ds: {{interface}}
+  cur <-- ds: {{interfaceMetadata}}
 
-  loop FOR EACH interfaceInstance
+  loop FOR EACH interface in interfaceMetadata
     note over cur
-      Iterate over interface and call the
-      function for each record.
       <u>p1MaintainDevInterfaceInDs</u>
     end note
-    cur -> intf: {{parameters},\n{configFile},\n{dataStoreEsClient},\nmountName,\nretentionPeriod,\n{interfaceInstance}}
+    cur -> intf: {{dataStoreEsClient},\nretentionPeriod,\nmountName,\n{interface}}
     activate intf #LightCyan
       note over intf
         Deletes the interfaceInstance
@@ -73,6 +71,8 @@ activate cur #LightCyan
 
   note over cur
     <u>GetInterfaceCount</u>
+    Returns the size of interfaceMetadata
+    (i.e. number of records)
   end note
   cur -> ds: {mountName}
   note over ds #WhiteSmoke
@@ -98,37 +98,33 @@ activate cur #LightCyan
   == Delete expired lots for the device from dataStore ==
 
   note over cur
-    <u>p1ReadLotTimestampsFromDs</u>
-      Read the lot timestamps from dataStore.
-      They are returned sorted from oldest to newest date.
+    <u>p1GetSortedBatchTimestampsFromDs</u>
+      Get the list of sorted batch timestamps from dataStore
+      (sorted from oldest to newest).
   end note
-  cur -> lotTs: {mountName,\n{{parameters=/sub-function=p1ReadLotTimestampsFromDs}},\n{dataStoreEsClient},\n{configFile}}
+  cur -> lotTs: {{dataStoreEsClient},\nmountName}
   activate lotTs #LightCyan
     lotTs -> ds
     note over lotTs
       Read and sort list of
-      lot timestamps
+      batch timestamps
     end note
     note over ds #WhiteSmoke
     read
     end note
     lotTs <-- ds
-  cur <-- lotTs: {{sortedLotTimestamps}}
+  cur <-- lotTs: {{sortedBatchTimestamps}}
   deactivate lotTs
 
 
   loop FOR EACH timestamp in sortedLotTimestamps
     note over cur
-      <u>DeleteExpiredLots</u>
+      <u>DeleteExpiredBatches</u>
         IF (timestamp older than allowed by retentionPeriod)
-        THEN DELETE related lot from datastore:
-          [/data-store/device=mountName/lot=timestamp]
+        THEN DELETE related batch from datastore:
+          [/data-store/device=mountName/batch=timestamp]
         ELSE
           break
-        
-        As soon as a timestamp is encountered, that is not
-        expired, the lot cleanup is finished due to
-        timestamps being sorted.
     end note
 
   cur -> ds: {mountName, timestamp}
