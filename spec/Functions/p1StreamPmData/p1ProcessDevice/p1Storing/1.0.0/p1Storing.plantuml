@@ -1,0 +1,38 @@
+@startuml p1Storing
+skinparam responseMessageBelowArrow true
+
+title
+  p1Storing
+end title
+
+participant "p1ProcessDevice" as requestor #LightBlue
+participant "p1Storing" as cur #LightCyan
+database "DataStore" as ds #LightCyan
+
+
+requestor -> cur : { {dataStoreEsClient},\n{resultCc} }
+activate cur #LightCyan
+
+  loop FOR all [/result-cc/logical-termination-point]
+    note over cur
+      extractInterfaceMetadata
+    end note
+  end loop
+
+  note over cur
+    storeInterfaceMetadataList
+  end note
+  cur -> ds: { [interface-metadata] }
+  cur <-- ds
+
+  note over cur
+    storeResultCc
+  end note
+  cur -> ds: { {batch} }
+  cur <-- ds
+
+requestor <-- cur
+
+deactivate cur
+
+@enduml

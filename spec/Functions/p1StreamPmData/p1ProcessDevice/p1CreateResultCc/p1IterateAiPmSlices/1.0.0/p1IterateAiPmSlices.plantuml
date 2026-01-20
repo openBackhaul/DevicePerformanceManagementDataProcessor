@@ -1,0 +1,53 @@
+@startuml p1IterateAiPmSlices
+skinparam responseMessageBelowArrow true
+
+title
+  p1IterateAiPmSlices
+end title
+
+participant "p1CreateResultCc\n" as cur #LightCyan
+
+participant "p1IterateAi\nPmSlices" as iterateSlices #LightCyan
+participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
+participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
+
+
+cur -> iterateSlices : {parameters,\n[historicalPerformanceDataList],\n[transmissionModeList]}
+activate iterateSlices #LightCyan
+
+  loop FOR [historicalPerformanceDataList]
+
+    iterateSlices -> intCC : { [time-xstates-list],\n[transmission-mode-list] }
+    activate intCC #LightCyan
+      note over intCC
+        Calculates intervalCapacity
+      end note
+    iterateSlices <-- intCC: {intervalCapacity}
+    deactivate intCC
+
+    iterateSlices -> p1RORL : { {/parameters/sub-function=p1RemoveOutOfRangeLevels},\n{historical-performance-data} }
+    activate p1RORL #LightCyan
+      note over p1RORL
+        Deletes TX and RX levels
+        outside pre-defined range
+      end note
+    iterateSlices <-- p1RORL: {historical-performance-data}
+    deactivate p1RORL
+
+    iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{historical-performance-data} }
+    activate p1RemDefault #LightCyan
+      note over p1RemDefault
+        Deletes default values
+      end note
+    iterateSlices <-- p1RemDefault: {historical-performance-data}
+    deactivate p1RemDefault
+
+  end loop
+
+cur <-- iterateSlices : { [historicalPerformanceDataList] }
+deactivate iterateSlices
+
+deactivate cur
+
+@enduml

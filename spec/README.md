@@ -47,16 +47,24 @@ Although the sequence of function calls is hard-coded, actually calling a functi
   - [p1InitKafka*](./Functions/p1StreamPmData/p1InitKafka/1.0.0)  
   - [p1UpdateMwdiReplica](./Functions/p1StreamPmData/p1UpdateMwdiReplica/1.0.0)  
   - [p1ProcessDevice](./Functions/p1StreamPmData/p1ProcessDevice/1.0.0)  
-    - [p1LoadRawCc](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/1.0.0)  
+    - [p1LoadRawCc](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/1.1.0)  
       - [p1FieldsFilter*](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1FieldsFilter/1.0.0)  
       - [p1DiscardIrrelevantPmRecords*](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1DiscardIrrelevantPmRecords/1.0.0)  
-    - [p1CreateResultCc](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.0.0)  
-      - [p1PrepareTxModes](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/1.0.0)  
-        - [p1CalculateAiCapacity*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/p1CalculateAiCapacity/1.0.0)  
-        - [p1CalculateIntervalCapacity*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/p1CalculateIntervalCapacity/1.0.0)  
+    - [p1CreateResultCc](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.1.0)  
+      - [p2PrepareTxModes](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p2PrepareTxModes/1.0.0)  
+        - [p1CalculateAiCapacity*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p2PrepareTxModes/p1CalculateAiCapacity/1.0.0)  
+      - [p1IterateAiPmSlices](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/1.0.0)  
+        - [p1CalculateIntervalCapacity*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1CalculateIntervalCapacity/1.0.0)  
+        - [p1RemoveOutOfRangeLevels](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveOutOfRangeLevels/1.0.0)  
+        - [p1RemoveDefaultValues*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveDefaultValues/1.0.0)  
       - [p1CalculateEthernetKpis](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/1.0.0)  
-    - [p1FormattingOutputApt](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.0.0)  
+    - [p1FormattingOutputApt](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.1.0)  
     - [p1TransmittingKafka](./Functions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/1.0.0)  
 
 *) Indicates a Generic Function that is part of the DPMDP's implementation.  
 
+
+### Changes with DPMDP 1.1.0
+
+- p1LoadRawCc had a backward compatible change.  
+  p1LoadRawCc version 1.1.0 provides an additional /raw-cc/batch-timestamp attribute.  

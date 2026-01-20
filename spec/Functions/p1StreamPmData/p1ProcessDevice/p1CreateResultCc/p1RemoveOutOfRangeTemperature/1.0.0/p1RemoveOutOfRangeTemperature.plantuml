@@ -1,0 +1,27 @@
+@startuml p1RemoveOutOfRangeTemperature
+skinparam responseMessageBelowArrow true
+
+title
+  p1RemoveOutOfRangeTemperature
+end title
+
+participant "p1CreateResultCc\n" as requestor #LightCyan
+participant "p1RemoveOutOfRange\nTemperature" as removeTemp #LightCyan
+
+
+  requestor -> removeTemp : { parameters,\n[equipment] }
+  activate removeTemp #LightCyan
+
+    loop FOR [equipment]
+
+      note over removeTemp
+        IF value of temperature outside [lowerTemperatureLimit, upperTemperatureLimit]
+          THEN delete temperature attribute
+      end note
+
+    end loop
+
+  requestor <-- removeTemp: { [equipment] }
+  deactivate removeTemp
+
+@enduml

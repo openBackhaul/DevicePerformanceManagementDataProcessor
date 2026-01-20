@@ -1,0 +1,67 @@
+@startuml p1LoadRawCc
+skinparam responseMessageBelowArrow true
+
+title
+  p1LoadRawCc
+end title
+
+participant "p1ProcessDevice" as requestor #LightBlue
+participant "p1LoadRawCc" as cur #LightCyan
+database "MWDI ES Replica" as MwdiEs #LightBlue
+participant "p1FieldsFilter" as fieldsFilter #LightBlue
+database "DataStore" as datastore #LightCyan
+participant "p1DiscardIrrelevantPmRecords" as filterPm #LightBlue
+
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\nmountName }
+activate cur #LightCyan
+
+  note over cur
+    readControlConstructFromReplica
+  end note
+  cur -> MwdiEs: { mountName }
+  cur <-- MwdiEs: { {rawControlConstruct} }
+
+  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilter }
+  activate fieldsFilter #LightBlue
+    note over fieldsFilter
+      Apply FieldsFilter
+    end note
+  cur <-- fieldsFilter: { {filtered rawControlConstruct} }
+  deactivate fieldsFilter #LightBlue
+
+  note over cur
+    retrieveMostRecentPeriodEndTimesFromDs
+  end note
+  cur -> datastore: { mountName }
+  cur <-- datastore: { [interface] }
+
+  loop FOR all [/raw-cc/logical-termination-point]
+
+    note over cur
+      IF layerProtocolName == AirInterface OR EthernetContainer
+    end note
+
+    note over cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\n<color:LightGray>relevantGranularities,\n<color:LightGray>mostRecentPeriodEndTime,\n<color:LightGray>mostRecentPeriodEndTime24</color> }
+    activate filterPm #LightBlue
+    note over filterPm
+      Discards records that are
+      of wrong granularity or
+      already processed from 
+      historicalPerformanceDataList 
+    end note 
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList] }
+    deactivate filterPm
+
+    note over cur
+      IF layerProtocolName == AirInterface
+        THEN addBatchTimestamp
+    end note
+
+  end loop
+
+requestor <-- cur: { {rawCc} }
+deactivate cur

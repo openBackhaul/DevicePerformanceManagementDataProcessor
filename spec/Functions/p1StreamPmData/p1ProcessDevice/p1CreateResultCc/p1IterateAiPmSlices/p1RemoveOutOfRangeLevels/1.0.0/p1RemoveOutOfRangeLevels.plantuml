@@ -1,0 +1,48 @@
+@startuml p1RemoveOutOfRangeLevels
+skinparam responseMessageBelowArrow true
+
+title
+  p1RemoveOutOfRangeLevels
+end title
+
+participant "p1IterateAiPmSlices\n" as requestor
+participant "p1RemoveOutOfRangeLevels\n" as removeLevels #LightCyan
+
+
+  requestor -> removeLevels : {parameters,\nperformanceData}
+  activate removeLevels #LightCyan
+
+    note over removeLevels
+      IF value of txLevelMin outside [lowerTxLevelLimit, upperTxLevelLimit]
+        THEN delete txLevelMin attribute
+    end note
+
+    note over removeLevels
+      IF value of txLevelMax outside [lowerTxLevelLimit, upperTxLevelLimit]
+        THEN delete txLevelMax attribute
+    end note
+
+    note over removeLevels
+      IF value of txLevelAvg outside [lowerTxLevelLimit, upperTxLevelLimit]
+        THEN delete txLevelAvg attribute
+    end note
+
+    note over removeLevels
+      IF value of rxLevelMin outside [lowerRxLevelLimit, upperRxLevelLimit]
+        THEN delete rxLevelMin attribute
+    end note
+
+    note over removeLevels
+      IF value of rxLevelMax outside [lowerRxLevelLimit, upperRxLevelLimit]
+        THEN delete rxLevelMax attribute
+    end note
+
+    note over removeLevels
+      IF value of rxLevelAvg outside [lowerRxLevelLimit, upperRxLevelLimit]
+        THEN delete rxLevelAvg attribute
+    end note
+
+  requestor <-- removeLevels: {performanceData}
+  deactivate removeLevels
+
+@enduml

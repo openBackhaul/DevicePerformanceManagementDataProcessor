@@ -1,0 +1,180 @@
+@startuml p1CreateResultCc
+skinparam responseMessageBelowArrow true
+
+title
+  p1CreateResultCc
+end title
+
+participant "p1ProcessDevice\n" as requestor #LightBlue
+participant "p1CreateResultCc\n" as cur #LightCyan
+participant "p1Prepare\nTxModes" as p1PrepTxModes #BurlyWood
+participant "p2Prepare\nTxModes" as p2PrepTxModes #LightCyan
+participant "p1IterateAi\nPmSlices" as p1IterateAi #LightCyan
+participant "p1Calculate\nEthernetKpis" as ethKpis #BurlyWood
+participant "p1IterateEc\nPmSlices" as p1IterateEc #LightCyan
+participant "p1RemoveOutOfRange\nTemperature" as p1RemoveTemp #LightCyan
+
+requestor -> cur: { {parameters},\n{rawCc} }
+activate cur #LightCyan
+
+  note over cur
+    Copies rawCc to resultCc
+  end note
+
+  note over cur
+    Creates AggregationGroupList
+  end note
+
+  loop FOR all AirInterfaces in resultCc
+
+    cur -> p1PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p1PrepTxModes #BurlyWood
+
+      note over p1PrepTxModes #Beige
+        Removes unused transmission modes
+        from historicalPerformanceDataList
+      end note
+
+      note over p1PrepTxModes #Beige
+        Removes unused transmission modes
+        from transmissionModeList
+      end note
+
+      note over p1PrepTxModes #Beige
+        Adds AirInterfaceCapacity to
+        used transmission modes
+      end note
+
+      note over p1PrepTxModes #Beige
+        Adds IntervalCapacity to
+        performance data slices
+      end note
+
+    cur <-- p1PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    deactivate p1PrepTxModes
+
+    cur -> p2PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p2PrepTxModes #LightCyan
+
+      note over p2PrepTxModes
+        Removes unused transmission modes
+        from historicalPerformanceDataList
+      end note
+
+      note over p2PrepTxModes
+        Removes unused transmission modes
+        from transmissionModeList
+      end note
+
+      note over p2PrepTxModes
+        Adds AirInterfaceCapacity to
+        used transmission modes
+      end note
+
+    cur <-- p2PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    deactivate p2PrepTxModes
+
+    cur -> p1IterateAi : { {/parameters/sub-function=p1IterateAiPmSlices},\n[historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p1IterateAi #LightCyan
+
+      note over p1IterateAi
+        Adds IntervalCapacity
+        to Ai Pm data slice
+      end note
+
+      note over p1IterateAi
+        Deletes TX and RX levels
+        outside pre-defined range
+        from Ai Pm data
+      end note
+
+      note over p1IterateAi
+        Deletes default values
+        from Ai Pm data
+      end note
+
+    cur <-- p1IterateAi : { [historicalPerformanceDataList] }
+    deactivate p1IterateAi
+
+    note over cur
+      Adds linkId
+    end note
+
+    note over cur
+      Adds list of parallel LTPs
+    end note
+
+    note over cur
+      Adds mostRecentPeriodEndTime
+    end note
+
+    note over cur
+      Adds mostRecentPeriodEndTime24
+    end note
+
+  end
+
+  loop FOR all EthernetContainers in resultCc
+
+    cur -> ethKpis : { [historicalPerformanceDataList] }
+    activate ethKpis #BurlyWood
+
+      note over ethKpis #Beige
+        Adds transmitTraffic
+      end note
+
+      note over ethKpis #Beige
+        Adds receiveTraffic
+      end note
+
+      note over ethKpis #Beige
+        Adds frameLossInput
+      end note
+
+      note over ethKpis #Beige
+        Adds frameLossOutput
+      end note
+
+    cur <-- ethKpis : { [historicalPerformanceDataList] }
+    deactivate ethKpis
+
+    cur -> p1IterateEc : { {/parameters/sub-function=p1IterateEcPmSlices},\n[historicalPerformanceDataList] }
+    activate p1IterateEc #LightCyan
+
+      note over p1IterateEc
+        Adds Ethernet KPIs
+      end note
+
+      note over p1IterateEc
+        Deletes default values
+        from Ec Pm data
+      end note
+
+    cur <-- p1IterateEc : { [historicalPerformanceDataList] }
+    deactivate p1IterateEc
+
+    note over cur
+      Adds mostRecentPeriodEndTime
+    end note
+
+    note over cur
+      Adds mostRecentPeriodEndTime24
+    end note
+
+  end loop
+
+  cur -> p1RemoveTemp : { {/parameters/sub-function=p1RemoveOutOfRangeTemperature},\n[equipment] }
+  activate p1RemoveTemp #LightCyan
+
+    note over p1RemoveTemp
+      Deletes temperature values
+      outside pre-defined range
+    end note
+
+  cur <-- p1RemoveTemp : { [equipment] }
+  deactivate p1RemoveTemp
+
+requestor <-- cur: { {resultCc} }
+deactivate cur
+
+@enduml

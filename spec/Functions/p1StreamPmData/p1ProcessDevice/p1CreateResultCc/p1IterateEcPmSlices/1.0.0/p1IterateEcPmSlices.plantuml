@@ -1,0 +1,43 @@
+@startuml p1IterateEcPmSlices
+skinparam responseMessageBelowArrow true
+
+title
+  p1IterateEcPmSlices
+end title
+
+participant "p1CreateResultCc\n" as cur #LightCyan
+
+participant "p1IterateEc\nPmSlices" as iterateSlices #LightCyan
+participant "p2Calculate\nEthernetKpis" as intCC #LightCyan
+participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
+
+
+cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList] }
+activate iterateSlices #LightCyan
+
+  loop FOR [historicalPerformanceDataList]
+
+    iterateSlices -> intCC : {historical-performance-data}
+    activate intCC #LightCyan
+      note over intCC
+        Add Ethernet KPIs
+      end note
+    iterateSlices <-- intCC: {historical-performance-data}
+    deactivate intCC
+
+    iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{historical-performance-data} }
+    activate p1RemDefault #LightCyan
+      note over p1RemDefault
+        Deletes default values
+      end note
+    iterateSlices <-- p1RemDefault: {historical-performance-data}
+    deactivate p1RemDefault
+
+  end loop
+
+cur <-- iterateSlices : { [historicalPerformanceDataList] }
+deactivate iterateSlices
+
+deactivate cur
+
+@enduml
