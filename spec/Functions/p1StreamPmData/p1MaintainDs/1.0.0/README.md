@@ -1,8 +1,6 @@
 # p1MaintainDs
 
-Maintains the DPDMP dataStore by cleaning up expired records.
-
-#### Processing
+Periodically deletes records from the dataStore
 
 
 ### Diagram  
@@ -20,3 +18,12 @@ Please find a detailed description of the [interface](./interface.yaml).
 ### Variables
 
 Please find a detailed description of the [variables](./variables.yaml).
+
+
+### Parameters
+
+| Parameter Name               | Description                                                  |
+|------------------------------|--------------------------------------------------------------|
+| dataStoreCleanupPeriod       | Time period between two cleanup runs                         |
+| dataStoreRetentionPeriod     | Time period for which data is retained before deletion       |
+

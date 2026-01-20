@@ -6,26 +6,18 @@ title
   p1MaintainDs
 end title
 
-participant "p1StreamPmData\n" as requestor
+participant "p1StreamPmData\n" as requestor #LightBlue
 participant "p1MaintainDs\n" as cur #LightCyan
-participant "p1MaintainDeviceInDs" as dev #LightCyan
+participant "p1MaintainDeviceInDs\n" as dev #LightCyan
 database "DataStore" as ds #LightCyan
 
 
 activate requestor
 
-requestor -> cur : {{parameters},\n{configFile},\n{dataStoreEsClient}}
+requestor -> cur : { {parameters},\n{configFile},\n{dataStoreEsClient} }
 activate cur #LightCyan
 
 loop endless
-  note over cur
-    Cycically cleanup the dataStore
-    according to time interval configured
-    in parameters.<i>dataStoreCleanupPeriod</i>.
-
-    With <i>retentionPeriod</i> from
-    parameters.<i>dataStoreRetentionPeriod</i>.
-  end note
 
   note over cur
     <u>ReadMountNamesInDs</u>
@@ -41,7 +33,7 @@ loop endless
       <u>p1MaintainDeviceInDs</u>
     end note
 
-    cur -> dev: {{parameters},\n{configFile},\n{dataStoreEsClient},\nmountName,\nretentionPeriod}
+    cur -> dev: { {parameters},\n{configFile},\n{dataStoreEsClient},\nmountName,\nretentionPeriod }
     activate dev #LightCyan
       note over dev
         Deletes expired
@@ -56,8 +48,6 @@ loop endless
 end loop
 
 deactivate cur
-
-
 
 
 @enduml
