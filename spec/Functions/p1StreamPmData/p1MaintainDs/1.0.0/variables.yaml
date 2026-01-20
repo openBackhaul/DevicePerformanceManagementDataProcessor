@@ -2,7 +2,6 @@ maintain-ds:
   type: object
   required:
     - parameters
-    - config-file
     - data-store-es-client
   properties:
     parameters:
@@ -10,16 +9,12 @@ maintain-ds:
       description: >
         'Hierarchical object holding the parameter settings
         from {$input#/parameters}'
-    config-file:
-      type: object
-      description: >
-        'configFile content
-        from {$input#/config-file}'
     data-store-es-client:
       type: object
       description: >
         'Data Store ElasticSearch address
         from {$input#/data-store-es-client}'
+
     data-store-url:
       type: string
       description: >
@@ -35,13 +30,18 @@ maintain-ds:
       description: >
         'RetentionPeriod in hours until data expires
         from [/maintain-ds/parameters/parameter={dataStoreRetentionPeriod}/value]'
-    mount-name-list:
+
+    mount-names:
       type: array
       items:
         type: string
       description: >
         'The list contains the mountNames (x-key) of devices in the dataStore
-        from {$readMountNamesInDs.output#mount-name-list}'
+        from {$readMountNamesInDs.output#mount-names}'
+
+
+
+        
     interface:
       type: array
       x-key: uuid
