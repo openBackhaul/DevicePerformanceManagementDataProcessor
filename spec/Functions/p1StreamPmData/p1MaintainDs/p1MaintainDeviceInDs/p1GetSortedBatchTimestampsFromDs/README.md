@@ -1,4 +1,4 @@
-# p1ReadLotTimestampsFromDs
+# p1GetSortedBatchTimestampsFromDs
 
 Reads the lot timestamps of an input device from dataStore and returns these as a sorted list (from oldest to newest date).
 #### Processing
@@ -7,7 +7,7 @@ Reads the lot timestamps of an input device from dataStore and returns these as 
 ### Diagram  
 
 <p align="center">  
-  <img src="./p1ReadLotTimestampsFromDs.png" alt="p1ReadLotTimestampsFromDs diagram" width="400" />
+  <img src="./p1GetSortedBatchTimestampsFromDs.png" alt="p1GetSortedBatchTimestampsFromDs diagram" width="400" />
 </p>  
 
 

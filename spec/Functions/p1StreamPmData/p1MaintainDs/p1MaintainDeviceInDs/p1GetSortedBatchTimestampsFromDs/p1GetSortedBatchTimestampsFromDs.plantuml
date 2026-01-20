@@ -1,19 +1,19 @@
-@startuml p1ReadLotTimestampsFromDs
+@startuml p1GetSortedBatchTimestampsFromDs
 skinparam responseMessageBelowArrow true
 skinparam SequenceDividerBackgroundColor #LightSalmon
 
 title
-  p1ReadLotTimestampsFromDs
+  p1GetSortedBatchTimestampsFromDs
 end title
 
 participant "requestor" as requestor
-participant "p1ReadLotTimestampsFromDs\n" as cur #LightCyan
+participant "p1GetSortedBatchTimestampsFromDs" as cur #LightCyan
 database "DataStore" as ds #LightCyan
 
 
 activate requestor
 
-requestor -> cur : {mountName,\n{parameters},\n{configFile},\n{dataStoreEsClient}}
+requestor -> cur : {{dataStoreEsClient},\nmountName}
 activate cur #LightCyan
 
   note over cur
@@ -23,16 +23,16 @@ activate cur #LightCyan
     from [/data-store/device=mountName/lot/timestamp]
   end note
   cur -> ds: {mountName}
-  cur <-- ds: {{timestampList}}
+  cur <-- ds: {{batchTimestamps}}
 
   note over cur
     <u>SortTimestamps</u>
-    Sort the timestamps in the list
+    Sort the timestamps in batchTimestamps
     from old to new.
 
     Return the sorted list.
   end note
-  requestor <-- cur: {{sortedTimestampList}}
+  requestor <-- cur: {{sortedTimestamps}}
 
 deactivate cur
 

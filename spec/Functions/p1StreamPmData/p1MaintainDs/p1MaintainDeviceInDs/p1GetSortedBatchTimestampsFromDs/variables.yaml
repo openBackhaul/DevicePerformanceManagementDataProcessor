@@ -1,0 +1,37 @@
+get-sorted-batch-timestamps-from-ds:
+  type: object
+  required:
+    - data-store-es-client
+    - mount-name
+  properties:
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/get-sorted-batch-timestamps-from-ds/data-store-es-client/url]'
+
+    batch-timestamps:
+      type: array
+      items:
+        type: string
+      description: >
+        'Unsorted list of batch timestamps read from dataStore for input mountName
+        from {$ReadTimestampsFromDs.output/batch-timestamps}'
+    sorted-batch-timestamps:
+      type: array
+      items:
+        type: string
+      description: >
+        'Sorted list of batch timestamps for input mountName
+        from {$sortTimestamps.output/sorted-batch-timestamps}'
