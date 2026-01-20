@@ -1,4 +1,4 @@
-maintain-ds:
+maintain-device-in-ds:
   type: object
   required:
     - parameters
@@ -26,7 +26,7 @@ maintain-ds:
       type: string
       description: >
         'ElasticSearch URL of Data Store ES
-        from [/read-lot-timestamps-from-ds/data-store-es-client/url]'
+        from [/maintain-device-in-ds/data-store-es-client/url]'
     mount-name:
       type: string
       description: >
@@ -37,3 +37,26 @@ maintain-ds:
       description: >
         'RetentionPeriod in hours until data expires
         from {$input#/retention-period}'
+    interface:
+      type: array
+      items:
+        type: object
+      description: >
+        'The interface list of the device from dataStore
+        from {$GetDeviceInterfaces.output#/interface}'
+    interface-instance:
+      type: object
+      description: >
+        'The currently processed interface instance from interface'
+    interface-count:
+      type: integer
+      description: >
+        'The size of the interface list in the dataStore
+        from {$GetInterfaceCount.output#/interface-count}'
+    sorted-lot-timestamps:
+      type: array
+      items:
+        type: string
+      description: >
+        'The list of lot timestamps, sorted from oldest to newest timestamp
+        from {$p1ReadLotTimestampsFromDs.output#/sorted-lot-timestamps}'
