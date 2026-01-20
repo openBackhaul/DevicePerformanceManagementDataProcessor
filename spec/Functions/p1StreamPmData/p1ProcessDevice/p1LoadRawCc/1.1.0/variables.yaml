@@ -1,0 +1,382 @@
+load-raw-cc:
+  type: object
+  required:
+    - mount-name
+    - parameters
+    - mwdi-replica-es-client
+    - data-store-es-client
+  properties:
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    mwdi-replica-es-client:
+      type: object
+      description: >
+        'MWDI Replica ElasticSearch address
+        from {$input#/mwdi-replica-es-client}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+
+    mwdi-replica-url:
+      type: string
+      description: >
+        'ElasticSearch URL of MWDI Replica ES
+        from [/load-raw-cc/mwdi-replica-es-client/url]'
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/load-raw-cc/data-store-es-client/url]'
+
+    fields-filter:
+      type: string
+      description: >
+        'Fields filter to be applied to reduce the raw ControlConstruct data
+        from [/load-raw-cc/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
+    relevant-granularities:
+      type: string
+      enum:
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+      description: >
+        'An regex pattern indicating which data granularities are to be kept
+        from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
+
+    interface:
+      type: array
+      x-key: uuid
+      description: >
+        'MostRecentPeriodEndTimes for all already known interfaces of the device
+        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+          layer-protocol-name:
+            type: string
+          most-recent-period-end-time:
+            type: string
+            description: 'The newest seen periodEndTime for this interface in 15min data'
+          most-recent-period-end-time-24:
+            type: string
+            description: 'The newest seen periodEndTime for this interface in 24h data'
+
+    raw-cc:
+      type: object
+      description: >
+        'rawCc read from Replica ES, but stripped to the content of the object inside the array
+        from {$readControlConstructFromReplica.output#/core-model-1-4:control-construct={[/load-raw-cc/mount-name]}}
+        overwritten by {$p1FieldsFilter.output#/filtered-data-structure}'
+      properties:
+        equipment-augment-1-0:control-construct-pac:
+          type: object
+          properties:
+            external-label:
+              type: string
+              description: >
+                'mountName'
+            device-model-name:
+              type: string
+        equipment:
+          type: array
+          x-key: uuid
+          items:
+            type: object
+            properties:
+              uuid:
+                type: string
+              actual-equipment:
+                type: object
+                properties:
+                  local-id:
+                    type: string
+                  physical-properties:
+                    type: object
+                    properties:
+                      temperature:
+                        type: string
+                  structure:
+                    type: object
+                    properties:
+                      category:
+                        type: string
+        profile-collection:
+          type: object
+          properties:
+            profile:
+              type: array
+              x-key: uuid
+              items:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                  profile-name:
+                    type: string
+                  layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac:
+                    type: object
+                    properties:
+                      l1-aggregation-profile-configuration:
+                        type: object
+                        properties:
+                          client-ltp:
+                            type: string
+                          server-ltp-list:
+                            type: array
+                            items:
+                              type: string
+        logical-termination-point:
+          type: array
+          description: >
+            'instance to be deleted, 
+              if [./layer-protocol=*/layer-protocol-name] != [air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER OR ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER]'
+          x-key: uuid
+          items:
+            type: object
+            properties:
+              uuid:
+                type: string
+              client-ltp:
+                type: array
+                items:
+                  type: string
+              server-ltp:
+                type: array
+                items:
+                  type: string
+              ltp-augment-1-0:ltp-augment-pac:
+                type: object
+                properties:
+                  external-label:
+                    type: string
+                  original-ltp-name:
+                    type: string
+              layer-protocol:
+                type: array
+                x-key: local-id
+                items:
+                  oneOf:
+                    - description: 'air-interface'
+                      type: object
+                      properties:
+                        local-id:
+                          type: string
+                        layer-protocol-name:
+                          type: string
+                          enum:
+                            - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                        air-interface-2-0:air-interface-pac:
+                          type: object
+                          properties:
+                            air-interface-configuration:
+                              type: object
+                              properties:
+                                transmission-mode-min:
+                                  type: string
+                                transmission-mode-max:
+                                  type: string
+                                tx-power:
+                                  type: integer
+                                atpc-is-on:
+                                  type: boolean
+                                atpc-thresh-upper:
+                                  type: integer
+                                atpc-thresh-lower:
+                                  type: integer
+                            air-interface-capability:
+                              type: object
+                              properties:
+                                transmission-mode-list:
+                                  type: array
+                                  x-key: transmission-mode-name
+                                  items:
+                                    type: object
+                                    properties:
+                                      transmission-mode-name:
+                                        type: string
+                                      channel-bandwidth:
+                                        type: integer
+                                      modulation-scheme:
+                                        type: integer
+                                      modulation-scheme-name-at-lct:
+                                        type: string
+                                      code-rate:
+                                        type: integer
+                                      symbol-rate-reduction-factor:
+                                        type: integer
+                            air-interface-current-performance:
+                              type: object
+                              properties:
+                                timestamp:
+                                  type: string
+                            air-interface-historical-performances:
+                              type: object
+                              properties:
+                                historical-performance-data-list:
+                                  type: array
+                                  x-key: period-end-time
+                                  description: >
+                                    'HistoricalPerformancesDataList
+                                    overwritten by {$p1DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
+                                  items:
+                                    type: object
+                                    properties:
+                                      granularity-period:
+                                        type: string
+                                      period-end-time:
+                                        type: string
+                                      performance-data:
+                                        type: object
+                                        properties:
+                                          es:
+                                            type: integer
+                                          ses:
+                                            type: integer
+                                          cses:
+                                            type: integer
+                                          unavailability:
+                                            type: integer
+                                          tx-level-min:
+                                            type: integer
+                                          tx-level-max:
+                                            type: integer
+                                          tx-level-avg:
+                                            type: integer
+                                          rx-level-min:
+                                            type: integer
+                                          rx-level-max:
+                                            type: integer
+                                          rx-level-avg:
+                                            type: integer
+                                          time-xstates-list:
+                                            type: array
+                                            x-key: transmission-mode
+                                            items:
+                                              type: object
+                                              properties:
+                                                transmission-mode:
+                                                  type: string
+                                                time:
+                                                  type: integer
+                                          snir-min:
+                                            type: integer
+                                          snir-max:
+                                            type: integer
+                                          snir-avg:
+                                            type: integer
+                                          xpd-min:
+                                            type: integer
+                                          xpd-max:
+                                            type: integer
+                                          xpd-avg:
+                                            type: integer
+                                          defect-blocks-sum:
+                                            type: integer
+                                          time-period:
+                                            type: integer
+                    - description: 'ethernet-container'
+                      type: object
+                      properties:
+                        local-id:
+                          type: string
+                        layer-protocol-name:
+                          type: string
+                          enum:
+                            - 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
+                        ethernet-container-2-0:ethernet-container-pac:
+                          type: object
+                          properties:
+                            ethernet-container-historical-performances:
+                              type: object
+                              properties:
+                                historical-performance-data-list:
+                                  type: array
+                                  x-key: period-end-time
+                                  description: >
+                                    'HistoricalPerformancesDataList
+                                    overwritten by {$p1DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
+                                  items:
+                                    type: object
+                                    properties:
+                                      granularity-period:
+                                        type: string
+                                      period-end-time:
+                                        type: string
+                                      performance-data:
+                                        type: object
+                                        properties:
+                                          max-bytes-per-second-output:
+                                            type: integer
+                                          total-bytes-input:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          total-bytes-output:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          time-period:
+                                            type: integer
+                                          total-frames-input:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          total-frames-output:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          forwarded-frames-input:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          forwarded-frames-output:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          unicast-frames-input:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          unicast-frames-output:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          multicast-frames-input:
+                                            type: integer
+                                          multicast-frames-output:
+                                            type: integer
+                                          broadcast-frames-input:
+                                            type: integer
+                                          broadcast-frames-output:
+                                            type: integer
+                                          fragmented-frames-input:
+                                            type: integer
+                                          errored-frames-input:
+                                            type: integer
+                                          errored-frames-output:
+                                            type: integer
+                                          dropped-frames-input:
+                                            type: integer
+                                          dropped-frames-output:
+                                            type: integer
+                                          oversized-frames-ingress:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          undersized-frames-ingress:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          jabber-frames-ingress:
+                                            type: string
+                                            description: 'String representation of int64 value'
+                                          unknown-protocol-frames-input:
+                                            type: string
+                                            description: 'String representation of int64 value'
+        batch-timestamp:
+          type: string
+          description: >
+            'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
+            from {$addBatchTimestamp.output#/batch-timestamp}'

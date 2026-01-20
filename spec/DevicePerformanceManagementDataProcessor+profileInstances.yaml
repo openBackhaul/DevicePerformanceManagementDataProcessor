@@ -431,9 +431,11 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-300'
+        - 'dpmdp-1-0-0-function-p-301'
         - 'dpmdp-1-0-0-function-p-390'
     configuration:
       is-active: true
+
 
   # p1PrepareTxModes
   - profile-name: 'FunctionProfile'
@@ -446,15 +448,41 @@ profile-instances:
         - 'dpmdp-1-0-0-function-p-330'
         - 'dpmdp-1-0-0-function-p-360'
     configuration:
+      is-active: false
+
+
+  # p2PrepareTxModes
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-301'
+    capability:
+      function-name: 'p2PrepareTxModes'
+      function-description: 'Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-330'
+        - 'dpmdp-1-0-0-function-p-360'
+    configuration:
       is-active: true
 
-
+      
   # p1CalculateAiCapacity
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-330'
     capability:
       function-name: 'p1CalculateAiCapacity'
       function-description: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1IterateAiPmSlices
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1IterateAiPmSlices'
+      function-description: ''
       parameter-list:
       sub-function-list:
     configuration:
@@ -473,6 +501,230 @@ profile-instances:
       is-active: true
 
 
+  # p1RemoveOutOfRangeLevels
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveOutOfRangeLevels'
+      function-description: ''
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'lowerTxLevelLimit'
+      purpose: 'Lower bound of valid values of the transmit level'
+    configuration:
+      string-value: '-30'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'upperTxLevelLimit'
+      purpose: 'Upper bound of valid values of the transmit level'
+    configuration:
+      string-value: '40'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'lowerRxLevelLimit'
+      purpose: 'Lower bound of valid values of the receive level'
+    configuration:
+      string-value: '-10'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'upperRxLevelLimit'
+      purpose: 'Upper bound of valid values of the receive level'
+    configuration:
+      string-value: '-129'
+
+
+  # p1RemoveDefaultValues
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveDefaultValues'
+      function-description: ''
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'es'
+      purpose: 'Number of errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'ses'
+      purpose: 'Number of severely errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'cses'
+      purpose: 'Number of consecutive severely errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'unavailability'
+      purpose: 'Total time of unavailability in seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'txLevelMin'
+      purpose: 'Minimum transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'txLevelMax'
+      purpose: 'Maximum transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'txLevelAvg'
+      purpose: 'Averaged transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rxLevelMin'
+      purpose: 'Minimum receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rxLevelMax'
+      purpose: 'Maximum receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rxLevelAvg'
+      purpose: 'Averaged receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'snirMin'
+      purpose: 'Minimum signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'snirMax'
+      purpose: 'Maximum signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'snirAvg'
+      purpose: 'Averaged signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'xpdMin'
+      purpose: 'Minimum cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'xpdMax'
+      purpose: 'Maximum cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'xpdAvg'
+      purpose: 'Averaged cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rfTempMin'
+      purpose: 'Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rfTempMax'
+      purpose: 'Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'rfTempAvg'
+      purpose: 'Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'defectBlocksSum'
+      purpose: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'timePeriod'
+      purpose: 'Total length of the measurement period in seconds'
+    configuration:
+      string-value: '-1'
+
+
   # p1CalculateEthernetKpis
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-390'
@@ -482,7 +734,255 @@ profile-instances:
       parameter-list:
       sub-function-list:
     configuration:
+      is-active: false
+
+
+  # p1IterateEcPmSlices
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1IterateEcPmSlices'
+      function-description: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
+      parameter-list:
+      sub-function-list:
+    configuration:
       is-active: true
+
+
+  # p2CalculateEthernetKpis
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-360'
+    capability:
+      function-name: 'p2CalculateEthernetKpis'
+      function-description: 'Adds Ethernet KPIs to the historicalPerformanceData set'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1RemoveDefaultValues
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveDefaultValues'
+      function-description: ''
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'maxBytesPerSecondOutput'
+      purpose: 'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'totalBytesInput'
+      purpose: 'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'totalBytesOutput'
+      purpose: 'Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'timePeriod'
+      purpose: 'Total length of the measurement period in seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'totalFramesInput'
+      purpose: 'The total number of Ethernet frames received at this interface (including those received in error)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'totalFramesOutput'
+      purpose: 'The total number of Ethernet frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'forwardedFramesInput'
+      purpose: 'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'forwardedFramesOutput'
+      purpose: 'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'unicastFramesInput'
+      purpose: 'Total number of unicast frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'unicastFramesOutput'
+      purpose: 'Total number of unicast frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'multicastFramesInput'
+      purpose: 'Total number of multicast frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'multicastFramesOutput'
+      purpose: 'Total number of multicast frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'broadcastFramesInput'
+      purpose: 'Total number of broadcast frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'broadcastFramesOutput'
+      purpose: 'Total number of broadcast frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'fragmentedFramesInput'
+      purpose: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'erroredFramesInput'
+      purpose: 'Total number of errored frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'erroredFramesOutput'
+      purpose: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'droppedFramesInput'
+      purpose: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'droppedFramesOutput'
+      purpose: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'oversizedFramesIngress'
+      purpose: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'undersizedFramesIngress'
+      purpose: 'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'jabberFramesIngress'
+      purpose: 'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'unknownProtocolFramesInput'
+      purpose: 'Total number of received frames that were transporting an unknown protocol'
+    configuration:
+      string-value: '-1'
+
+
+  # p1RemoveOutOfRangeTemperature
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-'
+    capability:
+      function-name: 'p1RemoveOutOfRangeTemperature'
+      function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'lowerTemperatureLimit'
+      purpose: 'Lower bound of valid values of the temperature'
+    configuration:
+      string-value: '-30'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-'
+    capability:
+      string-name: 'upperTemperatureLimit'
+      purpose: 'Upper bound of valid values of the temperature'
+    configuration:
+      string-value: '130'
 
 
   # p1FormattingOutputApt

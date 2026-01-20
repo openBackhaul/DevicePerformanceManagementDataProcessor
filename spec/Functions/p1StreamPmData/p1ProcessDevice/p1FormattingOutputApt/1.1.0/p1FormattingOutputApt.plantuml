@@ -1,0 +1,21 @@
+@startuml p1FormattingOutputApt
+skinparam responseMessageBelowArrow true
+
+title
+  p1FormattingOutputApt
+end title
+
+participant "requestor\n(e.g. p1ProcessDevice)" as requestor
+participant "p1FormattingOutputApt" as cur #LightCyan
+
+requestor -> cur: {{resultCc}}
+activate cur #LightCyan
+
+  note over cur #Yellow
+    Transform resultCc data into
+    aptOutputFormat (incl.
+    batchTimestamp)
+  end note
+
+requestor <-- cur: {{output}}
+deactivate cur

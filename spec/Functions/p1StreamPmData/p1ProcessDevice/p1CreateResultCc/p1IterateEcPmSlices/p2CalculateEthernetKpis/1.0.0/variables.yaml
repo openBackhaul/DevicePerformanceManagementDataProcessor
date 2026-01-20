@@ -1,0 +1,47 @@
+calculate-ethernet-kpis:
+  type: object
+  required:
+    - historical-performance-data
+  properties:
+    historical-performance-data:
+      type: object
+      description: >
+        'historicalPerformanceData set
+        from {$input#/historical-performance-data}'
+      properties:
+        total-bytes-input:
+          type: string
+          description: 'String representation of int64 value'
+        total-bytes-output:
+          type: string
+          description: 'String representation of int64 value'
+        time-period:
+          type: integer
+        transmit-traffic:
+          type: integer
+          description: >
+            'transmitTraffic in Mbps
+            from {$calculateTransmitTraffic.output#/transmit-traffic}'
+        receive-traffic:
+          type: integer
+          description: >
+            'receiveTraffic in Mbps
+            from {$calculateReceiveTraffic.output#/receive-traffic}'
+        errored-frames-input:
+          type: integer
+        errored-frames-output:
+          type: integer
+        dropped-frames-input:
+          type: integer
+        dropped-frames-output:
+          type: integer
+        frame-loss-input:
+          type: integer
+          description: >
+            'Total frame loss on ingress
+            from {$calculateFrameLossInput.output#/frame-loss-input}'
+        frame-loss-output:
+          type: integer
+          description: >
+            'Total frame loss on egress
+            from {$calculateFrameLossOutput.output#/frame-loss-output}'
