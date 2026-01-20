@@ -1,0 +1,59 @@
+storing:
+  type: object
+  required:
+    - data-store-es-client
+    - result-cc
+  properties:
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+    result-cc:
+      type: object
+      description: >
+        'resultCc
+        from {$input#/result-cc}'
+
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/storing/data-store-es-client/url]'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from [/storing/result-cc/equipment-augment-1-0:control-construct-pac/external-label]'
+    batch-timestamp:
+      type: string
+      description: >
+        'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
+        from [/storing/result-cc/batch-timestamp]'
+
+    interface-metadata-list:
+      type: array
+      x-key: uuid
+      items:
+        type: object
+        description: >
+          'interfaceMetadataList, extended by another object instance with each iteration of the loop
+          from [ {$extractInterfaceMetadata.output#/} ]'
+    batch:
+      type: object
+      required:
+        - batch-timestamp
+        - result-cc
+      properties:
+        batch-timestamp:
+          type: string
+          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+          description: >
+            'Timestamp when the CC was read from the device
+            from [/storing/batch-timestamp]'
+        result-cc:
+          type: object
+          description: >
+            'The resultCc
+            from [/storing/result-cc]'
+

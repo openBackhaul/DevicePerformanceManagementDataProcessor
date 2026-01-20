@@ -88,7 +88,7 @@ activate p1RMWDI #LightBlue
   deactivate p1InitKafka
 
   p1RMWDI -> p1MDS
-  activate p1MDS #Black
+  activate p1MDS #Yellow
     note over p1MDS
       Maintain DataStore
     end note
@@ -394,7 +394,7 @@ activate p1RMWDI #LightBlue
 
         ' storing ->
         p1ProcessPm -> p1Store
-        activate p1Store #Black
+        activate p1Store #Yellow
 
           note over p1Store
             Store resultCc

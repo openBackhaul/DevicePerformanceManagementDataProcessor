@@ -1,16 +1,11 @@
 load-raw-cc:
   type: object
   required:
-    - mount-name
     - parameters
     - mwdi-replica-es-client
     - data-store-es-client
+    - mount-name
   properties:
-    mount-name:
-      type: string
-      description: >
-        'MountName
-        from {$input#/mount-name}'
     parameters:
       type: object
       description: >
@@ -26,6 +21,11 @@ load-raw-cc:
       description: >
         'Data Store ElasticSearch address
         from {$input#/data-store-es-client}'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
 
     mwdi-replica-url:
       type: string
@@ -53,25 +53,12 @@ load-raw-cc:
         'An regex pattern indicating which data granularities are to be kept
         from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
 
-    interface:
+    interface-metadata:
       type: array
       x-key: uuid
       description: >
         'MostRecentPeriodEndTimes for all already known interfaces of the device
-        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
-      items:
-        type: object
-        properties:
-          uuid:
-            type: string
-          layer-protocol-name:
-            type: string
-          most-recent-period-end-time:
-            type: string
-            description: 'The newest seen periodEndTime for this interface in 15min data'
-          most-recent-period-end-time-24:
-            type: string
-            description: 'The newest seen periodEndTime for this interface in 24h data'
+        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/}'
 
     raw-cc:
       type: object
