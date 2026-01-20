@@ -6,32 +6,39 @@ title
 end title
 
 participant "embedYourself\n" as embed
-participant "p1StreamPmData\n" as p1RMWDI #LightCyan
-participant "p1LoadParameters\n" as p1LoadParams #LightCyan
-participant "p1ResolveEsAddress\n" as p1REA #LightCyan
-participant "p1InitKafka\n" as p1InitKafka #LightCyan
-participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
+participant "p1StreamPmData\n" as p1RMWDI #LightBlue
+participant "p1LoadParameters\n" as p1LoadParams #LightBlue
+participant "p1ResolveEsAddress\n" as p1REA #LightBlue
+participant "p1InitKafka\n" as p1InitKafka #LightBlue
+participant "p1UpdateMwdiReplica\n" as p1UMR #LightBlue
 
-participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
+participant "p1ProcessDevice\n" as p1ProcessPm #LightBlue
 
 participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
-participant "p1FieldsFilter\n" as p1FieldsFilter #LightCyan
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
+participant "p1FieldsFilter\n" as p1FieldsFilter #LightBlue
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightBlue
 
 participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
-participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
-participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
-participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightCyan
+participant "p1Prepare\nTxModes" as p1prepTxModes #BurlyWood
+participant "p2Prepare\nTxModes" as p2prepTxModes #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
+participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
+participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
+participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #BurlyWood
+participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
+participant "p2Calculate\nEthernetKpis" as p2EthKpi #LightCyan
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
-participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
-participant "p1Storing\n" as p1Store #LightBlue
-participant "p1MaintainDs\n" as p1MDS #LightBlue
+participant "p1Storing\n" as p1Store #Yellow
+participant "p1MaintainDs\n" as p1MDS #Yellow
 
-participant "kafkaProducer\nService" as kafkaProd #LightCyan
+participant "kafkaProducer\nService" as kafkaProd #LightBlue
 
 note right embed
   Automatically start
@@ -40,10 +47,10 @@ end note
 embed -> p1RMWDI
 
 ' replicate MWDI ES ->
-activate p1RMWDI #LightCyan
+activate p1RMWDI #LightBlue
 
   p1RMWDI -> p1LoadParams
-  activate p1LoadParams #LightCyan
+  activate p1LoadParams #LightBlue
     note over p1LoadParams
       Load parameters
       from configFile
@@ -53,7 +60,7 @@ activate p1RMWDI #LightCyan
 
   Loop FOR all esName
     p1RMWDI -> p1REA
-    activate p1REA #LightCyan
+    activate p1REA #LightBlue
       note over p1REA
         Resolve ES address
       end note
@@ -63,7 +70,7 @@ activate p1RMWDI #LightCyan
   end Loop
 
   p1RMWDI -> p1InitKafka
-  activate p1InitKafka #LightCyan
+  activate p1InitKafka #LightBlue
 
     note over p1InitKafka
       Resolve Kafka
@@ -71,7 +78,7 @@ activate p1RMWDI #LightCyan
     end note
 
     p1InitKafka -> kafkaProd
-    activate kafkaProd #LightCyan
+    activate kafkaProd #LightBlue
       note over kafkaProd
         Establish session
       end note
@@ -81,7 +88,7 @@ activate p1RMWDI #LightCyan
   deactivate p1InitKafka
 
   p1RMWDI -> p1MDS
-  activate p1MDS #LightBlue
+  activate p1MDS #Yellow
     note over p1MDS
       Maintain DataStore
     end note
@@ -89,7 +96,7 @@ activate p1RMWDI #LightCyan
   Loop endless
 
     p1RMWDI -> p1UMR
-    activate p1UMR #LightCyan
+    activate p1UMR #LightBlue
       note over p1UMR
         Replicate updated CCs
       end note
@@ -99,7 +106,7 @@ activate p1RMWDI #LightCyan
     Loop for every updated CC
 
       p1RMWDI -> p1ProcessPm
-      activate p1ProcessPm #LightCyan
+      activate p1ProcessPm #LightBlue
 
         note over p1ProcessPm
           Create data structure
@@ -111,15 +118,15 @@ activate p1RMWDI #LightCyan
         activate p1AddRaw #LightCyan
 
           note over p1AddRaw
-            Load raw data to rawCC
+            Load raw data to rawCc
           end note
 
           ' apply fieldsFilter ->
           p1AddRaw -> p1FieldsFilter
-          activate p1FieldsFilter #LightCyan
+          activate p1FieldsFilter #LightBlue
 
             note over p1FieldsFilter
-              Reduce structure of rawCC
+              Reduce structure of rawCc
             end note
 
           p1AddRaw <-- p1FieldsFilter
@@ -131,7 +138,7 @@ activate p1RMWDI #LightCyan
 
           ' discard irrelevant PM records
           p1AddRaw -> filterPm
-          activate filterPm #LightCyan
+          activate filterPm #LightBlue
 
             note over filterPm
               Delete PM data that has
@@ -141,118 +148,214 @@ activate p1RMWDI #LightCyan
           p1AddRaw <-- filterPm
           deactivate filterPm
 
+          note over p1AddRaw
+            addBatchTimestamp
+          end note
+
         p1ProcessPm <-- p1AddRaw
         deactivate p1AddRaw
 
         note over p1ProcessPm
-          Add rawCC to data structure
+          Add rawCc to data structure
           for processing
         end note
 
-        ' create resultCC ->
+        ' create resultCc ->
         p1ProcessPm -> p1CreateResultCc
         activate p1CreateResultCc #LightCyan
 
           note over p1CreateResultCc
-            Create resultCC
-            from rawCC
+            Copies rawCc to resultCc
           end note
 
-          p1CreateResultCc -> prepTxModes
-          activate prepTxModes #LightCyan
+          note over p1CreateResultCc
+            Creates aggregationGroupList
+          end note
 
-            note over prepTxModes
-              Prepare TxModes
-            end note
+          loop FOR all AirInterfaces in resultCc
 
-            prepTxModes -> aiCC
-            activate aiCC #LightCyan
+            p1CreateResultCc -> p1prepTxModes
+            activate p1prepTxModes #BurlyWood
 
-              note over aiCC
-                Calculate
-                AirInterfaceCapacity
+              note over p1prepTxModes
+                Prepare TxModes
               end note
 
-            prepTxModes <-- aiCC
-            deactivate aiCC
+              p1prepTxModes -> aiCC
+              activate aiCC #LightBlue
 
-            prepTxModes -> intCC
-            activate intCC #LightCyan
+                note over aiCC
+                  Calculate
+                  AirInterfaceCapacity
+                end note
 
-              note over intCC
-                Calculate
-                IntervalCapacity
+              p1prepTxModes <-- aiCC
+              deactivate aiCC
+
+              p1prepTxModes -> intCC
+              activate intCC #LightBlue
+
+                note over intCC
+                  Calculate
+                  IntervalCapacity
+                end note
+
+              p1prepTxModes <-- intCC
+              deactivate intCC
+
+            p1CreateResultCc <-- p1prepTxModes
+            deactivate p1prepTxModes
+
+            p1CreateResultCc -> p2prepTxModes
+            activate p2prepTxModes #LightCyan
+
+              note over p2prepTxModes
+                Prepare TxModes
               end note
 
-            prepTxModes <-- intCC
-            deactivate intCC
+              p2prepTxModes -> aiCC
+              activate aiCC #LightBlue
 
-          p1CreateResultCc <-- prepTxModes
-          deactivate prepTxModes
+                note over aiCC
+                  Calculate
+                  AirInterfaceCapacity
+                end note
 
-          note over p1CreateResultCc
-            Add linkId
-          end note
+              p2prepTxModes <-- aiCC
+              deactivate aiCC
 
-          note over p1CreateResultCc
-            Add list of parallel LTPs
-          end note
+            p1CreateResultCc <-- p2prepTxModes
+            deactivate p2prepTxModes
 
-          note over p1CreateResultCc
-            Add mostRecentPeriodEndTime
-            (AirInterface)
-          end note
+            p1CreateResultCc -> aiSlices
+            activate aiSlices #LightCyan
 
-          note over p1CreateResultCc
-            Add mostRecentPeriodEndTime24
-            (AirInterface)
-          end note
+                aiSlices -> intCC
+                activate intCC #LightBlue
 
-          ' process outOfRange values ->
-          note over p1CreateResultCc #LightGray
-            Delete attributes with value outside
-            pre-defined range from resultCC
-          end note
+                  note over intCC
+                    Calculate
+                    IntervalCapacity
+                  end note
 
-          ' get EthContainer KPIs ->
-          p1CreateResultCc -> p1EthKpi
-          activate p1EthKpi #LightCyan
+                aiSlices <-- intCC
+                deactivate intCC
 
-            note over p1EthKpi
-              Add Ethernet KPIs
-              to resultCC
+                aiSlices -> p1RORL
+                activate p1RORL #LightCyan
+
+                  note over p1RORL
+                    Delete RxLevel and TxLevel
+                    attributes with values
+                    outside pre-defined range
+                  end note
+
+                aiSlices <-- p1RORL
+                deactivate p1RORL        
+
+                aiSlices -> p1RemDefault
+                activate p1RemDefault #LightCyan
+
+                  note over p1RemDefault
+                    Delete attributes with
+                    ONF default value
+                  end note
+
+                aiSlices <-- p1RemDefault
+                deactivate p1RemDefault        
+
+            p1CreateResultCc <-- aiSlices
+            deactivate aiSlices
+
+            note over p1CreateResultCc
+              Add linkId
             end note
 
-          p1CreateResultCc <-- p1EthKpi
-          deactivate p1EthKpi
+            note over p1CreateResultCc
+              Add list of parallel LTPs
+            end note
 
-          note over p1CreateResultCc
-            Add mostRecentPeriodEndTime
-            (EthernetContainer)
-          end note
+            note over p1CreateResultCc
+              Add mostRecentPeriodEndTime
+              (AirInterface)
+            end note
 
-          note over p1CreateResultCc
-            Add mostRecentPeriodEndTime24
-            (EthernetContainer)
-          end note
+            note over p1CreateResultCc
+              Add mostRecentPeriodEndTime24
+              (AirInterface)
+            end note
 
-          ' harmonize Temperature ->
-          note over p1CreateResultCc #LightGray
-            Harmonize temperature
-            across device types
-          end note
+          end loop
 
-          ' process default values ->
-          note over p1CreateResultCc #LightGray
-            Delete attributes with ONF
-            default value from resultCC
-          end note
+          loop FOR all EthernetContainers in resultCc
+
+            p1CreateResultCc -> p1EthKpi
+            activate p1EthKpi #BurlyWood
+
+              note over p1EthKpi
+                Add Ethernet KPIs
+                to resultCc
+              end note
+
+            p1CreateResultCc <-- p1EthKpi
+            deactivate p1EthKpi
+
+            p1CreateResultCc -> ecSlices
+            activate ecSlices #LightCyan
+
+              ecSlices -> p2EthKpi
+              activate p2EthKpi #LightCyan
+
+                note over p2EthKpi
+                  Add Ethernet KPIs to
+                  historicalPerformanceData
+                end note
+
+              ecSlices <-- p2EthKpi
+              deactivate p2EthKpi
+
+              ecSlices -> p1RemDefault
+              activate p1RemDefault #LightCyan
+
+                note over p1RemDefault
+                  Delete attributes with
+                  ONF default value
+                end note
+
+              ecSlices <-- p1RemDefault
+              deactivate p1RemDefault        
+
+            p1CreateResultCc <-- ecSlices
+            deactivate ecSlices
+
+            note over p1CreateResultCc
+              Add mostRecentPeriodEndTime
+              (EthernetContainer)
+            end note
+
+            note over p1CreateResultCc
+              Add mostRecentPeriodEndTime24
+              (EthernetContainer)
+            end note
+
+          end loop
+
+          p1CreateResultCc -> p1ROoRT
+          activate p1ROoRT #LightCyan
+
+            note over p1ROoRT
+              Delete temperature attributes with
+              values outside pre-defined range
+            end note
+
+          p1CreateResultCc <-- p1ROoRT
+          deactivate p1ROoRT
 
         p1ProcessPm <-- p1CreateResultCc
         deactivate p1CreateResultCc
 
         note over p1ProcessPm
-          Add resultCC to data 
+          Add resultCc to data 
           structure for processing
         end note
 
@@ -262,7 +365,6 @@ activate p1RMWDI #LightCyan
 
           note over p1Output
             Create APT format
-            from resultCC
           end note
 
         p1ProcessPm <-- p1Output
@@ -275,7 +377,7 @@ activate p1RMWDI #LightCyan
 
         ' transmit data ->
         p1ProcessPm -> p1Trans
-        activate p1Trans #LightCyan
+        activate p1Trans #LightBlue
 
           note over p1Trans
             Transmit object
@@ -292,10 +394,10 @@ activate p1RMWDI #LightCyan
 
         ' storing ->
         p1ProcessPm -> p1Store
-        activate p1Store #LightBlue
+        activate p1Store #Yellow
 
           note over p1Store
-            Store resultCC
+            Store resultCc
             to DataStore
           end note
 

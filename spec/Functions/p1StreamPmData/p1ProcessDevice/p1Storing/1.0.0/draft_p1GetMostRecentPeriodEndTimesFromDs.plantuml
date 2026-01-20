@@ -1,0 +1,73 @@
+@startuml p1GetMostRecentPeriodEndTimesFromDs
+skinparam responseMessageBelowArrow true
+
+title
+  p1GetMostRecentPeriodEndTimesFromDs
+end title
+
+participant "p1LoadRawCc\n" as requestor
+participant "p1GetMostRecentPeriod\nEndTimesFromDs" as cur #LightCyan
+participant "p1ReadLotTimestamps\nFromDs" as ts #LightCyan
+participant "p1FieldsFilter\n" as fieldsFilter #LightCyan
+database "DataStore\n" as ds #LightCyan
+
+activate requestor #LightGray
+requestor -> cur: {{parameters}\n{configFile}\n{dataStoreEsClient},\nmountName}
+activate cur #LightCyan
+
+  note over cur #LightGray
+    steps: (box to be removed)
+    1. get lot timstamps
+    2. select newest timestamp from
+      the list (the last one in the list),
+      read the resultCC for that timestamp from DS (=input of ff)
+    3. get the mostRecentPeriodEndTimes
+      {uuid, (lpName), mostRecentPeriodEndTime, mostRecentPeriodEndTime24}
+  end note
+
+  note over cur
+    <u>p1ReadLotTimestampsFromDs</u>
+      Get the list of lot timestamps
+      from the dataStore.
+      (Timestamps are sorted from oldest
+      to newest timestamp.)
+  end note
+  cur -> ts: {{parameters},\n{configFile},\n{dataStoreEsClient},\nmountName}
+  cur <-- ts: {{sortedTimestampList}}
+
+  note over cur
+    <u>ReadResultCcFromDs</u>
+    Select the newest timestamp
+    from sortedTimestampList.
+    Read the resultCc from the dataStore:
+    [/data-store/device=mountName/lot=timestamp]
+  end note
+  cur -> ds: {mountName, timestamp}
+  cur <-- ds: {{resultCc}}
+
+  note over cur
+    <u>p1FieldsFilter</u>
+    Apply fields filter from (parameter xyz)
+    to filter resultCc
+  end note
+  cur -> fieldsFilter: {{resultCc}, fieldsFilter}
+  cur <-- fieldsFilter: {{filtered resultCc}}
+
+  note over cur
+    <u>FormatMostRecentPeriodEndTimesList</u>
+      Transform the filtered resultCc data into a list
+      that is being returned.
+      For each layer-protocol in filtered resultCc:
+      - uuid
+      - most-recent-period-end-time
+      - most-recent-period-end-time-24
+  end note
+
+requestor <-- cur: {list-of{uuid,\nmost-recent-period-end-time,\nmost-recent-period-end-time-24}}
+
+
+deactivate cur
+
+
+'fieldsFilter:
+'logical-termination-point(uuid;layer-protocol(air-interface-2-0:air-interface-pac(air-interface-historical-performances(most-recent-period-end-time;most-recent-period-end-time-24);ethernet-container-historical-performances(most-recent-period-end-time;most-recent-period-end-time-24))))

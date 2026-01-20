@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: p1Storing
+  version: 1.0.0
+
+x-javascript-interface:
+  p1Storing:
+    summary: 'Stores the resultCc in the dataStore and updates dataStore interface information.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data-store-es-client
+              - result-cc
+            properties:
+              data-store-es-client:
+                type: object
+                description: >
+                  'DataStore ElasticSearch address'
+              result-cc:
+                type: object
+                description: >
+                  'The resultCc to be stored'
+    output:
+      success:
+        description: 'resultCc stored'
+      error:
+        description: 'resultCc could not be stored'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'resultCc could not be stored'
+                - 'General processing error'
+    processing:
+      extractInterfaceMetadata:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - logical-termination-point
+                properties:
+                  logical-termination-point:
+                    type: object
+                    description: >
+                      'logicalTerminationPoint
+                      from [/storing/result-cc/logical-termination-point=*]'
+        output:
+          success:
+            description: 'interfaceMetadata extracted'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - uuid
+                    - layer-protocol-name
+                    - most-recent-period-end-time
+                    - most-recent-period-end-time-24
+                  properties:
+                    uuid:
+                      type: string
+                      description: >
+                        'ltpUuid
+                        from {$input#/logical-termination-point/uuid}'
+                    layer-protocol-name:
+                      type: string
+                      description: >
+                        'layerProtocolName
+                        from {$input#/logical-termination-point/layer-protocol=*/layer-protocol-name}'
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'Most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList
+                        from [ {$input#/logical-termination-point/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/most-recent-period-end-time where layerProtocolName indicates AIR_LAYER} or {$input#/logical-termination-point/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/most-recent-period-end-time where layerProtocolName indicates ETHERNET_CONTAINER} ]'
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
+                        from [ {$input#/logical-termination-point/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/most-recent-period-end-time-24 where layerProtocolName indicates AIR_LAYER} or {$input#/logical-termination-point/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/most-recent-period-end-time-24 where layerProtocolName indicates ETHERNET_CONTAINER} ]'
+          error:
+            description: 'interfaceMetadata could not be extracted'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'logicalTerminationPoint not provided'
+                    - 'logicalTerminationPoint invalid'
+                    - 'interfaceMetadata could not be extracted'
+                    - 'General processing error'
+      storeInterfaceMetadataList:
+        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/interface-metadata]
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: array
+                x-key: uuid
+                description: >
+                  'Performs a bare write operation on the entire interfaceMetadata as a block
+                  interfaceMetadata of existing devices is overwritten, interfaceMetadata of non-existing mountName is created
+                  from [/storing/interface-metadata-list]'
+        output:
+          success:
+            description: 'interfaceMetadata stored'
+          error:
+            description: 'interfaceMetadata could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'interfaceMetadataList not provided'
+                    - 'interfaceMetadataList invalid'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+      storeResultCc:
+        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/batch={/storing/batch-timestamp}] 
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >
+                  'Writes the entire batch as a block
+                  assuming that the value of the batchTimestamp is always unique, a new entry is created with every storing operation
+                  from [/storing/batch]'
+        output:
+          success:
+            description: 'resultCc stored'
+          error:
+            description: 'resultCc could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'batchTimestamp not provided'
+                    - 'batchTimestamp invalid'
+                    - 'resultCc not provided'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
+

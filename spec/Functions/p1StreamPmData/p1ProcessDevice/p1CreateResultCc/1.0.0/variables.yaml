@@ -225,7 +225,7 @@ create-result-cc:
                                         type: integer
                                         description: >
                                           'AirInterface capacity in kbps
-                                          requires {$p1PrepareTxModes}'
+                                          requires {$p2PrepareTxModes}'
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -300,7 +300,7 @@ create-result-cc:
                                             type: integer
                                             description: >
                                               'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
-                                              requires {$p1PrepareTxModes}'
+                                              requires {$p2PrepareTxModes}'
                                           snir-min:
                                             type: integer
                                           snir-max:
@@ -449,3 +449,7 @@ create-result-cc:
                                           unknown-protocol-frames-input:
                                             type: string
                                             description: 'String representation of int64 value'
+        batch-timestamp:
+          type: string
+          description: >
+            'Timestamp when the CC was read from the device (actually youngest air interface current performance data)'

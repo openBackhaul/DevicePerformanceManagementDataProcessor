@@ -1,0 +1,124 @@
+openapi: 3.0.0
+info:
+  title: p2PrepareTxModes
+  version: 1.0.0
+
+x-javascript-interface:
+  p2PrepareTxModes:
+    summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+              - historical-performance-data-list
+              - transmission-mode-list
+            properties:
+              historical-performance-data-list:
+                type: array
+                description: >
+                  'historicalPerformanceDataList'
+              transmission-mode-list:
+                type: array
+                description: >
+                  'transmissionModeList'
+    output:
+      success:
+        description: 'transmissionModeList provided'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - historical-performance-data-list
+                - transmission-mode-list
+              properties:
+                historical-performance-data-list:
+                  type: array
+                  description: >
+                    'historicalPerformanceDataList
+                    from [/prepare-tx-modes/historical-performance-data-list]
+                transmission-mode-list:
+                  type: array
+                  description: >
+                    'transmissionModeList
+                    from [/prepare-tx-modes/transmission-mode-list]
+      error:
+        description: 'transmissionModeList could not be provided'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'historicalPerformanceDataList not provided'
+                - 'historicalPerformanceDataList incomplete'
+                - 'historicalPerformanceDataList invalid'
+                - 'transmissionModeList not provided'
+                - 'transmissionModeList incomplete'
+                - 'transmissionModeList invalid'
+                - 'historicalPerformanceDataList could not be provided'
+                - 'transmissionModeList could not be provided'
+                - 'General processing error'
+    processing:
+      p1CalculateAiCapacity:
+        summary: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - channel-bandwidth
+                  - symbol-rate-reduction-factor
+                  - number-of-states-in-modulation
+                  - code-rate
+                properties:
+                  channel-bandwidth:
+                    type: integer
+                    description: >
+                      'Channel bandwidth in kHz
+                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/channel-bandwidth]'
+                  symbol-rate-reduction-factor:
+                    type: integer
+                    description: >
+                      'Symbol rate reduction factor
+                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/symbol-rate-reduction-factor]'
+                  number-of-states-in-modulation:
+                    type: integer
+                    description: >
+                      'Number of states in modulation
+                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/modulation-scheme]'
+                  code-rate:
+                    type: integer
+                    description: >
+                      'Code rate in percent
+                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/code-rate]'
+        output:
+          success:
+            description: 'AirInterface capacity calculated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - air-interface-capacity
+                  properties:
+                    air-interface-capacity:
+                      type: integer
+                      description: >
+                        'airInterfaceCapacity'
+          error:
+            description: 'AirInterface capacity could not be calculated'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'Input parameters missing'
+                    - 'Input parameters invalid'
+                    - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

@@ -36,3 +36,7 @@ Please find a detailed description of the [variables](variables.yaml).
 
 [mw-sdn-p1-calculate-interval-capacity](https://www.npmjs.com/package/mw-sdn-p1-calculate-interval-capacity)  
 
+
+### Remarks
+
+Calling this Function has been moved from p1PrepareTxModes to p1IterateAiPmSlices.  

@@ -1,0 +1,687 @@
+openapi: 3.0.0
+info:
+  title: p1CreateResultCc
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CreateResultCc:
+    summary: 'Creates the PM data (resultCc) from the raw data (rawCc)'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - raw-cc
+            properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              raw-cc:
+                type: object
+                description: >
+                  'rawCc'
+    output:
+      success:
+        description: 'Result CC data created'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - result-cc
+              properties:
+                  result-cc:
+                    type: object
+                    description: >
+                      'The result control construct, following ONF structure.
+                      from [/create-result-cc/result-cc]'
+      error:
+        description: 'Result CC data could not be created'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'rawCc not provided'
+                - 'rawCc invalid'
+                - 'resultCc could not be provided'
+                - 'General processing error'
+    processing:
+      createResultCcFromRawCc:
+        summary: 'Creates the resultCc object and fills it from rawCc data'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - raw-cc
+                properties:
+                  raw-cc:
+                    type: object
+                    description: >
+                      'RawCc
+                      from [/create-result-cc/raw-cc]'
+        output:
+          success:
+            description: 'ResultCc provided'
+            content:
+              application/json:
+                schema:
+                  properties:
+                    type: object
+                    properties:
+                      result-cc:
+                        type: object
+                        description: >
+                          'ResultCc
+                          from {bare copy of $input#/raw-cc}'
+        error:
+          description: 'ResultCc could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'rawCc not provided'
+                  - 'rawCc invalid'
+                  - 'resultCc could not be provided'
+                  - 'General processing error'
+      createAggregationGroupList:
+        summary: 'Creates the aggregation-group-list from rawCc data'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - raw-cc
+                properties:
+                  raw-cc:
+                    type: object
+                    description: >
+                      'RawCc
+                      from [/create-result-cc/raw-cc]'
+        output:
+          success:
+            description: 'aggregationGroupList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - aggregation-group-list
+                  properties:
+                    aggregation-group-list:
+                      type: array
+                      description: >
+                        'List of Layer1AggregationGroups at the device'
+                      items:
+                        type: object
+                        properties:
+                          uuid:
+                            type: string
+                            description: >
+                              'UUID of Layer1AggregationGroup
+                              from {$input#/raw-cc/profile-collection/profile=*/uuid}
+                                with {$input#/raw-cc/profile-collection/profile={uuid}/profile-name} == "PROFILE_NAME_TYPE_LAYER_1_AGGREGATION_PROFILE"'
+                          client-ltp:
+                            type: string
+                            description: >
+                              'UUID of transported EthernetContainer LTP
+                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/client-ltp}'
+                          server-ltp-list:
+                            type: array
+                            description: >
+                              'List of UUIDs of transporting PureEthernetStructure or HybridMwStructure LTPs
+                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/server-ltp-list}'
+                            items:
+                              type: string
+                          physical-server-ltp-list:
+                            type: array
+                            description: >
+                              'List of UUIDs of transporting AirInterface and WireInterface LTPs
+                              for every PureEthernetStructure or HybridMwStructure LTP in {server-ltp-list}
+                              from [all {$input#/raw-cc/logical-termination-point={structure-ltp[*]}/server-ltp]'
+                            items:
+                              type: string
+        error:
+          description: 'aggregationGroupList could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'rawCc not provided'
+                  - 'rawCc invalid'
+                  - 'aggregationGroupList could not be provided'
+                  - 'General processing error'
+      p1PrepareTxModes:
+        summary: 'Deprecated!'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - historical-performance-data-list
+                  - transmission-mode-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+                  transmission-mode-list:
+                    type: array
+                    description: >
+                      'transmissionModeList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list]'
+        output:
+          success:
+            description: 'transmissionModeList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                    - transmission-mode-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+                    transmission-mode-list:
+                      type: array
+                      description: >
+                        'transmissionModeList'
+          error:
+            description: 'transmissionModeList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p2PrepareTxModes:
+        summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - historical-performance-data-list
+                  - transmission-mode-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+                  transmission-mode-list:
+                    type: array
+                    description: >
+                      'transmissionModeList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list]'
+        output:
+          success:
+            description: 'transmissionModeList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                    - transmission-mode-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+                    transmission-mode-list:
+                      type: array
+                      description: >
+                        'transmissionModeList'
+          error:
+            description: 'transmissionModeList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1IterateAiPmSlices:
+        summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - parameters
+                  - historical-performance-data-list
+                  - transmission-mode-list
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/create-result-cc/parameters/sub-function=p1IterateAiPmSlices]'
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+                  transmission-mode-list:
+                    type: array
+                    description: >
+                      'transmissionModeList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list]'
+        output:
+          success:
+            description: 'historicalPerformanceDataList processed'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+          error:
+            description: 'historicalPerformanceDataList could not be processed'
+            content:
+              application/json:
+                schema:
+                  type: string
+      substringLinkId:
+        summary: 'Creates the linkId from linkEndpointId'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - link-endpoint-id
+                properties:
+                  link-endpoint-id:
+                    type: object
+                    pattern: '^[0-9]{9}[AB]$'
+                    description: >
+                      'linkEndpointId
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/ltp-augment-1-0:ltp-augment-pac/external-label]'
+        output:
+          success:
+            description: 'linkId provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - link-id
+                  properties:
+                    link-id:
+                      type: string
+                      description: >
+                        'linkId = input.link-endpoint-id.substring(0, 9)'
+        error:
+          description: 'ResultCc could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'linkEndpointId not provided'
+                  - 'linkEndpointId invalid'
+                  - 'linkId could not be provided'
+                  - 'General processing error'
+      findParallelPhysic:
+        summary: 'Finds parallel physical LTPs'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ltp-uuid
+                  - aggregation-group-list
+                properties:
+                  ltp-uuid:
+                    type: string
+                    description: >
+                      'UUID of the LTP to find parallel physical LTPs for
+                      from [/create-result-cc/air-interface-uuid[n]]'
+                  aggregation-group-list:
+                    type: array
+                    description: >
+                      'List of Layer1AggregationGroups
+                      from [/create-result-cc/aggregation-group-list]'
+        output:
+          success:
+            description: 'List of parallel physical LTPs provided, might be empty'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - physical-server-ltp-list
+                  properties:
+                    physical-server-ltp-list:
+                      type: array
+                      items:
+                        type: string
+                      description: >
+                        'List of UUIDs of parallel LTPs (AirInterfaces or WireInterfaces in the same Layer1AggregationGroup)
+                        IF {$input#ltp-uuid} is part of any {$input#/aggregation-group-list=*/physical-server-ltp-list}
+                          THEN from [all other members of same {$input#/aggregation-group-list=*/physical-server-ltp-list}]'
+        error:
+          description: 'List of parallel physical LTPs could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'ltpUuid not provided'
+                  - 'ltpUuid invalid'
+                  - 'aggregationGroupList not provided'
+                  - 'aggregationGroupList invalid'
+                  - 'General processing error'
+      findMostRecentPeriodEndTime_ai:
+        summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'mostRecentPeriodEndTime provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - most-recent-period-end-time
+                  properties:
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} ) ]'
+        error:
+          description: 'mostRecentPeriodEndTime could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'historicalPerformanceDataList not provided'
+                  - 'historicalPerformanceDataList invalid'
+                  - 'mostRecentPeriodEndTime could not be provided'
+                  - 'General processing error'
+      findMostRecentPeriodEndTime24_ai:
+        summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'MostRecentPeriodEndTime24 provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - most-recent-period-end-time-24
+                  properties:
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} ) ]'
+        error:
+          description: 'mostRecentPeriodEndTime24 could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'historicalPerformanceDataList not provided'
+                  - 'historicalPerformanceDataList invalid'
+                  - 'mostRecentPeriodEndTime24 could not be provided'
+                  - 'General processing error'
+      p1CalculateEthernetKpis:
+        summary: 'Deprecated!'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'Ethernet KPIs added'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+        error:
+          description: 'Ethernet KPIs could not be added'
+          content:
+            application/json:
+              schema:
+                type: string
+      p1IterateEcPmSlices:
+        summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - parameters
+                  - historical-performance-data-list
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/create-result-cc/parameters/sub-function=p1IterateEcPmSlices]'
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'historicalPerformanceDataList processed'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+          error:
+            description: 'historicalPerformanceDataList could not be processed'
+            content:
+              application/json:
+                schema:
+                  type: string
+      findMostRecentPeriodEndTime_ec:
+        summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'mostRecentPeriodEndTime provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - most-recent-period-end-time
+                  properties:
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} ) ]'
+        error:
+          description: 'mostRecentPeriodEndTime could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'historicalPerformanceDataList not provided'
+                  - 'historicalPerformanceDataList invalid'
+                  - 'mostRecentPeriodEndTime could not be provided'
+                  - 'General processing error'
+      findMostRecentPeriodEndTime24_ec:
+        summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+        output:
+          success:
+            description: 'MostRecentPeriodEndTime24 provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - most-recent-period-end-time-24
+                  properties:
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24
+                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} ) ]'
+        error:
+          description: 'mostRecentPeriodEndTime24 could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'historicalPerformanceDataList not provided'
+                  - 'historicalPerformanceDataList invalid'
+                  - 'mostRecentPeriodEndTime24 could not be provided'
+                  - 'General processing error'
+      p1RemoveOutOfRangeTemperature:
+        summary: 'Deletes temperature attributes with values outside pre-defined range from equipment'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - equipment
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/create-result-cc/parameters/sub-function=p1RemoveOutOfRangeTemperature]'
+                  equipment:
+                    type: array
+                    description: >
+                      'List of equipment at the device
+                      from [/create-result-cc/result-cc/equipment]'
+        output:
+          success:
+            description: 'Equipment data cleaned from out-of-range temperature attributes'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - equipment
+                  properties:
+                    equipment:
+                      type: array
+                      description: >
+                        'List of equipment'
+          error:
+            description: 'Equipment data could not be cleaned from out-of-range temperature attributes'
+            content:
+              application/json:
+                schema:
+                  type: string
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

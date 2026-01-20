@@ -18,8 +18,7 @@ x-javascript-interface:
             properties:
               parameters:
                 type: object
-                description: >
-                  'parameters object for p1CreateResultCc'
+                description: 'Hierarchical object holding the parameter settings'
               raw-cc:
                 type: object
                 description: >
@@ -80,7 +79,8 @@ x-javascript-interface:
                       result-cc:
                         type: object
                         description: >
-                          'ResultCc'
+                          'ResultCc
+                          from {$input#/raw-cc}'
         error:
           description: 'ResultCc could not be provided'
           content:
@@ -93,6 +93,52 @@ x-javascript-interface:
                   - 'resultCc could not be provided'
                   - 'General processing error'
       p1PrepareTxModes:
+        summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - historical-performance-data-list
+                  - transmission-mode-list
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'historicalPerformanceDataList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
+                  transmission-mode-list:
+                    type: array
+                    description: >
+                      'transmissionModeList
+                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list]'
+        output:
+          success:
+            description: 'transmissionModeList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data-list
+                    - transmission-mode-list
+                  properties:
+                    historical-performance-data-list:
+                      type: array
+                      description: >
+                        'historicalPerformanceDataList'
+                    transmission-mode-list:
+                      type: array
+                      description: >
+                        'transmissionModeList'
+          error:
+            description: 'transmissionModeList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p2PrepareTxModes:
         summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
         input:
           required: true

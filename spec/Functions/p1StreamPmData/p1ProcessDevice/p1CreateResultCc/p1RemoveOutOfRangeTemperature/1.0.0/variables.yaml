@@ -1,0 +1,47 @@
+remove-out-of-range-temperature:
+  type: object
+  required:
+    - parameters
+    - equipment
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    equipment:
+      type: array
+      x-key: uuid
+      description: >
+        'List of equipment at the device
+        from {$input#/equipment}
+        ! simplified representation !'
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+          actual-equipment:
+            type: object
+            properties:
+              local-id:
+                type: string
+              physical-properties:
+                type: object
+                properties:
+                  temperature:
+                    type: string
+                    description: >
+                      'temperature
+                      to be deleted, if [ [{temperature}<{lower-temperature-limit}] OR [{temperature}>{upper-temperature-limit}] ]'
+    
+    lower-temperature-limit:
+      type: string
+      description: >
+        'Lower temperature limit
+        from [/remove-out-of-range-temperature/parameters/parameter=lowerTemperatureLimit/value]'
+    upper-temperature-limit:
+      type: string
+      description: >
+        'Upper temperature limit
+        from [/remove-out-of-range-temperature/parameters/parameter=upperTemperatureLimit/value]'

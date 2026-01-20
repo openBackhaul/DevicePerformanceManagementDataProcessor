@@ -5,11 +5,11 @@ title
   p1PrepareTxModes
 end title
 
-participant "p1CreateResultCc\n" as cur
+participant "p1CreateResultCc\n" as cur #LightCyan
 
-participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
-participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
+participant "p1Prepare\nTxModes" as prepTxModes #BurlyWood
+participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
+participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 
 
 cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}

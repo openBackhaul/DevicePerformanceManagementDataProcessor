@@ -1,0 +1,106 @@
+remove-out-of-range-levels:
+  type: object
+  required:
+    - parameters
+    - performance-data
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    performance-data:
+      type: object
+      description: >
+        'performanceData set of a single time period
+        from {$input#/performance-data}'
+      properties:
+        es:
+          type: integer
+        ses:
+          type: integer
+        cses:
+          type: integer
+        unavailability:
+          type: integer
+        tx-level-min:
+          type: integer
+          description: >
+            'txLevelMin
+            to be deleted, if [ [{tx-level-min}<{lower-tx-level-limit}] OR [{tx-level-min}>{upper-tx-level-limit}] ]'
+        tx-level-max:
+          type: integer
+          description: >
+            'txLevelMax
+            to be deleted, if [ [{tx-level-max}<{lower-tx-level-limit}] OR [{tx-level-max}>{upper-tx-level-limit}] ]'
+        tx-level-avg:
+          type: integer
+          description: >
+            'txLevelAvg
+            to be deleted, if [ [{tx-level-avg}<{lower-tx-level-limit}] OR [{tx-level-avg}>{upper-tx-level-limit}] ]'
+        rx-level-min:
+          type: integer
+          description: >
+            'rxLevelMin
+            to be deleted, if [ [{rx-level-min}<{lower-rx-level-limit}] OR [{rx-level-min}>{upper-rx-level-limit}] ]'
+        rx-level-max:
+          type: integer
+          description: >
+            'rxLevelMax
+            to be deleted, if [ [{rx-level-max}<{lower-rx-level-limit}] OR [{rx-level-max}>{upper-rx-level-limit}] ]'
+        rx-level-avg:
+          type: integer
+          description: >
+            'rxLevelAvg
+            to be deleted, if [ [{rx-level-avg}<{lower-rx-level-limit}] OR [{rx-level-avg}>{upper-rx-level-limit}] ]'
+        time-xstates-list:
+          type: array
+          x-key: transmission-mode
+          items:
+            type: object
+            required:
+              - transmission-mode
+            properties:
+              transmission-mode:
+                type: string
+              time:
+                type: integer
+        interval-capacity:
+          type: integer
+        snir-min:
+          type: integer
+        snir-max:
+          type: integer
+        snir-avg:
+          type: integer
+        xpd-min:
+          type: integer
+        xpd-max:
+          type: integer
+        xpd-avg:
+          type: integer
+        defect-blocks-sum:
+          type: integer
+        time-period:
+          type: integer
+
+    lower-tx-level-limit:
+      type: string
+      description: >
+        'Lower bound of valid values of the transmit level
+        from [/remove-out-of-range-levels/parameters/parameter=lowerTxLevelLimit/value]'
+    upper-tx-level-limit:
+      type: string
+      description: >
+        'Upper bound of valid values of the transmit level'
+        from [/remove-out-of-range-levels/parameters/parameter=upperTxLevelLimit/value]'
+    lower-rx-level-limit:
+      type: string
+      description: >
+        'Lower bound of valid values of the receive level
+        from [/remove-out-of-range-levels/parameters/parameter=lowerRxLevelLimit/value]'
+    upper-rx-level-limit:
+      type: string
+      description: >
+        'Upper bound of valid values of the receive level'
+        from [/remove-out-of-range-levels/parameters/parameter=upperRxLevelLimit/value]'
