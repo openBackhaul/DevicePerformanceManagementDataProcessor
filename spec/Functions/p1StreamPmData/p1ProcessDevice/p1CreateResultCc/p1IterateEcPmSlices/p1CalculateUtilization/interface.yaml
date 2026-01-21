@@ -74,6 +74,7 @@ x-javascript-interface:
                 properties:
                   logical-termination-point:
                     type: array
+                    #TODO: should be result-cc, not raw-cc
                     description: >
                       'logicalTerminationPoint list
                       from [/calculate-utilization/raw-cc/logical-termination-point]'
@@ -98,6 +99,8 @@ x-javascript-interface:
                     properties:
                       total-air-interface-interval-capacity:
                         type: integer
+                        #TODO: im from wird >historical-performance-data-list={period-end-time}< benutzt,
+                        # müsste das nicht sowas wie {$input.period-end-time} sein, damit klarer ist, wo das herkommt?
                         description: >
                           'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
                           from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={period-end-time}/performance-data/interval-capacity}]
@@ -124,6 +127,8 @@ x-javascript-interface:
           content:
             application/json:
               schema:
+                #TODO: ich würde auch utilizationRX berechnen, wir haben ja auch total-bytes-input
+                # und die utilization unten würde ich in utilizationTX umbenennen, damit man schon am counter-namen sieht, dass es TX ist.
                 required:
                   - total-bytes-output
                   - total-air-interface-interval-capacity
