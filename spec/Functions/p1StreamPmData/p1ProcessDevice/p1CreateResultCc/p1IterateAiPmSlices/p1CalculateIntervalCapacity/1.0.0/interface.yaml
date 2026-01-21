@@ -37,7 +37,7 @@ x-javascript-interface:
                   type: integer
                   description: >
                     'intervalCapacity
-                    from '
+                    from [/calculate-interval-capacity/interval-capacity]'
       error:
         description: 'Interval capacity could not be provided'
         content:

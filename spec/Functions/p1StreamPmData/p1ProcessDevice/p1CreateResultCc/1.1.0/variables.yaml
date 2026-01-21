@@ -356,6 +356,16 @@ create-result-cc:
                                           total-bytes-output:
                                             type: string
                                             description: 'String representation of int64 value'
+                                          total-air-interface-interval-capacity:
+                                            type: integer
+                                            description: >
+                                              'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
+                                              requires {$p1IterateEcPmSlices} and {p1CalculateUtilization}'
+                                          utilization:
+                                            type: integer
+                                            description: >
+                                              'Interval utilization (=totalBytesOutput/totalAirInterfaceIntervalCapacity) in %
+                                              requires {$p1IterateEcPmSlices} and {p1CalculateUtilization}'
                                           time-period:
                                             type: integer
                                           transmit-traffic:

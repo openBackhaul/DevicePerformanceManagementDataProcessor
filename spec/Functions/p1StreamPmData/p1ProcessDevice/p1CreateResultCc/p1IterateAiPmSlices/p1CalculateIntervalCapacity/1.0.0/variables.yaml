@@ -20,12 +20,12 @@ calculate-interval-capacity:
           transmission-mode-capacity:
             type: integer
             description: >
-              'transmissionModeCapacity
+              'transmissionModeCapacity in kbps
               from [/calculate-interval-capacity/transmission-mode-list==transmission-mode]/capacity'
           offered-volume:
             type: integer
             description: >
-              'Offered volume in kb
+              'Offered volume in kilobits
               from [./transmission-mode-capacity] * [./time]'
     transmission-mode-list:
       type: array
@@ -35,5 +35,5 @@ calculate-interval-capacity:
     interval-capacity:
       type: integer
       description: >
-        'intervalCapacity
+        'intervalCapacity in kilobits / s
         from sum of [/calculate-interval-capacity/time-xstates-list=={all}/offered-volume] divided by sum of [/calculate-interval-capacity/time-xstates-list=={all}/time]'

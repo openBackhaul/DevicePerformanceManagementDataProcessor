@@ -1,0 +1,43 @@
+@startuml p1CalculateUtilization
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateUtilization
+end title
+
+participant "p1IterateEc\nPmSlices" as requestor #LightCyan
+participant "p1Calculate\nUtilization" as p1CalcUtil #LightCyan
+
+
+requestor -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
+activate p1CalcUtil #LightCyan
+
+  note over p1CalcUtil
+    IF /historical-performance-data/granularity-period == '15min'
+  end note
+  
+  note left p1CalcUtil
+    ELSE
+  end note
+  requestor <-- p1CalcUtil : {historical-performance-data}
+
+  note over p1CalcUtil
+    THEN
+  end note
+
+  loop FOR /aggregation-group/physical-server-ltp-list[*]
+    note over p1CalcUtil
+      totalAirInterfaceIntervalCapacity += AirInterfaceIntervalCapacity
+    end note
+  end loop
+
+  note over p1CalcUtil
+    utilization = totalBytesOutput / totalAirInterfaceIntervalCapacity
+  end note
+
+requestor <-- p1CalcUtil : {historical-performance-data}
+deactivate p1CalcUtil
+
+deactivate requestor
+
+@enduml

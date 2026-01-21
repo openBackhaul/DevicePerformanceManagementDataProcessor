@@ -119,6 +119,7 @@ x-javascript-interface:
                   properties:
                     aggregation-group-list:
                       type: array
+                      x-key: client-ltp
                       description: >
                         'List of Layer1AggregationGroups at the device'
                       items:
@@ -524,6 +525,8 @@ x-javascript-interface:
                 required:
                   - parameters
                   - historical-performance-data-list
+                  - aggregation-group
+                  - result-cc
                 properties:
                   parameters:
                     type: object
@@ -535,6 +538,16 @@ x-javascript-interface:
                     description: >
                       'historicalPerformanceDataList
                       from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+                  aggregation-group:
+                    type: object
+                    description: >
+                      'aggregationGroup
+                      from [/create-result-cc/aggregation-group-list={[/create-result-cc/ethernet-container-uuid[n]]}]'
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc
+                      from [/create-result-cc/result-cc]'
         output:
           success:
             description: 'historicalPerformanceDataList processed'

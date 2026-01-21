@@ -138,7 +138,7 @@ activate cur #LightCyan
     cur <-- ethKpis : { [historicalPerformanceDataList] }
     deactivate ethKpis
 
-    cur -> p1IterateEc : { {/parameters/sub-function=p1IterateEcPmSlices},\n[historicalPerformanceDataList] }
+    cur -> p1IterateEc : { {/parameters/sub-function=p1IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
     activate p1IterateEc #LightCyan
 
       note over p1IterateEc
@@ -148,6 +148,10 @@ activate cur #LightCyan
       note over p1IterateEc
         Deletes default values
         from Ec Pm data
+      end note
+
+      note over p1IterateEc
+        Adds utilization
       end note
 
     cur <-- p1IterateEc : { [historicalPerformanceDataList] }

@@ -3,6 +3,8 @@ iterate-ec-pm-slices:
   required:
     - parameters
     - historical-performance-data-list
+    - aggregation-group
+    - result-cc
   properties:
     parameters:
       type: object
@@ -47,3 +49,13 @@ iterate-ec-pm-slices:
                 description: >
                   'Sum of errored and dropped frames on the egress
                   requires {$p2CalculateEthernetKpis}'
+    aggregation-group:
+      type: object
+      description: >
+        'aggregationGroup
+        from {$input#/aggregation-group}'
+    result-cc:
+      type: object
+      description: >
+        'resultCc
+        from {$input#/result-cc}'
