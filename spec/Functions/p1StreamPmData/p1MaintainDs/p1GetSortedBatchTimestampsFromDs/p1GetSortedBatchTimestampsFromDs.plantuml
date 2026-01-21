@@ -6,8 +6,8 @@ title
   p1GetSortedBatchTimestampsFromDs
 end title
 
-participant "requestor" as requestor
-participant "p1GetSortedBatchTimestampsFromDs" as cur #LightCyan
+participant "requestor\n" as requestor
+participant "p1GetSortedBatch\nTimestampsFromDs" as cur #LightCyan
 database "DataStore" as ds #LightCyan
 
 
