@@ -30,7 +30,7 @@ x-javascript-interface:
                 - historical-performance-data
               properties:
                 historical-performance-data:
-                  type: array
+                  type: object
                   description: >
                     'historicalPerformanceData
                     from [/calculate-ethernet-kpis/historical-performance-data]'

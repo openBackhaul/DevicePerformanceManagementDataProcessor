@@ -29,6 +29,7 @@ participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #BurlyWood
 participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #LightCyan
+participant "p1Calculate\nUtilization" as p1Util #LightCyan
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
 
 participant "p1Formatting\nOutputApt" as p1Output #LightCyan
@@ -317,8 +318,7 @@ activate p1StreamPm #LightBlue
               activate p2EthKpi #LightCyan
 
                 note over p2EthKpi
-                  Add Ethernet KPIs to
-                  historicalPerformanceData
+                  Add Ethernet KPIs
                 end note
 
               ecSlices <-- p2EthKpi
@@ -328,12 +328,22 @@ activate p1StreamPm #LightBlue
               activate p1RemDefault #LightCyan
 
                 note over p1RemDefault
-                  Delete attributes with
-                  ONF default value
+                  Deletes default values
+                  from Ec Pm data
                 end note
 
               ecSlices <-- p1RemDefault
-              deactivate p1RemDefault        
+              deactivate p1RemDefault
+
+              ecSlices -> p1Util
+              activate p1Util #LightCyan
+
+                note over p1Util
+                  Adds utilization
+                end note
+
+              ecSlices <-- p1Util
+              deactivate p1Util
 
             p1CreateResultCc <-- ecSlices
             deactivate ecSlices

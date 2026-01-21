@@ -10,9 +10,10 @@ participant "p1CreateResultCc\n" as cur #LightCyan
 participant "p1IterateEc\nPmSlices" as iterateSlices #LightCyan
 participant "p2Calculate\nEthernetKpis" as intCC #LightCyan
 participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
+participant "p1Calculate\nUtilization" as p1CalcUtil #LightCyan
 
 
-cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList] }
+cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
 activate iterateSlices #LightCyan
 
   loop FOR [historicalPerformanceDataList]
@@ -20,7 +21,7 @@ activate iterateSlices #LightCyan
     iterateSlices -> intCC : {historical-performance-data}
     activate intCC #LightCyan
       note over intCC
-        Add Ethernet KPIs
+        Adds Ethernet KPIs
       end note
     iterateSlices <-- intCC: {historical-performance-data}
     deactivate intCC
@@ -32,6 +33,14 @@ activate iterateSlices #LightCyan
       end note
     iterateSlices <-- p1RemDefault: {historical-performance-data}
     deactivate p1RemDefault
+
+    iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
+    activate p1CalcUtil #LightCyan
+      note over p1CalcUtil
+        Adds utilization
+      end note
+    iterateSlices <-- p1CalcUtil: {historical-performance-data}
+    deactivate p1CalcUtil
 
   end loop
 
