@@ -45,37 +45,18 @@ maintain-ds:
         'List of sorted batch timestamps (from oldest to newest) for the currently processed mountName
         from {$p1GetSortedBatchTimestampsFromDs.output#/sorted-batch-timestamps}'
 
-
-        
-    interface:
-      type: array
-      x-key: uuid
-      items:
-        type: object
-      description: >
-        'The interfaces stored for a device in the dataStore
-        from {$getDeviceInterfaces.output#interface}'
-      interface-count:
-        type: integer
-        description: >
-          'The number of interface instances in the interface object of a device
-          from {$GetNumberOfDeviceInterfaces.output/interface-count}'
-      sorted-lot-timestamps:
-        type: array
-        items:
-          type: string
-        description: >
-          'The list of all timestamps in a devices lot in the dataStore, sorted from oldest to newest data
-          from {$p1ReadLotTimestampsFromDs.output/sorted-lot-timestamps}'
-
-    # for iterating over devices and interfaces
     mount-name:
       type: string
       description: >
-        'MountName,
-        from {$getDeviceInterfaces.input#/mount-name}'
-    current-interface:
-      type: object
+        'Currently processed mountName
+         from [/maintain-ds/mount-names[n]]''
+    timestamp:
+      type: string
       description: >
-        'Currently processed interface instance of interface
-        from {$deleteExpiredInterface.input/current-interface}'
+        'Currently processed batch timestamp
+         from [/maintain-ds/sorted-batch-timestamps[n]]''
+    batch-count:
+      type: integer
+      description: >
+        'The number of batches for the current mountName in the dataStore
+        from {$getBatchesCountFromDs.output#/batch-count}'
