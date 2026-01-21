@@ -1,0 +1,53 @@
+@startuml p1MaintainDs
+skinparam responseMessageBelowArrow true
+skinparam SequenceDividerBackgroundColor #LightSalmon
+
+title
+  p1MaintainDs
+end title
+
+participant "p1StreamPmData\n" as requestor #LightBlue
+participant "p1MaintainDs\n" as cur #LightCyan
+participant "p1MaintainDeviceInDs\n" as dev #LightCyan
+database "DataStore" as ds #LightCyan
+
+
+activate requestor
+
+requestor -> cur : {{parameters},\n{dataStoreEsClient}}
+activate cur #LightCyan
+
+loop endless
+
+  note over cur
+    <u>ReadMountNamesInDs</u>
+      Get a list of mountNames
+      for all devices in the dataStore.
+  end note
+  cur -> ds
+  cur <-- ds: {{mountNames}}
+
+  'iterate over each device
+  loop FOR EACH mountName in mountNames
+    note over cur
+      <u>p1MaintainDeviceInDs</u>
+    end note
+
+    cur -> dev: {{dataStoreEsClient},\nretentionPeriod,\nmountName}
+    activate dev #LightCyan
+      note over dev
+        Deletes expired
+        data from dataStore
+      end note
+      dev -> ds
+      dev <-- ds
+    cur <-- dev
+    deactivate dev
+  end loop
+
+end loop
+
+deactivate cur
+
+
+@enduml

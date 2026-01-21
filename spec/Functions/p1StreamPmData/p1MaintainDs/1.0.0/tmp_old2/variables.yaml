@@ -38,12 +38,7 @@ maintain-ds:
       description: >
         'The list contains the mountNames (x-key) of devices in the dataStore
         from {$readMountNamesInDs.output#mount-names}'
-    sorted-batch-timestamps:
-      type: array
-      items: string
-      description: >
-        'List of sorted batch timestamps (from oldest to newest) for the currently processed mountName
-        from {$p1GetSortedBatchTimestampsFromDs.output#/sorted-batch-timestamps}'
+
 
 
         

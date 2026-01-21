@@ -3,6 +3,8 @@ info:
   title: p1MaintainDs
   version: 1.0.0
 
+#REDO
+
 x-javascript-interface:
   p1MaintainDs:
     summary: 'Maintains the dataStore by cleaning up expired data.'
@@ -42,14 +44,13 @@ x-javascript-interface:
         'The cleanup is executed cycically, according to the time interval
         from [/maintain-ds/cleanup-period]'
       readMountNamesInDs:
-        url: # [{/maintain-ds/data-store-url}][/data-store]
+        url: # [{/maintain-ds/data-store-url}][/data-store/device]
         output:
           success:
             description: 'MountNames from dataStore provided'
             content:
               application/json:
                 schema:
-                  type: object
                   required:
                     - mount-names
                   properties:
@@ -58,48 +59,7 @@ x-javascript-interface:
                       items:
                         type: string
                       description: >
-                        'For each device in the data-store read the mountName and add it to the mountNames list,
-                        from [/data-store/device=*]'
-      p1GetSortedBatchTimestampsFromDs:
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data-store-es-client
-                  - mount-name
-                properties:
-                  data-store-es-client:
-                    type: object
-                    description: >
-                      'Data Store ElasticSearch address'
-                  mount-name:
-                    type: string
-                    description: >
-                      'Currently processed mountName
-                      from [/data-store/mount-names[n]]'
-        output:
-          success:
-            description: 'Sorted list of batch timestamps provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - sorted-batch-timestamps
-                  properties:
-                    sorted-batch-timestamps:
-                      type: array
-                      items:
-                        type: string
-                      description: >
-                        'The list of sorted batch timestamps'
-
-
-
-
+                        'For each device in the data-store read the mountName and add it to the mountNames list.'
       p1MaintainDeviceInDs:
         input:
           required: true

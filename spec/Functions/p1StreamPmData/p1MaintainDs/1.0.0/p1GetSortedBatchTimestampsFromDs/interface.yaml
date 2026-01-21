@@ -30,12 +30,17 @@ x-javascript-interface:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: string
-              description: >
-                'The list of sorted batch timestamps (from old to new)
-                from [/get-sorted-batch-timestamps-from-ds/sorted-batch-timestamps]'
+              type: object
+              required:
+                - sorted-batch-timestamps
+              properties:
+                sorted-batch-timestamps:
+                  type: array
+                  items:
+                    type: string
+                  description: >
+                    'The list of sorted batch timestamps (from old to new)
+                    from [/get-sorted-batch-timestamps-from-ds/sorted-batch-timestamps]'
       error:
         description: 'Reading batch timestamps failed'
         content:
@@ -57,6 +62,7 @@ x-javascript-interface:
             content:
               application/json:
                 schema:
+                  type: object
                   required:
                     - batch-timestamps
                   properties:
@@ -81,6 +87,7 @@ x-javascript-interface:
           content:
             application/json:
               schema:
+                type: object
                 required:
                   - batch-timestamps
                 properties:
@@ -97,6 +104,7 @@ x-javascript-interface:
             content:
               application/json:
                 schema:
+                  type: object
                   required:
                     - sorted-batch-timestamps
                   properties:
