@@ -54,6 +54,6 @@ storing:
         result-cc:
           type: object
           description: >
-            'The resultCc
+            'resultCc
             from [/storing/result-cc]'
 

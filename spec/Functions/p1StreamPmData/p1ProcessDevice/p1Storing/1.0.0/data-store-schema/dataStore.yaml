@@ -29,9 +29,9 @@ data-store:
                 from [/storing/interface-metadata-list]'
           batch:
             type: array
+            x-key: batch-timestamp
             items:
               type: object
-              x-key: batch-timestamp
               description: >
                 'batch
                 from [/storing/batch]'
