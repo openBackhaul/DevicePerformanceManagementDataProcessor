@@ -19,44 +19,46 @@ maintain-ds:
       type: string
       description: >
         'ElasticSearch URL of Data Store ES
-        from [/read-lot-timestamps-from-ds/data-store-es-client/url]'
+        from [/maintain-ds/data-store-es-client/url]'
     cleanup-period:
       type: string
       description: >
-        'Time period for cleaning up expired entries in the DataStore in hours
+        'Time period between two cleanup runs in hours
         from [/maintain-ds/parameters/parameter={dataStoreCleanupPeriod}/value]'
     retention-period:
       type: string
       description: >
-        'RetentionPeriod in hours until data expires
+        'Time period for which data is retained before deletion in hours
         from [/maintain-ds/parameters/parameter={dataStoreRetentionPeriod}/value]'
 
-    mount-names:
+    device-list:
       type: array
       items:
         type: string
       description: >
-        'The list contains the mountNames (x-key) of devices in the dataStore
-        from {$readMountNamesInDs.output#mount-names}'
-    sorted-batch-timestamps:
-      type: array
-      items: string
+        'List of mountNames of all devices in the DataStore
+        from {$retrieveListOfDevices.output#/}'
+    device-data:
+      type: object
       description: >
-        'List of sorted batch timestamps (from oldest to newest) for the currently processed mountName
-        from {$p1GetSortedBatchTimestampsFromDs.output#/sorted-batch-timestamps}'
-
-    mount-name:
-      type: string
-      description: >
-        'Currently processed mountName
-         from [/maintain-ds/mount-names[n]]''
-    timestamp:
-      type: string
-      description: >
-        'Currently processed batch timestamp
-         from [/maintain-ds/sorted-batch-timestamps[n]]''
-    batch-count:
-      type: integer
-      description: >
-        'The number of batches for the current mountName in the dataStore
-        from {$getBatchesCountFromDs.output#/batch-count}'
+        'Complete device data read from the dataStore
+        from {$readDeviceDataFromDs.output#/device-data}
+        ! simplified representation !'
+      properties:
+        mount-name:
+          type: string
+          description: >
+            'mountName'
+        batch:
+          type: array
+          x-key: batch-timestamp
+          description: >
+            'batchList
+            overwritten by {$deleteExpiredBatches.output#/batch-list}'
+          items:
+            type: object
+            properties:
+              batch-timestamp:
+                type: string
+                description: >
+                  'Timestamp when the CC was read from the device'

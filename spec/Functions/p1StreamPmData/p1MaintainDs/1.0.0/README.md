@@ -1,6 +1,7 @@
 # p1MaintainDs
 
-Periodically deletes records from the dataStore
+Periodically deletes resultsCc (with batchTimestamp older than dataStoreRetentionPeriod) from the dataStore  
+(It does not cover deletion of devices from the dataStore)
 
 
 ### Diagram  

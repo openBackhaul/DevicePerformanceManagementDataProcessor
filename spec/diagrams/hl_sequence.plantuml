@@ -37,8 +37,7 @@ participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
 participant "p1Storing\n" as p1Store #Yellow
-participant "p1MaintainDs\n" as p1MaintainDs #Yellow
-participant "p1GetSortedBatch\nTimestampsFromDs" as p1BatchTs #Yellow
+participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
 
 participant "kafkaProducer\nService" as kafkaProd #LightBlue
 
@@ -90,19 +89,14 @@ activate p1StreamPm #LightBlue
   deactivate p1InitKafka
 
   p1StreamPm -> p1MaintainDs
-  activate p1MaintainDs #Yellow
-    note over p1MaintainDs
-      Maintain DataStore
-    end note
+  activate p1MaintainDs #LightCyan
 
-    p1MaintainDs -> p1BatchTs
-    activate p1BatchTs #Yellow
-      note over p1BatchTs
-        get sorted batch
-        timestamps
-      end note
-    p1MaintainDs <-- p1BatchTs
-    deactivate p1BatchTs
+  Loop endless
+    note over p1MaintainDs
+      deletes old
+      resultCc
+    end note
+  end loop
 
   Loop endless
 
@@ -339,7 +333,7 @@ activate p1StreamPm #LightBlue
               activate p1Util #LightCyan
 
                 note over p1Util
-                  Adds utilization
+                  Add utilization
                 end note
 
               ecSlices <-- p1Util

@@ -25,7 +25,9 @@ x-javascript-interface:
                 description: >
                   'Data Store ElasticSearch address'
     output:
-      # there is no success output as this is an ongoing process with an indefinite loop
+      success:
+        description: >
+          'Success will not be indicated as this Function implements an endless process in an infinite loop'
       error:
         description: 'DataStore maintenance failed'
         content:
@@ -33,193 +35,214 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'Parameters missing or invalid'
-                - 'DataStoreEsClient missing or invalid'
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
                 - 'DataStore error'
                 - 'General processing error'
     processing:
       description: >
-        'The cleanup is executed cycically, according to the time interval
-        from [/maintain-ds/cleanup-period]'
-      readMountNamesInDs:
-        url: # [{/maintain-ds/data-store-url}][/data-store/device=*]
-        output:
-          success:
-            description: 'MountNames from dataStore provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - mount-names
-                  properties:
-                    mount-names:
-                      type: array
-                      items:
-                        type: string
-                      description: >
-                        'For each device in the data-store read the mountName and add it to the mountNames list,
-                        from [/data-store/device=*]'
-          error:
-            description: 'Reading mount-names failed'
-            content:
-              application/json:
-                schema:
-                  type: string
-                  enum:
-                    - 'General processing error'
-      p1GetSortedBatchTimestampsFromDs:
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data-store-es-client
-                  - mount-name
-                properties:
-                  data-store-es-client:
-                    type: object
-                    description: >
-                      'Data Store ElasticSearch address'
-                  mount-name:
-                    type: string
-                    description: >
-                      'MountName
-                      from [/maintain-ds/mount-name]'
-        output:
-          success:
-            description: 'Sorted list of batch timestamps provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - sorted-batch-timestamps
-                  properties:
-                    sorted-batch-timestamps:
-                      type: array
-                      items:
-                        type: string
-                      description: >
-                        'The list of sorted batch timestamps'
-          error:
-            description: 'Reading batch timestamps failed'
-            content:
-              application/json:
-                schema:
-                  type: string
-                  enum:
-                    - 'DataStoreEsClient not provided'
-                    - 'DataStoreEsClient invalid'
-                    - 'MountName not provided'
-                    - 'MountName invalid'
-                    - 'General processing error'
-        deleteExpiredBatches:
-          url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/mount-name}/batch={/maintain-ds/timestamp}]
+        'The cleanup process is re-started with a delay of one [/maintain-ds/cleanup-period] after it has been started last time'
+      retrieveListOfDevices:
+        url: # [{/maintain-ds/data-store-url}]
           description: >
-            'IF ([/maintain-ds/timestamp] older than allowed by {$input.retention-period})
-            THEN delete batch from dataStore. Once a timestamp is encountered that is not expired,
-            break'
+            'A request has to be addressed to ES for retrieving the list of mountNames from [/data-store/device=*/mount-name]'
+          output:
+            success:
+              description: 'Device list read'
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: string
+                    description: >
+                      'List of mountNames of all devices in the DataStore'
+            error:
+              description: 'Device list could not be read'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error'
+      lockDevice:
+        url: # [{/maintain-ds/data-store-url}]
+          description: >
+            'Parallel writing of a performance data batch shall be prevented'
           input:
-            required: true
             content:
               application/json:
                 schema:
                   type: object
                   required:
-                    - retention-period
+                    - mount-name
                   properties:
-                    retention-period:
+                    mount-name:
                       type: string
                       description: >
-                        'RetentionPeriod
-                        from [maintain-ds/retention-period]'
+                        'mountName of the device that shall be locked
+                        from [/maintain-ds/device-list[*]]'
           output:
             success:
-              description: 'Expired batch deleted from dataStore'
-              content:
-                application/json:
-                  schema:
-                    type: string
-                    enum:
-                      - 'Expired batch deleted from dataStore'
+              description: 'Device locked'
             error:
-              description: 'Deleting expired batch failed'
+              description: 'Device could not be locked'
               content:
                 application/json:
                   schema:
                     type: string
                     enum:
-                      - 'DataStore url invalid'
-                      - 'MountName invalid'
-                      - 'Timestamp invalid'
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch lock error'
                       - 'General processing error'
-        getBatchesCountFromDs:
-          url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/mount-name}/batch=*]
+      readDeviceDataFromDs:
+        url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
+          description: 'Reads the complete data of one of the devices from the DataStore'
           output:
             success:
-              description: 'Batch count provided'
+              description: 'Device data read'
               content:
                 application/json:
                   schema:
                     type: object
                     required:
-                      - batch-count
+                      - device-data
                     properties:
-                      batch-count:
-                        type: integer
-                        description: >
-                          'The number of batches for the current mountName in the dataStore.'
+                      device-data:
+                        type: object
             error:
-              description: 'Reading batch count failed'
+              description: 'Device data could not be read'
               content:
                 application/json:
                   schema:
                     type: string
                     enum:
-                      - 'DataStore url invalid'
-                      - 'MountName invalid'
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'mountName not provided'
+                      - 'mountName invalid'
+                      - 'ElasticSearch read error'
                       - 'General processing error'
-        deleteExpiredDevice:
-          url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/mount-name}]
-          description: >
-            'IF ([/maintain-ds/batch-count] == 0)
-            THEN delete complete device from the dataStore.'
+      deleteExpiredBatches:
+        description: 'Deletes batches with batchTimestamp older than retentionPeriod from batchList'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - batch-list
+                  - retention-period
+                properties:
+                  batch-list:
+                    type: array
+                    description: >
+                      'batchList
+                      from [/maintain-ds/device-data/batch]'
+                  retention-period:
+                    type: 
+                    description: >
+                      'retentionPeriod
+                      from [/maintain-ds/retention-period]'
+        output:
+          success:
+            description: 'batchList cleaned'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    batch-list:
+                      type: array
+                      x-key: batch-timestamp
+                      items:
+                        type: object
+                        description: >
+                          'batch to be deleted from batchList,
+                          if [./batch-timestamp] older than {$input#/retention-period}'
+          error:
+            description: 'batchList could not be cleaned'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'batchList not provided'
+                    - 'batchList invalid'
+                    - 'retentionPeriod not provided'
+                    - 'retentionPeriod invalid'
+                    - 'General processing error'
+      writeDeviceDataToDs:
+        url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
+          description: 'Writes the complete data of one of the devices to the DataStore'
           input:
-            required: true
             content:
               application/json:
                 schema:
                   type: object
                   required:
-                    - batch-count
+                    - device-data
                   properties:
-                    batch-count:
-                      type: integer
+                    device-data:
+                      type: object
                       description: >
-                        'Batch count for the current mountName
-                        from [maintain-ds/batch-count]'
+                        'deviceData
+                        from [/maintain-ds/device-data]'
           output:
             success:
-              description: 'Expired device deleted from dataStore'
-              content:
-                application/json:
-                  schema:
-                    type: string
-                    enum:
-                      - 'Expired device deleted from dataStore'
+              description: 'deviceData written'
             error:
-              description: 'Deleting device from dataStore failed'
+              description: 'deviceData could not be written'
               content:
                 application/json:
                   schema:
                     type: string
                     enum:
-                      - 'DataStore url invalid'
-                      - 'MountName invalid'
-                      - 'BatchCount missing or invalid'
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'mountName not provided'
+                      - 'mountName invalid'
+                      - 'deviceData not provided'
+                      - 'deviceData invalid'
+                      - 'ElasticSearch write error'
+                      - 'General processing error'
+      unlockDevice:
+        url: # [{/maintain-ds/data-store-url}]
+          description: >
+            'Writing of performance data batches shall be enabled again'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be unlocked
+                        from [/maintain-ds/device-list[*]]'
+
+          output:
+            success:
+              description: 'Device unlocked'
+            error:
+              description: 'Device could not be unlocked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch unlock error'
                       - 'General processing error'
 
 paths:

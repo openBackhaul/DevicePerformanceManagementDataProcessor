@@ -1,92 +1,63 @@
 @startuml p1MaintainDs
 skinparam responseMessageBelowArrow true
-skinparam SequenceDividerBackgroundColor #LightSalmon
 
 title
   p1MaintainDs
 end title
 
 participant "p1StreamPmData\n" as requestor #LightBlue
-participant "p1MaintainDs\n" as cur #LightCyan
-participant "p1GetSortedBatch\nTimestampsFromDs" as ts #LightCyan
+participant "p1MaintainDs\n" as p1Main #LightCyan
 database "DataStore" as ds #LightCyan
 
+requestor -> p1Main : { {parameters},\n{dataStoreEsClient} }
+activate p1Main #LightCyan
 
-activate requestor
+  loop endlessly re-started after cleanupPeriod
 
-requestor -> cur : {{parameters},\n{dataStoreEsClient}}
-
-  note over cur
-    Cycically cleanup the dataStore
-    according to time interval configured
-    in parameters.<i>dataStoreCleanupPeriod</i>.
-
-    With <i>retentionPeriod</i> from
-    parameters.<i>dataStoreRetentionPeriod</i>.
-  end note
-
-loop endless
-activate cur #LightCyan
-
-  note over cur
-    <u>ReadMountNamesInDs</u>
-      Get a list of mountNames
-      for all devices in the dataStore.
-  end note
-  cur -> ds
-  cur <-- ds: {{mountNames}}
-
-  'iterate over each device
-  loop FOR EACH mountName in mountNames
-    == delete expired batches ==
-    note over cur
-      <u>p1GetSortedBatchTimestampsFromDs</u>
-        Get the list of batch timestamps,
-        sortest from oldest to newest
+    note over p1Main
+      Retrieve list of devices
+      from DataStore
     end note
-    cur -> ts: {{dataStoreEsClient},\nmountName}
-    activate ts #LightCyan
-      ts -> ds
-      note over ts
-        Read and sort
-        batch timestamps
-      end note
-      ts <-- ds
-    cur <-- ts: {{sortedBatchTimestamps}}
-    deactivate ts
+    p1Main -> ds
+    p1Main <-- ds: [mountNames]
 
-    loop FOR EACH timestamp in sortedBatchTimestamps
-      note over cur
-        <u>DeleteExpiredBatches</u>
-          IF (timestamp older than allowed by <i>retentionPeriod</i>)
-          THEN DELTE batch from dataStore
-          [/data-store/device=mountName/batch=timestamp]
+    loop FOR device-list[*]
+
+      note over p1Main
+        Lock device
+        in DataStore
       end note
+      p1Main -> ds: mountName
+
+      note over p1Main
+        Read deviceData
+        from DataStore
+      end note
+      p1Main -> ds: mountName
+      p1Main <-- ds: {deviceData}
+
+      loop FOR all /device-data/batch=*
+        note over p1Main
+          IF batchTimestamp older than retentionPeriod
+            THEN delete batch from deviceData
+        end note
+      end loop
+
+      note over p1Main
+        Write updated deviceData
+        to DataStore
+      end note
+      p1Main -> ds: mountName,\n{deviceData}
+
+      note over p1Main
+        Unlock device
+        in DataStore
+      end note
+      p1Main -> ds: mountName
+
     end loop
 
-    == delete expired device ==
-    note over cur
-      <u>GetBatchesCountFromDs</u>
-        Retrieve how many batches are still
-        stored for this device
-    end note
-    cur -> ds: {mountName}
-    cur <-- ds: {batchCount}
-
-    note over cur
-      <u>DeleteExpiredDevice</u>
-        IF (batchCount == 0)
-        THEN delete complete device from dataStore
-        [/data-store/device=mountName]
-    end note
-    cur -> ds: {mountName}
-    cur <-- ds
-
   end loop
-
-end loop
-
-deactivate cur
 
 
 @enduml

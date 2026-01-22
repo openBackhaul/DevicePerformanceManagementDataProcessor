@@ -238,17 +238,17 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-string-p-101'
     capability:
       string-name: 'dataStoreCleanupPeriod'
-      purpose: 'Time period for cleaning up expired entries in the DataStore in hours; value range 1-24'
+      purpose: 'Time period between two cleanup runs in hours'
     configuration:
-      string-value: '24'
+      string-value: '12'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-102'
     capability:
       string-name: 'dataStoreRetentionPeriod'
-      purpose: 'Time period for which items are kept in the DataStore in hours; value range 1-96'
+      purpose: 'Time period for which data is retained before deletion in hours'
     configuration:
-      string-value: '96'
+      string-value: '48'
 
 
   # p1UpdateMwdiReplica

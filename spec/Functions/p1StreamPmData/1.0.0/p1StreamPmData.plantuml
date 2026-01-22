@@ -12,7 +12,7 @@ participant "p1ResolveEsAddress\n" as p1REA #LightCyan
 participant "p1InitKafka\n" as p1InitKafka #LightCyan
 participant "p1UpdateMwdiReplica\n" as p1UMR #LightCyan
 participant "p1ProcessDevice\n" as p1ProcessPm #LightCyan
-participant "p1MaintainDs\n" as p1MDS #LightBlue
+participant "p1MaintainDs\n" as p1MDS #LightCyan
 
 note right embed
   Automatically start
@@ -27,20 +27,20 @@ activate p1RMWDI #LightCyan
       Load parameters
       from configFile
     end note
-  p1RMWDI <-- p1LP : {{parameters}\n{configFile}}
+  p1RMWDI <-- p1LP : { {parameters}\n{configFile} }
   deactivate p1LP
 
   Loop FOR all esName
-    p1RMWDI -> p1REA : {{parameters}\n{configFile}\nesName}
+    p1RMWDI -> p1REA : { {parameters}\n{configFile}\nesName}
     activate p1REA #LightCyan
       note over p1REA
         Resolve ES address
       end note
-    p1RMWDI <-- p1REA : {{esAddress}}
+    p1RMWDI <-- p1REA : { {esAddress} }
     deactivate p1REA
   end Loop
 
-    p1RMWDI -> p1InitKafka : {{parameters}\n{configFile}}
+    p1RMWDI -> p1InitKafka : { {parameters}\n{configFile} }
     activate p1InitKafka #LightCyan
 
       note over p1InitKafka
@@ -51,15 +51,16 @@ activate p1RMWDI #LightCyan
     p1RMWDI <-- p1InitKafka
     deactivate p1InitKafka
 
-  p1RMWDI -> p1MDS : {{parameters}\n{dataStoreEsClient}}
-  activate p1MDS #LightBlue
+  p1RMWDI -> p1MDS : { {parameters}\n{dataStoreEsClient} }
+  activate p1MDS #LightCyan
     note over p1MDS
-      Maintain DataStore
+      Periodically delete
+      old records
     end note
 
   loop endless
 
-    p1RMWDI -> p1UMR : {{parameters}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient}}
+    p1RMWDI -> p1UMR : { {parameters}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
     activate p1UMR #LightCyan
       note over p1UMR
         Replicate updated CCs
@@ -68,7 +69,7 @@ activate p1RMWDI #LightCyan
     deactivate p1UMR
 
     loop FOR all [updatedMountNames]
-      p1RMWDI -> p1ProcessPm : {{parameters}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
+      p1RMWDI -> p1ProcessPm : { {parameters}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
       activate p1ProcessPm #LightCyan
         note over p1ProcessPm
           Process PM data
