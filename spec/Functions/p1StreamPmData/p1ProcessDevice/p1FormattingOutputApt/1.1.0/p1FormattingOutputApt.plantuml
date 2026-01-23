@@ -11,7 +11,7 @@ participant "p1FormattingOutputApt" as cur #LightCyan
 requestor -> cur: {{resultCc}}
 activate cur #LightCyan
 
-  note over cur #Yellow
+  note over cur
     Transform resultCc data into
     aptOutputFormat (incl.
     batchTimestamp)

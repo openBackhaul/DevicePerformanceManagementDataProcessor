@@ -16,6 +16,12 @@ participant "p1Calculate\nUtilization" as p1CalcUtil #LightCyan
 cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
 activate iterateSlices #LightCyan
 
+  note over iterateSlices
+    Initializes:
+      mostRecentPeriodEndTime
+      mostRecentPeriodEndTime24
+  end note
+
   loop FOR [historicalPerformanceDataList]
 
     iterateSlices -> intCC : {historical-performance-data}
@@ -42,9 +48,15 @@ activate iterateSlices #LightCyan
     iterateSlices <-- p1CalcUtil: {historical-performance-data}
     deactivate p1CalcUtil
 
+    note over iterateSlices
+      IF granularityPeriod == 15-MIN/24-HOURS
+        THEN update mostRecentPeriodEndTime
+        THEN update mostRecentPeriodEndTime24
+    end note
+
   end loop
 
-cur <-- iterateSlices : { [historicalPerformanceDataList] }
+cur <-- iterateSlices : { [historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24 }
 deactivate iterateSlices
 
 deactivate cur

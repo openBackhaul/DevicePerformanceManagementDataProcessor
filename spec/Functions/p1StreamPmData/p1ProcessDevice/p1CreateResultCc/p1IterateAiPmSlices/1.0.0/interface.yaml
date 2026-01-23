@@ -42,6 +42,16 @@ x-javascript-interface:
                   description: >
                     'historicalPerformanceDataList
                     from [/iterate-ai-pm-slices/historical-performance-data-list]'
+                most-recent-period-end-time:
+                  type: string
+                  description: >
+                    'mostRecentPeriodEndTime
+                    from [/iterate-ai-pm-slices/most-recent-period-end-time]'
+                most-recent-period-end-time-24:
+                  type: string
+                  description: >
+                    'mostRecentPeriodEndTime24
+                    from [/iterate-ai-pm-slices/most-recent-period-end-time-24]'
       error:
         description: 'historicalPerformanceDataList could not be processed'
         content:
@@ -50,18 +60,17 @@ x-javascript-interface:
               type: string
               enum:
                 - 'parameters not provided'
-                - 'parameters incomplete'
                 - 'parameters invalid'
                 - 'historicalPerformanceDataList not provided'
-                - 'historicalPerformanceDataList incomplete'
                 - 'historicalPerformanceDataList invalid'
                 - 'transmissionModeList not provided'
-                - 'transmissionModeList incomplete'
                 - 'transmissionModeList invalid'
                 - 'interval capacity could not be calculated'
                 - 'out of range levels could not be removed'
                 - 'default values could not be removed'
-                - 'historicalPerformanceDataList could not be processed'
+                - 'historicalPerformanceDataList could not be provided'
+                - 'mostRecentPeriodEndTime could not be provided'
+                - 'mostRecentPeriodEndTime24 could not be provided'
                 - 'General processing error'
     processing:
       p1CalculateIntervalCapacity:
@@ -189,6 +198,77 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
+      updateMostRecentPeriodEndTime:
+        summary: 'Overwrites mostRecentPeriodEndTime or mostRecentPeriodEndTime24 with latest value of periodEndTime'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - most-recent-period-end-time
+                  - most-recent-period-end-time-24
+                  - granularity-period
+                  - period-end-time
+                properties:
+                  most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime
+                      from [/iterate-ai-pm-slices/most-recent-period-end-time]'
+                  most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime24
+                      from [/iterate-ai-pm-slices/most-recent-period-end-time-24]'
+                  granularity-period:
+                    type: string
+                    description: >
+                      'granularityPeriod
+                      from [/iterate-ai-pm-slices/historical-performance-data-list=*/granularity-period]'
+                  period-end-time:
+                    type: string
+                    description: >
+                      'periodEndTime
+                      from [/iterate-ai-pm-slices/historical-performance-data-list=*/period-end-time]'
+        output:
+          success:
+            description: 'mostRecentPeriodEndTime provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - most-recent-period-end-time
+                    - most-recent-period-end-time-24
+                  properties:
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime
+                        from [{$input#period-end-time} if {$input#granularity-period}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN]'
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24
+                        from [{$input#period-end-time} if {$input#granularity-period}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS]'
+          error:
+            description: 'mostRecentPeriodEndTime could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'mostRecentPeriodEndTime not provided'
+                    - 'mostRecentPeriodEndTime invalid'
+                    - 'mostRecentPeriodEndTime24 not provided'
+                    - 'mostRecentPeriodEndTime24 invalid'
+                    - 'granularityPeriod not provided'
+                    - 'granularityPeriod invalid'
+                    - 'periodEndTime not provided'
+                    - 'periodEndTime invalid'
+                    - 'mostRecentPeriodEndTime could not be provided'
+                    - 'General processing error'
 
 paths:
   /:

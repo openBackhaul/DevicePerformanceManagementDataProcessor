@@ -14,7 +14,7 @@ participant "p1Calculate\nEthernetKpis" as ethKpis #BurlyWood
 participant "p1IterateEc\nPmSlices" as p1IterateEc #LightCyan
 participant "p1RemoveOutOfRange\nTemperature" as p1RemoveTemp #LightCyan
 
-requestor -> cur: { {parameters},\n{rawCc} }
+requestor -> cur : { {parameters},\n{rawCc} }
 activate cur #LightCyan
 
   note over cur
@@ -22,7 +22,11 @@ activate cur #LightCyan
   end note
 
   note over cur
-    Creates AggregationGroupList
+    Creates aggregationGroupList
+  end note
+
+  note over cur
+    Creates interfaceMetadataList
   end note
 
   loop FOR all AirInterfaces in resultCc
@@ -93,8 +97,17 @@ activate cur #LightCyan
         from Ai Pm data
       end note
 
-    cur <-- p1IterateAi : { [historicalPerformanceDataList] }
+      note over p1IterateAi
+        Derives most recent
+        periodEndTime
+      end note
+
+    cur <-- p1IterateAi : { [historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24 }
     deactivate p1IterateAi
+
+    note over cur
+      Completes interfaceMetadataList
+    end note
 
     note over cur
       Adds linkId
@@ -102,14 +115,6 @@ activate cur #LightCyan
 
     note over cur
       Adds list of parallel LTPs
-    end note
-
-    note over cur
-      Adds mostRecentPeriodEndTime
-    end note
-
-    note over cur
-      Adds mostRecentPeriodEndTime24
     end note
 
   end
@@ -154,15 +159,16 @@ activate cur #LightCyan
         Adds utilization
       end note
 
-    cur <-- p1IterateEc : { [historicalPerformanceDataList] }
+      note over p1IterateEc
+        Derives most recent
+        periodEndTime
+      end note
+
+    cur <-- p1IterateEc : { [historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24 }
     deactivate p1IterateEc
 
     note over cur
-      Adds mostRecentPeriodEndTime
-    end note
-
-    note over cur
-      Adds mostRecentPeriodEndTime24
+      Completes interfaceMetadataList
     end note
 
   end loop
@@ -178,7 +184,7 @@ activate cur #LightCyan
   cur <-- p1RemoveTemp : { [equipment] }
   deactivate p1RemoveTemp
 
-requestor <-- cur: { {resultCc} }
+requestor <-- cur : { {resultCc},\n{interfaceMetadataList} }
 deactivate cur
 
 @enduml

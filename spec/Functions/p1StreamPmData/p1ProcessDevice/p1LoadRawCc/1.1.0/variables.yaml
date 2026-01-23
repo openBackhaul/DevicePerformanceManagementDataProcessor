@@ -53,12 +53,23 @@ load-raw-cc:
         'An regex pattern indicating which data granularities are to be kept
         from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
 
-    interface-metadata:
+    interface-metadata-list:
       type: array
       x-key: uuid
       description: >
         'MostRecentPeriodEndTimes for all already known interfaces of the device
         from {$retrieveMostRecentPeriodEndTimesFromDs.output#/}'
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+          layer-protocol-name:
+            type: string
+          most-recent-period-end-time:
+            type: string
+          most-recent-period-end-time-24:
+            type: string
 
     raw-cc:
       type: object

@@ -146,6 +146,10 @@ x-javascript-interface:
                       type: object
                       description: >
                         'resultCc'
+                    interface-metadata-list:
+                      type: array
+                      description: >
+                        'interfaceMetadataList'
           error:
             description: 'Result CC data could not be created'
             content:
@@ -238,25 +242,25 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - result-cc
-                  - parameters
                   - data-store-es-client
+                  - result-cc
+                  - interface-metadata-list
                 properties:
-                  result-cc:
-                    type: object
-                    description: >
-                      'resultCc
-                      from [/process-device/result-cc]'
-                  parameters:
-                    type: object
-                    description: >
-                      'Subtree of the parameters object for p1Storing
-                      from [/process-device/parameters/sub-function=p1Storing]'
                   data-store-es-client:
                     type: object
                     description: >
                       'Data Store ElasticSearch address
                       from [/process-device/data-store-es-client]'
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc
+                      from [/process-device/result-cc]'
+                  interface-metadata-list:
+                    type: array
+                    description: >
+                      'interfaceMetadataList
+                      from [/process-device/interface-metadata-list]'
         output:
           success:
             description: 'resultCc stored'

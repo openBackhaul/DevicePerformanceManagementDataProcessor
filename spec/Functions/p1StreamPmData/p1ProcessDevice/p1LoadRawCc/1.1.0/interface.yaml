@@ -132,40 +132,31 @@ x-javascript-interface:
                 schema:
                   type: string
       retrieveMostRecentPeriodEndTimesFromDs:
-        url: # [{/load-raw-cc/data-store-url}][/data-store/device={/load-raw-cc/mount-name}/interface-metadata]
+        url: # [{/load-raw-cc/data-store-url}][/data-store/device={/load-raw-cc/mount-name}/interface-metadata-list]
           description: 'Reads the timestamps of the most recent 15min and 24h PM data records of all interfaces.'
           output:
             success:
-              description: 'interfaceMetadata provided'
+              description: 'interfaceMetadataList provided'
               content:
                 application/json:
                   schema:
                     type: array
                     x-key: uuid
-                    items:
-                      type: object
-                      properties:
-                        uuid:
-                          type: string
-                        layer-protocol-name:
-                          type: string
-                        most-recent-period-end-time:
-                          type: string
-                          description: 'The newest seen periodEndTime for this interface in 15min data'
-                        most-recent-period-end-time-24:
-                          type: string
-                          description: 'The newest seen periodEndTime for this interface in 24h data'
-                    example:
-                      - uuid: 'RF-819.1.1'
-                        layer-protocol-name: 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
-                        most-recent-period-end-time: '2025-11-19T18:33:43.813+01:00'
-                        most-recent-period-end-time-24: '2025-11-19T02:33:43.813+01:00'
-                      - uuid: 'ETH-785.1.5'
-                        layer-protocol-name: 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
-                        most-recent-period-end-time: '2025-11-18T00:00:01+01:00'
-                        most-recent-period-end-time-24: '2025-11-18T23:33:43.813+01:00'
+                    description: >
+                      'interfaceMetadataList'
             error:
-              description: 'interfaceMetadata could not be provided'
+              description: 'interfaceMetadataList could not be provided'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'mountName not provided'
+                      - 'mountName invalid'
+                      - 'interfaceMetadataList could not be provided'
+                      - 'General processing error'
       p1DiscardIrrelevantPmRecords:
         input:
           required: true
@@ -196,13 +187,13 @@ x-javascript-interface:
                     description: >
                       '15min PM records not newer than this timestamp are to be discarded.
                       If not provided, any 15min record passes.
-                      from [/load-raw-cc/interface-metadata={uuid}/most-recent-period-end-time]'
+                      from [/load-raw-cc/interface-metadata-list={uuid}/most-recent-period-end-time]'
                   most-recent-period-end-time-24:
                     type: string
                     description: >
                       '24h PM records not newer than this timestamp are to be discarded.
                       If not provided, any 24h record passes.
-                      from [/load-raw-cc/interface-metadata={uuid}/most-recent-period-end-time-24]'
+                      from [/load-raw-cc/interface-metadata-list={uuid}/most-recent-period-end-time-24]'
         output:
           success:
             description: 'filteredHistoricalPerformanceDataList provided'
@@ -266,7 +257,11 @@ x-javascript-interface:
                   schema:
                     type: string
                     enum:
-                      - 'currentPerformanceTimestamp missing or invalid'
+                      - 'currentPerformanceTimestamp not provided'
+                      - 'currentPerformanceTimestamp invalid'
+                      - 'batchTimestamp not provided'
+                      - 'batchTimestamp invalid'
+                      - 'batchTimestamp could not be provided'
                       - 'General processing error'
 
 paths:

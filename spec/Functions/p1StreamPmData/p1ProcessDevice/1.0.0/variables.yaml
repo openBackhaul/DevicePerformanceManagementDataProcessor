@@ -52,6 +52,11 @@ process-device:
       description: >
         'The result control construct data created from the raw control construct data, following ONF structure.
         from {$p1CreateResultCc.output#/result-cc}'
+    interface-metadata-list:
+      type: array
+      description: >
+        'interfaceMetadataList
+        from {$p1CreateResultCc.output#/interface-metadata-list}'
     output-format:
       type: array
       x-key: format-name

@@ -38,6 +38,11 @@ x-javascript-interface:
                     description: >
                       'The result control construct, following ONF structure.
                       from [/create-result-cc/result-cc]'
+                  interface-metadata-list:
+                    type: array
+                    description: >
+                      'interfaceMetadataList
+                      from [/create-result-cc/interface-metadata-list]'
       error:
         description: 'Result CC data could not be created'
         content:
@@ -50,6 +55,7 @@ x-javascript-interface:
                 - 'rawCc not provided'
                 - 'rawCc invalid'
                 - 'resultCc could not be provided'
+                - 'interfaceMetadataList could not be provided'
                 - 'General processing error'
     processing:
       createResultCcFromRawCc:
@@ -295,6 +301,14 @@ x-javascript-interface:
                       type: array
                       description: >
                         'historicalPerformanceDataList'
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime'
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24'
           error:
             description: 'historicalPerformanceDataList could not be processed'
             content:
@@ -395,90 +409,6 @@ x-javascript-interface:
                   - 'aggregationGroupList not provided'
                   - 'aggregationGroupList invalid'
                   - 'General processing error'
-      findMostRecentPeriodEndTime_ai:
-        summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - historical-performance-data-list
-                properties:
-                  historical-performance-data-list:
-                    type: array
-                    description: >
-                      'historicalPerformanceDataList
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
-        output:
-          success:
-            description: 'mostRecentPeriodEndTime provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - most-recent-period-end-time
-                  properties:
-                    most-recent-period-end-time:
-                      type: string
-                      description: >
-                        'mostRecentPeriodEndTime
-                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} ) ]'
-        error:
-          description: 'mostRecentPeriodEndTime could not be provided'
-          content:
-            application/json:
-              schema:
-                type: string
-                enum:
-                  - 'historicalPerformanceDataList not provided'
-                  - 'historicalPerformanceDataList invalid'
-                  - 'mostRecentPeriodEndTime could not be provided'
-                  - 'General processing error'
-      findMostRecentPeriodEndTime24_ai:
-        summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - historical-performance-data-list
-                properties:
-                  historical-performance-data-list:
-                    type: array
-                    description: >
-                      'historicalPerformanceDataList
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list]'
-        output:
-          success:
-            description: 'MostRecentPeriodEndTime24 provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - most-recent-period-end-time-24
-                  properties:
-                    most-recent-period-end-time-24:
-                      type: string
-                      description: >
-                        'mostRecentPeriodEndTime24
-                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} ) ]'
-        error:
-          description: 'mostRecentPeriodEndTime24 could not be provided'
-          content:
-            application/json:
-              schema:
-                type: string
-                enum:
-                  - 'historicalPerformanceDataList not provided'
-                  - 'historicalPerformanceDataList invalid'
-                  - 'mostRecentPeriodEndTime24 could not be provided'
-                  - 'General processing error'
       p1CalculateEthernetKpis:
         summary: 'Deprecated!'
         input:
@@ -562,96 +492,20 @@ x-javascript-interface:
                       type: array
                       description: >
                         'historicalPerformanceDataList'
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime'
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24'
           error:
             description: 'historicalPerformanceDataList could not be processed'
             content:
               application/json:
                 schema:
                   type: string
-      findMostRecentPeriodEndTime_ec:
-        summary: 'Finds most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList'
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - historical-performance-data-list
-                properties:
-                  historical-performance-data-list:
-                    type: array
-                    description: >
-                      'historicalPerformanceDataList
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
-        output:
-          success:
-            description: 'mostRecentPeriodEndTime provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - most-recent-period-end-time
-                  properties:
-                    most-recent-period-end-time:
-                      type: string
-                      description: >
-                        'mostRecentPeriodEndTime
-                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"} ) ]'
-        error:
-          description: 'mostRecentPeriodEndTime could not be provided'
-          content:
-            application/json:
-              schema:
-                type: string
-                enum:
-                  - 'historicalPerformanceDataList not provided'
-                  - 'historicalPerformanceDataList invalid'
-                  - 'mostRecentPeriodEndTime could not be provided'
-                  - 'General processing error'
-      findMostRecentPeriodEndTime24_ec:
-        summary: 'Finds most recent periodEndTime of a 24hours slice in historicalPerformanceDataList'
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - historical-performance-data-list
-                properties:
-                  historical-performance-data-list:
-                    type: array
-                    description: >
-                      'historicalPerformanceDataList
-                      from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/ethernet-container-uuid[n]]}/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
-        output:
-          success:
-            description: 'MostRecentPeriodEndTime24 provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - most-recent-period-end-time-24
-                  properties:
-                    most-recent-period-end-time-24:
-                      type: string
-                      description: >
-                        'mostRecentPeriodEndTime24
-                        from [ max( {$input#/historical-performance-data-list=*/period-end-time} for {$input#/historical-performance-data-list=*/granularity-period=="ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"} ) ]'
-        error:
-          description: 'mostRecentPeriodEndTime24 could not be provided'
-          content:
-            application/json:
-              schema:
-                type: string
-                enum:
-                  - 'historicalPerformanceDataList not provided'
-                  - 'historicalPerformanceDataList invalid'
-                  - 'mostRecentPeriodEndTime24 could not be provided'
-                  - 'General processing error'
       p1RemoveOutOfRangeTemperature:
         summary: 'Deletes temperature attributes with values outside pre-defined range from equipment'
         input:

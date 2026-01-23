@@ -45,7 +45,7 @@ activate cur #LightCyan
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n<color:LightGray>relevantGranularities,\n<color:LightGray>mostRecentPeriodEndTime,\n<color:LightGray>mostRecentPeriodEndTime24</color> }
+    cur -> filterPm: { [historicalPerformanceDataList],\nrelevantGranularities,\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24 }
     activate filterPm #LightBlue
     note over filterPm
       Discards records that are

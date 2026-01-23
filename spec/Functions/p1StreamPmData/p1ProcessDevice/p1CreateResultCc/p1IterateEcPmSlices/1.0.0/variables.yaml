@@ -21,13 +21,16 @@ iterate-ec-pm-slices:
       items:
         type: object
         properties:
+          granularity-period:
+            type: string
+          period-end-time:
+            type: string
           performance-data:
             type: object
             description: >
               'historicalPerformanceData
               overwritten by {$p2CalculateEthernetKpis.output#/historical-performance-data}
-              overwritten by {$p1RemoveDefaultValues.output#/input-object}
-              ! simplified representation !'
+              overwritten by {$p1RemoveDefaultValues.output#/input-object}'
             properties:
               transmit-traffic:
                 type: integer
@@ -59,3 +62,19 @@ iterate-ec-pm-slices:
       description: >
         'resultCc
         from {$input#/result-cc}'
+
+    most-recent-period-end-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'mostRecentPeriodEndTime
+        initial value: {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
+    most-recent-period-end-time-24:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'mostRecentPeriodEndTime24
+        initial value: {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
+

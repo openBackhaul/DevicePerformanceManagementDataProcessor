@@ -10,19 +10,13 @@ participant "p1Storing" as cur #LightCyan
 database "DataStore" as ds #LightCyan
 
 
-requestor -> cur : { {dataStoreEsClient},\n{resultCc} }
+requestor -> cur : { {dataStoreEsClient},\n{resultCc},\n{interfaceMetadataList} }
 activate cur #LightCyan
-
-  loop FOR all [/result-cc/logical-termination-point]
-    note over cur
-      extractInterfaceMetadata
-    end note
-  end loop
 
   note over cur
     storeInterfaceMetadataList
   end note
-  cur -> ds: { [interface-metadata] }
+  cur -> ds: { [interface-metadata-list] }
   cur <-- ds
 
   note over cur

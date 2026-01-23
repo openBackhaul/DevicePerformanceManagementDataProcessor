@@ -36,13 +36,13 @@ participant "p1Formatting\nOutputApt" as p1Output #LightCyan
 
 participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
-participant "p1Storing\n" as p1Store #Yellow
+participant "p1Storing\n" as p1Store #LightCyan
 participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
 
 participant "kafkaProducer\nService" as kafkaProd #LightBlue
 
 note right embed
-  Automatically start
+  Automatically starts
   p1StreamPmData
 end note
 embed -> p1StreamPm
@@ -53,7 +53,7 @@ activate p1StreamPm #LightBlue
   p1StreamPm -> p1LoadParams
   activate p1LoadParams #LightBlue
     note over p1LoadParams
-      Load parameters
+      Loads parameters
       from configFile
     end note
   p1StreamPm <-- p1LoadParams
@@ -63,7 +63,7 @@ activate p1StreamPm #LightBlue
     p1StreamPm -> p1ResolveAddress
     activate p1ResolveAddress #LightBlue
       note over p1ResolveAddress
-        Resolve ES address
+        Resolves ES address
       end note
     p1StreamPm <-- p1ResolveAddress
     deactivate p1ResolveAddress
@@ -74,14 +74,14 @@ activate p1StreamPm #LightBlue
   activate p1InitKafka #LightBlue
 
     note over p1InitKafka
-      Resolve Kafka
+      Resolves Kafka
       address
     end note
 
     p1InitKafka -> kafkaProd
     activate kafkaProd #LightBlue
       note over kafkaProd
-        Establish session
+        Establishes session
       end note
     p1InitKafka <-- kafkaProd
 
@@ -93,7 +93,7 @@ activate p1StreamPm #LightBlue
 
   Loop endless
     note over p1MaintainDs
-      deletes old
+      Deletes old
       resultCc
     end note
   end loop
@@ -103,7 +103,7 @@ activate p1StreamPm #LightBlue
     p1StreamPm -> p1UpdateMwdiRep
     activate p1UpdateMwdiRep #LightBlue
       note over p1UpdateMwdiRep
-        Replicate updated CCs
+        Replicates updated CCs
       end note
     p1StreamPm <-- p1UpdateMwdiRep
     deactivate p1UpdateMwdiRep
@@ -113,17 +113,12 @@ activate p1StreamPm #LightBlue
       p1StreamPm -> p1ProcessPm
       activate p1ProcessPm #LightBlue
 
-        note over p1ProcessPm
-          Create data structure
-          for processing
-        end note
-
         ' create RawCC ->
         p1ProcessPm -> p1AddRaw
         activate p1AddRaw #LightCyan
 
           note over p1AddRaw
-            Load raw data to rawCc
+            Loads raw data to rawCc
           end note
 
           ' apply fieldsFilter ->
@@ -131,7 +126,7 @@ activate p1StreamPm #LightBlue
           activate p1FieldsFilter #LightBlue
 
             note over p1FieldsFilter
-              Reduce structure of rawCc
+              Reduces structure of rawCc
             end note
 
           p1AddRaw <-- p1FieldsFilter
@@ -146,7 +141,7 @@ activate p1StreamPm #LightBlue
           activate filterPm #LightBlue
 
             note over filterPm
-              Delete PM data that has
+              Deletes PM data that has
               already been processed in past
             end note
 
@@ -157,13 +152,8 @@ activate p1StreamPm #LightBlue
             addBatchTimestamp
           end note
 
-        p1ProcessPm <-- p1AddRaw
+        p1ProcessPm <-- p1AddRaw : {rawCc}
         deactivate p1AddRaw
-
-        note over p1ProcessPm
-          Add rawCc to data structure
-          for processing
-        end note
 
         ' create resultCc ->
         p1ProcessPm -> p1CreateResultCc
@@ -183,14 +173,14 @@ activate p1StreamPm #LightBlue
             activate p1prepTxModes #BurlyWood
 
               note over p1prepTxModes
-                Prepare TxModes
+                Prepares TxModes
               end note
 
               p1prepTxModes -> aiCC
               activate aiCC #LightBlue
 
                 note over aiCC
-                  Calculate
+                  Calculates
                   AirInterfaceCapacity
                 end note
 
@@ -201,7 +191,7 @@ activate p1StreamPm #LightBlue
               activate intCC #LightBlue
 
                 note over intCC
-                  Calculate
+                  Calculates
                   IntervalCapacity
                 end note
 
@@ -215,14 +205,14 @@ activate p1StreamPm #LightBlue
             activate p2prepTxModes #LightCyan
 
               note over p2prepTxModes
-                Prepare TxModes
+                Prepares TxModes
               end note
 
               p2prepTxModes -> aiCC
               activate aiCC #LightBlue
 
                 note over aiCC
-                  Calculate
+                  Calculates
                   AirInterfaceCapacity
                 end note
 
@@ -239,7 +229,7 @@ activate p1StreamPm #LightBlue
                 activate intCC #LightBlue
 
                   note over intCC
-                    Calculate
+                    Calculates
                     IntervalCapacity
                   end note
 
@@ -250,7 +240,7 @@ activate p1StreamPm #LightBlue
                 activate p1RORL #LightCyan
 
                   note over p1RORL
-                    Delete RxLevel and TxLevel
+                    Deletes RxLevel and TxLevel
                     attributes with values
                     outside pre-defined range
                   end note
@@ -262,15 +252,24 @@ activate p1StreamPm #LightBlue
                 activate p1RemDefault #LightCyan
 
                   note over p1RemDefault
-                    Delete attributes with
+                    Deletes attributes with
                     ONF default value
                   end note
 
                 aiSlices <-- p1RemDefault
-                deactivate p1RemDefault        
+                deactivate p1RemDefault
+
+                note over aiSlices
+                  Derives most recent
+                  periodEndTime
+                end note
 
             p1CreateResultCc <-- aiSlices
             deactivate aiSlices
+
+            note over p1CreateResultCc
+              Update interfaceMetadata
+            end note
 
             note over p1CreateResultCc
               Add linkId
@@ -278,16 +277,6 @@ activate p1StreamPm #LightBlue
 
             note over p1CreateResultCc
               Add list of parallel LTPs
-            end note
-
-            note over p1CreateResultCc
-              Add mostRecentPeriodEndTime
-              (AirInterface)
-            end note
-
-            note over p1CreateResultCc
-              Add mostRecentPeriodEndTime24
-              (AirInterface)
             end note
 
           end loop
@@ -339,17 +328,16 @@ activate p1StreamPm #LightBlue
               ecSlices <-- p1Util
               deactivate p1Util
 
+              note over ecSlices
+                Derives most recent
+                periodEndTime
+              end note
+
             p1CreateResultCc <-- ecSlices
             deactivate ecSlices
 
             note over p1CreateResultCc
-              Add mostRecentPeriodEndTime
-              (EthernetContainer)
-            end note
-
-            note over p1CreateResultCc
-              Add mostRecentPeriodEndTime24
-              (EthernetContainer)
+              Update interfaceMetadata
             end note
 
           end loop
@@ -365,15 +353,9 @@ activate p1StreamPm #LightBlue
           p1CreateResultCc <-- p1ROoRT
           deactivate p1ROoRT
 
-        p1ProcessPm <-- p1CreateResultCc
+        p1ProcessPm <-- p1CreateResultCc : {resultCc}
         deactivate p1CreateResultCc
 
-        note over p1ProcessPm
-          Add resultCc to data 
-          structure for processing
-        end note
-
-        ' Format OutputAPT ->
         p1ProcessPm -> p1Output
         activate p1Output #LightCyan
 
@@ -381,15 +363,9 @@ activate p1StreamPm #LightBlue
             Create APT format
           end note
 
-        p1ProcessPm <-- p1Output
+        p1ProcessPm <-- p1Output : {outputApt}
         deactivate p1Output
 
-        note over p1ProcessPm
-          Add APT format to data
-          structure for processing
-        end note
-
-        ' transmit data ->
         p1ProcessPm -> p1Trans
         activate p1Trans #LightBlue
 
@@ -406,9 +382,8 @@ activate p1StreamPm #LightBlue
         p1ProcessPm <-- p1Trans
         deactivate p1Trans
 
-        ' storing ->
         p1ProcessPm -> p1Store
-        activate p1Store #Yellow
+        activate p1Store #LightCyan
 
           note over p1Store
             Store resultCc

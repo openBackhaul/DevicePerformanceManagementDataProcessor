@@ -3,6 +3,7 @@ storing:
   required:
     - data-store-es-client
     - result-cc
+    - interface-metadata-list
   properties:
     data-store-es-client:
       type: object
@@ -14,6 +15,11 @@ storing:
       description: >
         'resultCc
         from {$input#/result-cc}'
+    interface-metadata-list:
+      type: array
+      description: >
+        'interfaceMetadataList'
+        from {$input#/interface-metadata-list}'
 
     data-store-url:
       type: string
@@ -31,14 +37,6 @@ storing:
         'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
         from [/storing/result-cc/batch-timestamp]'
 
-    interface-metadata-list:
-      type: array
-      x-key: uuid
-      items:
-        type: object
-        description: >
-          'interfaceMetadataList, extended by another object instance with each iteration of the loop
-          from [ {$extractInterfaceMetadata.output#/} ]'
     batch:
       type: object
       required:
