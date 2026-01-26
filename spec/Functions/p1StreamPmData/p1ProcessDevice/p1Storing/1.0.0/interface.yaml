@@ -3,6 +3,9 @@ info:
   title: p1Storing
   version: 1.0.0
 
+#TODO: during maintainance, devices are locked to prevent writing while maintaining
+#      storing spec doesn't include/mention lock...
+
 x-javascript-interface:
   p1Storing:
     summary: 'Stores the resultCc in the dataStore and updates dataStore interface information.'
@@ -80,7 +83,7 @@ x-javascript-interface:
                     - 'Writing to dataStore failed'
                     - 'General processing error'
       storeResultCc:
-        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/batch={/storing/batch-timestamp}] 
+        url: # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/batch={/storing/batch-timestamp}]
         input:
           required: true
           content:

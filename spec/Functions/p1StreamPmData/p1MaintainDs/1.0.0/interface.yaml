@@ -229,7 +229,6 @@ x-javascript-interface:
                       description: >
                         'mountName of the device that shall be unlocked
                         from [/maintain-ds/device-list[*]]'
-
           output:
             success:
               description: 'Device unlocked'

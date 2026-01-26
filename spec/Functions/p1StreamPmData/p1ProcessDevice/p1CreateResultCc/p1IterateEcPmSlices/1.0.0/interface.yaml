@@ -3,6 +3,8 @@ info:
   title: p1IterateEcPmSlices
   version: 1.0.0
 
+#TODO: also see comments from iterateAiPmSlices (mostRecentPeriodEndTimes, input-object)
+
 x-javascript-interface:
   p1IterateEcPmSlices:
     summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'

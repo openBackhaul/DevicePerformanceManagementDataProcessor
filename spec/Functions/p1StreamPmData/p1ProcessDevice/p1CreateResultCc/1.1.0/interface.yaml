@@ -261,7 +261,7 @@ x-javascript-interface:
                 schema:
                   type: string
       p1IterateAiPmSlices:
-        summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
+        summary: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions''
         input:
           required: true
           content:
@@ -347,7 +347,7 @@ x-javascript-interface:
                       description: >
                         'linkId = input.link-endpoint-id.substring(0, 9)'
         error:
-          description: 'ResultCc could not be provided'
+          description: 'LinkId could not be provided'
           content:
             application/json:
               schema:

@@ -166,6 +166,8 @@ x-javascript-interface:
                 type: object
                 required:
                   - parameters
+                  #TODO: proposal: rename to data-object; input-object is returned in the output, which looks strange in e.g. {$p1RemoveDefaultValues.output#/input-object}
+                  #applies to all instances where input-object is returned in the output
                   - input-object
                 properties:
                   parameters:
@@ -199,6 +201,8 @@ x-javascript-interface:
                 schema:
                   type: string
       updateMostRecentPeriodEndTime:
+        #TODO: imho the descriptions do not explicitly enough state that the result should be the period-end-time with the
+        # overall newest date. (latest value could also be read as the value from the currently processed slice instead.)
         summary: 'Overwrites mostRecentPeriodEndTime or mostRecentPeriodEndTime24 with latest value of periodEndTime'
         input:
           content:
