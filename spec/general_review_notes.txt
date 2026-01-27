@@ -1,0 +1,6 @@
+**kafkaProducerService**  
+The highlevel overview diagram shows the kafkaProducerService as a participant,
+but there is no related function folder or service explicitly specified.
+Kafka producer service is just mentioned in the p1InitKafka function folder.
+Maybe it would be good to somehow make this more transparent, because right 
+now it is not clear where to look for that, if the reader doesn't already know this.
