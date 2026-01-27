@@ -17,3 +17,9 @@ to get the mostRecentPeriodEndTimes and don't find them (which returns an error)
 will not filter any data.
 Maybe it would make sense, to categorize errors (explicitly) and apply different handling for them, depending on what
 the error entails for the caller.
+
+**FunctionProfile**  
+We have introduced a new profile type in profiles and profileInstances,
+but we have not yet added that to the applicationPattern.  
+Hence, the related additions to the OAS are still missing.
+Also see AppPattern issue #1089: https://github.com/openBackhaul/ApplicationPattern/issues/1089
