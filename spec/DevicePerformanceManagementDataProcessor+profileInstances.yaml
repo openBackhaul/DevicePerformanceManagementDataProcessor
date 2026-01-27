@@ -220,6 +220,7 @@ profile-instances:
 
 
   # p1MaintainDs
+  # TODO: tb activated
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-100'
     capability:
@@ -478,6 +479,7 @@ profile-instances:
 
 
   # p1IterateAiPmSlices
+  #TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
@@ -502,6 +504,7 @@ profile-instances:
 
 
   # p1RemoveOutOfRangeLevels
+  #TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
@@ -512,6 +515,7 @@ profile-instances:
     configuration:
       is-active: true
 
+  #TODO: incomplete -->
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -520,6 +524,7 @@ profile-instances:
     configuration:
       string-value: '-30'
 
+  #TODO: incomplete
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -528,6 +533,7 @@ profile-instances:
     configuration:
       string-value: '40'
 
+  #TODO: incomplete
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -536,6 +542,7 @@ profile-instances:
     configuration:
       string-value: '-10'
 
+  #TODO: incomplete
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -546,6 +553,7 @@ profile-instances:
 
 
   # p1RemoveDefaultValues
+  #TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
@@ -556,6 +564,7 @@ profile-instances:
     configuration:
       is-active: true
 
+  #TODO: incomplete -> all parameters lack the uuid seqnum
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -738,6 +747,7 @@ profile-instances:
 
 
   # p1IterateEcPmSlices
+  # TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
@@ -762,6 +772,7 @@ profile-instances:
 
 
   # p1RemoveDefaultValues
+  #TODO: function + params incomplete -->
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
@@ -958,6 +969,7 @@ profile-instances:
 
 
   # p1RemoveOutOfRangeTemperature
+  # TODO: incomplete -->
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-'
     capability:
@@ -1021,6 +1033,7 @@ profile-instances:
 
 
   # p1Storing
+  # TODO: tb activated
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-480'
     capability:
