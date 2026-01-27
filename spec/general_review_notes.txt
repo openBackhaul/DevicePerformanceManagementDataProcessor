@@ -1,6 +1,19 @@
+# General notes
+
 **kafkaProducerService**  
 The highlevel overview diagram shows the kafkaProducerService as a participant,
 but there is no related function folder or service explicitly specified.
 Kafka producer service is just mentioned in the p1InitKafka function folder.
 Maybe it would be good to somehow make this more transparent, because right 
 now it is not clear where to look for that, if the reader doesn't already know this.
+
+**Error handling**  
+As already written as an inline TODO comment in an interface.yaml, there are different types
+of errors that can happen.
+E.g. if the rawCC for a device cannot be read from ES at all, we already can stop further processings for that device,
+as we will not get any data.
+But if e.g. we have new device, which doesn't yet have any data in the dataStore and we try to read the interfaceMetadata
+to get the mostRecentPeriodEndTimes and don't find them (which returns an error), this is not a problem, we simply
+will not filter any data.
+Maybe it would make sense, to categorize errors (explicitly) and apply different handling for them, depending on what
+the error entails for the caller.
