@@ -122,11 +122,11 @@ profile-instances:
         - 'dpmdp-1-0-0-function-p-030'
         - 'dpmdp-1-0-0-function-p-060'
         - 'dpmdp-1-0-0-function-p-090'
+        - 'dpmdp-1-0-0-function-p-100'
         - 'dpmdp-1-0-0-function-p-120'
         - 'dpmdp-1-0-0-function-p-150'
     configuration:
       is-active: true
-
 
   # p1LoadParameters
   - profile-name: 'FunctionProfile'
@@ -220,7 +220,6 @@ profile-instances:
 
 
   # p1MaintainDs
-  # TODO: tb activated
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-100'
     capability:
@@ -233,7 +232,7 @@ profile-instances:
           owner: 'platform'
       sub-function-list:
     configuration:
-      is-active: false
+      is-active: true
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-101'
@@ -346,8 +345,9 @@ profile-instances:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-180'
         - 'dpmdp-1-0-0-function-p-270'
-        - 'dpmdp-1-0-0-function-p-420'
-        - 'dpmdp-1-0-0-function-p-450'
+        - 'dpmdp-1-0-0-function-p-520'
+        - 'dpmdp-1-0-0-function-p-550'
+        - 'dpmdp-1-0-0-function-p-580'
     configuration:
       is-active: true
 
@@ -433,7 +433,10 @@ profile-instances:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-300'
         - 'dpmdp-1-0-0-function-p-301'
+        - 'dpmdp-1-0-0-function-p-350'
         - 'dpmdp-1-0-0-function-p-390'
+        - 'dpmdp-1-0-0-function-p-400'
+        - 'dpmdp-1-0-0-function-p-440'
     configuration:
       is-active: true
 
@@ -461,7 +464,6 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-330'
-        - 'dpmdp-1-0-0-function-p-360'
     configuration:
       is-active: true
 
@@ -479,14 +481,17 @@ profile-instances:
 
 
   # p1IterateAiPmSlices
-  #TODO: incomplete
+  #TODO: params prüfen
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-'
+    uuid: 'dpmdp-1-0-0-function-p-350'
     capability:
       function-name: 'p1IterateAiPmSlices'
-      function-description: ''
+      function-description: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
       parameter-list:
       sub-function-list:
+        - 'dpmdp-1-0-0-function-p-360'
+        - 'dpmdp-1-0-0-function-p-370'
+        - 'dpmdp-1-0-0-function-p-380'
     configuration:
       is-active: true
 
@@ -506,10 +511,10 @@ profile-instances:
   # p1RemoveOutOfRangeLevels
   #TODO: incomplete
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-'
+    uuid: 'dpmdp-1-0-0-function-p-370'
     capability:
       function-name: 'p1RemoveOutOfRangeLevels'
-      function-description: ''
+      function-description: 'Removes out-of-range level attributes from a performance data slice'
       parameter-list:
       sub-function-list:
     configuration:
@@ -555,7 +560,7 @@ profile-instances:
   # p1RemoveDefaultValues
   #TODO: incomplete
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-'
+    uuid: 'dpmdp-1-0-0-function-p-380'
     capability:
       function-name: 'p1RemoveDefaultValues'
       function-description: ''
@@ -774,7 +779,7 @@ profile-instances:
   # p1RemoveDefaultValues
   #TODO: function + params incomplete -->
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-'
+    uuid: 'dpmdp-1-0-0-function-p-420'
     capability:
       function-name: 'p1RemoveDefaultValues'
       function-description: ''
@@ -967,11 +972,23 @@ profile-instances:
     configuration:
       string-value: '-1'
 
+  # p1CalculateUtilization
+  # TODO: prüfen
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-430'
+    capability:
+      function-name: 'p1CalculateUtilization'
+      function-description: 'Calculates utilization of the aggregated physical resources in a performance data slice'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
 
   # p1RemoveOutOfRangeTemperature
   # TODO: incomplete -->
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-'
+    uuid: 'dpmdp-1-0-0-function-p-440'
     capability:
       function-name: 'p1RemoveOutOfRangeTemperature'
       function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
@@ -999,7 +1016,7 @@ profile-instances:
 
   # p1FormattingOutputApt
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-420'
+    uuid: 'dpmdp-1-0-0-function-p-520'
     capability:
       function-name: 'p1FormattingOutputApt'
       function-description: 'Transforms the resultCc into aptOutputFormat'
@@ -1011,19 +1028,19 @@ profile-instances:
 
   # p1TransmittingKafka
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-450'
+    uuid: 'dpmdp-1-0-0-function-p-550'
     capability:
       function-name: 'p1TransmittingKafka'
       function-description: 'Transfers output data to Kafka transmitter'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-451'
+        - parameter: 'dpmdp-1-0-0-string-p-551'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-451'
+    uuid: 'dpmdp-1-0-0-string-p-551'
     capability:
       string-name: 'aptFormat'
       purpose: 'kafkaTransmitter'
@@ -1033,13 +1050,13 @@ profile-instances:
 
 
   # p1Storing
-  # TODO: tb activated
+  # TODO: params prüfen
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-480'
+    uuid: 'dpmdp-1-0-0-function-p-580'
     capability:
       function-name: 'p1Storing'
       function-description: 'Stores the resultCc into the DataStore'
       parameter-list:
       sub-function-list:
     configuration:
-      is-active: false
+      is-active: true

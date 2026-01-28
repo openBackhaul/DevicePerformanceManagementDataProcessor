@@ -545,8 +545,8 @@
               "sub-function-list": [
                 "dpmdp-1-0-0-function-p-180",
                 "dpmdp-1-0-0-function-p-270",
-                "dpmdp-1-0-0-function-p-420",
-                "dpmdp-1-0-0-function-p-450"
+                "dpmdp-1-0-0-function-p-520",
+                "dpmdp-1-0-0-function-p-550"
               ]
             },
             "function-profile-configuration": {
@@ -736,7 +736,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-420",
+          "uuid": "dpmdp-1-0-0-function-p-520",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -751,7 +751,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-450",
+          "uuid": "dpmdp-1-0-0-function-p-550",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -759,7 +759,7 @@
               "function-description": "Transfers output data to Kafka transmitter",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-0-0-string-p-451",
+                  "parameter": "dpmdp-1-0-0-string-p-551",
                   "owner": "platform"
                 }
               ],
@@ -771,7 +771,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-string-p-451",
+          "uuid": "dpmdp-1-0-0-string-p-551",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -784,7 +784,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-480",
+          "uuid": "dpmdp-1-0-0-function-p-580",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
