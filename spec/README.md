@@ -63,6 +63,11 @@ Although the sequence of function calls is hard-coded, actually calling a functi
 
 *) Indicates a Generic Function that is part of the DPMDP's implementation.  
 
+**Most relevant Data Structures:**  
+- [rawCc]()
+- [resultCc]()
+- [output]()
+
 
 ### Changes with DPMDP 1.1.0
 
