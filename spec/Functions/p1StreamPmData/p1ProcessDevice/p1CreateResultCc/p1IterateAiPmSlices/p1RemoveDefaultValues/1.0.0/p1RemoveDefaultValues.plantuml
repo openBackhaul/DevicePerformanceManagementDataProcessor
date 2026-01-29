@@ -15,7 +15,7 @@ participant "p1RemoveDefaultValues\n" as removeDefault #LightCyan
   activate removeDefault #LightCyan
 
     note over removeDefault
-      Create [default-value-list]
+      Creates [default-value-list]
       from parameters
     end note
 

@@ -13,7 +13,7 @@ participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
 participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 
 
-cur -> iterateSlices : {parameters,\n[historicalPerformanceDataList],\n[transmissionModeList]}
+cur -> iterateSlices : {parameters,\n[historicalPerformanceDataList],\n[transmissionModeList] }
 activate iterateSlices #LightCyan
 
   note over iterateSlices

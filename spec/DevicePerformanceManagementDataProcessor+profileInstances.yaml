@@ -1196,7 +1196,7 @@ profile-instances:
 
   # p1Storing
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-580'
+    uuid: 'dpmdp-1-0-0-function-p-620'
     capability:
       function-name: 'p1Storing'
       function-description: 'Stores the resultCc into the DataStore'

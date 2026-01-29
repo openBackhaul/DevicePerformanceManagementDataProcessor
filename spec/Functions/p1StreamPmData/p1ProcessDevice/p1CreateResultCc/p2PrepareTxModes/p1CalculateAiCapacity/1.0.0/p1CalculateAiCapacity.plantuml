@@ -5,14 +5,14 @@ title
   p1CalculateAiCapacity
 end title
 
-participant "requestor" as requestor
-participant "p1CalculateAiCapacity" as aiCC #LightCyan
+participant "requestor\n" as requestor
+participant "p1CalculateAiCapacity\n" as aiCC #LightCyan
 
 requestor -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
 activate aiCC #LightCyan
-  
+
   note over aiCC
-    Calculate AirInterfaceCapacity
+    Calculates AirInterfaceCapacity
     according to ONF TR-532 v2.0 Chapter 6.5
   end note
 
