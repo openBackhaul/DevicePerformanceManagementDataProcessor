@@ -51,4 +51,35 @@ parameters are upper and lower limits for level values.
 Who is allowed to change those?
 Owner might have to be changed from platform to something else.
 
+Same for **p1RemoveOutOfRangeTemperature**
+
 #===============================================================================================
+
+**ONF output**
+Added profileInstances (function + string) for onfOutput
+
+DOES onfFormat kafkaTransmitter string-value have to have another seq-num or the same (000 or 001)?
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-601'
+    capability:
+      string-name: 'aptFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-602'
+    capability:
+      string-name: 'onfFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
+
+#===============================================================================================
+
+**configFile**
+Needs to be re-created
