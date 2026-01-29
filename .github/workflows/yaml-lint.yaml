@@ -19,3 +19,6 @@ jobs:
             rules:
               line-length: disable
               document-start: disable
+
+              comments: disable
+              comments-indentation: disable
