@@ -1026,6 +1026,41 @@ profile-instances:
       is-active: true
 
 
+  # p1FormattingOutputOnf
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-530'
+    capability:
+      function-name: 'p1FormattingOutputOnf'
+      function-description: 'Creates a filtered ONF output format from the resultCc'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-540'
+    configuration:
+      is-active: true
+
+
+  # p1FieldsFilter
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-540'
+    capability:
+      function-name: 'p1FieldsFilter'
+      function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-541'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-541'
+    capability:
+      string-name: 'fieldsFilter'
+      purpose: 'Fields filter to be applied to reduce the ONF output format data'
+    configuration:
+      string-value: 'core-model-1-4:control-construct'
+
+
   # p1TransmittingKafka
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-550'

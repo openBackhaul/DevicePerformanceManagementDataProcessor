@@ -32,7 +32,8 @@ participant "p2Calculate\nEthernetKpis" as p2EthKpi #LightCyan
 participant "p1Calculate\nUtilization" as p1Util #LightCyan
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
 
-participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+participant "p1Formatting\nOutputApt" as p1OutputApt #LightCyan
+participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightCyan
 
 participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
@@ -113,7 +114,6 @@ activate p1StreamPm #LightBlue
       p1StreamPm -> p1ProcessPm
       activate p1ProcessPm #LightBlue
 
-        ' create RawCC ->
         p1ProcessPm -> p1AddRaw
         activate p1AddRaw #LightCyan
 
@@ -121,7 +121,6 @@ activate p1StreamPm #LightBlue
             Loads raw data to rawCc
           end note
 
-          ' apply fieldsFilter ->
           p1AddRaw -> p1FieldsFilter
           activate p1FieldsFilter #LightBlue
 
@@ -136,7 +135,6 @@ activate p1StreamPm #LightBlue
             Get mostRecentPeriodEndTimes
           end note
 
-          ' discard irrelevant PM records
           p1AddRaw -> filterPm
           activate filterPm #LightBlue
 
@@ -155,7 +153,6 @@ activate p1StreamPm #LightBlue
         p1ProcessPm <-- p1AddRaw : {rawCc}
         deactivate p1AddRaw
 
-        ' create resultCc ->
         p1ProcessPm -> p1CreateResultCc
         activate p1CreateResultCc #LightCyan
 
@@ -246,7 +243,7 @@ activate p1StreamPm #LightBlue
                   end note
 
                 aiSlices <-- p1RORL
-                deactivate p1RORL        
+                deactivate p1RORL
 
                 aiSlices -> p1RemDefault
                 activate p1RemDefault #LightCyan
@@ -356,15 +353,36 @@ activate p1StreamPm #LightBlue
         p1ProcessPm <-- p1CreateResultCc : {resultCc}
         deactivate p1CreateResultCc
 
-        p1ProcessPm -> p1Output
-        activate p1Output #LightCyan
+        p1ProcessPm -> p1OutputApt
+        activate p1OutputApt #LightCyan
 
-          note over p1Output
+          note over p1OutputApt
             Create APT format
           end note
 
-        p1ProcessPm <-- p1Output : {outputApt}
-        deactivate p1Output
+        p1ProcessPm <-- p1OutputApt : {outputApt}
+        deactivate p1OutputApt
+
+        p1ProcessPm -> p1OutputOnf
+        activate p1OutputOnf #LightCyan
+
+          note over p1OutputOnf
+            Create ONF format
+          end note
+
+          p1OutputOnf -> p1FieldsFilter
+          activate p1FieldsFilter #LightBlue
+
+            note over p1FieldsFilter
+              Reduces structure of
+              ONF output format
+            end note
+
+          p1OutputOnf <-- p1FieldsFilter
+          deactivate p1FieldsFilter
+
+        p1ProcessPm <-- p1OutputOnf : {outputOnf}
+        deactivate p1OutputOnf
 
         p1ProcessPm -> p1Trans
         activate p1Trans #LightBlue
