@@ -12,7 +12,7 @@ requestor -> cur: { {resultCc} }
 activate cur #LightCyan
 
   note over cur
-    Transform resultCc data into
+    Transforms resultCc data into
     aptOutputFormat (incl.
     batchTimestamp)
   end note

@@ -11,7 +11,7 @@ participant "p2Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
 
 
-cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+cur -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
 activate prepTxModes #LightCyan
 
   loop FOR all [historicalPerformanceDataList]
@@ -20,7 +20,7 @@ activate prepTxModes #LightCyan
         IF time > 0
           THEN add transmissionMode to
                 [usedTransmissionModesList]
-          ELSE delete transmissionMode 
+          ELSE delete transmissionMode
                 from [timeXStatesList]
       end note
     end loop
@@ -29,9 +29,9 @@ activate prepTxModes #LightCyan
   loop FOR all [transmissionModeList]
 
     note over prepTxModes
-      IF transmissionMode NOT IN 
+      IF transmissionMode NOT IN
           [usedTransmissionModesList]
-        THEN 
+        THEN
           - Delete transmissionMode
             from [transmissionModeList]
         ELSE
@@ -43,7 +43,7 @@ activate prepTxModes #LightCyan
     prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
     activate aiCC #LightBlue
       note over aiCC
-        Calculate airInterfaceCapacity
+        Calculates airInterfaceCapacity
         according to ONF TR-532 v2.0 Chapter 6.5
       end note
     prepTxModes <-- aiCC: {airInterfaceCapacity}
@@ -51,7 +51,7 @@ activate prepTxModes #LightCyan
 
   end loop
 
-cur <-- prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+cur <-- prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
 deactivate prepTxModes
 
 deactivate cur

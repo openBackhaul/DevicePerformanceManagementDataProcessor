@@ -15,25 +15,25 @@ p1SPMD -> p1UMWR : { {parameters},\n{mwdiEsClient},\n{mwdiReplicaEsClient},\n{lo
 activate p1UMWR #LightCyan
 
   note over p1UMWR
-    Calculate periodStartTime
+    Calculates periodStartTime
     and periodEndTime
   end note
 
   note right p1UMWR
-    Replicate updated CCs from MWDI ES into MWDI ES Replica
+    Replicates updated CCs from MWDI ES into MWDI ES Replica
     using ElasticSearch _reindex with a range filter
     on lastCompleteControlConstructUpdateTimeAttempt
   end note
   p1UMWR -> mwdiEs
-  p1UMWR <-- mwdiReplicaEs : {[updatedMountNames],\nlastReplicationTimestamp,\nstatusMessage}
+  p1UMWR <-- mwdiReplicaEs : { [updatedMountNames],\nlastReplicationTimestamp,\nstatusMessage}
 
   note right p1UMWR
-    Log results of replication
+    Logs results of replication
   end note
   p1UMWR -> log : {cronjobName,\nlastReplicationTimestamp,\nupdatedMountNames,\nstatusMessage}
 
 
-p1SPMD <-- p1UMWR : {[updatedMountNames],\ntimestamp}
+p1SPMD <-- p1UMWR : { [updatedMountNames],\ntimestamp}
 deactivate p1UMWR
 
 @enduml

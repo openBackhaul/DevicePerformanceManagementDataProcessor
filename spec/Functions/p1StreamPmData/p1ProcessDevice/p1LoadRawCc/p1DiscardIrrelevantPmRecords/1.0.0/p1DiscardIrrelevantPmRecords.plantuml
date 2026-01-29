@@ -2,14 +2,14 @@
 skinparam responseMessageBelowArrow true
 
 title
-p1DiscardIrrelevantPmRecords
+  p1DiscardIrrelevantPmRecords
 end title
 
 participant "requestor\n(e.g. p1LoadRawCc)" as requestor
 participant "p1DiscardIrrelevant\nPmRecords" as cur #LightCyan
 
 
-requestor -> cur: {[historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color>}
+requestor -> cur: { [historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color>}
 activate cur #LightCyan
 
 loop FOR all [historicalPerformanceDataList]
@@ -28,6 +28,8 @@ loop FOR all [historicalPerformanceDataList]
 
 end loop
 
-requestor <-- cur: {[filteredHistoricalPerformanceDataList]}
+requestor <-- cur: { [filteredHistoricalPerformanceDataList] }
 
 deactivate cur
+
+@enduml

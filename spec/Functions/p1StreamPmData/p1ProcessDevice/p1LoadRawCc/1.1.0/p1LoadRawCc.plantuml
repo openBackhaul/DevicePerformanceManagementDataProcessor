@@ -50,9 +50,9 @@ activate cur #LightCyan
     note over filterPm
       Discards records that are
       of wrong granularity or
-      already processed from 
-      historicalPerformanceDataList 
-    end note 
+      already processed from
+      historicalPerformanceDataList
+    end note
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList] }
     deactivate filterPm
 
@@ -65,3 +65,5 @@ activate cur #LightCyan
 
 requestor <-- cur: { {rawCc} }
 deactivate cur
+
+@enduml

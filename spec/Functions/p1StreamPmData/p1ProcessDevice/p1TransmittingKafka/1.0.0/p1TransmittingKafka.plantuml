@@ -12,17 +12,18 @@ queue "kafka\n" as kafka
 
 activate p1KafkaP #LightCyan
 
-requestor -> p1Trans : {{parameters},\n{configFile},\n[outputFormat],\nkafkaTransmitter}
+requestor -> p1Trans : { {parameters},\n{configFile},\n[outputFormat],\nkafkaTransmitter}
 activate p1Trans #LightCyan
 
   note over p1Trans
-    Resolve connection parameters
+    Resolves connection
+    parameters
   end note
 
     p1Trans -> p1KafkaP : {topicName,\n{messageObject}}
 
       note over p1KafkaP
-        Send object 
+        Sends object
         to Kafka
       end note
 

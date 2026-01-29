@@ -12,19 +12,19 @@ requestor -> ethKpis : {historicalPerformanceData}
 activate ethKpis #LightCyan
 
     note over ethKpis
-      Add transmitTraffic
+      Adds transmitTraffic
     end note
 
     note over ethKpis
-      Add receiveTraffic
+      Adds receiveTraffic
     end note
 
     note over ethKpis
-      Add frameLossInput
+      Adds frameLossInput
     end note
 
     note over ethKpis
-      Add frameLossOutput
+      Adds frameLossOutput
     end note
 
 requestor <-- ethKpis : {historicalPerformanceData}
