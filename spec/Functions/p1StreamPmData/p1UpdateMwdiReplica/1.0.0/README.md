@@ -46,6 +46,14 @@ Detailed description of the [internal variables](./variables.yaml).
 Detailed description of the [interface](./interface.yaml).  
 
 
+### Parameters
+
+| Parameter Name               | Description                                                                        |
+|------------------------------|------------------------------------------------------------------------------------|
+| jobName                      | Name of the replication job                                                        |
+| syncPeriod                   | Duration between two replications of the MWDI ES in seconds                        |
+
+
 ### Sample code:
 ```
 es.reindex({

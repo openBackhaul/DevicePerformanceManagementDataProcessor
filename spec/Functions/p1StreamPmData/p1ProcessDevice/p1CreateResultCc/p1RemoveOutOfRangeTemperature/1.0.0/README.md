@@ -20,3 +20,11 @@ Please find a detailed description of the [interface](interface.yaml).
 
 Please find a detailed description of the [variables](variables.yaml).
 
+
+### Parameters
+
+| Parameter Name               | Description                                                                        |
+|------------------------------|------------------------------------------------------------------------------------|
+| lowerTemperatureLimit        | Lower bound of valid temperature values                                            |
+| upperTemperatureLimit        | Upper bound of valid temperature values                                            |
+
