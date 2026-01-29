@@ -83,6 +83,7 @@ Although the sequence of function calls is hard-coded, actually calling a functi
   - instead each output format has its own output object, which is listed as content property under [output-format](./Functions/p1StreamPmData/p1InitKafka/1.0.0/variables.yaml)  
   - the different output objects depend on the format-name:  
     - *apt*: the *apt-output-format* is found in [apt-output-format](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.1.0/variables.yaml)  
+    - *onf*: tbd  
     - *iveritas*: tbd  
 - [data-store](./Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0/data-store-schema/dataStore.yaml)
   - stores data per device
