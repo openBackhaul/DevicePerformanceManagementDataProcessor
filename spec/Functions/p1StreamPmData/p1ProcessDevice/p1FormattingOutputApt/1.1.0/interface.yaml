@@ -4,7 +4,7 @@ info:
   version: 1.0.0
 
 x-javascript-interface:
-  p1FormattingOutputApt: 
+  p1FormattingOutputApt:
     summary: 'Transforms data of resultCc into aptOutputFormat'
     input:
       required: true
@@ -597,11 +597,11 @@ x-javascript-interface:
                                       schema:
                                         type: string
                                         enum:
-                                        - 'resultCc not provided'
-                                        - 'resultCc incomplete'
-                                        - 'resultCc invalid'
-                                        - 'aptOutputFormat could not be provided'
-                                        - 'General processing error'
+                                          - 'resultCc not provided'
+                                          - 'resultCc incomplete'
+                                          - 'resultCc invalid'
+                                          - 'aptOutputFormat could not be provided'
+                                          - 'General processing error'
           error:
             description: 'Output object could not be created.'
             content:
@@ -609,11 +609,11 @@ x-javascript-interface:
                 schema:
                   type: string
                   enum:
-                  - 'resultCc not provided'
-                  - 'resultCc incomplete'
-                  - 'resultCc invalid'
-                  - 'output could not be provided'
-                  - 'General processing error'
+                    - 'resultCc not provided'
+                    - 'resultCc incomplete'
+                    - 'resultCc invalid'
+                    - 'output could not be provided'
+                    - 'General processing error'
 
 paths:
   /:

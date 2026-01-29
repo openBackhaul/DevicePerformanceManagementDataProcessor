@@ -166,7 +166,7 @@ profile-instances:
       purpose: 'UUID of the MWDI ES ElasticsearchClient LTP'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
-      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'  
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-062'
@@ -467,7 +467,7 @@ profile-instances:
     configuration:
       is-active: true
 
-      
+
   # p1CalculateAiCapacity
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-330'

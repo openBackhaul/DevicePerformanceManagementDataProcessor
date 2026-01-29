@@ -45,7 +45,7 @@ x-javascript-interface:
       description: >
         'The cleanup process is re-started with a delay of one [/maintain-ds/cleanup-period] after it has been started last time'
       retrieveListOfDevices:
-        url: # [{/maintain-ds/data-store-url}]
+        url:  # [{/maintain-ds/data-store-url}]
           description: >
             'A request has to be addressed to ES for retrieving the list of mountNames from [/data-store/device=*/mount-name]'
           output:
@@ -71,7 +71,7 @@ x-javascript-interface:
                       - 'ElasticSearch read error'
                       - 'General processing error'
       lockDevice:
-        url: # [{/maintain-ds/data-store-url}]
+        url:  # [{/maintain-ds/data-store-url}]
           description: >
             'Parallel writing of a performance data batch shall be prevented'
           input:
@@ -102,7 +102,7 @@ x-javascript-interface:
                       - 'ElasticSearch lock error'
                       - 'General processing error'
       readDeviceDataFromDs:
-        url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
+        url:  # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
           description: 'Reads the complete data of one of the devices from the DataStore'
           output:
             success:
@@ -146,7 +146,7 @@ x-javascript-interface:
                       'batchList
                       from [/maintain-ds/device-data/batch]'
                   retention-period:
-                    type: 
+                    type:
                     description: >
                       'retentionPeriod
                       from [/maintain-ds/retention-period]'
@@ -179,7 +179,7 @@ x-javascript-interface:
                     - 'retentionPeriod invalid'
                     - 'General processing error'
       writeDeviceDataToDs:
-        url: # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
+        url:  # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
           description: 'Writes the complete data of one of the devices to the DataStore'
           input:
             content:
@@ -213,7 +213,7 @@ x-javascript-interface:
                       - 'ElasticSearch write error'
                       - 'General processing error'
       unlockDevice:
-        url: # [{/maintain-ds/data-store-url}]
+        url:  # [{/maintain-ds/data-store-url}]
           description: >
             'Writing of performance data batches shall be enabled again'
           input:

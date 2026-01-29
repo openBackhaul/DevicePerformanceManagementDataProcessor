@@ -82,7 +82,7 @@ x-javascript-interface:
             type: object
             required:
               - requests_per_second
-              - source 
+              - source
               - dest
               - conflicts
             properties:
