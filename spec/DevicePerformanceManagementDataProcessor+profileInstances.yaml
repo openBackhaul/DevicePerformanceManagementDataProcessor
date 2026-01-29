@@ -205,6 +205,8 @@ profile-instances:
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-091'
           owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-092'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -217,6 +219,16 @@ profile-instances:
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-092'
+    capability:
+      string-name: 'onfProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
 
 
   # p1MaintainDs
@@ -287,7 +299,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-122'
     capability:
-      string-name: 'synchPeriod'
+      string-name: 'syncPeriod'
       purpose: 'Duration between two replications of the MWDI ES in seconds'
     configuration:
       string-value: '480'
@@ -296,6 +308,7 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-string-p-123'
     capability:
       string-name: 'lastUpdatedField'
+      # TODO: what is the purpose of this?
       purpose: '?'
     configuration:
       string-value: 'lastUpdated'
@@ -342,6 +355,8 @@ profile-instances:
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-151'
           owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-152'
+          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-180'
         - 'dpmdp-1-0-0-function-p-270'
@@ -355,6 +370,15 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-string-p-151'
     capability:
       string-name: 'aptFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-152'
+    capability:
+      string-name: 'onfFormat'
       purpose: 'kafkaTransmitter'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
@@ -481,7 +505,6 @@ profile-instances:
 
 
   # p1IterateAiPmSlices
-  # TODO: params prüfen
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-350'
     capability:
@@ -509,47 +532,50 @@ profile-instances:
 
 
   # p1RemoveOutOfRangeLevels
-  # TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-370'
     capability:
       function-name: 'p1RemoveOutOfRangeLevels'
       function-description: 'Removes out-of-range level attributes from a performance data slice'
       parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-371'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-372'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-373'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-374'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
-  # TODO: incomplete -->
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-371'
     capability:
       string-name: 'lowerTxLevelLimit'
       purpose: 'Lower bound of valid values of the transmit level'
     configuration:
       string-value: '-30'
 
-  # TODO: incomplete
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-372'
     capability:
       string-name: 'upperTxLevelLimit'
       purpose: 'Upper bound of valid values of the transmit level'
     configuration:
       string-value: '40'
 
-  # TODO: incomplete
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-373'
     capability:
       string-name: 'lowerRxLevelLimit'
       purpose: 'Lower bound of valid values of the receive level'
     configuration:
       string-value: '-10'
 
-  # TODO: incomplete
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-374'
     capability:
       string-name: 'upperRxLevelLimit'
       purpose: 'Upper bound of valid values of the receive level'

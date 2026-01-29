@@ -1,11 +1,17 @@
 # General notes
 
+
+#===============================================================================================
+
 **kafkaProducerService**  
 The highlevel overview diagram shows the kafkaProducerService as a participant,
 but there is no related function folder or service explicitly specified.
 Kafka producer service is just mentioned in the p1InitKafka function folder.
 Maybe it would be good to somehow make this more transparent, because right 
 now it is not clear where to look for that, if the reader doesn't already know this.
+
+
+#===============================================================================================
 
 **Error handling**  
 As already written as an inline TODO comment in an interface.yaml, there are different types
@@ -18,8 +24,31 @@ will not filter any data.
 Maybe it would make sense, to categorize errors (explicitly) and apply different handling for them, depending on what
 the error entails for the caller.
 
+
+#===============================================================================================
+
 **FunctionProfile**  
 We have introduced a new profile type in profiles and profileInstances,
 but we have not yet added that to the applicationPattern.  
 Hence, the related additions to the OAS are still missing.
 Also see AppPattern issue #1089: https://github.com/openBackhaul/ApplicationPattern/issues/1089
+
+#===============================================================================================
+
+**p1RemoveOutOfRangeLevels**
+From profileInstances:
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-371'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-372'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-373'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-374'
+          owner: 'platform'
+
+parameters are upper and lower limits for level values.
+Who is allowed to change those?
+Owner might have to be changed from platform to something else.
+
+#===============================================================================================
