@@ -62,7 +62,7 @@ init-kafka:
               from [/init-kafka/config-file/core-model-1-4:control-construct/logical-termination-point={tcp-client-uuid}/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac]'
           url:
             type: string
-            description: > 
+            description: >
               'Kafka URL
               from [/init-kafka/client={kafkaClientName}/tcp-client-pac/tcp-client-interface-configuration/remote-protocol]://[/init-kafka/client={kafkaClientName}/tcp-client-pac/tcp-client-interface-configuration/remote-address/domain-name or /init-kafka/client={kafkaClientName}/tcp-client-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/init-kafka/client={kafkaClientName}/tcp-client-pac/tcp-client-interface-configuration/remote-port]'
           client-type:

@@ -144,11 +144,6 @@ x-javascript-interface:
                     x-key: uuid
                     description: >
                       'interfaceMetadataList'
-            #TODO: when a device is processed for the first time, there is no interfaceMetadataList, as there's no dataStore record for this device
-            #in that case this processing step would throw an error.
-            #Here, missing mostRecentPeriodEndTimes are not critical. We will just keep all PM records that we see,
-            #but in other cases an error can be a more serious problem
-            #maybe we need to define different types of errors and how they are to be handled (e.g. abortion vs ignore)?
             error:
               description: 'interfaceMetadataList could not be provided'
               content:
@@ -170,7 +165,7 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                - historical-performance-data-list
+                  - historical-performance-data-list
                 properties:
                   historical-performance-data-list:
                     type: array
@@ -227,7 +222,7 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                - current-performance-timestamp
+                  - current-performance-timestamp
                 properties:
                   current-performance-timestamp:
                     type: string

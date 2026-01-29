@@ -4,7 +4,7 @@ info:
   version: 1.0.0
 
 x-javascript-interface:
-  p1DiscardIrrelevantPmRecords: 
+  p1DiscardIrrelevantPmRecords:
     summary: 'This function provides the EthContainer names looked up from LtpAugment information'
     input:
       required: true
@@ -13,7 +13,7 @@ x-javascript-interface:
           schema:
             type: object
             required:
-            - historical-performance-data-list
+              - historical-performance-data-list
             properties:
               historical-performance-data-list:
                 type: array

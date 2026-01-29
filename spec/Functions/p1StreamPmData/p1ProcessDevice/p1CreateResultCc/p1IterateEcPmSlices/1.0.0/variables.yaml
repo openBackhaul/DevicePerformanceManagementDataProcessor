@@ -77,4 +77,3 @@ iterate-ec-pm-slices:
         'mostRecentPeriodEndTime24
         initial value: {2010-11-20T14:00:00+01:00}
         overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
-

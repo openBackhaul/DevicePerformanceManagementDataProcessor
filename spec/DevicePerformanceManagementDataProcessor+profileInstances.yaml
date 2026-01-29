@@ -481,7 +481,7 @@ profile-instances:
 
 
   # p1IterateAiPmSlices
-  #TODO: params prüfen
+  # TODO: params prüfen
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-350'
     capability:
@@ -509,7 +509,7 @@ profile-instances:
 
 
   # p1RemoveOutOfRangeLevels
-  #TODO: incomplete
+  # TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-370'
     capability:
@@ -520,7 +520,7 @@ profile-instances:
     configuration:
       is-active: true
 
-  #TODO: incomplete -->
+  # TODO: incomplete -->
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -529,7 +529,7 @@ profile-instances:
     configuration:
       string-value: '-30'
 
-  #TODO: incomplete
+  # TODO: incomplete
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -538,7 +538,7 @@ profile-instances:
     configuration:
       string-value: '40'
 
-  #TODO: incomplete
+  # TODO: incomplete
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -547,7 +547,7 @@ profile-instances:
     configuration:
       string-value: '-10'
 
-  #TODO: incomplete
+  # TODO: incomplete
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -558,7 +558,7 @@ profile-instances:
 
 
   # p1RemoveDefaultValues
-  #TODO: incomplete
+  # TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-380'
     capability:
@@ -569,7 +569,7 @@ profile-instances:
     configuration:
       is-active: true
 
-  #TODO: incomplete -> all parameters lack the uuid seqnum
+  # TODO: incomplete -> all parameters lack the uuid seqnum
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-'
     capability:
@@ -777,7 +777,7 @@ profile-instances:
 
 
   # p1RemoveDefaultValues
-  #TODO: function + params incomplete -->
+  # TODO: function + params incomplete -->
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-420'
     capability:

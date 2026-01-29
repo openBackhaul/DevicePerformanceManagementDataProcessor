@@ -71,4 +71,3 @@ prepare-tx-modes:
         THEN add [/prepare-tx-modes/historical-performance-data-list=*/performance-data/time-xstates-list=**/transmission-mode]'
       items:
         type: string
-
