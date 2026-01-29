@@ -6,9 +6,9 @@ title
 end title
 
 participant "requestor\n(e.g. p1ProcessDevice)" as requestor
-participant "p1FormattingOutputApt" as cur #LightCyan
+participant "p1FormattingOutputApt\n" as cur #LightCyan
 
-requestor -> cur: {{resultCc}}
+requestor -> cur: { {resultCc} }
 activate cur #LightCyan
 
   note over cur
@@ -17,5 +17,7 @@ activate cur #LightCyan
     batchTimestamp)
   end note
 
-requestor <-- cur: {{output}}
+requestor <-- cur: { {aptOutputFormat} }
 deactivate cur
+
+@enduml
