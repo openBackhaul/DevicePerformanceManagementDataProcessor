@@ -21,9 +21,9 @@ activate p1ProOrch #LightCyan
   activate p1AddRaw #LightCyan
 
     note over p1AddRaw
-      - Load rawCc from MWDI ES
-      - Reduce structure of rawCc
-      - Delete PM data that has
+      - Loads rawCc from MWDI ES
+      - Reduces structure of rawCc
+      - Deletess PM data that has
         already been processed in past
     end note
 
@@ -34,8 +34,8 @@ activate p1ProOrch #LightCyan
   activate p1CRC #LightCyan
 
     note over p1CRC
-      - Create resultCc from rawCc
-      - Process and complement PM data
+      - Creates resultCc from rawCc
+      - Processes and complements PM data
     end note
 
   p1ProOrch <-- p1CRC :  { {resultCc},\n{interfaceMetadataList} }
@@ -45,7 +45,7 @@ activate p1ProOrch #LightCyan
   activate p1Output #LightCyan
 
     note over p1Output
-      Create aptOutputFormat
+      Creates aptOutputFormat
       from resultCc
     end note
 
@@ -58,7 +58,7 @@ activate p1ProOrch #LightCyan
     activate p1Trans #LightCyan
 
       note over p1Trans
-        Transmit object
+        Transmits object
         to Kafka
       end note
 
@@ -71,7 +71,7 @@ activate p1ProOrch #LightCyan
   activate p1Store #LightCyan
 
     note over p1Store
-      Store resultCc
+      Stores resultCc
     end note
 
   p1ProOrch <-- p1Store

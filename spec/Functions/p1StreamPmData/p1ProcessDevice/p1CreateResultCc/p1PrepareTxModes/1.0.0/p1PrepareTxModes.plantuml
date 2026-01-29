@@ -12,7 +12,7 @@ participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
 participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
 
 
-cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+cur -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
 activate prepTxModes #LightCyan
 
   loop FOR all [historicalPerformanceDataList]
@@ -21,7 +21,7 @@ activate prepTxModes #LightCyan
         IF time > 0
           THEN add transmissionMode to
                 [usedTransmissionModesList]
-          ELSE delete transmissionMode 
+          ELSE delete transmissionMode
                 from [timeXStatesList]
       end note
     end loop
@@ -30,9 +30,9 @@ activate prepTxModes #LightCyan
   loop FOR all [transmissionModeList]
 
     note over prepTxModes
-      IF transmissionMode NOT IN 
+      IF transmissionMode NOT IN
           [usedTransmissionModesList]
-        THEN 
+        THEN
           - Delete transmissionMode
             from [transmissionModeList]
         ELSE
@@ -44,7 +44,7 @@ activate prepTxModes #LightCyan
     prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
     activate aiCC #LightCyan
       note over aiCC
-        Calculate airInterfaceCapacity
+        Calculates airInterfaceCapacity
         according to ONF TR-532 v2.0 Chapter 6.5
       end note
     prepTxModes <-- aiCC: {airInterfaceCapacity}
@@ -53,17 +53,17 @@ activate prepTxModes #LightCyan
   end loop
 
   loop FOR all [historicalPerformanceDataList]
-    prepTxModes -> intCC : {[time-xstates-list],\n[transmission-mode-list]}
+    prepTxModes -> intCC : { [time-xstates-list],\n[transmission-mode-list] }
     activate intCC #LightCyan
       note over intCC
-        Calculate intervalCapacity
+        Calculates intervalCapacity
       end note
     prepTxModes <-- intCC: {intervalCapacity}
     deactivate intCC
 
   end loop
 
-cur <-- prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+cur <-- prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
 deactivate prepTxModes
 
 deactivate cur

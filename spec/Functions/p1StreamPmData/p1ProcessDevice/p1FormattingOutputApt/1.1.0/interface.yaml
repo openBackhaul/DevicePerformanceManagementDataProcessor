@@ -42,7 +42,6 @@ x-javascript-interface:
               type: string
               enum:
                 - 'resultCc not provided'
-                - 'resultCc incomplete'
                 - 'resultCc invalid'
                 - 'aptOutputFormat could not be provided'
                 - 'General processing error'
@@ -59,7 +58,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'resultCc
-                      from {$p1FormattingOutputApt.input#/result-cc}'
+                      from [/formatting-output-apt/result-cc]'
         output:
           success:
             description: 'Output object provided'

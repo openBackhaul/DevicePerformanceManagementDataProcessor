@@ -8,6 +8,7 @@ formatting-output-apt:
       description: >
         'ResultCc
         from {$input#/result-cc}'
+
     apt-output-format:
       type: object
       description: >

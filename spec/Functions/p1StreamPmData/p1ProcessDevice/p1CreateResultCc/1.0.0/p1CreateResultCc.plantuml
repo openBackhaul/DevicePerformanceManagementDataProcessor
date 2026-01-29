@@ -11,7 +11,7 @@ participant "p1CreateResultCc\n" as cur #LightCyan
 participant "p1Prepare\nTxModes" as prepTxModes #LightCyan
 participant "p1Calculate\nEthernetKpis" as ethKpis #LightCyan
 
-requestor -> cur: {{parameters},\n{rawCc}}
+requestor -> cur: { {parameters},\n{rawCc} }
 activate cur #LightCyan
 
   note over cur #LightCyan
@@ -20,7 +20,7 @@ activate cur #LightCyan
 
   loop FOR all AirInterfaces in resultCc
 
-    cur -> prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+    cur -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
     activate prepTxModes #LightCyan
 
       note over prepTxModes
@@ -43,33 +43,33 @@ activate cur #LightCyan
         performance data slices
       end note
 
-    cur <-- prepTxModes : {[historicalPerformanceDataList],\n[transmissionModeList]}
+    cur <-- prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
     deactivate prepTxModes
 
     ' ----- Link ID --------------------------
     note over cur
-      Add linkId to resultCc
+      Adds linkId to resultCc
     end note
 
     ' ----- Aggregation Group --------------------------
     note over cur
-      Add list of parallel LTPs
+      Adds list of parallel LTPs
     end note
 
     ' ----- mostRecentPeriodEndTime --------------------------
     note over cur
-      Add mostRecentPeriodEndTime
+      Adds mostRecentPeriodEndTime
       to resultCc
     end note
 
     note over cur
-      Add mostRecentPeriodEndTime24
+      Adds mostRecentPeriodEndTime24
       to resultCc
     end note
 
     ' ----- OutOfRange TxLevel --------------------------
     note over cur #LightGray
-      Delete attributes with 
+      Deletes attributes with
       values outside range
     end note
 
@@ -78,36 +78,36 @@ activate cur #LightCyan
   loop FOR all EthernetContainers in resultCc
 
     ' ----- EthContainer KPIs --------------------------
-    cur -> ethKpis : {[historicalPerformanceDataList]}
+    cur -> ethKpis : { [historicalPerformanceDataList] }
     activate ethKpis #LightCyan
 
         note over ethKpis
-          Add transmitTraffic
+          Adds transmitTraffic
         end note
 
         note over ethKpis
-          Add receiveTraffic
+          Adds receiveTraffic
         end note
 
         note over ethKpis
-          Add frameLossInput
+          Adds frameLossInput
         end note
 
         note over ethKpis
-          Add frameLossOutput
+          Adds frameLossOutput
         end note
 
-    cur <-- ethKpis : {[historicalPerformanceDataList]}
+    cur <-- ethKpis : { [historicalPerformanceDataList] }
     deactivate ethKpis
 
     ' ----- mostRecentPeriodEndTime --------------------------
     note over cur
-      Add mostRecentPeriodEndTime
+      Adds mostRecentPeriodEndTime
       to resultCc
     end note
 
     note over cur
-      Add mostRecentPeriodEndTime24
+      Adds mostRecentPeriodEndTime24
       to resultCc
     end note
 
@@ -121,11 +121,11 @@ activate cur #LightCyan
 
   ' ----- ONF default values --------------------------
   note over cur #LightGray
-    Delete attributes with 
+    Deletes attributes with
     ONF default values
   end note
 
-requestor <-- cur: {{resultCc}}
+requestor <-- cur: { {resultCc} }
 
 deactivate cur
 
