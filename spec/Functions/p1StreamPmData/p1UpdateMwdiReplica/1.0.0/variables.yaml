@@ -43,7 +43,7 @@ update-mwdi-replica:
       type: string
       description: >
         'Duration between two replications of the MWDI ES in seconds
-        from [/update-mwdi-replica/parameters/parameter=synchPeriod/value]'
+        from [/update-mwdi-replica/parameters/parameter=syncPeriod/value]'
     source-url:
       type: string
       description: >

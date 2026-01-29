@@ -1,11 +1,17 @@
 # General notes
 
+
+#===============================================================================================
+
 **kafkaProducerService**  
 The highlevel overview diagram shows the kafkaProducerService as a participant,
 but there is no related function folder or service explicitly specified.
 Kafka producer service is just mentioned in the p1InitKafka function folder.
 Maybe it would be good to somehow make this more transparent, because right 
 now it is not clear where to look for that, if the reader doesn't already know this.
+
+
+#===============================================================================================
 
 **Error handling**  
 As already written as an inline TODO comment in an interface.yaml, there are different types
@@ -18,8 +24,62 @@ will not filter any data.
 Maybe it would make sense, to categorize errors (explicitly) and apply different handling for them, depending on what
 the error entails for the caller.
 
+
+#===============================================================================================
+
 **FunctionProfile**  
 We have introduced a new profile type in profiles and profileInstances,
 but we have not yet added that to the applicationPattern.  
 Hence, the related additions to the OAS are still missing.
 Also see AppPattern issue #1089: https://github.com/openBackhaul/ApplicationPattern/issues/1089
+
+#===============================================================================================
+
+**p1RemoveOutOfRangeLevels**
+From profileInstances:
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-371'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-372'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-373'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-374'
+          owner: 'platform'
+
+parameters are upper and lower limits for level values.
+Who is allowed to change those?
+Owner might have to be changed from platform to something else.
+
+Same for **p1RemoveOutOfRangeTemperature**
+
+#===============================================================================================
+
+**ONF output**
+Added profileInstances (function + string) for onfOutput
+
+DOES onfFormat kafkaTransmitter string-value have to have another seq-num or the same (000 or 001)?
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-601'
+    capability:
+      string-name: 'aptFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-602'
+    capability:
+      string-name: 'onfFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
+
+#===============================================================================================
+
+**configFile**
+Needs to be re-created

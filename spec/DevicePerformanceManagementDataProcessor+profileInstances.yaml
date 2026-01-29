@@ -205,6 +205,8 @@ profile-instances:
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-091'
           owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-092'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -217,6 +219,15 @@ profile-instances:
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-092'
+    capability:
+      string-name: 'onfProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
 
 
   # p1MaintainDs
@@ -287,7 +298,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-122'
     capability:
-      string-name: 'synchPeriod'
+      string-name: 'syncPeriod'
       purpose: 'Duration between two replications of the MWDI ES in seconds'
     configuration:
       string-value: '480'
@@ -296,6 +307,7 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-string-p-123'
     capability:
       string-name: 'lastUpdatedField'
+      # TODO: what is the purpose of this?
       purpose: '?'
     configuration:
       string-value: 'lastUpdated'
@@ -342,6 +354,8 @@ profile-instances:
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-151'
           owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-152'
+          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-180'
         - 'dpmdp-1-0-0-function-p-270'
@@ -359,6 +373,15 @@ profile-instances:
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-152'
+    capability:
+      string-name: 'onfFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
 
 
   # p1LoadRawCc
@@ -434,9 +457,9 @@ profile-instances:
         - 'dpmdp-1-0-0-function-p-300'
         - 'dpmdp-1-0-0-function-p-301'
         - 'dpmdp-1-0-0-function-p-350'
-        - 'dpmdp-1-0-0-function-p-390'
-        - 'dpmdp-1-0-0-function-p-400'
+        - 'dpmdp-1-0-0-function-p-430'
         - 'dpmdp-1-0-0-function-p-440'
+        - 'dpmdp-1-0-0-function-p-840'
     configuration:
       is-active: true
 
@@ -481,7 +504,6 @@ profile-instances:
 
 
   # p1IterateAiPmSlices
-  # TODO: params prüfen
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-350'
     capability:
@@ -509,47 +531,50 @@ profile-instances:
 
 
   # p1RemoveOutOfRangeLevels
-  # TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-370'
     capability:
       function-name: 'p1RemoveOutOfRangeLevels'
       function-description: 'Removes out-of-range level attributes from a performance data slice'
       parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-371'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-372'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-373'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-374'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
-  # TODO: incomplete -->
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-371'
     capability:
       string-name: 'lowerTxLevelLimit'
       purpose: 'Lower bound of valid values of the transmit level'
     configuration:
       string-value: '-30'
 
-  # TODO: incomplete
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-372'
     capability:
       string-name: 'upperTxLevelLimit'
       purpose: 'Upper bound of valid values of the transmit level'
     configuration:
       string-value: '40'
 
-  # TODO: incomplete
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-373'
     capability:
       string-name: 'lowerRxLevelLimit'
       purpose: 'Lower bound of valid values of the receive level'
     configuration:
       string-value: '-10'
 
-  # TODO: incomplete
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-374'
     capability:
       string-name: 'upperRxLevelLimit'
       purpose: 'Upper bound of valid values of the receive level'
@@ -558,20 +583,66 @@ profile-instances:
 
 
   # p1RemoveDefaultValues
-  # TODO: incomplete
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-380'
     capability:
       function-name: 'p1RemoveDefaultValues'
-      function-description: ''
+      function-description: 'Deletes attributes with default values from the transferred object'
       parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-381'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-382'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-383'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-384'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-385'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-386'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-387'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-388'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-389'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-390'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-391'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-392'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-393'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-394'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-395'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-396'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-397'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-398'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-399'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-400'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-401'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-402'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-403'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-404'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
-  # TODO: incomplete -> all parameters lack the uuid seqnum
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-381'
     capability:
       string-name: 'es'
       purpose: 'Number of errored seconds'
@@ -579,7 +650,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-382'
     capability:
       string-name: 'ses'
       purpose: 'Number of severely errored seconds'
@@ -587,7 +658,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-383'
     capability:
       string-name: 'cses'
       purpose: 'Number of consecutive severely errored seconds'
@@ -595,7 +666,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-384'
     capability:
       string-name: 'unavailability'
       purpose: 'Total time of unavailability in seconds'
@@ -603,7 +674,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-385'
     capability:
       string-name: 'txLevelMin'
       purpose: 'Minimum transmit power in dBm'
@@ -611,7 +682,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-386'
     capability:
       string-name: 'txLevelMax'
       purpose: 'Maximum transmit power in dBm'
@@ -619,7 +690,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-387'
     capability:
       string-name: 'txLevelAvg'
       purpose: 'Averaged transmit power in dBm'
@@ -627,7 +698,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-389'
     capability:
       string-name: 'rxLevelMin'
       purpose: 'Minimum receive level in dBm'
@@ -635,7 +706,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-390'
     capability:
       string-name: 'rxLevelMax'
       purpose: 'Maximum receive level in dBm'
@@ -643,7 +714,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-391'
     capability:
       string-name: 'rxLevelAvg'
       purpose: 'Averaged receive level in dBm'
@@ -651,7 +722,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-394'
     capability:
       string-name: 'snirMin'
       purpose: 'Minimum signal to (noise+interference) ratio in dB'
@@ -659,7 +730,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-395'
     capability:
       string-name: 'snirMax'
       purpose: 'Maximum signal to (noise+interference) ratio in dB'
@@ -667,7 +738,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-396'
     capability:
       string-name: 'snirAvg'
       purpose: 'Averaged signal to (noise+interference) ratio in dB'
@@ -675,7 +746,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-397'
     capability:
       string-name: 'xpdMin'
       purpose: 'Minimum cross polarization discrimination in dB'
@@ -683,7 +754,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-398'
     capability:
       string-name: 'xpdMax'
       purpose: 'Maximum cross polarization discrimination in dB'
@@ -691,7 +762,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-399'
     capability:
       string-name: 'xpdAvg'
       purpose: 'Averaged cross polarization discrimination in dB'
@@ -699,7 +770,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-400'
     capability:
       string-name: 'rfTempMin'
       purpose: 'Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
@@ -707,7 +778,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-401'
     capability:
       string-name: 'rfTempMax'
       purpose: 'Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
@@ -715,7 +786,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-402'
     capability:
       string-name: 'rfTempAvg'
       purpose: 'Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
@@ -723,7 +794,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-403'
     capability:
       string-name: 'defectBlocksSum'
       purpose: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks'
@@ -731,7 +802,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-404'
     capability:
       string-name: 'timePeriod'
       purpose: 'Total length of the measurement period in seconds'
@@ -741,7 +812,7 @@ profile-instances:
 
   # p1CalculateEthernetKpis
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-390'
+    uuid: 'dpmdp-1-0-0-function-p-430'
     capability:
       function-name: 'p1CalculateEthernetKpis'
       function-description: 'Adds Ethernet KPIs to the historicalPerformanceDataList'
@@ -752,21 +823,23 @@ profile-instances:
 
 
   # p1IterateEcPmSlices
-  # TODO: incomplete
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-'
+    uuid: 'dpmdp-1-0-0-function-p-440'
     capability:
       function-name: 'p1IterateEcPmSlices'
       function-description: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
       parameter-list:
       sub-function-list:
+        - 'dpmdp-1-0-0-function-p-450'
+        - 'dpmdp-1-0-0-function-p-460'
+        - 'dpmdp-1-0-0-function-p-830'
     configuration:
       is-active: true
 
 
   # p2CalculateEthernetKpis
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-360'
+    uuid: 'dpmdp-1-0-0-function-p-450'
     capability:
       function-name: 'p2CalculateEthernetKpis'
       function-description: 'Adds Ethernet KPIs to the historicalPerformanceData set'
@@ -777,19 +850,64 @@ profile-instances:
 
 
   # p1RemoveDefaultValues
-  # TODO: function + params incomplete -->
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-420'
+    uuid: 'dpmdp-1-0-0-function-p-460'
     capability:
       function-name: 'p1RemoveDefaultValues'
-      function-description: ''
+      function-description: 'Deletes attributes with default values from the transferred object'
       parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-461'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-462'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-463'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-464'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-465'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-466'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-467'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-468'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-469'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-470'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-471'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-472'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-473'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-474'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-475'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-476'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-477'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-478'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-479'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-480'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-481'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-482'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-483'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-461'
     capability:
       string-name: 'maxBytesPerSecondOutput'
       purpose: 'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
@@ -797,7 +915,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-462'
     capability:
       string-name: 'totalBytesInput'
       purpose: 'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
@@ -805,7 +923,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-463'
     capability:
       string-name: 'totalBytesOutput'
       purpose: 'Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period'
@@ -813,7 +931,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-464'
     capability:
       string-name: 'timePeriod'
       purpose: 'Total length of the measurement period in seconds'
@@ -821,7 +939,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-465'
     capability:
       string-name: 'totalFramesInput'
       purpose: 'The total number of Ethernet frames received at this interface (including those received in error)'
@@ -829,7 +947,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-466'
     capability:
       string-name: 'totalFramesOutput'
       purpose: 'The total number of Ethernet frames sent at this interface'
@@ -837,7 +955,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-467'
     capability:
       string-name: 'forwardedFramesInput'
       purpose: 'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
@@ -845,7 +963,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-468'
     capability:
       string-name: 'forwardedFramesOutput'
       purpose: 'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
@@ -853,7 +971,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-469'
     capability:
       string-name: 'unicastFramesInput'
       purpose: 'Total number of unicast frames received at this interface'
@@ -861,7 +979,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-470'
     capability:
       string-name: 'unicastFramesOutput'
       purpose: 'Total number of unicast frames sent at this interface'
@@ -869,7 +987,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-471'
     capability:
       string-name: 'multicastFramesInput'
       purpose: 'Total number of multicast frames received at this interface'
@@ -877,7 +995,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-472'
     capability:
       string-name: 'multicastFramesOutput'
       purpose: 'Total number of multicast frames sent at this interface'
@@ -885,7 +1003,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-473'
     capability:
       string-name: 'broadcastFramesInput'
       purpose: 'Total number of broadcast frames received at this interface'
@@ -893,7 +1011,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-474'
     capability:
       string-name: 'broadcastFramesOutput'
       purpose: 'Total number of broadcast frames sent at this interface'
@@ -901,7 +1019,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-475'
     capability:
       string-name: 'fragmentedFramesInput'
       purpose: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
@@ -909,7 +1027,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-476'
     capability:
       string-name: 'erroredFramesInput'
       purpose: 'Total number of errored frames received at this interface'
@@ -917,7 +1035,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-477'
     capability:
       string-name: 'erroredFramesOutput'
       purpose: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
@@ -925,7 +1043,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-478'
     capability:
       string-name: 'droppedFramesInput'
       purpose: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
@@ -933,7 +1051,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-479'
     capability:
       string-name: 'droppedFramesOutput'
       purpose: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
@@ -941,7 +1059,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-480'
     capability:
       string-name: 'oversizedFramesIngress'
       purpose: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
@@ -949,7 +1067,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-481'
     capability:
       string-name: 'undersizedFramesIngress'
       purpose: 'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
@@ -957,7 +1075,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-482'
     capability:
       string-name: 'jabberFramesIngress'
       purpose: 'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
@@ -965,17 +1083,17 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-483'
     capability:
       string-name: 'unknownProtocolFramesInput'
       purpose: 'Total number of received frames that were transporting an unknown protocol'
     configuration:
       string-value: '-1'
 
+
   # p1CalculateUtilization
-  # TODO: prüfen
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-430'
+    uuid: 'dpmdp-1-0-0-function-p-500'
     capability:
       function-name: 'p1CalculateUtilization'
       function-description: 'Calculates utilization of the aggregated physical resources in a performance data slice'
@@ -986,19 +1104,22 @@ profile-instances:
 
 
   # p1RemoveOutOfRangeTemperature
-  # TODO: incomplete -->
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-440'
+    uuid: 'dpmdp-1-0-0-function-p-510'
     capability:
       function-name: 'p1RemoveOutOfRangeTemperature'
       function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
       parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-511'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-512'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-511'
     capability:
       string-name: 'lowerTemperatureLimit'
       purpose: 'Lower bound of valid values of the temperature'
@@ -1006,7 +1127,7 @@ profile-instances:
       string-value: '-30'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-'
+    uuid: 'dpmdp-1-0-0-string-p-512'
     capability:
       string-name: 'upperTemperatureLimit'
       purpose: 'Upper bound of valid values of the temperature'
@@ -1016,7 +1137,7 @@ profile-instances:
 
   # p1FormattingOutputApt
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-520'
+    uuid: 'dpmdp-1-0-0-function-p-540'
     capability:
       function-name: 'p1FormattingOutputApt'
       function-description: 'Transforms the resultCc into aptOutputFormat'
@@ -1028,54 +1149,33 @@ profile-instances:
 
   # p1FormattingOutputOnf
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-530'
+    uuid: 'dpmdp-1-0-0-function-p-550'
     capability:
       function-name: 'p1FormattingOutputOnf'
-      function-description: 'Creates a filtered ONF output format from the resultCc'
+      function-description: 'Transforms the resultCc into onfOutputFormat'
       parameter-list:
-      sub-function-list:
-        - 'dpmdp-1-0-0-function-p-540'
-    configuration:
-      is-active: true
-
-
-  # p1FieldsFilter
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-540'
-    capability:
-      function-name: 'p1FieldsFilter'
-      function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
-      parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-541'
-          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-541'
-    capability:
-      string-name: 'fieldsFilter'
-      purpose: 'Fields filter to be applied to reduce the ONF output format data'
-    configuration:
-      string-value: 'core-model-1-4:control-construct'
 
 
   # p1TransmittingKafka
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-550'
+    uuid: 'dpmdp-1-0-0-function-p-600'
     capability:
       function-name: 'p1TransmittingKafka'
       function-description: 'Transfers output data to Kafka transmitter'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-551'
+        - parameter: 'dpmdp-1-0-0-string-p-601'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-602'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-551'
+    uuid: 'dpmdp-1-0-0-string-p-601'
     capability:
       string-name: 'aptFormat'
       purpose: 'kafkaTransmitter'
@@ -1083,11 +1183,19 @@ profile-instances:
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-602'
+    capability:
+      string-name: 'onfFormat'
+      purpose: 'kafkaTransmitter'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
 
   # p1Storing
-  # TODO: params prüfen
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-580'
+    uuid: 'dpmdp-1-0-0-function-p-620'
     capability:
       function-name: 'p1Storing'
       function-description: 'Stores the resultCc into the DataStore'

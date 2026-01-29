@@ -664,7 +664,7 @@
               "parameter-list": [],
               "sub-function-list": [
                 "dpmdp-1-0-0-function-p-300",
-                "dpmdp-1-0-0-function-p-390"
+                "dpmdp-1-0-0-function-p-430"
               ]
             },
             "function-profile-configuration": {
@@ -721,7 +721,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-390",
+          "uuid": "dpmdp-1-0-0-function-p-430",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -736,7 +736,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-520",
+          "uuid": "dpmdp-1-0-0-function-p-540",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -751,7 +751,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-550",
+          "uuid": "dpmdp-1-0-0-function-p-560",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -759,7 +759,7 @@
               "function-description": "Transfers output data to Kafka transmitter",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-0-0-string-p-551",
+                  "parameter": "dpmdp-1-0-0-string-p-561",
                   "owner": "platform"
                 }
               ],
@@ -771,7 +771,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-string-p-551",
+          "uuid": "dpmdp-1-0-0-string-p-561",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
