@@ -380,69 +380,119 @@ load-raw-cc:
                                     properties:
                                       granularity-period:
                                         type: string
+                                        description: >
+                                          'Time period between reset of the underlying counter'
                                       period-end-time:
                                         type: string
+                                        description: >
+                                          'Time when the counter values have been recorded and the counter reset'
                                       performance-data:
                                         type: object
                                         properties:
                                           max-bytes-per-second-output:
                                             type: integer
+                                            description: >
+                                              'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
                                           total-bytes-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
                                           total-bytes-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period'
                                           time-period:
                                             type: integer
+                                            description: >
+                                              'Total length of the measurement period in seconds'
                                           total-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of Ethernet frames received at this interface (including those received in error'
                                           total-frames-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of Ethernet frames sent at this interface'
                                           forwarded-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
                                           forwarded-frames-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
                                           unicast-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of unicast frames received at this interface'
                                           unicast-frames-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of unicast frames sent at this interface'
                                           multicast-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of multicast frames received at this interface'
                                           multicast-frames-output:
                                             type: integer
+                                            description: >
+                                              'Total number of multicast frames sent at this interface'
                                           broadcast-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of broadcast frames received at this interface'
                                           broadcast-frames-output:
                                             type: integer
+                                            description: >
+                                              'Total number of broadcast frames sent at this interface'
                                           fragmented-frames-input:
                                             type: integer
+                                            description: >
+                                              'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
                                           errored-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of errored frames received at this interface'
                                           errored-frames-output:
                                             type: integer
+                                            description: >
+                                              'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
                                           dropped-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
                                           dropped-frames-output:
                                             type: integer
+                                            description: >
+                                              'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
                                           oversized-frames-ingress:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
                                           undersized-frames-ingress:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
                                           jabber-frames-ingress:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
                                           unknown-protocol-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of received frames that were transporting an unknown protocol'
         batch-timestamp:
           type: string
           description: >
