@@ -4,7 +4,7 @@ info:
   version: 1.0.0
 
 x-javascript-interface:
-  p1FormattingOutputApt: 
+  p1FormattingOutputApt:
     summary: 'Transforms data of resultCc into aptOutputFormat'
     input:
       required: true
@@ -96,12 +96,12 @@ x-javascript-interface:
                                     type: string
                                     description: >
                                       'Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}
+                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}'
                                   link-id:
                                     type: string
                                     description: >
                                       'Identifier of the microwave link as used in the Telefonica planning tools. To be obtained by extracting the substring constituted by the 9 first characters
-                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/link-id}
+                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/link-id}'
                                   logical-termination-point-id:
                                     type: string
                                     description: >
@@ -446,11 +446,11 @@ x-javascript-interface:
                                     type: string
                                     description: >
                                       'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6
-                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}
+                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}'
                                   logical-termination-point-id:
                                     type: string
                                     description: >
-                                      'Identifier of the ethernet container within the MW SDN domain'
+                                      'Identifier of the ethernet container within the MW SDN domain
                                       from {$input#/result-cc/logical-termination-point/uuid}'
                               ethernet-container-performance-measurements-list:
                                 type: array
@@ -592,11 +592,11 @@ x-javascript-interface:
                                       schema:
                                         type: string
                                         enum:
-                                        - 'resultCc not provided'
-                                        - 'resultCc incomplete'
-                                        - 'resultCc invalid'
-                                        - 'aptOutputFormat could not be provided'
-                                        - 'General processing error'
+                                          - 'resultCc not provided'
+                                          - 'resultCc incomplete'
+                                          - 'resultCc invalid'
+                                          - 'aptOutputFormat could not be provided'
+                                          - 'General processing error'
           error:
             description: 'Output object could not be created.'
             content:
@@ -604,11 +604,11 @@ x-javascript-interface:
                 schema:
                   type: string
                   enum:
-                  - 'resultCc not provided'
-                  - 'resultCc incomplete'
-                  - 'resultCc invalid'
-                  - 'output could not be provided'
-                  - 'General processing error'
+                    - 'resultCc not provided'
+                    - 'resultCc incomplete'
+                    - 'resultCc invalid'
+                    - 'output could not be provided'
+                    - 'General processing error'
 
 paths:
   /:
