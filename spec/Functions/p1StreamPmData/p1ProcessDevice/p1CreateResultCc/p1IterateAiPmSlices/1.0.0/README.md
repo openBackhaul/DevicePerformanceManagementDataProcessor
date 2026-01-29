@@ -19,3 +19,8 @@ Please find a detailed description of the [interface](interface.yaml).
 
 Please find a detailed description of the [variables](variables.yaml).
 
+
+### Parameters
+
+Just passing through parameters to sub-functions.  
+

@@ -25,6 +25,11 @@ Please find a detailed description of the [interface](./interface.yaml).
 Please find a detailed description of the [variables](variables.yaml).
 
 
+### Parameters
+
+Just passing through parameters to sub-functions.  
+
+
 ### Remarks
 
 #### Changes in 1.1.0
@@ -37,3 +42,4 @@ Following Functions have been added to the sequence:
 Following Functions are still part of the sequence, but have been marked deprecated:  
 - p1PrepareTxModes
 - p1CalculateEthernetKpis
+

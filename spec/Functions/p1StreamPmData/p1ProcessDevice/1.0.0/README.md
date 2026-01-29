@@ -40,3 +40,11 @@ Please find a detailed description of the [interface](./interface.yaml).
 ### Variables
 
 Please find a detailed description of the [variables](./variables.yaml).
+
+
+### Parameters
+
+| Parameter Name               | Description                                                                        |
+|------------------------------|------------------------------------------------------------------------------------|
+| [kafkaTransmitter]           | Special usage of the parameters. parameter-name is not static. For all parameters with purpose=="kafkaTransmitter", parameter-name contains a kafkaTransmitter |
+

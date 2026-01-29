@@ -20,3 +20,13 @@ Please find a detailed description of the [interface](interface.yaml).
 
 Please find a detailed description of the [variables](variables.yaml).
 
+
+### Parameters
+
+| Parameter Name               | Description                                                                        |
+|------------------------------|------------------------------------------------------------------------------------|
+| lowerTxLevelLimit            | Lower bound of valid values of the transmit level                                  |
+| upperTxLevelLimit            | Upper bound of valid values of the transmit level                                  |
+| lowerRxLevelLimit            | Lower bound of valid values of the receive level                                   |
+| upperRxLevelLimit            | Upper bound of valid values of the receive level                                   |
+
