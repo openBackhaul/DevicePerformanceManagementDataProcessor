@@ -50,7 +50,7 @@ x-javascript-interface:
                 - 'equipment not provided'
                 - 'equipment invalid'
                 - 'General processing error'
-      
+
 paths:
   /:
     description: 'no rest path provided by this module'

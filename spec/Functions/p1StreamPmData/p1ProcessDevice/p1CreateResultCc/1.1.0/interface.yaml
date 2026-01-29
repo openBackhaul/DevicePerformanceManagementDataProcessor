@@ -33,16 +33,16 @@ x-javascript-interface:
               required:
                 - result-cc
               properties:
-                  result-cc:
-                    type: object
-                    description: >
-                      'The result control construct, following ONF structure.
-                      from [/create-result-cc/result-cc]'
-                  interface-metadata-list:
-                    type: array
-                    description: >
-                      'interfaceMetadataList
-                      from [/create-result-cc/interface-metadata-list]'
+                result-cc:
+                  type: object
+                  description: >
+                    'The result control construct, following ONF structure.
+                    from [/create-result-cc/result-cc]'
+                interface-metadata-list:
+                  type: array
+                  description: >
+                    'interfaceMetadataList
+                    from [/create-result-cc/interface-metadata-list]'
       error:
         description: 'Result CC data could not be created'
         content:
@@ -261,7 +261,7 @@ x-javascript-interface:
                 schema:
                   type: string
       p1IterateAiPmSlices:
-        summary: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions''
+        summary: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
         input:
           required: true
           content:

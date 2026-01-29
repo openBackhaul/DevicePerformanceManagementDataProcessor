@@ -138,7 +138,7 @@ load-raw-cc:
         logical-termination-point:
           type: array
           description: >
-            'instance to be deleted, 
+            'instance to be deleted,
               if [./layer-protocol=*/layer-protocol-name] != [air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER OR ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER]'
           x-key: uuid
           items:

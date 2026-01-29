@@ -34,7 +34,7 @@ remove-out-of-range-temperature:
                     description: >
                       'temperature
                       to be deleted, if [ [{temperature}<{lower-temperature-limit}] OR [{temperature}>{upper-temperature-limit}] ]'
-    
+
     lower-temperature-limit:
       type: string
       description: >

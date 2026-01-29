@@ -1,7 +1,7 @@
 discard-irrelevant-pm-records:
   type: object
   required:
-  - historical-performance-data-list
+    - historical-performance-data-list
   properties:
     historical-performance-data-list:
       type: array
@@ -46,7 +46,7 @@ discard-irrelevant-pm-records:
       description: >
         '24h PM records not newer than this timestamp are to be discarded.
         If not provided, any 24h record passes.
-        from {$input#/most-recent-period-end-time-24}'   
+        from {$input#/most-recent-period-end-time-24}'
 
     filtered-historical-performance-data-list:
       type: array

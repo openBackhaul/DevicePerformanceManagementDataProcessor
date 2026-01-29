@@ -16,6 +16,7 @@ jobs:
             ignore: |
               /server/
               /testing/
+              /.github/workflows/
             rules:
               line-length: disable
               document-start: disable

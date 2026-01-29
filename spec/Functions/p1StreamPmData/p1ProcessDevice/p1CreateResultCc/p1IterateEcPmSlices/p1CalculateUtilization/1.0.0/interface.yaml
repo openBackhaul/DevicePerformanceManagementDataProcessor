@@ -68,16 +68,15 @@ x-javascript-interface:
             application/json:
               schema:
                 required:
-                  - logical-termination-point 
+                  - logical-termination-point
                   - physical-server-ltp-list
                   - period-end-time
                 properties:
                   logical-termination-point:
                     type: array
-                    #TODO: should be result-cc, not raw-cc
                     description: >
                       'logicalTerminationPoint list
-                      from [/calculate-utilization/raw-cc/logical-termination-point]'
+                      from [/calculate-utilization/result-cc/logical-termination-point]'
                   physical-server-ltp-list:
                     type: array
                     description: >
@@ -99,8 +98,8 @@ x-javascript-interface:
                     properties:
                       total-air-interface-interval-capacity:
                         type: integer
-                        #TODO: im from wird >historical-performance-data-list={period-end-time}< benutzt,
-                        # müsste das nicht sowas wie {$input.period-end-time} sein, damit klarer ist, wo das herkommt?
+                        # TODO: In the from section, >historical-performance-data-list={period-end-time}< is used.
+                        # Shouldn't it be something like {$input.period-end-time} so it's clearer where the value comes from?
                         description: >
                           'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
                           from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={period-end-time}/performance-data/interval-capacity}]
