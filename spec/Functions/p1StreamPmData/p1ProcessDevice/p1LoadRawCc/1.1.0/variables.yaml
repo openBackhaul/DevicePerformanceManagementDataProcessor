@@ -183,16 +183,28 @@ load-raw-cc:
                               properties:
                                 transmission-mode-min:
                                   type: string
+                                  description: >
+                                    'Minimum transmission mode to be configured (in case adaptive modulation is not used, this value represents also the fixed transmission mode)'
                                 transmission-mode-max:
                                   type: string
+                                  description: >
+                                    'Maximum transmission mode to be configured'
                                 tx-power:
                                   type: integer
+                                  description: >
+                                    'Transmit power to be configured on the microwave link. Signed Byte is required. The actually operated transmit power might be lower depending on adaptive modulation and ATPC'
                                 atpc-is-on:
                                   type: boolean
+                                  description: >
+                                    'ATPC. Activation of Automated Transmit Power Control shall be expressed as a true'
                                 atpc-thresh-upper:
                                   type: integer
+                                  description: >
+                                    'If the receive level at the local/remote site is higher than the upper threshold value, the transmitter at the remote/local site is notified to decrease transmit power. In case the device does not know upper and lower threshold values, but only a single reference value, the atpcThreshUpper shall not be available for configuration and constantly represent the default value'
                                 atpc-thresh-lower:
                                   type: integer
+                                  description: >
+                                    'If the receive level at the local/remote site is lower than the lower threshold value, the transmitter at the remote/local site is notified to increase transmit power. In case the device does not know upper and lower threshold values, but only a single reference value, the atpcThreshLower shall represent this reference value'
                             air-interface-capability:
                               type: object
                               properties:
@@ -204,21 +216,35 @@ load-raw-cc:
                                     properties:
                                       transmission-mode-name:
                                         type: string
+                                        description: >
+                                          'Name of the transmission mode. BBBB-m*-i*/t*-r*. B=four digits of channel bandwidth in MHz. m*=required number of digits for modulation name. (i*/t*=code rate.) i*=required number of digits for number of information bits. t*=required number of digits for total bits. r*=required number of digits for rate reduction factor. Example: 0028-4QAM-188/204-1'
                                       channel-bandwidth:
                                         type: integer
+                                        description: >
+                                          'Bandwidth of the transmit channel. The value shall be expressed explicitly (means in kHz) not as a reference to an international agreement. The values shall be chosen from the following _list: 3.500, 7.000, 14.000, 27.500, 28.000, 29.000, 29.650, 30.000, 40.000, 50.000, 55.000, 56.000, 59.300, 60.000, 80.000, 100.000, 112.000, 120.000, 150.000, 200.000, 250.000, 500.000, 750.000, 1.000.000, 1.250.000, 1.500.000, 1.750.000, 2.000.000'
                                       modulation-scheme:
                                         type: integer
+                                        description: >
+                                          'Modulation scheme, which is base to the other characteristics described in the same transmissionModeType data type. The modulation scheme shall be described by the number of states in the phase diagram (e.g. BPSK->'2' or 256QAM->'256')'
                                       modulation-scheme-name-at-lct:
                                         type: string
+                                        description: >
+                                          'Modulation scheme name, which is together with the applied channel bandwidth identifying this transmission mode at the graphical user interface of the local craft terminal'
                                       code-rate:
                                         type: integer
+                                        description: >
+                                          'Code rate of the coding scheme in % (Net bit rate is either smaller or equal to (Gross bit rate mulitplied with code rate) )'
                                       symbol-rate-reduction-factor:
                                         type: integer
+                                        description: >
+                                          'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
                             air-interface-current-performance:
                               type: object
                               properties:
                                 timestamp:
                                   type: string
+                                  description: >
+                                    'The timestamp associated with when the current data was collected'
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -233,31 +259,55 @@ load-raw-cc:
                                     properties:
                                       granularity-period:
                                         type: string
+                                        description: >
+                                          'Period of the performance data collection'
                                       period-end-time:
                                         type: string
+                                        description: >
+                                          'Time when the counter values have been recorded and the counter reset'
                                       performance-data:
                                         type: object
                                         properties:
                                           es:
                                             type: integer
+                                            description: >
+                                              'Number of errored seconds'
                                           ses:
                                             type: integer
+                                            description: >
+                                              'Number of severely errored seconds'
                                           cses:
                                             type: integer
+                                            description: >
+                                              'Number of consecutive severely errored seconds'
                                           unavailability:
                                             type: integer
+                                            description: >
+                                              'otal time of unavailability in seconds'
                                           tx-level-min:
                                             type: integer
+                                            description: >
+                                              'Minimum transmit power. Signed integers are required'
                                           tx-level-max:
                                             type: integer
+                                            description: >
+                                              'Maximum transmit power. Signed integers are required'
                                           tx-level-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged transmit power. Signed integers are required'
                                           rx-level-min:
                                             type: integer
+                                            description: >
+                                              'Minimum receive level. Signed integers are required'
                                           rx-level-max:
                                             type: integer
+                                            description: >
+                                              'Maximum receive level. Signed integers are required'
                                           rx-level-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged receive level. Signed integers are required'
                                           time-xstates-list:
                                             type: array
                                             x-key: transmission-mode
@@ -266,24 +316,44 @@ load-raw-cc:
                                               properties:
                                                 transmission-mode:
                                                   type: string
+                                                  description: >
+                                                    'Operated transmission mode'
                                                 time:
                                                   type: integer
+                                                  description: >
+                                                    'Sum of all seconds the transmitter operated the transmission mode'
                                           snir-min:
                                             type: integer
+                                            description: >
+                                              'Minimum signal to (noise+interference) ratio'
                                           snir-max:
                                             type: integer
+                                            description: >
+                                              'Maximum signal to (noise+interference) ratio'
                                           snir-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged signal to (noise+interference) ratio'
                                           xpd-min:
                                             type: integer
+                                            description: >
+                                              'Minimum cross polarization discrimination'
                                           xpd-max:
                                             type: integer
+                                            description: >
+                                              'Maximum cross polarization discrimination'
                                           xpd-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged cross polarization discrimination'
                                           defect-blocks-sum:
                                             type: integer
+                                            description: >
+                                              'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
                                           time-period:
                                             type: integer
+                                            description: >
+                                              'Total length of the measurement period'
                     - description: 'ethernet-container'
                       type: object
                       properties:
