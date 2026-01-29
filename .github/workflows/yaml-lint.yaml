@@ -19,8 +19,3 @@ jobs:
             rules:
               line-length: disable
               document-start: disable
-
-              trailing-spaces: disable
-              indentation: disable
-              new-line-at-end-of-file: disable
-              truthy: disable
