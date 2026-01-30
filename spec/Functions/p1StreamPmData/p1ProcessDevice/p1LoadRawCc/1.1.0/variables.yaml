@@ -84,9 +84,12 @@ load-raw-cc:
             external-label:
               type: string
               description: >
-                'mountName'
+                'mountName
+                The externalLabel attribute is for the operator to persistently store an identifier from his documentation inside the device'
             device-model-name:
               type: string
+              description: >
+                'Name of the device model according to its official documentation'
         equipment:
           type: array
           x-key: uuid
@@ -131,8 +134,12 @@ load-raw-cc:
                         properties:
                           client-ltp:
                             type: string
+                            description: >
+                              'UUID of the LTP with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER that is configured to be transported by a group of LTPs with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER or LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER'
                           server-ltp-list:
                             type: array
+                            description: >
+                              'List of UUIDs of a group of LTPs with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER or LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER that are configured to transport an LTP with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
                             items:
                               type: string
         logical-termination-point:
@@ -159,8 +166,12 @@ load-raw-cc:
                 properties:
                   external-label:
                     type: string
+                    description: >
+                      'The externalLabel attribute is for the operator to persistently store an identifier from his documentation inside the device'
                   original-ltp-name:
                     type: string
+                    description: >
+                      'Shall automatically be filled with a string that contains the logical- or physical interface name as it is represented at the vendor's own management interface e.g. LAN 1/2/1'
               layer-protocol:
                 type: array
                 x-key: local-id
