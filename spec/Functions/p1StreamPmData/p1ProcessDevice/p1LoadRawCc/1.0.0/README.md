@@ -27,9 +27,3 @@ Please find a detailed description of the [variables](variables.yaml).
 | fieldsFilter                 | Fields filter string to be applied for reducing the rawCc        |
 | relevantGranularities        | regex pattern indicating which data granularities are to be kept |
 
-
-### Remarks:
-
-**Change with DPMDP 1.1.0***  
-Additional /raw-cc/batch-timestamp attribute  
-

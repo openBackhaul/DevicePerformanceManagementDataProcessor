@@ -5,12 +5,12 @@ title
   p1RemoveOutOfRangeTemperature
 end title
 
-participant "p1CreateResultCc\n" as requestor #LightCyan
-participant "p1RemoveOutOfRange\nTemperature" as removeTemp #LightCyan
+participant "p1CreateResultCc\n" as requestor
+participant "p1RemoveOutOfRange\nTemperature" as removeTemp
 
 
   requestor -> removeTemp : { parameters,\n[equipment] }
-  activate removeTemp #LightCyan
+  activate removeTemp
 
     loop FOR [equipment]
 

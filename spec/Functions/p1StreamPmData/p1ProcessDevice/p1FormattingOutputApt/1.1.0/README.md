@@ -24,8 +24,3 @@ Please find a detailed description of the [existing APT interface format](./Outp
 
 Please find a detailed description of the [variables](variables.yaml).
 
-
-### Remarks
-
-The batchTimestamp has been added close to the CPU temperature in the 1.1.0 release.
-
