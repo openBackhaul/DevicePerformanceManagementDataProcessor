@@ -12,7 +12,7 @@ participant "p1ResolveEsAddress\n" as p1ResolveAddress #LightBlue
 participant "p1InitKafka\n" as p1InitKafka #LightBlue
 participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep #LightBlue
 
-participant "p1ProcessDevice\n" as p1ProcessPm #LightBlue
+participant "p1ProcessDevice\n" as p1ProcessPm
 
 participant "p1LoadRawCc\n" as p1AddRaw
 participant "p1FieldsFilter\n" as p1FieldsFilter
@@ -35,7 +35,7 @@ participant "p1Formatting\nOutputOnf" as p1OutputOnf
 
 participant "p1Transmitting\nKafka" as p1Trans
 
-participant "p1Storing\n" as p1Store #LightCyan
+participant "p1Storing\n" as p1Store
 participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
 
 note right embed
@@ -106,7 +106,7 @@ activate p1StreamPm #LightBlue
     Loop for every updated CC
 
       p1StreamPm -> p1ProcessPm
-      activate p1ProcessPm #LightBlue
+      activate p1ProcessPm
 
         p1ProcessPm -> p1AddRaw
         activate p1AddRaw
@@ -347,7 +347,7 @@ activate p1StreamPm #LightBlue
         deactivate p1Trans
 
         p1ProcessPm -> p1Store
-        activate p1Store #LightCyan
+        activate p1Store
 
           note over p1Store
             Store resultCc

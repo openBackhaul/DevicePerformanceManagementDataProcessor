@@ -6,25 +6,25 @@ title
 end title
 
 participant "p1StreamPmData\n" as requestor
-participant "p1ProcessDevice\n" as p1ProOrch #LightCyan
-participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
-participant "p1CreateResultCc\n" as p1CRC #LightCyan
-participant "p1Formatting\nOutputApt" as p1OutputApt #LightCyan
-participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightCyan
-participant "p1Transmitting\nKafka" as p1Trans #LightCyan
-participant "p1Storing\n" as p1Store #LightCyan
+participant "p1ProcessDevice\n" as p1ProOrch
+participant "p1LoadRawCc\n" as p1AddRaw
+participant "p1CreateResultCc\n" as p1CRC
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
+participant "p1Transmitting\nKafka" as p1Trans
+participant "p1Storing\n" as p1Store
 
 
 requestor -> p1ProOrch : { mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
-activate p1ProOrch #LightCyan
+activate p1ProOrch
 
   p1ProOrch -> p1AddRaw : { mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
-  activate p1AddRaw #LightCyan
+  activate p1AddRaw
 
     note over p1AddRaw
       - Loads rawCc from MWDI ES
       - Reduces structure of rawCc
-      - Deletess PM data that has
+      - Deletes PM data that has
         already been processed in past
     end note
 
@@ -32,7 +32,7 @@ activate p1ProOrch #LightCyan
   deactivate p1AddRaw
 
   p1ProOrch -> p1CRC : { {/parameters/sub-function=createResultCc},\n{rawCc} }
-  activate p1CRC #LightCyan
+  activate p1CRC
 
     note over p1CRC
       - Creates resultCc from rawCc
@@ -43,7 +43,7 @@ activate p1ProOrch #LightCyan
   deactivate p1CRC
 
   p1ProOrch -> p1OutputApt : { {resultCc} }
-  activate p1OutputApt #LightCyan
+  activate p1OutputApt
 
     note over p1OutputApt
       Creates aptOutputFormat
@@ -54,7 +54,7 @@ activate p1ProOrch #LightCyan
   deactivate p1OutputApt
 
   p1ProOrch -> p1OutputOnf : { {resultCc} }
-  activate p1OutputOnf #LightCyan
+  activate p1OutputOnf
 
     note over p1OutputOnf
       Creates onfOutputFormat
@@ -67,7 +67,7 @@ activate p1ProOrch #LightCyan
   loop FOR all [kafkaTransmitter]
 
     p1ProOrch -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat],\nkafkaTransmitter[n] }
-    activate p1Trans #LightCyan
+    activate p1Trans
 
       note over p1Trans
         Transmits object
@@ -80,7 +80,7 @@ activate p1ProOrch #LightCyan
   end loop
 
   p1ProOrch -> p1Store : { {dataStoreEsClient},\n{resultCc},\n{interfaceMetadataList} }
-  activate p1Store #LightCyan
+  activate p1Store
 
     note over p1Store
       Stores resultCc

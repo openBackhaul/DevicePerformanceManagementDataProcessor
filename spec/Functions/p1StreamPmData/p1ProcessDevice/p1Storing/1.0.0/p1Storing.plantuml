@@ -5,13 +5,13 @@ title
   p1Storing
 end title
 
-participant "p1ProcessDevice\n" as requestor #LightBlue
-participant "p1Storing\n" as cur #LightCyan
-database "DataStore" as ds #LightCyan
+participant "p1ProcessDevice\n" as requestor
+participant "p1Storing\n" as cur
+database "DataStore" as ds
 
 
 requestor -> cur : { {dataStoreEsClient},\n{resultCc},\n{interfaceMetadataList} }
-activate cur #LightCyan
+activate cur
 
   note over cur
     storeInterfaceMetadataList
