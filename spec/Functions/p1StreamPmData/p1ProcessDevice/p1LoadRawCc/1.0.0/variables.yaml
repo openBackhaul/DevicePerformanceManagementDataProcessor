@@ -129,7 +129,7 @@ load-raw-cc:
                   layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac:
                     type: object
                     properties:
-                      l1-aggregation-profile-configuration:
+                      layer-1-aggregation-profile-configuration:
                         type: object
                         properties:
                           client-ltp:

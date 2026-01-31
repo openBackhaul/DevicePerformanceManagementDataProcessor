@@ -44,7 +44,6 @@ note right embed
 end note
 embed -> p1StreamPm
 
-' replicate MWDI ES ->
 activate p1StreamPm
 
   p1StreamPm -> p1LoadParams

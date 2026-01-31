@@ -141,12 +141,12 @@ x-javascript-interface:
                             type: string
                             description: >
                               'UUID of transported EthernetContainer LTP
-                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/client-ltp}'
+                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/layer-1-aggregation-profile-configuration/client-ltp}'
                           server-ltp-list:
                             type: array
                             description: >
                               'List of UUIDs of transporting PureEthernetStructure or HybridMwStructure LTPs
-                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/l1-aggregation-profile-configuration/server-ltp-list}'
+                              from {$input#/raw-cc/profile-collection/profile={uuid}/layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac/layer-1-aggregation-profile-configuration/server-ltp-list}'
                             items:
                               type: string
                           physical-server-ltp-list:
