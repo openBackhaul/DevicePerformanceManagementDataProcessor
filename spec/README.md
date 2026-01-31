@@ -58,7 +58,7 @@ Although the sequence of function calls is hard-coded, actually calling a functi
         - [p1RemoveOutOfRangeLevels](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveOutOfRangeLevels/1.0.0)  
         - [p1RemoveDefaultValues*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveDefaultValues/1.0.0)  
       - [p1IterateEcPmSlices](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/1.0.0)  
-        - [p2CalculateEthernetKpis](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p2CalculateEthernetKpis/1.0.0)  
+        - [p1CalculateEthernetKpis](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p1CalculateEthernetKpis/1.0.0)  
         - [p1RemoveDefaultValues*](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveDefaultValues/1.0.0)  
         - [p1CalculateUtilization](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p1CalculateUtilization/1.0.0)  
       - [p1RemoveOutOfRangeTemperatures](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1RemoveOutOfRangeTemperatures/1.0.0)

@@ -8,7 +8,7 @@ end title
 participant "p1CreateResultCc\n" as cur #LightCyan
 
 participant "p1IterateEc\nPmSlices" as iterateSlices #LightCyan
-participant "p2Calculate\nEthernetKpis" as intCC #LightCyan
+participant "p1Calculate\nEthernetKpis" as intCC #LightCyan
 participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
 participant "p1Calculate\nUtilization" as p1CalcUtil #LightCyan
 

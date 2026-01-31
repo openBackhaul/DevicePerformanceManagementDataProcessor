@@ -775,18 +775,6 @@ profile-instances:
       string-value: '-1'
 
 
-  # p1CalculateEthernetKpis
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-430'
-    capability:
-      function-name: 'p1CalculateEthernetKpis'
-      function-description: 'Adds Ethernet KPIs to the historicalPerformanceDataList'
-      parameter-list:
-      sub-function-list:
-    configuration:
-      is-active: false
-
-
   # p1IterateEcPmSlices
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-440'
@@ -802,11 +790,11 @@ profile-instances:
       is-active: true
 
 
-  # p2CalculateEthernetKpis
+  # p1CalculateEthernetKpis
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-450'
     capability:
-      function-name: 'p2CalculateEthernetKpis'
+      function-name: 'p1CalculateEthernetKpis'
       function-description: 'Adds Ethernet KPIs to the historicalPerformanceData set'
       parameter-list:
       sub-function-list:

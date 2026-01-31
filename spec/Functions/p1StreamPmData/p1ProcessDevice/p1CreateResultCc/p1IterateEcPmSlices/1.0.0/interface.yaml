@@ -79,7 +79,7 @@ x-javascript-interface:
                 - 'mostRecentPeriodEndTime24 could not be provided'
                 - 'General processing error'
     processing:
-      p2CalculateEthernetKpis:
+      p1CalculateEthernetKpis:
         summary: 'Adds Ethernet KPIs to a historicalPerformanceData set'
         input:
           required: true

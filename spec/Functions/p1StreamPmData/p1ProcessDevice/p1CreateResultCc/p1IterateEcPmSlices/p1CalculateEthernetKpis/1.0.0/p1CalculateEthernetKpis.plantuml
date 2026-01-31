@@ -1,15 +1,15 @@
-@startuml p2CalculateEthernetKpis
+@startuml p1CalculateEthernetKpis
 skinparam responseMessageBelowArrow true
 
 title
-  p2CalculateEthernetKpis
+  p1CalculateEthernetKpis
 end title
 
-participant "p1IterateEc\nPmSlices" as requestor #LightCyan
-participant "p2Calculate\nEthernetKpis" as ethKpis #LightCyan
+participant "p1IterateEcPmSlices\n" as requestor
+participant "p1CalculateEthernetKpis\n" as ethKpis
 
-requestor -> ethKpis : {historicalPerformanceData}
-activate ethKpis #LightCyan
+requestor -> ethKpis : { historicalPerformanceData }
+activate ethKpis
 
     note over ethKpis
       Adds transmitTraffic
@@ -27,7 +27,7 @@ activate ethKpis #LightCyan
       Adds frameLossOutput
     end note
 
-requestor <-- ethKpis : {historicalPerformanceData}
+requestor <-- ethKpis : { historicalPerformanceData }
 deactivate ethKpis
 
 deactivate requestor

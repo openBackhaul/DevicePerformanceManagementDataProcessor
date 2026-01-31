@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p1CalculateEthernetKpis:
-    summary: 'Adds Ethernet KPIs to historicalPerformanceDataList'
+    summary: 'Adds Ethernet KPIs to a historicalPerformanceData set'
     input:
       required: true
       content:
@@ -13,12 +13,12 @@ x-javascript-interface:
           schema:
             type: object
             required:
-              - historical-performance-data-list
+              - historical-performance-data
             properties:
-              historical-performance-data-list:
+              historical-performance-data:
                 type: array
                 description: >
-                  'historicalPerformanceDataList'
+                  'historicalPerformanceData set'
     output:
       success:
         description: 'Ethernet KPIs added'
@@ -27,13 +27,13 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - historical-performance-data-list
+                - historical-performance-data
               properties:
-                historical-performance-data-list:
-                  type: array
+                historical-performance-data:
+                  type: object
                   description: >
-                    'historicalPerformanceDataList
-                    from [/calculate-ethernet-kpis/historical-performance-data-list]'
+                    'historicalPerformanceData
+                    from [/calculate-ethernet-kpis/historical-performance-data]'
       error:
         description: 'Ethernet KPIs could not be added'
         content:
@@ -41,9 +41,9 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'historicalPerformanceDataList not provided'
-                - 'historicalPerformanceDataList incomplete'
-                - 'historicalPerformanceDataList invalid'
+                - 'historicalPerformanceData not provided'
+                - 'historicalPerformanceData incomplete'
+                - 'historicalPerformanceData invalid'
                 - 'transmitTraffic could not be provided'
                 - 'receiveTraffic could not be provided'
                 - 'frameLossInput could not be provided'
@@ -66,12 +66,12 @@ x-javascript-interface:
                     type: string
                     description: >
                       'totalBytesOutput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/total-bytes-output]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/total-bytes-output]'
                   time-period:
                     type: integer
                     description: >
                       'timePeriod in seconds
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/time-period]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/time-period]'
         output:
           success:
             description: 'transmitTraffic provided'
@@ -115,12 +115,12 @@ x-javascript-interface:
                     type: string
                     description: >
                       'totalBytesInput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/total-bytes-input]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/total-bytes-input]'
                   time-period:
                     type: integer
                     description: >
                       'timePeriod in seconds
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/time-period]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/time-period]'
         output:
           success:
             description: 'receiveTraffic provided'
@@ -164,12 +164,12 @@ x-javascript-interface:
                     type: integer
                     description: >
                       'erroredFramesInput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/errored-frames-input]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/errored-frames-input]'
                   dropped-frames-input:
                     type: integer
                     description: >
                       'droppedFramesInput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/dropped-frames-input]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/dropped-frames-input]'
         output:
           success:
             description: 'Total frameLossInput provided'
@@ -213,12 +213,12 @@ x-javascript-interface:
                     type: integer
                     description: >
                       'erroredFramesOutput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/errored-frames-output]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/errored-frames-output]'
                   dropped-frames-output:
                     type: integer
                     description: >
                       'droppedFramesOutput
-                      from [/calculate-ethernet-kpis/historical-performance-data-list=*/performance-data/dropped-frames-output]'
+                      from [/calculate-ethernet-kpis/historical-performance-data/dropped-frames-output]'
         output:
           success:
             description: 'Total frameLossOutput provided'
