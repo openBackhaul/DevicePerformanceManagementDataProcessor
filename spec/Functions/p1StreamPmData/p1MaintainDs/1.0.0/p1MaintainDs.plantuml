@@ -5,12 +5,12 @@ title
   p1MaintainDs
 end title
 
-participant "p1StreamPmData\n" as requestor #LightBlue
-participant "p1MaintainDs\n" as p1Main #LightCyan
-database "DataStore" as ds #LightCyan
+participant "p1StreamPmData\n" as requestor
+participant "p1MaintainDs\n" as p1Main
+database "DataStore" as ds
 
 requestor -> p1Main : { {parameters},\n{dataStoreEsClient} }
-activate p1Main #LightCyan
+activate p1Main
 
   loop endlessly re-started after cleanupPeriod
 

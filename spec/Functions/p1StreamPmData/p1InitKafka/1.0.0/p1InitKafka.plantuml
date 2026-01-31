@@ -6,13 +6,13 @@ title
 end title
 
 participant "requestor\n" as requestor
-participant "p1InitKafka\n" as p1Init #LightCyan
-participant "kafkaProducerService.\nconnect" as p1KafkaP #LightCyan
-participant "kafkaConsumerService.\nconnect" as p1KafkaC #LightCyan
+participant "p1InitKafka\n" as p1Init
+participant "kafkaProducerService.\nconnect" as p1KafkaP
+participant "kafkaConsumerService.\nconnect" as p1KafkaC
 queue "kafka\n" as kafka
 
 requestor -> p1Init : { {parameters},\n{configFile} }
-activate p1Init #LightCyan
+activate p1Init
 
   note over p1Init
     Resolves Kafka address
@@ -30,7 +30,7 @@ activate p1Init #LightCyan
     end note
 
     p1Init -> p1KafkaP : {clientId,\nbrokerList}
-    activate p1KafkaP #LightCyan
+    activate p1KafkaP
 
       note over p1KafkaP
         Establishes producer
@@ -50,7 +50,7 @@ activate p1Init #LightCyan
     end note
 
     p1Init -> p1KafkaC : {groupId,\nclientId,\nbrokerList}
-    activate p1KafkaC #LightCyan
+    activate p1KafkaC
 
       note over p1KafkaC
         Establishes consumer

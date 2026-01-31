@@ -5,14 +5,14 @@ title
   p1LoadParameters
 end title
 
-participant "requestor\n" as p1RMWDI #LightGrey
-participant "p1LoadParameters\n" as p1LP #LightCyan
-participant "configFile\n" as p1CF #LightCyan
+participant "requestor\n" as p1RMWDI
+participant "p1LoadParameters\n" as p1LP
+participant "configFile\n" as p1CF
 
-activate p1RMWDI #LightGrey
+activate p1RMWDI
 
 p1RMWDI -> p1LP : {functionName}
-activate p1LP #LightCyan
+activate p1LP
 
   note right p1LP
     loads the application's
