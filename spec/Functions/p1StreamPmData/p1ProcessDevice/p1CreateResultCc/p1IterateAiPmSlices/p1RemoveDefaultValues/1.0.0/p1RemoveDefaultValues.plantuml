@@ -5,14 +5,21 @@ title
   p1RemoveDefaultValues
 end title
 
-participant "p1IterateAi\nPmSlices" as requestor1 #LightCyan
-participant "p1IterateEc\nPmSlices" as requestor2 #LightCyan
+participant "p1IterateAi\nPmSlices" as requestor1
+participant "p1IterateEc\nPmSlices" as requestor2
 
-participant "p1RemoveDefaultValues\n" as removeDefault #LightCyan
+participant "p1RemoveDefaultValues\n" as removeDefault
+
+note over removeDefault #Salmon
+  GenericFunction that gets called
+  by multiple requestors at different
+  places in the overall sequence
+end note
 
 
-  requestor1 -> removeDefault : {parameters,\nperformanceData}
-  activate removeDefault #LightCyan
+
+  requestor1 -> removeDefault : { parameters,\nperformanceData }
+  activate removeDefault
 
     note over removeDefault
       Creates [default-value-list]
@@ -28,19 +35,22 @@ participant "p1RemoveDefaultValues\n" as removeDefault #LightCyan
 
     end loop
 
-  requestor1 <-- removeDefault: {performanceData}
+  requestor1 <-- removeDefault: { performanceData }
   deactivate removeDefault
 
 
-  requestor2 -> removeDefault : {parameters,\nperformanceData}
-  activate removeDefault #LightCyan
+
+  requestor2 -> removeDefault : { parameters,\nperformanceData }
+  activate removeDefault
 
     note over removeDefault
       Same as above, but
       with different parameters
     end note
 
-  requestor2 <-- removeDefault: {performanceData}
+  requestor2 <-- removeDefault: { performanceData }
   deactivate removeDefault
+
+
 
 @enduml

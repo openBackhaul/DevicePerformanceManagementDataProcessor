@@ -6,14 +6,14 @@ title
 end title
 
 participant "p1IterateAi\nPmSlices" as requestor
-participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
+participant "p1Calculate\nIntervalCapacity" as intCC
 
   requestor -> intCC : { [time-xstates-list],\n[transmission-mode-list] }
-  activate intCC #LightBlue
+  activate intCC
     note over intCC
       Calculates intervalCapacity
     end note
-  requestor <-- intCC: {intervalCapacity}
+  requestor <-- intCC: { intervalCapacity }
   deactivate intCC
 
 @enduml

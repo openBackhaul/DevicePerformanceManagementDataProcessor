@@ -6,11 +6,11 @@ title
 end title
 
 participant "p1IterateAiPmSlices\n" as requestor
-participant "p1RemoveOutOfRangeLevels\n" as removeLevels #LightCyan
+participant "p1RemoveOutOfRangeLevels\n" as removeLevels
 
 
-  requestor -> removeLevels : {parameters,\nperformanceData}
-  activate removeLevels #LightCyan
+  requestor -> removeLevels : { parameters,\nperformanceData }
+  activate removeLevels
 
     note over removeLevels
       IF value of txLevelMin outside [lowerTxLevelLimit, upperTxLevelLimit]
@@ -42,7 +42,7 @@ participant "p1RemoveOutOfRangeLevels\n" as removeLevels #LightCyan
         THEN delete rxLevelAvg attribute
     end note
 
-  requestor <-- removeLevels: {performanceData}
+  requestor <-- removeLevels: { performanceData }
   deactivate removeLevels
 
 @enduml

@@ -21,10 +21,10 @@ participant "p1DiscardIrrelevant\nPmRecords" as filterPm
 participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
 participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
-participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
-participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
-participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
-participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
+participant "p1IterateAi\nPmSlices" as aiSlices
+participant "p1Calculate\nIntervalCapacity" as intCC
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL
+participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #BurlyWood
 participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
 participant "p2Calculate\nEthernetKpis" as p2EthKpi #LightCyan
@@ -183,10 +183,10 @@ activate p1StreamPm #LightBlue
             deactivate p1prepTxModes
 
             p1CreateResultCc -> aiSlices
-            activate aiSlices #LightCyan
+            activate aiSlices
 
                 aiSlices -> intCC
-                activate intCC #LightBlue
+                activate intCC
 
                   note over intCC
                     Calculates
@@ -197,7 +197,7 @@ activate p1StreamPm #LightBlue
                 deactivate intCC
 
                 aiSlices -> p1RORL
-                activate p1RORL #LightCyan
+                activate p1RORL
 
                   note over p1RORL
                     Deletes RxLevel and TxLevel
@@ -209,7 +209,7 @@ activate p1StreamPm #LightBlue
                 deactivate p1RORL
 
                 aiSlices -> p1RemDefault
-                activate p1RemDefault #LightCyan
+                activate p1RemDefault
 
                   note over p1RemDefault
                     Deletes attributes with
