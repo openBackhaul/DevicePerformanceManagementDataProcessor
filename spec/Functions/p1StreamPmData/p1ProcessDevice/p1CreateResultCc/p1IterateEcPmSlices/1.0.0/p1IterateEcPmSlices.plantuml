@@ -5,16 +5,16 @@ title
   p1IterateEcPmSlices
 end title
 
-participant "p1CreateResultCc\n" as cur #LightCyan
+participant "p1CreateResultCc\n" as cur
 
-participant "p1IterateEc\nPmSlices" as iterateSlices #LightCyan
-participant "p1Calculate\nEthernetKpis" as intCC #LightCyan
-participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
-participant "p1Calculate\nUtilization" as p1CalcUtil #LightCyan
+participant "p1IterateEcPmSlices\n" as iterateSlices
+participant "p1Calculate\nEthernetKpis" as intCC
+participant "p1Remove\nDefaultValues" as p1RemDefault
+participant "p1Calculate\nUtilization" as p1CalcUtil
 
 
 cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
-activate iterateSlices #LightCyan
+activate iterateSlices
 
   note over iterateSlices
     Initializes:
@@ -24,28 +24,28 @@ activate iterateSlices #LightCyan
 
   loop FOR [historicalPerformanceDataList]
 
-    iterateSlices -> intCC : {historical-performance-data}
-    activate intCC #LightCyan
+    iterateSlices -> intCC : { {historical-performance-data} }
+    activate intCC
       note over intCC
         Adds Ethernet KPIs
       end note
-    iterateSlices <-- intCC: {historical-performance-data}
+    iterateSlices <-- intCC: { {historical-performance-data} }
     deactivate intCC
 
     iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{historical-performance-data} }
-    activate p1RemDefault #LightCyan
+    activate p1RemDefault
       note over p1RemDefault
         Deletes default values
       end note
-    iterateSlices <-- p1RemDefault: {historical-performance-data}
+    iterateSlices <-- p1RemDefault: { {historical-performance-data} }
     deactivate p1RemDefault
 
     iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
-    activate p1CalcUtil #LightCyan
+    activate p1CalcUtil
       note over p1CalcUtil
         Adds utilization
       end note
-    iterateSlices <-- p1CalcUtil: {historical-performance-data}
+    iterateSlices <-- p1CalcUtil: { {historical-performance-data} }
     deactivate p1CalcUtil
 
     note over iterateSlices

@@ -5,21 +5,21 @@ title
   p1CalculateUtilization
 end title
 
-participant "p1IterateEc\nPmSlices" as requestor #LightCyan
-participant "p1Calculate\nUtilization" as p1CalcUtil #LightCyan
+participant "p1IterateEcPmSlices\n" as requestor
+participant "p1CalculateUtilization\n" as p1CalcUtil
 
 
 requestor -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
-activate p1CalcUtil #LightCyan
+activate p1CalcUtil
 
   note over p1CalcUtil
     IF /historical-performance-data/granularity-period == '15min'
   end note
-
+  
   note left p1CalcUtil
     ELSE
   end note
-  requestor <-- p1CalcUtil : {historical-performance-data}
+  requestor <-- p1CalcUtil : { {historical-performance-data} }
 
   note over p1CalcUtil
     THEN
@@ -35,7 +35,7 @@ activate p1CalcUtil #LightCyan
     utilization = totalBytesOutput / totalAirInterfaceIntervalCapacity
   end note
 
-requestor <-- p1CalcUtil : {historical-performance-data}
+requestor <-- p1CalcUtil : { {historical-performance-data} }
 deactivate p1CalcUtil
 
 deactivate requestor

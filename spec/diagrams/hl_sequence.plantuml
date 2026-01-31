@@ -25,9 +25,9 @@ participant "p1IterateAi\nPmSlices" as aiSlices
 participant "p1Calculate\nIntervalCapacity" as intCC
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL
 participant "p1Remove\nDefaultValues" as p1RemDefault
-participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
+participant "p1IterateEc\nPmSlices" as ecSlices
 participant "p1Calculate\nEthernetKpis" as p1EthKpi
-participant "p1Calculate\nUtilization" as p1Util #LightCyan
+participant "p1Calculate\nUtilization" as p1Util
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
 
 participant "p1Formatting\nOutputApt" as p1OutputApt #LightCyan
@@ -243,7 +243,7 @@ activate p1StreamPm #LightBlue
           loop FOR all EthernetContainers in resultCc
 
             p1CreateResultCc -> ecSlices
-            activate ecSlices #LightCyan
+            activate ecSlices
 
               ecSlices -> p1EthKpi
               activate p1EthKpi
@@ -256,7 +256,7 @@ activate p1StreamPm #LightBlue
               deactivate p1EthKpi
 
               ecSlices -> p1RemDefault
-              activate p1RemDefault #LightCyan
+              activate p1RemDefault
 
                 note over p1RemDefault
                   Deletes default values
@@ -267,7 +267,7 @@ activate p1StreamPm #LightBlue
               deactivate p1RemDefault
 
               ecSlices -> p1Util
-              activate p1Util #LightCyan
+              activate p1Util
 
                 note over p1Util
                   Add utilization
