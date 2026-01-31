@@ -128,6 +128,7 @@ profile-instances:
     configuration:
       is-active: true
 
+
   # p1LoadParameters
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-030'
@@ -434,11 +435,9 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-300'
-        - 'dpmdp-1-0-0-function-p-301'
         - 'dpmdp-1-0-0-function-p-350'
-        - 'dpmdp-1-0-0-function-p-430'
         - 'dpmdp-1-0-0-function-p-440'
-        - 'dpmdp-1-0-0-function-p-840'
+        - 'dpmdp-1-0-0-function-p-510'
     configuration:
       is-active: true
 
@@ -477,8 +476,8 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-360'
-        - 'dpmdp-1-0-0-function-p-370'
         - 'dpmdp-1-0-0-function-p-380'
+        - 'dpmdp-1-0-0-function-p-410'
     configuration:
       is-active: true
 
@@ -497,25 +496,25 @@ profile-instances:
 
   # p1RemoveOutOfRangeLevels
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-370'
+    uuid: 'dpmdp-1-0-0-function-p-380'
     capability:
       function-name: 'p1RemoveOutOfRangeLevels'
       function-description: 'Removes out-of-range level attributes from a performance data slice'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-371'
+        - parameter: 'dpmdp-1-0-0-string-p-381'
           owner: 'engineering'
-        - parameter: 'dpmdp-1-0-0-string-p-372'
+        - parameter: 'dpmdp-1-0-0-string-p-382'
           owner: 'engineering'
-        - parameter: 'dpmdp-1-0-0-string-p-373'
+        - parameter: 'dpmdp-1-0-0-string-p-383'
           owner: 'engineering'
-        - parameter: 'dpmdp-1-0-0-string-p-374'
+        - parameter: 'dpmdp-1-0-0-string-p-384'
           owner: 'engineering'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-371'
+    uuid: 'dpmdp-1-0-0-string-p-381'
     capability:
       string-name: 'lowerTxLevelLimit'
       purpose: 'Lower bound of valid values of the transmit level'
@@ -523,7 +522,7 @@ profile-instances:
       string-value: '-30'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-372'
+    uuid: 'dpmdp-1-0-0-string-p-382'
     capability:
       string-name: 'upperTxLevelLimit'
       purpose: 'Upper bound of valid values of the transmit level'
@@ -531,7 +530,7 @@ profile-instances:
       string-value: '40'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-373'
+    uuid: 'dpmdp-1-0-0-string-p-383'
     capability:
       string-name: 'lowerRxLevelLimit'
       purpose: 'Lower bound of valid values of the receive level'
@@ -539,7 +538,7 @@ profile-instances:
       string-value: '-10'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-374'
+    uuid: 'dpmdp-1-0-0-string-p-384'
     capability:
       string-name: 'upperRxLevelLimit'
       purpose: 'Upper bound of valid values of the receive level'
@@ -549,65 +548,63 @@ profile-instances:
 
   # p1RemoveDefaultValues
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-380'
+    uuid: 'dpmdp-1-0-0-function-p-410'
     capability:
       function-name: 'p1RemoveDefaultValues'
       function-description: 'Deletes attributes with default values from the transferred object'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-381'
+        - parameter: 'dpmdp-1-0-0-string-p-411'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-382'
+        - parameter: 'dpmdp-1-0-0-string-p-412'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-383'
+        - parameter: 'dpmdp-1-0-0-string-p-413'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-384'
+        - parameter: 'dpmdp-1-0-0-string-p-414'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-385'
+        - parameter: 'dpmdp-1-0-0-string-p-415'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-386'
+        - parameter: 'dpmdp-1-0-0-string-p-416'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-387'
+        - parameter: 'dpmdp-1-0-0-string-p-417'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-388'
+        - parameter: 'dpmdp-1-0-0-string-p-419'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-389'
+        - parameter: 'dpmdp-1-0-0-string-p-420'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-390'
+        - parameter: 'dpmdp-1-0-0-string-p-421'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-391'
+        - parameter: 'dpmdp-1-0-0-string-p-422'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-392'
+        - parameter: 'dpmdp-1-0-0-string-p-423'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-393'
+        - parameter: 'dpmdp-1-0-0-string-p-424'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-394'
+        - parameter: 'dpmdp-1-0-0-string-p-425'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-395'
+        - parameter: 'dpmdp-1-0-0-string-p-426'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-396'
+        - parameter: 'dpmdp-1-0-0-string-p-427'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-397'
+        - parameter: 'dpmdp-1-0-0-string-p-428'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-398'
+        - parameter: 'dpmdp-1-0-0-string-p-429'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-399'
+        - parameter: 'dpmdp-1-0-0-string-p-430'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-400'
+        - parameter: 'dpmdp-1-0-0-string-p-431'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-401'
+        - parameter: 'dpmdp-1-0-0-string-p-432'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-402'
+        - parameter: 'dpmdp-1-0-0-string-p-433'
           owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-403'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-404'
+        - parameter: 'dpmdp-1-0-0-string-p-434'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-381'
+    uuid: 'dpmdp-1-0-0-string-p-411'
     capability:
       string-name: 'es'
       purpose: 'Number of errored seconds'
@@ -615,7 +612,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-382'
+    uuid: 'dpmdp-1-0-0-string-p-412'
     capability:
       string-name: 'ses'
       purpose: 'Number of severely errored seconds'
@@ -623,7 +620,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-383'
+    uuid: 'dpmdp-1-0-0-string-p-413'
     capability:
       string-name: 'cses'
       purpose: 'Number of consecutive severely errored seconds'
@@ -631,7 +628,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-384'
+    uuid: 'dpmdp-1-0-0-string-p-414'
     capability:
       string-name: 'unavailability'
       purpose: 'Total time of unavailability in seconds'
@@ -639,7 +636,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-385'
+    uuid: 'dpmdp-1-0-0-string-p-415'
     capability:
       string-name: 'txLevelMin'
       purpose: 'Minimum transmit power in dBm'
@@ -647,7 +644,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-386'
+    uuid: 'dpmdp-1-0-0-string-p-416'
     capability:
       string-name: 'txLevelMax'
       purpose: 'Maximum transmit power in dBm'
@@ -655,7 +652,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-387'
+    uuid: 'dpmdp-1-0-0-string-p-417'
     capability:
       string-name: 'txLevelAvg'
       purpose: 'Averaged transmit power in dBm'
@@ -663,7 +660,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-389'
+    uuid: 'dpmdp-1-0-0-string-p-419'
     capability:
       string-name: 'rxLevelMin'
       purpose: 'Minimum receive level in dBm'
@@ -671,7 +668,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-390'
+    uuid: 'dpmdp-1-0-0-string-p-420'
     capability:
       string-name: 'rxLevelMax'
       purpose: 'Maximum receive level in dBm'
@@ -679,7 +676,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-391'
+    uuid: 'dpmdp-1-0-0-string-p-421'
     capability:
       string-name: 'rxLevelAvg'
       purpose: 'Averaged receive level in dBm'
@@ -687,7 +684,7 @@ profile-instances:
       string-value: '99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-394'
+    uuid: 'dpmdp-1-0-0-string-p-424'
     capability:
       string-name: 'snirMin'
       purpose: 'Minimum signal to (noise+interference) ratio in dB'
@@ -695,7 +692,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-395'
+    uuid: 'dpmdp-1-0-0-string-p-425'
     capability:
       string-name: 'snirMax'
       purpose: 'Maximum signal to (noise+interference) ratio in dB'
@@ -703,7 +700,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-396'
+    uuid: 'dpmdp-1-0-0-string-p-426'
     capability:
       string-name: 'snirAvg'
       purpose: 'Averaged signal to (noise+interference) ratio in dB'
@@ -711,7 +708,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-397'
+    uuid: 'dpmdp-1-0-0-string-p-427'
     capability:
       string-name: 'xpdMin'
       purpose: 'Minimum cross polarization discrimination in dB'
@@ -719,7 +716,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-398'
+    uuid: 'dpmdp-1-0-0-string-p-428'
     capability:
       string-name: 'xpdMax'
       purpose: 'Maximum cross polarization discrimination in dB'
@@ -727,7 +724,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-399'
+    uuid: 'dpmdp-1-0-0-string-p-429'
     capability:
       string-name: 'xpdAvg'
       purpose: 'Averaged cross polarization discrimination in dB'
@@ -735,7 +732,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-400'
+    uuid: 'dpmdp-1-0-0-string-p-430'
     capability:
       string-name: 'rfTempMin'
       purpose: 'Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
@@ -743,7 +740,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-401'
+    uuid: 'dpmdp-1-0-0-string-p-431'
     capability:
       string-name: 'rfTempMax'
       purpose: 'Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
@@ -751,7 +748,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-402'
+    uuid: 'dpmdp-1-0-0-string-p-432'
     capability:
       string-name: 'rfTempAvg'
       purpose: 'Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
@@ -759,7 +756,7 @@ profile-instances:
       string-value: '-99'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-403'
+    uuid: 'dpmdp-1-0-0-string-p-433'
     capability:
       string-name: 'defectBlocksSum'
       purpose: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks'
@@ -767,7 +764,7 @@ profile-instances:
       string-value: '-1'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-404'
+    uuid: 'dpmdp-1-0-0-string-p-434'
     capability:
       string-name: 'timePeriod'
       purpose: 'Total length of the measurement period in seconds'
@@ -785,7 +782,7 @@ profile-instances:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-450'
         - 'dpmdp-1-0-0-function-p-460'
-        - 'dpmdp-1-0-0-function-p-830'
+        - 'dpmdp-1-0-0-function-p-500'
     configuration:
       is-active: true
 

@@ -1,10 +1,7 @@
 # p1FormattingOutputApt
 
-
-### Overview  
-
-p1FormattingOutputApt transforms the processed performance data (resultCc) from ONF format to the aptOutputFormat.  
-Attributes not found in the resultCc are also omitted from the aptOutputFormat.
+Transforms the processed performance data (resultCc) from ONF format to the aptOutputFormat.  
+Attributes not found in the resultCc are also omitted from the aptOutputFormat.  
 
 
 ### Diagram  

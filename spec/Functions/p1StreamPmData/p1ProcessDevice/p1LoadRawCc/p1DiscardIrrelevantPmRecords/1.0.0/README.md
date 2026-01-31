@@ -27,6 +27,13 @@ Please find a detailed description of the [interface](./interface.yaml).
 Please find a detailed description of the [variables](variables.yaml).
 
 
+### Parameters
+
+| Parameter Name               | Description                                                      |
+|------------------------------|------------------------------------------------------------------|
+| relevantGranularities        | regex pattern indicating which data granularities are to be kept |
+
+
 ### NPM Module  
 
 [mw-sdn-p1-discard-irrelevant-pm-records](https://www.npmjs.com/package/mw-sdn-p1-discard-irrelevant-pm-records)  

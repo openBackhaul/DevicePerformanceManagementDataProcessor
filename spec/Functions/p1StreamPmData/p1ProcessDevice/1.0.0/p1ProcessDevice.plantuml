@@ -64,20 +64,16 @@ activate p1ProOrch
   p1ProOrch <-- p1OutputOnf : { formatName,\n{outputFormat} }
   deactivate p1OutputOnf
 
-  loop FOR all [kafkaTransmitter]
+  p1ProOrch -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  activate p1Trans
 
-    p1ProOrch -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat],\nkafkaTransmitter[n] }
-    activate p1Trans
+    note over p1Trans
+      Transmits object
+      to Kafka
+    end note
 
-      note over p1Trans
-        Transmits object
-        to Kafka
-      end note
-
-    p1ProOrch <-- p1Trans
-    deactivate p1Trans
-
-  end loop
+  p1ProOrch <-- p1Trans
+  deactivate p1Trans
 
   p1ProOrch -> p1Store : { {dataStoreEsClient},\n{resultCc},\n{interfaceMetadataList} }
   activate p1Store

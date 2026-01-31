@@ -44,7 +44,5 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 ### Parameters
 
-| Parameter Name               | Description                                                                        |
-|------------------------------|------------------------------------------------------------------------------------|
-| [formatName]                 | Special usage of the parameters. parameter-name is not static. For all parameters with purpose=="transmitFunction", value contains a transmitter function's name |
+Just passing through parameters to sub-functions.  
 

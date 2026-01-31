@@ -7,7 +7,7 @@ Periodically deletes resultsCc (with batchTimestamp older than dataStoreRetentio
 ### Diagram  
 
 <p align="center">  
-  <img src="./p1MaintainDs.png" alt="p1MaintainDs diagram" width="400" />
+  <img src="./p1MaintainDs.png" alt="p1MaintainDs diagram" width="300" />
 </p>  
 
 
@@ -23,8 +23,8 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 ### Parameters
 
-| Parameter Name               | Description                                                  |
-|------------------------------|--------------------------------------------------------------|
-| dataStoreCleanupPeriod       | Time period between two cleanup runs                         |
-| dataStoreRetentionPeriod     | Time period for which data is retained before deletion       |
+| Parameter Name               | Description                                                           |
+|------------------------------|-----------------------------------------------------------------------|
+| dataStoreCleanupPeriod       | Time period between two cleanup runs in hours                         |
+| dataStoreRetentionPeriod     | Time period for which data is retained before deletion in hours       |
 

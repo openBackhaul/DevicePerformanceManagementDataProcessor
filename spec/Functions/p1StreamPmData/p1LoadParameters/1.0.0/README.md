@@ -38,4 +38,3 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 [mw-sdn-p1-load-parameters](https://www.npmjs.com/package/mw-sdn-p1-load-parameters)  
 
-
