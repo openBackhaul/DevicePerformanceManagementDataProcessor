@@ -6,23 +6,23 @@ title
 end title
 
 participant "requestor\n(e.g. p1ProcessDevice)" as requestor
-participant "p1FormattingOutputOnf\n" as cur #LightCyan
-participant "p1FieldsFilter\n" as fieldsFilter #LightBlue
+participant "p1FormattingOutputOnf\n" as cur
+participant "p1FieldsFilter\n" as fieldsFilter
 
 requestor -> cur: { {parameters},\n{resultCc} }
-activate cur #LightCyan
+activate cur
 
   note over cur
     Creates onfOutputFormat
   end note
 
   cur -> fieldsFilter: { {onfOutputFormat},\nfieldsFilter }
-  activate fieldsFilter #LightBlue
+  activate fieldsFilter
     note over fieldsFilter
       Applies FieldsFilter
     end note
   cur <-- fieldsFilter: { {onfOutputFormat} }
-  deactivate fieldsFilter #LightBlue
+  deactivate fieldsFilter
 
 requestor <-- cur: { formatName,\n{outputFormat} }
 deactivate cur

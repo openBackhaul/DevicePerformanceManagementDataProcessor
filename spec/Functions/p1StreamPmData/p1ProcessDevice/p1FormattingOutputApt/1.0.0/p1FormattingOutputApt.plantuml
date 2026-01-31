@@ -6,17 +6,18 @@ title
 end title
 
 participant "requestor\n(e.g. p1ProcessDevice)" as requestor
-participant "p1FormattingOutputApt\n" as cur #LightCyan
+participant "p1FormattingOutputApt\n" as cur
 
 requestor -> cur: { {resultCc} }
-activate cur #LightCyan
+activate cur
 
   note over cur
     Transforms resultCc data into
-    aptOutputFormat.
+    aptOutputFormat (incl.
+    batchTimestamp)
   end note
 
-requestor <-- cur: { {output} }
+requestor <-- cur: { formatName,\n{outputFormat} }
 deactivate cur
 
 @enduml

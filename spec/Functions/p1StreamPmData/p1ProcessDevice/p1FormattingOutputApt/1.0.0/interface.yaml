@@ -27,9 +27,16 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - apt-output-format
+                - format-name
+                - output-format
               properties:
-                apt-output-format:
+                format-name:
+                  type: string
+                  description: >
+                    'Name of the output format'
+                  enum:
+                    - 'apt-output-format'
+                output-format:
                   type: object
                   description: >
                     'aptOutputFormat
@@ -42,7 +49,6 @@ x-javascript-interface:
               type: string
               enum:
                 - 'resultCc not provided'
-                - 'resultCc incomplete'
                 - 'resultCc invalid'
                 - 'aptOutputFormat could not be provided'
                 - 'General processing error'
@@ -59,7 +65,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'resultCc
-                      from {$p1FormattingOutputApt.input#/result-cc}'
+                      from [/formatting-output-apt/result-cc]'
         output:
           success:
             description: 'Output object provided'
@@ -96,12 +102,12 @@ x-javascript-interface:
                                     type: string
                                     description: >
                                       'Identifier of the microwave link endpoint as used in the Telefonica planning tools
-                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}'
+                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/external-label}
                                   link-id:
                                     type: string
                                     description: >
                                       'Identifier of the microwave link as used in the Telefonica planning tools. To be obtained by extracting the substring constituted by the 9 first characters
-                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/link-id}'
+                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/link-id}
                                   logical-termination-point-id:
                                     type: string
                                     description: >
@@ -425,6 +431,11 @@ x-javascript-interface:
                                   cpuTemperature = [ {$input#result-cc/equipment=*/actual-equipment=*/physical-properties/temperature} for {$input#result-cc/equipment=*/actual-equipment=*/structure/category}=='CENTRAL_PROCESSING_UNIT' ]
                                   iduTemperature = [ {$input#result-cc/equipment=*/actual-equipment=*/physical-properties/temperature} for {$input#result-cc/equipment=*/actual-equipment=*/structure/category}=='SUBRACK' ]
                                   from [ cpuTemperature if existing, otherwise iduTemperature ]'
+                              retrieval-timestamp:
+                                type: string
+                                description: >
+                                  'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
+                                  from {$input#/result-cc/batch-timestamp}'
                         ethernet-container-list:
                           description: >
                             'List of EthernetContainers found in the resultCc.
@@ -446,11 +457,11 @@ x-javascript-interface:
                                     type: string
                                     description: >
                                       'Interface name of the EthernetContainer as it is represented at the vendors own management interface, e.g. LAN 1/6/6
-                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}'
+                                      from {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}
                                   logical-termination-point-id:
                                     type: string
                                     description: >
-                                      'Identifier of the ethernet container within the MW SDN domain
+                                      'Identifier of the ethernet container within the MW SDN domain'
                                       from {$input#/result-cc/logical-termination-point/uuid}'
                               ethernet-container-performance-measurements-list:
                                 type: array

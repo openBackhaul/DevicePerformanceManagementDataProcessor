@@ -18,7 +18,7 @@ participant "p1LoadRawCc\n" as p1AddRaw
 participant "p1FieldsFilter\n" as p1FieldsFilter
 participant "p1DiscardIrrelevant\nPmRecords" as filterPm
 
-participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
+participant "p1CreateResultCc\n" as p1CreateResultCc
 participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
 participant "p1IterateAi\nPmSlices" as aiSlices
@@ -28,10 +28,10 @@ participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p1IterateEc\nPmSlices" as ecSlices
 participant "p1Calculate\nEthernetKpis" as p1EthKpi
 participant "p1Calculate\nUtilization" as p1Util
-participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
-participant "p1Formatting\nOutputApt" as p1OutputApt #LightCyan
-participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightCyan
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
 
 participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 
@@ -148,7 +148,7 @@ activate p1StreamPm #LightBlue
         deactivate p1AddRaw
 
         p1ProcessPm -> p1CreateResultCc
-        activate p1CreateResultCc #LightCyan
+        activate p1CreateResultCc
 
           note over p1CreateResultCc
             Copies rawCc to resultCc
@@ -291,7 +291,7 @@ activate p1StreamPm #LightBlue
           end loop
 
           p1CreateResultCc -> p1ROoRT
-          activate p1ROoRT #LightCyan
+          activate p1ROoRT
 
             note over p1ROoRT
               Delete temperature attributes with
@@ -305,7 +305,7 @@ activate p1StreamPm #LightBlue
         deactivate p1CreateResultCc
 
         p1ProcessPm -> p1OutputApt
-        activate p1OutputApt #LightCyan
+        activate p1OutputApt
 
           note over p1OutputApt
             Create APT format
@@ -315,14 +315,14 @@ activate p1StreamPm #LightBlue
         deactivate p1OutputApt
 
         p1ProcessPm -> p1OutputOnf
-        activate p1OutputOnf #LightCyan
+        activate p1OutputOnf
 
           note over p1OutputOnf
             Create ONF format
           end note
 
           p1OutputOnf -> p1FieldsFilter
-          activate p1FieldsFilter #LightBlue
+          activate p1FieldsFilter
 
             note over p1FieldsFilter
               Reduces structure of
