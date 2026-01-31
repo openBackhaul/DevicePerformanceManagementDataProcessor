@@ -1,16 +1,11 @@
 load-raw-cc:
   type: object
   required:
-    - mount-name
     - parameters
     - mwdi-replica-es-client
     - data-store-es-client
+    - mount-name
   properties:
-    mount-name:
-      type: string
-      description: >
-        'MountName
-        from {$input#/mount-name}'
     parameters:
       type: object
       description: >
@@ -26,6 +21,11 @@ load-raw-cc:
       description: >
         'Data Store ElasticSearch address
         from {$input#/data-store-es-client}'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
 
     mwdi-replica-url:
       type: string
@@ -53,12 +53,12 @@ load-raw-cc:
         'An regex pattern indicating which data granularities are to be kept
         from [/load-raw-cc/parameters/sub-function=p1DiscardIrrelevantPmRecords/parameter=relevantGranularities/value]'
 
-    interface:
+    interface-metadata-list:
       type: array
       x-key: uuid
       description: >
         'MostRecentPeriodEndTimes for all already known interfaces of the device
-        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/interface}'
+        from {$retrieveMostRecentPeriodEndTimesFromDs.output#/}'
       items:
         type: object
         properties:
@@ -68,10 +68,8 @@ load-raw-cc:
             type: string
           most-recent-period-end-time:
             type: string
-            description: 'The newest seen periodEndTime for this interface in 15min data'
           most-recent-period-end-time-24:
             type: string
-            description: 'The newest seen periodEndTime for this interface in 24h data'
 
     raw-cc:
       type: object
@@ -86,9 +84,12 @@ load-raw-cc:
             external-label:
               type: string
               description: >
-                'mountName'
+                'mountName
+                The externalLabel attribute is for the operator to persistently store an identifier from his documentation inside the device'
             device-model-name:
               type: string
+              description: >
+                'Name of the device model according to its official documentation'
         equipment:
           type: array
           x-key: uuid
@@ -133,8 +134,12 @@ load-raw-cc:
                         properties:
                           client-ltp:
                             type: string
+                            description: >
+                              'UUID of the LTP with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER that is configured to be transported by a group of LTPs with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER or LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER'
                           server-ltp-list:
                             type: array
+                            description: >
+                              'List of UUIDs of a group of LTPs with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER or LAYER_PROTOCOL_NAME_TYPE_PURE_ETHERNET_STRUCTURE_LAYER that are configured to transport an LTP with LayerProtocol::layerProtocolName==LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER'
                             items:
                               type: string
         logical-termination-point:
@@ -161,8 +166,12 @@ load-raw-cc:
                 properties:
                   external-label:
                     type: string
+                    description: >
+                      'The externalLabel attribute is for the operator to persistently store an identifier from his documentation inside the device'
                   original-ltp-name:
                     type: string
+                    description: >
+                      'Shall automatically be filled with a string that contains the logical- or physical interface name as it is represented at the vendor's own management interface e.g. LAN 1/2/1'
               layer-protocol:
                 type: array
                 x-key: local-id
@@ -185,16 +194,28 @@ load-raw-cc:
                               properties:
                                 transmission-mode-min:
                                   type: string
+                                  description: >
+                                    'Minimum transmission mode to be configured (in case adaptive modulation is not used, this value represents also the fixed transmission mode)'
                                 transmission-mode-max:
                                   type: string
+                                  description: >
+                                    'Maximum transmission mode to be configured'
                                 tx-power:
                                   type: integer
+                                  description: >
+                                    'Transmit power to be configured on the microwave link. Signed Byte is required. The actually operated transmit power might be lower depending on adaptive modulation and ATPC'
                                 atpc-is-on:
                                   type: boolean
+                                  description: >
+                                    'ATPC. Activation of Automated Transmit Power Control shall be expressed as a true'
                                 atpc-thresh-upper:
                                   type: integer
+                                  description: >
+                                    'If the receive level at the local/remote site is higher than the upper threshold value, the transmitter at the remote/local site is notified to decrease transmit power. In case the device does not know upper and lower threshold values, but only a single reference value, the atpcThreshUpper shall not be available for configuration and constantly represent the default value'
                                 atpc-thresh-lower:
                                   type: integer
+                                  description: >
+                                    'If the receive level at the local/remote site is lower than the lower threshold value, the transmitter at the remote/local site is notified to increase transmit power. In case the device does not know upper and lower threshold values, but only a single reference value, the atpcThreshLower shall represent this reference value'
                             air-interface-capability:
                               type: object
                               properties:
@@ -206,21 +227,35 @@ load-raw-cc:
                                     properties:
                                       transmission-mode-name:
                                         type: string
+                                        description: >
+                                          'Name of the transmission mode. BBBB-m*-i*/t*-r*. B=four digits of channel bandwidth in MHz. m*=required number of digits for modulation name. (i*/t*=code rate.) i*=required number of digits for number of information bits. t*=required number of digits for total bits. r*=required number of digits for rate reduction factor. Example: 0028-4QAM-188/204-1'
                                       channel-bandwidth:
                                         type: integer
+                                        description: >
+                                          'Bandwidth of the transmit channel. The value shall be expressed explicitly (means in kHz) not as a reference to an international agreement. The values shall be chosen from the following _list: 3.500, 7.000, 14.000, 27.500, 28.000, 29.000, 29.650, 30.000, 40.000, 50.000, 55.000, 56.000, 59.300, 60.000, 80.000, 100.000, 112.000, 120.000, 150.000, 200.000, 250.000, 500.000, 750.000, 1.000.000, 1.250.000, 1.500.000, 1.750.000, 2.000.000'
                                       modulation-scheme:
                                         type: integer
+                                        description: >
+                                          'Modulation scheme, which is base to the other characteristics described in the same transmissionModeType data type. The modulation scheme shall be described by the number of states in the phase diagram (e.g. BPSK->'2' or 256QAM->'256')'
                                       modulation-scheme-name-at-lct:
                                         type: string
+                                        description: >
+                                          'Modulation scheme name, which is together with the applied channel bandwidth identifying this transmission mode at the graphical user interface of the local craft terminal'
                                       code-rate:
                                         type: integer
+                                        description: >
+                                          'Code rate of the coding scheme in % (Net bit rate is either smaller or equal to (Gross bit rate mulitplied with code rate) )'
                                       symbol-rate-reduction-factor:
                                         type: integer
+                                        description: >
+                                          'Reduction factor for the symbol rate. Example: value would be 4 for 1/4BPSK'
                             air-interface-current-performance:
                               type: object
                               properties:
                                 timestamp:
                                   type: string
+                                  description: >
+                                    'The timestamp associated with when the current data was collected'
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -235,31 +270,55 @@ load-raw-cc:
                                     properties:
                                       granularity-period:
                                         type: string
+                                        description: >
+                                          'Period of the performance data collection'
                                       period-end-time:
                                         type: string
+                                        description: >
+                                          'Time when the counter values have been recorded and the counter reset'
                                       performance-data:
                                         type: object
                                         properties:
                                           es:
                                             type: integer
+                                            description: >
+                                              'Number of errored seconds'
                                           ses:
                                             type: integer
+                                            description: >
+                                              'Number of severely errored seconds'
                                           cses:
                                             type: integer
+                                            description: >
+                                              'Number of consecutive severely errored seconds'
                                           unavailability:
                                             type: integer
+                                            description: >
+                                              'otal time of unavailability in seconds'
                                           tx-level-min:
                                             type: integer
+                                            description: >
+                                              'Minimum transmit power. Signed integers are required'
                                           tx-level-max:
                                             type: integer
+                                            description: >
+                                              'Maximum transmit power. Signed integers are required'
                                           tx-level-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged transmit power. Signed integers are required'
                                           rx-level-min:
                                             type: integer
+                                            description: >
+                                              'Minimum receive level. Signed integers are required'
                                           rx-level-max:
                                             type: integer
+                                            description: >
+                                              'Maximum receive level. Signed integers are required'
                                           rx-level-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged receive level. Signed integers are required'
                                           time-xstates-list:
                                             type: array
                                             x-key: transmission-mode
@@ -268,24 +327,44 @@ load-raw-cc:
                                               properties:
                                                 transmission-mode:
                                                   type: string
+                                                  description: >
+                                                    'Operated transmission mode'
                                                 time:
                                                   type: integer
+                                                  description: >
+                                                    'Sum of all seconds the transmitter operated the transmission mode'
                                           snir-min:
                                             type: integer
+                                            description: >
+                                              'Minimum signal to (noise+interference) ratio'
                                           snir-max:
                                             type: integer
+                                            description: >
+                                              'Maximum signal to (noise+interference) ratio'
                                           snir-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged signal to (noise+interference) ratio'
                                           xpd-min:
                                             type: integer
+                                            description: >
+                                              'Minimum cross polarization discrimination'
                                           xpd-max:
                                             type: integer
+                                            description: >
+                                              'Maximum cross polarization discrimination'
                                           xpd-avg:
                                             type: integer
+                                            description: >
+                                              'Averaged cross polarization discrimination'
                                           defect-blocks-sum:
                                             type: integer
+                                            description: >
+                                              'Total number of blocks that were defect after receiving and could not be corrected by the FEC'
                                           time-period:
                                             type: integer
+                                            description: >
+                                              'Total length of the measurement period'
                     - description: 'ethernet-container'
                       type: object
                       properties:
@@ -312,66 +391,121 @@ load-raw-cc:
                                     properties:
                                       granularity-period:
                                         type: string
+                                        description: >
+                                          'Time period between reset of the underlying counter'
                                       period-end-time:
                                         type: string
+                                        description: >
+                                          'Time when the counter values have been recorded and the counter reset'
                                       performance-data:
                                         type: object
                                         properties:
                                           max-bytes-per-second-output:
                                             type: integer
+                                            description: >
+                                              'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
                                           total-bytes-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
                                           total-bytes-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period'
                                           time-period:
                                             type: integer
+                                            description: >
+                                              'Total length of the measurement period in seconds'
                                           total-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of Ethernet frames received at this interface (including those received in error'
                                           total-frames-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of Ethernet frames sent at this interface'
                                           forwarded-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
                                           forwarded-frames-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
                                           unicast-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of unicast frames received at this interface'
                                           unicast-frames-output:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of unicast frames sent at this interface'
                                           multicast-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of multicast frames received at this interface'
                                           multicast-frames-output:
                                             type: integer
+                                            description: >
+                                              'Total number of multicast frames sent at this interface'
                                           broadcast-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of broadcast frames received at this interface'
                                           broadcast-frames-output:
                                             type: integer
+                                            description: >
+                                              'Total number of broadcast frames sent at this interface'
                                           fragmented-frames-input:
                                             type: integer
+                                            description: >
+                                              'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
                                           errored-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of errored frames received at this interface'
                                           errored-frames-output:
                                             type: integer
+                                            description: >
+                                              'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
                                           dropped-frames-input:
                                             type: integer
+                                            description: >
+                                              'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
                                           dropped-frames-output:
                                             type: integer
+                                            description: >
+                                              'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
                                           oversized-frames-ingress:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
                                           undersized-frames-ingress:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
                                           jabber-frames-ingress:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
                                           unknown-protocol-frames-input:
                                             type: string
-                                            description: 'String representation of int64 value'
+                                            description: >
+                                              'String representation of int64 value.
+                                              Total number of received frames that were transporting an unknown protocol'
+        batch-timestamp:
+          type: string
+          description: >
+            'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
+            from {$addBatchTimestamp.output#/batch-timestamp}'

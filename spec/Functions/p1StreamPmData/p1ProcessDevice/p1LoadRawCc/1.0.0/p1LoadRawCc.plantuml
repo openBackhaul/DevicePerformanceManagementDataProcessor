@@ -6,39 +6,34 @@ title
 end title
 
 participant "p1ProcessDevice\n" as requestor
-participant "p1LoadRawCc\n" as cur #LightCyan
-database "MWDI ES Replica" as MwdiEs #LightCyan
-participant "p1FieldsFilter\n" as fieldsFilter #LightCyan
-database "DataStore" as datastore #LightBlue
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightCyan
+participant "p1LoadRawCc\n" as cur
+database "MWDI ES Replica" as MwdiEs
+participant "p1FieldsFilter\n" as fieldsFilter
+database "DataStore" as datastore
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm
 
-requestor -> cur: {mountName\n{parameters}\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
-activate cur #LightCyan
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\nmountName }
+activate cur
 
   note over cur
     readControlConstructFromReplica
   end note
-  cur -> MwdiEs: {mountName}
+  cur -> MwdiEs: { mountName }
   cur <-- MwdiEs: { {rawControlConstruct} }
 
-  cur -> fieldsFilter: { {rawControlConstruct}\nfieldsFilter}
-  activate fieldsFilter #LightCyan
+  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilter }
+  activate fieldsFilter
     note over fieldsFilter
       Applies FieldsFilter
     end note
   cur <-- fieldsFilter: { {rawControlConstruct} }
-  deactivate fieldsFilter #LightCyan
+  deactivate fieldsFilter
 
-  note over cur #LightBlue
+  note over cur
     retrieveMostRecentPeriodEndTimesFromDs
   end note
-  cur -> datastore: {mountName}
+  cur -> datastore: { mountName }
   cur <-- datastore: { [interface] }
-
-    note right cur #LightBlue
-      In the pre-release there is no mostRecentPeriodEndTime info available
-      Both 15min and 24h records will be kept by default
-    end note
 
   loop FOR all [/raw-cc/logical-termination-point]
 
@@ -50,8 +45,8 @@ activate cur #LightCyan
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color> }
-    activate filterPm #LightCyan
+    cur -> filterPm: { [historicalPerformanceDataList],\nrelevantGranularities,\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24 }
+    activate filterPm
     note over filterPm
       Discards records that are
       of wrong granularity or
@@ -61,7 +56,12 @@ activate cur #LightCyan
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList] }
     deactivate filterPm
 
-  end group
+    note over cur
+      IF layerProtocolName == AirInterface
+        THEN addBatchTimestamp
+    end note
+
+  end loop
 
 requestor <-- cur: { {rawCc} }
 deactivate cur

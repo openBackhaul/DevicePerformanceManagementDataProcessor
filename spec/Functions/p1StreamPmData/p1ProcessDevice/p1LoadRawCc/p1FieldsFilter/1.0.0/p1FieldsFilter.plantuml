@@ -5,15 +5,11 @@ title
   p1FieldsFilter
 end title
 
-database "appDb" as appDb
 participant "requestor\n" as requestor
-participant "p1FieldsFilter\n" as pFF #LightCyan
-
-requestor -> appDb
-requestor <-- appDb : { {DataStructure} }
+participant "p1FieldsFilter\n" as pFF
 
 requestor -> pFF : { {DataStructure}, fieldsFilterString}
-activate pFF #LightCyan
+activate pFF
   note over pFF
     Applies the fieldsFilterString to the given DataStructure object,
     following the NETCONF FieldsFilter syntax and semantics.

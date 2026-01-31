@@ -6,11 +6,11 @@ title
 end title
 
 participant "requestor\n(e.g. p1LoadRawCc)" as requestor
-participant "p1DiscardIrrelevant\nPmRecords" as cur #LightCyan
+participant "p1DiscardIrrelevant\nPmRecords" as cur
 
 
-requestor -> cur: { [historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color>}
-activate cur #LightCyan
+requestor -> cur: { [historicalPerformanceDataList]\n<color:LightGray>relevantGranularities\n<color:LightGray>mostRecentPeriodEndTime\n<color:LightGray>mostRecentPeriodEndTime24</color> }
+activate cur
 
 loop FOR all [historicalPerformanceDataList]
 

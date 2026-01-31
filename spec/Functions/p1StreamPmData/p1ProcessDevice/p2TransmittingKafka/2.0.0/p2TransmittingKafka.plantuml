@@ -18,9 +18,9 @@ activate p1Trans #LightCyan
   loop FOR all [outputFormat]
 
     note over p1Trans
-      Check parameters with 
+      Check parameters with
       purpose==kafkaClient
-      for entry with 
+      for entry with
       parameterName==formatName
     end note
 

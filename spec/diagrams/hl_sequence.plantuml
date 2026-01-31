@@ -14,9 +14,9 @@ participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep #LightBlue
 
 participant "p1ProcessDevice\n" as p1ProcessPm #LightBlue
 
-participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
-participant "p1FieldsFilter\n" as p1FieldsFilter #LightBlue
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightBlue
+participant "p1LoadRawCc\n" as p1AddRaw
+participant "p1FieldsFilter\n" as p1FieldsFilter
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm
 
 participant "p1CreateResultCc\n" as p1CreateResultCc #LightCyan
 participant "p1Prepare\nTxModes" as p1prepTxModes #BurlyWood
