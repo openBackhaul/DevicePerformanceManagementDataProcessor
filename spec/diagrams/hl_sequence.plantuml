@@ -33,7 +33,7 @@ participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 participant "p1Formatting\nOutputApt" as p1OutputApt
 participant "p1Formatting\nOutputOnf" as p1OutputOnf
 
-participant "p1Transmitting\nKafka" as p1Trans #LightBlue
+participant "p1Transmitting\nKafka" as p1Trans
 
 participant "p1Storing\n" as p1Store #LightCyan
 participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
@@ -336,7 +336,7 @@ activate p1StreamPm #LightBlue
         deactivate p1OutputOnf
 
         p1ProcessPm -> p1Trans
-        activate p1Trans #LightBlue
+        activate p1Trans
 
           note over p1Trans
             Transmit object to

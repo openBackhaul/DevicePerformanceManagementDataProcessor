@@ -6,21 +6,32 @@ title
 end title
 
 participant "requestor\n" as requestor
-participant "p1TransmittingKafka\n" as p1Trans #LightCyan
-participant "kafkaProducerService.\nsendMessage" as p1KafkaP #LightCyan
+participant "p1TransmittingKafka\n" as p1Trans
+participant "kafkaProducerService.\nsendMessage" as p1KafkaP
 queue "kafka\n" as kafka
 
-activate p1KafkaP #LightCyan
+activate p1KafkaP
 
-requestor -> p1Trans : { {parameters},\n{configFile},\n[outputFormat],\nkafkaTransmitter}
-activate p1Trans #LightCyan
+requestor -> p1Trans : { {parameters},\n{configFile},\n[outputFormat] }
+activate p1Trans
 
-  note over p1Trans
-    Resolves connection
-    parameters
-  end note
+  loop FOR all [outputFormat]
 
-    p1Trans -> p1KafkaP : {topicName,\n{messageObject}}
+    note over p1Trans
+      Check parameters with
+      purpose==kafkaClient
+      for entry with
+      parameterName==formatName
+    end note
+
+    note over p1Trans
+      if such entry found,
+      use kafkaClientUuid
+      for reading kafkaClient
+      info from configFile
+    end note
+
+    p1Trans -> p1KafkaP : { topicName,\n{messageObject} }
 
       note over p1KafkaP
         Sends object
@@ -31,6 +42,8 @@ activate p1Trans #LightCyan
       p1KafkaP <-- kafka
 
     p1Trans <-- p1KafkaP
+
+  end loop
 
 requestor <-- p1Trans
 deactivate p1Trans

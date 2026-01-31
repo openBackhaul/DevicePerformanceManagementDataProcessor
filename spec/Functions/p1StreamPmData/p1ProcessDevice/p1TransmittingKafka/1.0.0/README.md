@@ -1,21 +1,20 @@
 # p1TransmittingKafka
 
-Transfers output data to Kafka.  
+Transfers outputFormats to their respective KafkaClient.  
 
 
-### Parameter Handling
+### Overview
 
-One or several Kafka client configurations are defined in the configFile.  
-One or several output formats are defined in the outputFormat array.  
+p1TransmittingKafka receives the list of outputFormats.  
+Each outputFormat is identified by its formatName.  
+p1TransmittingKafka checks its parameters for an entry with purpose=="kafkaClient" and parameterName==formatName.  
+If there is such an entry, then kafkaClientUuid=value.  
+It uses the kafkaClientUuid to retrieve the kafkaClient's configuration from the configFile.  
+Finally, it transmits the outputFormat to Kafka.  
 
-The p1TransmittingKafka's input parameter _kafkaTransmitter_ identifies:  
-- a parameter in the _parameters_ object that holds the _UUID_ of the KafkaClient in the configFile to be used with this call of p1TransmittingKafka  
-- the output format to be transmitted to Kafka with this call of p1TransmittingKafka  
-
-
-<p align="center">  
-  <img src="./parameterHandling.png" alt="Parameter Handling diagram" width="800" />
-</p>  
+Limitation:  
+- Not supported are multiple kafkaClients for the same outputFormat.  
+  (parameterName==formatName is key attribute in parameters.)  
 
 
 ### Diagram  
@@ -39,5 +38,5 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 | Parameter Name               | Description                                                                        |
 |------------------------------|------------------------------------------------------------------------------------|
-| [kafkaTransmitter]           | Special usage of the parameters. parameter-name is not static. For all parameters handed over to this function, parameter-name is identifying a kafkaTransmitter and value contains the kafkaClientUuid |
+| [formatName]                 | Special usage of the parameters. parameter-name is not static. For all parameters with purpose==kafkaClient, parameter-name is using the formatName for identifying a kafkaClient and value contains the kafkaClientUuid |
 

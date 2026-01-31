@@ -4,7 +4,6 @@ transmitting-kafka:
     - parameters
     - config-file
     - output-format
-    - kafka-transmitter
   properties:
     parameters:
       type: object
@@ -18,20 +17,37 @@ transmitting-kafka:
         from {$input#/config-file}'
     output-format:
       type: array
+      x-key: format-name
       description: >
-        'Array of all output formats to be somehow transmitted
-        from {$input#/output-format}'
-    kafka-transmitter:
+        'Array of output formats potentially to be transmitted
+        from {$input#/output-format}
+        ! simplified representation !'
+      items:
+        type: object
+        required:
+          - format-name
+          - output-format
+        properties:
+          format-name:
+            type: string
+            description: >
+              'Name of the output format'
+          output-format:
+            type: object
+            description: >
+              'outputFormat'
+
+    format-name:
       type: string
       description: >
-        'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka'
-        from {$input#/kafka-transmitter}'
-
+        'FormatName
+        from [/transmitting-kafka/output-format=*/format-name]'
     kafka-client-uuid:
       type: string
       description: >
-        'Kafka client UUID
-        from [/transmitting-kafka/parameters/parameter={[/transmitting-kafka/kafka-transmitter]}/value]'
+        'KafkaClientUuid
+        if [/transmitting-kafka/parameters/parameter={format-name}/purpose]==kafkaClient
+        from [/transmitting-kafka/parameters/parameter={format-name}/value]'
     kafka-client:
       type: object
       description: >
@@ -46,4 +62,4 @@ transmitting-kafka:
       type: object
       description: >
         'Object to be sent via Kafka
-        from [/transmitting-kafka/output-format={[/transmitting-kafka/kafka-transmitter]}/content]'
+        from [/transmitting-kafka/output-format={format-name}/output-format]'

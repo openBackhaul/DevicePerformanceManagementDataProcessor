@@ -16,7 +16,6 @@ x-javascript-interface:
               - parameters
               - config-file
               - output-format
-              - kafka-transmitter
             properties:
               parameters:
                 type: object
@@ -30,11 +29,7 @@ x-javascript-interface:
                 type: array
                 x-key: format-name
                 description: >
-                  'Array of output formats to be transmitted'
-              kafka-transmitter:
-                type: string
-                description: >
-                  'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka'
+                  'Array of output formats potentially to be transmitted'
     output:
       success:
         description: 'Objects sent via Kafka'
@@ -45,8 +40,15 @@ x-javascript-interface:
             schema:
               type: string
               enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'configFile not provided'
+                - 'configFile invalid'
+                - 'outputFormat not provided'
+                - 'outputFormat invalid'
                 - 'Producer connection error'
                 - 'Other transmission error'
+                - 'General processing error'
     processing:
       kafkaProducerService.sendMessage:
         summary: 'This function sends message to provided topic'
