@@ -18,7 +18,7 @@ formatting-output-onf:
     fields-filter:
       type: string
       description: >
-        'Fields filter to be applied to reduce the raw ControlConstruct data
+        'Fields filter to be applied to reduce the onfOutputFormat
         from [/formatting-output-onf/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
 
     onf-output-format:

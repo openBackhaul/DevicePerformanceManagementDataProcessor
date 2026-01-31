@@ -40,8 +40,6 @@ participant "p1Transmitting\nKafka" as p1Trans #LightBlue
 participant "p1Storing\n" as p1Store #LightCyan
 participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
 
-participant "kafkaProducer\nService" as kafkaProd #LightBlue
-
 note right embed
   Automatically starts
   p1StreamPmData
@@ -79,12 +77,10 @@ activate p1StreamPm #LightBlue
       address
     end note
 
-    p1InitKafka -> kafkaProd
-    activate kafkaProd #LightBlue
-      note over kafkaProd
-        Establishes session
-      end note
-    p1InitKafka <-- kafkaProd
+    note over p1InitKafka
+      Establishes Kafka
+      session
+    end note
 
   p1StreamPm <-- p1InitKafka
   deactivate p1InitKafka
@@ -360,7 +356,7 @@ activate p1StreamPm #LightBlue
             Create APT format
           end note
 
-        p1ProcessPm <-- p1OutputApt : {outputApt}
+        p1ProcessPm <-- p1OutputApt : {aptOutputFormat}
         deactivate p1OutputApt
 
         p1ProcessPm -> p1OutputOnf
@@ -381,21 +377,16 @@ activate p1StreamPm #LightBlue
           p1OutputOnf <-- p1FieldsFilter
           deactivate p1FieldsFilter
 
-        p1ProcessPm <-- p1OutputOnf : {outputOnf}
+        p1ProcessPm <-- p1OutputOnf : {onfOutputFormat}
         deactivate p1OutputOnf
 
         p1ProcessPm -> p1Trans
         activate p1Trans #LightBlue
 
           note over p1Trans
-            Transmit object
-            to Kafka
+            Transmit object to
+            KafkaProducerService
           end note
-          p1Trans -> kafkaProd
-            note over kafkaProd
-              Send message
-            end note
-          p1Trans <-- kafkaProd
 
         p1ProcessPm <-- p1Trans
         deactivate p1Trans

@@ -27,9 +27,16 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - apt-output-format
+                - format-name
+                - output-format
               properties:
-                apt-output-format:
+                format-name:
+                  type: string
+                  description: >
+                    'Name of the output format'
+                  enum:
+                    - 'apt-output-format'
+                output-format:
                   type: object
                   description: >
                     'aptOutputFormat

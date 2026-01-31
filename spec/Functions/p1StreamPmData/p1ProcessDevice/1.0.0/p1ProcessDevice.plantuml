@@ -9,7 +9,8 @@ participant "p1StreamPmData\n" as requestor
 participant "p1ProcessDevice\n" as p1ProOrch #LightCyan
 participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
 participant "p1CreateResultCc\n" as p1CRC #LightCyan
-participant "p1Formatting\nOutputApt" as p1Output #LightCyan
+participant "p1Formatting\nOutputApt" as p1OutputApt #LightCyan
+participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightCyan
 participant "p1Transmitting\nKafka" as p1Trans #LightCyan
 participant "p1Storing\n" as p1Store #LightCyan
 
@@ -41,16 +42,27 @@ activate p1ProOrch #LightCyan
   p1ProOrch <-- p1CRC :  { {resultCc},\n{interfaceMetadataList} }
   deactivate p1CRC
 
-  p1ProOrch -> p1Output : { {resultCc} }
-  activate p1Output #LightCyan
+  p1ProOrch -> p1OutputApt : { {resultCc} }
+  activate p1OutputApt #LightCyan
 
-    note over p1Output
+    note over p1OutputApt
       Creates aptOutputFormat
       from resultCc
     end note
 
-  p1ProOrch <-- p1Output : { {aptOutputFormat} }
-  deactivate p1Output
+  p1ProOrch <-- p1OutputApt : { formatName,\n{outputFormat} }
+  deactivate p1OutputApt
+
+  p1ProOrch -> p1OutputOnf : { {resultCc} }
+  activate p1OutputOnf #LightCyan
+
+    note over p1OutputOnf
+      Creates onfOutputFormat
+      from resultCc
+    end note
+
+  p1ProOrch <-- p1OutputOnf : { formatName,\n{outputFormat} }
+  deactivate p1OutputOnf
 
   loop FOR all [kafkaTransmitter]
 

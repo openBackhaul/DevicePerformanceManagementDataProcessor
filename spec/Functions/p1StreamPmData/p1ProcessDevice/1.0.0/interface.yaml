@@ -179,14 +179,62 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - apt-output-format
+                    - format-name
+                    - output-format
                   properties:
-                    apt-output-format:
+                    format-name:
+                      type: string
+                      description: >
+                        'Name of the output format'
+                    output-format:
                       type: object
                       description: >
-                        'aptOutputFormat'
+                        'outputFormat'
           error:
             description: 'aptOutputFormat could not be created'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1FormattingOutputOnf:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - result-cc
+                properties:
+                  description: >
+                    'Subtree of the parameters object for p1FormattingOutputOnf
+                    from [/process-device/parameters/sub-function=p1FormattingOutputOnf]'
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc'
+        output:
+          success:
+            description: 'onfOutputFormat created'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - format-name
+                    - output-format
+                  properties:
+                    format-name:
+                      type: string
+                      description: >
+                        'Name of the output format'
+                    output-format:
+                      type: object
+                      description: >
+                        'outputFormat'
+          error:
+            description: 'onfOutputFormat could not be created'
             content:
               application/json:
                 schema:
@@ -202,7 +250,6 @@ x-javascript-interface:
                   - parameters
                   - config-file
                   - output-format
-                  - kafka-transmitter
                 properties:
                   parameters:
                     type: object
@@ -218,13 +265,8 @@ x-javascript-interface:
                     type: array
                     x-key: format-name
                     description: >
-                      'Array of output formats to be transmitted
+                      'Array of output formats potentially to be transmitted
                       from [/process-device/output-format]'
-                  kafka-transmitter:
-                    type: string
-                    description: >
-                      'Identifies KafkaClient and output format to be used for this run of p1TransmittingKafka
-                      from [/process-device/kafka-transmitter[n]]'
         output:
           success:
             description: 'Objects sent via Kafka'

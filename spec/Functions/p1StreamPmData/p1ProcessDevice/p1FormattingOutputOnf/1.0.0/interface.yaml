@@ -31,9 +31,16 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - onf-output-format
+                - format-name
+                - output-format
               properties:
-                onf-output-format:
+                format-name:
+                  type: string
+                  description: >
+                    'Name of the output format'
+                  enum:
+                    - 'onf-output-format'
+                output-format:
                   type: object
                   description: >
                     'onfOutputFormat
@@ -76,7 +83,7 @@ x-javascript-interface:
                     output:
                       type: object
                       description: >
-                        'Output, bare copy
+                        'Output, bare replication
                         from {$input#/result-cc}'
           error:
             description: 'Output object could not be created.'

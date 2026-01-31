@@ -352,36 +352,15 @@ profile-instances:
       function-name: 'p1ProcessDevice'
       function-description: 'Orchestrates the device-wise processing, formatting, sending and storing of PM data'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-151'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-0-0-string-p-152'
-          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-180'
         - 'dpmdp-1-0-0-function-p-270'
-        - 'dpmdp-1-0-0-function-p-520'
+        - 'dpmdp-1-0-0-function-p-540'
         - 'dpmdp-1-0-0-function-p-550'
-        - 'dpmdp-1-0-0-function-p-580'
+        - 'dpmdp-1-0-0-function-p-600'
+        - 'dpmdp-1-0-0-function-p-620'
     configuration:
       is-active: true
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-151'
-    capability:
-      string-name: 'aptFormat'
-      purpose: 'kafkaTransmitter'
-      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
-    configuration:
-      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-152'
-    capability:
-      string-name: 'onfFormat'
-      purpose: 'kafkaTransmitter'
-      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
-    configuration:
-      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
 
 
   # p1LoadRawCc
@@ -538,13 +517,13 @@ profile-instances:
       function-description: 'Removes out-of-range level attributes from a performance data slice'
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-371'
-          owner: 'platform'
+          owner: 'engineering'
         - parameter: 'dpmdp-1-0-0-string-p-372'
-          owner: 'platform'
+          owner: 'engineering'
         - parameter: 'dpmdp-1-0-0-string-p-373'
-          owner: 'platform'
+          owner: 'engineering'
         - parameter: 'dpmdp-1-0-0-string-p-374'
-          owner: 'platform'
+          owner: 'engineering'
       sub-function-list:
     configuration:
       is-active: true
@@ -1111,9 +1090,9 @@ profile-instances:
       function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-511'
-          owner: 'platform'
+          owner: 'engineering'
         - parameter: 'dpmdp-1-0-0-string-p-512'
-          owner: 'platform'
+          owner: 'engineering'
       sub-function-list:
     configuration:
       is-active: true
@@ -1152,11 +1131,34 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-function-p-550'
     capability:
       function-name: 'p1FormattingOutputOnf'
-      function-description: 'Transforms the resultCc into onfOutputFormat'
+      function-description: 'Creates the onfOutputFormat from resultCc'
       parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-560'
+    configuration:
+      is-active: true
+
+
+  # p1FieldsFilter
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-560'
+    capability:
+      function-name: 'p1FieldsFilter'
+      function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-561'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-561'
+    capability:
+      string-name: 'fieldsFilter'
+      purpose: 'Fields filter to be applied to reduce the onfOutputFormat'
+    configuration:
+      string-value: ''
 
 
   # p1TransmittingKafka
@@ -1164,7 +1166,7 @@ profile-instances:
     uuid: 'dpmdp-1-0-0-function-p-600'
     capability:
       function-name: 'p1TransmittingKafka'
-      function-description: 'Transfers output data to Kafka transmitter'
+      function-description: 'Transfers outputFormats to their respective KafkaClient'
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-601'
           owner: 'platform'
@@ -1177,8 +1179,8 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-601'
     capability:
-      string-name: 'aptFormat'
-      purpose: 'kafkaTransmitter'
+      string-name: 'apt-output-format'
+      purpose: 'kafkaClient'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
@@ -1186,8 +1188,8 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-602'
     capability:
-      string-name: 'onfFormat'
-      purpose: 'kafkaTransmitter'
+      string-name: 'onf-output-format'
+      purpose: 'kafkaClient'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'

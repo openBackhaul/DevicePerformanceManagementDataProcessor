@@ -64,16 +64,15 @@ process-device:
         type: object
         required:
           - format-name
-          - content
+          - output-format
         properties:
           format-name:
             type: string
-            description: 'Name of the output format'
-            enum:
-              - 'apt'
-          content:
-            oneOf:
-              - description: >
-                  'APT formatted PM data
-                  from {$p1FormattingOutputApt.output#/apt-output-format}'
-                type: object
+            description: >
+              'Name of the output format
+              from [{$p1FormattingOutputApt.output#/format-name} or {$p1FormattingOutputOnf.output#/format-name}]'
+          output-format:
+            type: object
+            description: >
+              'outputFormat
+              from [{$p1FormattingOutputApt.output#/output-format} or {$p1FormattingOutputOnf.output#/output-format}]'

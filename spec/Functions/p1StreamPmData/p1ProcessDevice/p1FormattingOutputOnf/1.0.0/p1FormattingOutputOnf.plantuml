@@ -24,7 +24,7 @@ activate cur #LightCyan
   cur <-- fieldsFilter: { {onfOutputFormat} }
   deactivate fieldsFilter #LightBlue
 
-requestor <-- cur: { {onfOutputFormat} }
+requestor <-- cur: { formatName,\n{outputFormat} }
 deactivate cur
 
 @enduml

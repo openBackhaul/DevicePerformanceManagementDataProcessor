@@ -17,7 +17,7 @@ activate cur #LightCyan
     batchTimestamp)
   end note
 
-requestor <-- cur: { {aptOutputFormat} }
+requestor <-- cur: { formatName,\n{outputFormat} }
 deactivate cur
 
 @enduml

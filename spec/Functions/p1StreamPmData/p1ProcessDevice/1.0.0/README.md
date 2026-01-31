@@ -46,5 +46,5 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 | Parameter Name               | Description                                                                        |
 |------------------------------|------------------------------------------------------------------------------------|
-| [kafkaTransmitter]           | Special usage of the parameters. parameter-name is not static. For all parameters with purpose=="kafkaTransmitter", parameter-name contains a kafkaTransmitter |
+| [formatName]                 | Special usage of the parameters. parameter-name is not static. For all parameters with purpose=="transmitFunction", value contains a transmitter function's name |
 
