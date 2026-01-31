@@ -108,4 +108,4 @@ calculate-utilization:
                                         type: integer
                                         description: >
                                           'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
-                                          requires {$p2PrepareTxModes}'
+                                          requires {$p1PrepareTxModes}'

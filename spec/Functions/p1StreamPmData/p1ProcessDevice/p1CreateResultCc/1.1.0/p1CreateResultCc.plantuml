@@ -7,8 +7,7 @@ end title
 
 participant "p1ProcessDevice\n" as requestor #LightBlue
 participant "p1CreateResultCc\n" as cur #LightCyan
-participant "p1Prepare\nTxModes" as p1PrepTxModes #BurlyWood
-participant "p2Prepare\nTxModes" as p2PrepTxModes #LightCyan
+participant "p1Prepare\nTxModes" as p1prepTxModes #LightCyan
 participant "p1IterateAi\nPmSlices" as p1IterateAi #LightCyan
 participant "p1Calculate\nEthernetKpis" as ethKpis #BurlyWood
 participant "p1IterateEc\nPmSlices" as p1IterateEc #LightCyan
@@ -31,52 +30,26 @@ activate cur #LightCyan
 
   loop FOR all AirInterfaces in resultCc
 
-    cur -> p1PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
-    activate p1PrepTxModes #BurlyWood
+    cur -> p1prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p1prepTxModes #LightCyan
 
-      note over p1PrepTxModes #Beige
+      note over p1prepTxModes
         Removes unused transmission modes
         from historicalPerformanceDataList
       end note
 
-      note over p1PrepTxModes #Beige
+      note over p1prepTxModes
         Removes unused transmission modes
         from transmissionModeList
       end note
 
-      note over p1PrepTxModes #Beige
+      note over p1prepTxModes
         Adds AirInterfaceCapacity to
         used transmission modes
       end note
 
-      note over p1PrepTxModes #Beige
-        Adds IntervalCapacity to
-        performance data slices
-      end note
-
-    cur <-- p1PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
-    deactivate p1PrepTxModes
-
-    cur -> p2PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
-    activate p2PrepTxModes #LightCyan
-
-      note over p2PrepTxModes
-        Removes unused transmission modes
-        from historicalPerformanceDataList
-      end note
-
-      note over p2PrepTxModes
-        Removes unused transmission modes
-        from transmissionModeList
-      end note
-
-      note over p2PrepTxModes
-        Adds AirInterfaceCapacity to
-        used transmission modes
-      end note
-
-    cur <-- p2PrepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
-    deactivate p2PrepTxModes
+    cur <-- p1prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    deactivate p1prepTxModes
 
     cur -> p1IterateAi : { {/parameters/sub-function=p1IterateAiPmSlices},\n[historicalPerformanceDataList],\n[transmissionModeList] }
     activate p1IterateAi #LightCyan

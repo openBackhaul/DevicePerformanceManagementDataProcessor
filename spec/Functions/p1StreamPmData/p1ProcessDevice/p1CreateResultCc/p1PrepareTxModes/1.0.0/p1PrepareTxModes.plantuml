@@ -5,15 +5,14 @@ title
   p1PrepareTxModes
 end title
 
-participant "p1CreateResultCc\n" as cur #LightCyan
+participant "p1CreateResultCc\n" as cur
 
-participant "p1Prepare\nTxModes" as prepTxModes #BurlyWood
-participant "p1Calculate\nAiCapacity" as aiCC #LightBlue
-participant "p1Calculate\nIntervalCapacity" as intCC #LightBlue
+participant "p1Prepare\nTxModes" as prepTxModes
+participant "p1Calculate\nAiCapacity" as aiCC
 
 
 cur -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
-activate prepTxModes #LightCyan
+activate prepTxModes
 
   loop FOR all [historicalPerformanceDataList]
     loop FOR all [timeXStatesList]
@@ -42,24 +41,13 @@ activate prepTxModes #LightCyan
     end note
 
     prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
-    activate aiCC #LightCyan
+    activate aiCC
       note over aiCC
         Calculates airInterfaceCapacity
         according to ONF TR-532 v2.0 Chapter 6.5
       end note
     prepTxModes <-- aiCC: {airInterfaceCapacity}
     deactivate aiCC
-
-  end loop
-
-  loop FOR all [historicalPerformanceDataList]
-    prepTxModes -> intCC : { [time-xstates-list],\n[transmission-mode-list] }
-    activate intCC #LightCyan
-      note over intCC
-        Calculates intervalCapacity
-      end note
-    prepTxModes <-- intCC: {intervalCapacity}
-    deactivate intCC
 
   end loop
 

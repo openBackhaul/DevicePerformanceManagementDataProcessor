@@ -138,7 +138,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p2PrepareTxModes:
+      p1PrepareTxModes:
         summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
         input:
           required: true

@@ -233,7 +233,7 @@ create-result-cc:
                                         type: integer
                                         description: >
                                           'AirInterface capacity in kbps
-                                          requires {$p2PrepareTxModes}'
+                                          requires {$p1PrepareTxModes}'
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -299,7 +299,7 @@ create-result-cc:
                                             type: integer
                                             description: >
                                               'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
-                                              requires {$p2PrepareTxModes}'
+                                              requires {$p1PrepareTxModes}'
                                           snir-min:
                                             type: integer
                                           snir-max:

@@ -114,51 +114,6 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-                  enum:
-                    - 'Input parameters missing'
-                    - 'Input parameters invalid'
-                    - 'General processing error'
-      p1CalculateIntervalCapacity:
-        summary: 'Calculates the AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps'
-        input:
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - time-xstates-list
-                  - transmission-mode-list
-                properties:
-                  time-xstates-list:
-                    type: array
-                    description: >
-                      'timeXStatesList
-                      from [/prepare-tx-modes/historical-performance-data-list=*/performance-data/time-xstates-list]'
-                  transmission-mode-list:
-                    type: array
-                    description: >
-                      'transmissionModeList
-                      from [/prepare-tx-modes/transmission-mode-list]'
-        output:
-          success:
-            description: 'Interval capacity provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - interval-capacity
-                  properties:
-                    interval-capacity:
-                      type: integer
-                      description: >
-                        'intervalCapacity'
-          error:
-            description: 'Interval capacity could not be provided'
-            content:
-              application/json:
-                schema:
-                  type: string
 
 paths:
   /:

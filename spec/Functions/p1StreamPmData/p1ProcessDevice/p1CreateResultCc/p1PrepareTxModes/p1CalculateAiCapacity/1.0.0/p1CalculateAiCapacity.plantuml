@@ -6,17 +6,17 @@ title
 end title
 
 participant "requestor\n" as requestor
-participant "p1CalculateAiCapacity\n" as aiCC #LightCyan
+participant "p1CalculateAiCapacity\n" as aiCC
 
-requestor -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
-activate aiCC #LightCyan
+requestor -> aiCC : { channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate }
+activate aiCC
 
   note over aiCC
     Calculates AirInterfaceCapacity
     according to ONF TR-532 v2.0 Chapter 6.5
   end note
 
-requestor <-- aiCC : {airInterfaceCapacity}
+requestor <-- aiCC : { airInterfaceCapacity }
 deactivate aiCC
 
 @enduml
