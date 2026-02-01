@@ -69,7 +69,7 @@ Although the sequence of function calls is hard-coded, actually calling a functi
     - [p1Storing](./Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0)  
   - [p1MaintainDs](./Functions/p1StreamPmData/p1MaintainDs/1.0.0)  
 
-*) Shall be provided as an NPM module.  
+*) provided as an NPM module  
 
 **Most relevant Data Structures:**  
 
