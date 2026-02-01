@@ -14,6 +14,12 @@ requestor -> cur : { {dataStoreEsClient},\n{resultCc},\n{interfaceMetadataList} 
 activate cur
 
   note over cur
+    Locks device
+    in DataStore
+  end note
+  cur -> ds: mountName
+
+  note over cur
     storeInterfaceMetadataList
   end note
   cur -> ds: { [interface-metadata-list] }
@@ -24,6 +30,12 @@ activate cur
   end note
   cur -> ds: { {batch} }
   cur <-- ds
+
+  note over cur
+    Unlocks device
+    in DataStore
+  end note
+  cur -> ds: mountName
 
 requestor <-- cur
 

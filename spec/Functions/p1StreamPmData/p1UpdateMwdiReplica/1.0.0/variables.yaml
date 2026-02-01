@@ -91,7 +91,6 @@ update-mwdi-replica:
         from [/update-mwdi-replica/logging-es-client/api-key]'
     last-updated-field:
       type: string
-      # todo: please add a description of the parameter into the purpose field of the configFile and here
       description: >
         '?
         from [/parameters/parameter=lastUpdatedField/value]'

@@ -3,9 +3,6 @@ info:
   title: p1Storing
   version: 1.0.0
 
-# TODO: during maintenance, devices are locked to prevent writing while maintaining
-#      storing spec doesn't include/mention lock...
-
 x-javascript-interface:
   p1Storing:
     summary: 'Stores the resultCc in the dataStore and updates dataStore interface information.'
@@ -52,6 +49,37 @@ x-javascript-interface:
                 - 'interfaceMetadataList could not be stored'
                 - 'General processing error'
     processing:
+      lockDevice:
+        url:  # [{/storing/data-store-url}]
+          description: >
+            'Parallel maintenance of a device shall be prevented'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be locked
+                        from [/storing/mount-name]'
+          output:
+            success:
+              description: 'Device locked'
+            error:
+              description: 'Device could not be locked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch lock error'
+                      - 'General processing error'
       storeInterfaceMetadataList:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/interface-metadata-list]
         input:
@@ -109,6 +137,37 @@ x-javascript-interface:
                     - 'resultCc not provided'
                     - 'Writing to dataStore failed'
                     - 'General processing error'
+      unlockDevice:
+        url:  # [{/storing/data-store-url}]
+          description: >
+            'Maintenance of a device shall be enabled again'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be unlocked
+                        from [/storing/mount-name]'
+          output:
+            success:
+              description: 'Device unlocked'
+            error:
+              description: 'Device could not be unlocked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch unlock error'
+                      - 'General processing error'
 
 paths:
   /:
