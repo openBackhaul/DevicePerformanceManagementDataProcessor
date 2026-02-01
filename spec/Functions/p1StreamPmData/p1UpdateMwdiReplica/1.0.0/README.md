@@ -86,3 +86,8 @@ es.reindex({
 });
 ```
 
+
+### NPM Module
+
+[mw-sdn-p1-update-mwdi-replica](https://www.npmjs.com/package/mw-sdn-p1-update-mwdi-replica)  
+

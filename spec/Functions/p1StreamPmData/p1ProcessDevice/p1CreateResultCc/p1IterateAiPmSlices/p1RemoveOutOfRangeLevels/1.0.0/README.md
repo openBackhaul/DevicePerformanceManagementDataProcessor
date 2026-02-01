@@ -30,3 +30,8 @@ Please find a detailed description of the [variables](variables.yaml).
 | lowerRxLevelLimit            | Lower bound of valid values of the receive level                                   |
 | upperRxLevelLimit            | Upper bound of valid values of the receive level                                   |
 
+
+### NPM Module  
+
+[mw-sdn-p1-remove-out-of-range-levels](https://www.npmjs.com/package/mw-sdn-p1-remove-out-of-range-levels)  
+

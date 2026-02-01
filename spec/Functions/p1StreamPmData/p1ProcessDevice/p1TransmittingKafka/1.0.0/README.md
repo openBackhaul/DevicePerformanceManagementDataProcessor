@@ -40,3 +40,8 @@ Please find a detailed description of the [variables](./variables.yaml).
 |------------------------------|------------------------------------------------------------------------------------|
 | [formatName]                 | Special usage of the parameters. parameter-name is not static. For all parameters with purpose==kafkaClient, parameter-name is using the formatName for identifying a kafkaClient and value contains the kafkaClientUuid |
 
+
+### NPM Module
+
+[mw-sdn-p1-transmitting-kafka](https://www.npmjs.com/package/mw-sdn-p1-transmitting-kafka)  
+

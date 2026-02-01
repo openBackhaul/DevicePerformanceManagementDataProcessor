@@ -24,3 +24,8 @@ Please find a detailed description of the [variables](variables.yaml).
 
 Just passing through parameters to sub-functions.  
 
+
+### NPM Module  
+
+[mw-sdn-p1-iterate-ai-pm-slices](https://www.npmjs.com/package/mw-sdn-p1-iterate-ai-pm-slices)  
+

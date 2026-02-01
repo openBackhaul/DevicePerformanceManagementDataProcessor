@@ -21,3 +21,8 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 Please find a detailed description of the [variables](./variables.yaml).
 
+
+### NPM Module  
+
+[mw-sdn-p1-calculate-utilization](https://www.npmjs.com/package/mw-sdn-p1-calculate-utilization)
+

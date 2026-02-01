@@ -7,33 +7,33 @@ end title
 
 participant "embedYourself\n" as embed
 participant "p1StreamPmData\n" as p1StreamPm
-participant "p1LoadParameters\n" as p1LoadParams
-participant "p1ResolveEsAddress\n" as p1ResolveAddress
-participant "p1InitKafka\n" as p1InitKafka
-participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep
+participant "p1LoadParameters\n" as p1LoadParams #WhiteSmoke
+participant "p1ResolveEsAddress\n" as p1ResolveAddress #WhiteSmoke
+participant "p1InitKafka\n" as p1InitKafka #WhiteSmoke
+participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep #WhiteSmoke
 
 participant "p1ProcessDevice\n" as p1ProcessPm
 
 participant "p1LoadRawCc\n" as p1AddRaw
-participant "p1FieldsFilter\n" as p1FieldsFilter
-participant "p1DiscardIrrelevant\nPmRecords" as filterPm
+participant "p1FieldsFilter\n" as p1FieldsFilter #WhiteSmoke
+participant "p1DiscardIrrelevant\nPmRecords" as filterPm #LightPink
 
 participant "p1CreateResultCc\n" as p1CreateResultCc
-participant "p1Prepare\nTxModes" as p1prepTxModes
-participant "p1Calculate\nAiCapacity" as aiCC
-participant "p1IterateAi\nPmSlices" as aiSlices
-participant "p1Calculate\nIntervalCapacity" as intCC
-participant "p1RemoveOutOf\nRangeLevels" as p1RORL
-participant "p1Remove\nDefaultValues" as p1RemDefault
-participant "p1IterateEc\nPmSlices" as ecSlices
-participant "p1Calculate\nEthernetKpis" as p1EthKpi
-participant "p1Calculate\nUtilization" as p1Util
-participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
+participant "p1Prepare\nTxModes" as p1prepTxModes #LightCyan
+participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
+participant "p1IterateAi\nPmSlices" as aiSlices #LightPink
+participant "p1Calculate\nIntervalCapacity" as intCC #LightPink
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightPink
+participant "p1Remove\nDefaultValues" as p1RemDefault #LightPink
+participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightCyan
+participant "p1Calculate\nUtilization" as p1Util #LightCyan
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightPink
 
-participant "p1Formatting\nOutputApt" as p1OutputApt
-participant "p1Formatting\nOutputOnf" as p1OutputOnf
+participant "p1Formatting\nOutputApt" as p1OutputApt #LightPink
+participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightCyan
 
-participant "p1Transmitting\nKafka" as p1Trans
+participant "p1Transmitting\nKafka" as p1Trans #WhiteSmoke
 
 participant "p1Storing\n" as p1Store
 participant "p1MaintainDs\n" as p1MaintainDs

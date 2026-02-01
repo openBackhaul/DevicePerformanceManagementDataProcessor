@@ -21,3 +21,8 @@ Please find a detailed description of the [existing APT interface format](./Outp
 
 Please find a detailed description of the [variables](variables.yaml).
 
+
+### NPM Module  
+
+[mw-sdn-p1-formatting-output-apt](https://www.npmjs.com/package/mw-sdn-p1-formatting-output-apt)  
+

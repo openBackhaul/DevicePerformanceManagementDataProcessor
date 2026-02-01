@@ -28,3 +28,8 @@ Please find a detailed description of the [variables](variables.yaml).
 | lowerTemperatureLimit        | Lower bound of valid temperature values                                            |
 | upperTemperatureLimit        | Upper bound of valid temperature values                                            |
 
+
+### NPM Module  
+
+[mw-sdn-p1-remove-out-of-range-temperature](https://www.npmjs.com/package/mw-sdn-p1-remove-out-of-range-temperature)  
+
