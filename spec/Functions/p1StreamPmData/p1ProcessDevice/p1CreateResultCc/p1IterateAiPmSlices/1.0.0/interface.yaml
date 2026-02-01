@@ -166,8 +166,6 @@ x-javascript-interface:
                 type: object
                 required:
                   - parameters
-                  #TODO: proposal: rename to data-object; input-object is returned in the output, which looks strange in e.g. {$p1RemoveDefaultValues.output#/input-object}
-                  #applies to all instances where input-object is returned in the output
                   - input-object
                 properties:
                   parameters:
@@ -188,9 +186,9 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - input-object
+                    - cleaned-object
                   properties:
-                    input-object:
+                    cleaned-object:
                       type: object
                       description: >
                         'Data object from which attributes with default values have been removed'

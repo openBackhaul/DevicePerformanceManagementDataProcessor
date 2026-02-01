@@ -29,7 +29,7 @@ iterate-ai-pm-slices:
             description: >
               'historicalPerformanceData
               overwritten by {$p1RemoveOutOfRangeLevels.output#/performance-data}
-              overwritten by {$p1RemoveDefaultValues.output#/input-object}'
+              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}'
             properties:
               interval-capacity:
                 type: integer

@@ -18,7 +18,7 @@ end note
 
 
 
-  requestor1 -> removeDefault : { parameters,\nperformanceData }
+  requestor1 -> removeDefault : { parameters,\ninput-object }
   activate removeDefault
 
     note over removeDefault
@@ -35,12 +35,12 @@ end note
 
     end loop
 
-  requestor1 <-- removeDefault: { performanceData }
+  requestor1 <-- removeDefault: { cleaned-object }
   deactivate removeDefault
 
 
 
-  requestor2 -> removeDefault : { parameters,\nperformanceData }
+  requestor2 -> removeDefault : { parameters,\ninput-object }
   activate removeDefault
 
     note over removeDefault
@@ -48,7 +48,7 @@ end note
       with different parameters
     end note
 
-  requestor2 <-- removeDefault: { performanceData }
+  requestor2 <-- removeDefault: { cleaned-object }
   deactivate removeDefault
 
 

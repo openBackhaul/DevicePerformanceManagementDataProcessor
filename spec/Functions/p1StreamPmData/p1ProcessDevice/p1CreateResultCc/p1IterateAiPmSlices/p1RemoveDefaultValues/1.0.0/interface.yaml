@@ -31,9 +31,9 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - input-object
+                - cleaned-object
               properties:
-                input-object:
+                cleaned-object:
                   type: object
                   description: >
                     'Data object from which attributes with default values have been removed
@@ -49,6 +49,7 @@ x-javascript-interface:
                 - 'parameters invalid'
                 - 'inputObject not provided'
                 - 'inputObject invalid'
+                - 'cleanedObject could not be provided'
                 - 'General processing error'
 
 paths:
