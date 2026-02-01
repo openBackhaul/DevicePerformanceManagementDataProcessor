@@ -22,22 +22,6 @@ Formatting the output is separated from transmitting it.
 Internal data structure of prepared performance data follows ONF information model.  
 => Further processing and services can be added independently from customer-specific output formats.  
 
-The data is manipulated in the following regards:  
-  - Release 1.0.0:
-    - Complement capability information  
-    - Complement configuration information  
-    - Add LinkId
-    - Add AirInterface capacity
-    - Add AirInterface interval capacity
-    - Add list of parallel physics
-    - Add three aggregated Ethernet KPIs
-  - Future releases:
-    - Remove already processed data
-    - Remove attributes with default value
-    - Remove attributes with implausible values
-    - Harmonize temperature values
-
-See further [details](./spec/).  
 
 ### Relevance  
 

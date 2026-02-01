@@ -68,7 +68,7 @@ servers:
     owner-email-address: Thorsten.Heinze@telefonica.com
     release-list:
       - release-number: 1.0.0
-        release-date: 29.12.2025
+        release-date: 31.01.2026
         changes: Initial version
   tcp-server:
     - description: Without TLS layer
