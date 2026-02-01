@@ -1,0 +1,37 @@
+data-store:
+  type: object
+  required:
+    - device
+  properties:
+    device:
+      type: array
+      x-key: mount-name
+      items:
+        type: object
+        required:
+          - mount-name
+          - interface-metadata-list
+          - batch
+        properties:
+          mount-name:
+            type: string
+            description: >
+              'mountName
+              instance to be created during storing, if not existing
+              from [ {$storeInterfaceMetadataList.url#device} or {$storeResultCc.url#device} ]'
+          interface-metadata-list:
+            type: array
+            x-key: uuid
+            items:
+              type: object
+              description: >
+                'interfaceMetadataList
+                from [/storing/interface-metadata-list]'
+          batch:
+            type: array
+            x-key: batch-timestamp
+            items:
+              type: object
+              description: >
+                'batch
+                from [/storing/batch]'

@@ -1,0 +1,62 @@
+@startuml p1MaintainDs
+skinparam responseMessageBelowArrow true
+
+title
+  p1MaintainDs
+end title
+
+participant "p1StreamPmData\n" as requestor
+participant "p1MaintainDs\n" as p1Main
+database "DataStore" as ds
+
+requestor -> p1Main : { {parameters},\n{dataStoreEsClient} }
+activate p1Main
+
+  loop endlessly re-started after cleanupPeriod
+
+    note over p1Main
+      Retrieves list of devices
+      from DataStore
+    end note
+    p1Main -> ds
+    p1Main <-- ds: [mountNames]
+
+    loop FOR device-list[*]
+
+      note over p1Main
+        Locks device
+        in DataStore
+      end note
+      p1Main -> ds: mountName
+
+      note over p1Main
+        Reads deviceData
+        from DataStore
+      end note
+      p1Main -> ds: mountName
+      p1Main <-- ds: {deviceData}
+
+      loop FOR all /device-data/batch=*
+        note over p1Main
+          IF batchTimestamp older than retentionPeriod
+            THEN delete batch from deviceData
+        end note
+      end loop
+
+      note over p1Main
+        Writes updated deviceData
+        to DataStore
+      end note
+      p1Main -> ds: mountName,\n{deviceData}
+
+      note over p1Main
+        Unlocks device
+        in DataStore
+      end note
+      p1Main -> ds: mountName
+
+    end loop
+
+  end loop
+
+@enduml

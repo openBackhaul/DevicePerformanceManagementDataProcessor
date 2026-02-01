@@ -34,9 +34,9 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'parameters parameter missing'
+                - 'parameters missing'
                 - 'parameters invalid'
-                - 'config-file parameter missing'
+                - 'config-file missing'
                 - 'config-file invalid'
                 - 'Kafka address could not be resolved'
                 - 'Kafka session initialization failed'
@@ -64,7 +64,7 @@ x-javascript-interface:
                     items:
                       type: string
                       description: >
-                        'URL composed from IP address or domain name and port
+                        'host:port combination composed from IP address or domain name and port
                         from [/init-kafka/client={kafkaClientName}/url]'
         output:
           success:

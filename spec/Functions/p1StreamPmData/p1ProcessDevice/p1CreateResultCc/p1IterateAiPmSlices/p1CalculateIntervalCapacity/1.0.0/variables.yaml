@@ -1,0 +1,39 @@
+calculate-interval-capacity:
+  type: object
+  required:
+    - time-xstates-list
+    - transmission-mode-list
+  properties:
+    time-xstates-list:
+      type: array
+      x-key: transmission-mode
+      description: >
+        'timeXStatesList
+        from {$input#/time-xstates-list}'
+      items:
+        type: object
+        properties:
+          transmission-mode:
+            type: string
+          time:
+            type: integer
+          transmission-mode-capacity:
+            type: integer
+            description: >
+              'transmissionModeCapacity in kbps
+              from [/calculate-interval-capacity/transmission-mode-list==transmission-mode]/capacity'
+          offered-volume:
+            type: integer
+            description: >
+              'Offered volume in kilobits
+              from [./transmission-mode-capacity] * [./time]'
+    transmission-mode-list:
+      type: array
+      description: >
+        'transmissionModeList
+        from {$input#/transmission-mode-list}'
+    interval-capacity:
+      type: integer
+      description: >
+        'intervalCapacity in kilobits / s
+        from sum of [/calculate-interval-capacity/time-xstates-list=={all}/offered-volume] divided by sum of [/calculate-interval-capacity/time-xstates-list=={all}/time]'

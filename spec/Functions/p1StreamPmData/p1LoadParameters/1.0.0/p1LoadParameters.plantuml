@@ -5,17 +5,17 @@ title
   p1LoadParameters
 end title
 
-participant "requestor\n" as p1RMWDI #LightGrey
-participant "p1LoadParameters\n" as p1LP #LightCyan
-participant "configFile\n" as p1CF #LightCyan
+participant "requestor\n" as p1RMWDI
+participant "p1LoadParameters\n" as p1LP
+participant "configFile\n" as p1CF
 
-activate p1RMWDI #LightGrey
+activate p1RMWDI
 
 p1RMWDI -> p1LP : {functionName}
-activate p1LP #LightCyan
+activate p1LP
 
   note right p1LP
-    load the application's
+    loads the application's
     CC from configFile
   end note
 
@@ -23,23 +23,25 @@ activate p1LP #LightCyan
   p1LP <-- p1CF
 
   note right p1LP
-    Find uuid of FunctionProfile
+    Finds uuid of FunctionProfile
     instance with functionName
   end note
 
 
   loop
     note right p1LP
-      Load instance of FunctionProfile from
+      Loads instance of FunctionProfile from
       the internal copy of the configFile and
       translate into internal parameters format
     end note
     p1LP -> p1LP
 
     note right p1LP
-      Read uuids of SubFunctions
+      Reads uuids of SubFunctions
     end note
   end loop
 
-p1RMWDI <-- p1LP : {{parameters},\n{configFile}}
+p1RMWDI <-- p1LP : { {parameters},\n{configFile} }
 deactivate p1LP
+
+@enduml

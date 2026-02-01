@@ -122,6 +122,7 @@ profile-instances:
         - 'dpmdp-1-0-0-function-p-030'
         - 'dpmdp-1-0-0-function-p-060'
         - 'dpmdp-1-0-0-function-p-090'
+        - 'dpmdp-1-0-0-function-p-100'
         - 'dpmdp-1-0-0-function-p-120'
         - 'dpmdp-1-0-0-function-p-150'
     configuration:
@@ -166,7 +167,7 @@ profile-instances:
       purpose: 'UUID of the MWDI ES ElasticsearchClient LTP'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
-      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'  
+      string-value: 'dpmdp-1-0-0-es-c-es-1-0-0-007'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-062'
@@ -205,6 +206,8 @@ profile-instances:
       parameter-list:
         - parameter: 'dpmdp-1-0-0-string-p-091'
           owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-092'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -217,6 +220,15 @@ profile-instances:
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-092'
+    capability:
+      string-name: 'onfProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
 
 
   # p1MaintainDs
@@ -232,23 +244,23 @@ profile-instances:
           owner: 'platform'
       sub-function-list:
     configuration:
-      is-active: false
+      is-active: true
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-101'
     capability:
       string-name: 'dataStoreCleanupPeriod'
-      purpose: 'Time period for cleaning up expired entries in the DataStore in hours; value range 1-24'
+      purpose: 'Time period between two cleanup runs in hours'
     configuration:
-      string-value: '24'
+      string-value: '12'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-102'
     capability:
       string-name: 'dataStoreRetentionPeriod'
-      purpose: 'Time period for which items are kept in the DataStore in hours; value range 1-96'
+      purpose: 'Time period for which data is retained before deletion in hours'
     configuration:
-      string-value: '96'
+      string-value: '48'
 
 
   # p1UpdateMwdiReplica
@@ -287,7 +299,7 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-122'
     capability:
-      string-name: 'synchPeriod'
+      string-name: 'syncPeriod'
       purpose: 'Duration between two replications of the MWDI ES in seconds'
     configuration:
       string-value: '480'
@@ -340,24 +352,15 @@ profile-instances:
       function-name: 'p1ProcessDevice'
       function-description: 'Orchestrates the device-wise processing, formatting, sending and storing of PM data'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-151'
-          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-180'
         - 'dpmdp-1-0-0-function-p-270'
-        - 'dpmdp-1-0-0-function-p-420'
-        - 'dpmdp-1-0-0-function-p-450'
+        - 'dpmdp-1-0-0-function-p-540'
+        - 'dpmdp-1-0-0-function-p-550'
+        - 'dpmdp-1-0-0-function-p-600'
+        - 'dpmdp-1-0-0-function-p-620'
     configuration:
       is-active: true
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-151'
-    capability:
-      string-name: 'aptFormat'
-      purpose: 'kafkaTransmitter'
-      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
-    configuration:
-      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
 
 
   # p1LoadRawCc
@@ -393,7 +396,7 @@ profile-instances:
       string-name: 'fieldsFilter'
       purpose: 'Fields filter to be applied to reduce the raw ControlConstruct data'
     configuration:
-      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
+      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(timestamp);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
 
 
   # p1DiscardIrrelevantPmRecords
@@ -431,9 +434,12 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-300'
-        - 'dpmdp-1-0-0-function-p-390'
+        - 'dpmdp-1-0-0-function-p-350'
+        - 'dpmdp-1-0-0-function-p-440'
+        - 'dpmdp-1-0-0-function-p-510'
     configuration:
       is-active: true
+
 
   # p1PrepareTxModes
   - profile-name: 'FunctionProfile'
@@ -444,7 +450,6 @@ profile-instances:
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-0-0-function-p-330'
-        - 'dpmdp-1-0-0-function-p-360'
     configuration:
       is-active: true
 
@@ -461,6 +466,21 @@ profile-instances:
       is-active: true
 
 
+  # p1IterateAiPmSlices
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-350'
+    capability:
+      function-name: 'p1IterateAiPmSlices'
+      function-description: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-360'
+        - 'dpmdp-1-0-0-function-p-380'
+        - 'dpmdp-1-0-0-function-p-410'
+    configuration:
+      is-active: true
+
+
   # p1CalculateIntervalCapacity
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-360'
@@ -473,21 +493,600 @@ profile-instances:
       is-active: true
 
 
+  # p1RemoveOutOfRangeLevels
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-380'
+    capability:
+      function-name: 'p1RemoveOutOfRangeLevels'
+      function-description: 'Removes out-of-range level attributes from a performance data slice'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-381'
+          owner: 'engineering'
+        - parameter: 'dpmdp-1-0-0-string-p-382'
+          owner: 'engineering'
+        - parameter: 'dpmdp-1-0-0-string-p-383'
+          owner: 'engineering'
+        - parameter: 'dpmdp-1-0-0-string-p-384'
+          owner: 'engineering'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-381'
+    capability:
+      string-name: 'lowerTxLevelLimit'
+      purpose: 'Lower bound of valid values of the transmit level'
+    configuration:
+      string-value: '-30'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-382'
+    capability:
+      string-name: 'upperTxLevelLimit'
+      purpose: 'Upper bound of valid values of the transmit level'
+    configuration:
+      string-value: '40'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-383'
+    capability:
+      string-name: 'lowerRxLevelLimit'
+      purpose: 'Lower bound of valid values of the receive level'
+    configuration:
+      string-value: '-10'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-384'
+    capability:
+      string-name: 'upperRxLevelLimit'
+      purpose: 'Upper bound of valid values of the receive level'
+    configuration:
+      string-value: '-129'
+
+
+  # p1RemoveDefaultValues
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-410'
+    capability:
+      function-name: 'p1RemoveDefaultValues'
+      function-description: 'Deletes attributes with default values from the transferred object'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-411'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-412'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-413'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-414'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-415'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-416'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-417'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-419'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-420'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-421'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-422'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-423'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-424'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-425'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-426'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-427'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-428'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-429'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-430'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-431'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-432'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-433'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-434'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-411'
+    capability:
+      string-name: 'es'
+      purpose: 'Number of errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-412'
+    capability:
+      string-name: 'ses'
+      purpose: 'Number of severely errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-413'
+    capability:
+      string-name: 'cses'
+      purpose: 'Number of consecutive severely errored seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-414'
+    capability:
+      string-name: 'unavailability'
+      purpose: 'Total time of unavailability in seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-415'
+    capability:
+      string-name: 'txLevelMin'
+      purpose: 'Minimum transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-416'
+    capability:
+      string-name: 'txLevelMax'
+      purpose: 'Maximum transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-417'
+    capability:
+      string-name: 'txLevelAvg'
+      purpose: 'Averaged transmit power in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-419'
+    capability:
+      string-name: 'rxLevelMin'
+      purpose: 'Minimum receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-420'
+    capability:
+      string-name: 'rxLevelMax'
+      purpose: 'Maximum receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-421'
+    capability:
+      string-name: 'rxLevelAvg'
+      purpose: 'Averaged receive level in dBm'
+    configuration:
+      string-value: '99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-424'
+    capability:
+      string-name: 'snirMin'
+      purpose: 'Minimum signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-425'
+    capability:
+      string-name: 'snirMax'
+      purpose: 'Maximum signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-426'
+    capability:
+      string-name: 'snirAvg'
+      purpose: 'Averaged signal to (noise+interference) ratio in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-427'
+    capability:
+      string-name: 'xpdMin'
+      purpose: 'Minimum cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-428'
+    capability:
+      string-name: 'xpdMax'
+      purpose: 'Maximum cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-429'
+    capability:
+      string-name: 'xpdAvg'
+      purpose: 'Averaged cross polarization discrimination in dB'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-430'
+    capability:
+      string-name: 'rfTempMin'
+      purpose: 'Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-431'
+    capability:
+      string-name: 'rfTempMax'
+      purpose: 'Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-432'
+    capability:
+      string-name: 'rfTempAvg'
+      purpose: 'Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius'
+    configuration:
+      string-value: '-99'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-433'
+    capability:
+      string-name: 'defectBlocksSum'
+      purpose: 'Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-434'
+    capability:
+      string-name: 'timePeriod'
+      purpose: 'Total length of the measurement period in seconds'
+    configuration:
+      string-value: '-1'
+
+
+  # p1IterateEcPmSlices
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-440'
+    capability:
+      function-name: 'p1IterateEcPmSlices'
+      function-description: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-450'
+        - 'dpmdp-1-0-0-function-p-460'
+        - 'dpmdp-1-0-0-function-p-500'
+    configuration:
+      is-active: true
+
+
   # p1CalculateEthernetKpis
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-390'
+    uuid: 'dpmdp-1-0-0-function-p-450'
     capability:
       function-name: 'p1CalculateEthernetKpis'
-      function-description: 'Adds Ethernet KPIs to the historicalPerformanceDataList'
+      function-description: 'Adds Ethernet KPIs to the historicalPerformanceData set'
       parameter-list:
       sub-function-list:
     configuration:
       is-active: true
 
 
+  # p1RemoveDefaultValues
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-460'
+    capability:
+      function-name: 'p1RemoveDefaultValues'
+      function-description: 'Deletes attributes with default values from the transferred object'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-461'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-462'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-463'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-464'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-465'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-466'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-467'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-468'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-469'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-470'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-471'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-472'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-473'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-474'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-475'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-476'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-477'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-478'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-479'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-480'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-481'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-482'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-483'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-461'
+    capability:
+      string-name: 'maxBytesPerSecondOutput'
+      purpose: 'Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-462'
+    capability:
+      string-name: 'totalBytesInput'
+      purpose: 'Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-463'
+    capability:
+      string-name: 'totalBytesOutput'
+      purpose: 'Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-464'
+    capability:
+      string-name: 'timePeriod'
+      purpose: 'Total length of the measurement period in seconds'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-465'
+    capability:
+      string-name: 'totalFramesInput'
+      purpose: 'The total number of Ethernet frames received at this interface (including those received in error)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-466'
+    capability:
+      string-name: 'totalFramesOutput'
+      purpose: 'The total number of Ethernet frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-467'
+    capability:
+      string-name: 'forwardedFramesInput'
+      purpose: 'Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-468'
+    capability:
+      string-name: 'forwardedFramesOutput'
+      purpose: 'Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-469'
+    capability:
+      string-name: 'unicastFramesInput'
+      purpose: 'Total number of unicast frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-470'
+    capability:
+      string-name: 'unicastFramesOutput'
+      purpose: 'Total number of unicast frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-471'
+    capability:
+      string-name: 'multicastFramesInput'
+      purpose: 'Total number of multicast frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-472'
+    capability:
+      string-name: 'multicastFramesOutput'
+      purpose: 'Total number of multicast frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-473'
+    capability:
+      string-name: 'broadcastFramesInput'
+      purpose: 'Total number of broadcast frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-474'
+    capability:
+      string-name: 'broadcastFramesOutput'
+      purpose: 'Total number of broadcast frames sent at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-475'
+    capability:
+      string-name: 'fragmentedFramesInput'
+      purpose: 'The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-476'
+    capability:
+      string-name: 'erroredFramesInput'
+      purpose: 'Total number of errored frames received at this interface'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-477'
+    capability:
+      string-name: 'erroredFramesOutput'
+      purpose: 'Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-478'
+    capability:
+      string-name: 'droppedFramesInput'
+      purpose: 'Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-479'
+    capability:
+      string-name: 'droppedFramesOutput'
+      purpose: 'The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-480'
+    capability:
+      string-name: 'oversizedFramesIngress'
+      purpose: 'The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-481'
+    capability:
+      string-name: 'undersizedFramesIngress'
+      purpose: 'The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-482'
+    capability:
+      string-name: 'jabberFramesIngress'
+      purpose: 'Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem'
+    configuration:
+      string-value: '-1'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-483'
+    capability:
+      string-name: 'unknownProtocolFramesInput'
+      purpose: 'Total number of received frames that were transporting an unknown protocol'
+    configuration:
+      string-value: '-1'
+
+
+  # p1CalculateUtilization
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-500'
+    capability:
+      function-name: 'p1CalculateUtilization'
+      function-description: 'Calculates utilization of the aggregated physical resources in a performance data slice'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1RemoveOutOfRangeTemperature
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-510'
+    capability:
+      function-name: 'p1RemoveOutOfRangeTemperature'
+      function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-511'
+          owner: 'engineering'
+        - parameter: 'dpmdp-1-0-0-string-p-512'
+          owner: 'engineering'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-511'
+    capability:
+      string-name: 'lowerTemperatureLimit'
+      purpose: 'Lower bound of valid values of the temperature'
+    configuration:
+      string-value: '-30'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-512'
+    capability:
+      string-name: 'upperTemperatureLimit'
+      purpose: 'Upper bound of valid values of the temperature'
+    configuration:
+      string-value: '130'
+
+
   # p1FormattingOutputApt
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-420'
+    uuid: 'dpmdp-1-0-0-function-p-540'
     capability:
       function-name: 'p1FormattingOutputApt'
       function-description: 'Transforms the resultCc into aptOutputFormat'
@@ -497,36 +1096,82 @@ profile-instances:
       is-active: true
 
 
-  # p1TransmittingKafka
+  # p1FormattingOutputOnf
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-450'
+    uuid: 'dpmdp-1-0-0-function-p-550'
     capability:
-      function-name: 'p1TransmittingKafka'
-      function-description: 'Transfers output data to Kafka transmitter'
+      function-name: 'p1FormattingOutputOnf'
+      function-description: 'Creates the onfOutputFormat from resultCc'
       parameter-list:
-        - parameter: 'dpmdp-1-0-0-string-p-451'
+      sub-function-list:
+        - 'dpmdp-1-0-0-function-p-560'
+    configuration:
+      is-active: true
+
+
+  # p1FieldsFilter
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-560'
+    capability:
+      function-name: 'p1FieldsFilter'
+      function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-561'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-0-0-string-p-451'
+    uuid: 'dpmdp-1-0-0-string-p-561'
     capability:
-      string-name: 'aptFormat'
-      purpose: 'kafkaTransmitter'
+      string-name: 'fieldsFilter'
+      purpose: 'Fields filter to be applied to reduce the onfOutputFormat'
+    configuration:
+      string-value: ''
+
+
+  # p1TransmittingKafka
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-0-0-function-p-600'
+    capability:
+      function-name: 'p1TransmittingKafka'
+      function-description: 'Transfers outputFormats to their respective KafkaClient'
+      parameter-list:
+        - parameter: 'dpmdp-1-0-0-string-p-601'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-0-0-string-p-602'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-601'
+    capability:
+      string-name: 'apt-output-format'
+      purpose: 'kafkaClient'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-000'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-0-0-string-p-602'
+    capability:
+      string-name: 'onf-output-format'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
+
 
   # p1Storing
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-0-0-function-p-480'
+    uuid: 'dpmdp-1-0-0-function-p-620'
     capability:
       function-name: 'p1Storing'
       function-description: 'Stores the resultCc into the DataStore'
       parameter-list:
       sub-function-list:
     configuration:
-      is-active: false
+      is-active: true

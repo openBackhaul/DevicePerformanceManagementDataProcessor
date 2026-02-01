@@ -1,0 +1,56 @@
+@startuml p1RemoveDefaultValues
+skinparam responseMessageBelowArrow true
+
+title
+  p1RemoveDefaultValues
+end title
+
+participant "p1IterateAi\nPmSlices" as requestor1
+participant "p1IterateEc\nPmSlices" as requestor2
+
+participant "p1RemoveDefaultValues\n" as removeDefault
+
+note over removeDefault #Salmon
+  GenericFunction that gets called
+  by multiple requestors at different
+  places in the overall sequence
+end note
+
+
+
+  requestor1 -> removeDefault : { parameters,\ninput-object }
+  activate removeDefault
+
+    note over removeDefault
+      Creates [default-value-list]
+      from parameters
+    end note
+
+    loop FOR [/remove-default-values/default-value-list]
+
+      note over removeDefault
+        IF { [/remove-default-values/input-object/{[/remove-default-values/default-value-list[*]/attribute-name]}] } == { [/remove-default-values/default-value-list[*]/attribute-value] }
+          THEN delete [/remove-default-values/input-object/{[/remove-default-values/default-value-list[*]/attribute-name]}] attribute from [/remove-default-values/input-object]
+      end note
+
+    end loop
+
+  requestor1 <-- removeDefault: { cleaned-object }
+  deactivate removeDefault
+
+
+
+  requestor2 -> removeDefault : { parameters,\ninput-object }
+  activate removeDefault
+
+    note over removeDefault
+      Same as above, but
+      with different parameters
+    end note
+
+  requestor2 <-- removeDefault: { cleaned-object }
+  deactivate removeDefault
+
+
+
+@enduml

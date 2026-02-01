@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: p1FormattingOutputOnf
+  version: 1.0.0
+
+x-javascript-interface:
+  p1FormattingOutputOnf:
+    summary: 'Creates a filtered onfOutputFormat'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - result-cc
+            properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              result-cc:
+                type: object
+                description: >
+                  'resultCc'
+    output:
+      success:
+        description: 'onfOutputFormat created'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - format-name
+                - output-format
+              properties:
+                format-name:
+                  type: string
+                  description: >
+                    'Name of the output format'
+                  enum:
+                    - 'onf-output-format'
+                output-format:
+                  type: object
+                  description: >
+                    'onfOutputFormat
+                    from [/formatting-output-onf/onf-output-format]'
+      error:
+        description: 'onfOutputFormat could not be created'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'onfOutputFormat could not be provided'
+                - 'General processing error'
+    processing:
+      createOutputFromResultCc:
+        description: >
+          'Creates the output object as a variable of the p1FormattingOutputOnf function and fills it from resultCc data'
+        input:
+          content:
+            application/json:
+              schema:
+                properties:
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc
+                      from [/formatting-output-onf/result-cc]'
+        output:
+          success:
+            description: 'Output object provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    output:
+                      type: object
+                      description: >
+                        'Output, bare replication
+                        from {$input#/result-cc}'
+          error:
+            description: 'Output object could not be created.'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'resultCc not provided'
+                    - 'resultCc invalid'
+                    - 'output could not be provided'
+                    - 'General processing error'
+      p1FieldsFilter:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data-structure
+                  - fields-filter-string
+                properties:
+                  data-structure:
+                    type: object
+                    description: >
+                      'The data structure to be filtered according to the provided fields filter string.
+                      from [/formatting-output-onf/onf-output-format]'
+                  fields-filter-string:
+                    type: string
+                    description: >
+                      'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure,
+                      from [/formatting-output-onf/fields-filter]'
+        output:
+          success:
+            description: 'Data structure successfully filtered according to the provided fields filter string'
+            content:
+              application/json:
+                schema:
+                  type: object
+                properties:
+                  filtered-data-structure:
+                    type: object
+                    description: 'The data structure after filtering according to the provided fields filter string'
+          error:
+            description: 'Data structure could not be filtered according to the provided fields filter string'
+            content:
+              application/json:
+                schema:
+                  type: string
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

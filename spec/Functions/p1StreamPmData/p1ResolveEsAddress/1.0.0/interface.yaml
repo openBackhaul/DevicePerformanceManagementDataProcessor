@@ -52,7 +52,7 @@ x-javascript-interface:
                   properties:
                     url:
                       type: string
-                      description: > 
+                      description: >
                         'ElasticSearch URL
                         from [/resolve-es-address/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/resolve-es-address/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /resolve-es-address/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/resolve-es-address/tcp-client/logical-termination-point/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port]'
                     api-key:
@@ -87,20 +87,20 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-              - 'es-name not found in parameters'
-              - 'es-client-uuid could not be resolved'
-              - 'es-client LTP could not be found in config-file'
-              - 'http-client-uuid could not be resolved'
-              - 'http-client LTP could not be found in config-file'
-              - 'tcp-client-uuid could not be resolved'
-              - 'tcp-client LTP could not be found in config-file'
-              - 'url could not be resolved'
-              - 'api-key could not be resolved'
-              - 'index-alias could not be resolved'
-              - 'service-records-policy could not be resolved'
-              - 'operational-state could not be resolved'
-              - 'life-cycle-state could not be resolved'
-              - 'unknown error occurred'
+                - 'es-name not found in parameters'
+                - 'es-client-uuid could not be resolved'
+                - 'es-client LTP could not be found in config-file'
+                - 'http-client-uuid could not be resolved'
+                - 'http-client LTP could not be found in config-file'
+                - 'tcp-client-uuid could not be resolved'
+                - 'tcp-client LTP could not be found in config-file'
+                - 'url could not be resolved'
+                - 'api-key could not be resolved'
+                - 'index-alias could not be resolved'
+                - 'service-records-policy could not be resolved'
+                - 'operational-state could not be resolved'
+                - 'life-cycle-state could not be resolved'
+                - 'unknown error occurred'
 
 paths:
   /:

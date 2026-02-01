@@ -24,7 +24,7 @@ resolve-es-address:
       type: string
       description: >
         'ElasticSearch client UUID
-        find [/resolve-es-address/parameters/parameter=*/parameter-name]==[resolve-es-address/es-name]
+        find [/resolve-es-address/parameters/parameter=*/parameter-name]==[/resolve-es-address/es-name]
         from [/resolve-es-address/parameters/parameter=*/value]'
     es-client:
       type: object

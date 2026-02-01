@@ -6,15 +6,16 @@ title
 end title
 
 participant "requestor\n" as requestor
-participant "p1InitKafka\n" as p1Init #LightCyan
-participant "kafkaProducerService.\nconnect" as p1KafkaP #LightCyan
+participant "p1InitKafka\n" as p1Init
+participant "kafkaProducerService.\nconnect" as p1KafkaP
+participant "kafkaConsumerService.\nconnect" as p1KafkaC
 queue "kafka\n" as kafka
 
-requestor -> p1Init : {{parameters},\n{configFile}}
-activate p1Init #LightCyan
+requestor -> p1Init : { {parameters},\n{configFile} }
+activate p1Init
 
   note over p1Init
-    Resolve Kafka address
+    Resolves Kafka address
     and connection parameters
   end note
 
@@ -29,10 +30,10 @@ activate p1Init #LightCyan
     end note
 
     p1Init -> p1KafkaP : {clientId,\nbrokerList}
-    activate p1KafkaP #LightCyan
+    activate p1KafkaP
 
       note over p1KafkaP
-        Establish producer
+        Establishes producer
         session to Kafka
       end note
       p1KafkaP -> kafka : {CONNECT event}
@@ -48,17 +49,17 @@ activate p1Init #LightCyan
       THEN
     end note
 
-    p1Init -> p1KafkaP : {groupId,\nclientId,\nbrokerList}
-    activate p1KafkaP #LightCyan
+    p1Init -> p1KafkaC : {groupId,\nclientId,\nbrokerList}
+    activate p1KafkaC
 
-      note over p1KafkaP
-        Establish consumer
+      note over p1KafkaC
+        Establishes consumer
         session to Kafka
       end note
-      p1KafkaP -> kafka : {CONNECT event}
-      p1KafkaP <-- kafka
+      p1KafkaC -> kafka : {CONNECT event}
+      p1KafkaC <-- kafka
 
-    p1Init <-- p1KafkaP
+    p1Init <-- p1KafkaC
 
   end loop
 

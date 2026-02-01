@@ -1,0 +1,29 @@
+formatting-output-onf:
+  type: object
+  required:
+    - parameters
+    - result-cc
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    result-cc:
+      type: object
+      description: >
+        'ResultCc
+        from {$input#/result-cc}'
+
+    fields-filter:
+      type: string
+      description: >
+        'Fields filter to be applied to reduce the onfOutputFormat
+        from [/formatting-output-onf/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
+
+    onf-output-format:
+      type: object
+      description: >
+        'onfOutputFormat
+        from {$createOutputFromResultCc.output#/output}
+        overwritten by {$p1FieldsFilter.output#/filtered-data-structure}'

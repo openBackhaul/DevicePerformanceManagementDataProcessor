@@ -1,0 +1,79 @@
+iterate-ec-pm-slices:
+  type: object
+  required:
+    - parameters
+    - historical-performance-data-list
+    - aggregation-group
+    - result-cc
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    historical-performance-data-list:
+      type: array
+      x-key: period-end-time
+      description: >
+        'historicalPerformanceDataList
+        from {$input#/historical-performance-data-list}
+        ! simplified representation !'
+      items:
+        type: object
+        properties:
+          granularity-period:
+            type: string
+          period-end-time:
+            type: string
+          performance-data:
+            type: object
+            description: >
+              'historicalPerformanceData
+              overwritten by {$p1CalculateEthernetKpis.output#/historical-performance-data}
+              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}'
+            properties:
+              transmit-traffic:
+                type: integer
+                description: >
+                  'transmitTraffic in Mbps
+                  requires {$p1CalculateEthernetKpis}'
+              receive-traffic:
+                type: integer
+                description: >
+                  'receiveTraffic in Mbps
+                  requires {$p1CalculateEthernetKpis}'
+              frame-loss-input:
+                type: integer
+                description: >
+                  'Sum of errored and dropped frames on the ingress
+                  requires {$p1CalculateEthernetKpis}'
+              frame-loss-output:
+                type: integer
+                description: >
+                  'Sum of errored and dropped frames on the egress
+                  requires {$p1CalculateEthernetKpis}'
+    aggregation-group:
+      type: object
+      description: >
+        'aggregationGroup
+        from {$input#/aggregation-group}'
+    result-cc:
+      type: object
+      description: >
+        'resultCc
+        from {$input#/result-cc}'
+
+    most-recent-period-end-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'mostRecentPeriodEndTime
+        initial value: {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
+    most-recent-period-end-time-24:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'mostRecentPeriodEndTime24
+        initial value: {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'

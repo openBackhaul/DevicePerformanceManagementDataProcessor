@@ -27,6 +27,13 @@ Detailed description of the [internal variables](./variables.yaml).
 Detailed description of the [interface](./interface.yaml).  
 
 
+### Parameters
+
+| Parameter Name               | Description                                                                        |
+|------------------------------|------------------------------------------------------------------------------------|
+| [ElasticSearch name]         | Special usage of the parameters. parameter-name is not static. For all parameters with parameter-name == {$input#/es-name} the value contains the ElasticSearch client's UUID |
+
+
 ### NPM Module  
 
 [mw-sdn-p1-resolve-es-address](https://www.npmjs.com/package/mw-sdn-p1-resolve-es-address)  

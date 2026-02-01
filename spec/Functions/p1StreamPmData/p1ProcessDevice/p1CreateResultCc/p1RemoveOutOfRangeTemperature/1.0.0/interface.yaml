@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: p1RemoveOutOfRangeTemperature
+  version: 1.0.0
+
+x-javascript-interface:
+  p1RemoveOutOfRangeTemperature:
+    summary: 'Deletes temperature attributes with values outside pre-defined range from equipment'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - equipment
+            properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              equipment:
+                type: array
+                description: >
+                  'List of equipment at the device'
+    output:
+      success:
+        description: 'Equipment data cleaned from out-of-range temperature attributes'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - equipment
+              properties:
+                equipment:
+                  type: array
+                  description: >
+                    'List of equipment
+                    from [/remove-out-of-range-temperature/equipment]'
+      error:
+        description: 'Equipment data could not be cleaned from out-of-range temperature attributes'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'equipment not provided'
+                - 'equipment invalid'
+                - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

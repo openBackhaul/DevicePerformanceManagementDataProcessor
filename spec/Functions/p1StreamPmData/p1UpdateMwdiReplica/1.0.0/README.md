@@ -46,6 +46,19 @@ Detailed description of the [internal variables](./variables.yaml).
 Detailed description of the [interface](./interface.yaml).  
 
 
+### Parameters
+
+| Parameter Name               | Description                                                                        |
+|------------------------------|------------------------------------------------------------------------------------|
+| jobName                      | Name of the replication job                                                        |
+| syncPeriod                   | Duration between two replications of the MWDI ES in seconds                        |
+| lastUpdatedField             |                                                                                    |
+| overlapMs                    | Overlap in milliseconds to avoid missing updates at period boundaries              |
+| reqPerSec                    | NThrottles re-indexing to number of copy operations per second, preventing high load on the server |
+| scrollSize                   | Number of documents returned per page when Elasticsearch performs a scroll search  |
+| scrollTtl                    | How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window |
+
+
 ### Sample code:
 ```
 es.reindex({
@@ -72,4 +85,9 @@ es.reindex({
   }
 });
 ```
+
+
+### NPM Module
+
+[mw-sdn-p1-update-mwdi-replica](https://www.npmjs.com/package/mw-sdn-p1-update-mwdi-replica)  
 

@@ -1,0 +1,64 @@
+@startuml p1IterateEcPmSlices
+skinparam responseMessageBelowArrow true
+
+title
+  p1IterateEcPmSlices
+end title
+
+participant "p1CreateResultCc\n" as cur
+
+participant "p1IterateEcPmSlices\n" as iterateSlices
+participant "p1Calculate\nEthernetKpis" as intCC
+participant "p1Remove\nDefaultValues" as p1RemDefault
+participant "p1Calculate\nUtilization" as p1CalcUtil
+
+
+cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
+activate iterateSlices
+
+  note over iterateSlices
+    Initializes:
+      mostRecentPeriodEndTime
+      mostRecentPeriodEndTime24
+  end note
+
+  loop FOR [historicalPerformanceDataList]
+
+    iterateSlices -> intCC : { {historical-performance-data} }
+    activate intCC
+      note over intCC
+        Adds Ethernet KPIs
+      end note
+    iterateSlices <-- intCC: { {historical-performance-data} }
+    deactivate intCC
+
+    iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{historical-performance-data} }
+    activate p1RemDefault
+      note over p1RemDefault
+        Deletes default values
+      end note
+    iterateSlices <-- p1RemDefault: { {historical-performance-data} }
+    deactivate p1RemDefault
+
+    iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
+    activate p1CalcUtil
+      note over p1CalcUtil
+        Adds utilization
+      end note
+    iterateSlices <-- p1CalcUtil: { {historical-performance-data} }
+    deactivate p1CalcUtil
+
+    note over iterateSlices
+      IF granularityPeriod == 15-MIN/24-HOURS
+        THEN update mostRecentPeriodEndTime
+        THEN update mostRecentPeriodEndTime24
+    end note
+
+  end loop
+
+cur <-- iterateSlices : { [historicalPerformanceDataList],\nmostRecentPeriodEndTime,\nmostRecentPeriodEndTime24 }
+deactivate iterateSlices
+
+deactivate cur
+
+@enduml

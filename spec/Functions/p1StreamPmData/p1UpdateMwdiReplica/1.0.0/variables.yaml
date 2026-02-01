@@ -2,22 +2,16 @@ update-mwdi-replica:
   type: object
   required:
     - parameters
-    - last-replica-time
     - mwdi-es-client
     - mwdi-replica-es-client
     - logging-es-client
+    - last-replica-time
   properties:
     parameters:
       type: object
       description: >
         'Hierarchical object holding the parameter settings
         from {$input#/parameters}'
-    last-replica-time:
-      type: string
-      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
-      description: >
-        'Timestamp of the last successful replication
-        from {$input#/last-replica-time}'
     mwdi-es-client:
       type: object
       description: >
@@ -33,6 +27,12 @@ update-mwdi-replica:
       description: >
         'Logging ElasticSearch address
         from {$input#/logging-es-client}'
+    last-replica-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'Timestamp of the last successful replication
+        from {$input#/last-replica-time}'
 
     job-name:
       type: string
@@ -43,7 +43,7 @@ update-mwdi-replica:
       type: string
       description: >
         'Duration between two replications of the MWDI ES in seconds
-        from [/update-mwdi-replica/parameters/parameter=synchPeriod/value]'
+        from [/update-mwdi-replica/parameters/parameter=syncPeriod/value]'
     source-url:
       type: string
       description: >
@@ -91,7 +91,6 @@ update-mwdi-replica:
         from [/update-mwdi-replica/logging-es-client/api-key]'
     last-updated-field:
       type: string
-      # todo: please add a description of the parameter into the purpose field of the configFile and here
       description: >
         '?
         from [/parameters/parameter=lastUpdatedField/value]'

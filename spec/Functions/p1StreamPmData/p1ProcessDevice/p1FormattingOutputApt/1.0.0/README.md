@@ -1,10 +1,7 @@
 # p1FormattingOutputApt
 
-
-### Overview  
-
-p1FormattingOutputApt transforms the processed performance data (resultCc) from ONF format to the aptOutputFormat.  
-Attributes not found in the resultCc are also omitted from the aptOutputFormat.
+Transforms the processed performance data (resultCc) from ONF format to the aptOutputFormat.  
+Attributes not found in the resultCc are also omitted from the aptOutputFormat.  
 
 
 ### Diagram  
@@ -23,3 +20,9 @@ Please find a detailed description of the [existing APT interface format](./Outp
 ### Variables
 
 Please find a detailed description of the [variables](variables.yaml).
+
+
+### NPM Module  
+
+[mw-sdn-p1-formatting-output-apt](https://www.npmjs.com/package/mw-sdn-p1-formatting-output-apt)  
+

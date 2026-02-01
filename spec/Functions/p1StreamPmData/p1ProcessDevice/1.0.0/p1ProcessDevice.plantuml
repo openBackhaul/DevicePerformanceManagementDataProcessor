@@ -6,94 +6,80 @@ title
 end title
 
 participant "p1StreamPmData\n" as requestor
-participant "p1ProcessDevice\n" as p1ProOrch #LightCyan
-participant "p1LoadRawCc\n" as p1AddRaw #LightCyan
-participant "p1CreateResultCc\n" as p1CRC #LightCyan
-participant "p1Formatting\nOutputApt" as p1Output #LightCyan
-participant "p1Transmitting\nKafka" as p1Trans #LightCyan
-participant "p1Storing\n" as p1Store #LightBlue
+participant "p1ProcessDevice\n" as p1ProOrch
+participant "p1LoadRawCc\n" as p1AddRaw
+participant "p1CreateResultCc\n" as p1CRC
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
+participant "p1Transmitting\nKafka" as p1Trans
+participant "p1Storing\n" as p1Store
 
 
-activate requestor
+requestor -> p1ProOrch : { mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+activate p1ProOrch
 
-requestor -> p1ProOrch : {mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient}}
-activate p1ProOrch #LightCyan
-
-  note over p1ProOrch
-    Create data structure
-    for processing
-  end note
-
-  p1ProOrch -> p1AddRaw : {mountName\n{/parameters/sub-function=loadRawCc}\n{mwdiReplicaEsClient}\n{dataStoreEsClient}}
-  activate p1AddRaw #LightCyan
+  p1ProOrch -> p1AddRaw : { mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+  activate p1AddRaw
 
     note over p1AddRaw
-      - Load rawCc from MWDI ES
-      - Reduce structure of rawCc
-      - Delete PM data that has
+      - Loads rawCc from MWDI ES
+      - Reduces structure of rawCc
+      - Deletes PM data that has
         already been processed in past
     end note
 
-  p1ProOrch <-- p1AddRaw : {{rawCc}}
+  p1ProOrch <-- p1AddRaw : { {rawCc} }
   deactivate p1AddRaw
 
-  note over p1ProOrch
-    Add rawCc to
-    data structure
-  end note
-
-  p1ProOrch -> p1CRC : {{/parameters/sub-function=createResultCc},\n{rawCc}}
-  activate p1CRC #LightCyan
+  p1ProOrch -> p1CRC : { {/parameters/sub-function=createResultCc},\n{rawCc} }
+  activate p1CRC
 
     note over p1CRC
-      - Create resultCc from rawCc
-      - Process and complement PM data
+      - Creates resultCc from rawCc
+      - Processes and complements PM data
     end note
 
-  p1ProOrch <-- p1CRC : {{resultCc}}
+  p1ProOrch <-- p1CRC :  { {resultCc},\n{interfaceMetadataList} }
   deactivate p1CRC
 
-  note over p1ProOrch
-    Add resultCc to
-    data structure
-  end note
+  p1ProOrch -> p1OutputApt : { {resultCc} }
+  activate p1OutputApt
 
-  p1ProOrch -> p1Output : {{resultCc}}
-  activate p1Output #LightCyan
-
-    note over p1Output
-      Create aptOutputFormat
+    note over p1OutputApt
+      Creates aptOutputFormat
       from resultCc
     end note
 
-  p1ProOrch <-- p1Output : {{aptOutputFormat}}
-  deactivate p1Output
+  p1ProOrch <-- p1OutputApt : { formatName,\n{outputFormat} }
+  deactivate p1OutputApt
 
-  note over p1ProOrch
-    Add aptOutputFormat
-    to data structure
-  end note
+  p1ProOrch -> p1OutputOnf : { {resultCc} }
+  activate p1OutputOnf
 
-  loop FOR all [kafkaTransmitter]
+    note over p1OutputOnf
+      Creates onfOutputFormat
+      from resultCc
+    end note
 
-    p1ProOrch -> p1Trans : {{/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat],\nkafkaTransmitter[n]}
-    activate p1Trans #LightCyan
+  p1ProOrch <-- p1OutputOnf : { formatName,\n{outputFormat} }
+  deactivate p1OutputOnf
 
-      note over p1Trans
-        Transmit object
-        to Kafka
-      end note
+  p1ProOrch -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  activate p1Trans
 
-    p1ProOrch <-- p1Trans
-    deactivate p1Trans
+    note over p1Trans
+      Transmits object
+      to Kafka
+    end note
 
-  end loop
+  p1ProOrch <-- p1Trans
+  deactivate p1Trans
 
-  p1ProOrch -> p1Store : {{/parameters/sub-function=p1Storing},\n{dataStoreEsClient},\n{configFile},\n{resultCc}}
-  activate p1Store #LightBlue
+  p1ProOrch -> p1Store : { {dataStoreEsClient},\n{resultCc},\n{interfaceMetadataList} }
+  activate p1Store
 
     note over p1Store
-      Store resultCc
+      Stores resultCc
     end note
 
   p1ProOrch <-- p1Store

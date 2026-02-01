@@ -1,0 +1,64 @@
+maintain-ds:
+  type: object
+  required:
+    - parameters
+    - data-store-es-client
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/maintain-ds/data-store-es-client/url]'
+    cleanup-period:
+      type: string
+      description: >
+        'Time period between two cleanup runs in hours
+        from [/maintain-ds/parameters/parameter={dataStoreCleanupPeriod}/value]'
+    retention-period:
+      type: string
+      description: >
+        'Time period for which data is retained before deletion in hours
+        from [/maintain-ds/parameters/parameter={dataStoreRetentionPeriod}/value]'
+
+    device-list:
+      type: array
+      items:
+        type: string
+      description: >
+        'List of mountNames of all devices in the DataStore
+        from {$retrieveListOfDevices.output#/}'
+    device-data:
+      type: object
+      description: >
+        'Complete device data read from the dataStore
+        from {$readDeviceDataFromDs.output#/device-data}
+        ! simplified representation !'
+      properties:
+        mount-name:
+          type: string
+          description: >
+            'mountName'
+        batch:
+          type: array
+          x-key: batch-timestamp
+          description: >
+            'batchList
+            overwritten by {$deleteExpiredBatches.output#/batch-list}'
+          items:
+            type: object
+            properties:
+              batch-timestamp:
+                type: string
+                description: >
+                  'Timestamp when the CC was read from the device'

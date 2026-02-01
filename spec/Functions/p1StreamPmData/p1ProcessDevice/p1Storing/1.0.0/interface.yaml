@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: p1Storing
+  version: 1.0.0
+
+x-javascript-interface:
+  p1Storing:
+    summary: 'Stores the resultCc in the dataStore and updates dataStore interface information.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data-store-es-client
+              - result-cc
+              - interface-metadata-list
+            properties:
+              data-store-es-client:
+                type: object
+                description: >
+                  'DataStore ElasticSearch address'
+              result-cc:
+                type: object
+                description: >
+                  'The resultCc to be stored'
+              interface-metadata-list:
+                type: object
+                description: >
+                  'interfaceMetadataList'
+    output:
+      success:
+        description: 'resultCc stored'
+      error:
+        description: 'resultCc could not be stored'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'interfaceMetadataList not provided'
+                - 'interfaceMetadataList invalid'
+                - 'resultCc could not be stored'
+                - 'interfaceMetadataList could not be stored'
+                - 'General processing error'
+    processing:
+      lockDevice:
+        url:  # [{/storing/data-store-url}]
+          description: >
+            'Parallel maintenance of a device shall be prevented'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be locked
+                        from [/storing/mount-name]'
+          output:
+            success:
+              description: 'Device locked'
+            error:
+              description: 'Device could not be locked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch lock error'
+                      - 'General processing error'
+      storeInterfaceMetadataList:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/interface-metadata-list]
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: array
+                x-key: uuid
+                description: >
+                  'Performs a bare write operation on the entire interfaceMetadataList as a block
+                  interfaceMetadataList of existing devices is overwritten, interfaceMetadataList of non-existing mountName is created
+                  from [/storing/interface-metadata-list]'
+        output:
+          success:
+            description: 'interfaceMetadataList stored'
+          error:
+            description: 'interfaceMetadataList could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'interfaceMetadataList not provided'
+                    - 'interfaceMetadataList invalid'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+      storeResultCc:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/batch={/storing/batch-timestamp}]
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >
+                  'Writes the entire batch as a block
+                  assuming that the value of the batchTimestamp is always unique, a new entry is created with every storing operation
+                  from [/storing/batch]'
+        output:
+          success:
+            description: 'resultCc stored'
+          error:
+            description: 'resultCc could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'batchTimestamp not provided'
+                    - 'batchTimestamp invalid'
+                    - 'resultCc not provided'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+      unlockDevice:
+        url:  # [{/storing/data-store-url}]
+          description: >
+            'Maintenance of a device shall be enabled again'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be unlocked
+                        from [/storing/mount-name]'
+          output:
+            success:
+              description: 'Device unlocked'
+            error:
+              description: 'Device could not be unlocked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch unlock error'
+                      - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
