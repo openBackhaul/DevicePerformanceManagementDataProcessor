@@ -98,12 +98,10 @@ x-javascript-interface:
                     properties:
                       total-air-interface-interval-capacity:
                         type: integer
-                        # TODO: In the from section, >historical-performance-data-list={period-end-time}< is used.
-                        # Shouldn't it be something like {$input.period-end-time} so it's clearer where the value comes from?
                         description: >
                           'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
-                          from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={period-end-time}/performance-data/interval-capacity}]
-                                  with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                          from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
+                                  with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
         error:
           description: 'totalAirInterfaceIntervalCapacity could not be provided'
           content:
@@ -126,8 +124,6 @@ x-javascript-interface:
           content:
             application/json:
               schema:
-                #TODO: ich würde auch utilizationRX berechnen, wir haben ja auch total-bytes-input
-                # und die utilization unten würde ich in utilizationTX umbenennen, damit man schon am counter-namen sieht, dass es TX ist.
                 required:
                   - total-bytes-output
                   - total-air-interface-interval-capacity

@@ -3,7 +3,7 @@ info:
   title: p1Storing
   version: 1.0.0
 
-# TODO: during maintainance, devices are locked to prevent writing while maintaining
+# TODO: during maintenance, devices are locked to prevent writing while maintaining
 #      storing spec doesn't include/mention lock...
 
 x-javascript-interface:

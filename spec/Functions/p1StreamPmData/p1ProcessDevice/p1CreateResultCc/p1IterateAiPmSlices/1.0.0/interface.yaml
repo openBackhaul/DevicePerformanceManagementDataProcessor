@@ -199,9 +199,7 @@ x-javascript-interface:
                 schema:
                   type: string
       updateMostRecentPeriodEndTime:
-        #TODO: imho the descriptions do not explicitly enough state that the result should be the period-end-time with the
-        # overall newest date. (latest value could also be read as the value from the currently processed slice instead.)
-        summary: 'Overwrites mostRecentPeriodEndTime or mostRecentPeriodEndTime24 with latest value of periodEndTime'
+        summary: 'Overwrites mostRecentPeriodEndTime or mostRecentPeriodEndTime24 with latest value (means, most recent date) of periodEndTime'
         input:
           content:
             application/json:
