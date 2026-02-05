@@ -212,6 +212,7 @@
                 "dpmdp-1-0-0-function-p-030",
                 "dpmdp-1-0-0-function-p-060",
                 "dpmdp-1-0-0-function-p-090",
+                "dpmdp-1-0-0-function-p-100",
                 "dpmdp-1-0-0-function-p-120",
                 "dpmdp-1-0-0-function-p-150"
               ]
@@ -331,6 +332,10 @@
                 {
                   "parameter": "dpmdp-1-0-0-string-p-091",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-092",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -354,6 +359,19 @@
           }
         },
         {
+          "uuid": "dpmdp-1-0-0-string-p-092",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-0-0-function-p-100",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
@@ -373,7 +391,7 @@
               "sub-function-list": []
             },
             "function-profile-configuration": {
-              "is-active": false
+              "is-active": true
             }
           }
         },
@@ -382,10 +400,10 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Time period for cleaning up expired entries in the DataStore in hours; value range 1-24"
+              "string-name": "Time period between two cleanup runs in hours"
             },
             "string-profile-configuration": {
-              "string-value": "24"
+              "string-value": "12"
             }
           }
         },
@@ -394,10 +412,10 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Time period for which items are kept in the DataStore in hours; value range 1-96"
+              "string-name": "Time period for which data is retained before deletion in hours"
             },
             "string-profile-configuration": {
-              "string-value": "96"
+              "string-value": "48"
             }
           }
         },
@@ -536,34 +554,18 @@
             "function-profile-capability": {
               "function-name": "p1ProcessDevice",
               "function-description": "Orchestrates the device-wise processing, formatting, sending and storing of PM data",
-              "parameter-list": [
-                {
-                  "parameter": "dpmdp-1-0-0-string-p-151",
-                  "owner": "platform"
-                }
-              ],
+              "parameter-list": [],
               "sub-function-list": [
                 "dpmdp-1-0-0-function-p-180",
                 "dpmdp-1-0-0-function-p-270",
-                "dpmdp-1-0-0-function-p-520",
-                "dpmdp-1-0-0-function-p-550"
+                "dpmdp-1-0-0-function-p-540",
+                "dpmdp-1-0-0-function-p-550",
+                "dpmdp-1-0-0-function-p-600",
+                "dpmdp-1-0-0-function-p-620"
               ]
             },
             "function-profile-configuration": {
               "is-active": true
-            }
-          }
-        },
-        {
-          "uuid": "dpmdp-1-0-0-string-p-151",
-          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
-          "string-profile-1-0:string-profile-pac": {
-            "string-profile-capability": {
-              "string-name": "kafkaTransmitter",
-              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
-            },
-            "string-profile-configuration": {
-              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000"
             }
           }
         },
@@ -664,7 +666,9 @@
               "parameter-list": [],
               "sub-function-list": [
                 "dpmdp-1-0-0-function-p-300",
-                "dpmdp-1-0-0-function-p-430"
+                "dpmdp-1-0-0-function-p-350",
+                "dpmdp-1-0-0-function-p-440",
+                "dpmdp-1-0-0-function-p-510"
               ]
             },
             "function-profile-configuration": {
@@ -681,8 +685,7 @@
               "function-description": "Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-0-0-function-p-330",
-                "dpmdp-1-0-0-function-p-360"
+                "dpmdp-1-0-0-function-p-330"
               ]
             },
             "function-profile-configuration": {
@@ -706,6 +709,25 @@
           }
         },
         {
+          "uuid": "dpmdp-1-0-0-function-p-350",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1IterateAiPmSlices",
+              "function-description": "Iterates through all AirInterface historical performance data slices and calls the processing Functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-360",
+                "dpmdp-1-0-0-function-p-380",
+                "dpmdp-1-0-0-function-p-410"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-0-0-function-p-360",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
@@ -721,17 +743,923 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-430",
+          "uuid": "dpmdp-1-0-0-function-p-380",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveOutOfRangeLevels",
+              "function-description": "Removes out-of-range level attributes from a performance data slice",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-381",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-382",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-383",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-384",
+                  "owner": "engineering"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-381",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Lower bound of valid values of the transmit level"
+            },
+            "string-profile-configuration": {
+              "string-value": "-30"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-382",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Upper bound of valid values of the transmit level"
+            },
+            "string-profile-configuration": {
+              "string-value": "40"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-383",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Lower bound of valid values of the receive level"
+            },
+            "string-profile-configuration": {
+              "string-value": "-10"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-384",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Upper bound of valid values of the receive level"
+            },
+            "string-profile-configuration": {
+              "string-value": "-129"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-410",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveDefaultValues",
+              "function-description": "Deletes attributes with default values from the transferred object",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-411",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-412",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-413",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-414",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-415",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-416",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-417",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-419",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-420",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-421",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-422",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-423",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-424",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-425",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-426",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-427",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-428",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-429",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-430",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-431",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-432",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-433",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-434",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-411",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of errored seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-412",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of severely errored seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-413",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of consecutive severely errored seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-414",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total time of unavailability in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-415",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Minimum transmit power in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-416",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Maximum transmit power in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-417",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Averaged transmit power in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-419",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Minimum receive level in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-420",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Maximum receive level in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-421",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Averaged receive level in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-424",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Minimum signal to (noise+interference) ratio in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-425",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Maximum signal to (noise+interference) ratio in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-426",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Averaged signal to (noise+interference) ratio in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-427",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Minimum cross polarization discrimination in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-428",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Maximum cross polarization discrimination in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-429",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Averaged cross polarization discrimination in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-430",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-431",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-432",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-433",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-434",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total length of the measurement period in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-440",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1IterateEcPmSlices",
+              "function-description": "Iterates through all EthernetContainer historical performance data slices and calls the processing Functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-450",
+                "dpmdp-1-0-0-function-p-460",
+                "dpmdp-1-0-0-function-p-500"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-450",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
               "function-name": "p1CalculateEthernetKpis",
-              "function-description": "Adds Ethernet KPIs to the historicalPerformanceDataList",
+              "function-description": "Adds Ethernet KPIs to the historicalPerformanceData set",
               "parameter-list": [],
               "sub-function-list": []
             },
             "function-profile-configuration": {
               "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-460",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveDefaultValues",
+              "function-description": "Deletes attributes with default values from the transferred object",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-461",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-462",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-463",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-464",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-465",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-466",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-467",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-468",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-469",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-470",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-471",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-472",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-473",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-474",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-475",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-476",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-477",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-478",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-479",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-480",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-481",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-482",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-483",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-461",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-462",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-463",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-464",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total length of the measurement period in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-465",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "The total number of Ethernet frames received at this interface (including those received in error)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-466",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "The total number of Ethernet frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-467",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-468",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-469",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of unicast frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-470",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of unicast frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-471",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of multicast frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-472",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of multicast frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-473",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of broadcast frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-474",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of broadcast frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-475",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-476",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of errored frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-477",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-478",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-479",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-480",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-481",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-482",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-483",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Total number of received frames that were transporting an unknown protocol"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-500",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CalculateUtilization",
+              "function-description": "Calculates utilization of the aggregated physical resources in a performance data slice",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-510",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveOutOfRangeTemperature",
+              "function-description": "Deletes temperature attributes with values outside pre-defined range from equipment",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-511",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-512",
+                  "owner": "engineering"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-511",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Lower bound of valid values of the temperature"
+            },
+            "string-profile-configuration": {
+              "string-value": "-30"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-512",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "Upper bound of valid values of the temperature"
+            },
+            "string-profile-configuration": {
+              "string-value": "130"
             }
           }
         },
@@ -751,12 +1679,29 @@
           }
         },
         {
+          "uuid": "dpmdp-1-0-0-function-p-550",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1FormattingOutputOnf",
+              "function-description": "Creates the onfOutputFormat from resultCc",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-560"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-0-0-function-p-560",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1TransmittingKafka",
-              "function-description": "Transfers output data to Kafka transmitter",
+              "function-name": "p1FieldsFilter",
+              "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
               "parameter-list": [
                 {
                   "parameter": "dpmdp-1-0-0-string-p-561",
@@ -775,7 +1720,43 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "kafkaTransmitter",
+              "string-name": "Fields filter to be applied to reduce the onfOutputFormat"
+            },
+            "string-profile-configuration": {
+              "string-value": ""
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-600",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1TransmittingKafka",
+              "function-description": "Transfers outputFormats to their respective KafkaClient",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-601",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-602",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-601",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -784,7 +1765,20 @@
           }
         },
         {
-          "uuid": "dpmdp-1-0-0-function-p-580",
+          "uuid": "dpmdp-1-0-0-string-p-602",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-620",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -794,7 +1788,7 @@
               "sub-function-list": []
             },
             "function-profile-configuration": {
-              "is-active": false
+              "is-active": true
             }
           }
         }
@@ -1353,7 +2347,7 @@
                   {
                     "local-id": "0",
                     "release-number": "1.0.0",
-                    "release-date": "29.12.2025",
+                    "release-date": "31.01.2026",
                     "changes": "Initial version"
                   }
                 ]
