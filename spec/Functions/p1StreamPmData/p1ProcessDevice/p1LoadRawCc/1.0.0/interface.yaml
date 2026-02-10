@@ -228,7 +228,7 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Timestamp of current performance data
-                      from [/load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-current-performance/timestamp]'
+                      from [/load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-current-performance/current-performance-data-list=air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN/timestamp]'
                   batch-timestamp:
                     type: string
                     description: >

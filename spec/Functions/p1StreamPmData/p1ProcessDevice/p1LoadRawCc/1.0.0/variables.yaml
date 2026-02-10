@@ -252,10 +252,25 @@ load-raw-cc:
                             air-interface-current-performance:
                               type: object
                               properties:
-                                timestamp:
-                                  type: string
-                                  description: >
-                                    'The timestamp associated with when the current data was collected'
+                                current-performance-data-list:
+                                  type: array
+                                  x-key: granularity-period
+                                  items:
+                                    type: object
+                                    properties:
+                                      granularity-period:
+                                        type: string
+                                        enum:
+                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+                                          - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+                                        description: >
+                                          'Time period between reset of the underlying counter'
+                                      timestamp:
+                                        type: string
+                                        description: >
+                                          'The timestamp associated with when the current data was collected'
                             air-interface-historical-performances:
                               type: object
                               properties:
