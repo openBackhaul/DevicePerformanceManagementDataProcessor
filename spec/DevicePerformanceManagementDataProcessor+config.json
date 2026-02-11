@@ -274,7 +274,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "UUID of the MWDI ES ElasticsearchClient LTP",
+              "string-name": "mwdiEsClient",
+              "string-purpose": "UUID of the MWDI ES ElasticsearchClient LTP",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -287,7 +288,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "UUID of the MWDI ES Replica ElasticsearchClient LTP",
+              "string-name": "mwdiReplicaEsClient",
+              "string-purpose": "UUID of the MWDI ES Replica ElasticsearchClient LTP",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -300,7 +302,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "UUID of the ElasticsearchClient LTP for logging the replication activities",
+              "string-name": "loggingEsClient",
+              "string-purpose": "UUID of the ElasticsearchClient LTP for logging the replication activities",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -313,7 +316,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "UUID of the ElasticsearchClient LTP for storing the resultCc",
+              "string-name": "dataStoreEsClient",
+              "string-purpose": "UUID of the ElasticsearchClient LTP for storing the resultCc",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -350,7 +354,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "kafkaClient",
+              "string-name": "aptProvider",
+              "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -363,7 +368,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "kafkaClient",
+              "string-name": "onfProvider",
+              "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -400,7 +406,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Time period between two cleanup runs in hours"
+              "string-name": "dataStoreCleanupPeriod",
+              "string-purpose": "Time period between two cleanup runs in hours"
             },
             "string-profile-configuration": {
               "string-value": "12"
@@ -412,7 +419,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Time period for which data is retained before deletion in hours"
+              "string-name": "dataStoreRetentionPeriod",
+              "string-purpose": "Time period for which data is retained before deletion in hours"
             },
             "string-profile-configuration": {
               "string-value": "48"
@@ -468,7 +476,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Name of the replication job"
+              "string-name": "jobName",
+              "string-purpose": "Name of the replication job"
             },
             "string-profile-configuration": {
               "string-value": "mwdi-replica-update-job"
@@ -480,7 +489,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Duration between two replications of the MWDI ES in seconds"
+              "string-name": "syncPeriod",
+              "string-purpose": "Duration between two replications of the MWDI ES in seconds"
             },
             "string-profile-configuration": {
               "string-value": "480"
@@ -492,7 +502,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "?"
+              "string-name": "lastUpdatedField",
+              "string-purpose": "?"
             },
             "string-profile-configuration": {
               "string-value": "lastUpdated"
@@ -504,7 +515,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Overlap in milliseconds to avoid missing updates at period boundaries"
+              "string-name": "overlapMs",
+              "string-purpose": "Overlap in milliseconds to avoid missing updates at period boundaries"
             },
             "string-profile-configuration": {
               "string-value": "60000"
@@ -516,7 +528,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Throttles re-indexing to number of copy operations per second, preventing high load on the server"
+              "string-name": "reqPerSec",
+              "string-purpose": "Throttles re-indexing to number of copy operations per second, preventing high load on the server"
             },
             "string-profile-configuration": {
               "string-value": "2"
@@ -528,7 +541,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of documents returned per page when Elasticsearch performs a scroll search"
+              "string-name": "scrollSize",
+              "string-purpose": "Number of documents returned per page when Elasticsearch performs a scroll search"
             },
             "string-profile-configuration": {
               "string-value": "200"
@@ -540,7 +554,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window"
+              "string-name": "scrollTtl",
+              "string-purpose": "How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window"
             },
             "string-profile-configuration": {
               "string-value": "2"
@@ -612,10 +627,11 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Fields filter to be applied to reduce the raw ControlConstruct data"
+              "string-name": "fieldsFilter",
+              "string-purpose": "Fields filter to be applied to reduce the raw ControlConstruct data"
             },
             "string-profile-configuration": {
-              "string-value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(current-performance-data-list(timestamp));air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))"
+              "string-value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(timestamp);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))"
             }
           }
         },
@@ -644,7 +660,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "An regex pattern indicating which data granularities are to be kept",
+              "string-name": "relevantGranularities",
+              "string-purpose": "An regex pattern indicating which data granularities are to be kept",
               "enumeration": [
                 ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$",
                 ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$",
@@ -779,7 +796,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Lower bound of valid values of the transmit level"
+              "string-name": "lowerTxLevelLimit",
+              "string-purpose": "Lower bound of valid values of the transmit level"
             },
             "string-profile-configuration": {
               "string-value": "-30"
@@ -791,7 +809,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Upper bound of valid values of the transmit level"
+              "string-name": "upperTxLevelLimit",
+              "string-purpose": "Upper bound of valid values of the transmit level"
             },
             "string-profile-configuration": {
               "string-value": "40"
@@ -803,7 +822,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Lower bound of valid values of the receive level"
+              "string-name": "lowerRxLevelLimit",
+              "string-purpose": "Lower bound of valid values of the receive level"
             },
             "string-profile-configuration": {
               "string-value": "-10"
@@ -815,7 +835,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Upper bound of valid values of the receive level"
+              "string-name": "upperRxLevelLimit",
+              "string-purpose": "Upper bound of valid values of the receive level"
             },
             "string-profile-configuration": {
               "string-value": "-129"
@@ -935,7 +956,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of errored seconds"
+              "string-name": "es",
+              "string-purpose": "Number of errored seconds"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -947,7 +969,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of severely errored seconds"
+              "string-name": "ses",
+              "string-purpose": "Number of severely errored seconds"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -959,7 +982,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of consecutive severely errored seconds"
+              "string-name": "cses",
+              "string-purpose": "Number of consecutive severely errored seconds"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -971,7 +995,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total time of unavailability in seconds"
+              "string-name": "unavailability",
+              "string-purpose": "Total time of unavailability in seconds"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -983,7 +1008,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Minimum transmit power in dBm"
+              "string-name": "txLevelMin",
+              "string-purpose": "Minimum transmit power in dBm"
             },
             "string-profile-configuration": {
               "string-value": "99"
@@ -995,7 +1021,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Maximum transmit power in dBm"
+              "string-name": "txLevelMax",
+              "string-purpose": "Maximum transmit power in dBm"
             },
             "string-profile-configuration": {
               "string-value": "99"
@@ -1007,7 +1034,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Averaged transmit power in dBm"
+              "string-name": "txLevelAvg",
+              "string-purpose": "Averaged transmit power in dBm"
             },
             "string-profile-configuration": {
               "string-value": "99"
@@ -1019,7 +1047,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Minimum receive level in dBm"
+              "string-name": "rxLevelMin",
+              "string-purpose": "Minimum receive level in dBm"
             },
             "string-profile-configuration": {
               "string-value": "99"
@@ -1031,7 +1060,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Maximum receive level in dBm"
+              "string-name": "rxLevelMax",
+              "string-purpose": "Maximum receive level in dBm"
             },
             "string-profile-configuration": {
               "string-value": "99"
@@ -1043,7 +1073,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Averaged receive level in dBm"
+              "string-name": "rxLevelAvg",
+              "string-purpose": "Averaged receive level in dBm"
             },
             "string-profile-configuration": {
               "string-value": "99"
@@ -1055,7 +1086,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Minimum signal to (noise+interference) ratio in dB"
+              "string-name": "snirMin",
+              "string-purpose": "Minimum signal to (noise+interference) ratio in dB"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1067,7 +1099,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Maximum signal to (noise+interference) ratio in dB"
+              "string-name": "snirMax",
+              "string-purpose": "Maximum signal to (noise+interference) ratio in dB"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1079,7 +1112,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Averaged signal to (noise+interference) ratio in dB"
+              "string-name": "snirAvg",
+              "string-purpose": "Averaged signal to (noise+interference) ratio in dB"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1091,7 +1125,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Minimum cross polarization discrimination in dB"
+              "string-name": "xpdMin",
+              "string-purpose": "Minimum cross polarization discrimination in dB"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1103,7 +1138,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Maximum cross polarization discrimination in dB"
+              "string-name": "xpdMax",
+              "string-purpose": "Maximum cross polarization discrimination in dB"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1115,7 +1151,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Averaged cross polarization discrimination in dB"
+              "string-name": "xpdAvg",
+              "string-purpose": "Averaged cross polarization discrimination in dB"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1127,7 +1164,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+              "string-name": "rfTempMin",
+              "string-purpose": "Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1139,7 +1177,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+              "string-name": "rfTempMax",
+              "string-purpose": "Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1151,7 +1190,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+              "string-name": "rfTempAvg",
+              "string-purpose": "Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
             },
             "string-profile-configuration": {
               "string-value": "-99"
@@ -1163,7 +1203,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks"
+              "string-name": "defectBlocksSum",
+              "string-purpose": "Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1175,7 +1216,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total length of the measurement period in seconds"
+              "string-name": "timePeriod",
+              "string-purpose": "Total length of the measurement period in seconds"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1329,7 +1371,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period"
+              "string-name": "maxBytesPerSecondOutput",
+              "string-purpose": "Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1341,7 +1384,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period"
+              "string-name": "totalBytesInput",
+              "string-purpose": "Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1353,7 +1397,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period"
+              "string-name": "totalBytesOutput",
+              "string-purpose": "Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1365,7 +1410,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total length of the measurement period in seconds"
+              "string-name": "timePeriod",
+              "string-purpose": "Total length of the measurement period in seconds"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1377,7 +1423,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "The total number of Ethernet frames received at this interface (including those received in error)"
+              "string-name": "totalFramesInput",
+              "string-purpose": "The total number of Ethernet frames received at this interface (including those received in error)"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1389,7 +1436,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "The total number of Ethernet frames sent at this interface"
+              "string-name": "totalFramesOutput",
+              "string-purpose": "The total number of Ethernet frames sent at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1401,7 +1449,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination"
+              "string-name": "forwardedFramesInput",
+              "string-purpose": "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1413,7 +1462,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination"
+              "string-name": "forwardedFramesOutput",
+              "string-purpose": "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1425,7 +1475,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of unicast frames received at this interface"
+              "string-name": "unicastFramesInput",
+              "string-purpose": "Total number of unicast frames received at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1437,7 +1488,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of unicast frames sent at this interface"
+              "string-name": "unicastFramesOutput",
+              "string-purpose": "Total number of unicast frames sent at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1449,7 +1501,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of multicast frames received at this interface"
+              "string-name": "multicastFramesInput",
+              "string-purpose": "Total number of multicast frames received at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1461,7 +1514,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of multicast frames sent at this interface"
+              "string-name": "multicastFramesOutput",
+              "string-purpose": "Total number of multicast frames sent at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1473,7 +1527,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of broadcast frames received at this interface"
+              "string-name": "broadcastFramesInput",
+              "string-purpose": "Total number of broadcast frames received at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1485,7 +1540,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of broadcast frames sent at this interface"
+              "string-name": "broadcastFramesOutput",
+              "string-purpose": "Total number of broadcast frames sent at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1497,7 +1553,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)"
+              "string-name": "fragmentedFramesInput",
+              "string-purpose": "The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1509,7 +1566,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of errored frames received at this interface"
+              "string-name": "erroredFramesInput",
+              "string-purpose": "Total number of errored frames received at this interface"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1521,7 +1579,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination"
+              "string-name": "erroredFramesOutput",
+              "string-purpose": "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1533,7 +1592,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)"
+              "string-name": "droppedFramesInput",
+              "string-purpose": "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1545,7 +1605,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)"
+              "string-name": "droppedFramesOutput",
+              "string-purpose": "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1557,7 +1618,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed"
+              "string-name": "oversizedFramesIngress",
+              "string-purpose": "The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1569,7 +1631,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed"
+              "string-name": "undersizedFramesIngress",
+              "string-purpose": "The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1581,7 +1644,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem"
+              "string-name": "jabberFramesIngress",
+              "string-purpose": "Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1593,7 +1657,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Total number of received frames that were transporting an unknown protocol"
+              "string-name": "unknownProtocolFramesInput",
+              "string-purpose": "Total number of received frames that were transporting an unknown protocol"
             },
             "string-profile-configuration": {
               "string-value": "-1"
@@ -1644,7 +1709,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Lower bound of valid values of the temperature"
+              "string-name": "lowerTemperatureLimit",
+              "string-purpose": "Lower bound of valid values of the temperature"
             },
             "string-profile-configuration": {
               "string-value": "-30"
@@ -1656,7 +1722,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Upper bound of valid values of the temperature"
+              "string-name": "upperTemperatureLimit",
+              "string-purpose": "Upper bound of valid values of the temperature"
             },
             "string-profile-configuration": {
               "string-value": "130"
@@ -1720,7 +1787,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "Fields filter to be applied to reduce the onfOutputFormat"
+              "string-name": "fieldsFilter",
+              "string-purpose": "Fields filter to be applied to reduce the onfOutputFormat"
             },
             "string-profile-configuration": {
               "string-value": ""
@@ -1756,7 +1824,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "kafkaClient",
+              "string-name": "apt-output-format",
+              "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
@@ -1769,7 +1838,8 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "kafkaClient",
+              "string-name": "onf-output-format",
+              "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
