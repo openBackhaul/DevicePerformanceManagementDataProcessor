@@ -46,7 +46,6 @@ x-javascript-interface:
                     - url
                     - api-key
                     - index-alias
-                    - service-records-policy
                     - operational-state
                     - life-cycle-state
                   properties:
@@ -66,7 +65,7 @@ x-javascript-interface:
                         'ElasticSearch index alias
                         from [/resolve-es-address/es-client/logical-termination-point/layer-protocol=0/elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac/elasticsearch-client-interface-configuration/index-alias]'
                     service-records-policy:
-                      type: string
+                      type: object
                       description: >
                         'Service records policy
                         from [/resolve-es-address/es-client/logical-termination-point/layer-protocol=0/elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac/elasticsearch-client-interface-configuration/service-records-policy]'
@@ -97,7 +96,6 @@ x-javascript-interface:
                 - 'url could not be resolved'
                 - 'api-key could not be resolved'
                 - 'index-alias could not be resolved'
-                - 'service-records-policy could not be resolved'
                 - 'operational-state could not be resolved'
                 - 'life-cycle-state could not be resolved'
                 - 'unknown error occurred'
