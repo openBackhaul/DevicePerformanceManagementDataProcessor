@@ -11,6 +11,7 @@ participant "p1IterateEcPmSlices\n" as iterateSlices
 participant "p1Calculate\nEthernetKpis" as intCC
 participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p1Calculate\nUtilization" as p1CalcUtil
+participant "p1CalculateBh\n" as p1CalcBh #Yellow
 
 
 cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
@@ -53,6 +54,22 @@ activate iterateSlices
         THEN update mostRecentPeriodEndTime
         THEN update mostRecentPeriodEndTime24
     end note
+
+    note over iterateSlices #Yellow
+      IF granularityPeriod == 24-HOURS
+    end note
+
+    note right iterateSlices #Yellow
+      THEN
+    end note
+
+    iterateSlices -> p1CalcBh : { {historical-performance-data},\n{result-cc},\n ??? }
+    activate p1CalcBh #Yellow
+      note over p1CalcBh #Yellow
+        Adds BusyHourKPIs
+      end note
+    iterateSlices <-- p1CalcBh: { {historical-performance-data} }
+    deactivate p1CalcBh
 
   end loop
 
