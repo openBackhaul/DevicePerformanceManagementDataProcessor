@@ -1,26 +1,88 @@
 # Busy Hour KPI Computation
 
-## Busy Hour Definition
+### Busy Hour Definition
 
+Die busy hour bezieht sich auf einen individuellen EthernetContainer (logisches Ethernet Interface).  
 Es gibt genau eine busy hour pro Kalendertag.  
 Die busy hour stellt den Beobachtungszeitraum dar, während dem an diesem Kalendertag die maximale Datenmenge übertragen wurde.  
 
 Beobachtungszeiträume beginnen und enden zur vollen Stunde.  
-D.h. es ergeben sich 24 Beobachtungszeiträume pro Kalendertag.  
+D.h. es ergeben sich genau 24 Beobachtungszeiträume pro Kalendertag.  
 
-Die im Beobachtungszeitraum übertragene Datenmenge berechnet sich als Summe der Datenmengen, die in den vier in den  Beobachtungszeitraum fallenden 15Minuten PM Slices gemessen wurden.  
-Sollten weniger als die vier erwarteten 15Minuten PM Slices vorliegen, werden nur die vorhandenen Messwerte addiert.
+Die Messung der übertragenen Datenmenge bezieht sich nicht auf Stunden, sondern auf 15 Minuten lange Perioden.  
+Es wird unterstellt, dass die Geräte so programmiert sind, dass die 15-Minuten-Messperioden zur vollen Stunde (und 15, 30 bzw. 45 Minuten danach) beginnen.  
 
-Als Messwert werden die gesendeten Octets (Bytes) herangezogen.
+Die im Beobachtungszeitraum übertragene Datenmenge berechnet sich als Summe der Datenmengen, die in den vier Messperioden, die in den Beobachtungszeitraum fallen, gemessen wurden.  
+Sollten weniger als die vier erwarteten Messwerte vorliegen, werden nur die vorhandenen Messwerte addiert.  
 
-Der Wert des busyHour Attributes ist die Uhrzeit zu Beginn desjenigen Beobachtungszeitraums, während dem an diesem Kalendertag die maximale Datenmenge übertragen wurde.  
+Als Messwert wird das folgende Attribut ausgewertet:  
+/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/total-bytes-output  
+Die offizielle semantische Definition des Messwertes lautet:  
+"Total number of Bytes of Ethernet traffic (before header compression) transmitted (in direction out of the device) during the measurement period."  
+Die Maßeinheit des Messwertes lautet: Byte  
+Es handelt sich damit um eine reine Mengenangabe, keine Flussgröße.  
 
-## Busy Hour Throughput Definition
+### Busy Hour Performance Indikatoren
 
-Der Wert des busyHourThroughput Attributes ist die Datenmenge, die während des Beobachtungszeitraums, der durch das busyHour Attribut identifiziert wurde, im Mittel pro Sekunde, gesendet wurde.  
-Es handelt sich also um eine Flussgröße keine reine Menge!  
-Ferner wirkt die Mittelung über eine ganze Stunde stark glättend!
-Die Einheit des busyHourThroughput Attributes ist bit/s; d.h. die in Octets (Bytes) ausgedrückte Datenmenge ist in bits umzurechnen und durch die Länge des Beobachtungszeitraums von 3600 Sekunden zu teilen.  
+Die Busy Hour Performance Indikatoren werden zusammen mit den anderen Performance Indikatoren des selben Kalendertages prozessiert und im resultCc gespeichert.  
+Es wird unterstellt, dass die Geräte so programmiert sind, dass die 24-Stunden-Messperioden mit dem Kalendertag beginnen.  
+
+Der Name und der Ort des kombinierte Datentyps lautet:  
+/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/busy-hour  
+Er erscheint ausschließlich in Instanzen von historical-performance-data-list mit einer granularity-period von 24 Stunden.  
+
+Der kombinierte Datentyp enthält folgende Attribute:  
+- period-end-time-list  
+- label  
+- throughput  
+
+
+
+- suspicious-result-flag  
+  Dieses Attribut würde wahr anzeigen, falls sich im Rahmen der Berechnung Umstände ergaben, die das Ergebnis weniger zuverlässig erscheinen lassen.  
+
+#### busy-hour::period-end-time-list
+Liste der Werte des period-end-time Attributes der bis zu vier Messperioden, die zusammen die busy hour bilden.  
+Mit diesen Werten können die Messperioden für weitere Analysen adressiert werden.  
+
+#### busy-hour::label
+Die volle Stunde zu Beginn der busy hour wird in folgendem Format dargestellt: YYYY/MM/DD/hh/mm.  
+Mit diesen Werten wird die busy hour in anderen Tools und Datenvorräten bezeichnet.  
+
+#### busy-hour::throughput
+Der busy hour throughput ist die Datenmenge, die während der busy hour hypothetisch im Mittel in einer (=1) von 3600 Sekunden gesendet wurde.  
+D.h. die in Bytes ausgedrückte Datenmenge ist in bits umzurechnen und durch die statisch angenommene Länge des Beobachtungszeitraums (3600 Sekunden) zu teilen.  
+
+Die Einheit des busy hour throughput ist bit/s.  
+Es handelt sich also um eine Flussgröße keine reine Menge.  
+Die Mittelwertbildung über 3600 Sekunden wirkt stark glättend.  
+Dass die aufsummierte Länge der Messperioden von 3600 Sekunden abweichen könnte, wird ignoriert.  
+
+
+
+
+
+
+# Segmentation
+
+Das Problem zerfällt in folgende Segmente:
+
+- Berechnung der aggregierten Datenmenge für einen Beobachtungszeitraum  
+  Für alle 15-Minuten-Messperioden, die zur vollen Stunde endeten, sind die Datenmengen, die in den vergangenen vier Messperioden gemessen wurden, aufzuaddieren.  
+  Problem: Es fehlen bis zu drei Messwerte zu Beginn des Batches.  
+
+- Vergleich der aggregierten Datenmengen aller Beobachtungszeiträume eine Tages  
+  Für alle 24-Stunden-Messperioden, sind die aggregierten Datenmengen der letzten 24 Beobachtungszeiträumen, zu vergleichen.  
+  Der Beobachtungszeitraum mit der höchsten aggregierten Datenmenge wird zur Busy Hour definiert.  
+  Die Werte der period-end-time Attribute der vier beteiligten 15-Minuten-Messperioden werden in das busy-hour Attribut in der 24-Stunden-Messperiode eingetragen.
+  Der Wert des throughput Attributs wird berechnet und in das busy-hour Attribut in der 24-Stunden-Messperiode eingetragen.
+
+
+
+- Berechnung aller Busy Hour Performance Indikatoren
+
+
+
 
 
 
