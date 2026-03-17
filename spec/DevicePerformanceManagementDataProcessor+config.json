@@ -826,7 +826,7 @@
               "string-purpose": "Lower bound of valid values of the receive level"
             },
             "string-profile-configuration": {
-              "string-value": "-10"
+              "string-value": "-129"
             }
           }
         },
@@ -839,7 +839,7 @@
               "string-purpose": "Upper bound of valid values of the receive level"
             },
             "string-profile-configuration": {
-              "string-value": "-129"
+              "string-value": "-10"
             }
           }
         },

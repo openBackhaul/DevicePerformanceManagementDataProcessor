@@ -534,7 +534,7 @@ profile-instances:
       string-name: 'lowerRxLevelLimit'
       purpose: 'Lower bound of valid values of the receive level'
     configuration:
-      string-value: '-10'
+      string-value: '-129'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-0-0-string-p-384'
@@ -542,7 +542,7 @@ profile-instances:
       string-name: 'upperRxLevelLimit'
       purpose: 'Upper bound of valid values of the receive level'
     configuration:
-      string-value: '-129'
+      string-value: '-10'
 
 
   # p1RemoveDefaultValues
