@@ -2,6 +2,9 @@
 
 Iterates through all EthernetContainer historical performance data slices and calls the processing Functions.  
 
+**Iteration order**  
+The key attributes for iterating through the PM slices are periodEndTime and granularity.  
+It must be ensured that the function first iterates through all 15min PM slices, before a potentially contained 24h PM slice is processed.  
 
 ### Diagram
 
