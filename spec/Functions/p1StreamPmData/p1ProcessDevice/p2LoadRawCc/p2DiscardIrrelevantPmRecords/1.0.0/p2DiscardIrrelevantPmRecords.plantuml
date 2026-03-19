@@ -1,0 +1,50 @@
+@startuml p2DiscardIrrelevantPmRecords
+skinparam responseMessageBelowArrow true
+
+title
+  p2DiscardIrrelevantPmRecords
+end title
+
+participant "requestor\n(e.g. p2LoadRawCc)" as requestor
+participant "p1DiscardIrrelevant\nPmRecords" as cur
+
+
+requestor -> cur: { [historicalPerformanceDataList],\n{offset} }
+activate cur
+
+note over cur
+  new_mostRecentPeriodEndTime = /offset/mostRecentPeriodEndTime
+  new_mostRecentPeriodEndTime24 = /offset/mostRecentPeriodEndTime24
+end note
+
+loop FOR all [historicalPerformanceDataList]
+
+  note over cur
+    IF periodEndTime is not newer than:
+      - 15min: /offset/mostRecentPeriodEndTime
+      - 24h: /offset/mostRecentPeriodEndTime24
+    THEN discard record
+  end note
+
+  note over cur
+    IF mostRecentPeriodEndTime in this measurement > new_mostRecentPeriodEndTime
+    THEN new_mostRecentPeriodEndTime = mostRecentPeriodEndTime from this measurement
+  end note
+
+  note over cur
+    IF mostRecentPeriodEndTime24 in this measurement > new_mostRecentPeriodEndTime24
+    THEN new_mostRecentPeriodEndTime24 = mostRecentPeriodEndTime24 from this measurement
+  end note
+
+end loop
+
+note over cur
+  /offset/mostRecentPeriodEndTime = new_mostRecentPeriodEndTime
+  /offset/mostRecentPeriodEndTime24 = new_mostRecentPeriodEndTime24
+end note
+
+requestor <-- cur: { [filteredHistoricalPerformanceDataList],\n{offset} }
+
+deactivate cur
+
+@enduml

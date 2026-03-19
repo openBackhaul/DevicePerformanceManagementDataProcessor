@@ -1,0 +1,84 @@
+@startuml p2LoadRawCc
+skinparam responseMessageBelowArrow true
+
+title
+  p2LoadRawCc
+end title
+
+participant "p1ProcessDevice\n" as requestor
+participant "p2LoadRawCc\n" as cur
+database "MWDI ES Replica" as MwdiEs
+participant "p1FieldsFilter\n" as fieldsFilter
+participant "p2DiscardIrrelevant\nPmRecords" as filterPm
+
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n{offset} }
+activate cur
+
+  note over cur
+    readControlConstructFromReplica
+  end note
+  cur -> MwdiEs: { mountName }
+  cur <-- MwdiEs: { {rawControlConstruct} }
+
+  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilter }
+  activate fieldsFilter
+    note over fieldsFilter
+      Applies FieldsFilter
+    end note
+  cur <-- fieldsFilter: { {rawControlConstruct} }
+  deactivate fieldsFilter
+
+  loop FOR all [/raw-cc/logical-termination-point]
+
+    note over cur
+      IF layerProtocolName == AirInterface
+    end note
+
+    note right cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    activate filterPm
+    note over filterPm
+      Discards records that are
+      already processed from
+      historicalPerformanceDataList
+    end note
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    deactivate filterPm
+
+    note right cur
+      addBatchTimestamp
+    end note
+
+    note over cur
+      IF layerProtocolName == EthernetContainer
+    end note
+
+    note right cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    activate filterPm
+    note over filterPm
+      Discards records that are
+      already processed from
+      historicalPerformanceDataList
+    end note
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    deactivate filterPm
+
+    note right cur
+      updateOffset for this interface
+      with mostRecentPeriodEndTime and
+      mostRecentPeriodEndTime24 in this batch
+    end note
+
+  end loop
+
+requestor <-- cur: { {rawCc},\n{offset} }
+deactivate cur
+
+@enduml

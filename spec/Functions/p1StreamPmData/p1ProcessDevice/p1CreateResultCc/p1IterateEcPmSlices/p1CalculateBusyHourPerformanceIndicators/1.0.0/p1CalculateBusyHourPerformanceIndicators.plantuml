@@ -1,0 +1,23 @@
+@startuml p1CalculateBusyHourPerformanceIndicators
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateBusyHourPerformanceIndicators
+end title
+
+participant "p1IterateEcPmSlices\n" as requestor
+participant "p1CalculateBusyHour\nPerformanceIndicators" as calBh
+
+requestor -> calBh : { {historicalPerformanceData},\n{status} }
+activate calBh
+
+    note over calBh
+      
+    end note
+
+requestor <-- calBh : { {historicalPerformanceData} }
+deactivate calBh
+
+deactivate requestor
+
+@enduml

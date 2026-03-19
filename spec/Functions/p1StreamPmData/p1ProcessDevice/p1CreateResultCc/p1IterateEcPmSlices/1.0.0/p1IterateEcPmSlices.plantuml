@@ -11,7 +11,7 @@ participant "p1IterateEcPmSlices\n" as iterateSlices
 participant "p1Calculate\nEthernetKpis" as intCC
 participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p1Calculate\nUtilization" as p1CalcUtil
-participant "p1CalculateBh\n" as p1CalcBh #Yellow
+participant "p1CategorizeDataVolume\n" as p1CalcBh #Yellow
 
 
 cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }

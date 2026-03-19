@@ -1,4 +1,4 @@
-# p1CalculateBh
+# p1CategorizeDataVolume
 
 
 
@@ -6,7 +6,7 @@
 ### Diagram
 
 <p align="center">
-  <img src="p1CalculateBh.png" alt="p1CalculateBh" width="400"/>
+  <img src="p1CategorizeDataVolume.png" alt="p1CategorizeDataVolume" width="400"/>
 </p>
 
 
@@ -27,5 +27,4 @@ Please find a detailed description of the [variables](variables.yaml).
 
 ### NPM Module
 
-[mw-sdn-p1-calculate-bh](https://www.npmjs.com/package/mw-sdn-p1-calculate-bh)  
-
+[mw-sdn-p1-categorize-data-volume](https://www.npmjs.com/package/mw-sdn-p1-categorize-data-volume)  

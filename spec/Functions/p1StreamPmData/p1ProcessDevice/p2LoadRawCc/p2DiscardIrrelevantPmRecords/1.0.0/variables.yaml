@@ -1,0 +1,60 @@
+discard-irrelevant-pm-records:
+  type: object
+  required:
+    - historical-performance-data-list
+  properties:
+    historical-performance-data-list:
+      type: array
+      description: >
+        'The list of historical PM records, that shall be filtered
+        from {$input#historical-performance-data-list}'
+      items:
+        type: object
+        required:
+          - granularity-period
+          - period-end-time
+          - performance-data
+        properties:
+          granularity-period:
+            type: string
+            description: 'Indicates the granularity of the PM record'
+          period-end-time:
+            type: string
+            description: 'The timestamp of this PM data record'
+          performance-data:
+            type: object
+            description: 'The object containing actual PM data'
+    relevant-granularities:
+      type: string
+      enum:
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
+        - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+      description: >
+        'An (optional) regex pattern indicating which data granularities are to be kept.
+        If not provided as input, the following default pattern shall be applied (keep 15min and 24h data):
+        :GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$
+        from {$input#/relevant-granularities}'
+    most-recent-period-end-time:
+      type: string
+      description: >
+        '15min PM records not newer than this timestamp are to be discarded.
+        If not provided, any 15min record passes.
+        from {$input#/most-recent-period-end-time}'
+    most-recent-period-end-time-24:
+      type: string
+      description: >
+        '24h PM records not newer than this timestamp are to be discarded.
+        If not provided, any 24h record passes.
+        from {$input#/most-recent-period-end-time-24}'
+
+    filtered-historical-performance-data-list:
+      type: array
+      description: >
+        'The filtered list of historical PM records, after discarding irrelevant records
+        from [/discard-irrelevant-pm-records/historical-performance-data-list]
+        entry to be deleted if {granularity-period} does not match [/discard-irrelevant-pm-records/relevant-granularities]
+        if {granularity-period}==:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$
+            entry to be deleted if {period-end-time} is not newer than [/discard-irrelevant-pm-records/most-recent-period-end-time]
+        if {granularity-period}==:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$
+            entry to be deleted if {period-end-time} is not newer than [/discard-irrelevant-pm-records/most-recent-period-end-time-24]'

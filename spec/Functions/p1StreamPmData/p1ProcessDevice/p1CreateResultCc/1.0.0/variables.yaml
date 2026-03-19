@@ -68,6 +68,8 @@ create-result-cc:
             description: >
               'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
               from [ {$p1IterateAiPmSlices.output#/most-recent-period-end-time-24} or {$p1IterateEcPmSlices.output#/most-recent-period-end-time-24} ]'
+          busy-hour-spillover:
+            type: object
     result-cc:
       type: object
       description: >
