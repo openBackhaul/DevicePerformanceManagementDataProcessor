@@ -56,10 +56,16 @@ const p1CalculateIntervalCapacity = (input) => {
   } catch (err) {
 
     if (typeof err === "string") {
-      throw err;
+      return {
+        "error": err
+      };
     }
 
-    throw "General processing error";
+
+
+    return {
+      "error": "General processing error",
+    };
   }
 }
 
