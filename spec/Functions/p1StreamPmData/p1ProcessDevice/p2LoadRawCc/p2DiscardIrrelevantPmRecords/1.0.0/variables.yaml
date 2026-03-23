@@ -58,3 +58,20 @@ discard-irrelevant-pm-records:
             entry to be deleted if {period-end-time} is not newer than [/discard-irrelevant-pm-records/most-recent-period-end-time]
         if {granularity-period}==:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$
             entry to be deleted if {period-end-time} is not newer than [/discard-irrelevant-pm-records/most-recent-period-end-time-24]'
+
+    offset:
+      type: array
+      x-key: uuid
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+          most-recent-period-end-time:
+            type: string
+            description: >
+              'The newest 15min periodEndTime already processed'
+          most-recent-period-end-time-24:
+            type: string
+            description: >
+              'The newest 24h periodEndTime already processed'

@@ -1,1 +1,33 @@
 p1-load-offsets-and-status-data:
+  type: object
+  required:
+    - data-store-es-client
+    - mount-name
+  properties:
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/load-offsets-and-status-data/data-store-es-client/url]'
+
+    offsets:
+      type: array
+      description: >
+        'Offsets for the device
+        from [$retrieveOffsetsFromDs.output#/offsets]'
+    status-data:
+      type: array
+      description: >
+        'StatusData for the device
+        from [$retrieveOffsetsFromDs.output#/status-data]'
