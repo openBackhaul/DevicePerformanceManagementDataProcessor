@@ -27,13 +27,20 @@ loop FOR all [historicalPerformanceDataList]
   end note
 
   note over cur
-    IF mostRecentPeriodEndTime in this measurement > new_mostRecentPeriodEndTime
-    THEN new_mostRecentPeriodEndTime = mostRecentPeriodEndTime from this measurement
+    Determine measurement.mostRecentPeriodEndTime and measurement.mostRecentPeriodEndTime24
+    as the newest periodEndTimes across all 15min or 24h PM slices, respectively,
+    seen in historicalPerformanceDataList (also for discarded slices!).
+  end note
+
+
+  note over cur
+    IF measurement.mostRecentPeriodEndTime > new_mostRecentPeriodEndTime
+    THEN new_mostRecentPeriodEndTime = measurement.mostRecentPeriodEndTime
   end note
 
   note over cur
-    IF mostRecentPeriodEndTime24 in this measurement > new_mostRecentPeriodEndTime24
-    THEN new_mostRecentPeriodEndTime24 = mostRecentPeriodEndTime24 from this measurement
+    IF measurement.mostRecentPeriodEndTime24 > new_mostRecentPeriodEndTime24
+    THEN new_mostRecentPeriodEndTime24 = measurement.mostRecentPeriodEndTime24
   end note
 
 end loop
