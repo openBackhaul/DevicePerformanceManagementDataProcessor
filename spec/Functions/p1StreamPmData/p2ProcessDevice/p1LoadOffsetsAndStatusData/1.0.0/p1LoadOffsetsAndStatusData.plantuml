@@ -22,9 +22,9 @@ activate cur
     retrieveStatusData
   end note
   cur -> datastore: { dataStoreEsClient://data-store/device=mountName/status-data }
-  cur <-- datastore: { [status-data] }
+  cur <-- datastore: { [statusData] }
   
-requestor <-- cur: { [offsets],\n[status-data] }
+requestor <-- cur: { [offsets],\n[statusData] }
 deactivate cur
 
 @enduml
