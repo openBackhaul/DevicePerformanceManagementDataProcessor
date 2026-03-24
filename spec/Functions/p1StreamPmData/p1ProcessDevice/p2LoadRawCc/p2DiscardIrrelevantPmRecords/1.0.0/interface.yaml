@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p2DiscardIrrelevantPmRecords:
-    summary: 'This function provides the EthContainer names looked up from LtpAugment information'
+    summary: 'This function discards irrelevant PM records and computes updated offset information'
     input:
       required: true
       content:
@@ -14,43 +14,37 @@ x-javascript-interface:
             type: object
             required:
               - historical-performance-data-list
+              - offset
             properties:
               historical-performance-data-list:
                 type: array
                 description: 'The list of historical PM records, that shall be filtered'
-              relevant-granularities:
-                type: string
-                enum:
-                  - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
-                  - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
-                  - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
-                description: >
-                  'An (optional) regex pattern indicating which data granularities are to be kept.
-                  If not provided as input, the following default pattern shall be applied (keep 15min and 24h data):
-                  :GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
-              most-recent-period-end-time:
-                type: string
-                description: '15min PM records not newer than this timestamp are to be discarded. If not provided, any 15min record passes.'
-              most-recent-period-end-time-24:
-                type: string
-                description: '24h PM records not newer than this timestamp are to be discarded. If not provided, any 24h record passes.'
+              offset:
+                type: object
+                description: 'The offset object for the processed interface instance'
     output:
       success:
-        description: 'filteredHistoricalPerformanceDataList provided'
+        description: 'filteredHistoricalPerformanceDataList and updated offset provided'
         content:
           application/json:
             schema:
               type: object
               required:
                 - filtered-historical-performance-data-list
+                - offset
               properties:
                 filtered-historical-performance-data-list:
                   type: array
                   description: >
                     'Filtered list of historical PM records
                     from [/discard-irrelevant-pm-records/filtered-historical-performance-data-list]'
+                offset:
+                  type: object
+                  description: >
+                    'The updated offset object
+                    from [/discard-irrelevant-pm-records/offset]'
       error:
-        description: 'filteredHistoricalPerformanceDataList could not be provided'
+        description: 'filteredHistoricalPerformanceDataList and updated offset could not be provided'
         content:
           application/json:
             schema:
@@ -58,9 +52,46 @@ x-javascript-interface:
               enum:
                 - 'historicalPerformanceDataList not provided'
                 - 'historicalPerformanceDataList invalid'
+                - 'offset not provided'
+                - 'offset invalid'
+                - 'historicalPerformanceDataList filtering error'
+                - 'offset update error'
                 - 'General processing error'
     processing:
-      description: 'No requests or calls to other Functions'
+      updateOffset:
+        
+
+    # bsp
+      readControlConstructFromReplica:
+        url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
+          description: 'Reads the complete ControlConstruct for the [/load-raw-cc/mount-name] from MWDI ElasticSearch replica.'
+          output:
+            success:
+              description: 'Raw ControlConstruct data read'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    required:
+                      - core-model-1-4:control-construct
+                    properties:
+                      core-model-1-4:control-construct:
+                        type: array
+                        x-key: uuid
+                        items:
+                          type: object
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'Data structure is missing or invalid'
+                      - 'ElasticSearch read error'
+                      - 'General processing error during reading'
+
+
 
 
 paths:

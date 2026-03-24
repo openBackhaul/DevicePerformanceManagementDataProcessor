@@ -17,30 +17,25 @@ note over cur
   new_mostRecentPeriodEndTime24 = /offset/mostRecentPeriodEndTime24
 end note
 
-loop FOR all [historicalPerformanceDataList]
+loop FOR EACH record in [historicalPerformanceDataList]
 
   note over cur
-    IF periodEndTime is not newer than:
+    IF record.periodEndTime is not newer than:
       - 15min: /offset/mostRecentPeriodEndTime
       - 24h: /offset/mostRecentPeriodEndTime24
     THEN discard record
   end note
 
   note over cur
-    Determine measurement.mostRecentPeriodEndTime and measurement.mostRecentPeriodEndTime24
-    as the newest periodEndTimes across all 15min or 24h PM slices, respectively,
-    seen in historicalPerformanceDataList (also for discarded slices!).
-  end note
-
-
-  note over cur
-    IF measurement.mostRecentPeriodEndTime > new_mostRecentPeriodEndTime
-    THEN new_mostRecentPeriodEndTime = measurement.mostRecentPeriodEndTime
+    For 15min granularity record:
+      IF record.periodEndTime > new_mostRecentPeriodEndTime
+      THEN new_mostRecentPeriodEndTime = record.periodEndTime
   end note
 
   note over cur
-    IF measurement.mostRecentPeriodEndTime24 > new_mostRecentPeriodEndTime24
-    THEN new_mostRecentPeriodEndTime24 = measurement.mostRecentPeriodEndTime24
+    For 24h granularity slirecordce:
+      IF record.periodEndTime > new_mostRecentPeriodEndTime24
+      THEN new_mostRecentPeriodEndTime24 = record.periodEndTime
   end note
 
 end loop

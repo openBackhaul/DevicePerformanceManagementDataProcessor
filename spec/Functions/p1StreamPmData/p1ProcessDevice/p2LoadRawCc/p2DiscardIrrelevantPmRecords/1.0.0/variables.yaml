@@ -24,54 +24,54 @@ discard-irrelevant-pm-records:
           performance-data:
             type: object
             description: 'The object containing actual PM data'
-    relevant-granularities:
-      type: string
-      enum:
-        - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
-        - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
-        - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+    offset:
+      type: object
       description: >
-        'An (optional) regex pattern indicating which data granularities are to be kept.
-        If not provided as input, the following default pattern shall be applied (keep 15min and 24h data):
-        :GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$
-        from {$input#/relevant-granularities}'
-    most-recent-period-end-time:
-      type: string
-      description: >
-        '15min PM records not newer than this timestamp are to be discarded.
-        If not provided, any 15min record passes.
-        from {$input#/most-recent-period-end-time}'
-    most-recent-period-end-time-24:
-      type: string
-      description: >
-        '24h PM records not newer than this timestamp are to be discarded.
-        If not provided, any 24h record passes.
-        from {$input#/most-recent-period-end-time-24}'
+        'The offset for the currently processed interface instance
+        initialized by p2LoadRawCc for newly seen interfaces,
+        to be updated by p2DiscardIrrelevantPmRecords'
+      required:
+        - uuid
+        - most-recent-period-end-time
+        - most-recent-period-end-time-24
+      properties:
+        uuid:
+          type: string
+          description: >
+            'The interface instance uuid
+            from {$input#/offset/uuid}'
+        most-recent-period-end-time:
+          type: string
+          description: >
+            'The newest 15min periodEndTime seen during previous runs
+            or the default value from inialization.
+            15min PM records not newer than the initial timestamp value are to be discarded,
+            from {$input#/offset/most-recent-period-end-time},
+            updated from {$updateOffset#new-most-recent-period-end-time}'
+        most-recent-period-end-time-24:
+          type: string
+          description: >
+            'The newest 24h periodEndTime seen during previous runs
+            or the default value from inialization,
+            24h PM records not newer than the initial timestamp value are to be discarded.
+            from {$input#/offset/most-recent-period-end-time},
+            updated from {$updateOffset#new-most-recent-period-end-time-24}'
 
     filtered-historical-performance-data-list:
       type: array
       description: >
         'The filtered list of historical PM records, after discarding irrelevant records
-        from [/discard-irrelevant-pm-records/historical-performance-data-list]
-        entry to be deleted if {granularity-period} does not match [/discard-irrelevant-pm-records/relevant-granularities]
-        if {granularity-period}==:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$
-            entry to be deleted if {period-end-time} is not newer than [/discard-irrelevant-pm-records/most-recent-period-end-time]
-        if {granularity-period}==:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$
-            entry to be deleted if {period-end-time} is not newer than [/discard-irrelevant-pm-records/most-recent-period-end-time-24]'
+        from [/discard-irrelevant-pm-records/historical-performance-data-list]'
 
-    offset:
-      type: array
-      x-key: uuid
-      items:
-        type: object
-        properties:
-          uuid:
-            type: string
-          most-recent-period-end-time:
-            type: string
-            description: >
-              'The newest 15min periodEndTime already processed'
-          most-recent-period-end-time-24:
-            type: string
-            description: >
-              'The newest 24h periodEndTime already processed'
+    new-most-recent-period-end-time:
+      type: string
+      description: >
+        'Initialized 
+        from [/discard-irrelevant-pm-records/offset/most-recent-period-end-time],
+        updated with the newest periodEndTime seen across all 15min PM slices in the historicalPerformanceDataList'
+    new-most-recent-period-end-time-24:
+      type: string
+      description: >
+        'Initialized 
+        from [/discard-irrelevant-pm-records/offset/most-recent-period-end-time-24],
+        updated with the newest periodEndTime seen across all 15min PM slices in the historicalPerformanceDataList'
