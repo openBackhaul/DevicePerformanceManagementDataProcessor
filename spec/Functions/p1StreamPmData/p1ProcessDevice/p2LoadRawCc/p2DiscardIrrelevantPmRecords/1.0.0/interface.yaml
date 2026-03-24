@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p2DiscardIrrelevantPmRecords:
-    summary: 'This function provides the EthContainer names looked up from LtpAugment information'
+    summary: 'This function discards irrelevant PM records and computes updated offset information'
     input:
       required: true
       content:
@@ -14,43 +14,37 @@ x-javascript-interface:
             type: object
             required:
               - historical-performance-data-list
+              - offset
             properties:
               historical-performance-data-list:
                 type: array
                 description: 'The list of historical PM records, that shall be filtered'
-              relevant-granularities:
-                type: string
-                enum:
-                  - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
-                  - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
-                  - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
-                description: >
-                  'An (optional) regex pattern indicating which data granularities are to be kept.
-                  If not provided as input, the following default pattern shall be applied (keep 15min and 24h data):
-                  :GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
-              most-recent-period-end-time:
-                type: string
-                description: '15min PM records not newer than this timestamp are to be discarded. If not provided, any 15min record passes.'
-              most-recent-period-end-time-24:
-                type: string
-                description: '24h PM records not newer than this timestamp are to be discarded. If not provided, any 24h record passes.'
+              offset:
+                type: object
+                description: 'The offset object for the processed interface instance'
     output:
       success:
-        description: 'filteredHistoricalPerformanceDataList provided'
+        description: 'filteredHistoricalPerformanceDataList and updated offset provided'
         content:
           application/json:
             schema:
               type: object
               required:
                 - filtered-historical-performance-data-list
+                - offset
               properties:
                 filtered-historical-performance-data-list:
                   type: array
                   description: >
                     'Filtered list of historical PM records
                     from [/discard-irrelevant-pm-records/filtered-historical-performance-data-list]'
+                offset:
+                  type: object
+                  description: >
+                    'The updated offset object
+                    from [/discard-irrelevant-pm-records/offset]'
       error:
-        description: 'filteredHistoricalPerformanceDataList could not be provided'
+        description: 'filteredHistoricalPerformanceDataList and updated offset could not be provided'
         content:
           application/json:
             schema:
@@ -58,10 +52,143 @@ x-javascript-interface:
               enum:
                 - 'historicalPerformanceDataList not provided'
                 - 'historicalPerformanceDataList invalid'
+                - 'offset not provided'
+                - 'offset invalid'
+                - 'historicalPerformanceDataList filtering error'
+                - 'updateNewMostRecentPeriodEndTime update error'
+                - 'offset update error'
                 - 'General processing error'
     processing:
-      description: 'No requests or calls to other Functions'
+      updateNewMostRecentPeriodEndTime:
+        summary: 'Overwrites newMostRecentPeriodEndTime or newMostRecentPeriodEndTime24 with latest value (means, most recent date) of periodEndTime (includes periodEndTimes from discarded records).'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - new-most-recent-period-end-time
+                  - new-most-recent-period-end-time-24
+                  - granularity-period
+                  - period-end-time
+                properties:
+                  new-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'newMostRecentPeriodEndTime
+                      from [/discard-irrelevant-pm-records/new-most-recent-period-end-time]'
+                  new-most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'newMostRecentPeriodEndTime24
+                      from [/discard-irrelevant-pm-records/new-most-recent-period-end-time-24]'
+                  granularity-period:
+                    type: string
+                    description: >
+                      'granularityPeriod
+                      from [/discard-irrelevant-pm-records/historical-performance-data-list=*/granularity-period]'
+                  period-end-time:
+                    type: string
+                    description: >
+                      'periodEndTime
+                      from [/discard-irrelevant-pm-records/historical-performance-data-list=*/period-end-time]'
+        output:
+          success:
+            description: 'newMostRecentPeriodEndTime provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - new-most-recent-period-end-time
+                    - new-most-recent-period-end-time-24
+                  properties:
+                    new-most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'newMostRecentPeriodEndTime
+                        from [{$input#period-end-time} if {$input#granularity-period} indicates 15-MIN]'
+                    new-most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'newMostRecentPeriodEndTime24
+                        from [{$input#period-end-time} if {$input#granularity-period} indicates 24-HOURS]'
+          error:
+            description: 'newMostRecentPeriodEndTime could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'newMostRecentPeriodEndTime not provided'
+                    - 'newMostRecentPeriodEndTime invalid'
+                    - 'newMostRecentPeriodEndTime24 not provided'
+                    - 'newMostRecentPeriodEndTime24 invalid'
+                    - 'granularityPeriod not provided'
+                    - 'granularityPeriod invalid'
+                    - 'periodEndTime not provided'
+                    - 'periodEndTime invalid'
+                    - 'newMostRecentPeriodEndTime could not be provided'
+                    - 'General processing error'
 
+      updateOffset:
+        description: 'Updates the mostRecentPeriodEndTimes in the offset with newMostRecentPeriodEndTimes'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - new-most-recent-period-end-time
+                  - new-most-recent-period-end-time-24
+                properties:
+                  new-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'newMostRecentPeriodEndTime for 15min
+                      from [/discard-irrelevant-pm-records/new-most-recent-period-end-time]'
+                  new-most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'newMostRecentPeriodEndTime24 for 24h
+                      from [/discard-irrelevant-pm-records/new-most-recent-period-end-time24]'
+                  offset:
+                    type: object
+        output:
+          success:
+            description: 'Offset updated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  #TODO: review -> return only the timestamps, not offset, because offset already specified in variables
+                  required:
+                    - most-recent-period-end-time
+                    - most-recent-period-end-time-24
+                  properties:
+                    most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'updated mostRecentPeriodEndTime
+                        from {$updateOffset.input#/new-most-recent-period-end-time}'
+                    most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'updated mostRecentPeriodEndTime
+                        from {$updateOffset.input#/new-most-recent-period-end-time-24}'
+          error:
+            description: 'Offset could not be updated'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'NewMostRecentPeriodEndTime not provided'
+                    - 'NewMostRecentPeriodEndTime invalid'
+                    - 'NewMostRecentPeriodEndTime24 not provided'
+                    - 'NewMostRecentPeriodEndTime24 invalid'
+                    - 'Offset update error'
+                    - 'General processing error during reading'
 
 paths:
   /:

@@ -12,35 +12,39 @@ participant "p1DiscardIrrelevant\nPmRecords" as cur
 requestor -> cur: { [historicalPerformanceDataList],\n{offset} }
 activate cur
 
-note over cur
-  new_mostRecentPeriodEndTime = /offset/mostRecentPeriodEndTime
-  new_mostRecentPeriodEndTime24 = /offset/mostRecentPeriodEndTime24
-end note
+  note over cur
+    Initializes:
+      newMostRecentPeriodEndTime
+      newMostRecentPeriodEndTime24
+  end note
 
-loop FOR all [historicalPerformanceDataList]
+
+loop FOR EACH record in [historicalPerformanceDataList]
 
   note over cur
-    IF periodEndTime is not newer than:
+    IF record.periodEndTime is not newer than:
       - 15min: /offset/mostRecentPeriodEndTime
       - 24h: /offset/mostRecentPeriodEndTime24
     THEN discard record
   end note
 
   note over cur
-    IF mostRecentPeriodEndTime in this measurement > new_mostRecentPeriodEndTime
-    THEN new_mostRecentPeriodEndTime = mostRecentPeriodEndTime from this measurement
+    For granularityPeriod == 15-MIN:
+    IF (record.periodEndTime > newMostRecentPeriodEndTime)
+      THEN update newMostRecentPeriodEndTime
   end note
 
   note over cur
-    IF mostRecentPeriodEndTime24 in this measurement > new_mostRecentPeriodEndTime24
-    THEN new_mostRecentPeriodEndTime24 = mostRecentPeriodEndTime24 from this measurement
+    For granularityPeriod == 24-HOURS:
+    IF (record.periodEndTime > newMostRecentPeriodEndTime24)
+      THEN update newMostRecentPeriodEndTime24
   end note
 
 end loop
 
 note over cur
-  /offset/mostRecentPeriodEndTime = new_mostRecentPeriodEndTime
-  /offset/mostRecentPeriodEndTime24 = new_mostRecentPeriodEndTime24
+  /offset/mostRecentPeriodEndTime = newMostRecentPeriodEndTime
+  /offset/mostRecentPeriodEndTime24 = newMostRecentPeriodEndTime24
 end note
 
 requestor <-- cur: { [filteredHistoricalPerformanceDataList],\n{offset} }
