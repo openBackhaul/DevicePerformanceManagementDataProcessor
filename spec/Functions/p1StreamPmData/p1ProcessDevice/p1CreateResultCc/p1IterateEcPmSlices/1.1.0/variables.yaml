@@ -1,0 +1,64 @@
+iterate-ec-pm-slices:
+  type: object
+  required:
+    - parameters
+    - historical-performance-data-list
+    - aggregation-group
+    - result-cc
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    historical-performance-data-list:
+      type: array
+      x-key: granularity-period, period-end-time
+      description: >
+        'historicalPerformanceDataList
+        from {$input#/historical-performance-data-list}
+        ! simplified representation !'
+      items:
+        type: object
+        properties:
+          granularity-period:
+            type: string
+          period-end-time:
+            type: string
+          performance-data:
+            type: object
+            description: >
+              'historicalPerformanceData
+              overwritten by {$p1CalculateEthernetKpis.output#/historical-performance-data}
+              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}'
+            properties:
+              transmit-traffic:
+                type: integer
+                description: >
+                  'transmitTraffic in Mbps
+                  requires {$p1CalculateEthernetKpis}'
+              receive-traffic:
+                type: integer
+                description: >
+                  'receiveTraffic in Mbps
+                  requires {$p1CalculateEthernetKpis}'
+              frame-loss-input:
+                type: integer
+                description: >
+                  'Sum of errored and dropped frames on the ingress
+                  requires {$p1CalculateEthernetKpis}'
+              frame-loss-output:
+                type: integer
+                description: >
+                  'Sum of errored and dropped frames on the egress
+                  requires {$p1CalculateEthernetKpis}'
+    aggregation-group:
+      type: object
+      description: >
+        'aggregationGroup
+        from {$input#/aggregation-group}'
+    result-cc:
+      type: object
+      description: >
+        'resultCc
+        from {$input#/result-cc}'
