@@ -12,13 +12,6 @@ participant "p1DiscardIrrelevant\nPmRecords" as cur
 requestor -> cur: { [historicalPerformanceDataList],\n{offset} }
 activate cur
 
-  note over cur
-    Initializes:
-      newMostRecentPeriodEndTime
-      newMostRecentPeriodEndTime24
-  end note
-
-
 loop FOR EACH record in [historicalPerformanceDataList]
 
   note over cur
@@ -29,22 +22,22 @@ loop FOR EACH record in [historicalPerformanceDataList]
   end note
 
   note over cur
-    For granularityPeriod == 15-MIN:
-    IF (record.periodEndTime > newMostRecentPeriodEndTime)
-      THEN update newMostRecentPeriodEndTime
+    For 15min granularity record:
+      IF record.periodEndTime > new_mostRecentPeriodEndTime
+      THEN new_mostRecentPeriodEndTime = record.periodEndTime
   end note
 
   note over cur
-    For granularityPeriod == 24-HOURS:
-    IF (record.periodEndTime > newMostRecentPeriodEndTime24)
-      THEN update newMostRecentPeriodEndTime24
+    For 24h granularity slirecordce:
+      IF record.periodEndTime > new_mostRecentPeriodEndTime24
+      THEN new_mostRecentPeriodEndTime24 = record.periodEndTime
   end note
 
 end loop
 
 note over cur
-  /offset/mostRecentPeriodEndTime = newMostRecentPeriodEndTime
-  /offset/mostRecentPeriodEndTime24 = newMostRecentPeriodEndTime24
+  /offset/mostRecentPeriodEndTime = new_mostRecentPeriodEndTime
+  /offset/mostRecentPeriodEndTime24 = new_mostRecentPeriodEndTime24
 end note
 
 requestor <-- cur: { [filteredHistoricalPerformanceDataList],\n{offset} }
