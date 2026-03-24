@@ -1,0 +1,112 @@
+@startuml p2ProcessDevice
+skinparam responseMessageBelowArrow true
+
+title
+  p2ProcessDevice
+end title
+
+participant "p1StreamPmData\n" as requestor
+participant "p2ProcessDevice\n" as cur #LightSalmon
+participant "p1LoadOffsets\nAndStatusData" as p1Offset #LightSalmon
+participant "p2LoadRawCc\n" as p2AddRaw #LightSalmon
+participant "p2CreateResultCc\n" as p2CreateResCc #LightCyan
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
+participant "p1Transmitting\nKafka" as p1Trans
+participant "p1Storing\n" as p1Store #LightCyan
+
+
+requestor -> cur : { mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+activate cur
+
+  'LoadOffestsAndStatusData
+  cur -> p1Offset: { mountName,\n{dataStoreEsClient}}
+  activate p1Offset
+
+    note over p1Offset
+      Load offsets and status data
+      from DataStore
+    end note
+
+  cur <-- p1Offset: { [offsets],\n[statusData] }
+  deactivate p1Offset
+
+  'LoadRawCc
+  cur -> p2AddRaw : { mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n[offsets] }
+  activate p2AddRaw
+
+    note over p2AddRaw
+      - Loads rawCc from MWDI ES
+      - Reduces structure of rawCc
+      - Deletes PM data that has
+        already been processed in past
+      - Returns updated offsets
+        (mostRecentPeriodEndTimes)
+    end note
+
+  cur <-- p2AddRaw : { {rawCc},\n[offsets] }
+  deactivate p2AddRaw
+
+  'CreateResultCc
+  cur -> p2CreateResCc : { {/parameters/sub-function=createResultCc},\n{rawCc},\n[statusData] }
+  activate p2CreateResCc
+
+    note over p2CreateResCc
+      - Creates resultCc from rawCc
+      - Processes and complements PM data
+      - Updates statusData
+    end note
+
+  cur <-- p2CreateResCc :  { {resultCc},\n[statusData] }
+  deactivate p2CreateResCc
+
+  'FormattingOutputApt
+  cur -> p1OutputApt : { {resultCc} }
+  activate p1OutputApt
+
+    note over p1OutputApt
+      Creates aptOutputFormat
+      from resultCc
+    end note
+
+  cur <-- p1OutputApt : { formatName,\n{outputFormat} }
+  deactivate p1OutputApt
+
+  'FormattingOutputOnf
+  cur -> p1OutputOnf : { {resultCc} }
+  activate p1OutputOnf
+
+    note over p1OutputOnf
+      Creates onfOutputFormat
+      from resultCc
+    end note
+
+  cur <-- p1OutputOnf : { formatName,\n{outputFormat} }
+  deactivate p1OutputOnf
+
+  'TransmittingKafka
+  cur -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  activate p1Trans
+
+    note over p1Trans
+      Transmits object
+      to Kafka
+    end note
+
+  cur <-- p1Trans
+  deactivate p1Trans
+
+  'Storing
+  cur -> p1Store : { {dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+  activate p1Store
+
+    note over p1Store
+      Stores resultCc
+    end note
+
+  cur <-- p1Store
+  deactivate p1Store
+
+deactivate cur
+
+@enduml
