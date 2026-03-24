@@ -2,6 +2,7 @@ discard-irrelevant-pm-records:
   type: object
   required:
     - historical-performance-data-list
+    - offset
   properties:
     historical-performance-data-list:
       type: array
@@ -27,9 +28,7 @@ discard-irrelevant-pm-records:
     offset:
       type: object
       description: >
-        'The offset for the currently processed interface instance
-        initialized by p2LoadRawCc for newly seen interfaces,
-        to be updated by p2DiscardIrrelevantPmRecords'
+        'The offset for the currently processed interface instance'
       required:
         - uuid
         - most-recent-period-end-time
@@ -39,23 +38,21 @@ discard-irrelevant-pm-records:
           type: string
           description: >
             'The interface instance uuid
-            from {$input#/offset/uuid}'
+            from {$input#/offset/uuid}
         most-recent-period-end-time:
           type: string
           description: >
-            'The newest 15min periodEndTime seen during previous runs
-            or the default value from inialization.
+            'The newest 15min periodEndTime seen during previous runs (or the default value)
             15min PM records not newer than the initial timestamp value are to be discarded,
-            from {$input#/offset/most-recent-period-end-time},
-            updated from {$updateOffset.input#new-most-recent-period-end-time}'
+            from {$input#/offset/most-recent-period-end-time}
+            overwritten by {$updateOffset.output#/most-recent-period-end-time}
         most-recent-period-end-time-24:
           type: string
           description: >
-            'The newest 24h periodEndTime seen during previous runs
-            or the default value from inialization,
-            24h PM records not newer than the initial timestamp value are to be discarded.
-            from {$input#/offset/most-recent-period-end-time},
-            updated from {$updateOffset.input#new-most-recent-period-end-time-24}'
+            'The newest 24h periodEndTime seen during previous runs (or default value).
+            24h PM records not newer than the initial timestamp value are to be discarded,
+            from {$input#/offset/most-recent-period-end-time-24}
+            overwritten by {$updateOffset.output#/most-recent-period-end-time-24}
 
     filtered-historical-performance-data-list:
       type: array
@@ -65,13 +62,15 @@ discard-irrelevant-pm-records:
 
     new-most-recent-period-end-time:
       type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
-        'Initialized 
-        from [/discard-irrelevant-pm-records/offset/most-recent-period-end-time],
-        updated with the newest periodEndTime (also from discarded records) seen across all 15min PM slices in the historicalPerformanceDataList'
+        'newMostRecentPeriodEndTime
+        initial value: {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
     new-most-recent-period-end-time-24:
       type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
-        'Initialized 
-        from [/discard-irrelevant-pm-records/offset/most-recent-period-end-time-24],
-        updated with the newest periodEndTime (also from discarded records)  seen across all 15min PM slices in the historicalPerformanceDataList'
+        'newMostRecentPeriodEndTime24
+        initial value: {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
