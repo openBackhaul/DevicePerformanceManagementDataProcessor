@@ -37,37 +37,6 @@ create-result-cc:
         'List of Layer1AggregationGroups at the device
         from {$createAggregationGroupList.output#/aggregation-group-list}'
 
-    interface-metadata-list:
-      type: array
-      x-key: uuid
-      items:
-        type: object
-        required:
-          - uuid
-          - layer-protocol-name
-          - most-recent-period-end-time
-          - most-recent-period-end-time-24
-        properties:
-          uuid:
-            type: string
-            description: >
-              'ltpUuid
-              from [{air-interface-uuid[n]} or {ethernet-container-uuid[n]}]'
-          layer-protocol-name:
-            type: string
-            description: >
-              'layerProtocolName
-              from [air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER or ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER]'
-          most-recent-period-end-time:
-            type: string
-            description: >
-              'Most recent periodEndTime of a 15minutes slice in historicalPerformanceDataList
-              from [ {$p1IterateAiPmSlices.output#/most-recent-period-end-time} or {$p1IterateEcPmSlices.output#/most-recent-period-end-time} ]'
-          most-recent-period-end-time-24:
-            type: string
-            description: >
-              'Most recent periodEndTime of a 24hours slice in historicalPerformanceDataList
-              from [ {$p1IterateAiPmSlices.output#/most-recent-period-end-time-24} or {$p1IterateEcPmSlices.output#/most-recent-period-end-time-24} ]'
     result-cc:
       type: object
       description: >
