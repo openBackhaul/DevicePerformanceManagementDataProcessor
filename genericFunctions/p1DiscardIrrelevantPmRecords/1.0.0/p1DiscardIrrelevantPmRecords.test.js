@@ -1,10 +1,11 @@
 const p1DiscardIrrelevantPmRecords = require('./P1DiscardIrrelevantPmRecords');
+const ERRORS = require('./ErrorsEnum');
 
 describe('p1DiscardIrrelevantPmRecords', () => {
 
   test('should return error if input is missing', () => {
     expect(p1DiscardIrrelevantPmRecords(null))
-      .toBe('historicalPerformanceDataList not provided');
+      .toBe(ERRORS.HISTPERF_NOT_PROVIDED);
   });
 
   test('should filter records correctly (full scenario)', () => {

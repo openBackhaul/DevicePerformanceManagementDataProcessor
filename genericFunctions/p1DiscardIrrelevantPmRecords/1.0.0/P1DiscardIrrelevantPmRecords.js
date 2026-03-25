@@ -1,11 +1,10 @@
-/**
- * p1DiscardIrrelevantPmRecords
- */
+const ERRORS = require('./ErrorsEnum');
+
 const p1DiscardIrrelevantPmRecords = (input) => {
   try {
     // Validate input
     if (!input || !Array.isArray(input["historical-performance-data-list"])) {
-      return "historicalPerformanceDataList not provided";
+      return ERRORS.HISTPERF_NOT_PROVIDED;
     }
 
     const records = input["historical-performance-data-list"];
@@ -32,45 +31,30 @@ const p1DiscardIrrelevantPmRecords = (input) => {
 
       const granularity = record["granularity-period"];
       const periodEndTime = record["period-end-time"];
-      console.log("Granularity: " + granularity);
-      console.log("mostRecent15Date: " + mostRecent15Date);
+
       // Basic validation
       if (!granularity || !periodEndTime) {
-        console.error("Error Basic Validation");
         return false;
-      } else {
-        console.log("Basic Validation OK");
       }
 
       // Granularity regex filter
       if (!granularityRegex.test(granularity)) {
-        console.error("REGEX Granularity failing");
         return false;
-      } else {
-        console.log("REGEX Granularity OK");
       }
 
       const recordDate = new Date(periodEndTime);
       if (isNaN(recordDate)){
-        console.error("is NaN");
         return false;
-      } else {
-        console.log("is not a NaN");
       }
-      console.log(granularity)
+
       // 15-min filtering
       if (
         granularity.endsWith(":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN") &&
         mostRecent15Date
       ) {
-        console.log("15 minutes analysis");
         if (recordDate <= mostRecent15Date) {
           return false;
-        } else {
-          console.log("is 15 min discarded");
         }
-      } else {
-        console.log("15 minute filter does")
       }
 
       // 24h filtering
@@ -79,12 +63,8 @@ const p1DiscardIrrelevantPmRecords = (input) => {
         granularity.endsWith(":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS") &&
         mostRecent24Date
       ) {
-        console.log("24 hours analysis");
         if (recordDate <= mostRecent24Date) {
-          console.error("is 24 discarded");
           return false;
-        } else {
-          console.log("24h NOT discarded");
         }
       }
 
@@ -92,12 +72,11 @@ const p1DiscardIrrelevantPmRecords = (input) => {
     });
 
     // Output
-    console.log(filtered);
     return {
       "filtered-historical-performance-data-list": filtered,
     };
   } catch (e) {
-    return "General processing error";
+    return ERRORS.GENERAL_ERROR;
   }
 }
 
