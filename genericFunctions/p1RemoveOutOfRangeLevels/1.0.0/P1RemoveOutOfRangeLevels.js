@@ -1,51 +1,89 @@
 
-const performanceStruct = {
-  "es": 0,
-  "ses": 0,
-  "cses": 0,
-  "unavailability": 0,
-  "tx-level-min": 0,
-  "tx-level-max": 0,
-  "tx-level-avg": 0,
-  "rx-level-min": 0,
-  "rx-level-max": 0,
-  "rx-level-avg": 0,
-  "time-xstates-list": [
-    {"transmission-mode": "A"},
-    {"transmission-mode": "B"},
-    {"transmission-mode": "C"},
-  ],
-  "interval-capacity": 0,
-  "snir-min": 0,
-  "snir-max": 0,
-  "snir-avg": 0,
-  "xpd-min": 0,
-  "xpd-max": 0,
-  "xpd-avg": 0,
-  "defect-blocks-sum": 0,
-  "time-period": 100
+let parameterStruct;
+
+function checkOutOfRange(value, isTX) {
+
+  let min = isTX ? parameterStruct["lower-tx-level-limit"] : parameterStruct["lower-rx-level-limit"];
+  let max = isTX ? parameterStruct["upper-tx-level-limit"] : parameterStruct["upper-rx-level-limit"];
+
+  if (value < min || value > max ) {
+    return false;
+  }
+
+  return true;
 }
-
-const parameterStruct = {
-  "lower-tx-level-limit": "",   // Lower bound of valid values of the transmit level
-  "upper-tx-level-limit": "",   // Upper bound of valid values of the transmit level
-  "lower-rx-level-limit": "",   // Lower bound of valid values of the receive level
-  "upper-rx-level-limit": "",   // Upper bound of valid values of the receive level
-}
-
-
 
 const p1RemoveOutOfRangeLevels = (input) => {
-  const parameters = input["parameters"];
+  parameterStruct = input["parameters"];
   const performanceData = input["performance-data"];
 
-  if (performanceData["tx-level-min"] < parameters["lower-tx-level-limit"] &&
-      performanceData["tx-level-min"] > parameters["upper-tx-level-limit"] 
-  ) {
-    // drop entry
+  // Check paramenters
+  if (!parameterStruct) {
+    return "parameters not provided";
+  } else {
+
+    if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "number") {
+      return "parameters invalid";
+    }
+
+    if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "number") {
+      return "parameters invalid";
+    }
+
+    if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "number") {
+      return "parameters invalid";
+    }
+
+    if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "number") {
+      return "parameters invalid";
+    }
   }
 
+  if (!performanceData) {
+    return "performanceData not provided";
+  } else {
+
+  }
+
+  let performanceDataClean = performanceData;  // Initializate return value
+
+  // TX Data
+  if (!checkOutOfRange(performanceData["tx-level-min"], true)) {
+    delete performanceDataClean["tx-level-min"];
+  }
+
+  if (!checkOutOfRange(performanceData["tx-level-max"], true)) {
+    delete performanceDataClean["tx-level-min"];
+  }
+
+  if (!checkOutOfRange(performanceData["tx-level-avg"], true)) {
+    delete performanceDataClean["tx-level-min"];
+  }
+
+  // RX Data
+  if (!checkOutOfRange(performanceData["rx-level-min"], false)) {
+    delete performanceDataClean["tx-level-min"];
+  }
+
+  if (!checkOutOfRange(performanceData["rx-level-max"], false)) {
+    delete performanceDataClean["tx-level-min"];
+  }
+
+  if (!checkOutOfRange(performanceData["rx-level-avg"], false)) {
+    delete performanceDataClean["tx-level-min"];
+  }
+
+
+  // TODO Manage the errors
+  // enum:
+
+  //   - 'performanceData not provided'
+  //   - 'performanceData invalid'
+  //   - 'General processing error'
+
   return {
-    "performance-data": performanceData
+    "performance-data": performanceDataClean
   }
 }
+
+module.exports = p1RemoveOutOfRangeLevels;
