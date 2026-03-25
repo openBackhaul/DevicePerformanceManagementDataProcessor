@@ -1,3 +1,4 @@
+const ERRORS = require('./ErrorsEnum');
 
 const p1CalculateIntervalCapacity = (input) => {
   try {
@@ -6,19 +7,19 @@ const p1CalculateIntervalCapacity = (input) => {
     const transmissionModeList = input["transmission-mode-list"];
 
     if (timeXstatesList === undefined) {
-      throw "timeXstatesList not provided";
+      return ERRORS.TIMEXSTATES_NOT_PROVIDED;
     }
 
     if (!Array.isArray(timeXstatesList)) {
-      throw "timeXstatesList invalid";
+      return ERRORS.TIMEXSTATES_INVALID;
     }
 
     if (transmissionModeList === undefined) {
-      throw "transmissionModeList not provided";
+      return ERRORS.TRANSMODE_NOT_PROVIDED;
     }
 
     if (!Array.isArray(transmissionModeList)) {
-      throw "transmissionModeList invalid";
+      return ERRORS.TRANSMODE_INVALID;
     }
 
     const capacityMap = new Map();
@@ -54,18 +55,8 @@ const p1CalculateIntervalCapacity = (input) => {
     };
 
   } catch (err) {
-
-    if (typeof err === "string") {
-      return {
-        "error": err
-      };
-    }
-
-
-
-    return {
-      "error": "General processing error",
-    };
+    console.err(err);
+    return ERRORS.GENERAL_ERROR;
   }
 }
 
