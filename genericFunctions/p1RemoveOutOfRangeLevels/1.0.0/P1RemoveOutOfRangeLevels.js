@@ -1,4 +1,6 @@
 
+const ERRORS = require ('./ErrorsEnum');
+
 let parameterStruct;
 
 function checkOutOfRange(value, isTX) {
@@ -20,54 +22,54 @@ const p1RemoveOutOfRangeLevels = (input) => {
 
     // Check paramenters
     if (!parameterStruct) {
-      return "parameters not provided";
+      return ERRORS.PARAM_NOT_PROVIDED;
     } else {
 
       if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "number") {
-        return "parameters invalid";
+        return ERRORS.PARAM_INVALID;
       }
 
       if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "number") {
-        return "parameters invalid";
+        return ERRORS.PARAM_INVALID;
       }
 
       if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "number") {
-        return "parameters invalid";
+        return ERRORS.PARAM_INVALID;
       }
 
       if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "number") {
-        return "parameters invalid";
+        return ERRORS.PARAM_INVALID;
       }
     }
 
     if (!performanceData) {
-      return "performanceData not provided";
+      return ERRORS.PERF_NOT_PROVIDED;
     } else {
 
       // TX
       if (performanceData["tx-level-min"] == undefined || typeof performanceData["tx-level-min"] != "number") {
-        return "performanceData invalid";
+        return ERRORS.PERF_INVALID;
       }
 
       if (performanceData["tx-level-max"] == undefined || typeof performanceData["tx-level-max"] != "number") {
-        return "performanceData invalid";
+        return ERRORS.PERF_INVALID;
       }
 
       if (performanceData["tx-level-avg"] == undefined || typeof performanceData["tx-level-avg"] != "number") {
-        return "performanceData invalid";
+        return ERRORS.PERF_INVALID;
       }
 
       // RX
       if (performanceData["rx-level-min"] == undefined || typeof performanceData["rx-level-min"] != "number") {
-        return "performanceData invalid";
+        return ERRORS.PERF_INVALID;
       }
 
       if (performanceData["rx-level-max"] == undefined || typeof performanceData["rx-level-max"] != "number") {
-        return "performanceData invalid";
+        return ERRORS.PERF_INVALID;
       }
 
       if (performanceData["rx-level-avg"] == undefined || typeof performanceData["rx-level-avg"] != "number") {
-        return "performanceData invalid";
+        return ERRORS.PERF_INVALID;
       }
     }
 
@@ -103,7 +105,7 @@ const p1RemoveOutOfRangeLevels = (input) => {
       "performance-data": performanceDataClean
     }
   } catch (e) {
-    return "General processing error";
+    return ERRORS.GENERAL_ERROR;
   }
 
 }

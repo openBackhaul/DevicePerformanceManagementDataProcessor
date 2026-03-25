@@ -1,4 +1,5 @@
 const p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
+const ERRORS = require ('./ErrorsEnum');
 
 const performanceStruct1 = {
   "es": 0,
@@ -151,21 +152,43 @@ describe('p1RemoveOutOfRangeLevels', () => {
     });
   });
 
-
   test('Missing parameters', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
     }))
-    .toBe("parameters not provided");
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
+  test('Missing parameters (undefined)', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": performanceStruct2,
+      "parameters": undefined
+    }))
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+  });
+
+  test('Missing parameters (null)', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": performanceStruct2,
+      "parameters": null
+    }))
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+  });
+
+  test('Missing parameters (string)', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": performanceStruct2,
+      "parameters": "ciao"
+    }))
+    .toBe(ERRORS.PARAM_INVALID);
+  });
 
   test('Missing some property of parameters', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": wrongParameterStruct1
     }))
-    .toBe("parameters invalid");
+    .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('String on property of parameters', () => {
@@ -173,7 +196,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
       "performance-data": performanceStruct2,
       "parameters": wrongParameterStruct2
     }))
-    .toBe("parameters invalid");
+    .toBe(ERRORS.PARAM_INVALID);
   });
 
 
@@ -181,7 +204,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     expect(p1RemoveOutOfRangeLevels({
       "parameters": parameterStruct1
     }))
-    .toBe("performanceData not provided");
+    .toBe(ERRORS.PERF_NOT_PROVIDED);
   });
 
 
@@ -190,7 +213,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
       "performance-data": wrongPerformanceStruct1,
       "parameters": parameterStruct1
     }))
-    .toBe("performanceData invalid");
+    .toBe(ERRORS.PERF_INVALID);
   });
 // Test end
 });
