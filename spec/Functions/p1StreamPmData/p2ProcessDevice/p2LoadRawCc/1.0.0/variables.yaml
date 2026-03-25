@@ -27,7 +27,8 @@ load-raw-cc:
       x-key: functionName
       description: >
         'Offsets array
-        from {$input#/offsets}'
+        from {$input#/offsets}
+        overwritten by {$updateOffset.output#/offsets}'
 
     mwdi-replica-url:
       type: string
@@ -511,8 +512,7 @@ load-raw-cc:
         'The interface-offsets array for functionName=p2DiscardIrrelevantRecords, if existing
         from [/load-raw-cc/offsets/function-name=p2DiscardIrrelevantRecords/interface-offsets],
         if not existing and empty array is initialized for this functionName.
-        Items added by {} for new uuids,
-        Items overwritten by {} for existing uuids.'
+        Is overwritten by {$updateInterfaceOffset.output#/interface-offsets}'
       items:
         type: object
         properties:
@@ -528,13 +528,12 @@ load-raw-cc:
             most-recent-period-end-time-24:
               type: string
 
-
-
     offset:
       description: >
         'The offset of the currently processed interface (ltp) for functionName p2DiscardIrrelevantRecords.
         from [/load-raw-cc/interface-offsets={/load-raw-cc/raw-cc/logical-termination-point[n]}].
-        If not existing offset is initialized.'
+        If not existing offset is initialized.
+        Overwritten by {$p2DiscardIrrelevantPmRecords.output/offset}.'
       type: object
       required:
         - uuid

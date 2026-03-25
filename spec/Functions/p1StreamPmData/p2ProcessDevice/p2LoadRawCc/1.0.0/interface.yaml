@@ -150,8 +150,6 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-
-
       p2DiscardIrrelevantPmRecords:
         input:
           required: true
@@ -161,38 +159,18 @@ x-javascript-interface:
                 type: object
                 required:
                   - historical-performance-data-list
+                  - offset
                 properties:
                   historical-performance-data-list:
                     type: array
                     description: >
                       'The list of historical PM records, that shall be filtered
                       from [/load-raw-cc/raw-cc/logical-termination-point={uuid}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list or /load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
-                  relevant-granularities:
-                    type: string
-                    enum:
-                      - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
-                      - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
-                      - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
+                  offset:
+                    type: object
                     description: >
-                      'An (optional) regex pattern indicating which data granularities are to be kept.
-                      If not provided as input, both 15min and 24h are kept.
-                      from [/load-raw-cc/relevant-granularities]'
-                  most-recent-period-end-time:
-                    type: string
-                    description: >
-                      '15min PM records not newer than this timestamp are to be discarded.
-                      If not provided, any 15min record passes.
-                      from []'
-
-
-                  most-recent-period-end-time-24:
-                    type: string
-                    description: >
-                      '24h PM records not newer than this timestamp are to be discarded.
-                      If not provided, any 24h record passes.
-                      from []'
-
-                      
+                      'Offset for the currently processed ltp
+                      from [/load-raw-cc/offset]'
         output:
           success:
             description: 'filteredHistoricalPerformanceDataList provided'
@@ -207,14 +185,10 @@ x-javascript-interface:
                       type: array
                       description: >
                         'Filtered list of historical PM records'
-                    most-recent-period-end-time:
-                      type: string
+                    offset:
+                      type: object
                       description: >
-                        'Timestamp of the latest 15min PM record in this batch'
-                    most-recent-period-end-time-24:
-                      type: string
-                      description: >
-                        'Timestamp of the latest 24h PM record record in this batch'
+                        'Updated offset'
           error:
             description: 'filteredHistoricalPerformanceDataList could not be provided'
             content:
@@ -270,6 +244,106 @@ x-javascript-interface:
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
                       - 'General processing error'
+      updateInterfaceOffset:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - interface-offsets
+                  - offset
+                properties:
+                  interface-offsets:
+                    type: array
+                    description: > 
+                      'interfaceOffsets
+                      from [/load-raw-cc/interface-offsets]'
+                  offset:
+                    type: object
+                    description: >
+                      'Offset for the currently processed ltp
+                      from [/load-raw-cc/offset]'
+        output:
+          success:
+            description: 'updated interfaceOffset provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - interfaceOffset
+                  properties:
+                    interface-offsets:
+                      type: array
+                      description: > 
+                        'interfaceOffsets
+                        updated by adding items for new uuids and overwriting for existing entries. Offset object
+                        from {{$updateInterfaceOffset.input/offset}
+                        (over)writes item for [/load-raw-cc/interface-offsets={$updateInterfaceOffset.input#/offset/uuid}].'
+          error:
+            description: 'filteredHistoricalPerformanceDataList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'interfaceOffsets not provided'
+                    - 'interfaceOffsets invalid'
+                    - 'offset not provided'
+                    - 'offset invalid'
+                    - 'General processing error'
+      updateOffsets:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - offsets
+                  - interface-offsets
+                properties:
+                  offsets:
+                    type: array
+                    description: >
+                      'Offsets
+                      from [/load-raw-cc/offsets]'
+                  interface-offsets:
+                    type: array
+                    description: > 
+                      'interfaceOffsets
+                      from [/load-raw-cc/interface-offsets]'
+        output:
+          success:
+            description: 'updated offsets provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - offsets
+                  properties:
+                    offsets:
+                      type: array
+                      description: > 
+                        'The offsets item is updated, by
+                        (over)writing {$updateOffsets.input#/interface-offsets}
+                        into {$updateOffsets.input#/offsets=p2DiscardIrrelevantPmRecords}.
+                        '
+          error:
+            description: 'filteredHistoricalPerformanceDataList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'offsets not provided'
+                    - 'offsets invalid'
+                    - 'interfaceOffsets not provided'
+                    - 'interfaceOffsets invalid'
+                    - 'General processing error'
 
 paths:
   /:

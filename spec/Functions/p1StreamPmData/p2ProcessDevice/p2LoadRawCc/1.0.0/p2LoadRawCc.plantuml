@@ -28,14 +28,16 @@ activate cur
   cur <-- fieldsFilter: { {rawControlConstruct} }
   deactivate fieldsFilter
 
+  note over cur
+    Initialize interfaceOffsets
+    if not existing
+  end note
+
   loop FOR all [/raw-cc/logical-termination-point]
 
     note over cur
-      Set [/load-raw-cc/function-name] = p2DiscardIrrelevantRecords
-      IF not existing
-        [/offsets/functionName=p2DiscardIrrelevantRecords]
-      THEN initialize for this functionName:
-        [/load-raw-cc/offset]
+      Initialize offset
+      if not existing
     end note
 
     note over cur
@@ -46,7 +48,7 @@ activate cur
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n[/offsets/functionName=p2DiscardIrrelevantPmRecords] }
+    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
     activate filterPm
     note over filterPm
       Discards records that are
@@ -68,7 +70,7 @@ activate cur
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n[/offsets/functionName=p2DiscardIrrelevantPmRecords] }
+    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
     activate filterPm
     note over filterPm
       Discards records that are
@@ -79,13 +81,17 @@ activate cur
     deactivate filterPm
 
     note right cur
-      updateOffset for this interface
+      updateInterfaceOffset for this interface
       with mostRecentPeriodEndTime and
       mostRecentPeriodEndTime24 in this batch
-      in [/load-raw-cc/offsets]
     end note
 
   end loop
+
+  note over cur
+    updateOffsets for this device
+    from interfaceOffsets
+  end note
 
 requestor <-- cur: { {rawCc},\n[offsets] }
 deactivate cur
