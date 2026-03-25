@@ -5,13 +5,13 @@ title
   p2LoadRawCc
 end title
 
-participant "p1ProcessDevice\n" as requestor
+participant "p2ProcessDevice\n" as requestor
 participant "p2LoadRawCc\n" as cur
 database "MWDI ES Replica" as MwdiEs
 participant "p1FieldsFilter\n" as fieldsFilter
 participant "p2DiscardIrrelevant\nPmRecords" as filterPm
 
-requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n{offset} }
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
 activate cur
 
   note over cur
@@ -28,7 +28,17 @@ activate cur
   cur <-- fieldsFilter: { {rawControlConstruct} }
   deactivate fieldsFilter
 
+  note over cur
+    Initialize interfaceOffsets
+    if not existing
+  end note
+
   loop FOR all [/raw-cc/logical-termination-point]
+
+    note over cur
+      Initialize offset
+      if not existing
+    end note
 
     note over cur
       IF layerProtocolName == AirInterface
@@ -67,18 +77,23 @@ activate cur
       already processed from
       historicalPerformanceDataList
     end note
-    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n[offset] }
     deactivate filterPm
 
     note right cur
-      updateOffset for this interface
+      updateInterfaceOffset for this interface
       with mostRecentPeriodEndTime and
       mostRecentPeriodEndTime24 in this batch
     end note
 
   end loop
 
-requestor <-- cur: { {rawCc},\n{offset} }
+  note over cur
+    updateOffsets for this device
+    from interfaceOffsets
+  end note
+
+requestor <-- cur: { {rawCc},\n[offsets] }
 deactivate cur
 
 @enduml

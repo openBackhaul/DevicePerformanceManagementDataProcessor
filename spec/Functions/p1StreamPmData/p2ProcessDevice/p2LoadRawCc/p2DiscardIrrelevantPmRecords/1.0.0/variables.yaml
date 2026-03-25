@@ -45,14 +45,14 @@ discard-irrelevant-pm-records:
             'The newest 15min periodEndTime seen during previous runs (or the default value)
             15min PM records not newer than the initial timestamp value are to be discarded,
             from {$input#/offset/most-recent-period-end-time}
-            overwritten by {$updateOffset.output#/most-recent-period-end-time}
+            overwritten by {$updateOffset.output#/most-recent-period-end-time}'
         most-recent-period-end-time-24:
           type: string
           description: >
             'The newest 24h periodEndTime seen during previous runs (or default value).
             24h PM records not newer than the initial timestamp value are to be discarded,
             from {$input#/offset/most-recent-period-end-time-24}
-            overwritten by {$updateOffset.output#/most-recent-period-end-time-24}
+            overwritten by {$updateOffset.output#/most-recent-period-end-time-24}'
 
     filtered-historical-performance-data-list:
       type: array
