@@ -5,13 +5,13 @@ title
   p2LoadRawCc
 end title
 
-participant "p1ProcessDevice\n" as requestor
+participant "p2ProcessDevice\n" as requestor
 participant "p2LoadRawCc\n" as cur
 database "MWDI ES Replica" as MwdiEs
 participant "p1FieldsFilter\n" as fieldsFilter
 participant "p2DiscardIrrelevant\nPmRecords" as filterPm
 
-requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n{offset} }
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
 activate cur
 
   note over cur
@@ -31,6 +31,14 @@ activate cur
   loop FOR all [/raw-cc/logical-termination-point]
 
     note over cur
+      Set [/load-raw-cc/function-name] = p2DiscardIrrelevantRecords
+      IF not existing
+        [/offsets/functionName=p2DiscardIrrelevantRecords]
+      THEN initialize for this functionName:
+        [/load-raw-cc/offset]
+    end note
+
+    note over cur
       IF layerProtocolName == AirInterface
     end note
 
@@ -38,7 +46,7 @@ activate cur
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    cur -> filterPm: { [historicalPerformanceDataList],\n[/offsets/functionName=p2DiscardIrrelevantPmRecords] }
     activate filterPm
     note over filterPm
       Discards records that are
@@ -60,25 +68,26 @@ activate cur
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    cur -> filterPm: { [historicalPerformanceDataList],\n[/offsets/functionName=p2DiscardIrrelevantPmRecords] }
     activate filterPm
     note over filterPm
       Discards records that are
       already processed from
       historicalPerformanceDataList
     end note
-    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n[offset] }
     deactivate filterPm
 
     note right cur
       updateOffset for this interface
       with mostRecentPeriodEndTime and
       mostRecentPeriodEndTime24 in this batch
+      in [/load-raw-cc/offsets]
     end note
 
   end loop
 
-requestor <-- cur: { {rawCc},\n{offset} }
+requestor <-- cur: { {rawCc},\n[offsets] }
 deactivate cur
 
 @enduml

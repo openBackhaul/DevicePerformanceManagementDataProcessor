@@ -28,9 +28,25 @@ x-javascript-interface:
                 type: string
                 description: 'mountName of the device for which ControlConstruct data shall be read'
                 mount-name: '100250001'
-              offset:
-                type: object
-                description: 'Offset object for this function'
+              offsets:
+                type: array
+                x-key: function-name
+                items:
+                  type: object
+                  required:
+                    - function-name
+                    - offset
+                  properties:
+                    function-name:
+                      type: string
+                    offset:
+                      # currently only 1 offset type, but additional ones possible in the future
+                      oneOf:
+                        type: object
+                        description: 'Offset for functionName=p2DiscardIrrelevantPmRecords'
+                        interface-offsets:
+                          type: array
+
     output:
       success:
         description: 'rawCc loaded'
@@ -66,9 +82,6 @@ x-javascript-interface:
                 - 'mountName invalid'
                 - 'rawCc could not be provided'
                 - 'General processing error'
-
-
-
     processing:
       readControlConstructFromReplica:
         url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
@@ -137,6 +150,8 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
+
+
       p2DiscardIrrelevantPmRecords:
         input:
           required: true

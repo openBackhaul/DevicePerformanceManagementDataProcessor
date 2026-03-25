@@ -5,6 +5,7 @@ load-raw-cc:
     - mwdi-replica-es-client
     - data-store-es-client
     - mount-name
+    - offsets
   properties:
     parameters:
       type: object
@@ -21,22 +22,13 @@ load-raw-cc:
       description: >
         'MountName
         from {$input#/mount-name}'
-    offset:
-      type: object
+    offsets:
+      type: array
+      x-key: functionName
       description: >
-        'Offset object
-        from {$input#/offset}'
-      properties:
-        mostRecentPeriodEndTime:
-          type: string
-          description: >
-            'Timestamp indicating the most recent period end time for 15min PM data
-            overwritten by {$p2DiscardIrrelevantPmRecords.output#/most-recent-period-end-time}'
-        mostRecentPeriodEndTime24:
-          type: string
-          description: >
-            'Timestamp indicating the most recent period end time for 24h PM data
-            overwritten by {$p2DiscardIrrelevantPmRecords.output#/most-recent-period-end-time-24}'
+        'Offsets array
+        from {$input#/offsets}'
+
     mwdi-replica-url:
       type: string
       description: >
@@ -511,3 +503,63 @@ load-raw-cc:
           description: >
             'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
             from {$addBatchTimestamp.output#/batch-timestamp}'
+
+    interface-offsets:
+      type: array
+      x-key: uuid
+      description: >
+        'The interface-offsets array for functionName=p2DiscardIrrelevantRecords, if existing
+        from [/load-raw-cc/offsets/function-name=p2DiscardIrrelevantRecords/interface-offsets],
+        if not existing and empty array is initialized for this functionName.
+        Items added by {} for new uuids,
+        Items overwritten by {} for existing uuids.'
+      items:
+        type: object
+        properties:
+          required:
+            - uuid
+            - most-recent-period-end-time
+            - most-recent-period-end-time-24
+          properties:
+            uuid:
+              type: string
+            most-recent-period-end-time:
+              type: string
+            most-recent-period-end-time-24:
+              type: string
+
+
+
+    offset:
+      description: >
+        'The offset of the currently processed interface (ltp) for functionName p2DiscardIrrelevantRecords.
+        from [/load-raw-cc/interface-offsets={/load-raw-cc/raw-cc/logical-termination-point[n]}].
+        If not existing offset is initialized.'
+      type: object
+      required:
+        - uuid
+        - most-recent-period-end-time
+        - most-recent-period-end-time-24
+      properties:
+        uuid:
+          type: string
+          description: >
+            'uuid
+            from [/load-raw-cc/interface-offsets/uuid] (existing), or
+            from [/load-raw-cc/raw-cc/logical-termination-point[n]] of the currently processed ltp, if initialized'
+        most-recent-period-end-time:
+          type: string
+          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+          description: >
+            'mostRecentPeriodEndTime
+            from [/load-raw-cc/interface-offsets[n]/most-recent-period-end-time] if existing,
+            initial value: {2010-11-20T14:00:00+01:00} otherwise'
+        most-recent-period-end-time-24:
+          type: string
+          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+          description: >
+            'mostRecentPeriodEndTime24
+            from [/load-raw-cc/interface-offsets[n]/most-recent-period-end-time-24] if existing,
+            initial value: {2010-11-20T14:00:00+01:00} otherwise'
+
+
