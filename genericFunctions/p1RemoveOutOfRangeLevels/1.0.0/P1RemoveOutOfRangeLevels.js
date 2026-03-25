@@ -14,76 +14,98 @@ function checkOutOfRange(value, isTX) {
 }
 
 const p1RemoveOutOfRangeLevels = (input) => {
-  parameterStruct = input["parameters"];
-  const performanceData = input["performance-data"];
+  try {
+    parameterStruct = input["parameters"];
+    const performanceData = input["performance-data"];
 
-  // Check paramenters
-  if (!parameterStruct) {
-    return "parameters not provided";
-  } else {
+    // Check paramenters
+    if (!parameterStruct) {
+      return "parameters not provided";
+    } else {
 
-    if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "number") {
-      return "parameters invalid";
+      if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "number") {
+        return "parameters invalid";
+      }
+
+      if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "number") {
+        return "parameters invalid";
+      }
+
+      if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "number") {
+        return "parameters invalid";
+      }
+
+      if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "number") {
+        return "parameters invalid";
+      }
     }
 
-    if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "number") {
-      return "parameters invalid";
+    if (!performanceData) {
+      return "performanceData not provided";
+    } else {
+
+      // TX
+      if (performanceData["tx-level-min"] == undefined || typeof performanceData["tx-level-min"] != "number") {
+        return "performanceData invalid";
+      }
+
+      if (performanceData["tx-level-max"] == undefined || typeof performanceData["tx-level-max"] != "number") {
+        return "performanceData invalid";
+      }
+
+      if (performanceData["tx-level-avg"] == undefined || typeof performanceData["tx-level-avg"] != "number") {
+        return "performanceData invalid";
+      }
+
+      // RX
+      if (performanceData["rx-level-min"] == undefined || typeof performanceData["rx-level-min"] != "number") {
+        return "performanceData invalid";
+      }
+
+      if (performanceData["rx-level-max"] == undefined || typeof performanceData["rx-level-max"] != "number") {
+        return "performanceData invalid";
+      }
+
+      if (performanceData["rx-level-avg"] == undefined || typeof performanceData["rx-level-avg"] != "number") {
+        return "performanceData invalid";
+      }
     }
 
-    if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "number") {
-      return "parameters invalid";
+    let performanceDataClean = performanceData;  // Initializate return value
+
+    // TX Data
+    if (!checkOutOfRange(performanceData["tx-level-min"], true)) {
+      delete performanceDataClean["tx-level-min"];
     }
 
-    if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "number") {
-      return "parameters invalid";
+    if (!checkOutOfRange(performanceData["tx-level-max"], true)) {
+      delete performanceDataClean["tx-level-min"];
     }
+
+    if (!checkOutOfRange(performanceData["tx-level-avg"], true)) {
+      delete performanceDataClean["tx-level-min"];
+    }
+
+    // RX Data
+    if (!checkOutOfRange(performanceData["rx-level-min"], false)) {
+      delete performanceDataClean["tx-level-min"];
+    }
+
+    if (!checkOutOfRange(performanceData["rx-level-max"], false)) {
+      delete performanceDataClean["tx-level-min"];
+    }
+
+    if (!checkOutOfRange(performanceData["rx-level-avg"], false)) {
+      delete performanceDataClean["tx-level-min"];
+    }
+
+    return {
+      "performance-data": performanceDataClean
+    }
+  } catch (e) {
+    return "General processing error";
   }
 
-  if (!performanceData) {
-    return "performanceData not provided";
-  } else {
-
-  }
-
-  let performanceDataClean = performanceData;  // Initializate return value
-
-  // TX Data
-  if (!checkOutOfRange(performanceData["tx-level-min"], true)) {
-    delete performanceDataClean["tx-level-min"];
-  }
-
-  if (!checkOutOfRange(performanceData["tx-level-max"], true)) {
-    delete performanceDataClean["tx-level-min"];
-  }
-
-  if (!checkOutOfRange(performanceData["tx-level-avg"], true)) {
-    delete performanceDataClean["tx-level-min"];
-  }
-
-  // RX Data
-  if (!checkOutOfRange(performanceData["rx-level-min"], false)) {
-    delete performanceDataClean["tx-level-min"];
-  }
-
-  if (!checkOutOfRange(performanceData["rx-level-max"], false)) {
-    delete performanceDataClean["tx-level-min"];
-  }
-
-  if (!checkOutOfRange(performanceData["rx-level-avg"], false)) {
-    delete performanceDataClean["tx-level-min"];
-  }
-
-
-  // TODO Manage the errors
-  // enum:
-
-  //   - 'performanceData not provided'
-  //   - 'performanceData invalid'
-  //   - 'General processing error'
-
-  return {
-    "performance-data": performanceDataClean
-  }
 }
 
 module.exports = p1RemoveOutOfRangeLevels;

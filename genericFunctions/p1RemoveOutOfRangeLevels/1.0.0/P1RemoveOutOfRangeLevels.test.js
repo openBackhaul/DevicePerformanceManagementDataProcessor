@@ -55,6 +55,33 @@ const performanceStruct2 = {
   "time-period": 100
 }
 
+const wrongPerformanceStruct1 = {
+  "es": 0,
+  "ses": 0,
+  "cses": 0,
+  "unavailability": 0,
+  "tx-level-min": 5,
+  // "tx-level-max": 200,
+  "tx-level-avg": 50,
+  "rx-level-min": 1000,
+  "rx-level-max": 100000,
+  "rx-level-avg": 5000,
+  "time-xstates-list": [
+    {"transmission-mode": "A"},
+    {"transmission-mode": "B"},
+    {"transmission-mode": "C"},
+  ],
+  "interval-capacity": 0,
+  "snir-min": 0,
+  "snir-max": 0,
+  "snir-avg": 0,
+  "xpd-min": 0,
+  "xpd-max": 0,
+  "xpd-avg": 0,
+  "defect-blocks-sum": 0,
+  "time-period": 100
+}
+
 const parameterStruct1 = {
   "lower-tx-level-limit": 10,   // Lower bound of valid values of the transmit level
   "upper-tx-level-limit": 100,   // Upper bound of valid values of the transmit level
@@ -155,6 +182,15 @@ describe('p1RemoveOutOfRangeLevels', () => {
       "parameters": parameterStruct1
     }))
     .toBe("performanceData not provided");
+  });
+
+
+  test('Missing some property of performance', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": wrongPerformanceStruct1,
+      "parameters": parameterStruct1
+    }))
+    .toBe("performanceData invalid");
   });
 // Test end
 });
