@@ -1,0 +1,51 @@
+@startuml p1Storing
+skinparam responseMessageBelowArrow true
+
+title
+  p1Storing
+end title
+
+participant "p1ProcessDevice\n" as requestor
+participant "p1Storing\n" as cur
+database "DataStore" as ds
+
+
+requestor -> cur : { {dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+activate cur
+
+  note over cur
+    Locks device
+    in DataStore
+  end note
+  cur -> ds: mountName
+
+  note over cur
+    storeOffsets
+  end note
+  cur -> ds: { [offsets] }
+  cur <-- ds
+
+  note over cur
+    storeStatusData
+  end note
+  cur -> ds: { [statusData] }
+  cur <-- ds
+
+  note over cur
+    storeResultCc
+    in resultData
+  end note
+  cur -> ds: { {batch} }
+  cur <-- ds
+
+  note over cur
+    Unlocks device
+    in DataStore
+  end note
+  cur -> ds: mountName
+
+requestor <-- cur
+
+deactivate cur
+
+@enduml
