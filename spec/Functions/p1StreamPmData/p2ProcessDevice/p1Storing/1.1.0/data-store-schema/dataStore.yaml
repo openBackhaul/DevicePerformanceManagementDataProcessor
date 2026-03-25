@@ -1,0 +1,70 @@
+data-store:
+  type: object
+  required:
+    - device
+  properties:
+    device:
+      type: array
+      x-key: mount-name
+      items:
+        type: object
+        required:
+          - mount-name
+          - offsets
+          - status-data
+          - result-data
+        properties:
+          mount-name:
+            type: string
+            description: >
+              'mountName
+              instance to be created during storing, if not existing
+              from [ {$storeInterfaceMetadataList.url#device} or {$storeResultCc.url#device} ]'
+          offsets:
+            type: array
+            x-key: function-name
+            items:
+              type: object
+              required:
+                - function-name
+                - offset
+              properties:
+                function-name:
+                  type: string
+                  description: >
+                    'functionName
+                    instance to be created during storing, if not existing
+                    from {$p1Storing.input/offsets[*]/function-name}'
+                offset:
+                  type: object
+                  description: >
+                    'offset
+                    from {$p1Storing.input/offsets[*]/offset}'
+          status-data:
+            type: array
+            x-key: function-name
+            items:
+              type: object
+              required:
+                - function-name
+                - status
+              properties:
+                function-name:
+                  type: string
+                  description: >
+                    'functionName
+                    instance to be created during storing, if not existing
+                    from {$p1Storing.input/status-data[*]/function-name}'
+                status:
+                  type: object
+                  description: >
+                    'status
+                    from {$p1Storing.input/status-data[*]/status}'
+          result-data:
+            type: array
+            x-key: batch-timestamp
+            items:
+              type: object
+              description: >
+                'batch
+                from [/storing/batch]'

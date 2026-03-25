@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: p1Storing
+  version: 1.1.0
+
+x-javascript-interface:
+  p1Storing:
+    summary: 'Stores the resultCc in the dataStore and updates dataStore offset and statusData information.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data-store-es-client
+              - result-cc
+              - offsets
+              - status-data
+            properties:
+              data-store-es-client:
+                type: object
+                description: >
+                  'DataStore ElasticSearch address'
+              result-cc:
+                type: object
+                description: >
+                  'The resultCc to be stored in result-data'
+              offsets:
+                type: array
+                description: >
+                  'offsets'
+              status-data:
+                description: >
+                  'statusData'
+    output:
+      success:
+        description: 'resultCc stored'
+      error:
+        description: 'resultCc could not be stored'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'offsets not provided'
+                - 'offsets invalid'
+                - 'statusData not provided'
+                - 'statusData invalid'
+                - 'resultData could not be stored'
+                - 'offsets could not be stored'
+                - 'statusData could not be stored'
+                - 'General processing error'
+    processing:
+      lockDevice:
+        url:  # [{/storing/data-store-url}]
+          description: >
+            'Parallel maintenance of a device shall be prevented'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be locked
+                        from [/storing/mount-name]'
+          output:
+            success:
+              description: 'Device locked'
+            error:
+              description: 'Device could not be locked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch lock error'
+                      - 'General processing error'
+      storeOffsets:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/offsets]
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: array
+                x-key: function-name
+                description: >
+                  'Performs a write operation on the offsets array in the dataStore.
+                  The offsets array handed over can contain multiple offset objects [/storing/offsets/offset] for different functionNames [/storing/offsets/function-name].
+                  Offsets array elements for functionNames already existing in the [/data-store/device={/storing/mount-name}/offsets]
+                  are overwritten, for non-existing functionNames a new record is added to the offsets array. Data to be written is coming
+                  from [/storing/offsets]'
+        output:
+          success:
+            description: 'Offsets stored'
+          error:
+            description: 'Offsets could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'offsets not provided'
+                    - 'offsets invalid'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+      status-data:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/status-data]
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: array
+                x-key: function-name
+                description: >
+                  'Performs a write operation on the statusData array in the dataStore.
+                  The statusData array handed over can contain multiple status objects [/storing/status-data/status] for different functionNames [/storing/status-data/function-name].
+                  StatusData array elements for functionNames already existing in the [/data-store/device={/storing/mount-name}/status-data]
+                  are overwritten, for non-existing functionNames a new record is added to the status-data array. Data to be written is coming
+                  from [/storing/status-data]'
+        output:
+          success:
+            description: 'StatusData stored'
+          error:
+            description: 'StatusData could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'statusData not provided'
+                    - 'statusData invalid'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+      storeResultCc:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/result-data={/storing/batch-timestamp}]
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >
+                  'Writes the entire batch as a block
+                  assuming that the value of the batchTimestamp is always unique, a new entry is created with every storing operation
+                  from [/storing/batch]'
+        output:
+          success:
+            description: 'resultCc stored'
+          error:
+            description: 'resultCc could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'batchTimestamp not provided'
+                    - 'batchTimestamp invalid'
+                    - 'resultCc not provided'
+                    - 'Writing to dataStore failed'
+                    - 'General processing error'
+      unlockDevice:
+        url:  # [{/storing/data-store-url}]
+          description: >
+            'Maintenance of a device shall be enabled again'
+          input:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - mount-name
+                  properties:
+                    mount-name:
+                      type: string
+                      description: >
+                        'mountName of the device that shall be unlocked
+                        from [/storing/mount-name]'
+          output:
+            success:
+              description: 'Device unlocked'
+            error:
+              description: 'Device could not be unlocked'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'ElasticSearch unlock error'
+                      - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
