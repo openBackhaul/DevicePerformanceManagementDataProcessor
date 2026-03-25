@@ -1,4 +1,5 @@
 const p1RemoveOutOfRangeTemperature = require('./P1RemoveOutOfRangeTemperature');
+const ERRORS = require('./ErrorsEnum');
 
 const equipmentDataSIAE = [
   {
@@ -27,7 +28,40 @@ const equipmentDataSIAE = [
       "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
       "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
       "physical-properties": {
-        "temperature": "38"
+        "temperature": "70"
+      },
+    }
+  },
+];
+
+const wrongEquipmentDataSIAE = [
+  {
+    "uuid": "AGS-20 IDU",
+    "is-field-replaceable": false,
+    "local-id": "AGS-20 Dual-IF 16xE1 XG",
+    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+    "actual-equipment": {
+      "local-id": "513250006+",
+      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+      "physical-properties": {
+        "temperature": "32"
+      },
+    },
+  },
+  {
+    "uuid": "LAN-1 SFP",
+    "is-field-replaceable": true,
+    "local-id": "LAN-1 SFP",
+    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+    "actual-equipment": {
+      "local-id": "513250006+",
+      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+      "physical-properties": {
+        "temperature": 2
       },
     }
   },
@@ -61,57 +95,69 @@ const wrongParameterStruct4 = {
 
 describe('p1RemoveOutOfRangeTemperature', () => {
 
-  // test('All levels are ok', () => {
-  //   expect(p1RemoveOutOfRangeTemperature({
-  //       "equipment": equipmentDataSIAE,
-  //       "parameters": parameterStruct1
-  //   }))
-  //   .toMatchObject({
-  //     "performance-data": equipmentDataSIAE
-  //     });
-  // });
+  test('All levels are ok', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+        "equipment": equipmentDataSIAE,
+        "parameters": parameterStruct1
+    }))
+    .toMatchObject({
+      "equipment": equipmentDataSIAE
+    });
+  });
 
-  // test('Remove some levels', () => {
-  //   expect(p1RemoveOutOfRangeTemperature({
-  //     "performance-data": performanceStruct2,
-  //     "parameters": parameterStruct1
-  //   }))
-  //   .toMatchObject({
-  //     "performance-data": {
-  //       "es": 0,
-  //       "ses": 0,
-  //       "cses": 0,
-  //       "unavailability": 0,
-  //       // "tx-level-min": 5,
-  //       "tx-level-max": 200,
-  //       "tx-level-avg": 50,
-  //       "rx-level-min": 1000,
-  //     //   "rx-level-max": 100000,
-  //       "rx-level-avg": 5000,
-  //       "time-xstates-list": [
-  //         {"transmission-mode": "A"},
-  //         {"transmission-mode": "B"},
-  //         {"transmission-mode": "C"},
-  //       ],
-  //       "interval-capacity": 0,
-  //       "snir-min": 0,
-  //       "snir-max": 0,
-  //       "snir-avg": 0,
-  //       "xpd-min": 0,
-  //       "xpd-max": 0,
-  //       "xpd-avg": 0,
-  //       "defect-blocks-sum": 0,
-  //       "time-period": 100
-  //     }
-  //   });
-  // });
+  test('Equipment not provided', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+        // "equipment": wrongEquipmentDataSIAE,
+        "parameters": parameterStruct1
+    }))
+    .toBe(ERRORS.EQUIP_NOT_PROVIDED);
+  });
 
+  test('Equipment not provided2', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+        "equipment": undefined,
+        "parameters": parameterStruct1
+    }))
+    .toBe(ERRORS.EQUIP_NOT_PROVIDED);
+  });
+
+  test('Equipment not provided3', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+        "equipment": null,
+        "parameters": parameterStruct1
+    }))
+    .toBe(ERRORS.EQUIP_NOT_PROVIDED);
+  });
+
+  test('Eqp KO', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+        "equipment": wrongEquipmentDataSIAE,
+        "parameters": parameterStruct1
+    }))
+    .toBe(ERRORS.EQUIP_INVALID);
+  });
 
   test('Missing parameters', () => {
     expect(p1RemoveOutOfRangeTemperature({
       "equipment": equipmentDataSIAE,
     }))
-    .toBe("parameters not provided");
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+  });
+
+  test('Missing parameters2', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+      "equipment": equipmentDataSIAE,
+      "parameters": null
+    }))
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+  });
+
+  test('Missing parameters3', () => {
+    expect(p1RemoveOutOfRangeTemperature({
+      "equipment": equipmentDataSIAE,
+      "parameters": undefined
+    }))
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Missing some property of parameters', () => {
@@ -119,7 +165,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       "performance-data": equipmentDataSIAE,
       "parameters": wrongParameterStruct1
     }))
-    .toBe("parameters invalid");
+    .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('Missing some property of parameters', () => {
@@ -127,7 +173,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       "performance-data": equipmentDataSIAE,
       "parameters": wrongParameterStruct2
     }))
-    .toBe("parameters invalid");
+    .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('String on property of parameters', () => {
@@ -135,7 +181,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       "performance-data": equipmentDataSIAE,
       "parameters": wrongParameterStruct3
     }))
-    .toBe("parameters invalid");
+    .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('String on property of parameters 2', () => {
@@ -143,24 +189,9 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       "performance-data": equipmentDataSIAE,
       "parameters": wrongParameterStruct4
     }))
-    .toBe("parameters invalid");
+    .toBe(ERRORS.PARAM_INVALID);
   });
 
-  //  test('Missing performance data', () => {
-  //   expect(p1RemoveOutOfRangeLevels({
-  //     "parameters": parameterStruct1
-  //   }))
-  //   .toBe("performanceData not provided");
-  // });
-
-
-  // test('Missing some property of performance', () => {
-  //   expect(p1RemoveOutOfRangeLevels({
-  //     "equipment": wrongPerformanceStruct1,
-  //     "parameters": parameterStruct1
-  //   }))
-  //   .toBe("performanceData invalid");
-  // });
 // Test end
 });
 

@@ -1,17 +1,6 @@
+const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct;
-
-// function checkOutOfRange(value, isTX) {
-
-//   let min = isTX ? parameterStruct["lower-tx-level-limit"] : parameterStruct["lower-rx-level-limit"];
-//   let max = isTX ? parameterStruct["upper-tx-level-limit"] : parameterStruct["upper-rx-level-limit"];
-
-//   if (value < min || value > max ) {
-//     return false;
-//   }
-
-//   return true;
-// }
 
 const p1RemoveOutOfRangeTemperature = (input) => {
   try {
@@ -20,55 +9,87 @@ const p1RemoveOutOfRangeTemperature = (input) => {
 
     // Check paramenters
     if (!parameterStruct) {
-      return "parameters not provided";
+      return ERRORS.PARAM_NOT_PROVIDED;
     } else {
 
       if (parameterStruct["lower-temperature-limit"] == undefined || typeof parameterStruct["lower-temperature-limit"] != "number") {
-        return "parameters invalid";
+        return ERRORS.PARAM_INVALID;
       }
 
       if (parameterStruct["upper-temperature-limit"] == undefined || typeof parameterStruct["upper-temperature-limit"] != "number") {
-        return "parameters invalid";
+        return ERRORS.PARAM_INVALID;
       }
     }
 
     if (!equipmentsArray) {
-      return "equipment not provided";
+      return ERRORS.EQUIP_NOT_PROVIDED
     } else {
-      // for(let equipment in equipmentsArray) {
-      //   console.log(equipment);
+      for (let i=0; i < equipmentsArray.length; i++) {
+        if (equipmentsArray[i]) {
+          const equipData = equipmentsArray[i];
+
+          if ((equipData["uuid"] == undefined) ||
+            (equipData["uuid"] != undefined && typeof equipData["uuid"] != "string")) {
+            return ERRORS.EQUIP_INVALID;
+          }
+
+          if ((equipData["actual-equipment"] == undefined) ||
+             (equipData["actual-equipment"] != undefined && typeof equipData["actual-equipment"] != "object")) {
+            return ERRORS.EQUIP_INVALID;
+          }
+
+          const actualEqp = equipData["actual-equipment"];
+          if ((actualEqp["local-id"] == undefined) ||
+            (actualEqp["local-id"] != undefined && typeof actualEqp["local-id"] != "string")) {
+            return ERRORS.EQUIP_INVALID;
+          }
+
+          const physicalProps = actualEqp["physical-properties"];
+          if ((physicalProps == undefined) ||
+            (physicalProps != undefined && typeof physicalProps != "object")) {
+            return ERRORS.EQUIP_INVALID;
+          }
+
+          if ((physicalProps["temperature"] == undefined) ||
+            (physicalProps["temperature"] != undefined && typeof physicalProps["temperature"] != "string")) {
+            return ERRORS.EQUIP_INVALID;
+          }
+        } else {
+          return ERRORS.EQUIP_INVALID;
+        }
+      }
+    }
+
+    // Check values
+    let lowParam = parameterStruct["lower-temperature-limit"].valueOf();
+    let highParam = parameterStruct["upper-temperature-limit"].valueOf();
+
+    // console.log(lowParam);
+    // console.log(highParam);
+    let equipClean = equipmentsArray;
+    // console.log(equipClean);
+    for (let i=0; i<equipClean.length; i++) {
+      // console.log(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"].valueOf());
+      if (lowParam > equipClean[i]["actual-equipment"]["physical-properties"]["temperature"].valueOf() ||
+        highParam < equipClean[i]["actual-equipment"]["physical-properties"]["temperature"].valueOf()) {
+        // console.log("I need to delete something");
+        delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
+        // console.log(equipClean[i]["actual-equipment"]);
+      }
+      //  else {
+      //   console.log(equipClean[i]["actual-equipment"]);
+      //   console.log("nothing to delete");
       // }
     }
 
-  //      {
-  //   "uuid": "AGS-20 IDU",
-  //   "is-field-replaceable": false,
-  //   "local-id": "AGS-20 Dual-IF 16xE1 XG",
-  //   "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-  //   "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-  //   "actual-equipment": {
-  //     "local-id": "513250006+",
-  //     "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-  //     "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-  //     "physical-properties": {
-  //       "temperature": "32"
-  //     },
-  //   },
-  // },
-
-    // let performanceDataClean = performanceData;  // Initializate return value
-
-
+    // console.log(equipClean);
     return {
-      "performance-data": performanceDataClean
+      "equipment": equipClean
     }
   } catch (e) {
-    return "General processing error";
+    return ERRORS.GENERAL_ERROR;
   }
 
 }
 
 module.exports = p1RemoveOutOfRangeTemperature;
-
-  // - 'equipment invalid'
-  // - 'General processing error'
