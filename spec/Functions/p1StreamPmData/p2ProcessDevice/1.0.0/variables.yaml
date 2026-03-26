@@ -1,1 +1,75 @@
-#TODO
+process-device:
+  type: object
+  required:
+    - mount-name
+    - parameters
+    - config-file
+    - mwdi-replica-es-client
+    - data-store-es-client
+  properties:
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+    mwdi-replica-es-client:
+      type: object
+      description: >
+        'MWDI Replica ElasticSearch address
+        from {$input#/mwdi-replica-es-client}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+
+    offsets:
+      type: array
+      description: >
+        'The offsets
+        from {$p1LoadOffsetsAndStatusData.output#/offsets}'
+    status-data:
+      type: array
+      description: >
+        'The statusData
+        from {$p1LoadOffsetsAndStatusData.output/#status-data}'
+    raw-cc:
+      type: object
+      description: >
+        'The raw control construct data read from ES, following ONF structure.
+        Only relevant classes and attributes listed.
+        from {$p1LoadRawCc.output#/raw-cc}'
+    result-cc:
+      type: object
+      description: >
+        'The result control construct data created from the raw control construct data, following ONF structure.
+        from {$p1CreateResultCc.output#/result-cc}'
+    output-format:
+      type: array
+      x-key: format-name
+      items:
+        type: object
+        required:
+          - format-name
+          - output-format
+        properties:
+          format-name:
+            type: string
+            description: >
+              'Name of the output format
+              from [{$p1FormattingOutputApt.output#/format-name} or {$p1FormattingOutputOnf.output#/format-name}]'
+          output-format:
+            type: object
+            description: >
+              'outputFormat
+              from [{$p1FormattingOutputApt.output#/output-format} or {$p1FormattingOutputOnf.output#/output-format}]'

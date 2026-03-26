@@ -9,7 +9,7 @@ participant "p1StreamPmData\n" as requestor
 participant "p2ProcessDevice\n" as cur #LightSalmon
 participant "p1LoadOffsets\nAndStatusData" as p1Offset #LightSalmon
 participant "p2LoadRawCc\n" as p2AddRaw #LightSalmon
-participant "p2CreateResultCc\n" as p2CreateResCc #LightCyan
+participant "p2CreateResultCc\n" as p2CreateResCc #LightSalmon
 participant "p1Formatting\nOutputApt" as p1OutputApt
 participant "p1Formatting\nOutputOnf" as p1OutputOnf
 participant "p1Transmitting\nKafka" as p1Trans
