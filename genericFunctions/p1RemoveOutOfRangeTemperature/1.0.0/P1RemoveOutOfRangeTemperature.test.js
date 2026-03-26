@@ -34,6 +34,40 @@ const equipmentDataSIAE = [
   },
 ];
 
+const equipmentDataSIAEResult = [
+  {
+    "uuid": "AGS-20 IDU",
+    "is-field-replaceable": false,
+    "local-id": "AGS-20 Dual-IF 16xE1 XG",
+    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+    "actual-equipment": {
+      "local-id": "513250006+",
+      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+      "physical-properties": {
+        "temperature": "32"
+      },
+    },
+  },
+  {
+    "uuid": "LAN-1 SFP",
+    "is-field-replaceable": true,
+    "local-id": "LAN-1 SFP",
+    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+    "actual-equipment": {
+      "local-id": "513250006+",
+      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
+      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
+      "physical-properties": {
+        // "temperature": "70"
+      },
+    }
+  },
+];
+
+
 const wrongEquipmentDataSIAE = [
   {
     "uuid": "AGS-20 IDU",
@@ -69,28 +103,28 @@ const wrongEquipmentDataSIAE = [
 
 // Paramenters Struct
 const parameterStruct1 = {
-  "lower-temperature-limit": 10,
-  "upper-temperature-limit": 100,
+  "lower-temperature-limit": "10",
+  "upper-temperature-limit": "100",
 }
 
 const wrongParameterStruct1 = {
-  "lower-temperature-limit": 10,
-  // "upper-temperature-limit": 100,
+  "lower-temperature-limit": "10",
+  // "upper-temperature-limit": "100",
 }
 
 const wrongParameterStruct2 = {
-  // "lower-temperature-limit": 10,
-  "upper-temperature-limit": 100,
+  // "lower-temperature-limit": "10",
+  "upper-temperature-limit": "100",
 }
 
 const wrongParameterStruct3 = {
   "lower-temperature-limit": "xyz",
-  "upper-temperature-limit": 100,
+  "upper-temperature-limit": "100",
 }
 
 const wrongParameterStruct4 = {
   "lower-temperature-limit": 10,
-  "upper-temperature-limit": "100",
+  "upper-temperature-limit": 100,
 }
 
 describe('p1RemoveOutOfRangeTemperature', () => {

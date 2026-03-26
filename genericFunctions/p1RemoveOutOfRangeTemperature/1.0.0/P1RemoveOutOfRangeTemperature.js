@@ -2,6 +2,11 @@ const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct;
 
+// DAMN JavaScript
+function isThisNaN(value) {
+  return value !== value
+};
+
 const p1RemoveOutOfRangeTemperature = (input) => {
   try {
     parameterStruct = input["parameters"];
@@ -12,11 +17,19 @@ const p1RemoveOutOfRangeTemperature = (input) => {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
 
-      if (parameterStruct["lower-temperature-limit"] == undefined || typeof parameterStruct["lower-temperature-limit"] != "number") {
+      if (parameterStruct["lower-temperature-limit"] == undefined || typeof parameterStruct["lower-temperature-limit"] != "string") {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct["upper-temperature-limit"] == undefined || typeof parameterStruct["upper-temperature-limit"] != "number") {
+      if (parameterStruct["upper-temperature-limit"] == undefined || typeof parameterStruct["upper-temperature-limit"] != "string") {
+        return ERRORS.PARAM_INVALID;
+      }
+
+      let lowParam = parseInt(parameterStruct["lower-temperature-limit"]);
+      let highParam = parseInt(parameterStruct["upper-temperature-limit"]);
+
+      // Check if is Number or also NaN
+      if ((typeof lowParam != "number" || isThisNaN(lowParam)) || (typeof highParam != "number" || isThisNaN(highParam))) {
         return ERRORS.PARAM_INVALID;
       }
     }
@@ -61,28 +74,19 @@ const p1RemoveOutOfRangeTemperature = (input) => {
     }
 
     // Check values
-    let lowParam = parameterStruct["lower-temperature-limit"].valueOf();
-    let highParam = parameterStruct["upper-temperature-limit"].valueOf();
+    let lowParam = parseInt(parameterStruct["lower-temperature-limit"]);
+    let highParam = parseInt(parameterStruct["upper-temperature-limit"]);
 
-    // console.log(lowParam);
-    // console.log(highParam);
-    let equipClean = equipmentsArray;
-    // console.log(equipClean);
-    for (let i=0; i<equipClean.length; i++) {
-      // console.log(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"].valueOf());
-      if (lowParam > equipClean[i]["actual-equipment"]["physical-properties"]["temperature"].valueOf() ||
-        highParam < equipClean[i]["actual-equipment"]["physical-properties"]["temperature"].valueOf()) {
-        // console.log("I need to delete something");
+    let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
+
+    for (let i=0; i < equipClean.length; i++) {
+      if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
+        highParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
+
         delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
-        // console.log(equipClean[i]["actual-equipment"]);
       }
-      //  else {
-      //   console.log(equipClean[i]["actual-equipment"]);
-      //   console.log("nothing to delete");
-      // }
     }
 
-    // console.log(equipClean);
     return {
       "equipment": equipClean
     }
