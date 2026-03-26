@@ -73,7 +73,7 @@ const p1RemoveOutOfRangeLevels = (input) => {
       }
     }
 
-    let performanceDataClean = performanceData;  // Initializate return value
+    let performanceDataClean = JSON.parse(JSON.stringify(performanceData)); // Initializate return value
 
     // TX Data
     if (!checkOutOfRange(performanceData["tx-level-min"], true)) {
