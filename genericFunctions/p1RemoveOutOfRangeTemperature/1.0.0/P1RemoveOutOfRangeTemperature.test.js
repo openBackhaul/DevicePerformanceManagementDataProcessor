@@ -127,6 +127,11 @@ const wrongParameterStruct4 = {
   "upper-temperature-limit": 100,
 }
 
+const parameterStructWithLowUpperLimit = {
+  "lower-temperature-limit": 10,
+  "upper-temperature-limit": 50,
+}
+
 describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('All levels are ok', () => {
@@ -227,6 +232,76 @@ describe('p1RemoveOutOfRangeTemperature', () => {
   });
 
 // Test end
+
+  test('Should remove out of range temperature (upper limit exceeded)', () => {
+    const inputEquipment = [
+      {
+        "uuid": "LAN-1 SFP",
+        "local-id": "LAN-1 SFP",
+        "actual-equipment": {
+          "local-id": "513250006+",
+          "physical-properties": {
+            "temperature": "70"
+          },
+        },
+      },
+    ];
+
+    const result = p1RemoveOutOfRangeTemperature({
+      "equipment": inputEquipment,
+      "parameters": parameterStructWithLowUpperLimit
+    });
+
+    expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
+  });
+
+  test('Should NOT mutate original equipment array - MUTATION BUG DETECTION', () => {
+    const originalEquipment = [
+      {
+        "uuid": "LAN-1 SFP",
+        "local-id": "LAN-1 SFP",
+        "actual-equipment": {
+          "local-id": "513250006+",
+          "physical-properties": {
+            "temperature": "70"
+          },
+        },
+      },
+    ];
+
+    const inputCopy = JSON.parse(JSON.stringify(originalEquipment));
+
+    p1RemoveOutOfRangeTemperature({
+      "equipment": originalEquipment,
+      "parameters": parameterStructWithLowUpperLimit
+    });
+
+    expect(originalEquipment[0]["actual-equipment"]["physical-properties"]["temperature"]).toBe("70");
+  });
+
+  test('Should NOT mutate original equipment when no removal needed - MUTATION BUG DETECTION', () => {
+    const originalEquipment = [
+      {
+        "uuid": "AGS-20 IDU",
+        "local-id": "AGS-20 Dual-IF 16xE1 XG",
+        "actual-equipment": {
+          "local-id": "513250006+",
+          "physical-properties": {
+            "temperature": "32"
+          },
+        },
+      },
+    ];
+
+    const inputCopy = JSON.parse(JSON.stringify(originalEquipment));
+
+    p1RemoveOutOfRangeTemperature({
+      "equipment": originalEquipment,
+      "parameters": parameterStruct1
+    });
+
+    expect(originalEquipment[0]["actual-equipment"]["physical-properties"]["temperature"]).toBe("32");
+  });
 });
 
 

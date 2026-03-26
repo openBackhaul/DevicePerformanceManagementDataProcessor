@@ -81,24 +81,24 @@ const p1RemoveOutOfRangeLevels = (input) => {
     }
 
     if (!checkOutOfRange(performanceData["tx-level-max"], true)) {
-      delete performanceDataClean["tx-level-min"];
+      delete performanceDataClean["tx-level-max"];
     }
 
     if (!checkOutOfRange(performanceData["tx-level-avg"], true)) {
-      delete performanceDataClean["tx-level-min"];
+      delete performanceDataClean["tx-level-avg"];
     }
 
     // RX Data
     if (!checkOutOfRange(performanceData["rx-level-min"], false)) {
-      delete performanceDataClean["tx-level-min"];
+      delete performanceDataClean["rx-level-min"];
     }
 
     if (!checkOutOfRange(performanceData["rx-level-max"], false)) {
-      delete performanceDataClean["tx-level-min"];
+      delete performanceDataClean["rx-level-max"];
     }
 
     if (!checkOutOfRange(performanceData["rx-level-avg"], false)) {
-      delete performanceDataClean["tx-level-min"];
+      delete performanceDataClean["rx-level-avg"];
     }
 
     return {

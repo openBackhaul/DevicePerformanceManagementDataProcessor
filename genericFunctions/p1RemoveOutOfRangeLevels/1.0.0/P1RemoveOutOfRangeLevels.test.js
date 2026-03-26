@@ -104,7 +104,6 @@ const wrongParameterStruct2 = {
   "upper-rx-level-limit": ":",   // Upper bound of valid values of the receive level
 }
 
-
 describe('p1RemoveOutOfRangeLevels', () => {
 
   test('All levels are ok', () => {
@@ -215,6 +214,102 @@ describe('p1RemoveOutOfRangeLevels', () => {
     }))
     .toBe(ERRORS.PERF_INVALID);
   });
+
+  test('Should NOT mutate original performance data - MUTATION BUG DETECTION', () => {
+    const originalPerformance = {
+      "es": 0,
+      "ses": 0,
+      "cses": 0,
+      "unavailability": 0,
+      "tx-level-min": 5,
+      "tx-level-max": 100,
+      "tx-level-avg": 50,
+      "rx-level-min": 1000,
+      "rx-level-max": 10000,
+      "rx-level-avg": 5000,
+      "interval-capacity": 0,
+      "snir-min": 0,
+      "snir-max": 0,
+      "snir-avg": 0,
+      "xpd-min": 0,
+      "xpd-max": 0,
+      "xpd-avg": 0,
+      "defect-blocks-sum": 0,
+      "time-period": 100
+    };
+
+    p1RemoveOutOfRangeLevels({
+      "performance-data": originalPerformance,
+      "parameters": parameterStruct1
+    });
+
+    expect(originalPerformance["tx-level-min"]).toBe(5);
+  });
+
+  test('Should delete CORRECT property (not always tx-level-min) - WRONG PROPERTY DELETE BUG DETECTION', () => {
+    const inputPerformance = {
+      "es": 0,
+      "ses": 0,
+      "cses": 0,
+      "unavailability": 0,
+      "tx-level-min": 50,
+      "tx-level-max": 200,
+      "tx-level-avg": 50,
+      "rx-level-min": 1000,
+      "rx-level-max": 10000,
+      "rx-level-avg": 5000,
+      "interval-capacity": 0,
+      "snir-min": 0,
+      "snir-max": 0,
+      "snir-avg": 0,
+      "xpd-min": 0,
+      "xpd-max": 0,
+      "xpd-avg": 0,
+      "defect-blocks-sum": 0,
+      "time-period": 100
+    };
+
+    const result = p1RemoveOutOfRangeLevels({
+      "performance-data": inputPerformance,
+      "parameters": parameterStruct1
+    });
+
+    expect(result["performance-data"]["tx-level-max"]).toBeUndefined();
+    expect(result["performance-data"]["tx-level-min"]).toBe(50);
+  });
+
+  test('Should delete CORRECT rx-level property - WRONG PROPERTY DELETE BUG DETECTION', () => {
+    const inputPerformance = {
+      "es": 0,
+      "ses": 0,
+      "cses": 0,
+      "unavailability": 0,
+      "tx-level-min": 50,
+      "tx-level-max": 100,
+      "tx-level-avg": 50,
+      "rx-level-min": 500,
+      "rx-level-max": 100000,
+      "rx-level-avg": 5000,
+      "interval-capacity": 0,
+      "snir-min": 0,
+      "snir-max": 0,
+      "snir-avg": 0,
+      "xpd-min": 0,
+      "xpd-max": 0,
+      "xpd-avg": 0,
+      "defect-blocks-sum": 0,
+      "time-period": 100
+    };
+
+    const result = p1RemoveOutOfRangeLevels({
+      "performance-data": inputPerformance,
+      "parameters": parameterStruct1
+    });
+
+    expect(result["performance-data"]["rx-level-max"]).toBeUndefined();
+    expect(result["performance-data"]["rx-level-min"]).toBeUndefined()
+  });
+
 // Test end
 });
 

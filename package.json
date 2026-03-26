@@ -1,0 +1,11 @@
+{
+  "name": "dpmdp",
+  "version": "1.0.0",
+  "description": "DevicePerformanceManagementDataProcessor",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
