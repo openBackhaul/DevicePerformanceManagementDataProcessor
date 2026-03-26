@@ -128,8 +128,8 @@ const wrongParameterStruct4 = {
 }
 
 const parameterStructWithLowUpperLimit = {
-  "lower-temperature-limit": 10,
-  "upper-temperature-limit": 50,
+  "lower-temperature-limit": "10",
+  "upper-temperature-limit": "50",
 }
 
 describe('p1RemoveOutOfRangeTemperature', () => {

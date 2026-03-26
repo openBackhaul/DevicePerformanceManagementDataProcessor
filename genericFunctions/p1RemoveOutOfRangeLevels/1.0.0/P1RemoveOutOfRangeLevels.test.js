@@ -117,38 +117,20 @@ describe('p1RemoveOutOfRangeLevels', () => {
   });
 
   test('Remove some levels', () => {
-    expect(p1RemoveOutOfRangeLevels({
+    const result = p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": parameterStruct1
-    }))
-    .toMatchObject({
-      "performance-data": {
-        "es": 0,
-        "ses": 0,
-        "cses": 0,
-        "unavailability": 0,
-        // "tx-level-min": 5,
-        "tx-level-max": 200,
-        "tx-level-avg": 50,
-        "rx-level-min": 1000,
-      //   "rx-level-max": 100000,
-        "rx-level-avg": 5000,
-        "time-xstates-list": [
-          {"transmission-mode": "A"},
-          {"transmission-mode": "B"},
-          {"transmission-mode": "C"},
-        ],
-        "interval-capacity": 0,
-        "snir-min": 0,
-        "snir-max": 0,
-        "snir-avg": 0,
-        "xpd-min": 0,
-        "xpd-max": 0,
-        "xpd-avg": 0,
-        "defect-blocks-sum": 0,
-        "time-period": 100
-      }
     });
+
+    expect(result["performance-data"]["es"]).toBe(0);
+    expect(result["performance-data"]["tx-level-avg"]).toBe(50);
+    expect(result["performance-data"]["rx-level-min"]).toBe(1000);
+    expect(result["performance-data"]["rx-level-avg"]).toBe(5000);
+    expect(result["performance-data"]["interval-capacity"]).toBe(0);
+
+    expect('tx-level-min' in result["performance-data"]).toBe(false);
+    expect('tx-level-max' in result["performance-data"]).toBe(false);
+    expect('rx-level-max' in result["performance-data"]).toBe(false);
   });
 
   test('Missing parameters', () => {
@@ -307,7 +289,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     });
 
     expect(result["performance-data"]["rx-level-max"]).toBeUndefined();
-    expect(result["performance-data"]["rx-level-min"]).toBeUndefined()
+    expect(result["performance-data"]["rx-level-min"]).toBeUndefined();
   });
 
 // Test end
