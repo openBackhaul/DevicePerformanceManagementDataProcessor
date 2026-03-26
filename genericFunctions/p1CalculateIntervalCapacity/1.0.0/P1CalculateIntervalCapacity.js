@@ -55,7 +55,6 @@ const p1CalculateIntervalCapacity = (input) => {
     };
 
   } catch (err) {
-    console.err(err);
     return ERRORS.GENERAL_ERROR;
   }
 }
