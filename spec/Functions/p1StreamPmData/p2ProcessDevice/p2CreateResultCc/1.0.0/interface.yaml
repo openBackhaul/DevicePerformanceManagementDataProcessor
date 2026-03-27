@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1CreateResultCc
+  title: p2CreateResultCc
   version: 1.0.0
 
 x-javascript-interface:
-  p1CreateResultCc:
+  p2CreateResultCc:
     summary: 'Creates the PM data (resultCc) from the raw data (rawCc)'
     input:
       required: true
@@ -15,6 +15,7 @@ x-javascript-interface:
             required:
               - parameters
               - raw-cc
+              #- status-data
             properties:
               parameters:
                 type: object
@@ -23,6 +24,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'rawCc'
+              # status-data:
+              #   type: array
+              #   description: >
+              #     'statusData'
     output:
       success:
         description: 'Result CC data created'
@@ -38,6 +43,11 @@ x-javascript-interface:
                   description: >
                     'The result control construct, following ONF structure.
                     from [/create-result-cc/result-cc]'
+              # status-data:
+              #   type: array
+              #   description: >
+              #     'statusData
+              #     from [/create-result-cc/status-data]'
       error:
         description: 'Result CC data could not be created'
         content:
@@ -49,6 +59,8 @@ x-javascript-interface:
                 - 'parameters invalid'
                 - 'rawCc not provided'
                 - 'rawCc invalid'
+                # - 'statusData not provided'
+                # - 'statusData invalid'
                 - 'resultCc could not be provided'
                 - 'General processing error'
     processing:
@@ -361,6 +373,7 @@ x-javascript-interface:
                   - historical-performance-data-list
                   - aggregation-group
                   - result-cc
+                  - status-data
                 properties:
                   parameters:
                     type: object
@@ -382,6 +395,11 @@ x-javascript-interface:
                     description: >
                       'resultCc
                       from [/create-result-cc/result-cc]'
+                  # status-data:
+                  #   type: array
+                  #   description: >
+                  #     'statusData
+                  #     from [/create-result-cc/status-data]'
         output:
           success:
             description: 'historicalPerformanceDataList processed'
@@ -391,11 +409,16 @@ x-javascript-interface:
                   type: object
                   required:
                     - historical-performance-data-list
+                    #- status-data
                   properties:
                     historical-performance-data-list:
                       type: array
                       description: >
                         'historicalPerformanceDataList'
+                    # status-data:
+                    #   type: array
+                    #   description: >
+                    #     'statusData'
           error:
             description: 'historicalPerformanceDataList could not be processed'
             content:
