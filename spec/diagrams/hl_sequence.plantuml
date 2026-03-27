@@ -12,37 +12,34 @@ participant "p1ResolveEsAddress\n" as p1ResolveAddress #PapayaWhip
 participant "p1InitKafka\n" as p1InitKafka #PapayaWhip
 participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep #PapayaWhip
 
-participant "p1ProcessDevice\n" as p2ProcessPm #PapayaWhip
-  participant "p2ProcessDevice\n" as p2ProcessPm #LightSalmon
+participant "p2ProcessDevice\n" as p2ProcessPm #LightSalmon
 
 participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
-participant "p1LoadRawCc\n" as p1AddRaw #PapayaWhip
-  participant "p2LoadRawCc\n" as p2AddRaw #LightSalmon
+participant "p2LoadRawCc\n" as p2AddRaw #LightSalmon
 participant "p1FieldsFilter\n" as p1FieldsFilter #PapayaWhip
-participant "p1DiscardIrrelevant\nPmRecords" as p1filterPm #LightCyan
-  participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightSalmon
+participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightSalmon
 
-participant "p1CreateResultCc\n" as p1CreateResultCc #PapayaWhip
-participant "p1Prepare\nTxModes" as p1prepTxModes #LightCyan
-participant "p1Calculate\nAiCapacity" as aiCC #LightCyan
+participant "p2CreateResultCc\n" as p2CreateResultCc #LightSalmon
+participant "p1Prepare\nTxModes" as p1prepTxModes  #PapayaWhip
+participant "p1Calculate\nAiCapacity" as aiCC #PapayaWhip
 participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
-participant "p1Calculate\nIntervalCapacity" as intCC #LightCyan
-participant "p1RemoveOutOf\nRangeLevels" as p1RORL #LightCyan
-participant "p1Remove\nDefaultValues" as p1RemDefault #LightCyan
+participant "p1Calculate\nIntervalCapacity" as intCC #PapayaWhip
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL #PapayaWhip
+participant "p1Remove\nDefaultValues" as p1RemDefault #PapayaWhip
 participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
-participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightCyan
-participant "p1Calculate\nUtilization" as p1Util #LightCyan
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #PapayaWhip
+participant "p1Calculate\nUtilization" as p1Util #PapayaWhip
 participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
-participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #LightCyan
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #PapayaWhip
 
-participant "p1Formatting\nOutputApt" as p1OutputApt #LightCyan
-participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightCyan
+participant "p1Formatting\nOutputApt" as p1OutputApt #PapayaWhip
+participant "p1Formatting\nOutputOnf" as p1OutputOnf #PapayaWhip
 
 participant "p1Transmitting\nKafka" as p1Trans #PapayaWhip
 
-participant "p1Storing\n" as p1Store #PapayaWhip
-participant "p1MaintainDs\n" as p1MaintainDs #PapayaWhip
+participant "p1Storing\n" as p1Store #LightCyan
+participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
 
 note right embed
   Automatically starts
@@ -52,6 +49,7 @@ embed -> p1StreamPm
 
 activate p1StreamPm
 
+  ' Load parameters
   p1StreamPm -> p1LoadParams
   activate p1LoadParams
     note over p1LoadParams
@@ -61,6 +59,7 @@ activate p1StreamPm
   p1StreamPm <-- p1LoadParams
   deactivate p1LoadParams
 
+  ' Resolve ES address
   Loop FOR all esName
     p1StreamPm -> p1ResolveAddress
     activate p1ResolveAddress
@@ -72,6 +71,7 @@ activate p1StreamPm
 
   end Loop
 
+  ' Init Kafka
   p1StreamPm -> p1InitKafka
   activate p1InitKafka
 
@@ -88,6 +88,7 @@ activate p1StreamPm
   p1StreamPm <-- p1InitKafka
   deactivate p1InitKafka
 
+  ' Maintain DataStore
   p1StreamPm -> p1MaintainDs
   activate p1MaintainDs
 
@@ -100,6 +101,7 @@ activate p1StreamPm
 
   Loop endless
 
+    ' Update MWDI replica
     p1StreamPm -> p1UpdateMwdiRep
     activate p1UpdateMwdiRep
       note over p1UpdateMwdiRep
@@ -110,62 +112,82 @@ activate p1StreamPm
 
     Loop for every updated CC
 
+      ' ProcessDevice
       p1StreamPm -> p2ProcessPm
       activate p2ProcessPm
 
-        p2ProcessPm -> p1AddRaw
-        activate p1AddRaw
 
-          note over p1AddRaw
+        ' Load Offset and StatusData
+        p2ProcessPm -> p1LoadStatus
+        activate p1LoadStatus
+
+          note over p1LoadStatus
+            Loads offsets and status data
+            from DataStore
+          end note
+
+        p2ProcessPm <-- p1LoadStatus
+        deactivate p1LoadStatus
+
+        ' Load RawCC
+        p2ProcessPm -> p2AddRaw
+        activate p2AddRaw
+
+          note over p2AddRaw
             Loads raw data to rawCc
           end note
 
-          p1AddRaw -> p1FieldsFilter
+          ' Apply fieldsFilter
+          p2AddRaw -> p1FieldsFilter
           activate p1FieldsFilter
 
             note over p1FieldsFilter
               Reduces structure of rawCc
             end note
 
-          p1AddRaw <-- p1FieldsFilter
+          p2AddRaw <-- p1FieldsFilter
           deactivate p1FieldsFilter
 
-          note over p1AddRaw
-            Get mostRecentPeriodEndTimes
-          end note
+          ' DiscardIrrelvantPmRecords
+          p2AddRaw -> p2filterPm
+          activate p2filterPm
 
-          p1AddRaw -> p1filterPm
-          activate p1filterPm
-
-            note over p1filterPm
+            note over p2filterPm
               Deletes PM data that has
               already been processed in past
             end note
 
-          p1AddRaw <-- p1filterPm
-          deactivate p1filterPm
+          p2AddRaw <-- p2filterPm
+          deactivate p2filterPm
 
-          note over p1AddRaw
+          note over p2AddRaw
             addBatchTimestamp
           end note
 
-        p2ProcessPm <-- p1AddRaw : {rawCc}
-        deactivate p1AddRaw
+          note over p2AddRaw
+            update offset
+          end note
 
-        p2ProcessPm -> p1CreateResultCc
-        activate p1CreateResultCc
+        p2ProcessPm <-- p2AddRaw : {rawCc}
+        deactivate p2AddRaw
 
-          note over p1CreateResultCc
+        ' Create resultCC
+        p2ProcessPm -> p2CreateResultCc
+        activate p2CreateResultCc
+
+          note over p2CreateResultCc
             Copies rawCc to resultCc
           end note
 
-          note over p1CreateResultCc
+          note over p2CreateResultCc
             Creates aggregationGroupList
           end note
 
+          ' AirInterfaces
           loop FOR all AirInterfaces in resultCc
 
-            p1CreateResultCc -> p1prepTxModes
+            ' prepTxModes
+            p2CreateResultCc -> p1prepTxModes
             activate p1prepTxModes
 
               note over p1prepTxModes
@@ -183,12 +205,14 @@ activate p1StreamPm
               p1prepTxModes <-- aiCC
               deactivate aiCC
 
-            p1CreateResultCc <-- p1prepTxModes
+            p2CreateResultCc <-- p1prepTxModes
             deactivate p1prepTxModes
 
-            p1CreateResultCc -> aiSlices
+            ' iterateAiPmSlices
+            p2CreateResultCc -> aiSlices
             activate aiSlices
 
+                ' capacityCalculation
                 aiSlices -> intCC
                 activate intCC
 
@@ -200,6 +224,7 @@ activate p1StreamPm
                 aiSlices <-- intCC
                 deactivate intCC
 
+                ' RemoveOutOfRangeLevelValues
                 aiSlices -> p1RORL
                 activate p1RORL
 
@@ -212,6 +237,7 @@ activate p1StreamPm
                 aiSlices <-- p1RORL
                 deactivate p1RORL
 
+                ' RemoveOnfDefaultValues
                 aiSlices -> p1RemDefault
                 activate p1RemDefault
 
@@ -223,33 +249,28 @@ activate p1StreamPm
                 aiSlices <-- p1RemDefault
                 deactivate p1RemDefault
 
-                note over aiSlices
-                  Derives most recent
-                  periodEndTime
-                end note
-
-            p1CreateResultCc <-- aiSlices
+            p2CreateResultCc <-- aiSlices
             deactivate aiSlices
 
-            note over p1CreateResultCc
-              Update interfaceMetadata
-            end note
-
-            note over p1CreateResultCc
+            note over p2CreateResultCc
               Add linkId
             end note
 
-            note over p1CreateResultCc
+            note over p2CreateResultCc
               Add list of parallel LTPs
             end note
 
           end loop
 
+
+          ' EthernetContainers
           loop FOR all EthernetContainers in resultCc
 
-            p1CreateResultCc -> ecSlices
+            ' IterateEcPmSlices
+            p2CreateResultCc -> ecSlices
             activate ecSlices
 
+              'EthernetKPIs
               ecSlices -> p1EthKpi
               activate p1EthKpi
 
@@ -260,6 +281,7 @@ activate p1StreamPm
               ecSlices <-- p1EthKpi
               deactivate p1EthKpi
 
+              ' RemoveOnfDefaultValues
               ecSlices -> p1RemDefault
               activate p1RemDefault
 
@@ -271,6 +293,7 @@ activate p1StreamPm
               ecSlices <-- p1RemDefault
               deactivate p1RemDefault
 
+              ' Utilization
               ecSlices -> p1Util
               activate p1Util
 
@@ -281,21 +304,41 @@ activate p1StreamPm
               ecSlices <-- p1Util
               deactivate p1Util
 
-              note over ecSlices
-                Derives most recent
-                periodEndTime
-              end note
+              ' categorizeDataVolume
+              ecSlices -> p1CatDV
+              activate p1CatDV
 
-            p1CreateResultCc <-- ecSlices
+                note over p1CatDV
+                  Categorize data volume
+                end note
+
+              ecSlices <- p1CatDV
+              deactivate p1CatDV
+
+              ' calculateBH
+              ecSlices -> p1CalcBH
+              activate p1CalcBH
+
+                note over p1CatDV
+                  Calculate BH performance
+                  indicators
+                end note
+
+              ecSlices <- p1CalcBH
+              deactivate p1CalcBH
+
+
+            p2CreateResultCc <-- ecSlices
             deactivate ecSlices
 
-            note over p1CreateResultCc
-              Update interfaceMetadata
+            note over p2CreateResultCc
+              Update statusData
             end note
 
           end loop
 
-          p1CreateResultCc -> p1ROoRT
+        ' RemoveOutOfRangeTemperatureValues
+          p2CreateResultCc -> p1ROoRT
           activate p1ROoRT
 
             note over p1ROoRT
@@ -303,12 +346,13 @@ activate p1StreamPm
               values outside pre-defined range
             end note
 
-          p1CreateResultCc <-- p1ROoRT
+          p2CreateResultCc <-- p1ROoRT
           deactivate p1ROoRT
 
-        p2ProcessPm <-- p1CreateResultCc : {resultCc}
-        deactivate p1CreateResultCc
+        p2ProcessPm <-- p2CreateResultCc : {resultCc}
+        deactivate p2CreateResultCc
 
+        ' OutputApt
         p2ProcessPm -> p1OutputApt
         activate p1OutputApt
 
@@ -319,6 +363,7 @@ activate p1StreamPm
         p2ProcessPm <-- p1OutputApt : {aptOutputFormat}
         deactivate p1OutputApt
 
+        ' OutputOnf
         p2ProcessPm -> p1OutputOnf
         activate p1OutputOnf
 
@@ -348,6 +393,7 @@ activate p1StreamPm
             KafkaProducerService
           end note
 
+        ' KafkaTransmission
         p2ProcessPm <-- p1Trans
         deactivate p1Trans
 
@@ -359,59 +405,9 @@ activate p1StreamPm
             to DataStore
           end note
 
+        ' Storing
         p2ProcessPm <-- p1Store
         deactivate p1Store
-
-      deactivate p2ProcessPm
-
-      p1StreamPm -> p2ProcessPm
-      activate p2ProcessPm
-
-        p2ProcessPm -> p1LoadStatus
-        activate p1LoadStatus
-
-          note over p1LoadStatus
-            Loads offsets and status data
-            from DataStore
-          end note
-
-        p2ProcessPm <-- p1LoadStatus
-        deactivate p1LoadStatus
-
-        p2ProcessPm -> p2AddRaw
-        activate p2AddRaw
-
-          note over p2AddRaw
-            Loads raw data to rawCc
-          end note
-
-          p2AddRaw -> p1FieldsFilter
-          activate p1FieldsFilter
-
-            note over p1FieldsFilter
-              Reduces structure of rawCc
-            end note
-
-          p2AddRaw <-- p1FieldsFilter
-          deactivate p1FieldsFilter
-
-          p2AddRaw -> p2filterPm
-          activate p2filterPm
-
-            note over p2filterPm
-              Deletes PM data that has
-              already been processed in past
-            end note
-
-          p2AddRaw <-- p2filterPm
-          deactivate p2filterPm
-
-          note over p2AddRaw
-            addBatchTimestamp
-          end note
-
-        p2ProcessPm <-- p2AddRaw : {rawCc}
-        deactivate p2AddRaw
 
       deactivate p2ProcessPm
 
