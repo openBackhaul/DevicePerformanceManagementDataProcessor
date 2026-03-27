@@ -39,7 +39,7 @@ participant "p1Formatting\nOutputOnf" as p1OutputOnf #PapayaWhip
 participant "p1Transmitting\nKafka" as p1Trans #PapayaWhip
 
 participant "p1Storing\n" as p1Store #LightCyan
-participant "p1MaintainDs\n" as p1MaintainDs #LightCyan
+participant "p1MaintainDs\n" as p1MaintainDs #PapayaWhip
 
 note right embed
   Automatically starts
