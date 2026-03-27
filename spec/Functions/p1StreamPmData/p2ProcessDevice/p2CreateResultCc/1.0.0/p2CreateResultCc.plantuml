@@ -1,18 +1,18 @@
-@startuml p1CreateResultCc
+@startuml p2CreateResultCc
 skinparam responseMessageBelowArrow true
 
 title
-  p1CreateResultCc
+  p2CreateResultCc
 end title
 
 participant "p1ProcessDevice\n" as requestor
-participant "p1CreateResultCc\n" as cur
+participant "p2CreateResultCc\n" as cur
 participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1IterateAi\nPmSlices" as p1IterateAi
 participant "p1IterateEc\nPmSlices" as p1IterateEc
 participant "p1RemoveOutOfRange\nTemperature" as p1RemoveTemp
 
-requestor -> cur : { {parameters},\n{rawCc} }
+requestor -> cur : { {parameters},\n{rawCc},\n[statusData] }
 activate cur
 
   note over cur
@@ -81,7 +81,7 @@ activate cur
 
   loop FOR all EthernetContainers in resultCc
 
-    cur -> p1IterateEc : { {/parameters/sub-function=p1IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
+    cur -> p1IterateEc : { {/parameters/sub-function=p1IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n[statusData] }
     activate p1IterateEc
 
       note over p1IterateEc
@@ -97,7 +97,12 @@ activate cur
         Adds utilization
       end note
 
-    cur <-- p1IterateEc : { [historicalPerformanceDataList] }
+      note over p1IterateEc #LightSalmon
+        Adds BH PIs
+        Updates statusData
+      end note
+
+    cur <-- p1IterateEc : { [historicalPerformanceDataList],\n[statusData] }
     deactivate p1IterateEc
 
   end loop
@@ -113,7 +118,7 @@ activate cur
   cur <-- p1RemoveTemp : { [equipment] }
   deactivate p1RemoveTemp
 
-requestor <-- cur : { {resultCc} }
+requestor <-- cur : { {resultCc},\n[statusData] }
 deactivate cur
 
 @enduml

@@ -3,6 +3,7 @@ create-result-cc:
   required:
     - parameters
     - raw-cc
+    - status-data
   properties:
     parameters:
       type: object
@@ -14,6 +15,12 @@ create-result-cc:
       description: >
         'rawCc
         from {$input#/raw-cc}'
+    # status-data:
+    #   type: array
+    #   description: >
+    #     'statusData
+    #     from {$input#/status-data},
+    #     overwritten by {$p1IterateEcPmSlices.output#/status-data}'
 
     air-interface-uuid:
       type: array
