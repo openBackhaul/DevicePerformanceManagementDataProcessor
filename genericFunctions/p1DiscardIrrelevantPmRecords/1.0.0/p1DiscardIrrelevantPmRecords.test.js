@@ -1,4 +1,5 @@
 const p1DiscardIrrelevantPmRecords = require('./P1DiscardIrrelevantPmRecords');
+const fs = require('fs');
 const ERRORS = require('./ErrorsEnum');
 
 const HISTORICAL_PERF_LIST1 = [
@@ -316,5 +317,21 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
   });
+
+  test('load real data', () => {
+    let dataFile = fs.readFileSync('./historicalData1.json', 'utf8');
+    let historicalDataList = JSON.parse(dataFile);
+
+    const input = {
+      "historical-performance-data-list": historicalDataList,
+      "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "most-recent-period-end-time": "2025-12-16T00:45:00+01:00",
+      "most-recent-period-end-time-24": "2025-12-15T09:00:00+01:00"
+    }
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(33);
+  })
 
 });
