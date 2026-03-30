@@ -6,6 +6,7 @@ const p1CalculateIntervalCapacity = (input) => {
     const timeXstatesList = input["time-xstates-list"];
     const transmissionModeList = input["transmission-mode-list"];
 
+    // Based validation
     if (timeXstatesList === undefined) {
       return ERRORS.TIMEXSTATES_NOT_PROVIDED;
     }
@@ -22,10 +23,13 @@ const p1CalculateIntervalCapacity = (input) => {
       return ERRORS.TRANSMODE_INVALID;
     }
 
+    // Check mandatory fields
+    // transmissionModeList
+
     const capacityMap = new Map();
 
     for (const mode of transmissionModeList) {
-      capacityMap.set(mode["transmission-mode"], mode.capacity);
+      capacityMap.set(mode["transmission-mode-name"], mode.capacity);
     }
 
     let totalOfferedVolume = 0;
