@@ -33,6 +33,11 @@ const parameterStructWithLowUpperLimit = {
   "upper-temperature-limit": "50",
 }
 
+const parameterStructWithSameValue = {
+  "lower-temperature-limit": "70",
+  "upper-temperature-limit": "70",
+}
+
 describe('p1RemoveOutOfRangeTemperature', () => {
   let dataFile = fs.readFileSync(__dirname + '/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
@@ -137,8 +142,6 @@ describe('p1RemoveOutOfRangeTemperature', () => {
     .toBe(ERRORS.PARAM_INVALID);
   });
 
-// Test end
-
   test('Should remove out of range temperature (upper limit exceeded)', () => {
     const inputEquipment = [
       {
@@ -156,6 +159,50 @@ describe('p1RemoveOutOfRangeTemperature', () => {
     const result = p1RemoveOutOfRangeTemperature({
       "equipment": inputEquipment,
       "parameters": parameterStructWithLowUpperLimit
+    });
+
+    expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
+  });
+
+  test('Keep Temperature structure, Min and Max has the same value', () => {
+    const inputEquipment = [
+      {
+        "uuid": "LAN-1 SFP",
+        "local-id": "LAN-1 SFP",
+        "actual-equipment": {
+          "local-id": "513250006+",
+          "physical-properties": {
+            "temperature": "70"
+          },
+        },
+      },
+    ];
+
+    const result = p1RemoveOutOfRangeTemperature({
+      "equipment": inputEquipment,
+      "parameters": parameterStructWithSameValue
+    });
+
+    expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBe("70");
+  });
+
+  test('Discard temperature value because is out of range, Min and Max has the same value', () => {
+    const inputEquipment = [
+      {
+        "uuid": "LAN-1 SFP",
+        "local-id": "LAN-1 SFP",
+        "actual-equipment": {
+          "local-id": "513250006+",
+          "physical-properties": {
+            "temperature": "71"
+          },
+        },
+      },
+    ];
+
+    const result = p1RemoveOutOfRangeTemperature({
+      "equipment": inputEquipment,
+      "parameters": parameterStructWithSameValue
     });
 
     expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
