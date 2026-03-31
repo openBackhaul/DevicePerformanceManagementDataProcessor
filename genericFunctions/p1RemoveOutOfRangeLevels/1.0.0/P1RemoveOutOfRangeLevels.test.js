@@ -28,7 +28,6 @@ const performanceStruct1 = {
   "time-period": 100
 }
 
-
 const performanceStruct2 = {
   "es": 0,
   "ses": 0,
