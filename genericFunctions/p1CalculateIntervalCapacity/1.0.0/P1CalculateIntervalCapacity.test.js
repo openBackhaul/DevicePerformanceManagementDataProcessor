@@ -129,4 +129,131 @@ describe('p1CalculateIntervalCapacity', () => {
     expect(result["interval-capacity"]).toBe(536);
   });
 
+  test('should return error if time-xstates-list is not an array', () => {
+    expect(p1CalculateIntervalCapacity({
+      "time-xstates-list": "not an array",
+      "transmission-mode-list": []
+    })).toBe(ERRORS.TIMEXSTATES_INVALID);
+  });
+
+  test('should return error if transmission-mode-list is not an array', () => {
+    expect(p1CalculateIntervalCapacity({
+      "time-xstates-list": [],
+      "transmission-mode-list": "not an array"
+    })).toBe(ERRORS.TRANSMODE_INVALID);
+  });
+
+  test('should return 0 when all transmission modes are unknown', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "UNKNOWN1", "time": 10},
+        {"transmission-mode": "UNKNOWN2", "time": 20}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 100}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(0);
+  });
+
+  test('should handle capacity of 0 correctly', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": 10},
+        {"transmission-mode": "B", "time": 10}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 0},
+        {"transmission-mode-name": "B", "capacity": 200}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(100);
+  });
+
+  test('should handle negative time values', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": -10},
+        {"transmission-mode": "B", "time": 20}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 100},
+        {"transmission-mode-name": "B", "capacity": 200}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(300);
+  });
+
+  test('should handle decimal time values', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": 5.5},
+        {"transmission-mode": "B", "time": 4.5}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 100},
+        {"transmission-mode-name": "B", "capacity": 200}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(145);
+  });
+
+  test('should handle single transmission mode', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": 30}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 150}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(150);
+  });
+
+  test('should handle empty transmission-mode-list', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": 10}
+      ],
+      "transmission-mode-list": []
+    });
+
+    expect(result["interval-capacity"]).toBe(0);
+  });
+
+  test('should return 0 when total time equals zero due to positive and negative values', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": -10},
+        {"transmission-mode": "B", "time": 10}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 100},
+        {"transmission-mode-name": "B", "capacity": 200}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(0);
+  });
+
+  test('should return 0 when offered volume is 0 but total time is not zero', () => {
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": -20},
+        {"transmission-mode": "B", "time": 10}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode-name": "A", "capacity": 100},
+        {"transmission-mode-name": "B", "capacity": 200}
+      ]
+    });
+
+    expect(result["interval-capacity"]).toBe(0);
+  });
+
 });
