@@ -99,11 +99,11 @@ describe('p1CalculateIntervalCapacity', () => {
     expect(result["interval-capacity"]).toBe(200);
   });
 
-  test('using real data for testing', () => {
-    let dataFile = fs.readFileSync('./transmissionModeList1.json', 'utf8');
+  test('Testing using the same capcity value = 200', () => {
+    let dataFile = fs.readFileSync('transmissionModeList1.json', 'utf8');
     let transmissionMode = JSON.parse(dataFile);
 
-    dataFile = fs.readFileSync('./timeXstates1.json', 'utf8');
+    dataFile = fs.readFileSync('timeXstates1.json', 'utf8');
     let timeXstates = JSON.parse(dataFile);
 
     const result = p1CalculateIntervalCapacity({
@@ -112,6 +112,21 @@ describe('p1CalculateIntervalCapacity', () => {
     });
 
     expect(result["interval-capacity"]).toBe(200);
+  });
+
+  test('Testing using different values of capacity', () => {
+    let dataFile = fs.readFileSync('transmissionModeList2.json', 'utf8');
+    let transmissionMode = JSON.parse(dataFile);
+
+    dataFile = fs.readFileSync('timeXstates1.json', 'utf8');
+    let timeXstates = JSON.parse(dataFile);
+
+    const result = p1CalculateIntervalCapacity({
+      "time-xstates-list": timeXstates,
+      "transmission-mode-list": transmissionMode
+    });
+
+    expect(result["interval-capacity"]).toBe(536);
   });
 
 });

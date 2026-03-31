@@ -23,11 +23,8 @@ const p1CalculateIntervalCapacity = (input) => {
       return ERRORS.TRANSMODE_INVALID;
     }
 
-    // Check mandatory fields
-    // transmissionModeList
-
+    // Mapping all the capacity for each profile
     const capacityMap = new Map();
-
     for (const mode of transmissionModeList) {
       capacityMap.set(mode["transmission-mode-name"], mode.capacity);
     }
@@ -35,17 +32,17 @@ const p1CalculateIntervalCapacity = (input) => {
     let totalOfferedVolume = 0;
     let totalTime = 0;
 
+    // Calculate offered volume for each state
     for (const state of timeXstatesList) {
-
       const capacity = capacityMap.get(state["transmission-mode"]);
 
+      // In case capacity is not present, skip the state
       if (capacity === undefined) {
         continue;
       }
 
       const time = state.time;
-
-      const offeredVolume = capacity * time;
+      const offeredVolume = capacity * time;  // Offered Volume is calculate by capacity and time
 
       totalOfferedVolume += offeredVolume;
       totalTime += time;
@@ -54,6 +51,7 @@ const p1CalculateIntervalCapacity = (input) => {
     const intervalCapacity =
       totalTime === 0 ? 0 : Math.round(totalOfferedVolume / totalTime);
 
+    // Return value
     return {
       "interval-capacity": intervalCapacity
     };
