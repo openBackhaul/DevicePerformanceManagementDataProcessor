@@ -1,105 +1,6 @@
 const p1RemoveOutOfRangeTemperature = require('./P1RemoveOutOfRangeTemperature');
 const ERRORS = require('./ErrorsEnum');
-
-const equipmentDataSIAE = [
-  {
-    "uuid": "AGS-20 IDU",
-    "is-field-replaceable": false,
-    "local-id": "AGS-20 Dual-IF 16xE1 XG",
-    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-    "actual-equipment": {
-      "local-id": "513250006+",
-      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-      "physical-properties": {
-        "temperature": "32"
-      },
-    },
-  },
-  {
-    "uuid": "LAN-1 SFP",
-    "is-field-replaceable": true,
-    "local-id": "LAN-1 SFP",
-    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-    "actual-equipment": {
-      "local-id": "513250006+",
-      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-      "physical-properties": {
-        "temperature": "70"
-      },
-    }
-  },
-];
-
-const equipmentDataSIAEResult = [
-  {
-    "uuid": "AGS-20 IDU",
-    "is-field-replaceable": false,
-    "local-id": "AGS-20 Dual-IF 16xE1 XG",
-    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-    "actual-equipment": {
-      "local-id": "513250006+",
-      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-      "physical-properties": {
-        "temperature": "32"
-      },
-    },
-  },
-  {
-    "uuid": "LAN-1 SFP",
-    "is-field-replaceable": true,
-    "local-id": "LAN-1 SFP",
-    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-    "actual-equipment": {
-      "local-id": "513250006+",
-      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-      "physical-properties": {
-        // "temperature": "70"
-      },
-    }
-  },
-];
-
-
-const wrongEquipmentDataSIAE = [
-  {
-    "uuid": "AGS-20 IDU",
-    "is-field-replaceable": false,
-    "local-id": "AGS-20 Dual-IF 16xE1 XG",
-    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-    "actual-equipment": {
-      "local-id": "513250006+",
-      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-      "physical-properties": {
-        "temperature": "32"
-      },
-    },
-  },
-  {
-    "uuid": "LAN-1 SFP",
-    "is-field-replaceable": true,
-    "local-id": "LAN-1 SFP",
-    "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-    "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-    "actual-equipment": {
-      "local-id": "513250006+",
-      "lifecycle-state": "core-model-1-4:LIFECYCLE_STATE_INSTALLED",
-      "operational-state": "core-model-1-4:OPERATIONAL_STATE_ENABLED",
-      "physical-properties": {
-        "temperature": 2
-      },
-    }
-  },
-];
+const fs = require('fs');
 
 // Paramenters Struct
 const parameterStruct1 = {
@@ -133,20 +34,25 @@ const parameterStructWithLowUpperLimit = {
 }
 
 describe('p1RemoveOutOfRangeTemperature', () => {
+  let dataFile = fs.readFileSync(__dirname + '/equipmentDataSIAE.json', 'utf8');
+  let equipmentData = JSON.parse(dataFile);
+
+  let dataWrongFile = fs.readFileSync(__dirname + '/equipmentDataSIAEwrong.json', 'utf8');
+  let equipmentWrongData = JSON.parse(dataWrongFile);
 
   test('All levels are ok', () => {
     expect(p1RemoveOutOfRangeTemperature({
-        "equipment": equipmentDataSIAE,
+        "equipment": equipmentData,
         "parameters": parameterStruct1
     }))
     .toMatchObject({
-      "equipment": equipmentDataSIAE
+      "equipment": equipmentData
     });
   });
 
   test('Equipment not provided', () => {
     expect(p1RemoveOutOfRangeTemperature({
-        // "equipment": wrongEquipmentDataSIAE,
+        // "equipment": nothing,
         "parameters": parameterStruct1
     }))
     .toBe(ERRORS.EQUIP_NOT_PROVIDED);
@@ -170,7 +76,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('Eqp KO', () => {
     expect(p1RemoveOutOfRangeTemperature({
-        "equipment": wrongEquipmentDataSIAE,
+        "equipment": equipmentWrongData,
         "parameters": parameterStruct1
     }))
     .toBe(ERRORS.EQUIP_INVALID);
@@ -178,14 +84,14 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('Missing parameters', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "equipment": equipmentDataSIAE,
+      "equipment": equipmentData,
     }))
     .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Missing parameters2', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "equipment": equipmentDataSIAE,
+      "equipment": equipmentData,
       "parameters": null
     }))
     .toBe(ERRORS.PARAM_NOT_PROVIDED);
@@ -193,7 +99,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('Missing parameters3', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "equipment": equipmentDataSIAE,
+      "equipment": equipmentData,
       "parameters": undefined
     }))
     .toBe(ERRORS.PARAM_NOT_PROVIDED);
@@ -201,7 +107,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('Missing some property of parameters', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "performance-data": equipmentDataSIAE,
+      "performance-data": equipmentData,
       "parameters": wrongParameterStruct1
     }))
     .toBe(ERRORS.PARAM_INVALID);
@@ -209,7 +115,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('Missing some property of parameters', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "performance-data": equipmentDataSIAE,
+      "performance-data": equipmentData,
       "parameters": wrongParameterStruct2
     }))
     .toBe(ERRORS.PARAM_INVALID);
@@ -217,7 +123,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('String on property of parameters', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "performance-data": equipmentDataSIAE,
+      "performance-data": equipmentData,
       "parameters": wrongParameterStruct3
     }))
     .toBe(ERRORS.PARAM_INVALID);
@@ -225,7 +131,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
 
   test('String on property of parameters 2', () => {
     expect(p1RemoveOutOfRangeTemperature({
-      "performance-data": equipmentDataSIAE,
+      "performance-data": equipmentData,
       "parameters": wrongParameterStruct4
     }))
     .toBe(ERRORS.PARAM_INVALID);
@@ -269,8 +175,6 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       },
     ];
 
-    const inputCopy = JSON.parse(JSON.stringify(originalEquipment));
-
     p1RemoveOutOfRangeTemperature({
       "equipment": originalEquipment,
       "parameters": parameterStructWithLowUpperLimit
@@ -293,8 +197,6 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       },
     ];
 
-    const inputCopy = JSON.parse(JSON.stringify(originalEquipment));
-
     p1RemoveOutOfRangeTemperature({
       "equipment": originalEquipment,
       "parameters": parameterStruct1
@@ -303,6 +205,4 @@ describe('p1RemoveOutOfRangeTemperature', () => {
     expect(originalEquipment[0]["actual-equipment"]["physical-properties"]["temperature"]).toBe("32");
   });
 });
-
-
 
