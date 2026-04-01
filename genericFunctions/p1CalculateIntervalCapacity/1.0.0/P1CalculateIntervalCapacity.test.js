@@ -257,3 +257,32 @@ describe('p1CalculateIntervalCapacity', () => {
   });
 
 });
+
+
+describe('p1CalculateIntervalCapacity passing values', () => {
+  test('should ignore unknown transmission modes', () => {
+
+    let inputObj = {
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": 10},
+        {"transmission-mode": "UNKNOWN", "time": 100}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode": "A", "capacity": 100}
+      ]
+    }
+
+    const result = p1CalculateIntervalCapacity(inputObj);
+
+
+    expect(inputObj).toMatchObject({
+      "time-xstates-list": [
+        {"transmission-mode": "A", "time": 10, "transmission-mode-capacity": 100, 'offered-volume': 1000 },
+        {"transmission-mode": "UNKNOWN", "time": 100}
+      ],
+      "transmission-mode-list": [
+        {"transmission-mode": "A", "capacity": 100}
+      ]
+    })
+  });
+});

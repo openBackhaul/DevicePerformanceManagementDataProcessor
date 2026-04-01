@@ -42,9 +42,11 @@ const p1CalculateIntervalCapacity = (input) => {
       }
 
       const time = state.time;
-      const offeredVolume = capacity * time;  // Offered Volume is calculate by capacity and time
 
+      const offeredVolume = capacity * time;   // Offered Volume is calculate by capacity and time
+      state['transmission-mode-capacity'] = capacity
       totalOfferedVolume += offeredVolume;
+      state['offered-volume'] = offeredVolume;
       totalTime += time;
     }
 
