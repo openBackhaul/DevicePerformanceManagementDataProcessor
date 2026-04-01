@@ -1,9 +1,8 @@
 
 const ERRORS = require ('./ErrorsEnum');
 
-let defaultValuesList =[];
-
 const p1RemoveDefaultValues = (input) => {
+  let defaultValuesList =[];
   try {
     const parameters = input["parameters"];
     const inputObj = input["input-object"];
@@ -31,26 +30,20 @@ const p1RemoveDefaultValues = (input) => {
 
     // Fill default key list
     for (const [key, value] of Object.entries(parameters)) {
-      if (defaultValuesList.includes({ 'attribute-name': key, 'attribute-value': value })) {
-        console.log("Parameter already present: " + key);
-      } else {
-        console.log("Add the parameter: " + key);
-      }
+      defaultValuesList.push({
+        'attribute-name': key,
+        'attribute-value': value
+      });
     }
 
     let cleanedObject = JSON.parse(JSON.stringify(inputObj)); // Initializate return value
 
     for (const [key, value] of Object.entries(parameters)) {
-      console.log(`${key}: ${value}`);
       if (cleanedObject[key] != undefined) {
         if (cleanedObject[key] == value) {
-          console.log("Remove parameter: " + key);
           delete cleanedObject[key];
-        } else {
-          console.log("Keep the parameter: " + key);
         }
       }
-      
     }
 
     return {

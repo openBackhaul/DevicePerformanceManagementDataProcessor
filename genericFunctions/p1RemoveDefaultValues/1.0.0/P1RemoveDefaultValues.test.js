@@ -1,7 +1,7 @@
 const p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
 const ERRORS = require ('./ErrorsEnum');
 
-describe('p1RemoveDefaultValues', () => {
+describe('p1RemoveDefaultValues Suite 1', () => {
 
   test('Passing null, return general error', () => {
     expect(p1RemoveDefaultValues(null))
@@ -58,7 +58,7 @@ describe('p1RemoveDefaultValues', () => {
     .toBe(ERRORS.INPUTOBJ_INVALID);
   });
 
-  test('Passing only parameters property, return input object not provided', () => {
+  test('Passing only input-object and empty parameters, return parameter invalid', () => {
     expect(p1RemoveDefaultValues({
       'parameters': {},
       'input-object': { 'abc-parameter': 0,},
@@ -66,7 +66,7 @@ describe('p1RemoveDefaultValues', () => {
     .toBe(ERRORS.PARAMS_INVALID);
   });
 
-  test('Passing parameters and input-object property, return input object not provided', () => {
+  test('Passing parameters and input-object property, return cleaned-object as empty object', () => {
     expect(p1RemoveDefaultValues({
       'parameters': { 'abc-parameter': 0 },
       'input-object': { 'abc-parameter': 0}
@@ -76,7 +76,7 @@ describe('p1RemoveDefaultValues', () => {
     });
   });
 
-  test('Passing parameters and input-object property, return input object not provided', () => {
+  test('Passing parameters and input-object property, return cleaned object without "default-paramer"', () => {
     expect(p1RemoveDefaultValues({
       'parameters': {
         'abc-parameter': 10,
@@ -103,4 +103,61 @@ describe('p1RemoveDefaultValues', () => {
       }
     });
   });
+
+  test('Passing parameters and input-object property, return cleaned object without "default-paramer"', () => {
+    expect(p1RemoveDefaultValues({
+      'parameters': {
+        'abc-parameter': 10,
+        '123-parameter': 20,
+        'xyz-parameter': 30,
+        'other-parameter': "SIAE",
+        'default-parameter': "Milano"
+      },
+      'input-object': {
+        'abc-parameter': 1,
+        '123-parameter': 2,
+        'xyz-parameter': 3,
+        'other-parameter': "SIAE",
+        'default-parameter': "Milano"
+      }
+    }))
+    .toStrictEqual({
+      "cleaned-object": {
+        'abc-parameter': 1,
+        '123-parameter': 2,
+        'xyz-parameter': 3,
+        // 'other-parameter': "SIAE"
+        // 'default-parameter': "Milano"
+      }
+    });
+  });
+
+  test('Passing parameters and input-object property, return cleaned-object without "default-paramer"', () => {
+    expect(p1RemoveDefaultValues({
+      'parameters': {
+        'abc-parameter': 10,
+        '123-parameter': 20,
+        'xyz-parameter': 30,
+        'other-parameter': "SIAE",
+        'default-parameter': "Milano"
+      },
+      'input-object': {
+        'abc-parameter': 10,
+        '123-parameter': 20,
+        'xyz-parameter': 30,
+        'other-parameter': "SIAE",
+        'default-parameter': "Milano"
+      }
+    }))
+    .toStrictEqual({
+      "cleaned-object": {
+        // 'abc-parameter': 10,
+        // '123-parameter': 20,
+        // 'xyz-parameter': 30,
+        // 'other-parameter': "SIAE"
+        // 'default-parameter': "Milano"
+      }
+    });
+  });
 });
+
