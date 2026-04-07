@@ -25,19 +25,19 @@ const p1RemoveOutOfRangeLevels = (input) => {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
 
-      if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "number") {
+      if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "string") {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "number") {
+      if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "string") {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "number") {
+      if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "string") {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "number") {
+      if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "string") {
         return ERRORS.PARAM_INVALID;
       }
     }
