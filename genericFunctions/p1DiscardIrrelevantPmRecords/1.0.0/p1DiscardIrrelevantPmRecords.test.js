@@ -62,7 +62,63 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
     const result = p1DiscardIrrelevantPmRecords(input);
 
-    expect(result["filtered-historical-performance-data-list"]).toHaveLength(3);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(97);
+  });
+
+  test('should filter records correctly (full scenario) - only 15 minutes', () => {
+    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$",
+      "most-recent-period-end-time": "2024-01-01T10:00:00Z",
+      "most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(96);
+  });
+
+  test('should filter records correctly (full scenario) - only 15 minutes, entries already processed', () => {
+    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$",
+      "most-recent-period-end-time": "2026-01-01T10:00:00Z",
+      "most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
+  });
+
+  test('should filter records correctly (full scenario) - only 24 hours', () => {
+    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$",
+      "most-recent-period-end-time": "2024-01-01T10:00:00Z",
+      "most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
+  });
+
+  test('should filter records correctly (full scenario) - only 24 hours, entries already processed', () => {
+    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$",
+      "most-recent-period-end-time": "2024-01-01T10:00:00Z",
+      "most-recent-period-end-time-24": "2026-01-01T00:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
   });
 
   test('should apply default granularity regex if not provided', () => {
@@ -197,7 +253,12 @@ describe('p1DiscardIrrelevantPmRecords', () => {
     };
 
     const result = p1DiscardIrrelevantPmRecords(input);
-
+    expect(result).toMatchObject(
+      {
+        "filtered-historical-performance-data-list": [
+          { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS", "period-end-time": "2024-01-01T00:00:00Z" }
+        ]
+      });
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
   });
 
@@ -383,19 +444,40 @@ describe('p1DiscardIrrelevantPmRecords', () => {
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
   });
 
-  test('should compare dates across different timezones correctly', () => {
+  test('should compare dates across different timezones correctly - all are older', () => {
     const input = {
       "historical-performance-data-list": [
-        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:00:00+01:00" },
-        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T09:00:00Z" }
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:00:00+01:00" },  // <<== those are the same time slot
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T09:00:00Z" }        // <<== those are the same time slot
       ],
       "most-recent-period-end-time": "2024-01-01T10:00:00Z"
     };
 
     const result = p1DiscardIrrelevantPmRecords(input);
 
-    expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
   });
+
+  test('should compare dates across different timezones correctly all are to be process, ', () => {
+    const input = {
+      "historical-performance-data-list": [
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:00:00+01:00" },  // <<== those are the same time slot
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T09:00:00Z" }        // <<== those are the same time slot
+      ],
+      "most-recent-period-end-time": "2024-01-01T08:59:59Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+    expect(result).toMatchObject(
+      {
+        "filtered-historical-performance-data-list": [
+          { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:00:00+01:00" },  // <<== those are the same time slot
+          { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T09:00:00Z" }        // <<== those are the same time slot
+        ]
+      });
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(2);
+  });
+
 
   test('should handle invalid most-recent-period-end-time', () => {
     const input = {
