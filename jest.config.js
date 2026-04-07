@@ -5,5 +5,6 @@ module.exports = {
     '<rootDir>/genericFunctions/p1RemoveDefaultValues/1.0.0',
     '<rootDir>/genericFunctions/p1DiscardIrrelevantPmRecords/1.0.0',
     '<rootDir>/genericFunctions/p1CalculateIntervalCapacity/1.0.0',
+    '<rootDir>/genericFunctions/p1CalculateAiCapacity/1.0.0'
   ],
 };
