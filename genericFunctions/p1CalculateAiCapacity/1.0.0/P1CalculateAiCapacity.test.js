@@ -2,7 +2,7 @@ const p1CalculateAiCapacity = require('./P1CalculateAiCapacity');
 const ERRORS = require('./ErrorsEnum.js');
 
 describe('p1CalculateAiCapacity', () => {
-  
+
   test('should return error if input is missing', () => {
     expect(p1CalculateAiCapacity(null))
       .toBe(ERRORS.GENERAL_ERROR);
@@ -52,12 +52,112 @@ describe('p1CalculateAiCapacity', () => {
   test('should calculate AI capacity correctly', () => {
 
     const result = p1CalculateAiCapacity({
-      "channel-bandwidth": 50000,              
+      "channel-bandwidth": 50000,
       "symbol-rate-reduction-factor": 2,
-      "number-of-states-in-modulation": 4,     
-      "code-rate": 75                      
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
     });
     expect(result["air-interface-capacity"]).toBe(32609);
   });
 
+// Testes added by Lorenzo Latta
+  test('should calculate AI capacity correctly (2)', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 1,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(65217);
+  });
+
+  test('should not calculate AI capacity correctly - symbol rate must be greater than 0', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 0,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result).toBe(ERRORS.SRRF_INVALID);
+  });
+
+  test('should calculate AI capacity correctly - code rate 1', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 1
+    });
+    expect(result["air-interface-capacity"]).toBe(435);
+  });
+
+  test('should calculate AI capacity correctly - code rate 0', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 0
+    });
+    expect(result["air-interface-capacity"]).toBe(0);
+  });
+
+  test('should calculate AI capacity correctly - code rate 0', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": -1
+    });
+    expect(result).toBe(ERRORS.CODERATE_INVALID);
+  });
+
+  test('shouldnt calculate AI capacity correctly - number of states 0', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 0,
+      "code-rate": 75
+    });
+    expect(result).toBe(ERRORS.MODSTATES_INVALID);
+  });
+
+  test('should not calculate AI capacity correctly - channel bandwith 0', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 1,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(1);
+  });
+
+  test('should not calculate AI capacity correctly - channel bandwith 0', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 0,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(0);
+  });
+
+
+  test('minumum values', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 1,
+      "symbol-rate-reduction-factor": 1,
+      "number-of-states-in-modulation": 1,
+      "code-rate": 0
+    });
+    expect(result["air-interface-capacity"]).toBe(0);
+  });
 });
