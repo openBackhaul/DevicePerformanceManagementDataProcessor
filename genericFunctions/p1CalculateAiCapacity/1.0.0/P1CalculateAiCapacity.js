@@ -18,11 +18,18 @@ const p1CalculateAiCapacity = (input) => {
       return ERRORS.SRRF_INVALID;
     }
 
+    if (symbolRateReductionFactor < 1) { // Otherwise i got infinity
+      return ERRORS.SRRF_INVALID;
+    }
+
     const numberOfStatesInModulation = input["number-of-states-in-modulation"];
     if (numberOfStatesInModulation === undefined) {
       return ERRORS.MODSTATES_NOT_PROVIDED;
     }
     if (typeof numberOfStatesInModulation !== "number") {
+      return ERRORS.MODSTATES_INVALID;
+    }
+    if (numberOfStatesInModulation < 1) { // Otherwise i got -infinity
       return ERRORS.MODSTATES_INVALID;
     }
 
@@ -33,11 +40,14 @@ const p1CalculateAiCapacity = (input) => {
     if (typeof codeRate !== "number") {
       return ERRORS.CODERATE_INVALID;
     }
+    if (codeRate < 0) { // Otherwise i got -infinity
+      return ERRORS.CODERATE_INVALID;
+    }
 
-    const BW = channelBandwidth;              
-    const SRRF = symbolRateReductionFactor;   
-    const M = numberOfStatesInModulation;     
-    const CR = codeRate / 100;                
+    const BW = channelBandwidth;
+    const SRRF = symbolRateReductionFactor;
+    const M = numberOfStatesInModulation;
+    const CR = codeRate / 100;
 
     const log2M = Math.log2(M);
 
