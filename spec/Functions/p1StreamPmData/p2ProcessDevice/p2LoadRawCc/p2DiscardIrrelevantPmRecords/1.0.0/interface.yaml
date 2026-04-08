@@ -107,12 +107,12 @@ x-javascript-interface:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime
-                        from [{$input#period-end-time} if {$input#granularity-period} indicates 15-MIN]'
+                        from {$input#period-end-time} if ( ({$input#granularity-period} indicates 15-MIN) AND ({$input#period-end-time} > {$input#new-most-recent-period-end-time}) )'
                     new-most-recent-period-end-time-24:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime24
-                        from [{$input#period-end-time} if {$input#granularity-period} indicates 24-HOURS]'
+                        from {$input#period-end-time} if ( ({$input#granularity-period} indicates 24-HOURS) AND ({$input#period-end-time} > {$input#new-most-recent-period-end-time-24}) )'
           error:
             description: 'newMostRecentPeriodEndTime could not be provided'
             content:
@@ -141,6 +141,7 @@ x-javascript-interface:
                 required:
                   - new-most-recent-period-end-time
                   - new-most-recent-period-end-time-24
+                  - offset
                 properties:
                   new-most-recent-period-end-time:
                     type: string
@@ -161,21 +162,25 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: object
-                  #TODO: review -> return only the timestamps, not offset, because offset already specified in variables
                   required:
-                    - most-recent-period-end-time
-                    - most-recent-period-end-time-24
+                    - offset
                   properties:
-                    most-recent-period-end-time:
-                      type: string
+                    offset:
+                      type: object
                       description: >
-                        'updated mostRecentPeriodEndTime
-                        from {$updateOffset.input#/new-most-recent-period-end-time}'
-                    most-recent-period-end-time-24:
-                      type: string
-                      description: >
-                        'updated mostRecentPeriodEndTime
-                        from {$updateOffset.input#/new-most-recent-period-end-time-24}'
+                        'The updated offset object
+                        ! simplified representation, just changes documented !'
+                      properties:
+                        most-recent-period-end-time:
+                          type: string
+                          description: >
+                            'potentially updated most-recent-period-end-time
+                            from maximum of ( {$updateOffset.input#/new-most-recent-period-end-time}, {$updateOffset.input#/offset/most-recent-period-end-time} )'
+                        most-recent-period-end-time-24:
+                          type: string
+                          description: >
+                            'potentially updated most-recent-period-end-time-24
+                            from maximum of ( {$updateOffset.input#/new-most-recent-period-end-time-24}, {$updateOffset.input#/offset/most-recent-period-end-time-24} )'
           error:
             description: 'Offset could not be updated'
             content:
@@ -183,11 +188,13 @@ x-javascript-interface:
                 schema:
                   type: string
                   enum:
-                    - 'NewMostRecentPeriodEndTime not provided'
-                    - 'NewMostRecentPeriodEndTime invalid'
-                    - 'NewMostRecentPeriodEndTime24 not provided'
-                    - 'NewMostRecentPeriodEndTime24 invalid'
-                    - 'Offset update error'
+                    - 'newMostRecentPeriodEndTime not provided'
+                    - 'newMostRecentPeriodEndTime invalid'
+                    - 'newMostRecentPeriodEndTime24 not provided'
+                    - 'newMostRecentPeriodEndTime24 invalid'
+                    - 'offset not provided'
+                    - 'offset invalid'
+                    - 'offset update error'
                     - 'General processing error during reading'
 
 paths:

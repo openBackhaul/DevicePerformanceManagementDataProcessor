@@ -28,7 +28,9 @@ discard-irrelevant-pm-records:
     offset:
       type: object
       description: >
-        'The offset for the currently processed interface instance'
+        'The offset for the currently processed interface instance,
+          from {$input#/offset}
+          modified by {$updateOffset.output#/offset}'
       required:
         - uuid
         - most-recent-period-end-time
@@ -37,22 +39,17 @@ discard-irrelevant-pm-records:
         uuid:
           type: string
           description: >
-            'The interface instance uuid
-            from {$input#/offset/uuid}
+            'UUID of the interface instance'
         most-recent-period-end-time:
           type: string
           description: >
             'The newest 15min periodEndTime seen during previous runs (or the default value)
-            15min PM records not newer than the initial timestamp value are to be discarded,
-            from {$input#/offset/most-recent-period-end-time}
-            overwritten by {$updateOffset.output#/most-recent-period-end-time}'
+            15min PM records not newer than the initial timestamp value are to be discarded'
         most-recent-period-end-time-24:
           type: string
           description: >
             'The newest 24h periodEndTime seen during previous runs (or default value).
-            24h PM records not newer than the initial timestamp value are to be discarded,
-            from {$input#/offset/most-recent-period-end-time-24}
-            overwritten by {$updateOffset.output#/most-recent-period-end-time-24}'
+            24h PM records not newer than the initial timestamp value are to be discarded'
 
     filtered-historical-performance-data-list:
       type: array

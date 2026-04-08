@@ -5,7 +5,7 @@ title
   p2CreateResultCc
 end title
 
-participant "p1ProcessDevice\n" as requestor
+participant "p2ProcessDevice\n" as requestor
 participant "p2CreateResultCc\n" as cur
 participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1IterateAi\nPmSlices" as p1IterateAi
