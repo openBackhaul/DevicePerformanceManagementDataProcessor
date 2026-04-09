@@ -92,3 +92,7 @@ Although the sequence of function calls is hard-coded, actually calling a functi
   - [batch](./Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0/variables.yaml) :
     resultCc identified by date of upload  
 
+**Busy Hour KPI Calculation:**
+
+Details about the dependencies between functions for calculating the busy hour KPIs can be found [here](./additionalDocumentation/busyHourKpiCalculation.md).
+

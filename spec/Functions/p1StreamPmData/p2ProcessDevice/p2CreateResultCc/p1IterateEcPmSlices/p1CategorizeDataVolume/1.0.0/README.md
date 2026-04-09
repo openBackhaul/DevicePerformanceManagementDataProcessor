@@ -1,8 +1,6 @@
 # p1CategorizeDataVolume
 
 
-
-
 ### Diagram
 
 <p align="center">

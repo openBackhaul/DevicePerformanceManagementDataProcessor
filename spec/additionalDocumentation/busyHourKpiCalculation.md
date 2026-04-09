@@ -1,4 +1,25 @@
-# Busy Hour KPI Computation
+# Calculating the Busy Hour KPIs
+
+This document relates to the design applied for the DPMDP v1.1.  
+There is no process established for updating it in case of later releases.  
+
+### Problem
+
+The basic structure of the DPMDP has been designed to optimize the speed of processing newly available PM data.  
+
+This means:  
+- The processing inside the DPMDP is triggered by the availability of an updated ControlConstruct in the MWDI.
+- The first step in the processing is to exclude old data from further processing.
+
+The DPMDP thinks and works in batches of 15 minutes PM data.  
+(The 24 hours PM data provided by the device is not relevant for busy hour KPIs.)
+
+On the other hand, for calculating the busy hour KPIs, data relating to hours must be processed in the context of data relating to days.  
+15 minutes PM data slices must be aggregated to hours.  
+Data concerning the same hour might be distributed across different batches.  
+Multiple batches are needed to get the full data of a day.  
+
+This results in need for storing status information and spill-over data between the processing of different batches.  
 
 ### Busy Hour Definition
 
