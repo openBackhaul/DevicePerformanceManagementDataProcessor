@@ -22,6 +22,26 @@ Formatting the output is separated from transmitting it.
 Internal data structure of prepared performance data follows ONF information model.  
 => Further processing and services can be added independently from customer-specific output formats.  
 
+### Latest Update
+
+#### v1.0.1
+
+This release contains updates for findings and bugs from v1.0.0 review.
+Amongst others, it adds the following changes:
+- addressing of PM slices is corrected (requires both periodEndTime and granularity to be considered as access keys)
+- *p1IterateEcPmSlices* is required to first iterate through 15min PM slices, before a potentially available 24h slice is processed
+
+Details on changes are found in [DPMDP v1.0.1_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/2).
+
+#### v1.0.0 Initial release
+
+The initial realease covers most of the main functionality requested by consumers, like providing 15min and 24h PM data for AirInterfaces and EthernetContainers.  
+Data is gathered from a replicated MWDI cache ElasticSearch instance periodically.  
+Various filtering and processing steps are carried out (e.g. removal of already delivered PM slices, removal attribute with default values from the output, etc.).
+DPDMP allows for providing output in different formats.  
+Data is provided to consumers via Kafka.  
+
+Related issues are found in [DMPMDP v1.0.0_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/1?closed=1).
 
 ### Relevance  
 
