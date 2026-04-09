@@ -2,8 +2,13 @@
 
 Determines the busy hour and calculates the busy hour performance indicators.  
 
-  
+
 ### Overview
+
+A high level description of the p1CalculateBusyHourPerformanceIndicators function can be found [here](./../../../../../../../additionalDocumentation/busyHourKpiCalculation.md#module)
+
+  
+### Delete_me
 
 Die Datenmengen in den jeweiligen Beobachtungszeiträumen werden aggregiert.  
 Die resultierenden 24 aggregierten Datenmengen werden verglichen.  
@@ -13,9 +18,9 @@ label und period-end-time-list werden mit den Werten der busy hour befüllt.
 Die restlichen busy hour performance indicators werden wie oben beschrieben aus den Messwerten der busy hour berechnet und in das busy-hour Attribut eingetragen.  
 
 > Bitte:  
->- die Inhalte des Kapitels Overview nach p1CalculateBusyHourPerformanceIndicators.plantuml übertragen  
+>- die Inhalte des Kapitels Delete_me nach p1CalculateBusyHourPerformanceIndicators.plantuml übertragen  
 >- dabei kurz und prägnant ausdrücken (wie andere Diagramme, z.B. ..\p1CreateResultCc\1.0.0\p1CreateResultCc.png)  
->- danach redundante Aussagen vermeiden, meint Kapitel Overview hier löschen  
+>- danach redundante Aussagen vermeiden, meint Kapitel Delete_me hier löschen  
 >- danach diesen Block löschen  
 
 

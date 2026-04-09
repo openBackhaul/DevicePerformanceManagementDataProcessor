@@ -112,7 +112,7 @@ Das Problem zerfällt in folgende Segmente:
   Die übertragenen Datenmengen, die in 15-Minuten-Messperioden dokumentiert wurden, werden nach Tagen und Label (Beobachtungszeiträume von einer Stunde) kategorisiert.  
   Neben total-bytes-output werden auch period-end-time, total-air-interface-interval-capacity, errored-frames-input und dropped-frames-input kategorisiert.  
   Da die Kategorisierung über die Grenzen der einzelnen Batches hinweg bestehen und vervollständigt werden muss, wird sie als Statusdaten in den DataStore geschrieben.  
-  Falls 15-minute-values-by-day länger als zwei Einträge geworden ist, werden die ältesten Einträge gelöscht (älter als der Wert 1 ist der Wert 31).   
+  Falls 15-minute-values-by-day länger als zwei Einträge geworden ist, werden die ältesten Einträge gelöscht (älter als der Wert 1 ist beispielsweise der Wert 31).   
 
 - Feststellen der busy hour und Berechnung der busy hour performance indicators => p1CalculateBusyHourPerformanceIndicators  
   Sobald die 24-Stunden-Messwerte eines Tages vorliegen, wird angenommen, dass mit dem aktuellen und den vorherigen Batch alle 15-Minuten-Messwerte eingetroffen und kategorisiert wurden.  
@@ -126,7 +126,7 @@ Das Problem zerfällt in folgende Segmente:
 # Aufrufe und Übergaben
 
 - p1CategorizeDataVolume  
-  p1CategorizeDataVolume wird von p1IterateEcPmSlices innerhalb der Schleife zur Bearbeitung der einzelnen Messperioden aufgerufen.  
+  p1CategorizeDataVolume wird von p2IterateEcPmSlices innerhalb der Schleife zur Bearbeitung der einzelnen Messperioden aufgerufen.  
   Nach dem Ausführen von p1CalculateUtilization wird geprüft, ob die Messperiode eine 15-Minuten-Messperiode ist.  
   Falls ja, wird p1CategorizeDataVolume aufgerufen.  
   Übergeben werden:  
@@ -193,7 +193,7 @@ status:
 ```
 
 - p1CalculateBusyHourPerformanceIndicators  
-  p1CalculateBusyHourPerformanceIndicators wird von p1IterateEcPmSlices innerhalb der Schleife zur Bearbeitung der einzelnen Messperioden aufgerufen.  
+  p1CalculateBusyHourPerformanceIndicators wird von p2IterateEcPmSlices innerhalb der Schleife zur Bearbeitung der einzelnen Messperioden aufgerufen.  
   Nach dem Ausführen von p1CalculateUtilization wird geprüft, ob die Messperiode eine 24-Stunden-Messperiode ist.  
   Falls ja, wird p1CalculateBusyHourPerformanceIndicators aufgerufen.  
   Übergeben werden:  

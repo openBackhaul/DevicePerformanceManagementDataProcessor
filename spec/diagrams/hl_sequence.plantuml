@@ -26,7 +26,7 @@ participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
 participant "p1Calculate\nIntervalCapacity" as intCC #PapayaWhip
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL #PapayaWhip
 participant "p1Remove\nDefaultValues" as p1RemDefault #PapayaWhip
-participant "p1IterateEc\nPmSlices" as ecSlices #LightCyan
+participant "p2IterateEc\nPmSlices" as ecSlices #LightSalmon
 participant "p1Calculate\nEthernetKpis" as p1EthKpi #PapayaWhip
 participant "p1Calculate\nUtilization" as p1Util #PapayaWhip
 participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon

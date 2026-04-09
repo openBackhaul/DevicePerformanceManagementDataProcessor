@@ -1,4 +1,4 @@
-# p1IterateEcPmSlices
+# p2IterateEcPmSlices
 
 Iterates through all EthernetContainer historical performance data slices and calls the processing Functions.  
 
@@ -6,7 +6,7 @@ Iterates through all EthernetContainer historical performance data slices and ca
 ### Diagram
 
 <p align="center">
-  <img src="p1IterateEcPmSlices.png" alt="p1IterateEcPmSlices" width="400"/>
+  <img src="p2IterateEcPmSlices.png" alt="p2IterateEcPmSlices" width="400"/>
 </p>
 
 

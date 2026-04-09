@@ -1,13 +1,13 @@
-@startuml p1IterateEcPmSlices
+@startuml p2IterateEcPmSlices
 skinparam responseMessageBelowArrow true
 
 title
-  p1IterateEcPmSlices
+  p2IterateEcPmSlices
 end title
 
 participant "p1CreateResultCc\n" as cur
 
-participant "p1IterateEcPmSlices\n" as iterateSlices
+participant "p2IterateEcPmSlices\n" as iterateSlices
 participant "p1Calculate\nEthernetKpis" as intCC
 participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p1Calculate\nUtilization" as p1CalcUtil

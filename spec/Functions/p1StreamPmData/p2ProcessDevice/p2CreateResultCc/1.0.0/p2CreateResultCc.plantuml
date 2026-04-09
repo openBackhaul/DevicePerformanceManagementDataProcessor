@@ -5,11 +5,11 @@ title
   p2CreateResultCc
 end title
 
-participant "p1ProcessDevice\n" as requestor
+participant "p2ProcessDevice\n" as requestor
 participant "p2CreateResultCc\n" as cur
 participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1IterateAi\nPmSlices" as p1IterateAi
-participant "p1IterateEc\nPmSlices" as p1IterateEc
+participant "p2IterateEc\nPmSlices" as p2IterateEc
 participant "p1RemoveOutOfRange\nTemperature" as p1RemoveTemp
 
 requestor -> cur : { {parameters},\n{rawCc},\n[statusData] }
@@ -81,29 +81,29 @@ activate cur
 
   loop FOR all EthernetContainers in resultCc
 
-    cur -> p1IterateEc : { {/parameters/sub-function=p1IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n[statusData] }
-    activate p1IterateEc
+    cur -> p2IterateEc : { {/parameters/sub-function=p2IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n[statusData] }
+    activate p2IterateEc
 
-      note over p1IterateEc
+      note over p2IterateEc
         Adds Ethernet KPIs
       end note
 
-      note over p1IterateEc
+      note over p2IterateEc
         Deletes default values
         from Ec Pm data
       end note
 
-      note over p1IterateEc
+      note over p2IterateEc
         Adds utilization
       end note
 
-      note over p1IterateEc #LightSalmon
+      note over p2IterateEc #LightSalmon
         Adds BH PIs
         Updates statusData
       end note
 
-    cur <-- p1IterateEc : { [historicalPerformanceDataList],\n[statusData] }
-    deactivate p1IterateEc
+    cur <-- p2IterateEc : { [historicalPerformanceDataList],\n[statusData] }
+    deactivate p2IterateEc
 
   end loop
 

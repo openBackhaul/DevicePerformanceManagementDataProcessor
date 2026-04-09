@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1IterateEcPmSlices
+  title: p2IterateEcPmSlices
   version: 1.0.0
 
 x-javascript-interface:
-  p1IterateEcPmSlices:
+  p2IterateEcPmSlices:
     summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
     input:
       required: true
