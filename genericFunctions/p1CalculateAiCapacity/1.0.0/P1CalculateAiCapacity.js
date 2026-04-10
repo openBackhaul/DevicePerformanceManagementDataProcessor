@@ -44,7 +44,7 @@ const p1CalculateAiCapacity = (input) => {
     if (typeof codeRate !== "number") {
       return ERRORS.CODERATE_INVALID;
     }
-    if (codeRate < 0) { // Otherwise i got -infinity
+    if (codeRate < 0 || codeRate > 100) { // Otherwise i got -infinity
       return ERRORS.CODERATE_INVALID;
     }
 
