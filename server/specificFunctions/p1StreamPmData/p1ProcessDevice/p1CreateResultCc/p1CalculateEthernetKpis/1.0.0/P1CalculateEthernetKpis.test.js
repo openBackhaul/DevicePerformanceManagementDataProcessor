@@ -144,7 +144,7 @@ describe('p1CalculateEthernetKpis', () => {
     }
 
     let result = p1CalculateEthernetKpis(input);
-    expect(p1CalculateEthernetKpis(input));
+    expect(result['historical-performance-data'].length).toBe(9);
   });
 
 });
