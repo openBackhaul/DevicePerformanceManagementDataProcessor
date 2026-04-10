@@ -2,10 +2,15 @@ const ERRORS = require('./ErrorsEnum.js');
 
 const p1CalculateAiCapacity = (input) => {
   try {
+    if (Object.keys(input).length == 0) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
     const channelBandwidth = input["channel-bandwidth"];
     if (channelBandwidth === undefined) {
       return ERRORS.CHANNEL_BW_NOT_PROVIDED;
     }
+    console.log("" + typeof channelBandwidth);
     if (typeof channelBandwidth !== "number") {
       return ERRORS.CHANNEL_BW_INVALID;
     }
