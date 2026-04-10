@@ -125,13 +125,24 @@ describe('p1CalculateAiCapacity', () => {
     expect(result["air-interface-capacity"]).toBe(0);
   });
 
-  test('should calculate AI capacity correctly - code rate 0', () => {
+  test('should not calculate AI capacity correctly - code rate 0', () => {
 
     const result = p1CalculateAiCapacity({
       "channel-bandwidth": 50000,
       "symbol-rate-reduction-factor": 2,
       "number-of-states-in-modulation": 4,
       "code-rate": -1
+    });
+    expect(result).toBe(ERRORS.CODERATE_INVALID);
+  });
+
+  test('should not calculate AI capacity correctly - code rate > 100', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 200
     });
     expect(result).toBe(ERRORS.CODERATE_INVALID);
   });
@@ -188,6 +199,6 @@ describe('p1CalculateAiCapacity', () => {
       "code-rate": 99
     });
     expect(result["air-interface-capacity"]).toBe(7799309);
-  })
+  });
 
 });
