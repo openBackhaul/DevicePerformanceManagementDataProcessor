@@ -10,7 +10,6 @@ const p1CalculateAiCapacity = (input) => {
     if (channelBandwidth === undefined) {
       return ERRORS.CHANNEL_BW_NOT_PROVIDED;
     }
-    console.log("" + typeof channelBandwidth);
     if (typeof channelBandwidth !== "number") {
       return ERRORS.CHANNEL_BW_INVALID;
     }
