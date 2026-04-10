@@ -6,7 +6,7 @@ title
 end title
 
 participant "requestor\n(e.g. p2LoadRawCc)" as requestor
-participant "p1DiscardIrrelevant\nPmRecords" as cur
+participant "p2DiscardIrrelevant\nPmRecords" as cur
 
 
 requestor -> cur: { [historicalPerformanceDataList],\n{offset} }
