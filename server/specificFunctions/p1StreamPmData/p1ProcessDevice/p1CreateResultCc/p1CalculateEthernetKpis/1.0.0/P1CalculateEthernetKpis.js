@@ -7,9 +7,15 @@ function calculateTransmitTraffic(totalBytesOutput, timePeriod) {
   const bytes = Number(totalBytesOutput);
   const time = Number(timePeriod);
 
-  if (Number.isNaN(bytes)) throw new Error(ERR.TOTAL_BYTES_OUTPUT_INVALID);
-  if (timePeriod == null) throw new Error(ERR.TIME_PERIOD_NOT_PROVIDED);
-  if (Number.isNaN(time) || time <= 0) throw new Error(ERR.TIME_PERIOD_INVALID);
+  if (Number.isNaN(bytes)) {
+    throw new Error(ERR.TOTAL_BYTES_OUTPUT_INVALID);
+  }
+  if (timePeriod == null) {
+    throw new Error(ERR.TIME_PERIOD_NOT_PROVIDED);
+  }
+  if (Number.isNaN(time) || time <= 0) {
+    throw new Error(ERR.TIME_PERIOD_INVALID);
+  }
 
   return Math.floor((bytes * 8) / (time * 1000000));
 }
@@ -20,33 +26,54 @@ function calculateReceiveTraffic(totalBytesInput, timePeriod) {
   const bytes = Number(totalBytesInput);
   const time = Number(timePeriod);
 
-  if (Number.isNaN(bytes)) throw new Error(ERR.TOTAL_BYTES_INPUT_INVALID);
-  if (timePeriod == null) throw new Error(ERR.TIME_PERIOD_NOT_PROVIDED);
-  if (Number.isNaN(time) || time <= 0) throw new Error(ERR.TIME_PERIOD_INVALID);
+  if (Number.isNaN(bytes)) {
+    throw new Error(ERR.TOTAL_BYTES_INPUT_INVALID);
+  }
+  if (timePeriod == null) {
+    throw new Error(ERR.TIME_PERIOD_NOT_PROVIDED);
+  }
+  if (Number.isNaN(time) || time <= 0) {
+    throw new Error(ERR.TIME_PERIOD_INVALID);
+  }
 
   return Math.floor((bytes * 8) / (time * 1000000)); 
 }
 
 function calculateFrameLossInput(err, drop) {
-  if (err == null) throw new Error(ERR.ERRORED_FRAMES_INPUT_NOT_PROVIDED);
-  if (drop == null) throw new Error(ERR.DROPPED_FRAMES_INPUT_NOT_PROVIDED);
+  if (err == null) {
+    throw new Error(ERR.ERRORED_FRAMES_INPUT_NOT_PROVIDED);
+  }
+  if (drop == null) {
+    throw new Error(ERR.DROPPED_FRAMES_INPUT_NOT_PROVIDED);
+  }
 
-  if (Number.isNaN(Number(err))) throw new Error(ERR.ERRORED_FRAMES_INPUT_INVALID);
-  if (Number.isNaN(Number(drop))) throw new Error(ERR.DROPPED_FRAMES_INPUT_INVALID);
+  if (Number.isNaN(Number(err))) {
+    throw new Error(ERR.ERRORED_FRAMES_INPUT_INVALID);
+  }
+  if (Number.isNaN(Number(drop))) {
+    throw new Error(ERR.DROPPED_FRAMES_INPUT_INVALID);
+  }
 
   return Number(err) + Number(drop);
 }
 
 function calculateFrameLossOutput(err, drop) {
-  if (err == null) throw new Error(ERR.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED);
-  if (drop == null) throw new Error(ERR.DROPPED_FRAMES_OUTPUT_NOT_PROVIDED);
+  if (err == null) {
+    throw new Error(ERR.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED);
+  }
+  if (drop == null) {
+    throw new Error(ERR.DROPPED_FRAMES_OUTPUT_NOT_PROVIDED);
+  }
 
-  if (Number.isNaN(Number(err))) throw new Error(ERR.ERRORED_FRAMES_OUTPUT_INVALID);
-  if (Number.isNaN(Number(drop))) throw new Error(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
+  if (Number.isNaN(Number(err))) {
+    throw new Error(ERR.ERRORED_FRAMES_OUTPUT_INVALID);
+  }
+  if (Number.isNaN(Number(drop))) {
+    throw new Error(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
+  }
 
   return Number(err) + Number(drop);
 }
-
 
 
 function p1CalculateEthernetKpis(input) {
@@ -69,7 +96,10 @@ function p1CalculateEthernetKpis(input) {
           item['total-bytes-output'],
           item['time-period']
         );
-      } catch {
+      } catch (error) {
+        if (Object.values(ERR).includes(error.message)) {
+          throw error;
+        }
         throw new Error(ERR.TRANSMIT_TRAFFIC_ERROR);
       }
 
@@ -78,7 +108,10 @@ function p1CalculateEthernetKpis(input) {
           item['total-bytes-input'],
           item['time-period']
         );
-      } catch {
+      } catch (error) {
+        if (Object.values(ERR).includes(error.message)) {
+          throw error;
+        }
         throw new Error(ERR.RECEIVE_TRAFFIC_ERROR);
       }
 
@@ -87,7 +120,10 @@ function p1CalculateEthernetKpis(input) {
           item['errored-frames-input'],
           item['dropped-frames-input']
         );
-      } catch {
+      } catch (error) {
+        if (Object.values(ERR).includes(error.message)) {
+          throw error;
+        }
         throw new Error(ERR.FRAME_LOSS_INPUT_ERROR);
       }
 
@@ -96,7 +132,10 @@ function p1CalculateEthernetKpis(input) {
           item['errored-frames-output'],
           item['dropped-frames-output']
         );
-      } catch {
+      } catch (error) {
+        if (Object.values(ERR).includes(error.message)) {
+          throw error;
+        }
         throw new Error(ERR.FRAME_LOSS_OUTPUT_ERROR);
       }
 

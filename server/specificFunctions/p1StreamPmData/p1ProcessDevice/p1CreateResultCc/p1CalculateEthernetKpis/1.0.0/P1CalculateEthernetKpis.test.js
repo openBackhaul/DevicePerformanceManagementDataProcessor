@@ -1,5 +1,6 @@
 const { p1CalculateEthernetKpis } = require('./P1CalculateEthernetKpis');
 const ERR = require('./ErrorsEnum');
+const fs = require('fs');
 
 describe('p1CalculateEthernetKpis', () => {
 
@@ -50,7 +51,7 @@ describe('p1CalculateEthernetKpis', () => {
     };
 
     expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TRANSMIT_TRAFFIC_ERROR);
+      .toThrow(ERR.TOTAL_BYTES_OUTPUT_INVALID);
   });
 
   test('should throw error for missing timePeriod', () => {
@@ -64,7 +65,7 @@ describe('p1CalculateEthernetKpis', () => {
     };
 
     expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TRANSMIT_TRAFFIC_ERROR);
+      .toThrow(ERR.TIME_PERIOD_NOT_PROVIDED);
   });
 
   test('should throw error for frame loss input missing', () => {
@@ -80,7 +81,7 @@ describe('p1CalculateEthernetKpis', () => {
     };
 
     expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.FRAME_LOSS_INPUT_ERROR);
+      .toThrow(ERR.ERRORED_FRAMES_INPUT_NOT_PROVIDED);
   });
 
   test('should handle multiple records', () => {
@@ -130,7 +131,18 @@ describe('p1CalculateEthernetKpis', () => {
     };
 
     expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TRANSMIT_TRAFFIC_ERROR);
+      .toThrow(ERR.TIME_PERIOD_INVALID);
+  });
+
+  test('Read from real data, everything is ok', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/sample1.json', 'utf8');
+    let ethPM = JSON.parse(dataFile);
+    const input = {
+      'historical-performance-data': ethPM
+    }
+
+    let result = p1CalculateEthernetKpis(input);
+    expect(p1CalculateEthernetKpis(input));
   });
 
 });
