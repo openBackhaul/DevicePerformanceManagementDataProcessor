@@ -147,6 +147,83 @@ describe('p1CalculateAiCapacity', () => {
     expect(result).toBe(ERRORS.CODERATE_INVALID);
   });
 
+  test('should calculate AI capacity correctly - code rate 100 (boundary)', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 100
+    });
+    expect(result["air-interface-capacity"]).toBe(43478);
+  });
+
+  test('should calculate AI capacity correctly - number of states 1 (minimum valid)', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 1,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(0);
+  });
+
+  test('should calculate AI capacity correctly - symbol rate reduction factor 1 (minimum valid)', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 1,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(65217);
+  });
+
+  test('should reject float channel-bandwidth - spec says integer', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000.5,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(undefined);
+  });
+
+  test('should reject float symbol-rate-reduction-factor - spec says integer', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2.5,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(undefined);
+  });
+
+  test('should reject float number-of-states-in-modulation - spec says integer', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4.5,
+      "code-rate": 75
+    });
+    expect(result["air-interface-capacity"]).toBe(undefined);
+  });
+
+  test('should reject float code-rate - spec says integer', () => {
+
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75.5
+    });
+    expect(result["air-interface-capacity"]).toBe(undefined);
+  });
+
   test('shouldnt calculate AI capacity correctly - number of states 0', () => {
 
     const result = p1CalculateAiCapacity({
@@ -158,6 +235,46 @@ describe('p1CalculateAiCapacity', () => {
     expect(result).toBe(ERRORS.MODSTATES_INVALID);
   });
 
+  test('should return error if number-of-states-in-modulation is negative', () => {
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": -4,
+      "code-rate": 75
+    });
+    expect(result).toBe(ERRORS.MODSTATES_INVALID);
+  });
+
+  test('should return error if symbol-rate-reduction-factor is negative', () => {
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 50000,
+      "symbol-rate-reduction-factor": -2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result).toBe(ERRORS.SRRF_INVALID);
+  });
+
+  test('should return error if channel-bandwidth is negative', () => {
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": -100,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result).toBe(ERRORS.CHANNEL_BW_INVALID);
+  });
+
+  test('should return error if channel-bandwidth is zero', () => {
+    const result = p1CalculateAiCapacity({
+      "channel-bandwidth": 0,
+      "symbol-rate-reduction-factor": 2,
+      "number-of-states-in-modulation": 4,
+      "code-rate": 75
+    });
+    expect(result).toBe(ERRORS.CHANNEL_BW_INVALID);
+  });
+
   test('should calculate AI capacity correctly - channel bandwith 1', () => {
 
     const result = p1CalculateAiCapacity({
@@ -167,17 +284,6 @@ describe('p1CalculateAiCapacity', () => {
       "code-rate": 75
     });
     expect(result["air-interface-capacity"]).toBe(1);
-  });
-
-  test('should calculate AI capacity correctly - channel bandwith 0', () => {
-
-    const result = p1CalculateAiCapacity({
-      "channel-bandwidth": 0,
-      "symbol-rate-reduction-factor": 2,
-      "number-of-states-in-modulation": 4,
-      "code-rate": 75
-    });
-    expect(result["air-interface-capacity"]).toBe(0);
   });
 
 
