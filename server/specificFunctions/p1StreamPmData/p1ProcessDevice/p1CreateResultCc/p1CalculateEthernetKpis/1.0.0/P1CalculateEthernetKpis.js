@@ -36,7 +36,7 @@ function calculateReceiveTraffic(totalBytesInput, timePeriod) {
     throw new Error(ERR.TIME_PERIOD_INVALID);
   }
 
-  return Math.floor((bytes * 8) / (time * 1000000)); 
+  return Math.floor((bytes * 8) / (time * 1000000));
 }
 
 function calculateFrameLossInput(err, drop) {
@@ -153,7 +153,7 @@ function p1CalculateEthernetKpis(input) {
     };
 
   } catch (error) {
-    
+
     if (Object.values(ERR).includes(error.message)) {
       throw error;
     }

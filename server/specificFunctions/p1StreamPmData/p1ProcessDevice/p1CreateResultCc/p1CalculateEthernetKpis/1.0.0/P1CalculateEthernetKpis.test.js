@@ -112,7 +112,9 @@ describe('p1CalculateEthernetKpis', () => {
 
     expect(result['historical-performance-data'].length).toBe(2);
     expect(result['historical-performance-data'][1]['frame-loss-input']).toBe(5);
+    expect(result['historical-performance-data'][1]['frame-loss-output']).toBe(5);
     expect(result['historical-performance-data'][1]['transmit-traffic']).toBe(0);
+    expect(result['historical-performance-data'][1]['receive-traffic']).toBe(0);
   });
 
   test('should throw error for timePeriod = 0', () => {
