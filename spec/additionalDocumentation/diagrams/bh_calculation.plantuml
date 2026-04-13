@@ -38,7 +38,7 @@ participant "p1Formatting\nOutputOnf" as p1OutputOnf
 
 participant "p1Transmitting\nKafka" as p1Trans
 
-participant "p1Storing\n" as p1Store #LightSalmon
+participant "p2Storing\n" as p2Store #LightSalmon
 participant "p1MaintainDs\n" as p1MaintainDs
 
 note right embed
@@ -398,16 +398,16 @@ activate p1StreamPm
         deactivate p1Trans
 
         ' Storing
-        p2ProcessPm -> p1Store
-        activate p1Store
+        p2ProcessPm -> p2Store
+        activate p2Store
 
-          note over p1Store #LightSalmon
+          note over p2Store #LightSalmon
             Store resultCc, offsets and
             status data to DataStore
           end note
 
-        p2ProcessPm <-- p1Store
-        deactivate p1Store
+        p2ProcessPm <-- p2Store
+        deactivate p2Store
 
       deactivate p2ProcessPm
 

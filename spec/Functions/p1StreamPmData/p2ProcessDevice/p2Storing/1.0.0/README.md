@@ -1,4 +1,4 @@
-# p1Storing  
+# p2Storing  
 
 Stores the resultCc, offsets and statusData of a device in the dataStore.  
 
@@ -10,7 +10,7 @@ StatusData are describing the status of the device, like total-bytes-output valu
 ### Diagram  
 
 <p align="center">  
-  <img src="./p1Storing.png" alt="p1Storing diagram" width="400" />
+  <img src="./p2Storing.png" alt="p2Storing diagram" width="400" />
 </p>  
 
 

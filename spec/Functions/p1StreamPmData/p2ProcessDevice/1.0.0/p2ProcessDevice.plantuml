@@ -13,7 +13,7 @@ participant "p2CreateResultCc\n" as p2CreateResCc #LightSalmon
 participant "p1Formatting\nOutputApt" as p1OutputApt
 participant "p1Formatting\nOutputOnf" as p1OutputOnf
 participant "p1Transmitting\nKafka" as p1Trans
-participant "p1Storing\n" as p1Store #LightCyan
+participant "p2Storing\n" as p2Store #LightCyan
 
 
 requestor -> cur : { mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
@@ -97,15 +97,15 @@ activate cur
   deactivate p1Trans
 
   'Storing
-  cur -> p1Store : { {dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
-  activate p1Store
+  cur -> p2Store : { {dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+  activate p2Store
 
-    note over p1Store
+    note over p2Store
       Stores resultCc
     end note
 
-  cur <-- p1Store
-  deactivate p1Store
+  cur <-- p2Store
+  deactivate p2Store
 
 deactivate cur
 

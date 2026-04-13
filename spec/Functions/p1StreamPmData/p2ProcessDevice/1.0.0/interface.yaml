@@ -339,7 +339,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1Storing:
+      p2Storing:
         input:
           required: true
           content:

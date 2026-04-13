@@ -34,12 +34,12 @@ data-store:
                   description: >
                     'functionName
                     instance to be created during storing, if not existing
-                    from {$p1Storing.input/offsets[*]/function-name}'
+                    from {$p2Storing.input/offsets[*]/function-name}'
                 offset:
                   type: object
                   description: >
                     'offset
-                    from {$p1Storing.input/offsets[*]/offset}'
+                    from {$p2Storing.input/offsets[*]/offset}'
           status-data:
             type: array
             x-key: function-name
@@ -54,12 +54,12 @@ data-store:
                   description: >
                     'functionName
                     instance to be created during storing, if not existing
-                    from {$p1Storing.input/status-data[*]/function-name}'
+                    from {$p2Storing.input/status-data[*]/function-name}'
                 status:
                   type: object
                   description: >
                     'status
-                    from {$p1Storing.input/status-data[*]/status}'
+                    from {$p2Storing.input/status-data[*]/status}'
           result-data:
             type: array
             x-key: batch-timestamp

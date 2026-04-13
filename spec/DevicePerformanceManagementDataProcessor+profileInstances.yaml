@@ -1165,11 +1165,11 @@ profile-instances:
       string-value: 'dpmdp-1-0-0-kmb-c-kmb-1-0-0-001'
 
 
-  # p1Storing
+  # p2Storing
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-0-0-function-p-620'
     capability:
-      function-name: 'p1Storing'
+      function-name: 'p2Storing'
       function-description: 'Stores the resultCc into the DataStore'
       parameter-list:
       sub-function-list:

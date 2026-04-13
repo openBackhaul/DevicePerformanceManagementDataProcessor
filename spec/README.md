@@ -66,7 +66,7 @@ Although the sequence of function calls is hard-coded, actually calling a functi
     - [p1FormattingOutputOnf*](./Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf/1.0.0)  
       - [p1FieldsFilter*](./Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1FieldsFilter/1.0.0)  
     - [p1TransmittingKafka*](./Functions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/1.0.0)  
-    - [p1Storing](./Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0)  
+    - [p2Storing](./Functions/p1StreamPmData/p2ProcessDevice/p2Storing/1.0.0)  
   - [p1MaintainDs](./Functions/p1StreamPmData/p1MaintainDs/1.0.0)  
 
 *) provided as an NPM module  
@@ -85,11 +85,11 @@ Although the sequence of function calls is hard-coded, actually calling a functi
     - [onf-output-format](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.0.0/variables.yaml) :
       the ONF format is created by a configurable filtering of the resultCc  
 
-- [data-store](./Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0/data-store-schema/dataStore.yaml) :
+- [data-store](./Functions/p1StreamPmData/p1ProcessDevice/p2Storing/1.0.0/data-store-schema/dataStore.yaml) :
   pm data stored for some configurable time period  
   - [interface-metadata-list](./Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.0.0/variables.yaml) :
     date information to accelerate pre-filtering  
-  - [batch](./Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0/variables.yaml) :
+  - [batch](./Functions/p1StreamPmData/p1ProcessDevice/p2Storing/1.0.0/variables.yaml) :
     resultCc identified by date of upload  
 
 **Busy Hour KPI Calculation:**

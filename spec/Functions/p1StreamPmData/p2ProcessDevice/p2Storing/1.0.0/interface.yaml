@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1Storing
+  title: p2Storing
   version: 1.1.0
 
 x-javascript-interface:
-  p1Storing:
+  p2Storing:
     summary: 'Stores the resultCc in the dataStore and updates dataStore offset and statusData information.'
     input:
       required: true

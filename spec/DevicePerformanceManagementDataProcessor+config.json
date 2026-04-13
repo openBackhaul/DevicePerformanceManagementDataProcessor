@@ -1852,7 +1852,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1Storing",
+              "function-name": "p2Storing",
               "function-description": "Stores the resultCc into the DataStore",
               "parameter-list": [],
               "sub-function-list": []

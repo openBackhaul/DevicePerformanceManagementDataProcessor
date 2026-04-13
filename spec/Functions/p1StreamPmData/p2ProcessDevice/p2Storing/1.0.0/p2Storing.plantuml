@@ -1,12 +1,12 @@
-@startuml p1Storing
+@startuml p2Storing
 skinparam responseMessageBelowArrow true
 
 title
-  p1Storing
+  p2Storing
 end title
 
 participant "p2ProcessDevice\n" as requestor
-participant "p1Storing\n" as cur
+participant "p2Storing\n" as cur
 database "DataStore" as ds
 
 
