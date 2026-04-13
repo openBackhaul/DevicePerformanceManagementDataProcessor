@@ -15,17 +15,18 @@ requestor -> cur: { mountName }
 activate cur
 
   cur -> p1Read: { mountName}
+  activate p1Read
 
+    p1Read -> ds
+      note over ds
+        return complete
+        device object
+      end note
+    p1Read <-- ds: { {device} }
 
+    cur <-- p1Read: { {device} }
 
-  p1Read -> ds
-    note over ds
-      return complete
-      device object
-    end note
-  p1Read <-- ds: { {device} }
-
-  cur <-- p1Read: { {device} }
+  deactivate p1Read
 
   requestor <-- cur: { {device} }
 deactivate cur
