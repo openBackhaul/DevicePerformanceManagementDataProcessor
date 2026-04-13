@@ -10,16 +10,14 @@ The basic structure of the DPMDP has been designed to optimize the speed of proc
 This means:  
 - The processing inside the DPMDP is triggered by the availability of an updated ControlConstruct in the MWDI.
 - The first step in the processing is to exclude old data from further processing.
-
-The DPMDP thinks and works in batches of 15 minutes PM data.  
-(The 24 hours PM data provided by the device is not relevant for busy hour KPIs.)
-
+  
+The DPMDP thinks and works in batches of 15 minutes PM data (24 hours PM data provided by the device is not relevant for busy hour KPIs).  
 On the other hand, for calculating the busy hour KPIs, data relating to hours must be processed in the context of data relating to days.  
 15 minutes PM data slices must be aggregated to hours.  
 Data concerning the same hour might be distributed across different batches.  
 Multiple batches are needed to get the full data of a day.  
 
-This results in need for storing status information and spill-over data between the processing of different batches.  
+This requires storing status information and spill-over data between the processing of different batches.  
 
 ### Busy Hour Definition
 
@@ -108,6 +106,9 @@ Dass weniger als vier Werte zu Verfügung stehen könnten, wird ignoriert.
 
 Das Problem zerfällt in folgende Segmente:  
 
+- Lesen von Offsets und Statusdaten => p1LoadOffsetsAndStatusData  
+  Offsets und Statusdaten werden zu Beginn der Verarbeitung eines Batches aus dem DataStore gelesen.  
+
 - Kategorisierung der Datenmengen => p1CategorizeDataVolume  
   Die übertragenen Datenmengen, die in 15-Minuten-Messperioden dokumentiert wurden, werden nach Tagen und Label (Beobachtungszeiträume von einer Stunde) kategorisiert.  
   Neben total-bytes-output werden auch period-end-time, total-air-interface-interval-capacity, errored-frames-input und dropped-frames-input kategorisiert.  
@@ -122,6 +123,14 @@ Das Problem zerfällt in folgende Segmente:
   In den 24-Stunden-Messdaten wird das busy-hour Attribut angelegt.  
   label und period-end-time-list werden mit den Werten der busy hour befüllt.  
   Die restlichen busy hour performance indicators werden wie oben beschrieben aus den Messwerten der busy hour berechnet und in das busy-hour Attribut eingetragen.  
+
+- Speichern von Offsets und Statusdaten => p2Storing  
+  Offsets und Statusdaten werden am Ende der Verarbeitung eines Batches in den DataStore geschrieben.  
+
+<p align="center">
+  <img src="./diagrams/bh_calculation.png" alt="Module der Busy Hour KPI Calculation" width="400"/>
+</p>
+
 
 # Aufrufe und Übergaben
 
@@ -201,169 +210,3 @@ status:
   - status der p1CategorizeDataVolume Funktion ( /status-data=p1CategorizeDataVolume/status )  
   Zurückgegeben wird:  
   - historical-performance-data der aktuellen Messperiode  
-
-
-
-
-========  
-hier geht's weiter
-========  
-
-
-  > Noch offen:  
-  Es fehlen bis zu drei Messwerte zu Beginn des Batches.  
-  Potential Solution: Die Summe aus den bis zu drei Messwerten, die am Ende eines Batches nicht mehr berücksichtigt werden, werden als Übertrag in ein neues /interface-metadata-list/busy-hour-calculation/total-bytes-output-spill-over Attribut eingetragen.  
-  Das total-bytes-output-spill-over Attribut bekommt die Beschreibung "Sum of the total-bytes-output values that could not be consolidated into an hourly value at the end of a batch."  
-  Der Wert des total-bytes-output-spill-over Attributs soll nur mit Datenmengen aus der selben Stunde verrechnet werden.  
-  Es ist der Wert des /interface-metadata-list/most-recent-period-end-time Attributes zu beachten.]
-
-
-
-
-
-
-# Noch offen:
-
-- will SDN also provide 3DBH?
-
-> => **Optimierungsvorschlag**:
-> - wenn man in einem resultCC ein komplettes Interface verarbeitet hat, dann könnte man für den dadurch abgedeckten Zeitbereich das lokale Maximum bestimmen (also timestamp + maximaler BH base value)
-> - für jedes Interface speichert man nur die Information zum lokalen Maximum (timestamp, Wert)
->   - das könnte man im resultCc abspeichern
->   - oder direkt im DataStore
-> - wenn man dann das 24h Maximum bestimmen will, muss man nicht mehr alle (bis zu 96) BH base values für jedes Interface nochmal auslesen und daraus das Maximum bestimmen, sondern man muss nur das absolute Maximum anhand der lokalen Maxima berechnen
-> - falls man das direkt im DataStore speichert, könnte man die Daten noch weiter verkürzen
->   - man muss nicht alle lokalen Maxima speichern, sondern eigentlich nur jedes Mal wenn man ein resultCc fertig bearbeitet hat, bestimmen, ob das aktuell hinterlegte Maximum immer noch das (bislang) absolute Maximum ist; falls die Daten im aktuellen resultCc ein höheres Maximum sind, wird das absolute Maximum dementsprechend aktualisiert
->   - d.h. man speicher (pro Interface): in welchem batch wurde das bislang größte Maximum gesehen (batch_timestamp), was war dessen periodEndTime und BH base value
->   - Frage: kann es vorkommen, dass das ein neues 24h Slice für Interface A später bereitgestellt wird, als für Interface B auf demselben device? (also in verschiedenen resultCcs)? => falls ja, wäre es gut, wenn man die resultCcs nicht 2x aus dem DataStore lesen muss...
->   - falls normierte Timestamps zu benutzen sind, muss man ggf. noch das Datum (yyyy-MM-dd) dazuspeichern, damit man nicht Daten von 2 Tagen vermischt.
-
-### Step 1: Determine BH base values
-
-For each 15min PM slice the BH base value is determined:
-- iterate through the 15min PM slices of the currently processed interface in the resultCc
-- for each slice aggregate the reference metric to an hourly value
-  - input for the hourly value are the PM slices of the last hour
-  - due to 15min granularity there should be 4 slices
-  - it is possible that slices in between are missing, missing slices are not to be filled with slices from previous hours. I.e. in this case less than 4 slices are aggregated
-  - the limitation is the periodEndTime of each slice, they may not be older than the periodEndTime of the last (current) slice minus 1 hour (rounded to minutes)
-    - example: if the periodEndTime of the current slice is 15:07, only those of the previous 3 slices are input for the BH base value, where the periodEndTime is not older than 14:07.
-    - see diagram for example
-- how to hourly aggregate:
-  - sum(up to 4 last reference metric values) / (number of relevant slices)
-  - AirInterface: sum(*intervalCapacity* values) / (number of *intervalCapacity* values)
-  - EthernetContainer: sum(*totalBytesOutput* values) / (number of *totalBytesOutput* values)
-
-![bh_base_value_computation](./pictures/bh_base_value.png)
-
-> [!NOTE]
-> **TO BE DISCUSSED**:  
-> 1. **Was soll an der Batch-Grenze passieren?**
->   - wird einfach ignoriert, dass die Daten in einem anderen resultCc liegen (verfälschte Base values)
->   - sollen die Daten aus dem vorherigen resultCc aus dem DataStore gelesen werden?
-> 2. **Normierte Stunden?!**:
->   - falls die Customer auf normierte Stunden bestehen, müsste statt der periodEndTime die normalisierte periodEndTime benutzt werden.
->   - man berechnet BH reference values, die man gar nicht braucht; ggf. kann man das optimieren
-
-## Step 2: Determine the Busy Hour (timestamp)
-
-> [!NOTE]
-> siehe Optimierungsvorschlag oben
-
-The Busy Hour timestamp shall be determined, once a new 24h PM slice is seen during processing of a resultCc.  
-This is, again, to be done per interface instance.  
-A single resultCc only contains a subset of intervals of a days data. Therefore, additional batches (resultCcs) must be read from the dataStore.  
-
-- To determine the BH, the 15min PM slices of the multiple resultCcs must be traversed
-- input are the last up to 96 15min PM slices *s*, with relevant periodEndTimes:
-  - with t = *s*.periodEndTime, tref = 24hSlice.periodEndTime (timestamps rounded to minutes)
-  - t ∈ ( tref-24hours, tref ]
-- find the 15min slice with the maximum BH base value
-- the periodEndTime of this slice is the Busy Hour (timestamp)
-
-## Step 3: Write the Busy Hour timestamp to resultCc
-
-The Busy Hour timestamp of the interface is written into its 24h record in the current resultCc.
-
-## Step 4: Calculate and provide the Busy Hour KPIs
-
-Service-Vorschlag (für den Input interface uuid und BH timestamp):
-- (0) stehen im DataStore schon die berechneten BH-KPIs? falls nein, weiter bei (1), sonst bei (6)
-- (1) aus dem DataStore die passenden resultCc Kandidaten raussuchen
-  - das batch_timestamp ist nur das neuestes currentAirInterface timestamp und daher nur bedingt aussagekräftig
-- (2) auf diese resultCcs den FieldsFilter anwenden, so dass nur noch relevante Attribute übrig bleiben
-- (3) dann in dem reduzierten resultCc für das Zielinterface prüfen, ob es ein record zum timestamp gibt
-  - man kann hier ggf. erstmal prüfen, wie die erste und letzte periodEndTime aussehen (unter der Annahme, dass die von alt nach neu sortiert sind); wenn der Zeitraum nicht passt, kann man das resultCc verwerfen
-  - ACHTUNG: es kann sein, dass die Daten über zwei resultCcs verteilt sind
-  -> die 4 (oder weniger) relevanten 15min slices raussuchen
-- (4) KPIs berechnen
-- (5) Berechnete Werte in den DataStore schreiben
-- (6) Daten bereitstellen
-
-```
-status:
-  type: object
-  required:
-    - function-name
-    - status
-  properties:
-    function-name:
-      type: string
-      enum:
-        - 'p1CategorizeDataVolume'
-    status:
-      type: object
-      required:
-        - xyz
-      properties:
-        xyz:
-          type: array
-          x-key: day
-          minItems: 0
-          maxItems: 2
-          items:
-            type: object
-            required:
-              - day
-              - lmn
-            properties:
-              day:
-                type: integer
-                minimum: 1
-                maximum: 31
-              lmn:
-                type: array
-                x-key: label
-                minItems: 0
-                maxItems: 24
-                items:
-                  type: object
-                  required:
-                    - label
-                    - opq
-                  properties:
-                    label:
-                      type: integer
-                      minimum: 0
-                      maximum: 23
-                    opq:
-                      type: array
-                      x-key: period-end-time
-                      minItems: 0
-                      maxItems: 4
-                      items:
-                        type: object
-                        required:
-                          - period-end-time
-                        properties:
-                          period-end-time:
-                            type: string
-                          total-bytes-output:
-                            type: integer
-                          total-air-interface-interval-capacity:
-                            type: integer
-                          errored-frames-input:
-                            type: integer
-                          dropped-frames-input:
-                            type: integer
-```

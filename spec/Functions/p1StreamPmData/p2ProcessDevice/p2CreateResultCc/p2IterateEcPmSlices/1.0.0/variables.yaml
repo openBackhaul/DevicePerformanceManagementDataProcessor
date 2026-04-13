@@ -5,6 +5,7 @@ iterate-ec-pm-slices:
     - historical-performance-data-list
     - aggregation-group
     - result-cc
+    - status
   properties:
     parameters:
       type: object

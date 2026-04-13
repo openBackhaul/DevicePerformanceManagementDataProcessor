@@ -2,8 +2,10 @@
 
 Stores the resultCc, offsets and statusData of a device in the dataStore.  
 
-Offsets and statusData can contain different offset and status objects depending on the related functionName.
-Offsets e.g. contain information about mostRecentPeriodEndTimes, whereas statusData e.g. contains information relevant for BusyHour computation.  
+Offsets and statusData of diverse Functions are identified by functionName.  
+Offsets are describing the status of the program execution, like pagination or mostRecentPeriodEndTimes.  
+StatusData are describing the status of the device, like total-bytes-output values of two 15-minute intervals that need some intermediate storing until the missing two values arrived and the aggregated value for the entire hour can be computed.  
+
 
 ### Diagram  
 

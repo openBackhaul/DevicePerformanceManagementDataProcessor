@@ -5,16 +5,16 @@ title
   p2IterateEcPmSlices
 end title
 
-participant "p1CreateResultCc\n" as cur
+participant "p2CreateResultCc\n" as cur
 
 participant "p2IterateEcPmSlices\n" as iterateSlices
 participant "p1Calculate\nEthernetKpis" as intCC
 participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p1Calculate\nUtilization" as p1CalcUtil
-participant "p1CategorizeDataVolume\n" as p1CalcBh #Yellow
+participant "p1CategorizeDataVolume\n" as p1CatDataVo
+participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 
-
-cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc} }
+cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{status} }
 activate iterateSlices
 
   loop FOR [historicalPerformanceDataList]
@@ -43,21 +43,38 @@ activate iterateSlices
     iterateSlices <-- p1CalcUtil: { {historical-performance-data} }
     deactivate p1CalcUtil
 
-    note over iterateSlices #Yellow
-      IF granularityPeriod == 24-HOURS
+    note over iterateSlices
+      IF granularityPeriod == 15-MIN
     end note
 
-    note right iterateSlices #Yellow
+    note right iterateSlices
       THEN
     end note
 
-    iterateSlices -> p1CalcBh : { {historical-performance-data},\n{result-cc},\n ??? }
-    activate p1CalcBh #Yellow
-      note over p1CalcBh #Yellow
+    iterateSlices -> p1CatDataVo : { {historical-performance-data},\n{status} }
+    activate p1CatDataVo
+      note over p1CatDataVo
+        Categorizes PM data
+        by day and hour
+      end note
+    iterateSlices <-- p1CatDataVo: { {status} }
+    deactivate p1CatDataVo
+
+    note over iterateSlices
+      IF granularityPeriod == 24-HOURS
+    end note
+
+    note right iterateSlices
+      THEN
+    end note
+
+    iterateSlices -> p1CalcBH : { {historical-performance-data},\n{status} }
+    activate p1CalcBH
+      note over p1CalcBH
         Adds BusyHourKPIs
       end note
-    iterateSlices <-- p1CalcBh: { {historical-performance-data} }
-    deactivate p1CalcBh
+    iterateSlices <-- p1CalcBH: { {historical-performance-data} }
+    deactivate p1CalcBH
 
   end loop
 

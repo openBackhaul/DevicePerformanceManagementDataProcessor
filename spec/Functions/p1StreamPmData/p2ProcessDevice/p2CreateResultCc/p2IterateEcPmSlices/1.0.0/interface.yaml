@@ -17,6 +17,7 @@ x-javascript-interface:
               - historical-performance-data-list
               - aggregation-group
               - result-cc
+              - status
             properties:
               parameters:
                 type: object
@@ -33,6 +34,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'resultCc'
+              status:
+                type: object
+                description: >
+                  'status data, e.g. for calculating BusyHourKPIs'
     output:
       success:
         description: 'historicalPerformanceDataList processed'
@@ -59,9 +64,17 @@ x-javascript-interface:
                 - 'parameters invalid'
                 - 'historicalPerformanceDataList not provided'
                 - 'historicalPerformanceDataList invalid'
-                - 'Ethernet KPIs could not be calculated'
+                - 'aggregationGroup not provided'
+                - 'aggregationGroup invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'status not provided'
+                - 'status invalid'
+                - 'Ethernet KPIs could not be added'
                 - 'Default values could not be removed'
                 - 'Utilization could not be calculated'
+                - 'Data volume could not be categorized'
+                - 'BusyHour KPIs could not be calculated'
                 - 'historicalPerformanceDataList could not be provided'
                 - 'General processing error'
     processing:
@@ -191,6 +204,91 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
+      p1CategorizeDataVolume:
+        summary: 'Categorizes PM data by day and hour'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data
+                  - status
+                properties:
+                  historical-performance-data:
+                    type: array
+                    description: >
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+                  status:
+                    type: object
+                    description: >
+                      'status of iterating the EC PM slices
+                      from [/iterate-ec-pm-slices/status]'
+        output:
+          success:
+            description: 'PM data categorized by day and hour'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - status
+                  properties:
+                    status:
+                      type: object
+                      description: >
+                        'new status after iterating the EC PM slices of the latest batch'
+          error:
+            description: 'PM data could not be categorized by day and hour'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1CalculateBusyHourPerformanceIndicators:
+        summary: 'Calculates BusyHour KPIs based on the status data derived from iterating the EC PM slices'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data
+                  - status
+                properties:
+                  historical-performance-data:
+                    type: array
+                    description: >
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+                  status:
+                    type: object
+                    description: >
+                      'status data derived from iterating the EC PM slices
+                      from [/iterate-ec-pm-slices/status]'
+        output:
+          success:
+            description: 'BusyHour KPIs added'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data
+                  properties:
+                    historical-performance-data:
+                      type: object
+                      description: >
+                        'historicalPerformanceData'
+          error:
+            description: 'BusyHour KPIs could not be added'
+            content:
+              application/json:
+                schema:
+                  type: string
+
 
 paths:
   /:
