@@ -4,65 +4,65 @@ servers:
     own-oam:
       basic:
         - operation-name: /v1/register-yourself
-          uuid: dpmdp-1-0-0-op-s-bm-000
+          uuid: dpmdp-1-1-0-op-s-bm-000
         - operation-name: /v1/embed-yourself
-          uuid: dpmdp-1-0-0-op-s-bm-001
+          uuid: dpmdp-1-1-0-op-s-bm-001
         - operation-name: /v1/redirect-service-request-information
-          uuid: dpmdp-1-0-0-op-s-bm-002
+          uuid: dpmdp-1-1-0-op-s-bm-002
         - operation-name: /v1/redirect-oam-request-information
-          uuid: dpmdp-1-0-0-op-s-bm-003
+          uuid: dpmdp-1-1-0-op-s-bm-003
         - operation-name: /v1/end-subscription
-          uuid: dpmdp-1-0-0-op-s-bm-004
+          uuid: dpmdp-1-1-0-op-s-bm-004
         - operation-name: /v1/inquire-oam-request-approvals
-          uuid: dpmdp-1-0-0-op-s-bm-005
+          uuid: dpmdp-1-1-0-op-s-bm-005
           life-cycle-state: deprecated
         - operation-name: /v1/update-client
-          uuid: dpmdp-1-0-0-op-s-bm-007
+          uuid: dpmdp-1-1-0-op-s-bm-007
         - operation-name: /v1/list-ltps-and-fcs
-          uuid: dpmdp-1-0-0-op-s-bm-008
+          uuid: dpmdp-1-1-0-op-s-bm-008
         - operation-name: /v1/redirect-topology-change-information
-          uuid: dpmdp-1-0-0-op-s-bm-009
+          uuid: dpmdp-1-1-0-op-s-bm-009
         - operation-name: /v1/update-operation-key
-          uuid: dpmdp-1-0-0-op-s-bm-010
+          uuid: dpmdp-1-1-0-op-s-bm-010
         - operation-name: /v1/update-operation-client
-          uuid: dpmdp-1-0-0-op-s-bm-011
+          uuid: dpmdp-1-1-0-op-s-bm-011
         - operation-name: /v1/inquire-basic-auth-approvals
-          uuid: dpmdp-1-0-0-op-s-bm-012
+          uuid: dpmdp-1-1-0-op-s-bm-012
         - operation-name: /v1/dispose-remainders-of-deregistered-application
-          uuid: dpmdp-1-0-0-op-s-bm-013
+          uuid: dpmdp-1-1-0-op-s-bm-013
         - operation-name: /v1/inform-about-preceding-release
-          uuid: dpmdp-1-0-0-op-s-bm-014
+          uuid: dpmdp-1-1-0-op-s-bm-014
           operation-key: n.a.
         - operation-name: /v1/update-client-of-subsequent-release
-          uuid: dpmdp-1-0-0-op-s-bm-015
+          uuid: dpmdp-1-1-0-op-s-bm-015
       individual:
         - operation-name: /v1/bequeath-your-data-and-die
-          uuid: dpmdp-1-0-0-op-s-im-000
+          uuid: dpmdp-1-1-0-op-s-im-000
     service:
       basic:
         - operation-name: /v1/start-application-in-generic-representation
-          uuid: dpmdp-1-0-0-op-s-bs-000
+          uuid: dpmdp-1-1-0-op-s-bs-000
           operation-key: n.a.
         - operation-name: /v1/inform-about-application
-          uuid: dpmdp-1-0-0-op-s-bs-001
+          uuid: dpmdp-1-1-0-op-s-bs-001
           operation-key: n.a.
         - operation-name: /v1/inform-about-application-in-generic-representation
-          uuid: dpmdp-1-0-0-op-s-bs-002
+          uuid: dpmdp-1-1-0-op-s-bs-002
           operation-key: n.a.
         - operation-name: /v1/inform-about-release-history
-          uuid: dpmdp-1-0-0-op-s-bs-003
+          uuid: dpmdp-1-1-0-op-s-bs-003
           operation-key: n.a.
         - operation-name: /v1/inform-about-release-history-in-generic-representation
-          uuid: dpmdp-1-0-0-op-s-bs-004
+          uuid: dpmdp-1-1-0-op-s-bs-004
           operation-key: n.a.
         - operation-name: /docs
-          uuid: dpmdp-1-0-0-op-s-bs-005
+          uuid: dpmdp-1-1-0-op-s-bs-005
           operation-key: n.a.
       individual:
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor
-    own-release-number: 1.0.0
-    uuid: dpmdp-1-0-0-http-s-000
+    own-release-number: 1.1.0
+    uuid: dpmdp-1-1-0-http-s-000
     application-purpose: Collects and processes historical device performance data and streams it to consumers
     owner-name: Thorsten Heinze
     owner-email-address: Thorsten.Heinze@telefonica.com
@@ -70,12 +70,15 @@ servers:
       - release-number: 1.0.0
         release-date: 31.01.2026
         changes: Initial version
+      - release-number: 1.1.0
+        release-date: 31.04.2026
+        changes: Adds additional functionality
   tcp-server:
     - description: Without TLS layer
       local-protocol: http
       own-ip-address: 127.0.0.1
-      own-tcp-port: 4031
-      uuid: dpmdp-1-0-0-tcp-s-000
+      own-tcp-port: 4033
+      uuid: dpmdp-1-1-0-tcp-s-000
 
 
 clients:
@@ -83,57 +86,57 @@ clients:
   - http-client:
       application-name: ElasticSearch
       release-number: 1.0.0
-      uuid: dpmdp-1-0-0-http-c-es-1-0-0-000
+      uuid: dpmdp-1-1-0-http-c-es-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3015
-      uuid: dpmdp-1-0-0-tcp-c-es-1-0-0-000
+      uuid: dpmdp-1-1-0-tcp-c-es-1-0-0-000
     elasticsearch-client:
-      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-007
+      - uuid: dpmdp-1-1-0-es-c-es-1-0-0-007
         index-alias: 7
         # MWDI
-      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-018
+      - uuid: dpmdp-1-1-0-es-c-es-1-0-0-018
         index-alias: 18
         # MWDI Replica
-      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-020
+      - uuid: dpmdp-1-1-0-es-c-es-1-0-0-020
         index-alias: 20
         # Logging
-      - uuid: dpmdp-1-0-0-es-c-es-1-0-0-021
-        index-alias: 21
+      - uuid: dpmdp-1-1-0-es-c-es-1-0-0-021
+        index-alias: 22
         # DataStore
 
   - http-client:
       application-name: KafkaMessageBus
       release-number: 1.0.0
-      uuid: dpmdp-1-0-0-http-c-kmb-1-0-0-000
+      uuid: dpmdp-1-1-0-http-c-kmb-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3017
-      uuid: dpmdp-1-0-0-tcp-c-kmb-1-0-0-000
+      uuid: dpmdp-1-1-0-tcp-c-kmb-1-0-0-000
     kafka-client:
-      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-000
+      - uuid: dpmdp-1-1-0-kmb-c-kmb-1-0-0-000
         topic-name: apt_format
         type: provider
-      - uuid: dpmdp-1-0-0-kmb-c-kmb-1-0-0-001
+      - uuid: dpmdp-1-1-0-kmb-c-kmb-1-0-0-001
         topic-name: onf_format
         type: provider
 
   - http-client:
       application-name: OldRelease
       release-number: 1.0.0
-      uuid: dpmdp-1-0-0-http-c-or-1-0-0-000
+      uuid: dpmdp-1-1-0-http-c-or-1-0-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 4031
-      uuid: dpmdp-1-0-0-tcp-c-or-1-0-0-000
+      uuid: dpmdp-1-1-0-tcp-c-or-1-0-0-000
     operation-clients:
       own-oam:
         basic:
           - operation-name: /v1/bequeath-your-data-and-die
-            uuid: dpmdp-1-0-0-op-c-bm-or-1-0-0-000
+            uuid: dpmdp-1-1-0-op-c-bm-or-1-0-0-000
         individual:
       service:
         basic:
@@ -141,13 +144,13 @@ clients:
 
   - http-client:
       application-name: NewRelease
-      release-number:
-      uuid: dpmdp-1-0-0-http-c-nr-1-0-0-000
+      release-number: 1.1.0
+      uuid: dpmdp-1-1-0-http-c-nr-1-1-0-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port:
-      uuid: dpmdp-1-0-0-tcp-c-nr-1-0-0-000
+      uuid: dpmdp-1-1-0-tcp-c-nr-1-1-0-000
     operation-clients:
       own-oam:
         basic:
@@ -159,24 +162,24 @@ clients:
   - http-client:
       application-name: RegistryOffice
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-ro-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-ro-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3031
-      uuid: dpmdp-1-0-0-tcp-c-ro-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-ro-2-1-2-000
     operation-clients:
       own-oam:
         basic:
           - operation-name: /v2/register-application
-            uuid: dpmdp-1-0-0-op-c-bm-ro-2-1-2-000
+            uuid: dpmdp-1-1-0-op-c-bm-ro-2-1-2-000
             operation-key: n.a.
           - operation-name: /v1/relay-server-replacement
-            uuid: dpmdp-1-0-0-op-c-bm-ro-2-1-2-001
+            uuid: dpmdp-1-1-0-op-c-bm-ro-2-1-2-001
           - operation-name: /v1/deregister-application
-            uuid: dpmdp-1-0-0-op-c-bm-ro-2-1-2-002
+            uuid: dpmdp-1-1-0-op-c-bm-ro-2-1-2-002
           - operation-name: /v1/relay-operation-update
-            uuid: dpmdp-1-0-0-op-c-bm-ro-2-1-2-003
+            uuid: dpmdp-1-1-0-op-c-bm-ro-2-1-2-003
         individual:
       service:
         basic:
@@ -185,12 +188,12 @@ clients:
   - http-client:
       application-name: TypeApprovalRegister
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-tar-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-tar-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3032
-      uuid: dpmdp-1-0-0-tcp-c-tar-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-tar-2-1-2-000
     operation-clients:
       own-oam:
         basic:
@@ -202,12 +205,12 @@ clients:
   - http-client:
       application-name: ExecutionAndTraceLog
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-eatl-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-eatl-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3033
-      uuid: dpmdp-1-0-0-tcp-c-eatl-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-eatl-2-1-2-000
     operation-clients:
       own-oam:
         basic:
@@ -215,19 +218,19 @@ clients:
       service:
         basic:
           - operation-name: /v1/record-service-request
-            uuid: dpmdp-1-0-0-op-c-bs-eatl-2-1-2-000
+            uuid: dpmdp-1-1-0-op-c-bs-eatl-2-1-2-000
             detailed-logging-is-on: false
         individual:
 
   - http-client:
       application-name: OamLog
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-ol-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-ol-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3034
-      uuid: dpmdp-1-0-0-tcp-c-ol-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-ol-2-1-2-000
     operation-clients:
       own-oam:
         basic:
@@ -235,18 +238,18 @@ clients:
       service:
         basic:
           - operation-name: /v1/record-oam-request
-            uuid: dpmdp-1-0-0-op-c-bs-ol-2-1-2-000
+            uuid: dpmdp-1-1-0-op-c-bs-ol-2-1-2-000
         individual:
 
   - http-client:
       application-name: AccessAdministration
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-aa-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-aa-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3035
-      uuid: dpmdp-1-0-0-tcp-c-aa-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-aa-2-1-2-000
     operation-clients:
       own-oam:
         basic:
@@ -254,33 +257,33 @@ clients:
       service:
         basic:
           - operation-name: /v1/approve-basic-auth-request
-            uuid: dpmdp-1-0-0-op-c-bs-aa-2-1-2-000
+            uuid: dpmdp-1-1-0-op-c-bs-aa-2-1-2-000
         individual:
 
   - http-client:
       application-name: ApplicationLayerTopology
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-alt-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-alt-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3036
-      uuid: dpmdp-1-0-0-tcp-c-alt-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-alt-2-1-2-000
     operation-clients:
       own-oam:
         basic:
           - operation-name: /v1/update-all-ltps-and-fcs
-            uuid: dpmdp-1-0-0-op-c-bm-alt-2-1-2-000
+            uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-000
           - operation-name: /v1/update-ltp
-            uuid: dpmdp-1-0-0-op-c-bm-alt-2-1-2-001
+            uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-001
           - operation-name: /v1/delete-ltp-and-dependents
-            uuid: dpmdp-1-0-0-op-c-bm-alt-2-1-2-002
+            uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-002
           - operation-name: /v1/update-fc
-            uuid: dpmdp-1-0-0-op-c-bm-alt-2-1-2-003
+            uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-003
           - operation-name: /v1/update-fc-port
-            uuid: dpmdp-1-0-0-op-c-bm-alt-2-1-2-004
+            uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-004
           - operation-name: /v1/delete-fc-port
-            uuid: dpmdp-1-0-0-op-c-bm-alt-2-1-2-005
+            uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-005
         individual:
       service:
         basic:
@@ -289,12 +292,12 @@ clients:
   - http-client:
       application-name: OperationKeyManagement
       release-number: 2.1.2
-      uuid: dpmdp-1-0-0-http-c-okm-2-1-2-000
+      uuid: dpmdp-1-1-0-http-c-okm-2-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
       tcp-port: 3037
-      uuid: dpmdp-1-0-0-tcp-c-okm-2-1-2-000
+      uuid: dpmdp-1-1-0-tcp-c-okm-2-1-2-000
     operation-clients:
       own-oam:
         basic:
