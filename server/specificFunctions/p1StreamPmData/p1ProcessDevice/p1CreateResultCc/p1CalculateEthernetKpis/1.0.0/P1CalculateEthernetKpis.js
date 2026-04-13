@@ -47,14 +47,20 @@ function calculateFrameLossInput(err, drop) {
     throw new Error(ERR.DROPPED_FRAMES_INPUT_NOT_PROVIDED);
   }
 
-  if (Number.isNaN(Number(err))) {
+  const errNum = Number(err);
+  const dropNum = Number(drop);
+
+  if (Number.isNaN(errNum)) {
     throw new Error(ERR.ERRORED_FRAMES_INPUT_INVALID);
   }
-  if (Number.isNaN(Number(drop))) {
+  if (Number.isNaN(dropNum)) {
     throw new Error(ERR.DROPPED_FRAMES_INPUT_INVALID);
   }
 
-  return Number(err) + Number(drop);
+  const safeErr = Math.max(0, errNum);
+  const safeDrop = Math.max(0, dropNum);
+
+  return safeErr + safeDrop;
 }
 
 function calculateFrameLossOutput(err, drop) {
@@ -65,14 +71,20 @@ function calculateFrameLossOutput(err, drop) {
     throw new Error(ERR.DROPPED_FRAMES_OUTPUT_NOT_PROVIDED);
   }
 
-  if (Number.isNaN(Number(err))) {
+  const errNum = Number(err);
+  const dropNum = Number(drop);
+
+  if (Number.isNaN(errNum)) {
     throw new Error(ERR.ERRORED_FRAMES_OUTPUT_INVALID);
   }
-  if (Number.isNaN(Number(drop))) {
+  if (Number.isNaN(dropNum)) {
     throw new Error(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
   }
 
-  return Number(err) + Number(drop);
+  const safeErr = Math.max(0, errNum);
+  const safeDrop = Math.max(0, dropNum);
+
+  return safeErr + safeDrop;
 }
 
 

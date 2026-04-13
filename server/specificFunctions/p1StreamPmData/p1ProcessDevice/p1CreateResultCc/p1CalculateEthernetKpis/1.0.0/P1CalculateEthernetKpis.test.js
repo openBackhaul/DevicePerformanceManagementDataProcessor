@@ -276,4 +276,88 @@ test('should throw error if historicalPerformanceData is not an array', () => {
     .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
 });
 
+test('should handle negative errored-frames-input as 0', () => {
+  const input = {
+    'historical-performance-data': [
+      {
+        'total-bytes-output': "1000",
+        'total-bytes-input': "2000",
+        'time-period': 10,
+        'errored-frames-input': -5,
+        'dropped-frames-input': 3,
+        'errored-frames-output': 1,
+        'dropped-frames-output': 1
+      }
+    ]
+  };
+
+  const result = p1CalculateEthernetKpis(input);
+
+  expect(result['historical-performance-data'][0]['frame-loss-input'])
+    .toBe(3); 
+});
+
+test('should handle negative dropped-frames-input as 0', () => {
+  const input = {
+    'historical-performance-data': [
+      {
+        'total-bytes-output': "1000",
+        'total-bytes-input': "2000",
+        'time-period': 10,
+        'errored-frames-input': 2,
+        'dropped-frames-input': -10,
+        'errored-frames-output': 1,
+        'dropped-frames-output': 1
+      }
+    ]
+  };
+
+  const result = p1CalculateEthernetKpis(input);
+
+  expect(result['historical-performance-data'][0]['frame-loss-input'])
+    .toBe(2); // 2 + 0
+});
+
+test('should handle negative errored-frames-output as 0', () => {
+  const input = {
+    'historical-performance-data': [
+      {
+        'total-bytes-output': "1000",
+        'total-bytes-input': "2000",
+        'time-period': 10,
+        'errored-frames-input': 1,
+        'dropped-frames-input': 1,
+        'errored-frames-output': -4,
+        'dropped-frames-output': 2
+      }
+    ]
+  };
+
+  const result = p1CalculateEthernetKpis(input);
+
+  expect(result['historical-performance-data'][0]['frame-loss-output'])
+    .toBe(2);
+});
+
+test('should handle negative dropped-frames-output as 0', () => {
+  const input = {
+    'historical-performance-data': [
+      {
+        'total-bytes-output': "1000",
+        'total-bytes-input': "2000",
+        'time-period': 10,
+        'errored-frames-input': 1,
+        'dropped-frames-input': 1,
+        'errored-frames-output': 3,
+        'dropped-frames-output': -2
+      }
+    ]
+  };
+
+  const result = p1CalculateEthernetKpis(input);
+
+  expect(result['historical-performance-data'][0]['frame-loss-output'])
+    .toBe(3);
+});
+
 });

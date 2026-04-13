@@ -32,5 +32,8 @@ module.exports = {
   ERRORED_FRAMES_OUTPUT_INVALID: 'erroredFramesOutput invalid',
 
   DROPPED_FRAMES_OUTPUT_NOT_PROVIDED: 'droppedFramesOutput not provided',
-  DROPPED_FRAMES_OUTPUT_INVALID: 'droppedFramesOutput invalid'
+  DROPPED_FRAMES_OUTPUT_INVALID: 'droppedFramesOutput invalid',
+
+  FRAME_LOSS_INPUT_INVALID: 'frameLossInput invalid',
+  FRAME_LOSS_OUTPUT_INVALID: 'frameLossOutput invalid',
 };
