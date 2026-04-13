@@ -148,216 +148,216 @@ describe('p1CalculateEthernetKpis', () => {
   });
 
   test('should throw error for empty historicalPerformanceData array', () => {
-  const input = {
-    'historical-performance-data': []
-  };
+    const input = {
+      'historical-performance-data': []
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
+  });
 
-test('should throw error for invalid totalBytesInput', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "abc",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'errored-frames-output': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should throw error for invalid totalBytesInput', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "abc",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'errored-frames-output': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.TOTAL_BYTES_INPUT_INVALID);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.TOTAL_BYTES_INPUT_INVALID);
+  });
 
-test('should throw error for missing totalBytesOutput', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'errored-frames-output': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should throw error for missing totalBytesOutput', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'errored-frames-output': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.TOTAL_BYTES_OUTPUT_NOT_PROVIDED);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.TOTAL_BYTES_OUTPUT_NOT_PROVIDED);
+  });
 
-test('should throw error for missing totalBytesInput', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'errored-frames-output': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should throw error for missing totalBytesInput', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'errored-frames-output': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.TOTAL_BYTES_INPUT_NOT_PROVIDED);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.TOTAL_BYTES_INPUT_NOT_PROVIDED);
+  });
 
-test('should throw error for invalid errored-frames-input', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': "abc",
-        'dropped-frames-input': 1,
-        'errored-frames-output': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should throw error for invalid errored-frames-input', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': "abc",
+          'dropped-frames-input': 1,
+          'errored-frames-output': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.ERRORED_FRAMES_INPUT_INVALID);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.ERRORED_FRAMES_INPUT_INVALID);
+  });
 
-test('should throw error for invalid dropped-frames-output', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'errored-frames-output': 1,
-        'dropped-frames-output': "xyz"
-      }
-    ]
-  };
+  test('should throw error for invalid dropped-frames-output', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'errored-frames-output': 1,
+          'dropped-frames-output': "xyz"
+        }
+      ]
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
+  });
 
-test('should throw error for missing errored-frames-output', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should throw error for missing errored-frames-output', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED);
+  });
 
-test('should throw error if historicalPerformanceData is not an array', () => {
-  const input = {
-    'historical-performance-data': "invalid"
-  };
+  test('should throw error if historicalPerformanceData is not an array', () => {
+    const input = {
+      'historical-performance-data': "invalid"
+    };
 
-  expect(() => p1CalculateEthernetKpis(input))
-    .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
-});
+    expect(() => p1CalculateEthernetKpis(input))
+      .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
+  });
 
-test('should handle negative errored-frames-input as 0', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': -5,
-        'dropped-frames-input': 3,
-        'errored-frames-output': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should handle negative errored-frames-input as 0', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': -5,
+          'dropped-frames-input': 3,
+          'errored-frames-output': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  const result = p1CalculateEthernetKpis(input);
+    const result = p1CalculateEthernetKpis(input);
 
-  expect(result['historical-performance-data'][0]['frame-loss-input'])
-    .toBe(3); 
-});
+    expect(result['historical-performance-data'][0]['frame-loss-input'])
+      .toBe(3);
+  });
 
-test('should handle negative dropped-frames-input as 0', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': 2,
-        'dropped-frames-input': -10,
-        'errored-frames-output': 1,
-        'dropped-frames-output': 1
-      }
-    ]
-  };
+  test('should handle negative dropped-frames-input as 0', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': 2,
+          'dropped-frames-input': -10,
+          'errored-frames-output': 1,
+          'dropped-frames-output': 1
+        }
+      ]
+    };
 
-  const result = p1CalculateEthernetKpis(input);
+    const result = p1CalculateEthernetKpis(input);
 
-  expect(result['historical-performance-data'][0]['frame-loss-input'])
-    .toBe(2); // 2 + 0
-});
+    expect(result['historical-performance-data'][0]['frame-loss-input'])
+      .toBe(2); // 2 + 0
+  });
 
-test('should handle negative errored-frames-output as 0', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'errored-frames-output': -4,
-        'dropped-frames-output': 2
-      }
-    ]
-  };
+  test('should handle negative errored-frames-output as 0', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'errored-frames-output': -4,
+          'dropped-frames-output': 2
+        }
+      ]
+    };
 
-  const result = p1CalculateEthernetKpis(input);
+    const result = p1CalculateEthernetKpis(input);
 
-  expect(result['historical-performance-data'][0]['frame-loss-output'])
-    .toBe(2);
-});
+    expect(result['historical-performance-data'][0]['frame-loss-output'])
+      .toBe(2);
+  });
 
-test('should handle negative dropped-frames-output as 0', () => {
-  const input = {
-    'historical-performance-data': [
-      {
-        'total-bytes-output': "1000",
-        'total-bytes-input': "2000",
-        'time-period': 10,
-        'errored-frames-input': 1,
-        'dropped-frames-input': 1,
-        'errored-frames-output': 3,
-        'dropped-frames-output': -2
-      }
-    ]
-  };
+  test('should handle negative dropped-frames-output as 0', () => {
+    const input = {
+      'historical-performance-data': [
+        {
+          'total-bytes-output': "1000",
+          'total-bytes-input': "2000",
+          'time-period': 10,
+          'errored-frames-input': 1,
+          'dropped-frames-input': 1,
+          'errored-frames-output': 3,
+          'dropped-frames-output': -2
+        }
+      ]
+    };
 
-  const result = p1CalculateEthernetKpis(input);
+    const result = p1CalculateEthernetKpis(input);
 
-  expect(result['historical-performance-data'][0]['frame-loss-output'])
-    .toBe(3);
-});
+    expect(result['historical-performance-data'][0]['frame-loss-output'])
+      .toBe(3);
+  });
 
 });
