@@ -5,47 +5,102 @@ title
   DevicePerformanceManagementDataProcessor
 end title
 
-participant "embedYourself\n" as embed #PapayaWhip
-participant "p1StreamPmData\n" as p1StreamPm #PapayaWhip
-participant "p1LoadParameters\n" as p1LoadParams #PapayaWhip
-participant "p1ResolveEsAddress\n" as p1ResolveAddress #PapayaWhip
-participant "p1InitKafka\n" as p1InitKafka #PapayaWhip
-participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep #PapayaWhip
+participant "embedYourself\n" as embed
+participant "p1StreamPmData\n" as p1StreamPm
+participant "p1LoadParameters\n" as p1LoadParams
+participant "p1ResolveEsAddress\n" as p1ResolveAddress
+participant "p1InitKafka\n" as p1InitKafka
+participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep
 
-participant "p2ProcessDevice\n" as p2ProcessPm #LightSalmon
+participant "p2ProcessDevice\n" as p2ProcessPm #LightYellow
 
 participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
-participant "p2LoadRawCc\n" as p2AddRaw #LightSalmon
-participant "p1FieldsFilter\n" as p1FieldsFilter #PapayaWhip
-participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightSalmon
+participant "p2LoadRawCc\n" as p2AddRaw #LightYellow
+participant "p1FieldsFilter\n" as p1FieldsFilter
+participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
 
-participant "p2CreateResultCc\n" as p2CreateResultCc #LightSalmon
-participant "p1Prepare\nTxModes" as p1prepTxModes  #PapayaWhip
-participant "p1Calculate\nAiCapacity" as aiCC #PapayaWhip
+participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
+participant "p1Prepare\nTxModes" as p1prepTxModes 
+participant "p1Calculate\nAiCapacity" as aiCC
 participant "p1IterateAi\nPmSlices" as aiSlices #LightCyan
-participant "p1Calculate\nIntervalCapacity" as intCC #PapayaWhip
-participant "p1RemoveOutOf\nRangeLevels" as p1RORL #PapayaWhip
-participant "p1Remove\nDefaultValues" as p1RemDefault #PapayaWhip
-participant "p2IterateEc\nPmSlices" as ecSlices #LightSalmon
-participant "p1Calculate\nEthernetKpis" as p1EthKpi #PapayaWhip
-participant "p1Calculate\nUtilization" as p1Util #PapayaWhip
+participant "p1Calculate\nIntervalCapacity" as intCC
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL
+participant "p1Remove\nDefaultValues" as p1RemDefault
+participant "p2IterateEc\nPmSlices" as ecSlices #LightYellow
+participant "p1Calculate\nEthernetKpis" as p1EthKpi
+participant "p1Calculate\nUtilization" as p1Util
 participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
-participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT #PapayaWhip
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
-participant "p1Formatting\nOutputApt" as p1OutputApt #PapayaWhip
-participant "p1Formatting\nOutputOnf" as p1OutputOnf #PapayaWhip
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
 
-participant "p1Transmitting\nKafka" as p1Trans #PapayaWhip
+participant "p1Transmitting\nKafka" as p1Trans
 
-participant "p2Storing\n" as p2Store #LightCyan
-participant "p1MaintainDs\n" as p1MaintainDs #PapayaWhip
+participant "p2Storing\n" as p2Store #LightYellow
+participant "p1MaintainDs\n" as p1MaintainDs
 
 note right embed
   Automatically starts
   p1StreamPmData
 end note
 embed -> p1StreamPm
+
+' Release Notes
+===== Changes for preventing mostRecentPeriodEndTimes poison pills  =====
+
+
+===== Changes for adding BH KPIs =====
+
+note over p2ProcessPm
+  - New interface to p1LoadOffsetsAndStatusData
+  [Changes to be described]
+end note
+
+note over p1LoadStatus
+  - load offset about
+    - which 15-min records have already been processed in past
+  - load status about
+    - total-bytes-output in 15-min records in already processed batches
+  [Changes to be described]
+end note
+
+note over p2AddRaw
+  [Changes to be described]
+end note
+
+note over p2filterPm
+  [Changes to be described]
+end note
+
+note over p2CreateResultCc
+  [Changes to be described]
+end note
+
+note over ecSlices
+  - New interface to p1CategorizeDataVolume
+  - New interface to p1CalculateBusyHourPerformanceIndicators
+  [Changes to be described]
+end note
+
+note over p1CatDV
+  [Changes to be described]
+end note
+
+note over p1CalcBH
+  [Changes to be described]
+end note
+
+note over p2Store
+  - store offset about
+    - the latest 15-min record that has been processed
+  - store status about
+    - total-bytes-output in 15-min records that have been processed
+  [Changes to be described]
+end note
+
+===== End of Changes =====
 
 activate p1StreamPm
 
