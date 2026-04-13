@@ -1,0 +1,33 @@
+@startuml provideDeviceDataStoreDump
+skinparam responseMessageBelowArrequestorw true
+
+title
+  provideDeviceDataStoreDump
+end title
+
+participant "requestor" as requestor
+participant "provideDeviceDataStoreDump\n" as cur
+participant "p1ReadDataStoreDeviceData\n" as p1Read
+database "DataStore" as ds
+
+
+requestor -> cur: { mountName }
+activate cur
+
+  cur -> p1Read: { mountName}
+
+
+
+  p1Read -> ds
+    note over ds
+      return complete
+      device object
+    end note
+  p1Read <-- ds: { {device} }
+
+  cur <-- p1Read: { {device} }
+
+  requestor <-- cur: { {device} }
+deactivate cur
+
+@enduml
