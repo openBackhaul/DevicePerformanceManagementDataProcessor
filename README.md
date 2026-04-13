@@ -24,6 +24,20 @@ Internal data structure of prepared performance data follows ONF information mod
 
 ### Latest Update
 
+#### v1.1.0
+
+This release adds new functionality and changes inner workings of DPMDP.
+New functionality and changes e.g. include:
+- provisioning of Busy Hour metrics
+- quality service monitoring
+- a new service for data dumps from DPMDP data store
+- hardening against poison pills during removal of "old" data
+  - when periodEndTimes are far in the future data loss might occur otherwise
+- changes the data storage concept (offsets, status, results)
+
+Details on changes are found in [DPMDP v1.1.0_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/3).
+
+
 #### v1.0.1
 
 This release contains updates for findings and bugs from v1.0.0 review.
