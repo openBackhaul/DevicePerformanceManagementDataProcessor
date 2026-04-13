@@ -6,42 +6,48 @@ const p1CalculateAiCapacity = (input) => {
       return ERRORS.GENERAL_ERROR;
     }
 
+    // Channel Bandwith checks
     const channelBandwidth = input["channel-bandwidth"];
     if (channelBandwidth === undefined) {
       return ERRORS.CHANNEL_BW_NOT_PROVIDED;
     }
-    if (typeof channelBandwidth !== "number") {
+    if (typeof channelBandwidth !== "number" || !Number.isInteger(channelBandwidth)) {
+      return ERRORS.CHANNEL_BW_INVALID;
+    }
+    if (channelBandwidth < 0) { // Otherwise i got infinity
       return ERRORS.CHANNEL_BW_INVALID;
     }
 
+    // Symbol Rate Reduction Factor checks
     const symbolRateReductionFactor = input["symbol-rate-reduction-factor"];
     if (symbolRateReductionFactor === undefined) {
       return ERRORS.SRRF_NOT_PROVIDED;
     }
-    if (typeof symbolRateReductionFactor !== "number") {
+    if (typeof symbolRateReductionFactor !== "number" || !Number.isInteger(symbolRateReductionFactor)) {
       return ERRORS.SRRF_INVALID;
     }
-
     if (symbolRateReductionFactor < 1) { // Otherwise i got infinity
       return ERRORS.SRRF_INVALID;
     }
 
+    // Number of States In Modulation checks
     const numberOfStatesInModulation = input["number-of-states-in-modulation"];
     if (numberOfStatesInModulation === undefined) {
       return ERRORS.MODSTATES_NOT_PROVIDED;
     }
-    if (typeof numberOfStatesInModulation !== "number") {
+    if (typeof numberOfStatesInModulation !== "number" || !Number.isInteger(numberOfStatesInModulation)) {
       return ERRORS.MODSTATES_INVALID;
     }
     if (numberOfStatesInModulation < 1) { // Otherwise i got -infinity
       return ERRORS.MODSTATES_INVALID;
     }
 
+    // Code Rate checks
     const codeRate = input["code-rate"];
     if (codeRate === undefined) {
       return ERRORS.CODERATE_NOT_PROVIDED;
     }
-    if (typeof codeRate !== "number") {
+    if (typeof codeRate !== "number" || !Number.isInteger(codeRate)) {
       return ERRORS.CODERATE_INVALID;
     }
     if (codeRate < 0 || codeRate > 100) { // Otherwise i got -infinity

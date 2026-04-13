@@ -188,6 +188,7 @@ describe('p1CalculateAiCapacity', () => {
       "number-of-states-in-modulation": 4,
       "code-rate": 75
     });
+    expect(result).toBe(ERRORS.CHANNEL_BW_INVALID);
     expect(result["air-interface-capacity"]).toBe(undefined);
   });
 
@@ -199,6 +200,7 @@ describe('p1CalculateAiCapacity', () => {
       "number-of-states-in-modulation": 4,
       "code-rate": 75
     });
+    expect(result).toBe(ERRORS.SRRF_INVALID);
     expect(result["air-interface-capacity"]).toBe(undefined);
   });
 
@@ -210,6 +212,7 @@ describe('p1CalculateAiCapacity', () => {
       "number-of-states-in-modulation": 4.5,
       "code-rate": 75
     });
+    expect(result).toBe(ERRORS.MODSTATES_INVALID);
     expect(result["air-interface-capacity"]).toBe(undefined);
   });
 
@@ -221,6 +224,7 @@ describe('p1CalculateAiCapacity', () => {
       "number-of-states-in-modulation": 4,
       "code-rate": 75.5
     });
+    expect(result).toBe(ERRORS.CODERATE_INVALID);
     expect(result["air-interface-capacity"]).toBe(undefined);
   });
 
@@ -272,7 +276,7 @@ describe('p1CalculateAiCapacity', () => {
       "number-of-states-in-modulation": 4,
       "code-rate": 75
     });
-    expect(result).toBe(ERRORS.CHANNEL_BW_INVALID);
+    expect(result["air-interface-capacity"]).toBe(0);
   });
 
   test('should calculate AI capacity correctly - channel bandwith 1', () => {
