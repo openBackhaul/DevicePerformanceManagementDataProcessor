@@ -1,4 +1,4 @@
-# p1IterateAiPmSlices
+# p2IterateAiPmSlices
 
 Iterates through all AirInterface historical performance data slices and calls the processing Functions.  
 
@@ -6,7 +6,7 @@ Iterates through all AirInterface historical performance data slices and calls t
 ### Diagram
 
 <p align="center">
-  <img src="p1IterateAiPmSlices.png" alt="p1IterateAiPmSlices" width="400"/>
+  <img src="p2IterateAiPmSlices.png" alt="p2IterateAiPmSlices" width="400"/>
 </p>
 
 

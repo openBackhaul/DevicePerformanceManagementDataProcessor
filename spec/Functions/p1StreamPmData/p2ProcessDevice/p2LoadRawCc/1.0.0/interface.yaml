@@ -16,7 +16,7 @@ x-javascript-interface:
               - parameters
               - mwdi-replica-es-client
               - mount-name
-              - offset
+              - offsets
             properties:
               parameters:
                 type: object
@@ -27,26 +27,9 @@ x-javascript-interface:
               mount-name:
                 type: string
                 description: 'mountName of the device for which ControlConstruct data shall be read'
-                mount-name: '100250001'
               offsets:
                 type: array
-                x-key: function-name
-                items:
-                  type: object
-                  required:
-                    - function-name
-                    - offset
-                  properties:
-                    function-name:
-                      type: string
-                    offset:
-                      # currently only 1 offset type, but additional ones possible in the future
-                      oneOf:
-                        type: object
-                        description: 'Offset for functionName=p2DiscardIrrelevantPmRecords'
-                        interface-offsets:
-                          type: array
-
+                description: 'Array of all Offsets'
     output:
       success:
         description: 'rawCc loaded'
@@ -62,11 +45,11 @@ x-javascript-interface:
                   description: >
                     'rawCc read from Replica ES, but reduced by irrelevant data
                     from [/load-raw-cc/raw-cc]'
-                offset:
-                  type: object
+                offsets:
+                  type: array
                   description: >
-                    'Offset object for this function
-                    from [/load-raw-cc/offset]'
+                    'Array of all Offsets
+                    from [/load-raw-cc/offsets]'
       error:
         description: 'rawCc could not be loaded'
         content:
@@ -80,6 +63,8 @@ x-javascript-interface:
                 - 'mwdiReplicaEsClient invalid'
                 - 'mountName not provided'
                 - 'mountName invalid'
+                - 'offsets not provided'
+                - 'offsets invalid'
                 - 'rawCc could not be provided'
                 - 'General processing error'
     processing:
@@ -170,7 +155,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Offset for the currently processed ltp
-                      from [/load-raw-cc/offset]'
+                      from [/load-raw-cc/interface-offset]'
         output:
           success:
             description: 'filteredHistoricalPerformanceDataList provided'
@@ -253,37 +238,38 @@ x-javascript-interface:
                 type: object
                 required:
                   - interface-offsets
-                  - offset
+                  - interface-offset
                 properties:
                   interface-offsets:
                     type: array
                     description: > 
-                      'interfaceOffsets
+                      'Array of offsets of all interfaces at the device
                       from [/load-raw-cc/interface-offsets]'
-                  offset:
+                  interface-offset:
                     type: object
                     description: >
-                      'Offset for the currently processed ltp
-                      from [/load-raw-cc/offset]'
+                      'Offset at a specific interface
+                      from [/load-raw-cc/interface-offset]'
         output:
           success:
-            description: 'updated interfaceOffset provided'
+            description: 'Updated array of offsets of all interfaces provided'
             content:
               application/json:
                 schema:
                   type: object
                   required:
-                    - interfaceOffset
+                    - interface-offsets
                   properties:
                     interface-offsets:
                       type: array
                       description: > 
-                        'interfaceOffsets
-                        updated by adding items for new uuids and overwriting for existing entries. Offset object
-                        from {{$updateInterfaceOffset.input/offset}
-                        (over)writes item for [/load-raw-cc/interface-offsets={$updateInterfaceOffset.input#/offset/uuid}].'
+                        'Array of offsets of all interfaces at the device'
+                      items:
+                        type: object
+                        description: >
+                          'Offset at the currently processed interface to be overwritten by [/load-raw-cc/interface-offset]'
           error:
-            description: 'filteredHistoricalPerformanceDataList could not be provided'
+            description: 'Updated array of offsets of all interfaces could not be provided'
             content:
               application/json:
                 schema:
@@ -291,8 +277,8 @@ x-javascript-interface:
                   enum:
                     - 'interfaceOffsets not provided'
                     - 'interfaceOffsets invalid'
-                    - 'offset not provided'
-                    - 'offset invalid'
+                    - 'interfaceOffset not provided'
+                    - 'interfaceOffset invalid'
                     - 'General processing error'
       updateOffsets:
         input:
@@ -317,7 +303,7 @@ x-javascript-interface:
                       from [/load-raw-cc/interface-offsets]'
         output:
           success:
-            description: 'updated offsets provided'
+            description: 'Updated offsets for all functions provided'
             content:
               application/json:
                 schema:
@@ -327,13 +313,28 @@ x-javascript-interface:
                   properties:
                     offsets:
                       type: array
-                      description: > 
-                        'The offsets item is updated, by
-                        (over)writing {$updateOffsets.input#/interface-offsets}
-                        into {$updateOffsets.input#/offsets=p2DiscardIrrelevantPmRecords}.
-                        '
+                      x-key: function-name
+                      description: >
+                        'Array of offsets of all functions'
+                      items:
+                        oneOf:
+                          - description: 'offset for p2DiscardIrrelevantPmRecords'
+                            type: object
+                            required:
+                              - function-name
+                              - offset
+                            properties:
+                              function-name:
+                                type: string
+                                enum:
+                                  - 'p2DiscardIrrelevantPmRecords'
+                              interface-offsets:
+                                type: array
+                                description: >
+                                  'Array of offsets of all interfaces at the device
+                                  overwritten by [/load-raw-cc/interface-offsets]'
           error:
-            description: 'filteredHistoricalPerformanceDataList could not be provided'
+            description: 'Updated offsets for all functions could not be provided'
             content:
               application/json:
                 schema:

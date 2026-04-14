@@ -1,8 +1,8 @@
-@startuml p1IterateAiPmSlices
+@startuml p2IterateAiPmSlices
 skinparam responseMessageBelowArrow true
 
 title
-  p1IterateAiPmSlices
+  p2IterateAiPmSlices
 end title
 
 participant "p1CreateResultCc\n" as cur

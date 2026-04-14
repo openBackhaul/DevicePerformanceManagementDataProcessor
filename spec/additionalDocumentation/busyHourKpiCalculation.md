@@ -113,7 +113,7 @@ Das Problem zerfällt in folgende Segmente:
   Die übertragenen Datenmengen, die in 15-Minuten-Messperioden dokumentiert wurden, werden nach Tagen und Label (Beobachtungszeiträume von einer Stunde) kategorisiert.  
   Neben total-bytes-output werden auch period-end-time, total-air-interface-interval-capacity, errored-frames-input und dropped-frames-input kategorisiert.  
   Da die Kategorisierung über die Grenzen der einzelnen Batches hinweg bestehen und vervollständigt werden muss, wird sie als Statusdaten in den DataStore geschrieben.  
-  Falls 15-minute-values-by-day länger als zwei Einträge geworden ist, werden die ältesten Einträge gelöscht (älter als der Wert 1 ist beispielsweise der Wert 31).   
+  Falls 15-minute-values-by-day länger als zwei Einträge geworden ist, werden die ältesten Einträge gelöscht (älter als der Wert 1 ist beispielsweise der Wert 31).  
 
 - Feststellen der busy hour und Berechnung der busy hour performance indicators => p1CalculateBusyHourPerformanceIndicators  
   Sobald die 24-Stunden-Messwerte eines Tages vorliegen, wird angenommen, dass mit dem aktuellen und den vorherigen Batch alle 15-Minuten-Messwerte eingetroffen und kategorisiert wurden.  
@@ -124,8 +124,8 @@ Das Problem zerfällt in folgende Segmente:
   label und period-end-time-list werden mit den Werten der busy hour befüllt.  
   Die restlichen busy hour performance indicators werden wie oben beschrieben aus den Messwerten der busy hour berechnet und in das busy-hour Attribut eingetragen.  
 
-- Speichern von Offsets und Statusdaten => p2Storing  
-  Offsets und Statusdaten werden am Ende der Verarbeitung eines Batches in den DataStore geschrieben.  
+- Speichern der Statusdaten => p2Storing  
+  Statusdaten (total-bytes-output values of already processed 15-minute periods) werden am Ende der Verarbeitung eines Batches in den DataStore geschrieben.  
 
 <p align="center">
   <img src="./diagrams/bh_calculation.png" alt="Module der Busy Hour KPI Calculation" width="400"/>

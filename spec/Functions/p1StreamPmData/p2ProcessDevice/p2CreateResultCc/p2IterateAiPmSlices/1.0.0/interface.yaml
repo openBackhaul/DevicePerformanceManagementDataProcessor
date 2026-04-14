@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1IterateAiPmSlices
+  title: p2IterateAiPmSlices
   version: 1.0.0
 
 x-javascript-interface:
-  p1IterateAiPmSlices:
+  p2IterateAiPmSlices:
     summary: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
     input:
       required: true
