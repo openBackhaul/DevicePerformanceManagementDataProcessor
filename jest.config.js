@@ -5,5 +5,6 @@ module.exports = {
     '<rootDir>/genericFunctions/p1RemoveDefaultValues/1.0.0',
     '<rootDir>/genericFunctions/p1DiscardIrrelevantPmRecords/1.0.0',
     '<rootDir>/genericFunctions/p1CalculateIntervalCapacity/1.0.0',
+    '<rootDir>/server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/1.0.0'
   ],
 };
