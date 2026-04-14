@@ -492,4 +492,52 @@ describe('p1DiscardIrrelevantPmRecords', () => {
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
   });
 
+  test('edge case: should filter out records with empty strings for granularity or period-end-time', () => {
+    const input = {
+      "historical-performance-data-list": [
+        { "granularity-period": "", "period-end-time": "2024-01-01T10:15:00Z" },
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "" },
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:15:00Z" }
+      ],
+      "most-recent-period-end-time": "2024-01-01T10:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
+    expect(result["filtered-historical-performance-data-list"][0]["period-end-time"]).toBe("2024-01-01T10:15:00Z");
+  });
+
+  test('edge case: should filter out records with whitespace-only granularity or period-end-time', () => {
+    const input = {
+      "historical-performance-data-list": [
+        { "granularity-period": "   ", "period-end-time": "2024-01-01T10:15:00Z" },
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "   " },
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:15:00Z" }
+      ],
+      "most-recent-period-end-time": "2024-01-01T10:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
+    expect(result["filtered-historical-performance-data-list"][0]["period-end-time"]).toBe("2024-01-01T10:15:00Z");
+  });
+
+  test('edge case: should filter out records with newline characters in granularity or period-end-time', () => {
+    const input = {
+      "historical-performance-data-list": [
+        { "granularity-period": "\n", "period-end-time": "2024-01-01T10:15:00Z" },
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "\n  \n" },
+        { "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN", "period-end-time": "2024-01-01T10:15:00Z" }
+      ],
+      "most-recent-period-end-time": "2024-01-01T10:00:00Z"
+    };
+
+    const result = p1DiscardIrrelevantPmRecords(input);
+
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
+    expect(result["filtered-historical-performance-data-list"][0]["period-end-time"]).toBe("2024-01-01T10:15:00Z");
+  });
+
 });
