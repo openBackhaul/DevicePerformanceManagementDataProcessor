@@ -23,6 +23,13 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
 
   const timeStamp = new Date(periodEndTime);
 
+  // let utilizationStruct = {
+  //   'total-bytes-output': historicalPerfData['performance-data']['total-bytes-output'],
+  //   'total-air-interface-interval-capacity': historicalPerfData['performance-data']['total-air-interface-interval-capacity'],
+  //   'time-period': historicalPerfData['performance-data']['time-period']
+  // };
+  // let utilizationResult = calculateUtilization(utilizationStruct);
+
   // 'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
   // from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
   //         with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
@@ -92,12 +99,18 @@ const p1CalculateUtilization = (input) => {
 
     // TODO: manage 'Utilization could not be added'
 
-    let utilizationStruct = {
-      'total-bytes-output': historicalPerfData['performance-data']['total-bytes-output'],
-      'total-air-interface-interval-capacity': historicalPerfData['performance-data']['total-air-interface-interval-capacity'],
-      'time-period': historicalPerfData['performance-data']['time-period']
-    };
-    let utilizationResult = calculateUtilization(utilizationStruct);
+    const granularityPeriod = historicalPerfData['granularity-period'];
+    if (granularityPeriod.endsWith('GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN')) {
+      // process data
+    } else if (granularityPeriod.endsWith('GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS') ||
+      granularityPeriod.endsWith('GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN') ||
+      granularityPeriod.endsWith('GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED')) {
+      return {
+        'historical-performance-data': historicalPerfData
+      };
+    } else {
+      return ERRORS.HIST_PERF_DATA_INVALID;
+    }
 
     // let capacityStruct = {
     //   'logical-termination-point': resultCC[0],
@@ -107,7 +120,7 @@ const p1CalculateUtilization = (input) => {
     // let capacityResult  = calculateTotalAirInterfaceIntervalCapacity(capacityStruct);
     // Return value
     return {
-      "historical-performance-data": undefined
+      'historical-performance-data': undefined
     };
   } catch (err) {
     return ERRORS.GENERAL_ERROR;
