@@ -28,7 +28,6 @@ const performanceStruct1 = {
   "time-period": 100
 }
 
-
 const performanceStruct2 = {
   "es": 0,
   "ses": 0,
@@ -62,7 +61,6 @@ const wrongPerformanceStruct1 = {
   "cses": 0,
   "unavailability": 0,
   "tx-level-min": 5,
-  // "tx-level-max": 200,
   "tx-level-avg": 50,
   "rx-level-min": 1000,
   "rx-level-max": 100000,
@@ -84,29 +82,28 @@ const wrongPerformanceStruct1 = {
 }
 
 const parameterStruct1 = {
-  "lower-tx-level-limit": 10,   // Lower bound of valid values of the transmit level
-  "upper-tx-level-limit": 100,   // Upper bound of valid values of the transmit level
-  "lower-rx-level-limit": 1000,   // Lower bound of valid values of the receive level
-  "upper-rx-level-limit": 10000,   // Upper bound of valid values of the receive level
+  "lower-tx-level-limit": "10",
+  "upper-tx-level-limit": "100",
+  "lower-rx-level-limit": "1000",
+  "upper-rx-level-limit": "10000",
 }
 
 const wrongParameterStruct1 = {
-  "lower-tx-level-limit": 10,   // Lower bound of valid values of the transmit level
-  "upper-tx-level-limit": 100,   // Upper bound of valid values of the transmit level
-  // "lower-rx-level-limit": 1000,   // Lower bound of valid values of the receive level
-  "upper-rx-level-limit": 10000,   // Upper bound of valid values of the receive level
+  "lower-tx-level-limit": "10",
+  "upper-tx-level-limit": "100",
+  "upper-rx-level-limit": "10000",
 }
 
 const wrongParameterStruct2 = {
-  "lower-tx-level-limit": "dsgf",   // Lower bound of valid values of the transmit level
-  "upper-tx-level-limit": 100,   // Upper bound of valid values of the transmit level
-  "lower-rx-level-limit": 1000,   // Lower bound of valid values of the receive level
-  "upper-rx-level-limit": ":",   // Upper bound of valid values of the receive level
+  "lower-tx-level-limit": "dsgf",
+  "upper-tx-level-limit": 100,
+  "lower-rx-level-limit": 1000,
+  "upper-rx-level-limit": ":",
 }
 
-describe('p1RemoveOutOfRangeLevels', () => {
+describe('Positive Tests - Happy Path @positive', () => {
 
-  test('All levels are ok', () => {
+  test('All levels are ok @positive', () => {
     expect(p1RemoveOutOfRangeLevels({
         "performance-data": performanceStruct1,
         "parameters": parameterStruct1
@@ -116,7 +113,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
       });
   });
 
-  test('Remove some levels', () => {
+  test('Remove some levels @positive', () => {
     const result = p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": parameterStruct1
@@ -133,14 +130,18 @@ describe('p1RemoveOutOfRangeLevels', () => {
     expect('rx-level-max' in result["performance-data"]).toBe(false);
   });
 
-  test('Missing parameters', () => {
+});
+
+describe('Negative Tests - Error Cases @negative', () => {
+
+  test('Missing parameters @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
     }))
     .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
-  test('Missing parameters (undefined)', () => {
+  test('Missing parameters (undefined) @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": undefined
@@ -148,7 +149,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
-  test('Missing parameters (null)', () => {
+  test('Missing parameters (null) @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": null
@@ -156,7 +157,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
-  test('Missing parameters (string)', () => {
+  test('Missing parameters (string) @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": "ciao"
@@ -164,7 +165,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     .toBe(ERRORS.PARAM_INVALID);
   });
 
-  test('Missing some property of parameters', () => {
+  test('Missing some property of parameters @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": wrongParameterStruct1
@@ -172,7 +173,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     .toBe(ERRORS.PARAM_INVALID);
   });
 
-  test('String on property of parameters', () => {
+  test('String on property of parameters @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
       "parameters": wrongParameterStruct2
@@ -180,16 +181,14 @@ describe('p1RemoveOutOfRangeLevels', () => {
     .toBe(ERRORS.PARAM_INVALID);
   });
 
-
-   test('Missing performance data', () => {
+  test('Missing performance data @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "parameters": parameterStruct1
     }))
     .toBe(ERRORS.PERF_NOT_PROVIDED);
   });
 
-
-  test('Missing some property of performance', () => {
+  test('Missing some property of performance @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": wrongPerformanceStruct1,
       "parameters": parameterStruct1
@@ -197,7 +196,11 @@ describe('p1RemoveOutOfRangeLevels', () => {
     .toBe(ERRORS.PERF_INVALID);
   });
 
-  test('Should NOT mutate original performance data - MUTATION BUG DETECTION', () => {
+});
+
+describe('Edge Cases @edge', () => {
+
+  test('Should NOT mutate original performance data - MUTATION BUG DETECTION @edge', () => {
     const originalPerformance = {
       "es": 0,
       "ses": 0,
@@ -228,7 +231,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     expect(originalPerformance["tx-level-min"]).toBe(5);
   });
 
-  test('Should delete CORRECT property (not always tx-level-min) - WRONG PROPERTY DELETE BUG DETECTION', () => {
+  test('Should delete CORRECT property (not always tx-level-min) - WRONG PROPERTY DELETE BUG DETECTION @edge', () => {
     const inputPerformance = {
       "es": 0,
       "ses": 0,
@@ -260,7 +263,7 @@ describe('p1RemoveOutOfRangeLevels', () => {
     expect(result["performance-data"]["tx-level-min"]).toBe(50);
   });
 
-  test('Should delete CORRECT rx-level property - WRONG PROPERTY DELETE BUG DETECTION', () => {
+  test('Should delete CORRECT rx-level property - WRONG PROPERTY DELETE BUG DETECTION @edge', () => {
     const inputPerformance = {
       "es": 0,
       "ses": 0,
@@ -292,8 +295,4 @@ describe('p1RemoveOutOfRangeLevels', () => {
     expect(result["performance-data"]["rx-level-min"]).toBeUndefined();
   });
 
-// Test end
 });
-
-
-
