@@ -7,6 +7,8 @@ end title
 
 participant "requestor" as requestor
 participant "provideDeviceDataStoreDump\n" as cur
+participant "p1LoadParameters" as loadParams
+participant "p1ResolveEsAddress" as resolveEsAddress
 participant "p1ReadDataStoreDeviceData\n" as p1Read
 database "DataStore" as ds
 
@@ -14,21 +16,61 @@ database "DataStore" as ds
 requestor -> cur: { mountName }
 activate cur
 
-  cur -> p1Read: { mountName}
+
+  ' get parameters
+  note right of cur #LightCoral
+    was wird hier als functionName übergeben?
+    eigentlich müsste ja hier "provideDeviceDataStoreDump"
+    übergeben werden, weil das der Aufrufer ist
+    (das ist aber ein Service, keine Function;
+    darf man das trotzdem angeben?)
+  end note
+
+  cur -> loadParams: { functionName=\n"p1ReadDataStoreDeviceData"}
+  activate loadParams
+
+    note over loadParams
+      Loads parameters
+      from configFile
+    end note
+    
+    cur <-- loadParams: { {parameters} \n{configFile} }
+  deactivate loadParams
+
+  ' get ES address
+  cur -> resolveEsAddress: { {parameters} \n{configFile} \nesName }
+  activate resolveEsAddress
+
+    note over resolveEsAddress
+      Resolves ES address
+      from configFile
+    end note
+    
+    cur <-- resolveEsAddress: { esAddress }
+  deactivate resolveEsAddress 
+
+  note right of cur
+    Build ressourcePath from esAddress and mountName:
+    ressourcePath := [{esAddress.url}://data-store/device={mountName}]
+  end note
+
+
+  cur -> p1Read: { ressourcePath }
   activate p1Read
 
     p1Read -> ds
       note over ds
-        return complete
-        device object
+        return device data
+        corresponding to
+        ressourcePath
       end note
-    p1Read <-- ds: { {device} }
+    p1Read <-- ds: { {deviceData} }
 
-    cur <-- p1Read: { {device} }
+    cur <-- p1Read: { {deviceData} }
 
   deactivate p1Read
 
-  requestor <-- cur: { {device} }
+  requestor <-- cur: { {deviceData} }
 deactivate cur
 
 @enduml

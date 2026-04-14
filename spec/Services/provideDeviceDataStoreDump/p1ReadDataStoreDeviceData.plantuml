@@ -7,49 +7,22 @@ end title
 
 participant "requestor" as requestor
 participant "p1ReadDataStoreDeviceData\n" as cur
-participant "p1LoadParameters" as loadParams
-participant "p1ResolveEsAddress" as resolveEsAddress
 database "DataStore" as ds
 
 
-requestor -> cur: { mountName }
+requestor -> cur: { ressourcePath }
 activate cur
 
-  ' get parameters
-  cur -> loadParams: { functionName=\n"p1ReadDataStoreDeviceData"}
-  activate loadParams
+    cur -> ds: { ressourcePath }
+      note over ds
+        return data addressed
+        by ressourcePath
+      end note
 
-    note over loadParams
-      Loads parameters
-      from configFile
-    end note
-    
-    cur <-- loadParams: { {parameters} \n{configFile} }
-  deactivate loadParams
-
-  ' get ES address
-  cur -> resolveEsAddress: { {parameters} \n{configFile} \nesName }
-  activate resolveEsAddress
-
-    note over resolveEsAddress
-      Resolves ES address
-      from configFile
-    end note
-    
-    cur <-- resolveEsAddress: { esAddress }
-  deactivate resolveEsAddress 
-
-  'read data from dataStore
-  cur -> ds: { /data-store/device=mountName }
-    note over ds
-      return complete
-      device object
-    end note
-  cur <-- ds: { {device} }
+    cur <-- ds: { {deviceData} }
 
 
-
-  requestor <-- cur: { {device} }
+  requestor <-- cur: { {deviceData} }
 deactivate cur
 
 @enduml
