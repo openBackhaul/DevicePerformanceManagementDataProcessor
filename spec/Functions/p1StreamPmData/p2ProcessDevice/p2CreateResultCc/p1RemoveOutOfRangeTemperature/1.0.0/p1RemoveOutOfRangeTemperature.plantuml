@@ -5,7 +5,7 @@ title
   p1RemoveOutOfRangeTemperature
 end title
 
-participant "p1CreateResultCc\n" as requestor
+participant "p2CreateResultCc\n" as requestor
 participant "p1RemoveOutOfRange\nTemperature" as removeTemp
 
 

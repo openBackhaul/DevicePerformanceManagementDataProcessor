@@ -5,7 +5,7 @@ title
   p1CalculateEthernetKpis
 end title
 
-participant "p1IterateEcPmSlices\n" as requestor
+participant "p2IterateEcPmSlices\n" as requestor
 participant "p1CalculateEthernetKpis\n" as ethKpis
 
 requestor -> ethKpis : { historicalPerformanceData }

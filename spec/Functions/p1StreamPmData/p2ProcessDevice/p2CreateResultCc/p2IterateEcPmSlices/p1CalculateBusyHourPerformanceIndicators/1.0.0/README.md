@@ -19,7 +19,7 @@ Die restlichen busy hour performance indicators werden wie oben beschrieben aus 
 
 > Bitte:  
 >- die Inhalte des Kapitels Delete_me nach p1CalculateBusyHourPerformanceIndicators.plantuml übertragen  
->- dabei kurz und prägnant ausdrücken (wie andere Diagramme, z.B. ..\p1CreateResultCc\1.0.0\p1CreateResultCc.png)  
+>- dabei kurz und prägnant ausdrücken (wie andere Diagramme, z.B. ..\p2CreateResultCc\1.0.0\p2CreateResultCc.png)  
 >- danach redundante Aussagen vermeiden, meint Kapitel Delete_me hier löschen  
 >- danach diesen Block löschen  
 

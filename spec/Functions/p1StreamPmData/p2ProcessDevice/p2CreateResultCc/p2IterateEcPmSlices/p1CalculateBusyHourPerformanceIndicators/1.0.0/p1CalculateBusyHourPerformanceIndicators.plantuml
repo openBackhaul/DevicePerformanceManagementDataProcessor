@@ -5,7 +5,7 @@ title
   p1CalculateBusyHourPerformanceIndicators
 end title
 
-participant "p1IterateEcPmSlices\n" as requestor
+participant "p2IterateEcPmSlices\n" as requestor
 participant "p1CalculateBusyHour\nPerformanceIndicators" as calBh
 
 requestor -> calBh : { {historicalPerformanceData},\n{status} }

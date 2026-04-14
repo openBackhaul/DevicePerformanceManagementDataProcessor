@@ -5,7 +5,7 @@ title
   p2IterateAiPmSlices
 end title
 
-participant "p1CreateResultCc\n" as cur
+participant "p2CreateResultCc\n" as cur
 
 participant "p1IterateAi\nPmSlices" as iterateSlices
 participant "p1Calculate\nIntervalCapacity" as intCC

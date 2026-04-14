@@ -5,7 +5,7 @@ title
   p1RemoveOutOfRangeLevels
 end title
 
-participant "p1IterateAiPmSlices\n" as requestor
+participant "p2IterateAiPmSlices\n" as requestor
 participant "p1RemoveOutOfRangeLevels\n" as removeLevels
 
 
