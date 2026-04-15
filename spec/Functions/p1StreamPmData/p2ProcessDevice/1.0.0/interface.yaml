@@ -49,15 +49,15 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'Input data missing or invalid'
-                - 'Mount name not found'
-                - 'Parameters missing or invalid'
-                - 'Config file missing or invalid'
-                - 'Raw CC data missing or invalid'
-                - 'Result CC data missing or invalid'
-                - 'Output format missing or invalid'
-                - 'Kafka transmission failed'
-                - 'Storing resultCc failed'
+                - 'input data missing or invalid'
+                - 'mount name not found'
+                - 'parameters missing or invalid'
+                - 'config file missing or invalid'
+                - 'raw CC data missing or invalid'
+                - 'result CC data missing or invalid'
+                - 'output format missing or invalid'
+                - 'kafka transmission failed'
+                - 'storing resultCc failed'
                 - 'general processing error'
     processing:
       p1LoadOffsetsAndStatusData:
@@ -117,7 +117,6 @@ x-javascript-interface:
                   - mount-name
                   - parameters
                   - mwdi-replica-es-client
-                  - data-store-es-client
                   - offsets
                 properties:
                   mount-name:
@@ -135,11 +134,6 @@ x-javascript-interface:
                     description: >
                       'MWDI Replica ElasticSearch address
                       from [/process-device/mwdi-replica-es-client]'
-                  data-store-es-client:
-                    type: object
-                    description: >
-                      'Data Store ElasticSearch address
-                      from [/process-device/data-store-es-client]'
                   offsets:
                     type: array
                     description: >

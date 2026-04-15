@@ -32,7 +32,7 @@ activate cur
   deactivate p1Offset
 
   'LoadRawCc
-  cur -> p2AddRaw : { mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n{dataStoreEsClient},\n[offsets] }
+  cur -> p2AddRaw : { mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n[offsets] }
   activate p2AddRaw
 
     note over p2AddRaw
