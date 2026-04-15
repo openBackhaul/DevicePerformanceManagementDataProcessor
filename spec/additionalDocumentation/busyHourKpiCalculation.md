@@ -127,6 +127,15 @@ Das Problem zerfällt in folgende Segmente:
 - Speichern der Statusdaten => p2Storing  
   Statusdaten (total-bytes-output values of already processed 15-minute periods) werden am Ende der Verarbeitung eines Batches in den DataStore geschrieben.  
 
+- Weiterreichen der Statusdaten
+  Mehrere Module (e.g., p2ProcessDevice, p2CreateResultCc, p2IterateEcPmSlices) müssen die Statusdaten zwischen Lesen, Verarbeiten und Speichern weiterreichen.
+
+- Rückbau von Löschen von Granularitäten
+  DPMDP v1.0 bot die Möglichkeit die 15-Minuten-Messwerte oder die 24-Stunden-Messwerte von der Bearbeitung auszuschließen.  
+  Nun werden die 15-Minuten-Messwerte für die Berechnung der busy hour KPIs benötigt,  
+  und die 24-Stunden-Messwerte werden für das Speichern der busy hour KPIs benötigt.  
+  Die Möglichkeit zum Löschen von Granularitäten wurde zurückgebaut.
+
 <p align="center">
   <img src="./diagrams/bh_calculation.png" alt="Module der Busy Hour KPI Calculation" width="400"/>
 </p>

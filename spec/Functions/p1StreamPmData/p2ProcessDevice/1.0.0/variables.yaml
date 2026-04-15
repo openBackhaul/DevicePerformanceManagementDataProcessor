@@ -1,17 +1,12 @@
 process-device:
   type: object
   required:
-    - mount-name
     - parameters
     - config-file
+    - mount-name
     - mwdi-replica-es-client
     - data-store-es-client
   properties:
-    mount-name:
-      type: string
-      description: >
-        'MountName
-        from {$input#/mount-name}'
     parameters:
       type: object
       description: >
@@ -22,6 +17,11 @@ process-device:
       description: >
         'configFile content
         from {$input#/config-file}'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
     mwdi-replica-es-client:
       type: object
       description: >
@@ -37,12 +37,14 @@ process-device:
       type: array
       description: >
         'The offsets
-        from {$p1LoadOffsetsAndStatusData.output#/offsets}'
+        from {$p1LoadOffsetsAndStatusData.output#/offsets}
+        overwriting by {$p2LoadRawCc.output#/offsets}'
     status-data:
       type: array
       description: >
         'The statusData
-        from {$p1LoadOffsetsAndStatusData.output/#status-data}'
+        from {$p1LoadOffsetsAndStatusData.output/#status-data}
+        overwriting by {$p2CreateResultCc.output#/status-data}'
     raw-cc:
       type: object
       description: >
@@ -53,7 +55,7 @@ process-device:
       type: object
       description: >
         'The result control construct data created from the raw control construct data, following ONF structure.
-        from {$p1CreateResultCc.output#/result-cc}'
+        from {$p2CreateResultCc.output#/result-cc}'
     output-format:
       type: array
       x-key: format-name

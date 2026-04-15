@@ -33,9 +33,9 @@ activate cur
 
   note over cur
     storeResultCc
-    in resultData
+    into resultData array
   end note
-  cur -> ds: { {batch} }
+  cur -> ds: { {resultCc} }
   cur <-- ds
 
   note over cur

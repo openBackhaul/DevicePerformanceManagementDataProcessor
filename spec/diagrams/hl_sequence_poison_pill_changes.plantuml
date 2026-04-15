@@ -1,0 +1,114 @@
+@startuml hl_sequence_poison_pill_changes
+skinparam responseMessageBelowArrow true
+
+title
+  Poison Pill Changes
+end title
+
+participant "embedYourself\n" as embed
+participant "p1StreamPmData\n" as p1StreamPm
+participant "p1LoadParameters\n" as p1LoadParams
+participant "p1ResolveEsAddress\n" as p1ResolveAddress
+participant "p1InitKafka\n" as p1InitKafka
+participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep
+
+participant "p2ProcessDevice\n" as p2ProcessPm #LightYellow
+
+participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
+participant "p2LoadRawCc\n" as p2AddRaw #LightYellow
+participant "p1FieldsFilter\n" as p1FieldsFilter
+participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
+
+participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
+participant "p1Prepare\nTxModes" as p1prepTxModes 
+participant "p1Calculate\nAiCapacity" as aiCC
+participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
+participant "p1Calculate\nIntervalCapacity" as intCC
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL
+participant "p1Remove\nDefaultValues" as p1RemDefault
+participant "p2IterateEc\nPmSlices" as ecSlices #LightYellow
+participant "p1Calculate\nEthernetKpis" as p1EthKpi
+participant "p1Calculate\nUtilization" as p1Util
+participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
+participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
+
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
+
+participant "p1Transmitting\nKafka" as p1Trans
+
+participant "p2Storing\n" as p2Store #LightYellow
+participant "p1MaintainDs\n" as p1MaintainDs
+
+===== Changes for preventing mostRecentPeriodEndTimes poison pills  =====
+
+note over p2ProcessPm
+  - Add interface to p1LoadOffsetsAndStatusData
+  - Complement interface to p2LoadRawCc by:
+    - offsets
+  - Complement interface from p2LoadRawCc by:
+    - offsets
+  - Complement interface to p2Storing by:
+    - offsets
+end note
+
+note over p1LoadStatus
+  - Load offsets about:
+    - which PM values have already been processed in past
+      (mostRecentPeriodEndTime and mostRecentPeriodEndTime24)
+end note
+
+note over p2AddRaw
+  - Complement own input interface by:
+    - offsets
+  - Remove from own input interface:
+    - dataStoreEsClient (mostRecentPeriodEndTimes 
+      have been loaded in p1LoadOffsetsAndStatusData)
+  - Remove loading mostRecentPeriodEndTimes from DataStore
+  - Complement interface to p2DiscardIrrelevantPmRecords by:
+    - offset (mostRecentPeriodEndTimes only)
+  - Complement interface from p2DiscardIrrelevantPmRecords by:
+    - offset (mostRecentPeriodEndTimes only)
+  - Wrap updated offset into offsets
+  - Complement own output interface by:
+    - offsets
+end note
+
+note over p2filterPm
+  - Complement own input interface by:
+    - offset (mostRecentPeriodEndTimes only)
+  - Update mostRecentPeriodEndTimes in offset
+  - Complement own output interface by:
+    - offset (mostRecentPeriodEndTimes only)
+end note
+
+note over p2CreateResultCc
+  - Remove from interface from p2IterateAiPmSlices:
+    - most-recent-period-end-time
+    - most-recent-period-end-time-24
+  - Remove from interface from p2IterateEcPmSlices:
+    - most-recent-period-end-time
+    - most-recent-period-end-time-24
+end note
+
+note over aiSlices
+  - Remove from own output interface
+    - most-recent-period-end-time
+    - most-recent-period-end-time-24
+  - Remove update of mostRecentPeriodEndTimes
+end note
+
+note over ecSlices
+  - Remove from own output interface
+    - most-recent-period-end-time
+    - most-recent-period-end-time-24
+  - Remove update of mostRecentPeriodEndTimes
+end note
+
+note over p2Store
+  - store offsets about:
+    which PM values have already been processed
+end note
+
+@enduml

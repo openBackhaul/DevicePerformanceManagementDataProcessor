@@ -6,25 +6,24 @@ title
 end title
 
 participant "p1StreamPmData\n" as requestor
-participant "p2ProcessDevice\n" as cur #LightSalmon
-participant "p1LoadOffsets\nAndStatusData" as p1Offset #LightSalmon
-participant "p2LoadRawCc\n" as p2AddRaw #LightSalmon
-participant "p2CreateResultCc\n" as p2CreateResCc #LightSalmon
+participant "p2ProcessDevice\n" as cur
+participant "p1LoadOffsets\nAndStatusData" as p1Offset
+participant "p2LoadRawCc\n" as p2AddRaw
+participant "p2CreateResultCc\n" as p2CreateResCc
 participant "p1Formatting\nOutputApt" as p1OutputApt
 participant "p1Formatting\nOutputOnf" as p1OutputOnf
 participant "p1Transmitting\nKafka" as p1Trans
-participant "p2Storing\n" as p2Store #LightCyan
+participant "p2Storing\n" as p2Store
 
-
-requestor -> cur : { mountName,\n{parameters},\n{configFile},\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+requestor -> cur : { {parameters},\n{configFile},\nmountName,\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
 activate cur
 
-  'LoadOffestsAndStatusData
-  cur -> p1Offset: { mountName,\n{dataStoreEsClient}}
+  'LoadOffsetsAndStatusData
+  cur -> p1Offset: { mountName,\n{dataStoreEsClient} }
   activate p1Offset
 
     note over p1Offset
-      Load offsets and status data
+      Loads offsets and statusData
       from DataStore
     end note
 
@@ -32,7 +31,7 @@ activate cur
   deactivate p1Offset
 
   'LoadRawCc
-  cur -> p2AddRaw : { mountName,\n{/parameters/sub-function=loadRawCc},\n{mwdiReplicaEsClient},\n[offsets] }
+  cur -> p2AddRaw : { {/parameters/sub-function=p2LoadRawCc},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
   activate p2AddRaw
 
     note over p2AddRaw
@@ -48,7 +47,7 @@ activate cur
   deactivate p2AddRaw
 
   'CreateResultCc
-  cur -> p2CreateResCc : { {/parameters/sub-function=createResultCc},\n{rawCc},\n[statusData] }
+  cur -> p2CreateResCc : { {/parameters/sub-function=p2CreateResultCc},\n{rawCc},\n[statusData] }
   activate p2CreateResCc
 
     note over p2CreateResCc
@@ -73,7 +72,7 @@ activate cur
   deactivate p1OutputApt
 
   'FormattingOutputOnf
-  cur -> p1OutputOnf : { {resultCc} }
+  cur -> p1OutputOnf : { {/parameters/sub-function=p1FormattingOutputOnf},\n{resultCc} }
   activate p1OutputOnf
 
     note over p1OutputOnf

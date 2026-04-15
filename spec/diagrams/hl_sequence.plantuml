@@ -48,76 +48,6 @@ end note
 embed -> p1StreamPm
 
 ' Release Notes
-===== Changes for preventing mostRecentPeriodEndTimes poison pills  =====
-
-note over p2ProcessPm
-  - Add interface to p1LoadOffsetsAndStatusData
-  - Complement interface to p2LoadRawCc by:
-    - offsets
-  - Complement interface from p2LoadRawCc by:
-    - offsets
-  - Complement interface to p2Storing by:
-    - offsets
-end note
-
-note over p1LoadStatus
-  - Load offsets about:
-    - which PM values have already been processed in past
-      (mostRecentPeriodEndTime and mostRecentPeriodEndTime24)
-end note
-
-note over p2AddRaw
-  - Complement own input interface by:
-    - offsets
-  - Remove from own input interface:
-    - dataStoreEsClient (mostRecentPeriodEndTimes 
-      have been loaded in p1LoadOffsetsAndStatusData)
-  - Remove loading mostRecentPeriodEndTimes from DataStore
-  - Complement interface to p2DiscardIrrelevantPmRecords by:
-    - offset (mostRecentPeriodEndTimes only)
-  - Complement interface from p2DiscardIrrelevantPmRecords by:
-    - offset (mostRecentPeriodEndTimes only)
-  - Wrap updated offset into offsets
-  - Complement own output interface by:
-    - offsets
-end note
-
-note over p2filterPm
-  - Complement own input interface by:
-    - offset (mostRecentPeriodEndTimes only)
-  - Update mostRecentPeriodEndTimes in offset
-  - Complement own output interface by:
-    - offset (mostRecentPeriodEndTimes only)
-end note
-
-note over p2CreateResultCc
-  - Remove from interface from p2IterateAiPmSlices:
-    - most-recent-period-end-time
-    - most-recent-period-end-time-24
-  - Remove from interface from p2IterateEcPmSlices:
-    - most-recent-period-end-time
-    - most-recent-period-end-time-24
-end note
-
-note over aiSlices
-  - Remove from own output interface
-    - most-recent-period-end-time
-    - most-recent-period-end-time-24
-  - Remove update of mostRecentPeriodEndTimes
-end note
-
-note over ecSlices
-  - Remove from own output interface
-    - most-recent-period-end-time
-    - most-recent-period-end-time-24
-  - Remove update of mostRecentPeriodEndTimes
-end note
-
-note over p2Store
-  - store offsets about:
-    which PM values have already been processed
-end note
-
 ===== Changes for adding BH KPIs =====
 
 note over p2ProcessPm
@@ -130,18 +60,44 @@ note over p2ProcessPm
     - statusData
 end note
 
+note over p2ProcessPm #LightGreen
+  all files checked
+end note
+
 note over p1LoadStatus
-  - Load statusData about:
-    - total-bytes-output in 15-min records in already processed batches
+  - retrieveStatusDataFromDs for functions:
+    - p1CategorizeDataVolume
+      (total-bytes-output of already processed batches in buckets)
+end note
+
+note over p1LoadStatus #LightGreen
+  all files checked
 end note
 
 note over p2AddRaw
-  - Remove deleting 15-min or 24-hours granularity
+  - Remove from interface to p2DiscardIrrelevantPmRecords:
+    - relevant-granularities
+end note
+
+note over p2filterPm
+  - Remove from own input interface:
+    -  relevant-granularities
+  - Remove deleting of 15-min or 24-hours granularity
 end note
 
 note over p2CreateResultCc
+  - Complement own input interface by:
+    - statusData
   - Complement interface to p2IterateEcPmSlices by:
     - statusData
+  - Complement interface from p2IterateEcPmSlices by:
+    - statusData
+  - Complement own output interface by:
+    - statusData
+end note
+
+note over p2CreateResultCc #Yellow
+  - entire spec to be checked
 end note
 
 note over ecSlices
@@ -149,33 +105,50 @@ note over ecSlices
     - statusData
   - Add interface to p1CategorizeDataVolume
   - Add interface to p1CalculateBusyHourPerformanceIndicators
+  - Complement own output interface by:
+    - statusData
+end note
+
+note over ecSlices #Yellow
+  - variables.yaml to be updated
 end note
 
 note over p1CatDV
-  - Reads from statusData:
+  - Read from statusData:
     - buckets (representing hours of the day) with:
       - total-bytes-output values from already processed 15-min periods
       - further 15-min values
   - In case of new day:
-    - creates 24 new buckets
-    - deletes 24 oldest buckets
-  - Categorizes new total-bytes-output values into the buckets
-  - Writes buckets back into statusData
+    - create 24 new buckets
+    - delete 24 oldest buckets
+  - Categorize new total-bytes-output values into the buckets
+  - Write buckets back into statusData
+end note
+
+note over p1CatDV #Yellow
+  - entire spec is missing
 end note
 
 note over p1CalcBH
-  - Reads from statusData:
+  - Read from statusData:
     - buckets with total-bytes-output values
   - Bucket with highest sum of total-bytes-output values defines busy hour
-  - Calculates KPIs for busy hour
-  - Writes busy hour KPIs into 24-hours values
+  - Calculate KPIs for busy hour
+  - Write busy hour KPIs into 24-hours values
+end note
+
+note over p1CalcBH #Yellow
+  - entire spec is missing
 end note
 
 note over p2Store
   - Complement own input interface by:
     - statusData
-  - Writes statusData about:
-    - total-bytes-output in processed 15-min records
+  - storeStatusData
+end note
+
+note over p2Store #LightGreen
+  all files checked
 end note
 
 == End of Changes ==

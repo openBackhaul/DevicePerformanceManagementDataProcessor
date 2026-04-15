@@ -15,7 +15,7 @@ x-javascript-interface:
             required:
               - parameters
               - raw-cc
-              #- status-data
+              - status-data
             properties:
               parameters:
                 type: object
@@ -24,10 +24,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'rawCc'
-              # status-data:
-              #   type: array
-              #   description: >
-              #     'statusData'
+              status-data:
+                type: array
+                description: >
+                  'statusData'
     output:
       success:
         description: 'Result CC data created'
@@ -43,11 +43,11 @@ x-javascript-interface:
                   description: >
                     'The result control construct, following ONF structure.
                     from [/create-result-cc/result-cc]'
-              # status-data:
-              #   type: array
-              #   description: >
-              #     'statusData
-              #     from [/create-result-cc/status-data]'
+              status-data:
+                type: array
+                description: >
+                  'statusData
+                  from [/create-result-cc/status-data]'
       error:
         description: 'Result CC data could not be created'
         content:

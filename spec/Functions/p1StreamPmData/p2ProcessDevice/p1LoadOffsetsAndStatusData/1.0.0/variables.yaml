@@ -1,4 +1,4 @@
-p1-load-offsets-and-status-data:
+load-offsets-and-status-data:
   type: object
   required:
     - data-store-es-client
@@ -25,9 +25,9 @@ p1-load-offsets-and-status-data:
       type: array
       description: >
         'Offsets for the device
-        from [$retrieveOffsetsFromDs.output#/offsets]'
+        from {$retrieveOffsetsFromDs.output#/}'
     status-data:
       type: array
       description: >
         'StatusData for the device
-        from [$retrieveOffsetsFromDs.output#/status-data]'
+        from {$retrieveStatusDataFromDs.output#/}'

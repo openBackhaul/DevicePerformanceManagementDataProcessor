@@ -114,16 +114,11 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - mount-name
                   - parameters
                   - mwdi-replica-es-client
+                  - mount-name
                   - offsets
                 properties:
-                  mount-name:
-                    type: string
-                    description: >
-                      'MountName
-                      from [/process-device/mount-name]'
                   parameters:
                     type: object
                     description: >
@@ -134,6 +129,11 @@ x-javascript-interface:
                     description: >
                       'MWDI Replica ElasticSearch address
                       from [/process-device/mwdi-replica-es-client]'
+                  mount-name:
+                    type: string
+                    description: >
+                      'MountName
+                      from [/process-device/mount-name]'
                   offsets:
                     type: array
                     description: >
@@ -264,13 +264,16 @@ x-javascript-interface:
                   - parameters
                   - result-cc
                 properties:
-                  description: >
-                    'Subtree of the parameters object for p1FormattingOutputOnf
-                    from [/process-device/parameters/sub-function=p1FormattingOutputOnf]'
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p1FormattingOutputOnf
+                      from [/process-device/parameters/sub-function=p1FormattingOutputOnf]'
                   result-cc:
                     type: object
                     description: >
-                      'resultCc'
+                      'resultCc
+                      from [/process-device/result-cc]'
         output:
           success:
             description: 'onfOutputFormat created'
