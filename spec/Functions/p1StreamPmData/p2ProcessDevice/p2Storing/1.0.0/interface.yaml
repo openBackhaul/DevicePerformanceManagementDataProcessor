@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: p2Storing
-  version: 1.1.0
+  version: 1.0.0
 
 x-javascript-interface:
   p2Storing:
@@ -25,7 +25,7 @@ x-javascript-interface:
               result-cc:
                 type: object
                 description: >
-                  'The resultCc to be stored in result-data'
+                  'The resultCc to be stored in resultData array'
               offsets:
                 type: array
                 description: >
@@ -97,10 +97,8 @@ x-javascript-interface:
                 type: array
                 x-key: function-name
                 description: >
-                  'Performs a write operation on the offsets array in the dataStore.
-                  The offsets array handed over can contain multiple offset objects [/storing/offsets/offset] for different functionNames [/storing/offsets/function-name].
-                  Offsets array elements for functionNames already existing in the [/data-store/device={/storing/mount-name}/offsets]
-                  are overwritten, for non-existing functionNames a new record is added to the offsets array. Data to be written is coming
+                  'Replaces the offsets array of a specific device in the dataStore
+                  if the mountName would not already exist, a new device object to be created in the dataStore
                   from [/storing/offsets]'
         output:
           success:
@@ -119,7 +117,7 @@ x-javascript-interface:
                     - 'offsets invalid'
                     - 'Writing to dataStore failed'
                     - 'general processing error'
-      status-data:
+      storeStatusData:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/status-data]
         input:
           required: true
@@ -129,10 +127,8 @@ x-javascript-interface:
                 type: array
                 x-key: function-name
                 description: >
-                  'Performs a write operation on the statusData array in the dataStore.
-                  The statusData array handed over can contain multiple status objects [/storing/status-data/status] for different functionNames [/storing/status-data/function-name].
-                  StatusData array elements for functionNames already existing in the [/data-store/device={/storing/mount-name}/status-data]
-                  are overwritten, for non-existing functionNames a new record is added to the status-data array. Data to be written is coming
+                  'Replaces the statusData array of a specific device in the dataStore
+                  if the mountName would not already exist, a new device object to be created in the dataStore
                   from [/storing/status-data]'
         output:
           success:
@@ -160,9 +156,8 @@ x-javascript-interface:
               schema:
                 type: object
                 description: >
-                  'Writes the entire batch as a block
-                  assuming that the value of the batchTimestamp is always unique, a new entry is created with every storing operation
-                  from [/storing/batch]'
+                  'Creates a new entry in the resultData array of a specific device in the dataStore
+                  from [/storing/result-cc]'
         output:
           success:
             description: 'resultCc stored'
