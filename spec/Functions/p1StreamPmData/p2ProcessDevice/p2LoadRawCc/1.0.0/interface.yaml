@@ -93,9 +93,9 @@ x-javascript-interface:
                   schema:
                     type: string
                     enum:
-                      - 'Data structure is missing or invalid'
-                      - 'ElasticSearch read error'
-                      - 'General processing error during reading'
+                      - 'ata structure is missing or invalid'
+                      - 'elasticSearch read error'
+                      - 'general processing error during reading'
       p1FieldsFilter:
         input:
           required: true
@@ -155,7 +155,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Offset for the currently processed ltp
-                      from [/load-raw-cc/interface-offset]'
+                      from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets={uuid}/interface-offset]'
         output:
           success:
             description: 'filteredHistoricalPerformanceDataList provided'
@@ -244,7 +244,7 @@ x-javascript-interface:
                     type: array
                     description: > 
                       'Array of offsets of all interfaces at the device
-                      from [/load-raw-cc/interface-offsets]'
+                      from [/load-raw-cc/offsets/interface-offsets]'
                   interface-offset:
                     type: object
                     description: >

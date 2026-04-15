@@ -3,7 +3,6 @@ load-raw-cc:
   required:
     - parameters
     - mwdi-replica-es-client
-    - data-store-es-client
     - mount-name
     - offsets
   properties:
@@ -40,41 +39,36 @@ load-raw-cc:
                 type: string
                 enum:
                   - 'p2DiscardIrrelevantPmRecords'
-              interface-offsets:
-                type: array
-                x-key: uuid
-                description: >
-                  'Array of offsets of all interfaces at the device
-                  overwritten by {$   }'
-
-    interface-offsets:
-      type: array
-      x-key: uuid
-      description: >
-        'Array of offsets of all interfaces at the device
-        if existing from [/load-raw-cc/offsets=p2DiscardIrrelevantRecords/interface-offsets]
-        if not existing and empty array is initialized for this functionName
-        overwritten by {$updateInterfaceOffset.output#/interface-offsets}'
-      items:
-        type: object
-        required:
-          - uuid
-          - offset
-        properties:
-          uuid:
-            type: string
-          interface-offset:
-            type: object
-            description: >
-              'Offset at a specific interface'
+              offset:
+                type: object
+                properties:
+                  interface-offsets:
+                    type: array
+                    x-key: uuid
+                    description: >
+                      'Array of offsets of all interfaces at the device,
+                      if not existing initialized with an empty array,
+                      overwritten by {$updateInterfaceOffset.output#/interface-offsets}'
+                    items:
+                      type: object
+                      required:
+                        - uuid
+                        - offset
+                      properties:
+                        uuid:
+                          type: string
+                        interface-offset:
+                          type: object
+                          description: >
+                            'Offset at a specific interface'
 
     interface-offset:
       type: object
       description: >
         'The offset at the currently processed interface (ltp)
-        from [/load-raw-cc/interface-offsets={/load-raw-cc/raw-cc/logical-termination-point[*]/uuid}]
+        from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets={/load-raw-cc/raw-cc/logical-termination-point[*]/uuid}]
         or to be initialized, if not already existing
-        overwritten by {$p2DiscardIrrelevantPmRecords.output/offset}.'
+        overwritten by {$p2DiscardIrrelevantPmRecords.output/offset}'
       required:
         - uuid
         - most-recent-period-end-time
