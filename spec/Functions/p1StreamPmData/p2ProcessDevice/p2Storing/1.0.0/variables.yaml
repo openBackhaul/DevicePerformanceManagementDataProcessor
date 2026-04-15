@@ -3,7 +3,7 @@ storing:
   required:
     - data-store-es-client
     - result-cc
-    - offset
+    - offsets
     - status-data
   properties:
     data-store-es-client:
