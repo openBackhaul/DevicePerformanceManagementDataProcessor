@@ -42,21 +42,3 @@ storing:
       description: >
         'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
         from [/storing/result-cc/batch-timestamp]'
-
-    batch:
-      type: object
-      required:
-        - batch-timestamp
-        - result-cc
-      properties:
-        batch-timestamp:
-          type: string
-          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
-          description: >
-            'Timestamp when the CC was read from the device
-            from [/storing/batch-timestamp]'
-        result-cc:
-          type: object
-          description: >
-            'resultCc
-            from [/storing/result-cc]'
