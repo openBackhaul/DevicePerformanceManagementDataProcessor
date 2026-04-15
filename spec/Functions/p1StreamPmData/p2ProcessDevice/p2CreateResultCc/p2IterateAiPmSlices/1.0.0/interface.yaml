@@ -59,7 +59,7 @@ x-javascript-interface:
                 - 'out of range levels could not be removed'
                 - 'default values could not be removed'
                 - 'historicalPerformanceDataList could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       p1CalculateIntervalCapacity:
         summary: 'Calculates the AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps'
