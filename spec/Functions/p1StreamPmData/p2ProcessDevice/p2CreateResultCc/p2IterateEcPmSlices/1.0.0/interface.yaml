@@ -47,12 +47,18 @@ x-javascript-interface:
               type: object
               required:
                 - historical-performance-data-list
+                # - status-data
               properties:
                 historical-performance-data-list:
                   type: array
                   description: >
                     'historicalPerformanceDataList
                     from [/iterate-ec-pm-slices/historical-performance-data-list]'
+                # status-data:
+                #   type: array
+                #   description: >
+                #     'statusData
+                #     from [ ??? ]'
       error:
         description: 'historicalPerformanceDataList could not be processed'
         content:
