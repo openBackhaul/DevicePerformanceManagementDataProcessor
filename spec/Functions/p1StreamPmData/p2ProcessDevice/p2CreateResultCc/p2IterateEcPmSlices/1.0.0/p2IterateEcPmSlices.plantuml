@@ -81,6 +81,13 @@ activate iterateSlices
 cur <-- iterateSlices : { [historicalPerformanceDataList] }
 deactivate iterateSlices
 
+note over cur #LightCoral
+  TODO for BH:
+  add returning of updated status
+  (also in interface.yaml/variables.yaml)
+end note
+
+
 deactivate cur
 
 @enduml
