@@ -40,7 +40,7 @@ x-javascript-interface:
                 - 'dataStoreEsClient not provided'
                 - 'dataStoreEsClient invalid'
                 - 'DataStore error'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       description: >
         'The cleanup process is re-started with a delay of one [/maintain-ds/cleanup-period] after it has been started last time'
@@ -69,7 +69,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch read error'
-                      - 'General processing error'
+                      - 'general processing error'
       lockDevice:
         url:  # [{/maintain-ds/data-store-url}]
           description: >
@@ -100,7 +100,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch lock error'
-                      - 'General processing error'
+                      - 'general processing error'
       readDeviceDataFromDs:
         url:  # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
           description: 'Reads the complete data of one of the devices from the DataStore'
@@ -128,7 +128,7 @@ x-javascript-interface:
                       - 'mountName not provided'
                       - 'mountName invalid'
                       - 'ElasticSearch read error'
-                      - 'General processing error'
+                      - 'general processing error'
       deleteExpiredBatches:
         description: 'Deletes batches with batchTimestamp older than retentionPeriod from batchList'
         input:
@@ -177,7 +177,7 @@ x-javascript-interface:
                     - 'batchList invalid'
                     - 'retentionPeriod not provided'
                     - 'retentionPeriod invalid'
-                    - 'General processing error'
+                    - 'general processing error'
       writeDeviceDataToDs:
         url:  # [{/maintain-ds/data-store-url}][/data-store/device={/maintain-ds/device-list[*]}]
           description: 'Writes the complete data of one of the devices to the DataStore'
@@ -211,7 +211,7 @@ x-javascript-interface:
                       - 'deviceData not provided'
                       - 'deviceData invalid'
                       - 'ElasticSearch write error'
-                      - 'General processing error'
+                      - 'general processing error'
       unlockDevice:
         url:  # [{/maintain-ds/data-store-url}]
           description: >
@@ -242,7 +242,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch unlock error'
-                      - 'General processing error'
+                      - 'general processing error'
 
 paths:
   /:

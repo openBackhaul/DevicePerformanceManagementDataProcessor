@@ -47,7 +47,7 @@ x-javascript-interface:
                 - 'fieldsFilterString not provided'
                 - 'fieldsFilterString invalid'
                 - 'filteredDataStructure could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       description: 'No requests or calls to other Functions'
 

@@ -49,7 +49,7 @@ x-javascript-interface:
                 - 'parameters invalid'
                 - 'performanceData not provided'
                 - 'performanceData invalid'
-                - 'General processing error'
+                - 'general processing error'
 
 paths:
   /:

@@ -54,7 +54,7 @@ x-javascript-interface:
                 - 'resultData could not be stored'
                 - 'offsets could not be stored'
                 - 'statusData could not be stored'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       lockDevice:
         url:  # [{/storing/data-store-url}]
@@ -86,7 +86,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch lock error'
-                      - 'General processing error'
+                      - 'general processing error'
       storeOffsets:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/offsets]
         input:
@@ -118,7 +118,7 @@ x-javascript-interface:
                     - 'offsets not provided'
                     - 'offsets invalid'
                     - 'Writing to dataStore failed'
-                    - 'General processing error'
+                    - 'general processing error'
       status-data:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/status-data]
         input:
@@ -150,7 +150,7 @@ x-javascript-interface:
                     - 'statusData not provided'
                     - 'statusData invalid'
                     - 'Writing to dataStore failed'
-                    - 'General processing error'
+                    - 'general processing error'
       storeResultCc:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/result-data={/storing/batch-timestamp}]
         input:
@@ -177,7 +177,7 @@ x-javascript-interface:
                     - 'batchTimestamp invalid'
                     - 'resultCc not provided'
                     - 'Writing to dataStore failed'
-                    - 'General processing error'
+                    - 'general processing error'
       unlockDevice:
         url:  # [{/storing/data-store-url}]
           description: >
@@ -208,7 +208,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch unlock error'
-                      - 'General processing error'
+                      - 'general processing error'
 
 paths:
   /:

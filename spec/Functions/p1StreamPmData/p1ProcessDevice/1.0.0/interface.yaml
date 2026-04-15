@@ -58,7 +58,7 @@ x-javascript-interface:
                 - 'Output format missing or invalid'
                 - 'Kafka transmission failed'
                 - 'Storing resultCc failed'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       p1LoadRawCc:
         input:

@@ -50,7 +50,7 @@ x-javascript-interface:
                 - 'inputObject not provided'
                 - 'inputObject invalid'
                 - 'cleanedObject could not be provided'
-                - 'General processing error'
+                - 'general processing error'
 
 paths:
   /:

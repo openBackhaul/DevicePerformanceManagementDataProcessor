@@ -49,7 +49,7 @@ x-javascript-interface:
                 - 'parameters invalid'
                 - 'equipment not provided'
                 - 'equipment invalid'
-                - 'General processing error'
+                - 'general processing error'
 
 paths:
   /:

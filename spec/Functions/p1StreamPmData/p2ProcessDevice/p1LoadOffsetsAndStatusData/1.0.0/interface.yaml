@@ -53,7 +53,7 @@ x-javascript-interface:
                 - 'mountName not provided'
                 - 'mountName invalid'
                 - 'ElasticSearch read error'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       retrieveOffsetsFromDs:
         url: # [{/p1-load-offsets-and-status-data/data-store-url}][/data-store/device={/p1-load-offsets-and-status-data/mount-name}/offsets]
@@ -80,7 +80,7 @@ x-javascript-interface:
                       - 'mountName not provided'
                       - 'mountName invalid'
                       - 'ElasticSearch read error for offsets'
-                      - 'General processing error'
+                      - 'general processing error'
       retrieveStatusDataFromDs:
         url: # [{/p1-load-offsets-and-status-data/data-store-url}][/data-store/device={/p1-load-offsets-and-status-data/mount-name}/status-data]
           description: 'Load statusData from dataStore'
@@ -106,7 +106,7 @@ x-javascript-interface:
                       - 'mountName not provided'
                       - 'mountName invalid'
                       - 'ElasticSearch read error for status-data'
-                      - 'General processing error'
+                      - 'general processing error'
   
 paths:
   /:

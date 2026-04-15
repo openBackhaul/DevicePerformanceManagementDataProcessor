@@ -64,7 +64,7 @@ x-javascript-interface:
                 - 'numberOfStatesInModulation invalid'
                 - 'codeRate not provided'
                 - 'codeRate invalid'
-                - 'General processing error'
+                - 'general processing error'
 
 paths:
   /:

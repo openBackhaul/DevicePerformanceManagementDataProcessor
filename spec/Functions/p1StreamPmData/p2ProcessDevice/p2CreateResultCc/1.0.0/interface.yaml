@@ -62,7 +62,7 @@ x-javascript-interface:
                 # - 'statusData not provided'
                 # - 'statusData invalid'
                 - 'resultCc could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       createResultCcFromRawCc:
         summary: 'Creates the resultCc object and fills it from rawCc data'
@@ -103,7 +103,7 @@ x-javascript-interface:
                   - 'rawCc not provided'
                   - 'rawCc invalid'
                   - 'resultCc could not be provided'
-                  - 'General processing error'
+                  - 'general processing error'
       createAggregationGroupList:
         summary: 'Creates the aggregation-group-list from rawCc data'
         input:
@@ -173,7 +173,7 @@ x-javascript-interface:
                   - 'rawCc not provided'
                   - 'rawCc invalid'
                   - 'aggregationGroupList could not be provided'
-                  - 'General processing error'
+                  - 'general processing error'
       p1PrepareTxModes:
         summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
         input:
@@ -308,7 +308,7 @@ x-javascript-interface:
                   - 'linkEndpointId not provided'
                   - 'linkEndpointId invalid'
                   - 'linkId could not be provided'
-                  - 'General processing error'
+                  - 'general processing error'
       findParallelPhysic:
         summary: 'Finds parallel physical LTPs'
         input:
@@ -360,7 +360,7 @@ x-javascript-interface:
                   - 'ltpUuid invalid'
                   - 'aggregationGroupList not provided'
                   - 'aggregationGroupList invalid'
-                  - 'General processing error'
+                  - 'general processing error'
       p1IterateEcPmSlices:
         summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
         input:

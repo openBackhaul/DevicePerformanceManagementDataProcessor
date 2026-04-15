@@ -75,7 +75,7 @@ x-javascript-interface:
                 - 'historicalPerformanceDataList could not be provided'
                 - 'mostRecentPeriodEndTime could not be provided'
                 - 'mostRecentPeriodEndTime24 could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       p1CalculateEthernetKpis:
         summary: 'Adds Ethernet KPIs to a historicalPerformanceData set'
@@ -273,7 +273,7 @@ x-javascript-interface:
                     - 'periodEndTime not provided'
                     - 'periodEndTime invalid'
                     - 'mostRecentPeriodEndTime could not be provided'
-                    - 'General processing error'
+                    - 'general processing error'
 
 paths:
   /:

@@ -51,7 +51,7 @@ x-javascript-interface:
                 - 'resultCc not provided'
                 - 'resultCc invalid'
                 - 'aptOutputFormat could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       createOutputFromResultCc:
         description: >
@@ -607,7 +607,7 @@ x-javascript-interface:
                                           - 'resultCc incomplete'
                                           - 'resultCc invalid'
                                           - 'aptOutputFormat could not be provided'
-                                          - 'General processing error'
+                                          - 'general processing error'
           error:
             description: 'Output object could not be created.'
             content:
@@ -619,7 +619,7 @@ x-javascript-interface:
                     - 'resultCc incomplete'
                     - 'resultCc invalid'
                     - 'output could not be provided'
-                    - 'General processing error'
+                    - 'general processing error'
 
 paths:
   /:

@@ -48,7 +48,7 @@ x-javascript-interface:
                 - 'outputFormat invalid'
                 - 'Producer connection error'
                 - 'Other transmission error'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       kafkaProducerService.sendMessage:
         summary: 'This function sends message to provided topic'

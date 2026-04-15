@@ -42,7 +42,7 @@ x-javascript-interface:
                 - 'Kafka session initialization failed'
                 - 'Producer connection to kafka failed'
                 - 'Consumer connection to kafka failed'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       kafkaProducerService.connect:
         summary: 'This function connects to kafka broker'

@@ -47,7 +47,7 @@ x-javascript-interface:
                 - 'interfaceMetadataList invalid'
                 - 'resultCc could not be stored'
                 - 'interfaceMetadataList could not be stored'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       lockDevice:
         url:  # [{/storing/data-store-url}]
@@ -79,7 +79,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch lock error'
-                      - 'General processing error'
+                      - 'general processing error'
       storeInterfaceMetadataList:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/interface-metadata-list]
         input:
@@ -109,7 +109,7 @@ x-javascript-interface:
                     - 'interfaceMetadataList not provided'
                     - 'interfaceMetadataList invalid'
                     - 'Writing to dataStore failed'
-                    - 'General processing error'
+                    - 'general processing error'
       storeResultCc:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/batch={/storing/batch-timestamp}]
         input:
@@ -136,7 +136,7 @@ x-javascript-interface:
                     - 'batchTimestamp invalid'
                     - 'resultCc not provided'
                     - 'Writing to dataStore failed'
-                    - 'General processing error'
+                    - 'general processing error'
       unlockDevice:
         url:  # [{/storing/data-store-url}]
           description: >
@@ -167,7 +167,7 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'ElasticSearch unlock error'
-                      - 'General processing error'
+                      - 'general processing error'
 
 paths:
   /:

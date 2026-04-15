@@ -57,7 +57,7 @@ x-javascript-interface:
                 - 'historicalPerformanceDataList filtering error'
                 - 'updateNewMostRecentPeriodEndTime update error'
                 - 'offset update error'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       updateNewMostRecentPeriodEndTime:
         summary: 'Overwrites newMostRecentPeriodEndTime or newMostRecentPeriodEndTime24 with latest value (means, most recent date) of periodEndTime (includes periodEndTimes from discarded records).'
@@ -129,7 +129,7 @@ x-javascript-interface:
                     - 'periodEndTime not provided'
                     - 'periodEndTime invalid'
                     - 'newMostRecentPeriodEndTime could not be provided'
-                    - 'General processing error'
+                    - 'general processing error'
 
       updateOffset:
         description: 'Updates the mostRecentPeriodEndTimes in the offset with newMostRecentPeriodEndTimes'

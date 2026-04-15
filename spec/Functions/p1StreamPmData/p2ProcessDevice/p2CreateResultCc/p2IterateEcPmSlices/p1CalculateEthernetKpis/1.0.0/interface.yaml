@@ -48,7 +48,7 @@ x-javascript-interface:
                 - 'receiveTraffic could not be provided'
                 - 'frameLossInput could not be provided'
                 - 'frameLossOutput could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       calculateTransmitTraffic:
         summary: 'Calculates the averaged transmit traffic in Mbps'
@@ -98,7 +98,7 @@ x-javascript-interface:
                   - 'totalBytesOutput invalid'
                   - 'timePeriod not provided'
                   - 'timePeriod invalid'
-                  - 'General processing error'
+                  - 'general processing error'
       calculateReceiveTraffic:
         summary: 'Calculates the averaged receive traffic in Mbps'
         input:
@@ -147,7 +147,7 @@ x-javascript-interface:
                   - 'totalBytesInput invalid'
                   - 'timePeriod not provided'
                   - 'timePeriod invalid'
-                  - 'General processing error'
+                  - 'general processing error'
       calculateFrameLossInput:
         summary: 'Calculates the total frame loss on ingress'
         input:
@@ -196,7 +196,7 @@ x-javascript-interface:
                   - 'erroredFramesInput invalid'
                   - 'droppedFramesInput not provided'
                   - 'droppedFramesInput invalid'
-                  - 'General processing error'
+                  - 'general processing error'
       calculateFrameLossOutput:
         summary: 'Calculates the total frame loss on egress'
         input:
@@ -245,7 +245,7 @@ x-javascript-interface:
                   - 'erroredFramesOutput invalid'
                   - 'droppedFramesOutput not provided'
                   - 'droppedFramesOutput invalid'
-                  - 'General processing error'
+                  - 'general processing error'
 
 paths:
   /:

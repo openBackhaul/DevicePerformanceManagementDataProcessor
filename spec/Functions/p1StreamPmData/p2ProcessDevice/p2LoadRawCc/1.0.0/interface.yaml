@@ -66,7 +66,7 @@ x-javascript-interface:
                 - 'offsets not provided'
                 - 'offsets invalid'
                 - 'rawCc could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       readControlConstructFromReplica:
         url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
@@ -228,7 +228,7 @@ x-javascript-interface:
                       - 'batchTimestamp not provided'
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
-                      - 'General processing error'
+                      - 'general processing error'
       updateInterfaceOffset:
         input:
           required: true
@@ -279,7 +279,7 @@ x-javascript-interface:
                     - 'interfaceOffsets invalid'
                     - 'interfaceOffset not provided'
                     - 'interfaceOffset invalid'
-                    - 'General processing error'
+                    - 'general processing error'
       updateOffsets:
         input:
           required: true
@@ -344,7 +344,7 @@ x-javascript-interface:
                     - 'offsets invalid'
                     - 'interfaceOffsets not provided'
                     - 'interfaceOffsets invalid'
-                    - 'General processing error'
+                    - 'general processing error'
 
 paths:
   /:

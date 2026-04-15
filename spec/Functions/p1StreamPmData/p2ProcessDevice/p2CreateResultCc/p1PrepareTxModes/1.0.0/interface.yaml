@@ -59,7 +59,7 @@ x-javascript-interface:
                 - 'transmissionModeList invalid'
                 - 'historicalPerformanceDataList could not be provided'
                 - 'transmissionModeList could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       p1CalculateAiCapacity:
         summary: 'Calculates the AirInterface capacity according to ONF TR-532 v2.0'
