@@ -40,7 +40,7 @@ x-javascript-interface:
                   type: array
                   description: >
                     'StatusData
-                    from [/load-offsets-and-status-data/statusData]'
+                    from [/load-offsets-and-status-data/status-data]'
       error:
         description: 'Offsets and statusData could not be read from dataStore'
         content:
@@ -66,8 +66,7 @@ x-javascript-interface:
                   schema:
                     type: array
                     description: >
-                      'Offsets for the device
-                      from [/data-store/device={/p1-load-offsets-and-status-data/mount-name}/offsets]'
+                      'Offsets for the device'
             error:
               description: 'Offsets from dataStore could not be provided'
               content:
@@ -92,8 +91,7 @@ x-javascript-interface:
                   schema:
                     type: array
                     description: >
-                      'StatusData for the device
-                      from [/data-store/device={/p1-load-offsets-and-status-data/mount-name}/status-data]'
+                      'StatusData for the device'
             error:
               description: 'StatusData from dataStore could not be provided'
               content:
