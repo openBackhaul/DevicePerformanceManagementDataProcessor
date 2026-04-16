@@ -1,47 +1,153 @@
-calculate-ethernet-kpis:
+calculate-busy-hour-performance-indicators:
   type: object
   required:
     - historical-performance-data
+    - interface-status
   properties:
     historical-performance-data:
       type: object
       description: >
         'historicalPerformanceData set
-        from {$input#/historical-performance-data}'
+        from {$input#/historical-performance-data}
+        ! simplified representation, just changes documented !'
       properties:
-        total-bytes-input:
+        granularity-period:
           type: string
-          description: 'String representation of int64 value'
-        total-bytes-output:
+        period-end-time:
           type: string
-          description: 'String representation of int64 value'
-        time-period:
-          type: integer
-        transmit-traffic:
-          type: integer
+        performance-data:
+          type: object
+          properties:
+            busy-hour:
+              type: object
+              required:
+                - period-end-time-list
+                - label
+                - throughput
+                - capacity
+                - utilization
+                - errored-frames
+                - dropped-frames
+                - suspicious-result-flag
+              properties:
+                period-end-time-list:
+                  type: array
+                  minItems: 1
+                  maxItems: 4
+                  description: >
+                    'list of period end times of the 15-min periods that are composing the busy hour'
+                  items:
+                    type: string
+                label:
+                  type: string
+                  description: >
+                    'label of the busy hour'
+                throughput:
+                  type: integer
+                  description: >
+                    'throughput during the busy hour'
+                capacity:
+                  type: integer
+                  description: >
+                    'capacity during the busy hour'
+                utilization:
+                  type: integer
+                  description: >
+                    'utilization during the busy hour'
+                errored-frames:
+                  type: integer
+                  description: >
+                    'errored frames during the busy hour'
+                dropped-frames:
+                  type: integer
+                  description: >
+                    'dropped frames during the busy hour'
+                suspicious-result-flag:
+                  type: boolean
+                  description: >
+                    'flag indicating suspicious busy hour KPIs'
+    interface-status:
+      type: object
+      description: >
+        'interface status derived from iterating the 15-min periods
+        from {$input#/interface-status}'
+      required:
+        - uuid
+      properties:
+        uuid:
+          type: string
           description: >
-            'transmitTraffic in Mbps
-            from {$calculateTransmitTraffic.output#/transmit-traffic}'
-        receive-traffic:
-          type: integer
+            'UUID of the interface (EthernetContainer)'
+        15-minute-values-by-day:
+          type: array
+          x-key: day
+          minItems: 1
+          maxItems: 2
           description: >
-            'receiveTraffic in Mbps
-            from {$calculateReceiveTraffic.output#/receive-traffic}'
-        errored-frames-input:
-          type: integer
-        errored-frames-output:
-          type: integer
-        dropped-frames-input:
-          type: integer
-        dropped-frames-output:
-          type: integer
-        frame-loss-input:
-          type: integer
-          description: >
-            'Total frame loss on ingress
-            from {$calculateFrameLossInput.output#/frame-loss-input}'
-        frame-loss-output:
-          type: integer
-          description: >
-            'Total frame loss on egress
-            from {$calculateFrameLossOutput.output#/frame-loss-output}'
+            'instance to be initialized, if not already existing for [/categorize-data-volume/day] 
+            eldest entry to be deleted first'
+          items:
+            type: object
+            required:
+              - day
+              - 15-minute-values-by-hour
+            properties:
+              day:
+                type: integer
+                minimum: 1
+                maximum: 31
+                description: >
+                  'day of month
+                  if to be initialized, to be parsed from [/iterate-ec-pm-slices/historical-performance-data-list=*/period-end-time]'
+              15-minute-values-by-hour:
+                type: array
+                x-key: hour
+                minItems: 24
+                maxItems: 24
+                description: >
+                  'to be initialized, if not already existing'
+                items:
+                  type: object
+                  required:
+                    - hour
+                    - 15-minute-values
+                  properties:
+                    hour:
+                      type: integer
+                      minimum: 0
+                      maximum: 23
+                      description: >
+                        'hour of day
+                        if to be initialized, from { [0,23] }'
+                    15-minute-values:
+                      type: array
+                      minItems: 0
+                      maxItems: 4
+                      description: >
+                        'PM data
+                        array content addressed based on index instead of key attribute
+                        if to be initialized, from { null }
+                        overwritten by {$categorizePmData.output#/15-minute-values}'
+                      items:
+                        type: object
+                        required:
+                          - period-end-time
+                        properties:
+                          period-end-time:
+                            type: string
+                          total-bytes-output:
+                            type: integer
+                          total-air-interface-interval-capacity:
+                            type: integer
+                          errored-frames-input:
+                            type: integer
+                          dropped-frames-input:
+                            type: integer
+
+    day:
+      type: integer
+      minimum: 1
+      maximum: 31
+      description: >
+        'day of month
+        parsing the day from [/historical-performance-data/period-end-time]'

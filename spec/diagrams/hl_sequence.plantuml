@@ -147,7 +147,10 @@ note over p1CalcBH
 end note
 
 note over p1CalcBH #Yellow
-  - entire spec is missing
+  - calculation of the busy hour KPIs is missing
+    - plantuml to be created from busyHourKpiCalculation.md
+    - interface.yaml to be complemented by processing steps
+    - variables.yaml to be complemented with "from" references
 end note
 
 note over p2Store

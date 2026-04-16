@@ -93,9 +93,9 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - historical-performance-data
+                  - performance-data
                 properties:
-                  historical-performance-data:
+                  performance-data:
                     type: object
                     description: >
                       'historicalPerformanceData set
@@ -108,12 +108,12 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - historical-performance-data
+                    - performance-data
                   properties:
-                    historical-performance-data:
+                    performance-data:
                       type: object
                       description: >
-                        'historicalPerformanceData'
+                        'historicalPerformanceData set with added Ethernet KPIs'
           error:
             description: 'Ethernet KPIs could not be added'
             content:
@@ -179,7 +179,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'historicalPerformanceData set
-                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*]'
                   aggregation-group:
                     type: object
                     description: >
@@ -203,7 +203,7 @@ x-javascript-interface:
                     historical-performance-data:
                       type: object
                       description: >
-                        'historicalPerformanceData'
+                        'historicalPerformanceData with added utilization'
           error:
             description: 'Utilization could not be added'
             content:
@@ -226,7 +226,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'historicalPerformanceData set
-                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*]'
                   interface-status:
                     type: object
                     description: >
@@ -268,12 +268,12 @@ x-javascript-interface:
                     type: object
                     description: >
                       'historicalPerformanceData set
-                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*]'
                   interface-status:
                     type: object
                     description: >
                       'interface status derived from iterating the 15-min periods
-                      from [/iterate-ec-pm-slices/status]'
+                      from [/iterate-ec-pm-slices/interface-status]'
         output:
           success:
             description: 'BusyHour KPIs added'
@@ -287,7 +287,7 @@ x-javascript-interface:
                     historical-performance-data:
                       type: object
                       description: >
-                        'historicalPerformanceData'
+                        'historicalPerformanceData set with added BusyHour KPIs'
           error:
             description: 'BusyHour KPIs could not be added'
             content:

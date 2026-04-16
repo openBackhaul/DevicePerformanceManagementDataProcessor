@@ -44,7 +44,7 @@ Die Busy Hour Performance Indikatoren werden zusammen mit den anderen Performanc
 Es wird unterstellt, dass die Geräte so programmiert sind, dass die 24-Stunden-Messperioden jeweils mit dem Kalendertag beginnen.  
 
 Der Name und der Ort des kombinierte Datentyps lautet:  
-/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/busy-hour  
+/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list/performance-data/busy-hour  
 Er erscheint ausschließlich in Instanzen von historical-performance-data-list mit einer granularity-period von 24 Stunden.  
 
 Der kombinierte Datentyp enthält folgende Attribute:  

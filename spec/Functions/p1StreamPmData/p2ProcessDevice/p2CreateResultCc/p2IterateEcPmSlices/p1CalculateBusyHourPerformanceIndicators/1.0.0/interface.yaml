@@ -5,32 +5,53 @@ info:
 
 x-javascript-interface:
   p1CalculateBusyHourPerformanceIndicators:
-    summary: ''
+    summary: 'Calculates BusyHour KPIs based on the status data derived from iterating the 15-min periods'
     input:
       required: true
       content:
         application/json:
           schema:
             type: object
-
-
+            required:
+              - historical-performance-data
+              - interface-status
+            properties:
+              historical-performance-data:
+                type: object
+                description: >
+                  'historicalPerformanceData set'
+              interface-status:
+                type: object
+                description: >
+                  'interface status derived from iterating the 15-min periods'
     output:
       success:
-        description: ''
+        description: 'BusyHour KPIs added'
         content:
           application/json:
             schema:
               type: object
-
-
+              required:
+                - historical-performance-data
+              properties:
+                historical-performance-data:
+                  type: object
+                  description: >
+                    'historicalPerformanceData set with added BusyHour KPIs
+                    from '
       error:
-        description: ''
+        description: 'BusyHour KPIs could not be added'
         content:
           application/json:
             schema:
               type: string
               enum:
-                - ''
+                - 'historicalPerformanceData not provided'
+                - 'historicalPerformanceData invalid'
+                - 'interfaceStatus not provided'
+                - 'interfaceStatus invalid'
+                - 'busyHour KPIs could not be added'
+                - 'general processing error'
     processing:
 
 paths:

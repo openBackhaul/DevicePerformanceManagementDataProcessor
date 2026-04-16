@@ -21,6 +21,9 @@ iterate-ec-pm-slices:
         ! simplified representation !'
       items:
         type: object
+        description: >
+          'historicalPerformanceData
+          overwritten by {$p1CalculateUtilization.output#/historical-performance-data}
         properties:
           granularity-period:
             type: string
@@ -29,9 +32,10 @@ iterate-ec-pm-slices:
           performance-data:
             type: object
             description: >
-              'historicalPerformanceData
-              overwritten by {$p1CalculateEthernetKpis.output#/historical-performance-data}
-              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}'
+              'historicalPerformanceData set
+              overwritten by {$p1CalculateEthernetKpis.output#/performance-data}
+              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}
+              overwritten by {$p1CalculateBusyHourPerformanceIndicators.output#/performance-data}'
             properties:
               transmit-traffic:
                 type: integer

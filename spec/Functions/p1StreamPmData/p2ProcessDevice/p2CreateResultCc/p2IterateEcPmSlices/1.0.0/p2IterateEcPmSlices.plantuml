@@ -19,20 +19,20 @@ activate iterateSlices
 
   loop FOR [historicalPerformanceDataList]
 
-    iterateSlices -> intCC : { {historical-performance-data} }
+    iterateSlices -> intCC : { {performance-data} }
     activate intCC
       note over intCC
         Adds Ethernet KPIs
       end note
-    iterateSlices <-- intCC: { {historical-performance-data} }
+    iterateSlices <-- intCC: { {performance-data} }
     deactivate intCC
 
-    iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{historical-performance-data} }
+    iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{performance-data} }
     activate p1RemDefault
       note over p1RemDefault
         Deletes default values
       end note
-    iterateSlices <-- p1RemDefault: { {historical-performance-data} }
+    iterateSlices <-- p1RemDefault: { {performance-data} }
     deactivate p1RemDefault
 
     iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }

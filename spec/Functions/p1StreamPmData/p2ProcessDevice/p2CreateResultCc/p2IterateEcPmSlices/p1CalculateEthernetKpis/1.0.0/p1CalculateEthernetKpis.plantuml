@@ -8,7 +8,7 @@ end title
 participant "p2IterateEcPmSlices\n" as requestor
 participant "p1CalculateEthernetKpis\n" as ethKpis
 
-requestor -> ethKpis : { historicalPerformanceData }
+requestor -> ethKpis : { performanceData }
 activate ethKpis
 
     note over ethKpis
@@ -27,7 +27,7 @@ activate ethKpis
       Adds frameLossOutput
     end note
 
-requestor <-- ethKpis : { historicalPerformanceData }
+requestor <-- ethKpis : { performanceData }
 deactivate ethKpis
 
 deactivate requestor
