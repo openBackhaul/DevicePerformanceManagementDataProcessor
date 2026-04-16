@@ -1,0 +1,210 @@
+# testing/p1RemoveOutOfRangeLevels/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1RemoveOutOfRangeLevels/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1RemoveOutOfRangeLevels/1.0.0/variables.yaml
+
+module:
+  functionUnderTest:
+    modulePath: "../../../genericFunctions/p1RemoveOutOfRangeLevels/1.0.0/P1RemoveOutOfRangeLevels.js"
+    exportName: ""
+
+processingSteps: []
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation (errors)
+  # -------------------------
+
+  - id: "errParametersNotProvided"
+    description: "Should return error: parameters not provided"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+    mocks: []
+
+  - id: "errParametersInvalid"
+    description: "Should return error: parameters invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errPerformanceDataNotProvided"
+    description: "Should return error: performanceData not provided"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "performanceData not provided"
+    mocks: []
+
+  - id: "errPerformanceDataInvalid"
+    description: "Should return error: performanceData invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "performanceData invalid"
+    mocks: []
+
+  - id: "errMissingInput"
+    description: "Should return error: General processing error"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  # ---------------------------------------
+  # Success - tx level fields removal rules
+  # ---------------------------------------
+
+  - id: "okTxLevelsInRangeNoDeletions"
+    description: "Should return success: performance-data unchanged (all tx-level-* within configured bounds)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okTxLevelMinBelowLowerIsDeleted"
+    description: "Should return success: tx-level-min deleted (value below lowerTxLevelLimit)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okTxLevelMaxAboveUpperIsDeleted"
+    description: "Should return success: tx-level-max deleted (value above upperTxLevelLimit)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okTxLevelAvgOutOfRangeIsDeleted"
+    description: "Should return success: tx-level-avg deleted (value outside [lowerTxLevelLimit, upperTxLevelLimit])"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okTxLevelsMixedDeleteOnlyOutOfRange"
+    description: "Should return success: only out-of-range tx-level-* attributes deleted; in-range kept"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okTxLevelEqualToLowerAndUpperKept"
+    description: "Should return success: boundary tx-level-* values kept (equal to lower/upper limits)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # ---------------------------------------
+  # Success - rx level fields removal rules
+  # ---------------------------------------
+
+  - id: "okRxLevelsInRangeNoDeletions"
+    description: "Should return success: performance-data unchanged (all rx-level-* within configured bounds)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRxLevelMinBelowLowerIsDeleted"
+    description: "Should return success: rx-level-min deleted (value below lowerRxLevelLimit)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRxLevelMaxAboveUpperIsDeleted"
+    description: "Should return success: rx-level-max deleted (value above upperRxLevelLimit)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRxLevelAvgOutOfRangeIsDeleted"
+    description: "Should return success: rx-level-avg deleted (value outside [lowerRxLevelLimit, upperRxLevelLimit])"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRxLevelsMixedDeleteOnlyOutOfRange"
+    description: "Should return success: only out-of-range rx-level-* attributes deleted; in-range kept"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRxLevelEqualToLowerAndUpperKept"
+    description: "Should return success: boundary rx-level-* values kept (equal to lower/upper limits)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # -------------------------
+  # Combined tx + rx behavior
+  # -------------------------
+
+  - id: "okCombinedTxAndRxDeleteOutOfRangeOnly"
+    description: "Should return success: delete all out-of-range tx-level-* and rx-level-* attributes; keep others"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okTxAndRxLevelsInRangeNoDeletions"
+    description: "Should return success:  keep all"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # -------------------------
+  # Edge/robustness scenarios
+  # -------------------------
+
+  - id: "okMissingLevelAttributesDoNothing"
+    description: "Should return success: performance-data unchanged (no tx-level-* or rx-level-* keys present)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "errLimitsMissingOrNonNumericGeneralProcessingError"
+    description: "Should return error: General processing error"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "okTimeXstatesListUnchanged"
+    description: "Should return success: time-xstates-list unchanged; only out-of-range level attributes removed"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []

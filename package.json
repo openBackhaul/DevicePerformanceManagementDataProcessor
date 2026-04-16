@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "DevicePerformanceManagementDataProcessor",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:function": "jest --config jest.function.config.js --runInBand --silent=false"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "js-yaml": "^4.1.1"
   }
 }

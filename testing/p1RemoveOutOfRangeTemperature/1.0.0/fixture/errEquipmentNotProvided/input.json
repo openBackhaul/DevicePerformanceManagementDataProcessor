@@ -1,0 +1,22 @@
+{
+  "parameters": {
+    "function-name": "p1RemoveOutOfRangeTemperature",
+    "description": "Deletes temperature attributes with values outside pre-defined range from equipment",
+    "is-active": true,
+    "parameter": [
+      {
+        "parameter-name": "lowerTemperatureLimit",
+        "purpose": "Lower bound of valid temperature values",
+        "owner": "engineering",
+        "value": "-40"
+      },
+      {
+        "parameter-name": "upperTemperatureLimit",
+        "purpose": "Upper bound of valid temperature values",
+        "owner": "engineering",
+        "value": "85"
+      }
+    ],
+    "sub-function": []
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$"
+}

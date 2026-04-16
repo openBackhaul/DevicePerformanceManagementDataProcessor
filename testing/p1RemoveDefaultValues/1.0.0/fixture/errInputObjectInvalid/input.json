@@ -1,0 +1,65 @@
+{
+  "parameters": {
+    "function-name": "p1RemoveDefaultValues",
+    "description": "Deletes attributes with default values from the transferred object",
+    "is-active": true,
+    "parameter": [
+      {
+        "parameter-name": "tx-level-min",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-1"
+      },
+      {
+        "parameter-name": "tx-level-max",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-1"
+      },
+      {
+        "parameter-name": "tx-level-avg",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-1"
+      },
+      {
+        "parameter-name": "rx-level-min",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-99"
+      },
+      {
+        "parameter-name": "rx-level-max",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-99"
+      },
+      {
+        "parameter-name": "rx-level-avg",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-99"
+      },
+      {
+        "parameter-name": "snir-min",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-99"
+      },
+      {
+        "parameter-name": "snir-max",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-99"
+      },
+      {
+        "parameter-name": "snir-avg",
+        "purpose": "Remove attribute if it has default value",
+        "owner": "engineering",
+        "value": "-99"
+      }
+    ],
+    "sub-function": []
+  },
+  "input-object": "not-an-object"
+}

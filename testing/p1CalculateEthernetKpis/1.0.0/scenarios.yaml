@@ -1,0 +1,98 @@
+# testing/p1CalculateEthernetKpis/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p1CalculateEthernetKpis/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p1CalculateEthernetKpis/1.0.0/variables.yaml
+
+module:
+  functionUnderTest:
+    modulePath: "../../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/1.0.0/P1CalculateEthernetKpis.js"
+    exportName: "p1CalculateEthernetKpis"
+
+processingSteps: []
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation (errors)
+  # -------------------------
+
+  - id: "errHistoricalPerformanceDataNotProvided"
+    description: "Should return error when historical-performance-data is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData not provided"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataIncomplete"
+    description: "Should return error when historical-performance-data is incomplete"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData incomplete"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataInvalid"
+    description: "Should return error when historical-performance-data is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+    mocks: []
+
+  - id: "errMissingInput"
+    description: "Should return error when input is null "
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  # ------------------------------------------------
+  # Internal KPI calculation failures (mapped errors)
+  # ------------------------------------------------
+
+  - id: "errTransmitTrafficCouldNotBeProvided"
+    description: "Should return error when transmit traffic cannot be calculated"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmitTraffic could not be provided"
+    mocks: []
+
+  - id: "errReceiveTrafficCouldNotBeProvided"
+    description: "Should return error when receive traffic cannot be calculated"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "receiveTraffic could not be provided"
+    mocks: []
+
+  - id: "errFrameLossInputCouldNotBeProvided"
+    description: "Should return error when ingress frame loss cannot be calculated"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "frameLossInput could not be provided"
+    mocks: []
+
+  - id: "errFrameLossOutputCouldNotBeProvided"
+    description: "Should return error when egress frame loss cannot be calculated"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "frameLossOutput could not be provided"
+    mocks: []
+
+  # -------------------------
+  # Success
+  # -------------------------
+
+  - id: "okEthernetKpisAdded"
+    description: "Should return success: add transmit/receive traffic and frame loss KPIs"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []

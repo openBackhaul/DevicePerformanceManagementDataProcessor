@@ -1,0 +1,144 @@
+# testing/p1DiscardIrrelevantPmRecords/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1DiscardIrrelevantPmRecords/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1DiscardIrrelevantPmRecords/1.0.0/variables.yaml
+
+module:
+  functionUnderTest:
+    modulePath: "../../../genericFunctions/p1DiscardIrrelevantPmRecords/1.0.0/P1DiscardIrrelevantPmRecords.js"
+    exportName: ""
+
+processingSteps: []
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation (errors)
+  # -------------------------
+
+  - id: "errHistoricalPerformanceDataListNotProvided"
+    description: "Should return error when historical-performance-data-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalid"
+    description: "Should return error when historical-performance-data-list is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+    mocks: []
+
+  - id: "errMissingInput"
+    description: "Should return error when input is null "
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  # -----------------------------------------
+  # Success cases - default relevant regex
+  # default relevant-granularities:
+  #   :GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$
+  # -----------------------------------------
+
+  - id: "okDefaultRegexKeeps15minAnd24hDiscardsOthers"
+    description: "Should return success: default filter keeps only 15-MIN and 24-HOURS records"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # ---------------------------------------------------------
+  # Success cases - relevant-granularities explicitly provided
+  # ---------------------------------------------------------
+
+  - id: "okExplicitRegexKeepOnly15min"
+    description: "Should return success: custom filter keeps only 15-MIN records"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okExplicitRegexKeepOnly24hours"
+    description: "Should return success: custom filter keeps only 24-HOURS records"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # ---------------------------------------------------
+  # Success cases - time filtering for 15min granularity
+  # ---------------------------------------------------
+
+  - id: "ok15minFilterDiscardsNotNewerThanThreshold"
+    description: "Should return success: 15-MIN keeps only records newer than most-recent-period-end-time"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # ---------------------------------------------------
+  # Success cases - time filtering for 24h granularity
+  # ---------------------------------------------------
+
+  - id: "ok24hoursFilterDiscardsNotNewerThanThreshold"
+    description: "Should return success: 24-HOURS keeps only records newer than most-recent-period-end-time-24"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # ---------------------------------------------------
+  # Combined filters: regex + 15min threshold + 24h threshold
+  # ---------------------------------------------------
+
+  - id: "okCombinedFiltersRegexAndBothThresholds"
+    description: "Should return success: apply default filter and both time thresholds"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # -----------------------------------------
+  # Edge cases
+  # -----------------------------------------
+
+  - id: "okEmptyInputList"
+    description: "Should return success: empty input list returns empty output list"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okMissingOptionalFiltersDoNotDiscardByTime"
+    description: "Should return success: without time thresholds, do not discard records by time"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  # ---------------------------------------------------
+  # Invalid regex pattern (implementation-dependent)
+  # ---------------------------------------------------
+
+  - id: "errInvalidRegexPattern"
+    description: "Should return error when relevant-granularities is an invalid regex"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []

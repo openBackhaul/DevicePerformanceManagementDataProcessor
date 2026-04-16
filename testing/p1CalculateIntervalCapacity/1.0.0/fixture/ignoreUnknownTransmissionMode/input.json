@@ -1,0 +1,9 @@
+{
+        "time-xstates-list": [
+          {"transmission-mode": "A", "time": 10},
+          {"transmission-mode": "UNKNOWN", "time": 100}
+        ],
+        "transmission-mode-list": [
+          {"transmission-mode-name": "A", "capacity": 100}
+        ]
+}
