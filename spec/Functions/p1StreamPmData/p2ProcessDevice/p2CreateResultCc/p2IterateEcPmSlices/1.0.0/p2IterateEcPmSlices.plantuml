@@ -78,7 +78,7 @@ activate iterateSlices
 
   end loop
 
-cur <-- iterateSlices : { [historicalPerformanceDataList] }
+cur <-- iterateSlices : { [historicalPerformanceDataList],\n{interfaceStatus} }
 deactivate iterateSlices
 
 deactivate cur

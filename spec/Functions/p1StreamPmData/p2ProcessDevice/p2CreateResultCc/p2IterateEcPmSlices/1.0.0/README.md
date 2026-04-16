@@ -1,6 +1,6 @@
 # p2IterateEcPmSlices
 
-Iterates through all EthernetContainer historical performance data slices and calls the processing Functions.  
+Iterates through all 15-min PM values at the EthernetContainer and calls the processing Functions.  
 
 
 ### Diagram
@@ -27,5 +27,5 @@ Just passing through parameters to sub-functions.
 
 ### NPM Module  
 
-[mw-sdn-p1-iterate-ec-pm-slices](https://www.npmjs.com/package/mw-sdn-p1-iterate-ec-pm-slices)  
+[mw-sdn-p2-iterate-ec-pm-slices](https://www.npmjs.com/package/mw-sdn-p2-iterate-ec-pm-slices)  
 
