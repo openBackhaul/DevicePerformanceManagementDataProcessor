@@ -399,7 +399,7 @@ x-javascript-interface:
                       'resultCc
                       from [/create-result-cc/result-cc]'
                   interface-status:
-                    type: array
+                    type: object
                     description: >
                       'status at the interface after iterating through PM data of 15-min periods in already processed batches
                       from [/create-result-cc/status-data={p1IterateEcPmSlices}/status/interface-status={ethernet-container-uuid}]'
