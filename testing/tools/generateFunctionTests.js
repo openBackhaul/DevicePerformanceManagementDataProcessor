@@ -70,13 +70,11 @@ if (require.main === module) {
   const [functionName, version] = process.argv.slice(2);
 
   if (!functionName || !version) {
-    // eslint-disable-next-line no-console
     console.error("Usage: node testing/tools/generateFunctionTests.js <FunctionName> <version>");
     process.exit(1);
   }
 
   const out = generate({ repoRoot, functionName, version });
-  // eslint-disable-next-line no-console
   console.log(`Generated: ${out}`);
 }
 

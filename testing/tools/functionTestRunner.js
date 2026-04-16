@@ -44,7 +44,7 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   for (const step of processingSteps) {
     const m = mockByStepId.get(step.stepId);
 
-    // If you want fully deterministic behavior, enforce mocks for every processing step:
+
     if (!m) {
       throw new Error(`Missing mock for step '${step.stepId}'`);
     }
@@ -55,7 +55,6 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
           return readJson(path.join(scenarioDir, m.fixture));
         }
         if (m.type === "throw") {
-          // The HLD mentions throwing the error string deterministically
           throw m.error;
         }
         throw new Error(`Unknown mock type '${m.type}' for step '${step.stepId}'`);
@@ -118,10 +117,9 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName, version }) {
 
       if (s.expected?.type === "error") {
         // Two patterns are common:
-        // A) function RETURNS error enum string (like your current p1CalculateIntervalCapacity)
+        // A) function RETURNS error enum string 
         // B) function THROWS error enum string
-        //
-        // We'll support both.
+
         try {
           const actual = await fn(input);
           // If it returned, compare returned value to expected enum:
