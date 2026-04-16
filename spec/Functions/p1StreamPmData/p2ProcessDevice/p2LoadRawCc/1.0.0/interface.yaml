@@ -70,7 +70,7 @@ x-javascript-interface:
     processing:
       readControlConstructFromReplica:
         url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
-          description: 'Reads the complete ControlConstruct for the [/load-raw-cc/mount-name] from MWDI ElasticSearch replica.'
+          description: 'Reads the complete ControlConstruct for the currently processed device from MWDI ES replica.'
           output:
             success:
               description: 'Raw ControlConstruct data read'
@@ -199,7 +199,7 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Timestamp when the CC was read from the device
-                      from [/load-raw-cc/raw-cc/batch-timestamp], if not already existing 2010-11-20T14:00:00+01:00 to be used'
+                      from [/load-raw-cc/raw-cc/batch-timestamp], if not already existing {2010-11-20T14:00:00+01:00} to be used'
         output:
           success:
             description: 'batchTimestamp provided'
@@ -214,8 +214,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'Timestamp when the CC was read from the device
-                        if [$input#current-performance-timestamp] > [$input#batch-timestamp]
-                        from [$input#batch-timestamp]'
+                        from { max ( {$input#current-performance-timestamp}, {$input#batch-timestamp} ) }'
             error:
               description: 'batchTimestamp could not be provided'
               content:
@@ -225,7 +224,6 @@ x-javascript-interface:
                     enum:
                       - 'currentPerformanceTimestamp not provided'
                       - 'currentPerformanceTimestamp invalid'
-                      - 'batchTimestamp not provided'
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
                       - 'general processing error'

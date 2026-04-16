@@ -17,7 +17,7 @@ x-javascript-interface:
               - historical-performance-data-list
               - aggregation-group
               - result-cc
-              - status
+              - interface-status
             properties:
               parameters:
                 type: object
@@ -34,7 +34,7 @@ x-javascript-interface:
                 type: object
                 description: >
                   'resultCc'
-              status:
+              interface-status:
                 type: object
                 description: >
                   'status data, e.g. for calculating BusyHourKPIs'
@@ -47,18 +47,18 @@ x-javascript-interface:
               type: object
               required:
                 - historical-performance-data-list
-                # - status-data
+                - interface-status
               properties:
                 historical-performance-data-list:
                   type: array
                   description: >
                     'historicalPerformanceDataList
                     from [/iterate-ec-pm-slices/historical-performance-data-list]'
-                # status-data:
-                #   type: array
-                #   description: >
-                #     'statusData
-                #     from [ ??? ]'
+                interface-status:
+                  type: object
+                  description: >
+                    'Interface status
+                    from [/iterate-ec-pm-slices/interface-status]'
       error:
         description: 'historicalPerformanceDataList could not be processed'
         content:
@@ -74,8 +74,8 @@ x-javascript-interface:
                 - 'aggregationGroup invalid'
                 - 'resultCc not provided'
                 - 'resultCc invalid'
-                - 'status not provided'
-                - 'status invalid'
+                - 'interfaceStatus not provided'
+                - 'interfaceStatus invalid'
                 - 'ethernet KPIs could not be added'
                 - 'default values could not be removed'
                 - 'utilization could not be calculated'
@@ -220,18 +220,18 @@ x-javascript-interface:
                 type: object
                 required:
                   - historical-performance-data
-                  - status
+                  - interface-status
                 properties:
                   historical-performance-data:
                     type: array
                     description: >
                       'historicalPerformanceData set
                       from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
-                  status:
+                  interface-status:
                     type: object
                     description: >
-                      'status of iterating the EC PM slices
-                      from [/iterate-ec-pm-slices/status]'
+                      'status at the interface
+                      from [/iterate-ec-pm-slices/interface-status]'
         output:
           success:
             description: 'PM data categorized by day and hour'
@@ -240,12 +240,12 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - status
+                    - interface-status
                   properties:
-                    status:
+                    interface-status:
                       type: object
                       description: >
-                        'new status after iterating the EC PM slices of the latest batch'
+                        'new status at the interface after categorizing PM data of a 15-min period'
           error:
             description: 'PM data could not be categorized by day and hour'
             content:
@@ -253,7 +253,7 @@ x-javascript-interface:
                 schema:
                   type: string
       p1CalculateBusyHourPerformanceIndicators:
-        summary: 'Calculates BusyHour KPIs based on the status data derived from iterating the EC PM slices'
+        summary: 'Calculates BusyHour KPIs based on the status data derived from iterating the 15-min periods'
         input:
           required: true
           content:
@@ -262,17 +262,17 @@ x-javascript-interface:
                 type: object
                 required:
                   - historical-performance-data
-                  - status
+                  - interface-status
                 properties:
                   historical-performance-data:
                     type: array
                     description: >
                       'historicalPerformanceData set
                       from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
-                  status:
+                  interface-status:
                     type: object
                     description: >
-                      'status data derived from iterating the EC PM slices
+                      'interface status derived from iterating the 15-min periods
                       from [/iterate-ec-pm-slices/status]'
         output:
           success:

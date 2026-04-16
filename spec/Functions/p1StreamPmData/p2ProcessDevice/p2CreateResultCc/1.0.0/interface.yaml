@@ -59,8 +59,8 @@ x-javascript-interface:
                 - 'parameters invalid'
                 - 'rawCc not provided'
                 - 'rawCc invalid'
-                # - 'statusData not provided'
-                # - 'statusData invalid'
+                - 'statusData not provided'
+                - 'statusData invalid'
                 - 'resultCc could not be provided'
                 - 'general processing error'
     processing:
@@ -71,6 +71,7 @@ x-javascript-interface:
           content:
             application/json:
               schema:
+                type: object
                 required:
                   - raw-cc
                 properties:
@@ -85,14 +86,13 @@ x-javascript-interface:
             content:
               application/json:
                 schema:
+                  type: object
                   properties:
-                    type: object
-                    properties:
-                      result-cc:
-                        type: object
-                        description: >
-                          'ResultCc
-                          from {bare copy of $input#/raw-cc}'
+                    result-cc:
+                      type: object
+                      description: >
+                        'ResultCc
+                        from {bare copy of {$input#/raw-cc}}'
         error:
           description: 'ResultCc could not be provided'
           content:
@@ -111,6 +111,7 @@ x-javascript-interface:
           content:
             application/json:
               schema:
+                type: object
                 required:
                   - raw-cc
                 properties:
@@ -181,6 +182,7 @@ x-javascript-interface:
           content:
             application/json:
               schema:
+                type: object
                 required:
                   - historical-performance-data-list
                   - transmission-mode-list
@@ -227,6 +229,7 @@ x-javascript-interface:
           content:
             application/json:
               schema:
+                type: object
                 required:
                   - parameters
                   - historical-performance-data-list
@@ -373,7 +376,7 @@ x-javascript-interface:
                   - historical-performance-data-list
                   - aggregation-group
                   - result-cc
-                  - status-data
+                  - interface-status
                 properties:
                   parameters:
                     type: object
@@ -395,11 +398,11 @@ x-javascript-interface:
                     description: >
                       'resultCc
                       from [/create-result-cc/result-cc]'
-                  # status-data:
-                  #   type: array
-                  #   description: >
-                  #     'statusData
-                  #     from [/create-result-cc/status-data]'
+                  interface-status:
+                    type: array
+                    description: >
+                      'status at the interface after iterating through PM data of 15-min periods in already processed batches
+                      from [/create-result-cc/status-data={p1IterateEcPmSlices}/status/interface-status={ethernet-container-uuid}]'
         output:
           success:
             description: 'historicalPerformanceDataList processed'
@@ -409,16 +412,16 @@ x-javascript-interface:
                   type: object
                   required:
                     - historical-performance-data-list
-                    #- status-data
+                    - interface-status
                   properties:
                     historical-performance-data-list:
                       type: array
                       description: >
                         'historicalPerformanceDataList'
-                    # status-data:
-                    #   type: array
-                    #   description: >
-                    #     'statusData'
+                    interface-status:
+                       type: array
+                       description: >
+                         'new status at the interface after iterating through PM data of the 15-min periods of the currently processed batch'
           error:
             description: 'historicalPerformanceDataList could not be processed'
             content:

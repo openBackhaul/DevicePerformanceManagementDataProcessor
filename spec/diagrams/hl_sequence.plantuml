@@ -79,34 +79,43 @@ note over p2AddRaw
     - relevant-granularities
 end note
 
+note over p2AddRaw #LightGreen
+  all files checked
+  but Katharina asked to fix redundant uuids in offsets
+end note
+
 note over p2filterPm
   - Remove from own input interface:
     -  relevant-granularities
   - Remove deleting of 15-min or 24-hours granularity
 end note
 
+note over p2filterPm #LightGreen
+  all files checked
+end note
+
 note over p2CreateResultCc
   - Complement own input interface by:
     - statusData
   - Complement interface to p2IterateEcPmSlices by:
-    - statusData
+    - interfaceStatus
   - Complement interface from p2IterateEcPmSlices by:
-    - statusData
+    - interfaceStatus
   - Complement own output interface by:
     - statusData
 end note
 
-note over p2CreateResultCc #Yellow
-  - entire spec to be checked
+note over p2CreateResultCc #LightGreen
+  - all files checked
 end note
 
 note over ecSlices
   - Complement own input interface by:
-    - statusData
+    - interfaceStatus
   - Add interface to p1CategorizeDataVolume
   - Add interface to p1CalculateBusyHourPerformanceIndicators
   - Complement own output interface by:
-    - statusData
+    - interfaceStatus
 end note
 
 note over ecSlices #Yellow

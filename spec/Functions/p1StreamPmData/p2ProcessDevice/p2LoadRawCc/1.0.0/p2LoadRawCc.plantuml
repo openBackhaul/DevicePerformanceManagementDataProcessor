@@ -80,7 +80,7 @@ activate cur
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n[offset] }
     deactivate filterPm
 
-    note right cur
+    note over cur
       updateInterfaceOffset for this interface
       with mostRecentPeriodEndTime and
       mostRecentPeriodEndTime24 in this batch

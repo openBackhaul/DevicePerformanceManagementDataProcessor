@@ -53,7 +53,7 @@ load-raw-cc:
                       type: object
                       required:
                         - uuid
-                        - offset
+                        - interface-offset
                       properties:
                         uuid:
                           type: string
@@ -157,7 +157,7 @@ load-raw-cc:
                                   x-key: granularity-period, period-end-time
                                   description: >
                                     'HistoricalPerformancesDataList
-                                    overwritten by {$p1DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
+                                    overwritten by {$p2DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
                     - description: 'ethernet-container'
                       type: object
                       properties:
@@ -178,7 +178,7 @@ load-raw-cc:
                                   x-key: granularity-period, period-end-time
                                   description: >
                                     'HistoricalPerformancesDataList
-                                    overwritten by {$p1DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
+                                    overwritten by {$p2DiscardIrrelevantPmRecords.output/filtered-historical-performance-data-list}'
         batch-timestamp:
           type: string
           description: >

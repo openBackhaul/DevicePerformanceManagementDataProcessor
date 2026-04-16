@@ -107,12 +107,18 @@ x-javascript-interface:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime
-                        from {$input#period-end-time} if ( ({$input#granularity-period} indicates 15-MIN) AND ({$input#period-end-time} > {$input#new-most-recent-period-end-time}) )'
+                        if {$input#granularity-period} indicates 15-MIN
+                          from { max ( {$input#period-end-time}, {$input#new-most-recent-period-end-time} ) }
+                        else
+                          from {$input#new-most-recent-period-end-time} (unchanged)'
                     new-most-recent-period-end-time-24:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime24
-                        from {$input#period-end-time} if ( ({$input#granularity-period} indicates 24-HOURS) AND ({$input#period-end-time} > {$input#new-most-recent-period-end-time-24}) )'
+                        if {$input#granularity-period} indicates 24-HOURS
+                          from { max ( {$input#period-end-time}, {$input#new-most-recent-period-end-time-24} ) }
+                        else
+                          from {$input#new-most-recent-period-end-time-24} (unchanged)'
           error:
             description: 'newMostRecentPeriodEndTime could not be provided'
             content:
@@ -130,7 +136,6 @@ x-javascript-interface:
                     - 'periodEndTime invalid'
                     - 'newMostRecentPeriodEndTime could not be provided'
                     - 'general processing error'
-
       updateOffset:
         description: 'Updates the mostRecentPeriodEndTimes in the offset with newMostRecentPeriodEndTimes'
         input:
@@ -175,12 +180,12 @@ x-javascript-interface:
                           type: string
                           description: >
                             'potentially updated most-recent-period-end-time
-                            from maximum of ( {$updateOffset.input#/new-most-recent-period-end-time}, {$updateOffset.input#/offset/most-recent-period-end-time} )'
+                            from { max ( {$input#/new-most-recent-period-end-time}, {$input#/offset/most-recent-period-end-time} ) }'
                         most-recent-period-end-time-24:
                           type: string
                           description: >
                             'potentially updated most-recent-period-end-time-24
-                            from maximum of ( {$updateOffset.input#/new-most-recent-period-end-time-24}, {$updateOffset.input#/offset/most-recent-period-end-time-24} )'
+                            from { max ( {$input#/new-most-recent-period-end-time-24}, {$input#/offset/most-recent-period-end-time-24} ) }'
           error:
             description: 'Offset could not be updated'
             content:

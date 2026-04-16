@@ -15,12 +15,40 @@ create-result-cc:
       description: >
         'rawCc
         from {$input#/raw-cc}'
-    # status-data:
-    #   type: array
-    #   description: >
-    #     'statusData
-    #     from {$input#/status-data},
-    #     overwritten by {$p1IterateEcPmSlices.output#/status-data}'
+    status-data:
+      type: array
+      x-key: function-name
+      description: >
+        'List of status data of diverse functions
+        from {$input#/status-data}
+        ! simplified representation, just relevant attributes documented !''
+      items:
+        type: object
+        required:
+          - function-name
+          - status
+        properties:
+          function-name:
+            type: string
+            description: >
+              'functionName'
+          status:
+            oneOf:
+              - description: 'p1IterateEcPmSlices'
+                type: object
+                properties:
+                  interface-status:
+                    type: array
+                    x-key: uuid
+                    description: >
+                      'status at the interface after iterating through PM data of 15-min periods
+                      overwritten by {$p1IterateEcPmSlices.output#/interface-status}'
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                          description: 'UUID of the interface (EthernetContainer)'
 
     air-interface-uuid:
       type: array

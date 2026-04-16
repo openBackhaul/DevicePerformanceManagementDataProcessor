@@ -29,22 +29,13 @@ loop FOR EACH record in [historicalPerformanceDataList]
   end note
 
   note over cur
-    For granularityPeriod == 15-MIN:
-    IF (record.periodEndTime > newMostRecentPeriodEndTime)
-      THEN update newMostRecentPeriodEndTime
-  end note
-
-  note over cur
-    For granularityPeriod == 24-HOURS:
-    IF (record.periodEndTime > newMostRecentPeriodEndTime24)
-      THEN update newMostRecentPeriodEndTime24
+    updateNewMostRecentPeriodEndTime
   end note
 
 end loop
 
 note over cur
-  /offset/mostRecentPeriodEndTime = newMostRecentPeriodEndTime
-  /offset/mostRecentPeriodEndTime24 = newMostRecentPeriodEndTime24
+  updateOffset
 end note
 
 requestor <-- cur: { [filteredHistoricalPerformanceDataList],\n{offset} }

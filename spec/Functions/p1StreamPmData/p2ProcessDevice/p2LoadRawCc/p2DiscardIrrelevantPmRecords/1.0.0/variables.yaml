@@ -30,16 +30,9 @@ discard-irrelevant-pm-records:
       description: >
         'The offset for the currently processed interface instance,
           from {$input#/offset}
-          modified by {$updateOffset.output#/offset}'
-      required:
-        - uuid
-        - most-recent-period-end-time
-        - most-recent-period-end-time-24
+          modified by {$updateOffset.output#/offset}
+          ! simplified representation, just relevant attributes documented !'
       properties:
-        uuid:
-          type: string
-          description: >
-            'UUID of the interface instance'
         most-recent-period-end-time:
           type: string
           description: >
@@ -62,12 +55,12 @@ discard-irrelevant-pm-records:
       pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
         'newMostRecentPeriodEndTime
-        initial value: {2010-11-20T14:00:00+01:00}
-        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
+        initial value from {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
     new-most-recent-period-end-time-24:
       type: string
       pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
         'newMostRecentPeriodEndTime24
-        initial value: {2010-11-20T14:00:00+01:00}
-        overwritten by {$updateMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
+        initial value from {2010-11-20T14:00:00+01:00}
+        overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
