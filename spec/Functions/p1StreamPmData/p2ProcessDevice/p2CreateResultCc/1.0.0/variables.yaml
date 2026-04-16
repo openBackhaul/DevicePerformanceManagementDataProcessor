@@ -23,18 +23,18 @@ create-result-cc:
         from {$input#/status-data}
         ! simplified representation, just relevant attributes documented !''
       items:
-        type: object
-        required:
-          - function-name
-          - status
-        properties:
-          function-name:
-            type: string
-            description: >
-              'functionName'
-          status:
-            oneOf:
-              - description: 'p1IterateEcPmSlices'
+        oneOf:
+          - description: 'p2IterateEcPmSlices'
+            type: object
+            required:
+              - function-name
+              - status
+            properties:
+              function-name:
+                type: string
+                enum:
+                  - 'p2IterateEcPmSlices'
+              status:
                 type: object
                 properties:
                   interface-status:
@@ -42,13 +42,16 @@ create-result-cc:
                     x-key: uuid
                     description: >
                       'status at the interface after iterating through PM data of 15-min periods
-                      overwritten by {$p1IterateEcPmSlices.output#/interface-status}'
+                      if new interface, must be initialized before calling p2IterateEcPmSlices
+                      overwritten by {$p2IterateEcPmSlices.output#/interface-status}'
                     items:
                       type: object
                       properties:
                         uuid:
                           type: string
-                          description: 'UUID of the interface (EthernetContainer)'
+                          description: >
+                            'UUID of the interface (EthernetContainer)
+                            if to be initialized, from [/create-result-cc/ethernet-container-uuid[n]]'
 
     air-interface-uuid:
       type: array
@@ -344,7 +347,7 @@ create-result-cc:
                                   x-key: granularity-period, period-end-time
                                   description: >
                                     'List of historical performance data slices
-                                    overwritten by {$p1IterateEcPmSlices.output#/historical-performance-data-list}'
+                                    overwritten by {$p2IterateEcPmSlices.output#/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
@@ -376,12 +379,12 @@ create-result-cc:
                                             type: integer
                                             description: >
                                               'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
-                                              requires {$p1IterateEcPmSlices} and {p1CalculateUtilization}'
+                                              requires {$p2IterateEcPmSlices} and {p1CalculateUtilization}'
                                           utilization:
                                             type: integer
                                             description: >
                                               'Interval utilization (=totalBytesOutput/totalAirInterfaceIntervalCapacity) in %
-                                              requires {$p1IterateEcPmSlices} and {p1CalculateUtilization}'
+                                              requires {$p2IterateEcPmSlices} and {p1CalculateUtilization}'
                                           time-period:
                                             type: integer
                                           transmit-traffic:

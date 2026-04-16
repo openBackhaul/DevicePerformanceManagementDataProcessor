@@ -37,7 +37,7 @@ x-javascript-interface:
               interface-status:
                 type: object
                 description: >
-                  'status data, e.g. for calculating BusyHourKPIs'
+                  'status at the interface based on already processed batches'
     output:
       success:
         description: 'historicalPerformanceDataList processed'
@@ -294,7 +294,6 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-
 
 paths:
   /:

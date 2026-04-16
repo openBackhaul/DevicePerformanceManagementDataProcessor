@@ -14,7 +14,7 @@ participant "p1Calculate\nUtilization" as p1CalcUtil
 participant "p1CategorizeDataVolume\n" as p1CatDataVo
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 
-cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{status} }
+cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{interfaceStatus} }
 activate iterateSlices
 
   loop FOR [historicalPerformanceDataList]
@@ -51,13 +51,13 @@ activate iterateSlices
       THEN
     end note
 
-    iterateSlices -> p1CatDataVo : { {historical-performance-data},\n{status} }
+    iterateSlices -> p1CatDataVo : { {historical-performance-data},\n{interfaceStatus} }
     activate p1CatDataVo
       note over p1CatDataVo
         Categorizes PM data
         by day and hour
       end note
-    iterateSlices <-- p1CatDataVo: { {status} }
+    iterateSlices <-- p1CatDataVo: { {interfaceStatus} }
     deactivate p1CatDataVo
 
     note over iterateSlices
@@ -68,7 +68,7 @@ activate iterateSlices
       THEN
     end note
 
-    iterateSlices -> p1CalcBH : { {historical-performance-data},\n{status} }
+    iterateSlices -> p1CalcBH : { {historical-performance-data},\n{interfaceStatus} }
     activate p1CalcBH
       note over p1CalcBH
         Adds BusyHourKPIs
@@ -80,13 +80,6 @@ activate iterateSlices
 
 cur <-- iterateSlices : { [historicalPerformanceDataList] }
 deactivate iterateSlices
-
-note over cur #LightCoral
-  TODO for BH:
-  add returning of updated status
-  (also in interface.yaml/variables.yaml)
-end note
-
 
 deactivate cur
 

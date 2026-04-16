@@ -364,7 +364,7 @@ x-javascript-interface:
                   - 'aggregationGroupList not provided'
                   - 'aggregationGroupList invalid'
                   - 'general processing error'
-      p1IterateEcPmSlices:
+      p2IterateEcPmSlices:
         summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
         input:
           required: true
@@ -382,7 +382,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/create-result-cc/parameters/sub-function=p1IterateEcPmSlices]'
+                      from [/create-result-cc/parameters/sub-function=p2IterateEcPmSlices]'
                   historical-performance-data-list:
                     type: array
                     description: >
@@ -402,7 +402,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'status at the interface after iterating through PM data of 15-min periods in already processed batches
-                      from [/create-result-cc/status-data={p1IterateEcPmSlices}/status/interface-status={ethernet-container-uuid}]'
+                      from [/create-result-cc/status-data={p2IterateEcPmSlices}/status/interface-status={ethernet-container-uuid}]'
         output:
           success:
             description: 'historicalPerformanceDataList processed'

@@ -118,8 +118,8 @@ note over ecSlices
     - interfaceStatus
 end note
 
-note over ecSlices #Yellow
-  - variables.yaml to be updated
+note over ecSlices #LightGreen
+  all files checked
 end note
 
 note over p1CatDV
