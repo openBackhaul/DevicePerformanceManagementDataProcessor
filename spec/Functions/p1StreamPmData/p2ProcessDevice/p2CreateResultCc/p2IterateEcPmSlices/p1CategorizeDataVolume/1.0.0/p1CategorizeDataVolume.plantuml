@@ -1,0 +1,42 @@
+@startuml p1CategorizeDataVolume
+skinparam responseMessageBelowArrow true
+
+title
+  p1CategorizeDataVolume
+end title
+
+participant "p2IterateEcPmSlices\n" as cur
+
+participant "p1CategorizeDataVolume\n" as p1CatDataVo
+
+
+cur -> p1CatDataVo : { {historicalPerformanceData},\n{interfaceStatus} }
+activate p1CatDataVo
+
+  note over p1CatDataVo
+    parse {day} from [/historical-performance-data/period-end-time]
+  end note
+
+  note over p1CatDataVo
+    IF {day} not in [/interface-status/15-minute-values-by-day=*/day]
+      initialize new instance in [15-minute-values-by-day]
+      IF number of instances in [15-minute-values-by-day] > 2
+        delete eldest instance in [15-minute-values-by-day]
+  end note
+
+  note over p1CatDataVo
+    parse {hour} from [/historical-performance-data/period-end-time]
+  end note
+
+  note over p1CatDataVo
+    transfer values
+      from [/historical-performance-data/performance-data/*] 
+      to [/interface-status/15-minute-values-by-day={day}/15-minute-values-by-hour={hour}/15-minute-values[n]/*]
+  end note
+
+cur <-- p1CatDataVo : { {interfaceStatus} }
+deactivate p1CatDataVo
+
+deactivate cur
+
+@enduml

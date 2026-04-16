@@ -3,7 +3,15 @@
 
 ### Overview
 
-A high level description of the p1CategorizeDataVolume function can be found [here](./../../../../../../../additionalDocumentation/busyHourKpiCalculation.md#module)
+Performance data measured during 15-minute periods are categorized by day and hour.  
+The following parameters are categorized:  
+- period-end-time
+- total-bytes-output
+- total-air-interface-interval-capacity
+- errored-frames-input
+- dropped-frames-input
+
+When 15-minute-values-by-day exceeds two entries, the oldest entries are deleted (for example, entry 31 is older than entry 1).  
 
 
 ### Diagram
@@ -21,11 +29,6 @@ Please find a detailed description of the [interface](interface.yaml).
 ### Variables
 
 Please find a detailed description of the [variables](variables.yaml).
-
-
-### Parameters
-
-???  
 
 
 ### NPM Module

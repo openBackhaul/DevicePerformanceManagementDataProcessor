@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: p1CategorizeDataVolume
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CategorizeDataVolume:
+    summary: 'Categorizes 15-min PM data by day and hour'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - historical-performance-data
+              - interface-status
+            properties:
+              historical-performance-data:
+                type: object
+                description: >
+                  'historicalPerformanceData set'
+              interface-status:
+                type: object
+                description: >
+                  'status at the interface'
+    output:
+      success:
+        description: '15-min PM data categorized by day and hour'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - interface-status
+              properties:
+                interface-status:
+                  type: object
+                  description: >
+                    'new status at the interface after categorizing PM data of a 15-min period
+                    from [/categorize-data-volume/interface-status]'
+      error:
+        description: 'historicalPerformanceDataList could not be processed'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'historicalPerformanceDataList not provided'
+                - 'historicalPerformanceDataList invalid'
+                - 'interfaceStatus not provided'
+                - 'interfaceStatus invalid'
+                - 'PM data categorization failed'
+                - 'general processing error'
+    processing:
+      categorizePmData:
+        summary: 'Categorizes the 15-minute-values by day and hour'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data
+                  - 15-minute-values
+                properties:
+                  historical-performance-data:
+                    type: object
+                    description: >
+                      'historicalPerformanceData
+                      from [/categorize-data-volume/historical-performance-data]'
+                  15-minute-values:
+                    type: array
+                    description: >
+                      'Bucket for 15-minute-values of a specific day and hour
+                      from [/categorize-data-volume/interface-status/15-minute-values-by-day={day}/15-minute-values-by-hour={hour}/15-minute-values]'
+        output:
+          success:
+            description: '15-minute-values categorized'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - 15-minute-values
+                  properties:
+                    15-minute-values:
+                      type: array
+                      description: >
+                        'Bucket for 15-minute-values of a specific day and hour
+                        from {$input#/15-minute-values}
+                        appended with an additional instance with values from historical-performance-data'
+                      items:
+                        type: object
+                        properties:
+                          period-end-time:
+                            type: string
+                            description: >
+                              'periodEndTime of the currently processed 15-min period
+                              from {$input#/historical-performance-data/period-end-time}'
+                          total-bytes-output:
+                            type: integer
+                            description: >
+                              'totalBytesOutput of the currently processed 15-min period
+                              from {$input#/historical-performance-data/performance-data/total-bytes-output}'
+                          total-air-interface-interval-capacity:
+                            type: integer
+                            description: >
+                              'totalAirInterfaceIntervalCapacity of the currently processed 15-min period
+                              from {$input#/historical-performance-data/performance-data/total-air-interface-interval-capacity}'
+                          errored-frames-input:
+                            type: integer
+                            description: >
+                              'erroredFramesInput of the currently processed 15-min period
+                              from {$input#/historical-performance-data/performance-data/errored-frames-input}'
+                          dropped-frames-input:
+                            type: integer
+                            description: >
+                              'droppedFramesInput of the currently processed 15-min period
+                              from {$input#/historical-performance-data/performance-data/dropped-frames-input}'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

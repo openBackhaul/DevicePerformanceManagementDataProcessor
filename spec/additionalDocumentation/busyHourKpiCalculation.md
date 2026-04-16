@@ -143,16 +143,6 @@ Das Problem zerfällt in folgende Segmente:
 
 # Aufrufe und Übergaben
 
-- p1CategorizeDataVolume  
-  p1CategorizeDataVolume wird von p2IterateEcPmSlices innerhalb der Schleife zur Bearbeitung der einzelnen Messperioden aufgerufen.  
-  Nach dem Ausführen von p1CalculateUtilization wird geprüft, ob die Messperiode eine 15-Minuten-Messperiode ist.  
-  Falls ja, wird p1CategorizeDataVolume aufgerufen.  
-  Übergeben werden:  
-  - historical-performance-data der aktuellen Messperiode  
-  - status der p1CategorizeDataVolume Funktion ( /status-data=p1CategorizeDataVolume/status )  
-  Zurückgegeben wird:  
-  - status der p1CategorizeDataVolume Funktion  
-
 - p1CalculateBusyHourPerformanceIndicators  
   p1CalculateBusyHourPerformanceIndicators wird von p2IterateEcPmSlices innerhalb der Schleife zur Bearbeitung der einzelnen Messperioden aufgerufen.  
   Nach dem Ausführen von p1CalculateUtilization wird geprüft, ob die Messperiode eine 24-Stunden-Messperiode ist.  

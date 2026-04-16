@@ -96,7 +96,7 @@ x-javascript-interface:
                   - historical-performance-data
                 properties:
                   historical-performance-data:
-                    type: array
+                    type: object
                     description: >
                       'historicalPerformanceData set
                       from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
@@ -223,7 +223,7 @@ x-javascript-interface:
                   - interface-status
                 properties:
                   historical-performance-data:
-                    type: array
+                    type: object
                     description: >
                       'historicalPerformanceData set
                       from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
@@ -265,7 +265,7 @@ x-javascript-interface:
                   - interface-status
                 properties:
                   historical-performance-data:
-                    type: array
+                    type: object
                     description: >
                       'historicalPerformanceData set
                       from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'

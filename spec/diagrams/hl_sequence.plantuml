@@ -134,8 +134,8 @@ note over p1CatDV
   - Write buckets back into statusData
 end note
 
-note over p1CatDV #Yellow
-  - entire spec is missing
+note over p1CatDV #LightGreen
+  all files checked
 end note
 
 note over p1CalcBH
