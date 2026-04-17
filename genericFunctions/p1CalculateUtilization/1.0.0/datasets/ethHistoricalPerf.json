@@ -1,6 +1,6 @@
 {
     "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
-    "period-end-time": "2015-05-14T00:15:00+00:00",
+    "period-end-time": "2026-04-01T04:00:00.0+00:00",
     "suspect-interval-flag": true,
     "performance-data": {
         "broadcast-frames-output": 0,
