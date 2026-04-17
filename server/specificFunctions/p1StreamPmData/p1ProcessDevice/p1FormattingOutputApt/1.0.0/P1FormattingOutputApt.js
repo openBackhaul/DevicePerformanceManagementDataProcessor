@@ -1,65 +1,277 @@
 const ERRORS = require('./ErrorsEnum');
-
 const p1FormattingOutputApt = (input) => {
   try {
-    const resultCC = input["result-cc"];
-
-    if (resultCC == undefined) {
+    if (!input || !input['result-cc']) {
       return ERRORS.RESULTCC_NOT_PROVIDED;
     }
 
-    let ccObj = resultCC["core-model-1-4:control-construct"][0];
-    let ltpObjs = ccObj['logical-termination-point'];
+    const resultCC = input['result-cc'];
 
-    let airIfListObj = [];
-    let ethContListObj = [];
-    for (const [key, value] of Object.entries(ltpObjs)) {
-      if (value['layer-protocol'][0]['layer-protocol-name'].endsWith('AIR_LAYER')) {
-        let airIfPac = value['layer-protocol'][0]['air-interface-2-0:air-interface-pac'];
-        let ltpAugPac = value['ltp-augment-1-0:ltp-augment-pac'];
+    if (
+      !resultCC['core-model-1-4:control-construct'] ||
+      !Array.isArray(resultCC['core-model-1-4:control-construct'])
+    ) {
+      return ERRORS.RESULTCC_INVALID;
+    }
 
-        let airIfObj = {
-          'air-interface-identifiers': {
-            'mount-name': ccObj['equipment-augment-1-0:control-construct-pac']['external-label'],
-            'link-endpoint-id': ltpAugPac['external-label'],
-            'link-id': ltpAugPac['link-id'],
-            'logical-termination-point-id': value['uuid'],
-            'link-aggregation-identifiers': [], // must be an array
-          },
-          'air-interface-configuration': airIfPac['air-interface-configuration'],
-          'air-interface-performance-measurements-list': airIfPac['air-interface-historical-performances']['historical-performance-data-list'],
-          'transmission-mode-list': airIfPac['air-interface-capability']['transmission-mode-list'],
-          'idu-cpu-temperature': {},
-          'retrieval-timestamp': resultCC['batch-timestamp']  // <-- should be processed in advance
-        }
-        airIfListObj.push(airIfObj);
-      } else if (value['layer-protocol'][0]['layer-protocol-name'].includes('ETHERNET_CONTAINER')) {
-        let ltpAugPac = value['ltp-augment-1-0:ltp-augment-pac'];
-        let ethHistPerf = value['layer-protocol'][0]['ethernet-container-2-0:ethernet-container-pac']['ethernet-container-historical-performances']['number-of-historical-performance-sets'] == 0 ? [] :
-          value['layer-protocol'][0]['ethernet-container-2-0:ethernet-container-pac']['ethernet-container-historical-performances']['number-of-historical-performance-sets']['historical-performance-data-list'];
+    const ccObj = resultCC['core-model-1-4:control-construct'][0];
+    const ltpObjs = ccObj['logical-termination-point'];
 
-        let ethContObj = {
-          'ethernet-container-identifiers': {
-            'mount-name': ccObj['equipment-augment-1-0:control-construct-pac']['external-label'],
-            'interface-name': ltpAugPac['original-ltp-name'],  // {$input#/result-cc/logical-termination-point/ltp-augment-1-0:ltp-augment-pac/original-ltp-name}
-            'logical-termination-point-id': value['uuid'],   // $input#/result-cc/logical-termination-point/uuid}
-          },
-          'ethernet-container-performance-measurements-list': ethHistPerf // $input#/result-cc/logical-termination-point/layer-protocol/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list}'
-        }
+    if (!ltpObjs) {
+      return ERRORS.RESULTCC_INCOMPLETE;
+    }
 
-        ethContListObj.push(ethContObj);
+  
+    const mountName =
+      ccObj['equipment-augment-1-0:control-construct-pac']?.['external-label'];
+
+    const retrievalTimestamp = resultCC['batch-timestamp'];    
+
+    const iduOrCpuTemperature = resolveTemperature(resultCC);
+
+
+    const airInterfaceList = [];
+    const ethernetContainerList = [];
+
+
+    for (const ltp of Object.values(ltpObjs)) {
+      const layerProtocol = ltp['layer-protocol']?.[0];
+      if (!layerProtocol) continue;
+
+      const lpName = layerProtocol['layer-protocol-name'];
+
+   
+      if (lpName.endsWith('AIR_LAYER')) {
+        airInterfaceList.push(
+          buildAirInterface(
+            ltp,
+            layerProtocol,
+            ltpObjs,
+            mountName,
+            retrievalTimestamp,
+            iduOrCpuTemperature
+          )
+        );
+      }
+
+ 
+      if (lpName.includes('ETHERNET_CONTAINER')) {
+        ethernetContainerList.push(
+          buildEthernetContainer(ltp, layerProtocol, mountName)
+        );
       }
     }
 
-    // Return value
-    return {
-      "air-interface-list": airIfListObj,
-      "ethernet-container-list": ethContListObj
-    };
+
+const result = {
+  'format-name': 'apt-output-format',
+  'output-format': {
+    'air-interface-list': airInterfaceList,
+    'ethernet-container-list': ethernetContainerList
+  }
+};
+
+console.log(JSON.stringify(result, null, 2));
+return result;
 
   } catch (err) {
     return ERRORS.GENERAL_ERROR;
   }
-}
+};
 
 module.exports = p1FormattingOutputApt;
+
+
+
+// Helper  Methods
+
+
+function buildAirInterface(
+  ltp,
+  layerProtocol,
+  allLtps,
+  mountName,
+  retrievalTimestamp,
+  temperature
+) {
+  const airPac = layerProtocol['air-interface-2-0:air-interface-pac'];
+  const ltpAug = ltp['ltp-augment-1-0:ltp-augment-pac'];
+
+  return {
+    'air-interface-identifiers': {
+      'mount-name': mountName,
+      'link-endpoint-id': ltpAug?.['external-label'],
+      'link-id': ltpAug?.['link-id']?.substring(0, 9),
+      'logical-termination-point-id': ltp.uuid,
+      'link-aggregation-identifiers':
+        resolveLinkAggregation(ltp, allLtps)
+    },
+
+    'air-interface-configuration': mapAirInterfaceConfiguration(
+      airPac['air-interface-configuration'],
+      airPac['air-interface-capability']
+    ),
+
+    'air-interface-performance-measurements-list':
+      mapAirPerformance(airPac),
+
+    'transmission-mode-list':
+      airPac['air-interface-capability']?.['transmission-mode-list'] || [],
+
+    'idu-cpu-temperature': temperature,
+
+    'retrieval-timestamp': retrievalTimestamp
+  };
+}
+
+function mapAirInterfaceConfiguration(config, capability) {
+  return {
+    'configured-atpc-is-on': config?.['atpc-is-on'],
+    'configured-atpc-threshold-upper': config?.['atpc-thresh-upper'],
+    'configured-atpc-threshold-lower': config?.['atpc-thresh-lower'],
+    'configured-tx-power': config?.['tx-power'],
+
+    'configured-modulation-minimum':
+      resolveTransmissionMode(config?.['transmission-mode-min'], capability),
+
+    'configured-modulation-maximum':
+      resolveTransmissionMode(config?.['transmission-mode-max'], capability)
+  };
+}
+
+function resolveTransmissionMode(modeName, capability) {
+  if (!modeName || !capability) return null;
+
+  const modes = capability['transmission-mode-list'] || [];
+  const match = modes.find(
+    m => m['transmission-mode-name'] === modeName
+  );
+
+  if (!match) return null;
+
+  return {
+    'number-of-states': match['number-of-states'],
+    'name-at-lct': match['modulation-scheme-name-at-lct'],
+    'configured-capacity-minimum': match['capacity'],
+    'configured-capacity-maximum': match['capacity']
+  };
+}
+
+
+function mapAirPerformance(airPac) {
+  const hist =
+    airPac?.['air-interface-historical-performances']
+      ?.['historical-performance-data-list'] || [];
+
+  return hist.map(entry => {
+    const perf = entry['performance-data'];
+
+    return {
+      ...entry,
+      'operated-transmission-modes-list':
+        (perf?.['time-xstates-list'] || [])
+          .filter(x => x.time > 0)
+          .map(x => ({
+            'transmission-mode-name': x['transmission-mode'],
+            'time': x.time
+          }))
+    };
+  });
+}
+
+
+function resolveLinkAggregation(ltp, allLtps) {
+  const result = [];
+  const parallel = ltp?.['parallel-ltp'] || [];
+
+  for (const uuid of parallel) {
+
+    const target = Object.values(allLtps)
+      .find(x => x.uuid === uuid);
+
+    if (!target) continue;
+
+    const targetLp = target?.['layer-protocol']?.[0];
+    const lpName = targetLp?.['layer-protocol-name'];
+
+    const aug = target?.['ltp-augment-1-0:ltp-augment-pac'];
+
+    // AIR interface aggregation
+    if (lpName?.endsWith('LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER')) {
+      result.push({
+        uuid,
+        'link-id': aug?.['link-id']?.substring(0, 9)
+      });
+    }
+
+    // WIRE interface aggregation
+    if (lpName?.endsWith('LAYER_PROTOCOL_NAME_TYPE_WIRE_LAYER')) {
+      result.push({
+        uuid,
+        'interface-name': aug?.['original-ltp-name']
+      });
+    }
+  }
+  return result;
+}
+
+
+function resolveTemperature(resultCC) {
+  const ccObj =
+    resultCC?.['core-model-1-4:control-construct']?.[0];
+
+  const equipments = ccObj?.['equipment'] || [];
+
+  let cpuTemp;
+  let iduTemp;
+
+  for (const eq of equipments) {
+
+    const category =
+      eq?.['structure']?.['category'];
+
+    const temp =
+      eq?.['actual-equipment']?.['physical-properties']?.['temperature'];
+  
+    if (category?.endsWith('EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT') &&
+        temp !== undefined) {
+      cpuTemp = temp;
+    }
+
+    if (category?.endsWith('EQUIPMENT_CATEGORY_SUBRACK') &&
+        temp !== undefined) {
+      iduTemp = temp;
+    }
+  }
+  return cpuTemp !== undefined ? cpuTemp : iduTemp;
+}
+
+
+
+function buildEthernetContainer(ltp, layerProtocol, mountName) {
+  const ltpAug = ltp['ltp-augment-1-0:ltp-augment-pac'];
+
+  const perfList =
+    layerProtocol?.['ethernet-container-2-0:ethernet-container-pac']
+      ?.['ethernet-container-historical-performances']
+      ?.['historical-performance-data-list'];
+
+  const result = {
+    'ethernet-container-identifiers': {
+      'mount-name': mountName,
+      'interface-name': ltpAug?.['original-ltp-name'],
+      'logical-termination-point-id': ltp.uuid
+    },    
+
+    'ethernet-container-performance-measurements-list':
+      Array.isArray(perfList)
+        ? perfList.map(entry => ({ ...entry }))
+        : []
+
+ 
+    };
+
+     return result;
+}
+
+
