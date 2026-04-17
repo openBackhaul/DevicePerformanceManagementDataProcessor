@@ -36,7 +36,7 @@ activate cur
   loop FOR all [/raw-cc/logical-termination-point]
 
     note over cur
-      Initialize offset
+      Initialize offset (=interfaceOffset)
       if not existing
     end note
 
@@ -53,13 +53,18 @@ activate cur
     note over filterPm
       Discards records that are
       already processed from
-      historicalPerformanceDataList
+      historicalPerformanceDataList,
+      updates interfaceOffset
     end note
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
     deactivate filterPm
 
     note right cur
       addBatchTimestamp
+    end note
+
+    note right cur
+      updateInterfaceOffsets
     end note
 
     note over cur
@@ -75,23 +80,17 @@ activate cur
     note over filterPm
       Discards records that are
       already processed from
-      historicalPerformanceDataList
+      historicalPerformanceDataList,
+      updates interfaceOffset
     end note
-    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n[offset] }
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
     deactivate filterPm
 
-    note over cur
-      updateInterfaceOffset for this interface
-      with mostRecentPeriodEndTime and
-      mostRecentPeriodEndTime24 in this batch
+    note right cur
+      updateInterfaceOffsets
     end note
 
   end loop
-
-  note over cur
-    updateOffsets for this device
-    from interfaceOffsets
-  end note
 
 requestor <-- cur: { {rawCc},\n[offsets] }
 deactivate cur

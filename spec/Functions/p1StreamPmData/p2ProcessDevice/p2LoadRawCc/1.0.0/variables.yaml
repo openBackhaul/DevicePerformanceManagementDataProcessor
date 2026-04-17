@@ -48,49 +48,38 @@ load-raw-cc:
                     description: >
                       'Array of offsets of all interfaces at the device,
                       if not existing initialized with an empty array,
-                      overwritten by {$updateInterfaceOffset.output#/interface-offsets}'
+                      overwritten by {$updateInterfaceOffsets.output#/interface-offsets}'
                     items:
                       type: object
                       required:
                         - uuid
-                        - interface-offset
+                        - most-recent-period-end-time
+                        - most-recent-period-end-time-24
                       properties:
                         uuid:
                           type: string
-                        interface-offset:
-                          type: object
                           description: >
-                            'Offset at a specific interface'
+                            'uuid of the interface'
+                        most-recent-period-end-time:
+                          type: string
+                          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+                          description: >
+                            'mostRecentPeriodEndTime
+                            if to be initialized, from {2010-11-20T14:00:00+01:00}'
+                        most-recent-period-end-time-24:
+                          type: string
+                          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+                          description: >
+                            'mostRecentPeriodEndTime24
+                            if to be initialized, from {2010-11-20T14:00:00+01:00}'
 
     interface-offset:
       type: object
       description: >
-        'The offset at the currently processed interface (ltp)
-        from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets={/load-raw-cc/raw-cc/logical-termination-point[*]/uuid}]
-        or to be initialized, if not already existing
-        overwritten by {$p2DiscardIrrelevantPmRecords.output/offset}'
-      required:
-        - uuid
-        - most-recent-period-end-time
-        - most-recent-period-end-time-24
-      properties:
-        uuid:
-          type: string
-          description: >
-            'uuid
-            if to be initialized, from [/load-raw-cc/raw-cc/logical-termination-point[*]/uuid] of the currently processed ltp'
-        most-recent-period-end-time:
-          type: string
-          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
-          description: >
-            'mostRecentPeriodEndTime
-            if to be initialized, from {2010-11-20T14:00:00+01:00}'
-        most-recent-period-end-time-24:
-          type: string
-          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
-          description: >
-            'mostRecentPeriodEndTime24
-            if to be initialized, from {2010-11-20T14:00:00+01:00}'
+        'The interfaceOffset for the currently processed ltp
+        from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets=*],
+        if not existing, initialized with uuid of currently processed ltp and default values for mostRecentPeriodEndTimes,
+        overwritten by {$p2DiscardIrrelevantPmRecords.output#/offset}'
 
     mwdi-replica-url:
       type: string

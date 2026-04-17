@@ -33,6 +33,11 @@ discard-irrelevant-pm-records:
           modified by {$updateOffset.output#/offset}
           ! simplified representation, just relevant attributes documented !'
       properties:
+        # TODO: shall uuid be listed here (not required for processing, but included in input and output)
+        uuid:
+          type: string
+          description: >
+            'The uuid of the processed interface'
         most-recent-period-end-time:
           type: string
           description: >

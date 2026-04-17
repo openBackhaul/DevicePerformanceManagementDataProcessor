@@ -154,8 +154,8 @@ x-javascript-interface:
                   offset:
                     type: object
                     description: >
-                      'Offset for the currently processed ltp
-                      from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets={uuid}/interface-offset]'
+                      'InterfaceOffset for the currently processed ltp
+                      from [/load-raw-cc/interface-offset]'
         output:
           success:
             description: 'filteredHistoricalPerformanceDataList provided'
@@ -173,7 +173,7 @@ x-javascript-interface:
                     offset:
                       type: object
                       description: >
-                        'Updated offset'
+                        'Updated (interface) offset'
           error:
             description: 'filteredHistoricalPerformanceDataList could not be provided'
             content:
@@ -227,7 +227,8 @@ x-javascript-interface:
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
                       - 'general processing error'
-      updateInterfaceOffset:
+
+      updateInterfaceOffsets:
         input:
           required: true
           content:
@@ -242,15 +243,15 @@ x-javascript-interface:
                     type: array
                     description: > 
                       'Array of offsets of all interfaces at the device
-                      from [/load-raw-cc/offsets/interface-offsets]'
+                      from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets]'
                   interface-offset:
                     type: object
                     description: >
-                      'Offset at a specific interface
+                      'Offset for the currently processed interface
                       from [/load-raw-cc/interface-offset]'
         output:
           success:
-            description: 'Updated array of offsets of all interfaces provided'
+            description: 'Updated offsets array of all interfaces provided'
             content:
               application/json:
                 schema:
@@ -265,7 +266,8 @@ x-javascript-interface:
                       items:
                         type: object
                         description: >
-                          'Offset at the currently processed interface to be overwritten by [/load-raw-cc/interface-offset]'
+                          'With curUuid = {$updateInterfaceOffsets.input#/interface-offset/uuid},
+                          (Over)write {$updateInterfaceOffsets.input#/interface-offsets[curUuid]} = {$updateInterfaceOffsets.input#/interface-offset}'
           error:
             description: 'Updated array of offsets of all interfaces could not be provided'
             content:
@@ -278,71 +280,8 @@ x-javascript-interface:
                     - 'interfaceOffset not provided'
                     - 'interfaceOffset invalid'
                     - 'general processing error'
-      updateOffsets:
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - offsets
-                  - interface-offsets
-                properties:
-                  offsets:
-                    type: array
-                    description: >
-                      'Offsets
-                      from [/load-raw-cc/offsets]'
-                  interface-offsets:
-                    type: array
-                    description: > 
-                      'interfaceOffsets
-                      from [/load-raw-cc/interface-offsets]'
-        output:
-          success:
-            description: 'Updated offsets for all functions provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - offsets
-                  properties:
-                    offsets:
-                      type: array
-                      x-key: function-name
-                      description: >
-                        'Array of offsets of all functions'
-                      items:
-                        oneOf:
-                          - description: 'offset for p2DiscardIrrelevantPmRecords'
-                            type: object
-                            required:
-                              - function-name
-                              - offset
-                            properties:
-                              function-name:
-                                type: string
-                                enum:
-                                  - 'p2DiscardIrrelevantPmRecords'
-                              interface-offsets:
-                                type: array
-                                description: >
-                                  'Array of offsets of all interfaces at the device
-                                  overwritten by [/load-raw-cc/interface-offsets]'
-          error:
-            description: 'Updated offsets for all functions could not be provided'
-            content:
-              application/json:
-                schema:
-                  type: string
-                  enum:
-                    - 'offsets not provided'
-                    - 'offsets invalid'
-                    - 'interfaceOffsets not provided'
-                    - 'interfaceOffsets invalid'
-                    - 'general processing error'
+
+
 
 paths:
   /:
