@@ -11,20 +11,20 @@ describe('p1CalculateUtilization', () => {
   });
 
   test('read from real dataset', () => {
-    let dataFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
-    let perfData = JSON.parse(dataFile);
+    let histFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
+    let perfData = JSON.parse(histFile);
+
+    let ccFile = fs.readFileSync(__dirname + '/datasets/resultCC1.json', 'utf8');
+    let resCC = JSON.parse(ccFile);
     let inputStruct = {
       'historical-performance-data': perfData,
       'aggregation-group': {
         'physical-server-ltp-list': [
-          'XXXXX',
-          'YYYYY',
-          'ZZZZZ'
+          'LTP-MWPS-TTP-ODU-B',
+          'LTP-MWPS-TTP-ODU-A',
         ]
       },
-      'result-cc': {
-        'logical-termination-point': undefined
-      }
+      'result-cc': resCC
     };
 
     let result = p1CalculateUtilization(inputStruct);
