@@ -355,14 +355,15 @@ profile-instances:
       string-value: '2'
 
 
-  # p1ProcessDevice
+  # p2ProcessDevice
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-150'
     capability:
-      function-name: 'p1ProcessDevice'
+      function-name: 'p2ProcessDevice'
       function-description: 'Orchestrates the device-wise processing, formatting, sending and storing of PM data'
       parameter-list:
       sub-function-list:
+        - 'dpmdp-1-1-0-function-p-160'
         - 'dpmdp-1-1-0-function-p-180'
         - 'dpmdp-1-1-0-function-p-270'
         - 'dpmdp-1-1-0-function-p-540'
@@ -372,12 +373,23 @@ profile-instances:
     configuration:
       is-active: true
 
+  # p1LoadOffsetsAndStatusData
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-160'
+    capability:
+      function-name: 'p1LoadOffsetsAndStatusData'
+      function-description: 'Reads offset and status data from dataStore'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
 
-  # p1LoadRawCc
+
+  # p2LoadRawCc
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-180'
     capability:
-      function-name: 'p1LoadRawCc'
+      function-name: 'p2LoadRawCc'
       function-description: 'Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data'
       parameter-list:
       sub-function-list:
@@ -409,37 +421,23 @@ profile-instances:
       string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(current-performance-data-list(timestamp));air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
 
 
-  # p1DiscardIrrelevantPmRecords
+  # p2DiscardIrrelevantPmRecords
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-240'
     capability:
-      function-name: 'p1DiscardIrrelevantPmRecords'
+      function-name: 'p2DiscardIrrelevantPmRecords'
       function-description: 'Discards irrelevant records from historical performance data list'
       parameter-list:
-        - parameter: 'dpmdp-1-1-0-string-p-241'
-          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-241'
-    capability:
-      string-name: 'relevantGranularities'
-      purpose: 'An regex pattern indicating which data granularities are to be kept'
-      enumeration:
-        - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'
-        - ':GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$'
-        - ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
-    configuration:
-      string-value: ':GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$'
 
-
-  # p1CreateResultCc
+  # p2CreateResultCc
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-270'
     capability:
-      function-name: 'p1CreateResultCc'
+      function-name: 'p2CreateResultCc'
       function-description: 'Composes the resultCc from the rawCc'
       parameter-list:
       sub-function-list:
@@ -476,11 +474,11 @@ profile-instances:
       is-active: true
 
 
-  # p1IterateAiPmSlices
+  # p2IterateAiPmSlices
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-350'
     capability:
-      function-name: 'p1IterateAiPmSlices'
+      function-name: 'p2IterateAiPmSlices'
       function-description: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
       parameter-list:
       sub-function-list:
@@ -781,17 +779,19 @@ profile-instances:
       string-value: '-1'
 
 
-  # p1IterateEcPmSlices
+  # p2IterateEcPmSlices
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-440'
     capability:
-      function-name: 'p1IterateEcPmSlices'
+      function-name: 'p2IterateEcPmSlices'
       function-description: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
       parameter-list:
       sub-function-list:
         - 'dpmdp-1-1-0-function-p-450'
         - 'dpmdp-1-1-0-function-p-460'
         - 'dpmdp-1-1-0-function-p-500'
+        - 'dpmdp-1-1-0-function-p-504'
+        - 'dpmdp-1-1-0-function-p-507'
     configuration:
       is-active: true
 
@@ -1061,6 +1061,27 @@ profile-instances:
     configuration:
       is-active: true
 
+  # p2CategorizeDataVolume
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-504'
+    capability:
+      function-name: 'p2CategorizeDataVolume'
+      function-description: 'Categorizes 15min PM data and stores info in status for Busy Hour computation'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  # p2CalculateBusyHourPerformanceIndicators
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-507'
+    capability:
+      function-name: 'p2CalculateBusyHourPerformanceIndicators'
+      function-description: 'Calculates Busy Hour performance indicators from status info'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
 
   # p1RemoveOutOfRangeTemperature
   - profile-name: 'FunctionProfile'
