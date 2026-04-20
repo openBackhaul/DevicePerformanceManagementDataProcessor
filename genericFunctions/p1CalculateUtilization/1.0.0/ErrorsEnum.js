@@ -11,8 +11,8 @@ const ERRORS = {
   // calculateTotalAirInterfaceIntervalCapacity
   LTP_LIST_NOT_PROVIDED: 'logicalTerminationPoint list not provided',
   LTP_LIST_INVALID: 'logicalTerminationPoint list invalid',
-  PHSY_SERVER_LTP_LIST_NOT_PROVIDED: 'physicalServerLtpList not provided',
-  PHSY_SERVER_LTP_LIST_INVALID: 'physicalServerLtpList invalid',
+  PSY_SERVER_LTP_LIST_NOT_PROVIDED: 'physicalServerLtpList not provided',
+  PSY_SERVER_LTP_LIST_INVALID: 'physicalServerLtpList invalid',
   PERIOD_ENDTIME_NOT_PROVIDED: 'periodEndTime not provided',
   PERIOD_ENDTIME_INVALID: 'periodEndTime invalid',
   TOTAL_AIR_IF_INT_CAP_COULDNT_PROVIDED: 'totalAirInterfaceIntervalCapacity could not be provided',
