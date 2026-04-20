@@ -8,7 +8,7 @@
         "total-frames-input": "-1",
         "multicast-frames-output": 0,
         "total-bytes-input": "0",
-        "total-bytes-output": "0",
+        "total-bytes-output": "500000",
         "oversized-frames-ingress": -1,
         "unicast-frames-input": "0",
         "unicast-frames-output": "0",

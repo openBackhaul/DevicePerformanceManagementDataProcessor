@@ -14,7 +14,7 @@ describe('p1CalculateUtilization', () => {
     let histFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
     let perfData = JSON.parse(histFile);
 
-    let ccFile = fs.readFileSync(__dirname + '/datasets/resultCC1.json', 'utf8');
+    let ccFile = fs.readFileSync(__dirname + '/datasets/resultCC2.json', 'utf8');
     let resCC = JSON.parse(ccFile);
     let inputStruct = {
       'historical-performance-data': perfData,

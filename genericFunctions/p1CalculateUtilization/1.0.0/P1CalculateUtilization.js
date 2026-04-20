@@ -16,6 +16,56 @@ const GRAN_24H = 'GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS';
 const GRAN_UNKN = 'GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN';
 const GRAN_NOTDEF = 'GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED';
 
+
+function validateResultCC(input) {
+  try {
+    if (input[LTP] != null && Array.isArray(input[LTP])) {
+      input[LTP].forEach(ltpObj => {
+        if (Object.hasOwn(ltpObj, 'uuid') &&
+          Object.hasOwn(ltpObj, 'layer-protocol')) {
+
+          if (Array.isArray(ltpObj['layer-protocol'])) {
+            ltpObj['layer-protocol'].forEach(lpObj => {
+              if (Object.hasOwn(lpObj, 'local-id') &&
+                Object.hasOwn(lpObj, 'layer-protocol-name') &&
+                Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')) {
+                const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
+                if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
+                  Object.hasOwn(aiPac['air-interface-historical-performances'], 'historical-performance-data-list') &&
+                  Array.isArray(aiPac['air-interface-historical-performances']['historical-performance-data-list'])) {
+                  const hPerf = aiPac['air-interface-historical-performances']['historical-performance-data-list'];
+                  hPerf.forEach(perfData => {
+                    if (Object.hasOwn(perfData, 'granularity-period') &&
+                      Object.hasOwn(perfData, 'period-end-time') &&
+                      Object.hasOwn(perfData, 'performance-data') && Object.hasOwn(perfData['performance-data'], 'interval-capacity')) {
+                      // Validation passed
+                    } else {
+                      throw new Error(ERRORS.RESULT_CC_INVALID);
+                    }
+                  });
+                } else {
+                  throw new Error(ERRORS.RESULT_CC_INVALID);
+                }
+              } else {
+                throw new Error(ERRORS.RESULT_CC_INVALID);
+              }
+            });
+          } else {
+            throw new Error(ERRORS.RESULT_CC_INVALID);
+          }
+        } else {
+          throw new Error(ERRORS.RESULT_CC_INVALID);
+        }
+      });
+    } else {
+      throw new Error(ERRORS.RESULT_CC_INVALID);
+    }
+  } catch (error) {
+    return false
+  }
+  return true;
+}
+
 // Aggregates the interval capacity of all transporting AirInterfaces
 // input
 // - logical-termination-point
@@ -155,8 +205,8 @@ function calculateUtilization(input) {
 const p1CalculateUtilization = (input) => {
   try {
     const historicalPerfData = input[HISTPERFDATA]; // Object
-    const aggGroup = input[AGGGROUP]; // Object
-    const resultCC = input[RESCC];  // Object
+    const aggGroup = input[AGGGROUP];               // Object
+    const resultCC = input[RESCC];                  // Object
 
     if (historicalPerfData == null) {
       return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
@@ -172,45 +222,48 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.AGG_GROUP_INVALID;
     }
 
-    if (resultCC == null || resultCC[LTP]) {
+    if (resultCC == null) {
       return ERRORS.RESULT_CC_NOT_PROVIDED;
+    } else if (validateResultCC(resultCC)) {
+      return ERRORS.RESULT_CC_INVALID;
     }
-    // TODO: manage 'result-cc invalid'
 
     // TODO: manage 'Utilization could not be added'
 
     // Functions must process only 15 minutes of PM
+    let returnData;
     const granularityPeriod = historicalPerfData['granularity-period'];
     if (granularityPeriod.endsWith(GRAN_15MIN)) {
-      // process data
+      const inputCapacity = {
+        'logical-termination-point': resultCC[LTP],
+        'physical-server-ltp-list': aggGroup[PSYSERVERLTP],
+        'period-end-time': historicalPerfData[ENDTIME],
+      }
+      let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
+      historicalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
+
+      const inputStruct = {
+        'total-bytes-output': historicalPerfData[PERFDATA][TOTBYTEOUT], // string
+        'total-air-interface-interval-capacity': historicalPerfData[PERFDATA][TOTAIRIFCAP], // integer
+        'time-period': historicalPerfData[PERFDATA][TIMEPERIOD] // integer
+      }
+      let utilization = calculateUtilization(inputStruct);
+      historicalPerfData[PERFDATA]['utilization'] = utilization['utilization'];
+      returnData = {
+        'historical-performance-data': historicalPerfData
+      };
     } else if (granularityPeriod.endsWith(GRAN_24H) || granularityPeriod.endsWith(GRAN_UNKN) || granularityPeriod.endsWith(GRAN_NOTDEF)) {
-      return {
+      returnData = {
         'historical-performance-data': historicalPerfData
       };
     } else {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
 
-    const inputCapacity = {
-      'logical-termination-point': resultCC['core-model-1-4:control-construct'][0][LTP],
-      'physical-server-ltp-list': aggGroup[PSYSERVERLTP],
-      'period-end-time': historicalPerfData[ENDTIME],
-    }
-    let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
-    historicalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
 
-    const inputStruct = {
-      'total-bytes-output': historicalPerfData[PERFDATA][TOTBYTEOUT], // string
-      'total-air-interface-interval-capacity': historicalPerfData[PERFDATA][TOTAIRIFCAP], // integer
-      'time-period': historicalPerfData[PERFDATA][TIMEPERIOD] // integer
-    }
-    let utilization = calculateUtilization(inputStruct);
-    historicalPerfData[PERFDATA]['utilization'] = utilization['utilization'];
 
     // Return value
-    return {
-      'historical-performance-data': historicalPerfData
-    };
+    return returnData;
   } catch (err) {
     return ERRORS.GENERAL_ERROR;
   }
