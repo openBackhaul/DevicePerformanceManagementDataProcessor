@@ -7,7 +7,7 @@ end title
 
 participant "p2CreateResultCc\n" as cur
 
-participant "p1IterateAi\nPmSlices" as iterateSlices
+participant "p2IterateAi\nPmSlices" as iterateSlices
 participant "p1Calculate\nIntervalCapacity" as intCC
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL
 participant "p1Remove\nDefaultValues" as p1RemDefault
