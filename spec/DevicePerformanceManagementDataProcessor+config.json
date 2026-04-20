@@ -586,10 +586,11 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1ProcessDevice",
+              "function-name": "p2ProcessDevice",
               "function-description": "Orchestrates the device-wise processing, formatting, sending and storing of PM data",
               "parameter-list": [],
               "sub-function-list": [
+                "dpmdp-1-1-0-function-p-160",
                 "dpmdp-1-1-0-function-p-180",
                 "dpmdp-1-1-0-function-p-270",
                 "dpmdp-1-1-0-function-p-540",
@@ -604,11 +605,26 @@
           }
         },
         {
+          "uuid": "dpmdp-1-1-0-function-p-160",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1LoadOffsetsAndStatusData",
+              "function-description": "Reads offset and status data from dataStore",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-1-0-function-p-180",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1LoadRawCc",
+              "function-name": "p2LoadRawCc",
               "function-description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
               "parameter-list": [],
               "sub-function-list": [
@@ -659,14 +675,9 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1DiscardIrrelevantPmRecords",
+              "function-name": "p2DiscardIrrelevantPmRecords",
               "function-description": "Discards irrelevant records from historical performance data list",
-              "parameter-list": [
-                {
-                  "parameter": "dpmdp-1-1-0-string-p-241",
-                  "owner": "platform"
-                }
-              ],
+              "parameter-list": [],
               "sub-function-list": []
             },
             "function-profile-configuration": {
@@ -675,29 +686,11 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-241",
-          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
-          "string-profile-1-0:string-profile-pac": {
-            "string-profile-capability": {
-              "string-name": "relevantGranularities",
-              "string-purpose": "An regex pattern indicating which data granularities are to be kept",
-              "enumeration": [
-                ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$",
-                ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$",
-                ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$"
-              ]
-            },
-            "string-profile-configuration": {
-              "string-value": ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$"
-            }
-          }
-        },
-        {
           "uuid": "dpmdp-1-1-0-function-p-270",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1CreateResultCc",
+              "function-name": "p2CreateResultCc",
               "function-description": "Composes the resultCc from the rawCc",
               "parameter-list": [],
               "sub-function-list": [
@@ -749,7 +742,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1IterateAiPmSlices",
+              "function-name": "p2IterateAiPmSlices",
               "function-description": "Iterates through all AirInterface historical performance data slices and calls the processing Functions",
               "parameter-list": [],
               "sub-function-list": [
@@ -1248,13 +1241,15 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1IterateEcPmSlices",
+              "function-name": "p2IterateEcPmSlices",
               "function-description": "Iterates through all EthernetContainer historical performance data slices and calls the processing Functions",
               "parameter-list": [],
               "sub-function-list": [
                 "dpmdp-1-1-0-function-p-450",
                 "dpmdp-1-1-0-function-p-460",
-                "dpmdp-1-1-0-function-p-500"
+                "dpmdp-1-1-0-function-p-500",
+                "dpmdp-1-1-0-function-p-504",
+                "dpmdp-1-1-0-function-p-507"
               ]
             },
             "function-profile-configuration": {
@@ -1691,6 +1686,36 @@
             "function-profile-capability": {
               "function-name": "p1CalculateUtilization",
               "function-description": "Calculates utilization of the aggregated physical resources in a performance data slice",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-504",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p2CategorizeDataVolume",
+              "function-description": "Categorizes 15min PM data and stores info in status for Busy Hour computation",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-507",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p2CalculateBusyHourPerformanceIndicators",
+              "function-description": "Calculates Busy Hour performance indicators from status info",
               "parameter-list": [],
               "sub-function-list": []
             },
