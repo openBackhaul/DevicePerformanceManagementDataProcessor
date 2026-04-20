@@ -8,7 +8,7 @@ end title
 participant "p2ProcessDevice\n" as requestor
 participant "p2CreateResultCc\n" as cur
 participant "p1Prepare\nTxModes" as p1prepTxModes
-participant "p1IterateAi\nPmSlices" as p1IterateAi
+participant "p2IterateAi\nPmSlices" as p2IterateAi
 participant "p2IterateEc\nPmSlices" as p2IterateEc
 participant "p1RemoveOutOfRange\nTemperature" as p1RemoveTemp
 
@@ -46,28 +46,28 @@ activate cur
     cur <-- p1prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
     deactivate p1prepTxModes
 
-    cur -> p1IterateAi : { {/parameters/sub-function=p1IterateAiPmSlices},\n[historicalPerformanceDataList],\n[transmissionModeList] }
-    activate p1IterateAi
+    cur -> p2IterateAi : { {/parameters/sub-function=p2IterateAiPmSlices},\n[historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p2IterateAi
 
-      note over p1IterateAi
+      note over p2IterateAi
         Adds IntervalCapacity
         to Ai Pm data slice
       end note
 
-      note over p1IterateAi
+      note over p2IterateAi
         Deletes TX and RX levels
         outside pre-defined range
         from Ai Pm data
       end note
 
-      note over p1IterateAi
+      note over p2IterateAi
         Deletes default values
         from Ai Pm data
       end note
 
 
-    cur <-- p1IterateAi : { [historicalPerformanceDataList] }
-    deactivate p1IterateAi
+    cur <-- p2IterateAi : { [historicalPerformanceDataList] }
+    deactivate p2IterateAi
 
     note over cur
       Adds linkId
