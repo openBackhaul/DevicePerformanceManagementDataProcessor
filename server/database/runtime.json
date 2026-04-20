@@ -1,0 +1,32 @@
+{
+  "service": {
+    "port": 4031,
+    "pollIntervalMs": 15000,
+    "concurrency": 4,
+    "maxUpdatedPerCycle": 5000,
+    "processRetryCount": 3,
+    "retryIntervalMs": 5000,
+    "infrastructureRetryCount": 10,
+    "lastReplicaTime": "1970-06-01T00:00:00.000Z",
+    "workerIdleSleepMs": 1000,
+    "shutdownGraceMs": 30000,
+    "httpPort": 8080
+  },
+  "redis": {
+    "url": "redis://127.0.0.1:6379",
+    "replicaLockTtlMs": 60000,
+    "cleanupLockTtlMs": 300000,
+    "staleMessageIdleMs": 60000,
+    "reconnectBaseDelayMs": 250,
+    "reconnectMaxDelayMs": 5000,
+    "queueMaxLength": 20000,
+    "enqueueBatchSize": 500,
+    "enqueuePauseMs": 50,
+    "maxQueueLengthBeforeReplicaPause": 20000,
+    "replicaPauseMsWhenBacklogged": 30000,
+    "retryIntervalMs": 10000
+  },
+  "monitoring": {
+    "enabled": true
+  }
+}
