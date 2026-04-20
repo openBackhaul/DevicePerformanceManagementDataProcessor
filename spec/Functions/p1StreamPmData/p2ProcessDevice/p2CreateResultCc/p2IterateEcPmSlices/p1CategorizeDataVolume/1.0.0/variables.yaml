@@ -3,6 +3,7 @@ categorize-data-volume:
   required:
     - historical-performance-data
     - interface-status
+    # TODO: add period-end-time ?
   properties:
     historical-performance-data:
       type: object
@@ -27,7 +28,7 @@ categorize-data-volume:
           minItems: 1
           maxItems: 2
           description: >
-            'instance to be initialized, if not already existing for [/categorize-data-volume/day] 
+            'instance to be initialized, if not already existing for [/categorize-data-volume/day]
             eldest entry to be deleted first'
           items:
             type: object
@@ -39,6 +40,8 @@ categorize-data-volume:
                 type: integer
                 minimum: 1
                 maximum: 31
+                # TODO: categorizeDataVolume should not access internal variables of other functions;
+                #       the caller should rather pass the periodEndTime as a parameter to categorizeDataVolume
                 description: >
                   'day of month
                   if to be initialized, to be parsed from [/iterate-ec-pm-slices/historical-performance-data-list=*/period-end-time]'
@@ -87,6 +90,8 @@ categorize-data-volume:
                           dropped-frames-input:
                             type: integer
 
+
+    # TODO: is that correct? historicalPerformanceData doesn't have periodEndTime, this is part of historicalPerformanceDataLIST
     day:
       type: integer
       minimum: 1
