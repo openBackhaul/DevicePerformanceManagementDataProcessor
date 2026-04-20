@@ -97,7 +97,7 @@ function calculateUtilization(input) {
 
   // Return result
   return {
-    'utilization' : result
+    'utilization': result
   };
 }
 
@@ -110,10 +110,10 @@ const p1CalculateUtilization = (input) => {
     if (historicalPerfData == null) {
       return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
     } else if (historicalPerfData['granularity-period'] == null ||
-        historicalPerfData[ENDTIME] == null ||
-        historicalPerfData[PERFDATA] == null) {
+      historicalPerfData[ENDTIME] == null ||
+      historicalPerfData[PERFDATA] == null) {
       return ERRORS.HIST_PERF_DATA_INVALID;
-    } 
+    }
 
     if (aggGroup == null) {
       return ERRORS.AGG_GROUP_NOT_PROVIDED;
@@ -147,7 +147,7 @@ const p1CalculateUtilization = (input) => {
     }
     let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
     historicalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
-    
+
     const inputStruct = {
       'total-bytes-output': historicalPerfData[PERFDATA][TOTBYTEOUT], // string
       'total-air-interface-interval-capacity': historicalPerfData[PERFDATA][TOTAIRIFCAP], // integer
