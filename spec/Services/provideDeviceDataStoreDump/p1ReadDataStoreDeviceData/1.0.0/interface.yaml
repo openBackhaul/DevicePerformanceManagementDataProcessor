@@ -19,7 +19,7 @@ x-javascript-interface:
                 description: >
                   'The ressourcePath for addressing the dataStore including ES client address information,
                   must target a specific device.'
-                example: '<ES-client-address>://data-store/device=exampleMountName'
+                example: '<ES-client-address>://data-store/device=inputMountName'
     output:
       success:
         description: 'deviceData provided'
