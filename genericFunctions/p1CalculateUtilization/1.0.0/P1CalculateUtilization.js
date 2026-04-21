@@ -233,29 +233,30 @@ const p1CalculateUtilization = (input) => {
 
     // Functions must process only 15 minutes of PM
     let returnData;
-    const granularityPeriod = historicalPerfData['granularity-period'];
+    let retHistoricalPerfData = JSON.parse(JSON.stringify(historicalPerfData)); // Initializate return value
+    const granularityPeriod = retHistoricalPerfData['granularity-period'];
     if (granularityPeriod.endsWith(GRAN_15MIN)) {
       const inputCapacity = {
         'logical-termination-point': resultCC[LTP],
         'physical-server-ltp-list': aggGroup[PSYSERVERLTP],
-        'period-end-time': historicalPerfData[ENDTIME],
+        'period-end-time': retHistoricalPerfData[ENDTIME],
       }
       let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
-      historicalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
+      retHistoricalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
 
       const inputStruct = {
-        'total-bytes-output': historicalPerfData[PERFDATA][TOTBYTEOUT], // string
-        'total-air-interface-interval-capacity': historicalPerfData[PERFDATA][TOTAIRIFCAP], // integer
-        'time-period': historicalPerfData[PERFDATA][TIMEPERIOD] // integer
+        'total-bytes-output': retHistoricalPerfData[PERFDATA][TOTBYTEOUT], // string
+        'total-air-interface-interval-capacity': retHistoricalPerfData[PERFDATA][TOTAIRIFCAP], // integer
+        'time-period': retHistoricalPerfData[PERFDATA][TIMEPERIOD] // integer
       }
       let utilization = calculateUtilization(inputStruct);
-      historicalPerfData[PERFDATA]['utilization'] = utilization['utilization'];
+      retHistoricalPerfData[PERFDATA]['utilization'] = utilization['utilization'];
       returnData = {
-        'historical-performance-data': historicalPerfData
+        'historical-performance-data': retHistoricalPerfData
       };
     } else if (granularityPeriod.endsWith(GRAN_24H) || granularityPeriod.endsWith(GRAN_UNKN) || granularityPeriod.endsWith(GRAN_NOTDEF)) {
       returnData = {
-        'historical-performance-data': historicalPerfData
+        'historical-performance-data': retHistoricalPerfData
       };
     } else {
       return ERRORS.HIST_PERF_DATA_INVALID;
