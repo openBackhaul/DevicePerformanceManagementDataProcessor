@@ -1,4 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
+
 const p1FormattingOutputApt = (input) => {
   try {
     if (!input || !input['result-cc']) {
@@ -21,26 +22,24 @@ const p1FormattingOutputApt = (input) => {
       return ERRORS.RESULTCC_INCOMPLETE;
     }
 
-  
     const mountName =
       ccObj['equipment-augment-1-0:control-construct-pac']?.['external-label'];
 
-    const retrievalTimestamp = resultCC['batch-timestamp'];    
+    const retrievalTimestamp = resultCC['batch-timestamp'];
 
     const iduOrCpuTemperature = resolveTemperature(resultCC);
-
 
     const airInterfaceList = [];
     const ethernetContainerList = [];
 
-
     for (const ltp of Object.values(ltpObjs)) {
       const layerProtocol = ltp['layer-protocol']?.[0];
-      if (!layerProtocol) continue;
+      if (!layerProtocol) {
+        continue;
+      }
 
       const lpName = layerProtocol['layer-protocol-name'];
 
-   
       if (lpName.endsWith('AIR_LAYER')) {
         airInterfaceList.push(
           buildAirInterface(
@@ -54,7 +53,6 @@ const p1FormattingOutputApt = (input) => {
         );
       }
 
- 
       if (lpName.includes('ETHERNET_CONTAINER')) {
         ethernetContainerList.push(
           buildEthernetContainer(ltp, layerProtocol, mountName)
@@ -62,17 +60,16 @@ const p1FormattingOutputApt = (input) => {
       }
     }
 
+    const result = {
+      'format-name': 'apt-output-format',
+      'output-format': {
+        'air-interface-list': airInterfaceList,
+        'ethernet-container-list': ethernetContainerList
+      }
+    };
 
-const result = {
-  'format-name': 'apt-output-format',
-  'output-format': {
-    'air-interface-list': airInterfaceList,
-    'ethernet-container-list': ethernetContainerList
-  }
-};
-
-console.log(JSON.stringify(result, null, 2));
-return result;
+    // console.log(JSON.stringify(result, null, 2));
+    return result;
 
   } catch (err) {
     return ERRORS.GENERAL_ERROR;
@@ -81,10 +78,7 @@ return result;
 
 module.exports = p1FormattingOutputApt;
 
-
-
 // Helper  Methods
-
 
 function buildAirInterface(
   ltp,
@@ -140,14 +134,18 @@ function mapAirInterfaceConfiguration(config, capability) {
 }
 
 function resolveTransmissionMode(modeName, capability) {
-  if (!modeName || !capability) return null;
+  if (!modeName || !capability) {
+    return null;
+  }
 
   const modes = capability['transmission-mode-list'] || [];
   const match = modes.find(
     m => m['transmission-mode-name'] === modeName
   );
 
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
 
   return {
     'number-of-states': match['number-of-states'],
@@ -157,11 +155,10 @@ function resolveTransmissionMode(modeName, capability) {
   };
 }
 
-
 function mapAirPerformance(airPac) {
   const hist =
     airPac?.['air-interface-historical-performances']
-      ?.['historical-performance-data-list'] || [];
+    ?.['historical-performance-data-list'] || [];
 
   return hist.map(entry => {
     const perf = entry['performance-data'];
@@ -179,7 +176,6 @@ function mapAirPerformance(airPac) {
   });
 }
 
-
 function resolveLinkAggregation(ltp, allLtps) {
   const result = [];
   const parallel = ltp?.['parallel-ltp'] || [];
@@ -189,7 +185,9 @@ function resolveLinkAggregation(ltp, allLtps) {
     const target = Object.values(allLtps)
       .find(x => x.uuid === uuid);
 
-    if (!target) continue;
+    if (!target) {
+      continue;
+    }
 
     const targetLp = target?.['layer-protocol']?.[0];
     const lpName = targetLp?.['layer-protocol-name'];
@@ -212,9 +210,9 @@ function resolveLinkAggregation(ltp, allLtps) {
       });
     }
   }
+
   return result;
 }
-
 
 function resolveTemperature(resultCC) {
   const ccObj =
@@ -226,52 +224,48 @@ function resolveTemperature(resultCC) {
   let iduTemp;
 
   for (const eq of equipments) {
-
     const category =
       eq?.['structure']?.['category'];
 
     const temp =
       eq?.['actual-equipment']?.['physical-properties']?.['temperature'];
-  
+
     if (category?.endsWith('EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT') &&
-        temp !== undefined) {
+      temp !== undefined) {
       cpuTemp = temp;
     }
 
     if (category?.endsWith('EQUIPMENT_CATEGORY_SUBRACK') &&
-        temp !== undefined) {
+      temp !== undefined) {
       iduTemp = temp;
     }
   }
+
   return cpuTemp !== undefined ? cpuTemp : iduTemp;
 }
-
-
 
 function buildEthernetContainer(ltp, layerProtocol, mountName) {
   const ltpAug = ltp['ltp-augment-1-0:ltp-augment-pac'];
 
   const perfList =
     layerProtocol?.['ethernet-container-2-0:ethernet-container-pac']
-      ?.['ethernet-container-historical-performances']
-      ?.['historical-performance-data-list'];
+    ?.['ethernet-container-historical-performances']
+    ?.['historical-performance-data-list'];
 
   const result = {
     'ethernet-container-identifiers': {
       'mount-name': mountName,
       'interface-name': ltpAug?.['original-ltp-name'],
       'logical-termination-point-id': ltp.uuid
-    },    
+    },
 
     'ethernet-container-performance-measurements-list':
       Array.isArray(perfList)
         ? perfList.map(entry => ({ ...entry }))
         : []
+  };
 
- 
-    };
-
-     return result;
+  return result;
 }
 
 
