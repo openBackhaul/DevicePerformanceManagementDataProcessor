@@ -9,7 +9,7 @@ describe('p1FormattingOutputApt', () => {
 
   beforeAll(() => {
     const dataFile = fs.readFileSync(
-      path.join(__dirname, 'datasets', 'cc_CO01715.json'),
+      path.join(__dirname, 'datasets', 'cc_clean_CO01715.json'),
       'utf8'
     );
     cc = JSON.parse(dataFile);
@@ -36,7 +36,7 @@ describe('p1FormattingOutputApt', () => {
   test('air interface identifiers should exist', () => {
     const air =
       p1FormattingOutputApt({ 'result-cc': cc })
-        ['output-format']['air-interface-list'][0];
+      ['output-format']['air-interface-list'][0];
 
     const identifiers = air['air-interface-identifiers'];
 
@@ -48,7 +48,7 @@ describe('p1FormattingOutputApt', () => {
   test('link-id should be max 9 characters', () => {
     const air =
       p1FormattingOutputApt({ 'result-cc': cc })
-        ['output-format']['air-interface-list'][0];
+      ['output-format']['air-interface-list'][0];
 
     const linkId = air['air-interface-identifiers']['link-id'];
 
@@ -60,7 +60,7 @@ describe('p1FormattingOutputApt', () => {
   test('air-interface-performance-measurements-list exists', () => {
     const air =
       p1FormattingOutputApt({ 'result-cc': cc })
-        ['output-format']['air-interface-list'][0];
+      ['output-format']['air-interface-list'][0];
 
     const perfList = air['air-interface-performance-measurements-list'];
 
@@ -71,7 +71,7 @@ describe('p1FormattingOutputApt', () => {
   test('operated transmission modes must have time > 0', () => {
     const airList =
       p1FormattingOutputApt({ 'result-cc': cc })
-        ['output-format']['air-interface-list'];
+      ['output-format']['air-interface-list'];
 
     airList.forEach(air => {
       air['air-interface-performance-measurements-list'].forEach(p => {
@@ -97,7 +97,7 @@ describe('p1FormattingOutputApt', () => {
   test('ethernet performance list must always be array', () => {
     const ethList =
       p1FormattingOutputApt({ 'result-cc': cc })
-        ['output-format']['ethernet-container-list'];
+      ['output-format']['ethernet-container-list'];
 
     ethList.forEach(ec => {
       expect(
@@ -115,16 +115,18 @@ describe('p1FormattingOutputApt', () => {
     const result = p1FormattingOutputApt({ 'result-cc': {} });
     expect(result).toBe(ERRORS.RESULTCC_INVALID);
   });
-  test('returns error: resultCc incomplete when LTP list missing', () => {
-  const incompleteCc = {
-    'core-model-1-4:control-construct': [
-      {// logical-termination-point missing
-         }]
-  };
 
-  const result = p1FormattingOutputApt({ 'result-cc': incompleteCc });
+  // not valid anymore
+  // test('returns error: resultCc incomplete when LTP list missing', () => {
+  //   const incompleteCc = {
+  //     'core-model-1-4:control-construct': [
+  //       {// logical-termination-point missing
+  //       }]
+  //   };
 
-  expect(result).toBe(ERRORS.RESULTCC_INCOMPLETE);
-});
+  //   const result = p1FormattingOutputApt({ 'result-cc': incompleteCc });
+
+  //   expect(result).toBe(ERRORS.RESULTCC_INCOMPLETE);
+  // });
 
 });

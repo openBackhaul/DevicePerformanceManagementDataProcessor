@@ -1,5 +1,9 @@
 const ERRORS = require('./ErrorsEnum');
 
+const EQUIP = 'equipment';
+const LTP = 'logical-termination-point';
+const EQP_AUG = 'equipment-augment-1-0:control-construct-pac';
+
 const p1FormattingOutputApt = (input) => {
   try {
     if (!input || !input['result-cc']) {
@@ -8,26 +12,22 @@ const p1FormattingOutputApt = (input) => {
 
     const resultCC = input['result-cc'];
 
-    if (
-      !resultCC['core-model-1-4:control-construct'] ||
-      !Array.isArray(resultCC['core-model-1-4:control-construct'])
-    ) {
+    if (resultCC[EQUIP] == null ||
+      resultCC[LTP] == null ||
+      resultCC[EQP_AUG] == null ||
+      resultCC['batch-timestamp'] == null) {
       return ERRORS.RESULTCC_INVALID;
     }
 
-    const ccObj = resultCC['core-model-1-4:control-construct'][0];
-    const ltpObjs = ccObj['logical-termination-point'];
+    const ltpObjs = resultCC[LTP];
 
     if (!ltpObjs) {
       return ERRORS.RESULTCC_INCOMPLETE;
     }
 
-    const mountName =
-      ccObj['equipment-augment-1-0:control-construct-pac']?.['external-label'];
-
+    const mountName = resultCC[EQP_AUG]?.['external-label'];
     const retrievalTimestamp = resultCC['batch-timestamp'];
-
-    const iduOrCpuTemperature = resolveTemperature(resultCC);
+    const iduOrCpuTemperature = resolveTemperature(resultCC[EQUIP]);
 
     const airInterfaceList = [];
     const ethernetContainerList = [];
@@ -68,9 +68,7 @@ const p1FormattingOutputApt = (input) => {
       }
     };
 
-    // console.log(JSON.stringify(result, null, 2));
     return result;
-
   } catch (err) {
     return ERRORS.GENERAL_ERROR;
   }
@@ -95,7 +93,7 @@ function buildAirInterface(
     'air-interface-identifiers': {
       'mount-name': mountName,
       'link-endpoint-id': ltpAug?.['external-label'],
-      'link-id': ltpAug?.['link-id']?.substring(0, 9),
+      'link-id': ltpAug?.['link-id']?.substring(0, 9) ,
       'logical-termination-point-id': ltp.uuid,
       'link-aggregation-identifiers':
         resolveLinkAggregation(ltp, allLtps)
@@ -214,21 +212,14 @@ function resolveLinkAggregation(ltp, allLtps) {
   return result;
 }
 
-function resolveTemperature(resultCC) {
-  const ccObj =
-    resultCC?.['core-model-1-4:control-construct']?.[0];
-
-  const equipments = ccObj?.['equipment'] || [];
-
+function resolveTemperature(equipmentStruct) {
   let cpuTemp;
   let iduTemp;
 
-  for (const eq of equipments) {
-    const category =
-      eq?.['structure']?.['category'];
+  for (const eq of equipmentStruct) {
+    const category = eq?.['structure']?.['category'];
 
-    const temp =
-      eq?.['actual-equipment']?.['physical-properties']?.['temperature'];
+    const temp = eq?.['actual-equipment']?.['physical-properties']?.['temperature'];
 
     if (category?.endsWith('EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT') &&
       temp !== undefined) {
@@ -241,7 +232,8 @@ function resolveTemperature(resultCC) {
     }
   }
 
-  return cpuTemp !== undefined ? cpuTemp : iduTemp;
+  let retValue = cpuTemp !== undefined ? cpuTemp : iduTemp;
+  return retValue == undefined ? '' : retValue;
 }
 
 function buildEthernetContainer(ltp, layerProtocol, mountName) {
