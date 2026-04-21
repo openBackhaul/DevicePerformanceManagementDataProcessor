@@ -1,0 +1,8 @@
+read-data-store-device-data:
+  type: object
+  properties:
+    ressource-path:
+      type: string
+      description: >
+        'The ressourcePath to access the target data structure in the dataStore
+        from {$p1ReadDataStoreDeviceData.input#/ressource-path}'
