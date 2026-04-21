@@ -209,6 +209,7 @@ const p1CalculateUtilization = (input) => {
     const aggGroup = input[AGGGROUP];               // Object
     const resultCC = input[RESCC];                  // Object
 
+    // Validate Historical Performance Data
     if (historicalPerfData == null) {
       return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
     } else if (historicalPerfData['granularity-period'] == null ||
@@ -217,12 +218,15 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
 
+    // Validate Aggreghation Group
     if (aggGroup == null) {
       return ERRORS.AGG_GROUP_NOT_PROVIDED;
-    } else if (aggGroup[PSYSERVERLTP] == null) {
+    } else if (aggGroup[PSYSERVERLTP] == null ||
+      aggGroup[PSYSERVERLTP].length == 0) {
       return ERRORS.AGG_GROUP_INVALID;
     }
 
+    // Valuidate Result CC
     if (resultCC == null) {
       return ERRORS.RESULT_CC_NOT_PROVIDED;
     } else if (!validateResultCC(resultCC)) {
