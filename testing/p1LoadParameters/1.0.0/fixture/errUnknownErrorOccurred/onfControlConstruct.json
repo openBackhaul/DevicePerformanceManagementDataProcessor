@@ -1,0 +1,4011 @@
+{
+  "core-model-1-4:control-construct": {
+    "uuid": "dpmdp-1-0-0",
+    "profile-collection": {
+      "profile": [
+        {
+          "uuid": "dpmdp-1-0-0-action-p-000",
+          "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
+          "action-profile-1-0:action-profile-pac": {
+            "action-profile-capability": {
+              "operation-name": "/v1/start-application-in-generic-representation",
+              "label": "Inform about Application",
+              "input-value-list": [],
+              "display-in-new-browser-window": false
+            },
+            "action-profile-configuration": {
+              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-bs-002/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-action-p-001",
+          "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
+          "action-profile-1-0:action-profile-pac": {
+            "action-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "label": "Release History",
+              "input-value-list": [],
+              "display-in-new-browser-window": false
+            },
+            "action-profile-configuration": {
+              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-bs-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-action-p-002",
+          "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
+          "action-profile-1-0:action-profile-pac": {
+            "action-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "label": "API Documentation",
+              "input-value-list": [],
+              "display-in-new-browser-window": true
+            },
+            "action-profile-configuration": {
+              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-op-s-bs-005/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-000",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/start-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "applicationName"
+              },
+              "description": "Own application name",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-001",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "applicationName"
+              },
+              "description": "Name of this application",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-002",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "releaseNumber"
+              },
+              "description": "Number of this release",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-003",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "applicationPurpose"
+              },
+              "description": "Purpose of this application",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-purpose"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-004",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "dataUpdatePeriod"
+              },
+              "description": "Period of updating the data inside this application",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/data-update-period"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-005",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "ownerName"
+              },
+              "description": "Name of the ApplicationOwner",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-name"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-006",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-application-in-generic-representation",
+              "field-name": {
+                "static-field-name": "ownerEmailAddress"
+              },
+              "description": "Email address of the ApplicationOwner",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-email-address"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-response-p-007",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-release-history-in-generic-representation",
+              "field-name": {
+                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/release-number"
+              },
+              "description": "Represents the first entry in the list of releases",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-0-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/changes"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-000",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1StreamPmData",
+              "function-description": "Cyclically triggers the replication of MWDI and initiates the processing of the PM data",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-030",
+                "dpmdp-1-0-0-function-p-060",
+                "dpmdp-1-0-0-function-p-090",
+                "dpmdp-1-0-0-function-p-100",
+                "dpmdp-1-0-0-function-p-120",
+                "dpmdp-1-0-0-function-p-150"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-030",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1LoadParameters",
+              "function-description": "Loads the parameters from the configFile",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-060",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1ResolveEsAddress",
+              "function-description": "Composes the address information of an ElasticSearchClient",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-061",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-062",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-063",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-064",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-061",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mwdiEsClient",
+              "string-purpose": "UUID of the MWDI ES ElasticsearchClient LTP",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-es-c-es-1-0-0-007"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-062",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mwdiReplicaEsClient",
+              "string-purpose": "UUID of the MWDI ES Replica ElasticsearchClient LTP",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-es-c-es-1-0-0-018"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-063",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "loggingEsClient",
+              "string-purpose": "UUID of the ElasticsearchClient LTP for logging the replication activities",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-es-c-es-1-0-0-020"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-064",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "dataStoreEsClient",
+              "string-purpose": "UUID of the ElasticsearchClient LTP for storing the resultCc",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-es-c-es-1-0-0-021"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-090",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1InitKafka",
+              "function-description": "Resolves Kafka address and initializes the Kafka session",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-091",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-092",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-091",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "aptProvider",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-092",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "onfProvider",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-100",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1MaintainDs",
+              "function-description": "Cyclically cleans up old entries in the DataStore",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-101",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-102",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-101",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "dataStoreCleanupPeriod",
+              "string-purpose": "Time period between two cleanup runs in hours"
+            },
+            "string-profile-configuration": {
+              "string-value": "12"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-102",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "dataStoreRetentionPeriod",
+              "string-purpose": "Time period for which data is retained before deletion in hours"
+            },
+            "string-profile-configuration": {
+              "string-value": "48"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-120",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1UpdateMwdiReplica",
+              "function-description": "Replicates updated ControlConstructs from MWDI to MWDI Replica",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-121",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-122",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-123",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-124",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-125",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-126",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-127",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-121",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "jobName",
+              "string-purpose": "Name of the replication job"
+            },
+            "string-profile-configuration": {
+              "string-value": "mwdi-replica-update-job"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-122",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "syncPeriod",
+              "string-purpose": "Duration between two replications of the MWDI ES in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "480"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-123",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "lastUpdatedField",
+              "string-purpose": "?"
+            },
+            "string-profile-configuration": {
+              "string-value": "lastUpdated"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-124",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "overlapMs",
+              "string-purpose": "Overlap in milliseconds to avoid missing updates at period boundaries"
+            },
+            "string-profile-configuration": {
+              "string-value": "60000"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-125",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "reqPerSec",
+              "string-purpose": "Throttles re-indexing to number of copy operations per second, preventing high load on the server"
+            },
+            "string-profile-configuration": {
+              "string-value": "2"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-126",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "scrollSize",
+              "string-purpose": "Number of documents returned per page when Elasticsearch performs a scroll search"
+            },
+            "string-profile-configuration": {
+              "string-value": "200"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-127",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "scrollTtl",
+              "string-purpose": "How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window"
+            },
+            "string-profile-configuration": {
+              "string-value": "2"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-150",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1ProcessDevice",
+              "function-description": "Orchestrates the device-wise processing, formatting, sending and storing of PM data",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-180",
+                "dpmdp-1-0-0-function-p-270",
+                "dpmdp-1-0-0-function-p-540",
+                "dpmdp-1-0-0-function-p-550",
+                "dpmdp-1-0-0-function-p-600",
+                "dpmdp-1-0-0-function-p-620"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-180",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1LoadRawCc",
+              "function-description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-210",
+                "dpmdp-1-0-0-function-p-240"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-210",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1FieldsFilter",
+              "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-211",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-211",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "fieldsFilter",
+              "string-purpose": "Fields filter to be applied to reduce the raw ControlConstruct data"
+            },
+            "string-profile-configuration": {
+              "string-value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(timestamp);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-240",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1DiscardIrrelevantPmRecords",
+              "function-description": "Discards irrelevant records from historical performance data list",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-241",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-241",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "relevantGranularities",
+              "string-purpose": "An regex pattern indicating which data granularities are to be kept",
+              "enumeration": [
+                ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$",
+                ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$",
+                ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-270",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CreateResultCc",
+              "function-description": "Composes the resultCc from the rawCc",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-300",
+                "dpmdp-1-0-0-function-p-350",
+                "dpmdp-1-0-0-function-p-440",
+                "dpmdp-1-0-0-function-p-510"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-300",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1PrepareTxModes",
+              "function-description": "Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-330"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-330",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CalculateAiCapacity",
+              "function-description": "Calculates the AirInterface capacity according to ONF TR-532 v2.0",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-350",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1IterateAiPmSlices",
+              "function-description": "Iterates through all AirInterface historical performance data slices and calls the processing Functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-360",
+                "dpmdp-1-0-0-function-p-380",
+                "dpmdp-1-0-0-function-p-410"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-360",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CalculateIntervalCapacity",
+              "function-description": "Calculates the average capacity provided by an AirInterface within a given interval",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-380",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveOutOfRangeLevels",
+              "function-description": "Removes out-of-range level attributes from a performance data slice",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-381",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-382",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-383",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-384",
+                  "owner": "engineering"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-381",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "lowerTxLevelLimit",
+              "string-purpose": "Lower bound of valid values of the transmit level"
+            },
+            "string-profile-configuration": {
+              "string-value": "-30"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-382",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "upperTxLevelLimit",
+              "string-purpose": "Upper bound of valid values of the transmit level"
+            },
+            "string-profile-configuration": {
+              "string-value": "40"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-383",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "lowerRxLevelLimit",
+              "string-purpose": "Lower bound of valid values of the receive level"
+            },
+            "string-profile-configuration": {
+              "string-value": "-129"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-384",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "upperRxLevelLimit",
+              "string-purpose": "Upper bound of valid values of the receive level"
+            },
+            "string-profile-configuration": {
+              "string-value": "-10"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-410",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveDefaultValues",
+              "function-description": "Deletes attributes with default values from the transferred object",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-411",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-412",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-413",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-414",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-415",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-416",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-417",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-419",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-420",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-421",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-422",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-423",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-424",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-425",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-426",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-427",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-428",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-429",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-430",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-431",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-432",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-433",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-434",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-411",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "es",
+              "string-purpose": "Number of errored seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-412",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "ses",
+              "string-purpose": "Number of severely errored seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-413",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "cses",
+              "string-purpose": "Number of consecutive severely errored seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-414",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "unavailability",
+              "string-purpose": "Total time of unavailability in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-415",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "txLevelMin",
+              "string-purpose": "Minimum transmit power in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-416",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "txLevelMax",
+              "string-purpose": "Maximum transmit power in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-417",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "txLevelAvg",
+              "string-purpose": "Averaged transmit power in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-419",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "rxLevelMin",
+              "string-purpose": "Minimum receive level in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-420",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "rxLevelMax",
+              "string-purpose": "Maximum receive level in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-421",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "rxLevelAvg",
+              "string-purpose": "Averaged receive level in dBm"
+            },
+            "string-profile-configuration": {
+              "string-value": "99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-424",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "snirMin",
+              "string-purpose": "Minimum signal to (noise+interference) ratio in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-425",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "snirMax",
+              "string-purpose": "Maximum signal to (noise+interference) ratio in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-426",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "snirAvg",
+              "string-purpose": "Averaged signal to (noise+interference) ratio in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-427",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "xpdMin",
+              "string-purpose": "Minimum cross polarization discrimination in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-428",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "xpdMax",
+              "string-purpose": "Maximum cross polarization discrimination in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-429",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "xpdAvg",
+              "string-purpose": "Averaged cross polarization discrimination in dB"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-430",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "rfTempMin",
+              "string-purpose": "Lowest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-431",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "rfTempMax",
+              "string-purpose": "Highest temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-432",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "rfTempAvg",
+              "string-purpose": "Averaged temperature (in degree Celsius) of the radio module inside the outdoor unit in degree Celsius"
+            },
+            "string-profile-configuration": {
+              "string-value": "-99"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-433",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "defectBlocksSum",
+              "string-purpose": "Total number of blocks that were defect after receiving and could not be corrected by the FEC in blocks"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-434",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "timePeriod",
+              "string-purpose": "Total length of the measurement period in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-440",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1IterateEcPmSlices",
+              "function-description": "Iterates through all EthernetContainer historical performance data slices and calls the processing Functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-450",
+                "dpmdp-1-0-0-function-p-460",
+                "dpmdp-1-0-0-function-p-500"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-450",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CalculateEthernetKpis",
+              "function-description": "Adds Ethernet KPIs to the historicalPerformanceData set",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-460",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveDefaultValues",
+              "function-description": "Deletes attributes with default values from the transferred object",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-461",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-462",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-463",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-464",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-465",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-466",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-467",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-468",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-469",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-470",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-471",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-472",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-473",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-474",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-475",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-476",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-477",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-478",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-479",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-480",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-481",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-482",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-483",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-461",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "maxBytesPerSecondOutput",
+              "string-purpose": "Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-462",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "totalBytesInput",
+              "string-purpose": "Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-463",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "totalBytesOutput",
+              "string-purpose": "Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-464",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "timePeriod",
+              "string-purpose": "Total length of the measurement period in seconds"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-465",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "totalFramesInput",
+              "string-purpose": "The total number of Ethernet frames received at this interface (including those received in error)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-466",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "totalFramesOutput",
+              "string-purpose": "The total number of Ethernet frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-467",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "forwardedFramesInput",
+              "string-purpose": "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-468",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "forwardedFramesOutput",
+              "string-purpose": "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-469",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "unicastFramesInput",
+              "string-purpose": "Total number of unicast frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-470",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "unicastFramesOutput",
+              "string-purpose": "Total number of unicast frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-471",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "multicastFramesInput",
+              "string-purpose": "Total number of multicast frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-472",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "multicastFramesOutput",
+              "string-purpose": "Total number of multicast frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-473",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "broadcastFramesInput",
+              "string-purpose": "Total number of broadcast frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-474",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "broadcastFramesOutput",
+              "string-purpose": "Total number of broadcast frames sent at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-475",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "fragmentedFramesInput",
+              "string-purpose": "The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-476",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "erroredFramesInput",
+              "string-purpose": "Total number of errored frames received at this interface"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-477",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "erroredFramesOutput",
+              "string-purpose": "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-478",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "droppedFramesInput",
+              "string-purpose": "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-479",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "droppedFramesOutput",
+              "string-purpose": "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-480",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "oversizedFramesIngress",
+              "string-purpose": "The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-481",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "undersizedFramesIngress",
+              "string-purpose": "The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-482",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "jabberFramesIngress",
+              "string-purpose": "Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-483",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "unknownProtocolFramesInput",
+              "string-purpose": "Total number of received frames that were transporting an unknown protocol"
+            },
+            "string-profile-configuration": {
+              "string-value": "-1"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-500",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CalculateUtilization",
+              "function-description": "Calculates utilization of the aggregated physical resources in a performance data slice",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-510",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1RemoveOutOfRangeTemperature",
+              "function-description": "Deletes temperature attributes with values outside pre-defined range from equipment",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-511",
+                  "owner": "engineering"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-512",
+                  "owner": "engineering"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-511",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "lowerTemperatureLimit",
+              "string-purpose": "Lower bound of valid values of the temperature"
+            },
+            "string-profile-configuration": {
+              "string-value": "-30"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-512",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "upperTemperatureLimit",
+              "string-purpose": "Upper bound of valid values of the temperature"
+            },
+            "string-profile-configuration": {
+              "string-value": "130"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-540",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1FormattingOutputApt",
+              "function-description": "Transforms the resultCc into aptOutputFormat",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-550",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1FormattingOutputOnf",
+              "function-description": "Creates the onfOutputFormat from resultCc",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-0-0-function-p-560"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-560",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1FieldsFilter",
+              "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-561",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-561",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "fieldsFilter",
+              "string-purpose": "Fields filter to be applied to reduce the onfOutputFormat"
+            },
+            "string-profile-configuration": {
+              "string-value": ""
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-600",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1TransmittingKafka",
+              "function-description": "Transfers outputFormats to their respective KafkaClient",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-601",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-602",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-601",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "apt-output-format",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-602",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "onf-output-format",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-function-p-620",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1Storing",
+              "function-description": "Stores the resultCc into the DataStore",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        }
+      ]
+    },
+    "logical-termination-point": [
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/register-yourself"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-001",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/embed-yourself"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-002",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/redirect-service-request-information"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-003",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/redirect-oam-request-information"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-004",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/end-subscription"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-005",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inquire-oam-request-approvals"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_DEPRECATED",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-007",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/update-client"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-008",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/list-ltps-and-fcs"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-009",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/redirect-topology-change-information"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-010",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/update-operation-key"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-011",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/update-operation-client"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-012",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inquire-basic-auth-approvals"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-013",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/dispose-remainders-of-deregistered-application"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-014",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inform-about-preceding-release"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bm-015",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/update-client-of-subsequent-release"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-im-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/bequeath-your-data-and-die"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "Operation key not yet provided."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bs-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/start-application-in-generic-representation"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bs-001",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inform-about-application"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bs-002",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inform-about-application-in-generic-representation"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bs-003",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inform-about-release-history"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bs-004",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/v1/inform-about-release-history-in-generic-representation"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-s-bs-005",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/docs"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-s-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-s-bm-000",
+          "dpmdp-1-0-0-op-s-bm-001",
+          "dpmdp-1-0-0-op-s-bm-002",
+          "dpmdp-1-0-0-op-s-bm-003",
+          "dpmdp-1-0-0-op-s-bm-004",
+          "dpmdp-1-0-0-op-s-bm-005",
+          "dpmdp-1-0-0-op-s-bm-007",
+          "dpmdp-1-0-0-op-s-bm-008",
+          "dpmdp-1-0-0-op-s-bm-009",
+          "dpmdp-1-0-0-op-s-bm-010",
+          "dpmdp-1-0-0-op-s-bm-011",
+          "dpmdp-1-0-0-op-s-bm-012",
+          "dpmdp-1-0-0-op-s-bm-013",
+          "dpmdp-1-0-0-op-s-bm-014",
+          "dpmdp-1-0-0-op-s-bm-015",
+          "dpmdp-1-0-0-op-s-im-000",
+          "dpmdp-1-0-0-op-s-bs-000",
+          "dpmdp-1-0-0-op-s-bs-001",
+          "dpmdp-1-0-0-op-s-bs-002",
+          "dpmdp-1-0-0-op-s-bs-003",
+          "dpmdp-1-0-0-op-s-bs-004",
+          "dpmdp-1-0-0-op-s-bs-005"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-server-interface-1-0:http-server-interface-pac": {
+              "http-server-interface-capability": {
+                "application-name": "DevicePerformanceManagementDataProcessor",
+                "release-number": "1.0.0",
+                "application-purpose": "Collects and processes historical device performance data and streams it to consumers",
+                "data-update-period": "http-server-interface-1-0:DATA_UPDATE_PERIOD_TYPE_REAL_TIME",
+                "owner-name": "Thorsten Heinze",
+                "owner-email-address": "Thorsten.Heinze@telefonica.com",
+                "release-list": [
+                  {
+                    "local-id": "0",
+                    "release-number": "1.0.0",
+                    "release-date": "31.01.2026",
+                    "changes": "Initial version"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-s-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-s-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-server-interface-1-0:tcp-server-interface-pac": {
+              "tcp-server-interface-configuration": {
+                "description": "Without TLS layer",
+                "local-protocol": "tcp-server-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "local-address": {
+                  "ipv-4-address": "127.0.0.1"
+                },
+                "local-port": 4031
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-007",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-es-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "elasticsearch-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_ELASTICSEARCH_LAYER",
+            "elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac": {
+              "elasticsearch-client-interface-configuration": {
+                "auth": {
+                  "api-key": "API key not yet defined."
+                },
+                "index-alias": "7"
+              },
+              "elasticsearch-client-interface-status": {
+                "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-018",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-es-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "elasticsearch-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_ELASTICSEARCH_LAYER",
+            "elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac": {
+              "elasticsearch-client-interface-configuration": {
+                "auth": {
+                  "api-key": "API key not yet defined."
+                },
+                "index-alias": "18"
+              },
+              "elasticsearch-client-interface-status": {
+                "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-020",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-es-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "elasticsearch-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_ELASTICSEARCH_LAYER",
+            "elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac": {
+              "elasticsearch-client-interface-configuration": {
+                "auth": {
+                  "api-key": "API key not yet defined."
+                },
+                "index-alias": "20"
+              },
+              "elasticsearch-client-interface-status": {
+                "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-021",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-es-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "elasticsearch-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_ELASTICSEARCH_LAYER",
+            "elasticsearch-client-interface-1-0:elasticsearch-client-interface-pac": {
+              "elasticsearch-client-interface-configuration": {
+                "auth": {
+                  "api-key": "API key not yet defined."
+                },
+                "index-alias": "21"
+              },
+              "elasticsearch-client-interface-status": {
+                "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-es-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-es-c-es-1-0-0-007",
+          "dpmdp-1-0-0-es-c-es-1-0-0-018",
+          "dpmdp-1-0-0-es-c-es-1-0-0-020",
+          "dpmdp-1-0-0-es-c-es-1-0-0-021"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-es-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "ElasticSearch",
+                "release-number": "1.0.0"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-es-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-es-1-0-0-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3015
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-kmb-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
+            "kafka-client-interface-1-0:kafka-client-interface-pac": {
+              "kafka-client-interface-configuration": {
+                "topic-name": "apt_format",
+                "type": "provider"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-kmb-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
+            "kafka-client-interface-1-0:kafka-client-interface-pac": {
+              "kafka-client-interface-configuration": {
+                "topic-name": "onf_format",
+                "type": "provider"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-kmb-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000",
+          "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-kmb-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "KafkaMessageBus",
+                "release-number": "1.0.0"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-kmb-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-kmb-1-0-0-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3017
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-or-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-or-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/bequeath-your-data-and-die",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-or-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-c-bm-or-1-0-0-000"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-or-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "OldRelease",
+                "release-number": "1.0.0"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-or-1-0-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-or-1-0-0-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 4031
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-ro-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v2/register-application",
+                "operation-key": "n.a."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-001",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-ro-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/relay-server-replacement",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-002",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-ro-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/deregister-application",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-003",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-ro-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/relay-operation-update",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-ro-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-c-bm-ro-2-1-2-000",
+          "dpmdp-1-0-0-op-c-bm-ro-2-1-2-001",
+          "dpmdp-1-0-0-op-c-bm-ro-2-1-2-002",
+          "dpmdp-1-0-0-op-c-bm-ro-2-1-2-003"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-ro-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "RegistryOffice",
+                "release-number": "2.1.2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-ro-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-ro-2-1-2-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3031
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bs-eatl-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-eatl-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/record-service-request",
+                "operation-key": "Operation key not yet provided.",
+                "detailed-logging-is-on": false
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-eatl-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-c-bs-eatl-2-1-2-000"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-eatl-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "ExecutionAndTraceLog",
+                "release-number": "2.1.2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-eatl-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-eatl-2-1-2-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3033
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bs-ol-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-ol-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/record-oam-request",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-ol-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-c-bs-ol-2-1-2-000"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-ol-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "OamLog",
+                "release-number": "2.1.2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-ol-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-ol-2-1-2-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3034
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bs-aa-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-aa-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/approve-basic-auth-request",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-aa-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-c-bs-aa-2-1-2-000"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-aa-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "AccessAdministration",
+                "release-number": "2.1.2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-aa-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-aa-2-1-2-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3035
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/update-all-ltps-and-fcs",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-001",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/update-ltp",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-002",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/delete-ltp-and-dependents",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-003",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/update-fc",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-004",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/update-fc-port",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-005",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-client-interface-1-0:operation-client-interface-pac": {
+              "operation-client-interface-configuration": {
+                "operation-name": "/v1/delete-fc-port",
+                "operation-key": "Operation key not yet provided."
+              },
+              "operation-client-interface-status": {
+                "operational-state": "operation-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "operation-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-http-c-alt-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-op-c-bm-alt-2-1-2-000",
+          "dpmdp-1-0-0-op-c-bm-alt-2-1-2-001",
+          "dpmdp-1-0-0-op-c-bm-alt-2-1-2-002",
+          "dpmdp-1-0-0-op-c-bm-alt-2-1-2-003",
+          "dpmdp-1-0-0-op-c-bm-alt-2-1-2-004",
+          "dpmdp-1-0-0-op-c-bm-alt-2-1-2-005"
+        ],
+        "server-ltp": [
+          "dpmdp-1-0-0-tcp-c-alt-2-1-2-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "ApplicationLayerTopology",
+                "release-number": "2.1.2"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-tcp-c-alt-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-0-0-http-c-alt-2-1-2-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 3036
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "forwarding-domain": [
+      {
+        "uuid": "dpmdp-1-0-0-op-fd-000",
+        "forwarding-construct": [
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-999",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptForRegisteringCausesRegistrationRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-000"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-000"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-000"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-000",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptForRegisteringCausesRegistrationRequest2"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-000"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-000"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-000"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-001",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptForEmbeddingCausesRequestForBequeathingData"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-001"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-or-1-0-0-000"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-002",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "ServiceRequestCausesLoggingRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-002"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-000"
+              },
+              {
+                "local-id": "101",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-001"
+              },
+              {
+                "local-id": "102",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-002"
+              },
+              {
+                "local-id": "103",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-003"
+              },
+              {
+                "local-id": "104",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-004"
+              },
+              {
+                "local-id": "105",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-005"
+              },
+              {
+                "local-id": "106",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-007"
+              },
+              {
+                "local-id": "107",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-008"
+              },
+              {
+                "local-id": "108",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "109",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-010"
+              },
+              {
+                "local-id": "110",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-011"
+              },
+              {
+                "local-id": "111",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-012"
+              },
+              {
+                "local-id": "112",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-013"
+              },
+              {
+                "local-id": "113",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-014"
+              },
+              {
+                "local-id": "114",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-015"
+              },
+              {
+                "local-id": "115",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-im-000"
+              },
+              {
+                "local-id": "116",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bs-000"
+              },
+              {
+                "local-id": "117",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bs-001"
+              },
+              {
+                "local-id": "118",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bs-002"
+              },
+              {
+                "local-id": "119",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bs-003"
+              },
+              {
+                "local-id": "120",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bs-004"
+              },
+              {
+                "local-id": "121",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bs-005"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bs-eatl-2-1-2-000"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-003",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "OamRequestCausesLoggingRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-003"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bs-ol-2-1-2-000"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-005",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "BasicAuthRequestCausesInquiryForAuthentication"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-012"
+              },
+              {
+                "local-id": "001",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-005"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bs-aa-2-1-2-000"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-105",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptForBequeathingDataCausesRequestForBroadcastingInfoAboutServerReplacement"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-001"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-im-000"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-001"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-106",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptForBequeathingDataCausesRequestForDeregisteringOfOldRelease"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-001"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-im-000"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-002"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-107",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "PromptingNewReleaseForUpdatingServerCausesRequestForBroadcastingInfoAboutBackwardCompatibleUpdateOfOperation"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-001"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-007"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-ro-2-1-2-003"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-006",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "ServiceRequestCausesLtpUpdateRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-000"
+              },
+              {
+                "local-id": "101",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-001"
+              },
+              {
+                "local-id": "102",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-002"
+              },
+              {
+                "local-id": "103",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-003"
+              },
+              {
+                "local-id": "104",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-005"
+              },
+              {
+                "local-id": "105",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-007"
+              },
+              {
+                "local-id": "106",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "107",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-011"
+              },
+              {
+                "local-id": "108",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-012"
+              },
+              {
+                "local-id": "109",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-015"
+              },
+              {
+                "local-id": "110",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-im-000"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-001"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-007",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "ServiceRequestCausesLtpDeletionRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-013"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-002"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-008",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "ServiceRequestCausesFcUpdateRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-003"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-009",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "ServiceRequestCausesFcPortUpdateRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-004"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-010",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "ServiceRequestCausesFcPortDeletionRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "100",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-004"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-005"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-011",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "OamRequestCausesLtpUpdateRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-001"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-012",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "OamRequestCausesLtpDeletionRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-002"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-013",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "OamRequestCausesFcUpdateRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-003"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-014",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "OamRequestCausesFcPortUpdateRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-004"
+              }
+            ]
+          },
+          {
+            "uuid": "dpmdp-1-0-0-op-fc-bm-015",
+            "name": [
+              {
+                "value-name": "ForwardingKind",
+                "value": "core-model-1-4:FORWARDING_KIND_TYPE_INVARIANT_PROCESS_SNIPPET"
+              },
+              {
+                "value-name": "ForwardingName",
+                "value": "OamRequestCausesFcPortDeletionRequest"
+              }
+            ],
+            "fc-port": [
+              {
+                "local-id": "000",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
+                "logical-termination-point": "dpmdp-1-0-0-op-s-bm-009"
+              },
+              {
+                "local-id": "200",
+                "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
+                "logical-termination-point": "dpmdp-1-0-0-op-c-bm-alt-2-1-2-005"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
