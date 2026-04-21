@@ -35,6 +35,14 @@ activate iterateSlices
     iterateSlices <-- p1RemDefault: { {performance-data} }
     deactivate p1RemDefault
 
+    note left iterateSlices #Orange
+      Please note:
+      {performance-data} and {historical-performance-data}
+      pass two slightly different sub-objects from
+      [historical-performance-data-list].
+    end note
+
+
     iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
     activate p1CalcUtil
       note over p1CalcUtil

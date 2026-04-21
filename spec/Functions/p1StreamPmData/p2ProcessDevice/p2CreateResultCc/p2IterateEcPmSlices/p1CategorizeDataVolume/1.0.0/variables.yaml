@@ -3,7 +3,6 @@ categorize-data-volume:
   required:
     - historical-performance-data
     - interface-status
-    # TODO: add period-end-time ?
   properties:
     historical-performance-data:
       type: object
@@ -40,11 +39,9 @@ categorize-data-volume:
                 type: integer
                 minimum: 1
                 maximum: 31
-                # TODO: categorizeDataVolume should not access internal variables of other functions;
-                #       the caller should rather pass the periodEndTime as a parameter to categorizeDataVolume
                 description: >
                   'day of month
-                  if to be initialized, to be parsed from [/iterate-ec-pm-slices/historical-performance-data-list=*/period-end-time]'
+                  if to be initialized, to be parsed from [/categorize-data-volume/historical-performance-data/period-end-time]'
               15-minute-values-by-hour:
                 type: array
                 x-key: hour
@@ -91,7 +88,6 @@ categorize-data-volume:
                             type: integer
 
 
-    # TODO: is that correct? historicalPerformanceData doesn't have periodEndTime, this is part of historicalPerformanceDataLIST
     day:
       type: integer
       minimum: 1
