@@ -37,8 +37,10 @@ activate iterateSlices
 
     note left iterateSlices #Orange
       Please note:
-      {performance-data} and {historical-performance-data}
-      pass two slightly different sub-objects from
+      {performance-data} and
+      {historical-performance-data}
+      pass two slightly different 
+      sub-objects of
       [historical-performance-data-list].
     end note
 
