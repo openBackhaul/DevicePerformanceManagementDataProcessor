@@ -116,17 +116,196 @@ describe('p1FormattingOutputApt', () => {
     expect(result).toBe(ERRORS.RESULTCC_INVALID);
   });
 
-  // not valid anymore
-  // test('returns error: resultCc incomplete when LTP list missing', () => {
-  //   const incompleteCc = {
-  //     'core-model-1-4:control-construct': [
-  //       {// logical-termination-point missing
-  //       }]
-  //   };
+  describe('Functional Data Extraction & Transformation', () => {
+    test('should resolve temperature with priority given to CPU over IDU', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [
+            {
+              'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
+              'actual-equipment': { 'physical-properties': { 'temperature': 45 } }
+            },
+            {
+              'structure': { 'category': 'EQUIPMENT_CATEGORY_SUBRACK' },
+              'actual-equipment': { 'physical-properties': { 'temperature': 35 } }
+            }
+          ],
+          'logical-termination-point': {
+            'ltp1': {
+              'uuid': 'ltp1',
+              'layer-protocol': [{
+                'layer-protocol-name': 'AIR_LAYER',
+                'air-interface-2-0:air-interface-pac': {
+                  'air-interface-configuration': {},
+                  'air-interface-capability': {},
+                  'air-interface-historical-performances': { 'historical-performance-data-list': [] }
+                }
+              }],
+              'ltp-augment-1-0:ltp-augment-pac': {}
+            }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      expect(res['output-format']['air-interface-list'][0]['idu-cpu-temperature']).toBe(45);
+    });
 
-  //   const result = p1FormattingOutputApt({ 'result-cc': incompleteCc });
+    
 
-  //   expect(result).toBe(ERRORS.RESULTCC_INCOMPLETE);
-  // });
+    test('resolveTransmissionMode: should return null if mode not found', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [],
+          'logical-termination-point': {
+            'ltp1': {
+              'uuid': 'ltp1',
+              'layer-protocol': [{
+                'layer-protocol-name': 'AIR_LAYER',
+                'air-interface-2-0:air-interface-pac': {
+                  'air-interface-configuration': { 'transmission-mode-min': 'UNKNOWN' },
+                  'air-interface-capability': { 'transmission-mode-list': [{ 'transmission-mode-name': 'KNOWN' }] }
+                }
+              }]
+            }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      const config = res['output-format']['air-interface-list'][0]['air-interface-configuration'];
+      expect(config['configured-modulation-minimum']).toBeNull();
+    });
 
+    test('should truncate link-id to strictly first 9 characters', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [],
+          'logical-termination-point': {
+            'ltp1': {
+              'uuid': 'ltp1',
+              'layer-protocol': [{
+                'layer-protocol-name': 'AIR_LAYER',
+                'air-interface-2-0:air-interface-pac': { 'air-interface-configuration': {}, 'air-interface-capability': {} }
+              }],
+              'ltp-augment-1-0:ltp-augment-pac': { 'link-id': '1234567890ABC' }
+            }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      expect(res['output-format']['air-interface-list'][0]['air-interface-identifiers']['link-id']).toBe('123456789');
+    });
+
+    test('Ethernet container performance should default to empty array if not array', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [],
+          'logical-termination-point': {
+            'eth1': {
+              'uuid': 'eth1',
+              'layer-protocol': [{
+                'layer-protocol-name': 'ETHERNET_CONTAINER',
+                'ethernet-container-2-0:ethernet-container-pac': {
+                  'ethernet-container-historical-performances': { 'historical-performance-data-list': 'not-an-array' }
+                }
+              }]
+            }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      expect(res['output-format']['ethernet-container-list'][0]['ethernet-container-performance-measurements-list']).toEqual([]);
+    });
+
+    test('should correctly handle 0 degrees when resolving temperature', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [
+            {
+              'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
+              'actual-equipment': { 'physical-properties': { 'temperature': 0 } }
+            }
+          ],
+          'logical-termination-point': {
+            'ltp1': {
+              'uuid': 'ltp1',
+              'layer-protocol': [{
+                'layer-protocol-name': 'AIR_LAYER',
+                'air-interface-2-0:air-interface-pac': {
+                  'air-interface-configuration': {},
+                  'air-interface-capability': {},
+                  'air-interface-historical-performances': { 'historical-performance-data-list': [] }
+                }
+              }]
+            }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      expect(res['output-format']['air-interface-list'][0]['idu-cpu-temperature']).toBe(0);
+    });
+
+    test('should return empty lists when no matching LTPs exist', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [],
+          'logical-termination-point': {
+            'other': { 'layer-protocol': [{ 'layer-protocol-name': 'OTHER_LAYER' }] }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      expect(res['output-format']['air-interface-list']).toEqual([]);
+      expect(res['output-format']['ethernet-container-list']).toEqual([]);
+    });
+
+    test('resolveTransmissionMode: should return correct object structure on match', () => {
+      const input = {
+        'result-cc': {
+          'equipment': [],
+          'logical-termination-point': {
+            'ltp1': {
+              'uuid': 'ltp1',
+              'layer-protocol': [{
+                'layer-protocol-name': 'AIR_LAYER',
+                'air-interface-2-0:air-interface-pac': {
+                  'air-interface-configuration': { 'transmission-mode-min': 'MODE_A' },
+                  'air-interface-capability': {
+                    'transmission-mode-list': [{
+                      'transmission-mode-name': 'MODE_A',
+                      'number-of-states': 4,
+                      'modulation-scheme-name-at-lct': 'QPSK',
+                      'capacity': 1000
+                    }]
+                  }
+                }
+              }]
+            }
+          },
+          'equipment-augment-1-0:control-construct-pac': { 'external-label': 'mount' },
+          'batch-timestamp': '2023-10-25T10:00:00Z'
+        }
+      };
+      const res = p1FormattingOutputApt(input);
+      const mode = res['output-format']['air-interface-list'][0]['air-interface-configuration']['configured-modulation-minimum'];
+      expect(mode).toEqual({
+        'number-of-states': 4,
+        'name-at-lct': 'QPSK',
+        'configured-capacity-minimum': 1000,
+        'configured-capacity-maximum': 1000
+      });
+    });
+
+  });
 });
