@@ -2408,6 +2408,7 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
+                    "interval-capacity": 450,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -2509,6 +2510,7 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
+                    "interval-capacity": 790,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -2610,6 +2612,7 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
+                    "interval-capacity": 399,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -2716,8 +2719,8 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": true,
                   "timestamp": "2026-04-01T06:56:02.0+00:00",
-                  "interval-capacity": 500,
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -2817,10 +2820,10 @@
                   "scanner-id": "Scanner ID not defined.",
                   "elapsed-time": "24962",
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
-                  "interval-capacity": 500,
                   "suspect-interval-flag": true,
                   "timestamp": "2026-04-01T06:56:02.0+00:00",
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -4438,8 +4441,8 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
-                    "ses": 0,
                     "interval-capacity": 500,
+                    "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
                     "rf-temp-max": -99,
@@ -5764,6 +5767,7 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -5865,6 +5869,7 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -5966,6 +5971,7 @@
                   "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                   "suspect-interval-flag": false,
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -6073,6 +6079,7 @@
                   "suspect-interval-flag": true,
                   "timestamp": "2026-04-01T06:55:59.0+00:00",
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
@@ -6175,6 +6182,7 @@
                   "suspect-interval-flag": true,
                   "timestamp": "2026-04-01T06:55:59.0+00:00",
                   "performance-data": {
+                    "interval-capacity": 500,
                     "ses": 0,
                     "xpd-max": -99,
                     "tx-level-max": 23,
