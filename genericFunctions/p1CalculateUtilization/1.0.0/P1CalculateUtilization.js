@@ -63,6 +63,7 @@ function validateResultCC(input) {
   } catch (error) {
     return false
   }
+
   return true;
 }
 
@@ -224,7 +225,7 @@ const p1CalculateUtilization = (input) => {
 
     if (resultCC == null) {
       return ERRORS.RESULT_CC_NOT_PROVIDED;
-    } else if (validateResultCC(resultCC)) {
+    } else if (!validateResultCC(resultCC)) {
       return ERRORS.RESULT_CC_INVALID;
     }
 
