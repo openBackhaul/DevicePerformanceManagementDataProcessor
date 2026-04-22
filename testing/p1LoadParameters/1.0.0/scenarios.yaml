@@ -61,6 +61,20 @@ scenarios:
         type: "return"
         fixture: "configFile.json"
 
+  - id: "okFunctionWithoutSubFunctionList"
+    description: "Should  return expected parameters + configFile"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "null.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"
+
   # -------------------------
   # input validation
   # -------------------------
