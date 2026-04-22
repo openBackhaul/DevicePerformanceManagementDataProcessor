@@ -44,19 +44,26 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   for (const step of processingSteps) {
     const m = mockByStepId.get(step.stepId);
 
-
     if (!m) {
       throw new Error(`Missing mock for step '${step.stepId}'`);
     }
 
+    const isAsync = step.isAsync === true;
+
     jest.doMock(step.modulePath, () => {
-      const fn = jest.fn(async () => {
+      const fn = jest.fn(() => {
         if (m.type === "return") {
-          return readJson(path.join(scenarioDir, m.fixture));
+          const val = readJson(path.join(scenarioDir, m.fixture));
+          return isAsync ? Promise.resolve(val) : val;
         }
+
         if (m.type === "throw") {
+          if (isAsync) {
+            return Promise.reject(m.error);
+          }
           throw m.error;
         }
+
         throw new Error(`Unknown mock type '${m.type}' for step '${step.stepId}'`);
       });
 
