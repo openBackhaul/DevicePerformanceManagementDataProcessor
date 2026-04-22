@@ -12,18 +12,32 @@ requestor -> calBh : { {historicalPerformanceData},\n{status} }
 activate calBh
 
   note over calBh
-    summarize total-bytes-output for each hour of the day
-    summarize values in [/interface-status/15-minute-values-by-day={day}/15-minute-values-by-hour=*/15-minute-values/total-bytes-output]
+    IF granularityPeriod == 24-HOURS
+  end note
+
+  note left calBh
+    ELSE terminate
+  end note
+  requestor <-- calBh : { 'PM data of wrong granularity provided' }
+
+  note over calBh
+    THEN
   end note
 
   note over calBh
-    identify the hour with the highest sum of total-bytes-output as busy hour
+    aggregateTotalBytesOutput
+    for every hour of the day
   end note
 
   note over calBh
-    transfer all values of the period-end-time attribute of the 15-minute-values into the /busy-hour/period-end-time-list
+    identifyBusyHour by
+    highest totalBytesOutput
   end note
 
+  note over calBh
+    calculateBusyHourKpis and add
+    them to {historicalPerformanceData}
+  end note
 
 requestor <-- calBh : { {historicalPerformanceData} }
 deactivate calBh

@@ -16,7 +16,7 @@ participant "p1Remove\nDefaultValues" as p1RemDefault
 cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n[transmissionModeList] }
 activate iterateSlices
 
-  loop FOR [historicalPerformanceDataList]
+  loop FOR [historicalPerformanceDataList]   (15min slices to be processed first)
 
     iterateSlices -> intCC : { [time-xstates-list],\n[transmission-mode-list] }
     activate intCC

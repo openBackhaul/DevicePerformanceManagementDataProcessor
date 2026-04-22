@@ -2,6 +2,9 @@
 
 Iterates through all 15-min PM values at the EthernetContainer and calls the processing Functions.  
 
+**Iteration order**  
+The key attributes for iterating through the PM slices are periodEndTime and granularity.  
+It must be ensured that the function first iterates through all 15min PM slices, before potentially contained 24h PM slices are processed.  
 
 ### Diagram
 

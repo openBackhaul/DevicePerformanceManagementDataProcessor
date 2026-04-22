@@ -17,7 +17,7 @@ participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{interfaceStatus} }
 activate iterateSlices
 
-  loop FOR [historicalPerformanceDataList]
+  loop FOR [historicalPerformanceDataList]   (15min slices to be processed first)
 
     iterateSlices -> intCC : { {performance-data} }
     activate intCC

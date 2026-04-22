@@ -50,9 +50,43 @@ x-javascript-interface:
                 - 'historicalPerformanceDataList invalid'
                 - 'interfaceStatus not provided'
                 - 'interfaceStatus invalid'
+                - 'PM data of wrong granularity provided'
                 - 'PM data categorization failed'
                 - 'general processing error'
     processing:
+      checkGranularity:
+        summary: 'Checks for 15-minute granularity'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - granularity
+                properties:
+                  granularity:
+                    type: string
+                    description: >
+                      'Granularity of the currently processed PM data
+                      from [/categorize-data-volume/historical-performance-data/granularity-period]'
+        output:
+          success:
+            description: '15-minute granularity confirmed'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - is-of-15-minute-granularity
+                  properties:
+                    is-of-15-minute-granularity:
+                      type: boolean
+                      description: >
+                        'Indicates whether the currently processed PM data is of 15-minute granularity
+                        IF {$input#/granularity} == {ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN}
+                          THEN from {true}
+                          ELSE from {false}'
       categorizePmData:
         summary: 'Categorizes the 15-minute-values by day and hour'
         input:
