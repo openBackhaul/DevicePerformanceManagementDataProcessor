@@ -13,12 +13,14 @@ module:
 
 processingSteps:
   - stepId: "onf.readControlConstruct"
-    modulePath: "../../infra/onf/onfAdapter.js"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
     exportName: "readControlConstruct"
+    isAsync: true
 
   - stepId: "config.loadConfigFile"
-    modulePath: "../../utils/config"
+    modulePath: "../../server/utils/config"
     exportName: "loadConfigFile"
+    isAsync: false
 
 errorMapping: {}
 
@@ -146,7 +148,7 @@ scenarios:
     inputFixture: "input.json"
     expected:
       type: "error"
-      errorEnum: "functionName not found in configFile"
+      errorEnum: "Function profile not found for doesNotExist"
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
