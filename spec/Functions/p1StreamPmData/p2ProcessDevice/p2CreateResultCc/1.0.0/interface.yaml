@@ -402,7 +402,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'status at the interface after iterating through PM data of 15-min periods in already processed batches
-                      from [/create-result-cc/status-data={p2IterateEcPmSlices}/status/interface-status={ethernet-container-uuid}]'
+                      from [/create-result-cc/status-data=p2IterateEcPmSlices/status/interface-status={ethernet-container-uuid}]'
         output:
           success:
             description: 'historicalPerformanceDataList processed'

@@ -41,7 +41,7 @@ create-result-cc:
                     type: array
                     x-key: uuid
                     description: >
-                      'status at the interface after iterating through PM data of 15-min periods
+                      'Status at the interface after iterating through PM data of 15-min periods
                       if new interface, must be initialized before calling p2IterateEcPmSlices
                       overwritten by {$p2IterateEcPmSlices.output#/interface-status}'
                     items:
