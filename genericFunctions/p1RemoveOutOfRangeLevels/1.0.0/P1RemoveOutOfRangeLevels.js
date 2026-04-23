@@ -39,6 +39,12 @@ function validateParameters(paramArray) {
     parameterStruct[paramElem['parameter-name']] = paramElem['value'];
   });
 
+  paramAllowed.forEach(paramElem => {
+    if (!parameterStruct.hasOwnProperty(paramElem)) {
+      res = false;
+    }
+  });
+
   return res;
 }
 
