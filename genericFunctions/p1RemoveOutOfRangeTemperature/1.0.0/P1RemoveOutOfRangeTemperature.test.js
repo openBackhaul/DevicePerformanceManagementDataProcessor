@@ -39,10 +39,10 @@ const parameterStructWithSameValue = {
 }
 
 describe('p1RemoveOutOfRangeTemperature', () => {
-  let dataFile = fs.readFileSync(__dirname + '/equipmentDataSIAE.json', 'utf8');
+  let dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
 
-  let dataWrongFile = fs.readFileSync(__dirname + '/equipmentDataSIAEwrong.json', 'utf8');
+  let dataWrongFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEwrong.json', 'utf8');
   let equipmentWrongData = JSON.parse(dataWrongFile);
 
   describe('Positive Tests @positive', () => {
