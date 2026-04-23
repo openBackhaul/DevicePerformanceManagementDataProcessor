@@ -117,10 +117,10 @@ describe('p1CalculateIntervalCapacity', () => {
     });
 
     test('Testing using the same capcity value = 200', () => {
-      let dataFile = fs.readFileSync(__dirname + '/dataset/transmissionModeList1.json', 'utf8');
+      let dataFile = fs.readFileSync(__dirname + '/datasets/transmissionModeList1.json', 'utf8');
       let transmissionMode = JSON.parse(dataFile);
 
-      dataFile = fs.readFileSync(__dirname + '/dataset/timeXstates1.json', 'utf8');
+      dataFile = fs.readFileSync(__dirname + '/datasets/timeXstates1.json', 'utf8');
       let timeXstates = JSON.parse(dataFile);
 
       const result = p1CalculateIntervalCapacity({
@@ -132,10 +132,10 @@ describe('p1CalculateIntervalCapacity', () => {
     });
 
     test('Testing using different values of capacity', () => {
-      let dataFile = fs.readFileSync(__dirname + '/dataset/transmissionModeList2.json', 'utf8');
+      let dataFile = fs.readFileSync(__dirname + '/datasets/transmissionModeList2.json', 'utf8');
       let transmissionMode = JSON.parse(dataFile);
 
-      dataFile = fs.readFileSync(__dirname + '/dataset/timeXstates1.json', 'utf8');
+      dataFile = fs.readFileSync(__dirname + '/datasets/timeXstates1.json', 'utf8');
       let timeXstates = JSON.parse(dataFile);
 
       const result = p1CalculateIntervalCapacity({
