@@ -57,6 +57,13 @@ iterate-ec-pm-slices:
                 description: >
                   'Sum of errored and dropped frames on the egress
                   requires {$p1CalculateEthernetKpis}'
+              # TODO: müssten hier nicht eigentlich auch die BH KPIs angegeben werden oder zumindest das top-level busy-hour object?
+              # busy-hour:
+              #   type: object
+              #   description: >
+              #     'busy hour performance indicators
+              #     requires {$p1CalculateBusyHourPerformanceIndicators}'
+
     aggregation-group:
       type: object
       description: >
