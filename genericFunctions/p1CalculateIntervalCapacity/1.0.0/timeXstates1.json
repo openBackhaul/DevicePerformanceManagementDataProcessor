@@ -1,0 +1,42 @@
+[
+    {
+        "time-xstate-sequence-number": 6,
+        "time": 1,
+        "transmission-mode": "56000-512-v2"
+    },
+    {
+        "time-xstate-sequence-number": 7,
+        "time": 30,
+        "transmission-mode": "56000-1024-v2"
+    },
+    {
+        "time-xstate-sequence-number": 4,
+        "time": 20,
+        "transmission-mode": "56000-128-v2"
+    },
+    {
+        "time-xstate-sequence-number": 5,
+        "time": 5,
+        "transmission-mode": "56000-256-v2"
+    },
+    {
+        "time-xstate-sequence-number": 2,
+        "time": 10,
+        "transmission-mode": "56000-32-v2"
+    },
+    {
+        "time-xstate-sequence-number": 3,
+        "time": 20,
+        "transmission-mode": "56000-64-v2"
+    },
+    {
+        "time-xstate-sequence-number": 0,
+        "time": 15,
+        "transmission-mode": "56000-4-v2"
+    },
+    {
+        "time-xstate-sequence-number": 1,
+        "time": 10,
+        "transmission-mode": "56000-16-v2"
+    }
+]

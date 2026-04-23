@@ -1,7 +1,7 @@
 {
-  "name": "p1-calculate-ai-capacity",
+  "name": "p1-formatting-output-apt",
   "version": "1.0.0",
-    "scripts": {
+  "scripts": {
     "test": "jest"
   },
   "devDependencies": {

@@ -1,8 +1,9 @@
 const ERR = require('./ErrorsEnum');
 
-
 function calculateTransmitTraffic(totalBytesOutput, timePeriod) {
-  if (totalBytesOutput == null) throw new Error(ERR.TOTAL_BYTES_OUTPUT_NOT_PROVIDED);
+  if (totalBytesOutput == null) {
+    throw new Error(ERR.TOTAL_BYTES_OUTPUT_NOT_PROVIDED);
+  }
 
   const bytes = Number(totalBytesOutput);
   const time = Number(timePeriod);
@@ -21,7 +22,9 @@ function calculateTransmitTraffic(totalBytesOutput, timePeriod) {
 }
 
 function calculateReceiveTraffic(totalBytesInput, timePeriod) {
-  if (totalBytesInput == null) throw new Error(ERR.TOTAL_BYTES_INPUT_NOT_PROVIDED);
+  if (totalBytesInput == null) {
+    throw new Error(ERR.TOTAL_BYTES_INPUT_NOT_PROVIDED);
+  }
 
   const bytes = Number(totalBytesInput);
   const time = Number(timePeriod);
@@ -172,8 +175,6 @@ function p1CalculateEthernetKpis(input) {
     throw new Error(ERR.GENERAL_ERROR);
   }
 }
-
-
 
 module.exports = {
   p1CalculateEthernetKpis
