@@ -5,7 +5,6 @@
 # - spec/Functions/p1StreamPmData/p1LoadParameters/1.0.0/variables.yaml
 #
 
-
 module:
   functionUnderTest:
     modulePath: "../../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
