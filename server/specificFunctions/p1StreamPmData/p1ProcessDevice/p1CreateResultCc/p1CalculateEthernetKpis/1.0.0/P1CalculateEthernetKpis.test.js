@@ -1,5 +1,5 @@
 const { p1CalculateEthernetKpis } = require('./P1CalculateEthernetKpis');
-const ERR = require('./ErrorsEnum');
+const ERRORS = require('./ErrorsEnum');
 const fs = require('fs');
 
 describe('p1CalculateEthernetKpis', () => {
@@ -30,9 +30,9 @@ describe('p1CalculateEthernetKpis', () => {
   });
 
   test('should throw error if historicalPerformanceData missing', () => {
-    expect(() => {
-      p1CalculateEthernetKpis({});
-    }).toThrow(ERR.HISTORICAL_DATA_NOT_PROVIDED);
+    const result = p1CalculateEthernetKpis({});
+
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_NOT_PROVIDED);
   });
 
   test('should throw error for invalid totalBytesOutput', () => {
@@ -49,9 +49,9 @@ describe('p1CalculateEthernetKpis', () => {
         }
       ]
     };
-
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TOTAL_BYTES_OUTPUT_INVALID);
+    
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.TRANSMIT_TRAFFIC_ERROR);
   });
 
   test('should throw error for missing timePeriod', () => {
@@ -64,8 +64,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TIME_PERIOD_NOT_PROVIDED);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.TRANSMIT_TRAFFIC_ERROR);
   });
 
   test('should throw error for frame loss input missing', () => {
@@ -80,8 +80,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.ERRORED_FRAMES_INPUT_NOT_PROVIDED);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.FRAME_LOSS_INPUT_ERROR);
   });
 
   test('should handle multiple records', () => {
@@ -132,8 +132,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TIME_PERIOD_INVALID);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.TRANSMIT_TRAFFIC_ERROR);
   });
 
   test('Read from real data, everything is ok', () => {
@@ -152,8 +152,8 @@ describe('p1CalculateEthernetKpis', () => {
       'historical-performance-data': []
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_INCOMPLETE);
   });
 
   test('should throw error for invalid totalBytesInput', () => {
@@ -171,8 +171,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TOTAL_BYTES_INPUT_INVALID);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.RECEIVE_TRAFFIC_ERROR);
   });
 
   test('should throw error for missing totalBytesOutput', () => {
@@ -189,8 +189,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TOTAL_BYTES_OUTPUT_NOT_PROVIDED);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.TRANSMIT_TRAFFIC_ERROR);
   });
 
   test('should throw error for missing totalBytesInput', () => {
@@ -207,8 +207,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.TOTAL_BYTES_INPUT_NOT_PROVIDED);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.RECEIVE_TRAFFIC_ERROR);
   });
 
   test('should throw error for invalid errored-frames-input', () => {
@@ -226,8 +226,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.ERRORED_FRAMES_INPUT_INVALID);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.FRAME_LOSS_INPUT_ERROR);
   });
 
   test('should throw error for invalid dropped-frames-output', () => {
@@ -245,8 +245,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.FRAME_LOSS_OUTPUT_ERROR);
   });
 
   test('should throw error for missing errored-frames-output', () => {
@@ -263,8 +263,8 @@ describe('p1CalculateEthernetKpis', () => {
       ]
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.FRAME_LOSS_OUTPUT_ERROR);
   });
 
   test('should throw error if historicalPerformanceData is not an array', () => {
@@ -272,8 +272,8 @@ describe('p1CalculateEthernetKpis', () => {
       'historical-performance-data': "invalid"
     };
 
-    expect(() => p1CalculateEthernetKpis(input))
-      .toThrow(ERR.HISTORICAL_DATA_INCOMPLETE);
+    const result = p1CalculateEthernetKpis(input);
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_INCOMPLETE);
   });
 
   test('should handle negative errored-frames-input as 0', () => {
