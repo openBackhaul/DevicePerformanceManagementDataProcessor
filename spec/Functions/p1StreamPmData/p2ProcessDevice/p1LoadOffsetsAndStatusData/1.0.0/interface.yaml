@@ -36,7 +36,7 @@ x-javascript-interface:
                   description: >
                     'Offsets
                     from [/load-offsets-and-status-data/offsets]'
-                statusData:
+                status-data:
                   type: array
                   description: >
                     'StatusData
