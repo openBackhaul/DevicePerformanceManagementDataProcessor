@@ -60,18 +60,10 @@ note over p2ProcessPm
     - statusData
 end note
 
-note over p2ProcessPm #LightGreen
-  all files checked
-end note
-
 note over p1LoadStatus
   - retrieveStatusDataFromDs for functions:
     - p1CategorizeDataVolume
       (total-bytes-output of already processed batches in buckets)
-end note
-
-note over p1LoadStatus #LightGreen
-  all files checked
 end note
 
 note over p2AddRaw
@@ -79,19 +71,10 @@ note over p2AddRaw
     - relevant-granularities
 end note
 
-note over p2AddRaw #LightGreen
-  all files checked
-  but Katharina asked to fix redundant uuids in offsets
-end note
-
 note over p2filterPm
   - Remove from own input interface:
     -  relevant-granularities
   - Remove deleting of 15-min or 24-hours granularity
-end note
-
-note over p2filterPm #LightGreen
-  all files checked
 end note
 
 note over p2CreateResultCc
@@ -105,10 +88,6 @@ note over p2CreateResultCc
     - statusData
 end note
 
-note over p2CreateResultCc #LightGreen
-  - all files checked
-end note
-
 note over ecSlices
   - Complement own input interface by:
     - interfaceStatus
@@ -116,10 +95,6 @@ note over ecSlices
   - Add interface to p1CalculateBusyHourPerformanceIndicators
   - Complement own output interface by:
     - interfaceStatus
-end note
-
-note over ecSlices #LightGreen
-  all files checked
 end note
 
 note over p1CatDV
@@ -134,33 +109,19 @@ note over p1CatDV
   - Write buckets back into statusData
 end note
 
-note over p1CatDV #LightGreen
-  all files checked
-end note
-
 note over p1CalcBH
   - Read from statusData:
     - buckets with total-bytes-output values
-  - Bucket with highest sum of total-bytes-output values defines busy hour
+  - Calculate sum of total-bytes-output values for each bucket
+  - Highest sum of total-bytes-output values defines busy hour
   - Calculate KPIs for busy hour
   - Write busy hour KPIs into 24-hours values
-end note
-
-note over p1CalcBH #Yellow
-  - calculation of the busy hour KPIs is missing
-    - plantuml to be created from busyHourKpiCalculation.md
-    - interface.yaml to be complemented by processing steps
-    - variables.yaml to be complemented with "from" references
 end note
 
 note over p2Store
   - Complement own input interface by:
     - statusData
   - storeStatusData
-end note
-
-note over p2Store #LightGreen
-  all files checked
 end note
 
 == End of Changes ==

@@ -14,6 +14,19 @@ cur -> p1CatDataVo : { {historicalPerformanceData},\n{interfaceStatus} }
 activate p1CatDataVo
 
   note over p1CatDataVo
+    IF granularityPeriod == 15-MIN
+  end note
+
+  note left p1CatDataVo
+    ELSE terminate
+  end note
+  cur <-- p1CatDataVo : { 'PM data of wrong granularity provided' }
+
+  note over p1CatDataVo
+    THEN
+  end note
+
+  note over p1CatDataVo
     parse {day} from [/historical-performance-data/period-end-time]
   end note
 
