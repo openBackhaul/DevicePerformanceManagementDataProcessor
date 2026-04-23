@@ -56,7 +56,7 @@ scenarios:
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
-        fixture: "null.json"
+        fixture: "nullObject.json"
       - stepId: "config.loadConfigFile"
         type: "return"
         fixture: "configFile.json"
@@ -70,7 +70,7 @@ scenarios:
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
-        fixture: "null.json"
+        fixture: "nullObject.json"
       - stepId: "config.loadConfigFile"
         type: "return"
         fixture: "configFile.json"
@@ -106,7 +106,7 @@ scenarios:
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
-        fixture: "null.json"
+        fixture: "nullObject.json"
       - stepId: "config.loadConfigFile"
         type: "throw"
         error: "configFile not found or not accessible"
@@ -120,7 +120,7 @@ scenarios:
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
-        fixture: "null.json"
+        fixture: "nullObject.json"
       - stepId: "config.loadConfigFile"
         type: "throw"
         error: "configFile is not valid JSON"
@@ -134,7 +134,7 @@ scenarios:
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
-        fixture: "null.json"
+        fixture: "nullObject.json"
       - stepId: "config.loadConfigFile"
         type: "throw"
         error: "configFile does not conform to the expected schema"
@@ -148,7 +148,7 @@ scenarios:
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
-        fixture: "null.json"
+        fixture: "nullObject.json"
       - stepId: "config.loadConfigFile"
         type: "throw"
         error: "unknown error occurred"
