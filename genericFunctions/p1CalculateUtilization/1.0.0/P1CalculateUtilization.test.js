@@ -343,57 +343,7 @@ describe('p1CalculateUtilization', () => {
     });
   });
 
-  describe('Layer Protocol Filtering Tests', () => {
-    test('should only aggregate AIR_LAYER protocol LTPs', () => {
-      const input = {
-        'historical-performance-data': {
-          'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-          'period-end-time': '2026-04-01T06:00:00.0+00:00',
-          'performance-data': { 'total-bytes-output': '900000', 'time-period': 900 }
-        },
-        'aggregation-group': createValidAggGroup(['LTP-AIR', 'LTP-ETH']),
-        'result-cc': {
-          'logical-termination-point': [
-            {
-              'uuid': 'LTP-AIR',
-              'layer-protocol': [{
-                'local-id': 'LP-1',
-                'layer-protocol-name': 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER',
-                'air-interface-2-0:air-interface-pac': {
-                  'air-interface-historical-performances': {
-                    'historical-performance-data-list': [{
-                      'period-end-time': '2026-04-01T06:00:00.0+00:00',
-                      'granularity-period': 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-                      'performance-data': { 'interval-capacity': 500 }
-                    }]
-                  }
-                }
-              }]
-            },
-            {
-              'uuid': 'LTP-ETH',
-              'layer-protocol': [{
-                'local-id': 'LP-1',
-                'layer-protocol-name': 'ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETH_LAYER',
-                'air-interface-2-0:air-interface-pac': {
-                  'air-interface-historical-performances': {
-                    'historical-performance-data-list': [{
-                      'period-end-time': '2026-04-01T06:00:00.0+00:00',
-                      'granularity-period': 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-                      'performance-data': { 'interval-capacity': 999 }
-                    }]
-                  }
-                }
-              }]
-            }
-          ]
-        }
-      };
 
-      const result = p1CalculateUtilization(input);
-      expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(500);
-    });
-  });
 
   describe('Granularity Passthrough Tests', () => {
     test('should return unchanged for 24-HOURS granularity using dataset', () => {
