@@ -25,31 +25,35 @@ function validateResultCC(input) {
           Object.hasOwn(ltpObj, 'layer-protocol')) {
 
           if (Array.isArray(ltpObj['layer-protocol'])) {
-            ltpObj['layer-protocol'].forEach(lpObj => {
-              if (Object.hasOwn(lpObj, 'local-id') &&
-                Object.hasOwn(lpObj, 'layer-protocol-name') &&
-                Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')) {
-                const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
-                if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
-                  Object.hasOwn(aiPac['air-interface-historical-performances'], 'historical-performance-data-list') &&
-                  Array.isArray(aiPac['air-interface-historical-performances']['historical-performance-data-list'])) {
-                  const hPerf = aiPac['air-interface-historical-performances']['historical-performance-data-list'];
-                  hPerf.forEach(perfData => {
-                    if (Object.hasOwn(perfData, 'granularity-period') &&
-                      Object.hasOwn(perfData, 'period-end-time') &&
-                      Object.hasOwn(perfData, 'performance-data') && Object.hasOwn(perfData['performance-data'], 'interval-capacity')) {
-                      // Validation passed
-                    } else {
-                      throw new Error(ERRORS.RESULT_CC_INVALID);
-                    }
-                  });
+            const lp = ltpObj['layer-protocol'][0];
+            if (lp['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER") {
+              ltpObj['layer-protocol'].forEach(lpObj => {
+                if (Object.hasOwn(lpObj, 'local-id') &&
+                  Object.hasOwn(lpObj, 'layer-protocol-name') &&
+                  Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')) {
+                  const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
+                  if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
+                    Object.hasOwn(aiPac['air-interface-historical-performances'], 'historical-performance-data-list') &&
+                    Array.isArray(aiPac['air-interface-historical-performances']['historical-performance-data-list'])) {
+                    const hPerf = aiPac['air-interface-historical-performances']['historical-performance-data-list'];
+                    hPerf.forEach(perfData => {
+                      if (Object.hasOwn(perfData, 'granularity-period') &&
+                        Object.hasOwn(perfData, 'period-end-time') &&
+                        Object.hasOwn(perfData, 'performance-data') && Object.hasOwn(perfData['performance-data'], 'interval-capacity')) {
+                        // Validation passed
+                      } else {
+                        throw new Error(ERRORS.RESULT_CC_INVALID);
+                      }
+                    });
+                  } else {
+                    throw new Error(ERRORS.RESULT_CC_INVALID);
+                  }
                 } else {
                   throw new Error(ERRORS.RESULT_CC_INVALID);
                 }
-              } else {
-                throw new Error(ERRORS.RESULT_CC_INVALID);
-              }
-            });
+              });
+            }
+            // else // Do nothing
           } else {
             throw new Error(ERRORS.RESULT_CC_INVALID);
           }
@@ -108,7 +112,8 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
 
     // Reduce function to calculate all AirInterfaceCapacity for the aggration
     const totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
-      const lp = currentLTP['layer-protocol'];
+      let lp = currentLTP['layer-protocol'];
+      lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER" );
       const resLP = lp.reduce((accLP, currentLP) => {
         // Pick-up historical performance data array
         const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
@@ -265,8 +270,6 @@ const p1CalculateUtilization = (input) => {
     } else {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
-
-
 
     // Return value
     return returnData;
