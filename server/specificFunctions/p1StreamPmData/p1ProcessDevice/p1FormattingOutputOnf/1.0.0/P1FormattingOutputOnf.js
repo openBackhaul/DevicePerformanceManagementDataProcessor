@@ -54,7 +54,7 @@ function createOutputFromResultCc(resultCc) {
     throw ERRORS.RESULT_CC_INVALID;
   }
 
-  return JSON.parse(JSON.stringify(resultCc)); 
+  return JSON.parse(JSON.stringify(resultCc));
 }
 
 
@@ -91,7 +91,7 @@ function applyFilter(data, keys) {
   const [currentKey, ...restKeys] = keys;
 
   if (Array.isArray(data)) {
-  
+
     return data
       .map(item => applyFilter(item, keys))
       .filter(item => item !== undefined);
