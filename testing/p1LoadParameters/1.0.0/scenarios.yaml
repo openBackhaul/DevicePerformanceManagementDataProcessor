@@ -43,7 +43,7 @@ scenarios:
         fixture: "configFile.json"
 
   # -------------------------
-  # fallback path (minimal)
+  # fallback path 
   # -------------------------
 
   - id: "okFallbackToLoadConfigFile"
@@ -93,7 +93,7 @@ scenarios:
         fixture: "configFile.json"
 
   # -------------------------
-  # file-access / config loading errors (spec enums)
+  # file-access / config loading errors 
   # -------------------------
 
   - id: "errConfigFileNotFoundOrNotAccessible"
@@ -161,7 +161,7 @@ scenarios:
     inputFixture: "input.json"
     expected:
       type: "error"
-      errorEnum: "Function profile not found for doesNotExist"
+      errorEnum: "Function profile not found for dummyFunction"
     mocks:
       - stepId: "onf.readControlConstruct"
         type: "return"
