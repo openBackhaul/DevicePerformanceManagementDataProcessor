@@ -124,14 +124,14 @@ function mapAirInterfaceConfiguration(config, capability) {
     'configured-tx-power': config?.['tx-power'],
 
     'configured-modulation-minimum':
-      resolveTransmissionMode(config?.['transmission-mode-min'], capability),
+      checkTransmissionModeNullability(config?.['transmission-mode-min'], capability),
 
     'configured-modulation-maximum':
-      resolveTransmissionMode(config?.['transmission-mode-max'], capability)
+      checkTransmissionModeNullability(config?.['transmission-mode-max'], capability)
   };
 }
 
-function resolveTransmissionMode(modeName, capability) {
+function checkTransmissionModeNullability(modeName, capability) {
   if (!modeName || !capability) {
     return null;
   }
