@@ -1,8 +1,6 @@
 const p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
 const ERRORS = require ('./ErrorsEnum');
 
-
-
 describe('Error Cases @negative', () => {
 
   test('Passing null, return general error @negative', () => {
@@ -39,7 +37,7 @@ describe('Error Cases @negative', () => {
     expect(p1RemoveDefaultValues({
       'input-object': {}
     }))
-    .toBe(ERRORS.PARAMS_NOT_PROVIDED);
+    .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Passing properties but both empty objects, return general error @negative', () => {
@@ -63,7 +61,7 @@ describe('Error Cases @negative', () => {
       'parameters': {},
       'input-object': { 'abc-parameter': 0,},
     }))
-    .toBe(ERRORS.PARAMS_INVALID);
+    .toBe(ERRORS.PARAM_INVALID);
   });
 });
 
