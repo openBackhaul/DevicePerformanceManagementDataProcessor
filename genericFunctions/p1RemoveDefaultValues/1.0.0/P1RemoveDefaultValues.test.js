@@ -1,6 +1,79 @@
 const p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
 const ERRORS = require ('./ErrorsEnum');
 
+
+const parameterStruct1 = {
+  "function-name": "p1GenericFunction",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lower-tx-level-limit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "upper-tx-level-limit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "lower-rx-level-limit",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "1000"
+    },
+    {
+      "parameter-name": "upper-rx-level-limit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "10000"
+    }
+  ],
+  "sub-function": []
+};
+
+const parameterStruct2 = {
+  "function-name": "p1GenericFunction",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "abc-parameter",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "123-parameter",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "20"
+    },
+    {
+      "parameter-name": "xyz-parameter",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "30"
+    },
+    {
+      "parameter-name": "other-parameter",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "SIAE"
+    },
+    {
+      "parameter-name": "default-parameter",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "Milano"
+    }
+  ]
+};
+
+
 describe('Error Cases @negative', () => {
 
   test('Passing null, return general error @negative', () => {
@@ -69,8 +142,8 @@ describe('Positive Tests @positive', () => {
 
   test('Passing parameters and input-object property, return cleaned-object as empty object @positive', () => {
     expect(p1RemoveDefaultValues({
-      'parameters': { 'abc-parameter': 0 },
-      'input-object': { 'abc-parameter': 0}
+      'parameters': parameterStruct1,
+      'input-object': { 'lower-tx-level-limit': "10"}
     }))
     .toStrictEqual({
       "cleaned-object": {}
@@ -79,13 +152,7 @@ describe('Positive Tests @positive', () => {
 
   test('Passing parameters and input-object property, return cleaned object without "default-parameter" @positive', () => {
     expect(p1RemoveDefaultValues({
-      'parameters': {
-        'abc-parameter': 10,
-        '123-parameter': 20,
-        'xyz-parameter': 30,
-        'other-parameter': "SIAE",
-        'default-parameter': "Milano"
-      },
+      'parameters': parameterStruct2,
       'input-object': {
         'abc-parameter': 1,
         '123-parameter': 2,
@@ -106,13 +173,7 @@ describe('Positive Tests @positive', () => {
 
   test('Passing parameters and input-object property, return cleaned object without "default-parameter" @positive', () => {
     expect(p1RemoveDefaultValues({
-      'parameters': {
-        'abc-parameter': 10,
-        '123-parameter': 20,
-        'xyz-parameter': 30,
-        'other-parameter': "SIAE",
-        'default-parameter': "Milano"
-      },
+      'parameters': parameterStruct2,
       'input-object': {
         'abc-parameter': 1,
         '123-parameter': 2,
@@ -132,13 +193,7 @@ describe('Positive Tests @positive', () => {
 
   test('Passing parameters and input-object property, return cleaned-object without "default-parameter" @positive', () => {
     expect(p1RemoveDefaultValues({
-      'parameters': {
-        'abc-parameter': 10,
-        '123-parameter': 20,
-        'xyz-parameter': 30,
-        'other-parameter': "SIAE",
-        'default-parameter': "Milano"
-      },
+      'parameters': parameterStruct2,
       'input-object': {
         'abc-parameter': 10,
         '123-parameter': 20,
@@ -157,7 +212,7 @@ describe('Mutation Detection Tests @mutation', () => {
 
   test('Should NOT mutate original input-object @mutation', () => {
     const original = {
-      'default-parameter': 'value',
+      'default-parameter': 'value',  // that test must be fail
       'other-parameter': 'keep'
     };
 
@@ -176,7 +231,7 @@ describe('Mutation Detection Tests @mutation', () => {
     };
 
     const result = p1RemoveDefaultValues({
-      parameters: { 'default-parameter': 'value' },
+      parameters: { 'default-parameter': 'value' },  // that test must be fail
       'input-object': original
     });
 

@@ -3,6 +3,11 @@ const ERRORS = require ('./ErrorsEnum');
 
 let defaultValuesList = [];
 
+// DAMN JavaScript
+function isThisNaN(value) {
+  return value !== value
+};
+
 function validateParameters(paramArray) {
   let res = true;
   paramArray.forEach(paramElem => {
@@ -14,12 +19,12 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    let paramValue = parseInt(paramElem["value"]);
+    // let paramValue = parseInt(paramElem["value"]);
 
     // Check if is Number or also NaN
-    if (typeof paramValue != "number" || isThisNaN(paramValue)) {
-      return ERRORS.PARAM_INVALID;
-    }
+    // if (typeof paramValue != "number" || isThisNaN(paramValue)) {
+    //   return ERRORS.PARAM_INVALID;
+    // }
 
     const tempStruct = {};
     tempStruct[paramElem['parameter-name']] = paramElem['value'];
@@ -69,31 +74,15 @@ const p1RemoveDefaultValues = (input) => {
       return ERRORS.INPUTOBJ_NOT_PROVIDED;
     }
 
-    if (Object.keys(inputObj).length === 0 && Object.keys(parameters).length === 0) {
-      return ERRORS.GENERAL_ERROR;
-    } else if (Object.keys(inputObj).length === 0) {
-      return ERRORS.INPUTOBJ_INVALID;
-    } else if (Object.keys(parameters).length === 0) {
-      return ERRORS.PARAMS_INVALID;
-    }
-
-    // // Fill default key list
-    // for (const [key, value] of Object.entries(parameters)) {
-    //   defaultValuesList.push({
-    //     'attribute-name': key,
-    //     'attribute-value': value
-    //   });
-    // }
-
     let cleanedObject = JSON.parse(JSON.stringify(inputObj)); // Initializate return value
 
-    for (const [key, value] of Object.entries(parameters)) {
-      if (cleanedObject[key] != undefined) {
-        if (cleanedObject[key] == value) {
-          delete cleanedObject[key];
-        }
+    defaultValuesList.forEach(defaultValue => {
+      const key = Object.keys(defaultValue);
+      if (cleanedObject.hasOwnProperty(key) && 
+        cleanedObject[key] == defaultValue[key]) {
+        delete cleanedObject[key];
       }
-    }
+    })
 
     return {
       "cleaned-object": cleanedObject
