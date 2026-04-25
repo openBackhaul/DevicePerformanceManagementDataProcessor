@@ -1,0 +1,27 @@
+{
+    "logical-termination-point": [
+        {
+            "uuid": "LTP-AIR-1",
+            "layer-protocol": [
+                {
+                    "local-id": "LP-1",
+                    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+                    "air-interface-2-0:air-interface-pac": {
+                        "air-interface-historical-performances": {
+                            "historical-performance-data-list": [
+                                {
+                                    "period-end-time": "2026-04-01T06:00:00.0+00:00",
+                                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                                    "performance-data": {
+                                        "interval-capacity": 1000,
+                                        "time-period": 900
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
