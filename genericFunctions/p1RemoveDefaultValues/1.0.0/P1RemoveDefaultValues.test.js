@@ -226,7 +226,19 @@ describe('Mutation Detection Tests @mutation', () => {
     };
 
     const result = p1RemoveDefaultValues({
-      parameters: { 'default-parameter': 'value' },
+      parameters: {
+        "function-name": "p1GenericFunction",
+        "description": "Generic Description",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "default-parameter",
+            "purpose": "Lower bound of valid values of the transmit level",
+            "owner": "engineering",
+            "value": "value"
+          },
+        ]
+      },
       'input-object': original
     });
 
@@ -240,7 +252,19 @@ describe('Mutation Detection Tests @mutation', () => {
     };
 
     const result = p1RemoveDefaultValues({
-      parameters: { 'default-parameter': 'value' },  // that test must be fail
+      parameters: {
+        "function-name": "p1GenericFunction",
+        "description": "Generic Description",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "default-parameter",
+            "purpose": "Lower bound of valid values of the transmit level",
+            "owner": "engineering",
+            "value": "value"
+          },
+        ]
+      },
       'input-object': original
     });
 
