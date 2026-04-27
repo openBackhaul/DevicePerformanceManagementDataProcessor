@@ -8,7 +8,7 @@ end title
 participant "p2IterateEcPmSlices\n" as requestor
 participant "p1CalculateBusyHour\nPerformanceIndicators" as calBh
 
-requestor -> calBh : { {historicalPerformanceData},\n{status} }
+requestor -> calBh : { {historicalPerformanceData},\n{interfaceStatus} }
 activate calBh
 
   note over calBh
