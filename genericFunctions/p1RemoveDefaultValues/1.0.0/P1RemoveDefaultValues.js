@@ -34,6 +34,7 @@ const p1RemoveDefaultValues = (input) => {
 
     const parameters = input["parameters"];
     const inputObj = input["input-object"];
+
     if (parameters == undefined && inputObj == undefined) {
       return ERRORS.GENERAL_ERROR;
     } else if (parameters == undefined) {
@@ -44,6 +45,12 @@ const p1RemoveDefaultValues = (input) => {
       if (Object.keys(parameters).length === 0 && Object.keys(inputObj).length === 0) {
         return ERRORS.GENERAL_ERROR;
       } else if (Object.keys(parameters).length === 0) {
+        return ERRORS.PARAM_INVALID;
+      } else if (!parameters.hasOwnProperty('parameter')) {
+        return ERRORS.PARAM_INVALID;
+      } else if (!Array.isArray(parameters['parameter'])) {
+        return ERRORS.PARAM_INVALID;
+      } else if (parameters['parameter'].length === 0) {
         return ERRORS.PARAM_INVALID;
       } else if (Object.keys(inputObj).length === 0) {
         return ERRORS.INPUTOBJ_INVALID;

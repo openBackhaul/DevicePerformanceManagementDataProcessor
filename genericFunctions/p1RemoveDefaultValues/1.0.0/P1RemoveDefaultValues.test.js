@@ -77,17 +77,17 @@ describe('Error Cases @negative', () => {
 
   test('Passing null, return general error @negative', () => {
     expect(p1RemoveDefaultValues(null))
-    .toBe(ERRORS.GENERAL_ERROR);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('Passing undefined, return general error @negative', () => {
     expect(p1RemoveDefaultValues(undefined))
-    .toBe(ERRORS.GENERAL_ERROR);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('Passing empty object, return general error @negative', () => {
     expect(p1RemoveDefaultValues({}))
-    .toBe(ERRORS.GENERAL_ERROR);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('Passing both undefined, return general error @negative', () => {
@@ -95,21 +95,21 @@ describe('Error Cases @negative', () => {
       'parameters': undefined,
       'input-object': undefined,
     }))
-    .toBe(ERRORS.GENERAL_ERROR);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('Passing only parameters property, return input object not provided @negative', () => {
     expect(p1RemoveDefaultValues({
       'parameters': {}
     }))
-    .toBe(ERRORS.INPUTOBJ_NOT_PROVIDED);
+      .toBe(ERRORS.INPUTOBJ_NOT_PROVIDED);
   });
 
   test('Passing only input-object property, return parameter not provided @negative', () => {
     expect(p1RemoveDefaultValues({
       'input-object': {}
     }))
-    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+      .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Passing properties but both empty objects, return general error @negative', () => {
@@ -117,23 +117,33 @@ describe('Error Cases @negative', () => {
       'parameters': {},
       'input-object': {},
     }))
-    .toBe(ERRORS.GENERAL_ERROR);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('Passing only input-object property, return input object not provided @negative', () => {
     expect(p1RemoveDefaultValues({
-      'parameters': { 'abc-parameter': 0,},
+      'parameters': parameterStruct1,
       'input-object': {},
     }))
-    .toBe(ERRORS.INPUTOBJ_INVALID);
+      .toBe(ERRORS.INPUTOBJ_INVALID);
   });
 
   test('Passing only input-object and empty parameters, return parameter invalid @negative', () => {
     expect(p1RemoveDefaultValues({
       'parameters': {},
-      'input-object': { 'abc-parameter': 0,},
+      'input-object': { 'abc-parameter': 0, },
     }))
-    .toBe(ERRORS.PARAM_INVALID);
+      .toBe(ERRORS.PARAM_INVALID);
+  });
+
+  test('Passing only input-object and empty parameters, return parameter invalid @negative', () => {
+    expect(p1RemoveDefaultValues({
+      'parameters': {
+        'parameter': {},
+      },
+      'input-object': { 'abc-parameter': 0, },
+    }))
+      .toBe(ERRORS.PARAM_INVALID);
   });
 });
 
@@ -142,11 +152,11 @@ describe('Positive Tests @positive', () => {
   test('Passing parameters and input-object property, return cleaned-object as empty object @positive', () => {
     expect(p1RemoveDefaultValues({
       'parameters': parameterStruct1,
-      'input-object': { 'lower-tx-level-limit': "10"}
+      'input-object': { 'lower-tx-level-limit': "10" }
     }))
-    .toStrictEqual({
-      "cleaned-object": {}
-    });
+      .toStrictEqual({
+        "cleaned-object": {}
+      });
   });
 
   test('Passing parameters and input-object property, return cleaned object without "default-parameter" @positive', () => {
@@ -160,14 +170,14 @@ describe('Positive Tests @positive', () => {
         'default-parameter': "Milano"
       }
     }))
-    .toStrictEqual({
-      "cleaned-object": {
-        'abc-parameter': 1,
-        '123-parameter': 2,
-        'xyz-parameter': 3,
-        'other-parameter': "Lorenzo"
-      }
-    });
+      .toStrictEqual({
+        "cleaned-object": {
+          'abc-parameter': 1,
+          '123-parameter': 2,
+          'xyz-parameter': 3,
+          'other-parameter': "Lorenzo"
+        }
+      });
   });
 
   test('Passing parameters and input-object property, return cleaned object without "default-parameter" @positive', () => {
@@ -181,13 +191,13 @@ describe('Positive Tests @positive', () => {
         'default-parameter': "Milano"
       }
     }))
-    .toStrictEqual({
-      "cleaned-object": {
-        'abc-parameter': 1,
-        '123-parameter': 2,
-        'xyz-parameter': 3
-      }
-    });
+      .toStrictEqual({
+        "cleaned-object": {
+          'abc-parameter': 1,
+          '123-parameter': 2,
+          'xyz-parameter': 3
+        }
+      });
   });
 
   test('Passing parameters and input-object property, return cleaned-object without "default-parameter" @positive', () => {
@@ -201,9 +211,9 @@ describe('Positive Tests @positive', () => {
         'default-parameter': "Milano"
       }
     }))
-    .toStrictEqual({
-      "cleaned-object": {}
-    });
+      .toStrictEqual({
+        "cleaned-object": {}
+      });
   });
 });
 
@@ -257,9 +267,9 @@ describe('Falsy Value Tests @falsy', () => {
       },
       'input-object': { 'count': 0 }
     }))
-    .toStrictEqual({
-      "cleaned-object": {}
-    });
+      .toStrictEqual({
+        "cleaned-object": {}
+      });
   });
 
   test('Should remove falsy value false @falsy', () => {
@@ -279,9 +289,9 @@ describe('Falsy Value Tests @falsy', () => {
       },
       'input-object': { 'flag': "false" }
     }))
-    .toStrictEqual({
-      "cleaned-object": {}
-    });
+      .toStrictEqual({
+        "cleaned-object": {}
+      });
   });
 
   test('Should remove empty string @falsy', () => {
@@ -301,9 +311,9 @@ describe('Falsy Value Tests @falsy', () => {
       },
       'input-object': { 'empty': '' }
     }))
-    .toStrictEqual({
-      "cleaned-object": {}
-    });
+      .toStrictEqual({
+        "cleaned-object": {}
+      });
   });
 });
 
