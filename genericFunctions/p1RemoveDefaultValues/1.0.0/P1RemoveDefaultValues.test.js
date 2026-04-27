@@ -1,5 +1,11 @@
-const p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
-const ERRORS = require ('./ErrorsEnum');
+const ERRORS = require('./ErrorsEnum');
+
+let p1RemoveDefaultValues;
+
+beforeEach(() => {
+  jest.resetModules();
+  p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
+});
 
 
 const parameterStruct1 = {

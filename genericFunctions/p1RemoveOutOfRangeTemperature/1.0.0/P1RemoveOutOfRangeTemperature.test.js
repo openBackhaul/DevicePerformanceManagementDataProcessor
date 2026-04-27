@@ -1,6 +1,7 @@
-const p1RemoveOutOfRangeTemperature = require('./P1RemoveOutOfRangeTemperature');
 const ERRORS = require('./ErrorsEnum');
 const fs = require('fs');
+
+let p1RemoveOutOfRangeTemperature;
 
 // Paramenters Struct
 const parameterStruct1 = {
@@ -151,6 +152,11 @@ const parameterStructWithSameValue = {
 };
 
 describe('p1RemoveOutOfRangeTemperature', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    p1RemoveOutOfRangeTemperature = require('./P1RemoveOutOfRangeTemperature');
+  });
+
   let dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
 
