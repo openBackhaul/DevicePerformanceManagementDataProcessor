@@ -1,12 +1,7 @@
 
-const ERRORS = require ('./ErrorsEnum');
+const ERRORS = require('./ErrorsEnum');
 
 let defaultValuesList = [];
-
-// DAMN JavaScript
-function isThisNaN(value) {
-  return value !== value
-};
 
 function validateParameters(paramArray) {
   let res = true;
@@ -19,13 +14,6 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    // let paramValue = parseInt(paramElem["value"]);
-
-    // Check if is Number or also NaN
-    // if (typeof paramValue != "number" || isThisNaN(paramValue)) {
-    //   return ERRORS.PARAM_INVALID;
-    // }
-
     const tempStruct = {};
     tempStruct[paramElem['parameter-name']] = paramElem['value'];
     defaultValuesList.push(tempStruct);
@@ -35,6 +23,9 @@ function validateParameters(paramArray) {
 }
 
 const p1RemoveDefaultValues = (input) => {
+
+  // Re-init variable everytime
+  defaultValuesList = [];
 
   try {
     if (input == null || Object.keys(input).length == 0) {
@@ -58,7 +49,7 @@ const p1RemoveDefaultValues = (input) => {
         return ERRORS.INPUTOBJ_INVALID;
       }
     }
-    
+
     // Check parameters
     if (!parameters || parameters['parameter'] == null) {
       return ERRORS.PARAM_NOT_PROVIDED;
@@ -78,7 +69,8 @@ const p1RemoveDefaultValues = (input) => {
 
     defaultValuesList.forEach(defaultValue => {
       const key = Object.keys(defaultValue);
-      if (cleanedObject.hasOwnProperty(key) && 
+
+      if (cleanedObject.hasOwnProperty(key) &&
         cleanedObject[key] == defaultValue[key]) {
         delete cleanedObject[key];
       }

@@ -1,12 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
-
-let p1RemoveDefaultValues;
-
-beforeEach(() => {
-  jest.resetModules();
-  p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
-});
-
+const p1RemoveDefaultValues = require('./P1RemoveDefaultValues');
 
 const parameterStruct1 = {
   "function-name": "p1GenericFunction",
@@ -249,7 +242,19 @@ describe('Falsy Value Tests @falsy', () => {
 
   test('Should remove falsy value 0 @falsy', () => {
     expect(p1RemoveDefaultValues({
-      parameters: { 'count': 0 },
+      parameters: {
+        "function-name": "p1GenericFunction",
+        "description": "Generic Description",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "count",
+            "purpose": "Lower bound of valid values of the transmit level",
+            "owner": "engineering",
+            "value": "0"
+          },
+        ]
+      },
       'input-object': { 'count': 0 }
     }))
     .toStrictEqual({
@@ -259,8 +264,20 @@ describe('Falsy Value Tests @falsy', () => {
 
   test('Should remove falsy value false @falsy', () => {
     expect(p1RemoveDefaultValues({
-      parameters: { 'flag': false },
-      'input-object': { 'flag': false }
+      parameters: {
+        "function-name": "p1GenericFunction",
+        "description": "Generic Description",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "flag",
+            "purpose": "Lower bound of valid values of the transmit level",
+            "owner": "engineering",
+            "value": "false"
+          },
+        ]
+      },
+      'input-object': { 'flag': "false" }
     }))
     .toStrictEqual({
       "cleaned-object": {}
@@ -269,7 +286,19 @@ describe('Falsy Value Tests @falsy', () => {
 
   test('Should remove empty string @falsy', () => {
     expect(p1RemoveDefaultValues({
-      parameters: { 'empty': '' },
+      parameters: {
+        "function-name": "p1GenericFunction",
+        "description": "Generic Description",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "empty",
+            "purpose": "Lower bound of valid values of the transmit level",
+            "owner": "engineering",
+            "value": ""
+          },
+        ]
+      },
       'input-object': { 'empty': '' }
     }))
     .toStrictEqual({
