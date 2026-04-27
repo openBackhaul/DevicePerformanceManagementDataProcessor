@@ -54,9 +54,13 @@ const p1RemoveOutOfRangeLevels = (input) => {
     const performanceData = input["performance-data"];
 
     // Check parameters
-    if (!parameters || parameters['parameter'] == null) {
+    if (!parameters) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
+      if (parameters['parameter'] == null) { 
+        return ERRORS.PARAM_INVALID;
+      }
+
       let paramArray = parameters['parameter'];
 
       if (!validateParameters(paramArray)) {
