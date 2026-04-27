@@ -31,6 +31,14 @@ function loadFunctionUnderTest(absModulePath, exportName) {
     return mod;
   }
 
+  jest.mock('pino', () => {
+  return () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn()
+  });
+});
+
   const fn = mod[exportName];
   if (typeof fn !== "function") {
     throw new Error(`Export '${exportName}' not found or not a function in '${absModulePath}'`);
