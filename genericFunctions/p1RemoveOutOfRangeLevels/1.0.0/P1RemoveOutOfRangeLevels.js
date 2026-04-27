@@ -49,6 +49,10 @@ function validateParameters(paramArray) {
 }
 
 const p1RemoveOutOfRangeLevels = (input) => {
+
+  // Re-init variable everytime
+  parameterStruct = {};
+
   try {
     const parameters = input["parameters"];
     const performanceData = input["performance-data"];

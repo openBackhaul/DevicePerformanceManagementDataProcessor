@@ -1,11 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
-
-let p1RemoveOutOfRangeLevels;
-
-beforeEach(() => {
-  jest.resetModules();
-  p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
-});
+const p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
 
 const performanceStruct1 = {
   "es": 0,
