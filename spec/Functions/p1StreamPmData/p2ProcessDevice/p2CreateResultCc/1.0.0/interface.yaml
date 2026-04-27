@@ -222,7 +222,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1IterateAiPmSlices:
+      p2IterateAiPmSlices:
         summary: 'Iterates through all AirInterface historical performance data slices and calls the processing Functions'
         input:
           required: true
