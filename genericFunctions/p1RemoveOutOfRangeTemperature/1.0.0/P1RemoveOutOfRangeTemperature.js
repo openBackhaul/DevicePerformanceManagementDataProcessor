@@ -30,7 +30,7 @@ function validateParameters(paramArray) {
 
     // Check if is Number or also NaN
     if (typeof paramValue != "number" || isThisNaN(paramValue)) {
-      return ERRORS.PARAM_INVALID;
+      res = false;
     }
 
     parameterStruct[paramElem['parameter-name']] = paramElem['value'];
@@ -46,14 +46,25 @@ function validateParameters(paramArray) {
 }
 
 const p1RemoveOutOfRangeTemperature = (input) => {
+
+  // Re-init variable everytime
+  parameterStruct = {};
+
   try {
     const parameters = input["parameters"];
     const equipmentsArray = input["equipment"];
 
     // Check parameters
-    if (!parameters || parameters['parameter'] == null) {
+    if (!parameters && !equipmentsArray) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    if (!parameters) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
+      if (parameters['parameter'] == null) {
+        return ERRORS.PARAM_INVALID;
+      }
       let paramArray = parameters['parameter'];
 
       if (!validateParameters(paramArray)) {
