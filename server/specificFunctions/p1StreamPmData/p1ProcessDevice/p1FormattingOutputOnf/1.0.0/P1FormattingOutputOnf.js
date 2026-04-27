@@ -4,27 +4,35 @@ function p1FormattingOutputOnf(input) {
   try {
 
     if (input === null || input === undefined) {
-      throw ERRORS.PARAMETERS_NOT_PROVIDED;
+      return ERRORS.PARAMETERS_NOT_PROVIDED;
     }
 
     const { parameters, "result-cc": resultCc } = input;
 
     if (parameters === null || parameters === undefined) {
-      throw ERRORS.PARAMETERS_NOT_PROVIDED;
+      return ERRORS.PARAMETERS_NOT_PROVIDED;
     }
     if (typeof parameters !== "object" || Array.isArray(parameters)) {
-      throw ERRORS.PARAMETERS_INVALID;
+      return ERRORS.PARAMETERS_INVALID;
     }
 
     if (resultCc === null || resultCc === undefined) {
-      throw ERRORS.RESULT_CC_NOT_PROVIDED;
+      return ERRORS.RESULT_CC_NOT_PROVIDED;
     }
     if (typeof resultCc !== "object" || Array.isArray(resultCc)) {
-      throw ERRORS.RESULT_CC_INVALID;
+      return ERRORS.RESULT_CC_INVALID;
     }
 
     const outputObj = createOutputFromResultCc(resultCc);
+    if (outputObj == ERRORS.RESULT_CC_NOT_PROVIDED ||
+      outputObj == ERRORS.RESULT_CC_INVALID) { // Handle errors
+      return outputObj;
+    }
+
     const fieldsFilter = extractFieldsFilter(parameters);
+    if (fieldsFilter == ERRORS.FILTER_INVALID) {
+      return ERRORS.FILTER_INVALID;
+    }
 
     let finalOutput = outputObj;
 
@@ -37,39 +45,40 @@ function p1FormattingOutputOnf(input) {
       "output-format": finalOutput
     };
 
-  } catch (err) {
-    return Object.values(ERRORS).includes(err)
-      ? err
-      : ERRORS.GENERAL_ERROR;
+  } catch (error) {
+    return ERRORS.GENERAL_ERROR;
   }
 }
 
-
-
 function createOutputFromResultCc(resultCc) {
   if (resultCc === null || resultCc === undefined) {
-    throw ERRORS.RESULT_CC_NOT_PROVIDED;
+    return ERRORS.RESULT_CC_NOT_PROVIDED;
   }
   if (typeof resultCc !== "object" || Array.isArray(resultCc)) {
-    throw ERRORS.RESULT_CC_INVALID;
+    return ERRORS.RESULT_CC_INVALID;
   }
 
   return JSON.parse(JSON.stringify(resultCc));
 }
 
-
 function extractFieldsFilter(parameters) {
   try {
     const subFunctions = parameters["sub-function"];
-    if (!Array.isArray(subFunctions)) return null;
+    if (!Array.isArray(subFunctions)) {
+      return null;
+    }
 
     const filterFn = subFunctions.find(
       fn => fn?.["function-name"] === "p1FieldsFilter"
     );
-    if (!filterFn) return null;
+    if (!filterFn) {
+      return null;
+    }
 
     const params = filterFn.parameter;
-    if (!Array.isArray(params)) return null;
+    if (!Array.isArray(params)) {
+      return null;
+    }
 
     const fieldParam = params.find(
       p => p?.["parameter-name"] === "fieldsFilter"
@@ -79,11 +88,9 @@ function extractFieldsFilter(parameters) {
     return typeof value === "string" && value.trim() !== "" ? value : null;
 
   } catch {
-    return null;
+    return ERRORS.FILTER_INVALID;
   }
 }
-
-
 
 function applyFilter(data, keys) {
   if (!keys.length) return data;

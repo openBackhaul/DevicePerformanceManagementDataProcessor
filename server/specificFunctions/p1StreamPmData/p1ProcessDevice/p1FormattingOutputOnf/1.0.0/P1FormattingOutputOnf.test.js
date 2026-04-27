@@ -1,7 +1,6 @@
 const { p1FormattingOutputOnf } = require("./P1FormattingOutputOnf");
 const ERRORS = require("./ErrorsEnum");
-
-const REAL_CC = require("./datasets/cc_clean_CO01715.json");
+const fs = require('fs');
 
 describe("Validation Tests", () => {
 
@@ -10,13 +9,13 @@ describe("Validation Tests", () => {
   });
 
   test("resultCc missing", () => {
-    const res = p1FormattingOutputOnf({ parameters: {} });
+    const res = p1FormattingOutputOnf({ "parameters": {} });
     expect(res).toBe(ERRORS.RESULT_CC_NOT_PROVIDED);
   });
 
   test("invalid parameters", () => {
     const res = p1FormattingOutputOnf({
-      parameters: "bad",
+      "parameters": "bad",
       "result-cc": {}
     });
     expect(res).toBe(ERRORS.PARAMETERS_INVALID);
@@ -24,7 +23,7 @@ describe("Validation Tests", () => {
 
   test("invalid resultCc", () => {
     const res = p1FormattingOutputOnf({
-      parameters: {},
+      "parameters": {},
       "result-cc": "bad"
     });
     expect(res).toBe(ERRORS.RESULT_CC_INVALID);
@@ -37,7 +36,7 @@ describe("Basic Functionality", () => {
 
   test("no filter returns full object", () => {
     const res = p1FormattingOutputOnf({
-      parameters: {},
+      "parameters": {},
       "result-cc": { a: 1 }
     });
 
@@ -51,7 +50,7 @@ describe("Basic Functionality", () => {
     const input = { a: 1 };
 
     const res = p1FormattingOutputOnf({
-      parameters: {},
+      "parameters": {},
       "result-cc": input
     });
 
@@ -60,44 +59,42 @@ describe("Basic Functionality", () => {
 
 });
 
-
 describe("Filter Tests", () => {
 
   test("object filtering", () => {
     const res = p1FormattingOutputOnf({
-      parameters: {
+      "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
-          parameter: [{
+          "parameter": [{
             "parameter-name": "fieldsFilter",
-            value: "a.b"
+            "value": "a.b"
           }]
         }]
       },
       "result-cc": {
-        a: { b: { c: 10 } }
+        "a": { "b": { "c": 10 } }
       }
     });
 
-    expect(res["output-format"]).toEqual({ c: 10 });
+    expect(res["output-format"]).toEqual({ "c": 10 });
   });
-
 
   test("array filtering (NETCONF compliant)", () => {
     const res = p1FormattingOutputOnf({
-      parameters: {
+      "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
-          parameter: [{
+          "parameter": [{
             "parameter-name": "fieldsFilter",
-            value: "logical-termination-point.uuid"
+            "value": "logical-termination-point.uuid"
           }]
         }]
       },
       "result-cc": {
         "logical-termination-point": [
-          { uuid: "1", name: "A" },
-          { uuid: "2", name: "B" }
+          { "uuid": "1", "name": "A" },
+          { "uuid": "2", "name": "B" }
         ]
       }
     });
@@ -111,16 +108,16 @@ describe("Filter Tests", () => {
 
   test("invalid filter returns empty object", () => {
     const res = p1FormattingOutputOnf({
-      parameters: {
+      "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
-          parameter: [{
+          "parameter": [{
             "parameter-name": "fieldsFilter",
-            value: "x.y"
+            "value": "x.y"
           }]
         }]
       },
-      "result-cc": { a: 1 }
+      "result-cc": { "a": 1 }
     });
 
     expect(res["output-format"]).toEqual({});
@@ -132,8 +129,10 @@ describe("Filter Tests", () => {
 describe("Real Dataset Tests", () => {
 
   test("basic execution", () => {
+    const dataFile = fs.readFileSync(__dirname + '/datasets/cc_clean_CO01715.json', 'utf8');
+    const REAL_CC = JSON.parse(dataFile);
     const res = p1FormattingOutputOnf({
-      parameters: {},
+      "parameters": {},
       "result-cc": REAL_CC
     });
 
@@ -141,13 +140,15 @@ describe("Real Dataset Tests", () => {
   });
 
   test("filter top-level array", () => {
+    const dataFile = fs.readFileSync(__dirname + '/datasets/cc_clean_CO01715.json', 'utf8');
+    const REAL_CC = JSON.parse(dataFile);
     const res = p1FormattingOutputOnf({
-      parameters: {
+      "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
-          parameter: [{
+          "parameter": [{
             "parameter-name": "fieldsFilter",
-            value: "logical-termination-point"
+            "value": "logical-termination-point"
           }]
         }]
       },
