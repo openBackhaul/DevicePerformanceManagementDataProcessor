@@ -29,6 +29,16 @@ describe("Validation Tests", () => {
     expect(res).toBe(ERRORS.RESULT_CC_INVALID);
   });
 
+  // TODO @ll to be concluded
+  // test("ONF OutputFormat couldn't be provided", () => {
+  //   const res = p1FormattingOutputOnf({
+  //     "parameters": {},
+  //     "result-cc": "bad"
+  //   });
+
+  //   expect(res);
+  // })
+
 });
 
 
