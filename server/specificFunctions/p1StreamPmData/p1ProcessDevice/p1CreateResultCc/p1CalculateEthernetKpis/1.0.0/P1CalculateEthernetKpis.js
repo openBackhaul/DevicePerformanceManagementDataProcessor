@@ -110,8 +110,7 @@ function p1CalculateEthernetKpis(input) {
           item['total-bytes-output'],
           item['time-period']
         );
-        let res = typeof transmitTraffic;
-        console.log(res);
+
         if (typeof transmitTraffic === "string") {
           return ERRORS.TRANSMIT_TRAFFIC_ERROR;
         }
