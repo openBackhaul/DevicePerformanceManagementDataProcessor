@@ -1,5 +1,7 @@
 const ERRORS = require("./ErrorsEnum");
 
+const ONF_FORMAT = "onf-output-format";
+
 function p1FormattingOutputOnf(input) {
   try {
 
@@ -15,6 +17,9 @@ function p1FormattingOutputOnf(input) {
     if (typeof parameters !== "object" || Array.isArray(parameters)) {
       return ERRORS.PARAMETERS_INVALID;
     }
+    // else if (parameters['parameter'] == null) { // || !Array.isArray(parameters['parameter'])) {
+    //   return ERRORS.PARAMETERS_INVALID;
+    // }
 
     if (resultCc === null || resultCc === undefined) {
       return ERRORS.RESULT_CC_NOT_PROVIDED;
@@ -27,6 +32,10 @@ function p1FormattingOutputOnf(input) {
     if (outputObj == ERRORS.RESULT_CC_NOT_PROVIDED ||
       outputObj == ERRORS.RESULT_CC_INVALID) { // Handle errors
       return outputObj;
+    } else if(outputObj == ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED) {
+      return ERRORS.ONF_OUTPUT_FORMAT;
+    } else if (outputObj == ERRORS.GENERAL_ERROR) {
+      return ERRORS.GENERAL_ERROR;
     }
 
     const fieldsFilter = extractFieldsFilter(parameters);
@@ -41,7 +50,7 @@ function p1FormattingOutputOnf(input) {
     }
 
     return {
-      "format-name": "onf-output-format",
+      "format-name": ONF_FORMAT,
       "output-format": finalOutput
     };
 
@@ -51,14 +60,24 @@ function p1FormattingOutputOnf(input) {
 }
 
 function createOutputFromResultCc(resultCc) {
-  if (resultCc === null || resultCc === undefined) {
-    return ERRORS.RESULT_CC_NOT_PROVIDED;
-  }
-  if (typeof resultCc !== "object" || Array.isArray(resultCc)) {
-    return ERRORS.RESULT_CC_INVALID;
+  try {
+    if (resultCc === null || resultCc === undefined) {
+      return ERRORS.RESULT_CC_NOT_PROVIDED;
+    }
+    if (typeof resultCc !== "object" || Array.isArray(resultCc)) {
+      return ERRORS.RESULT_CC_INVALID;
+    }
+
+    const result = JSON.parse(JSON.stringify(resultCc));
+
+    if (result == null || result == undefined) {
+      return ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED;
+    }
+    return result
+  } catch (error) {
+    return ERRORS.GENERAL_ERROR;
   }
 
-  return JSON.parse(JSON.stringify(resultCc));
 }
 
 function extractFieldsFilter(parameters) {
