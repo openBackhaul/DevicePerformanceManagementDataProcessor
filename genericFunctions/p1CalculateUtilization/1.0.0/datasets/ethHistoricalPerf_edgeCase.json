@@ -1,0 +1,10 @@
+{
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+    "period-end-time": "2026-04-01T06:00:00.0+00:00",
+    "suspect-interval-flag": false,
+    "performance-data": {
+        "total-bytes-output": "900000000",
+        "time-period": 900
+    },
+    "history-data-id": "PM_ETH_15M_DIVZERO"
+}
