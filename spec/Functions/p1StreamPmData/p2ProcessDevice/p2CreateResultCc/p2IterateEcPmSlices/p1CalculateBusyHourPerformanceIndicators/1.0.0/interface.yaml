@@ -132,6 +132,9 @@ x-javascript-interface:
                               'hour of day'
                           aggregated-total-bytes-output:
                             type: integer
+                            # TODO: müssten man nicht eigentlich statt $input und $output schreiben $processStepName.input und $processStepName.output?
+                            #       $input und $output beziehen sich ja normalerweise auf den input/output des Services bzw. der Function selbst
+                            #       analog unten
                             description: >
                               'aggregated total bytes output for this hour
                               from { sum( {$input#/15-minute-values-by-hour={$output#/aggregated-total-bytes-output-by-hour=*/hour}/15-minute-values[*]/total-bytes-output} ) }'
@@ -192,7 +195,7 @@ x-javascript-interface:
                       '15-minute-values grouped by hour of the day
                       from [/calculate-busy-hour-performance-indicators/interface-status/15-minute-values-by-day={/calculate-busy-hour-performance-indicators/day}/15-minute-values-by-hour]'
                   busy-hour-identifier:
-                    type: integer
+                    type: object
                     description: >
                       'busy hour KPIs
                       from [/calculate-busy-hour-performance-indicators/busy-hour-identifier]'
@@ -231,6 +234,7 @@ x-javascript-interface:
                             from { {$input#/busy-hour-identifier/aggregated-total-bytes-output} * 8 / 3600 }'
                         capacity:
                           type: integer
+                          # TODO: wieso geben wir die Capacity in bps an, statt bei kpbs zu bleiben?
                           description: >
                             'capacity during the busy hour
                             sum of total-air-interface-interval-capacity values transformed from kbit/s to bit/s, and divided by assumed four 15-min periods
