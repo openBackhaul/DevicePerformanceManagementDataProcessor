@@ -1,0 +1,32 @@
+{
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-04-01T00:00:00.0+00:00",
+    "suspect-interval-flag": false,
+    "performance-data": {
+        "broadcast-frames-output": 0,
+        "jabber-frames-ingress": -1,
+        "total-frames-input": "-1",
+        "multicast-frames-output": 0,
+        "total-bytes-input": "0",
+        "total-bytes-output": "7200000000",
+        "oversized-frames-ingress": -1,
+        "unicast-frames-input": "0",
+        "unicast-frames-output": "0",
+        "total-frames-output": "-1",
+        "errored-frames-input": 0,
+        "multicast-frames-input": 0,
+        "fragmented-frames-input": -1,
+        "dropped-frames-input": 0,
+        "dropped-frames-output": 0,
+        "queue-utilization-list": [],
+        "unknown-protocol-frames-input": -1,
+        "max-bytes-per-second-output": 0,
+        "forwarded-frames-output": "-1",
+        "broadcast-frames-input": 0,
+        "errored-frames-output": 0,
+        "forwarded-frames-input": "-1",
+        "time-period": 86400,
+        "undersized-frames-ingress": -1
+    },
+    "history-data-id": "PM_ETH_24H_001"
+}
