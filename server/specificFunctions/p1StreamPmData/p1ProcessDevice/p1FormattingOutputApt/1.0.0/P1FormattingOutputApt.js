@@ -96,7 +96,7 @@ function buildAirInterface(
       'link-id': ltpAug?.['link-id']?.substring(0, 9) ,
       'logical-termination-point-id': ltp.uuid,
       'link-aggregation-identifiers':
-        resolveLinkAggregation(ltp, allLtps)
+        resolveLinkAggregationIdentifiers(ltp, allLtps)
     },
 
     'air-interface-configuration': mapAirInterfaceConfiguration(
@@ -174,7 +174,7 @@ function mapAirPerformance(airPac) {
   });
 }
 
-function resolveLinkAggregation(ltp, allLtps) {
+function resolveLinkAggregationIdentifiers(ltp, allLtps) {
   const result = [];
   const parallel = ltp?.['parallel-ltp'] || [];
 
