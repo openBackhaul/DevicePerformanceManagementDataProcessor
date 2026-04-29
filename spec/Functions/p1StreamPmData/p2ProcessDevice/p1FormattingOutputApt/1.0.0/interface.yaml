@@ -113,6 +113,11 @@ x-javascript-interface:
                                     description: >
                                       'Identifier of the microwave link endpoint within the MW SDN domain
                                       from {$input#/result-cc/logical-termination-point/uuid}'
+                                  layer-protocol-id:
+                                    type: string
+                                    description: >
+                                      'Identifier of the layer protocol instance within the MW SDN domain
+                                      from {$input#/result-cc/logical-termination-point/layer-protocol/local-id}'
                                   link-aggregation-identifiers:
                                     type: array
                                     description: >
@@ -463,6 +468,11 @@ x-javascript-interface:
                                     description: >
                                       'Identifier of the ethernet container within the MW SDN domain'
                                       from {$input#/result-cc/logical-termination-point/uuid}'
+                                  layer-protocol-id:
+                                    type: string
+                                    description: >
+                                      'Identifier of the layer protocol instance within the MW SDN domain
+                                      from {$input#/result-cc/logical-termination-point/layer-protocol/local-id}'
                               ethernet-container-performance-measurements-list:
                                 type: array
                                 description: >
