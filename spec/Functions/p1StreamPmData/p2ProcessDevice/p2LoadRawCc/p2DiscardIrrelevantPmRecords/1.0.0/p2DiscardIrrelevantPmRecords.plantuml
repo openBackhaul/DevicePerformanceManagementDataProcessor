@@ -20,23 +20,23 @@ activate cur
   end note
   note over cur
     Initializes:
-      received = { [date, count] }
+      {received} = { [date, count] }
   end note
 
   loop FOR EACH record in [historicalPerformanceDataList]
 
     note over cur
-      IF (record.periodEndTime) is not newer than:
+      IF (record.periodEndTime) is newer than:
         - 15min: formerMostRecentPeriodEndTime
         - 24h: formerMostRecentPeriodEndTime24
     end note
     note right cur
       THEN
-        discard record
-      ELSE
-        update received for date parsed
+        update {received} for date parsed
         from record.periodEndTime as
         { [date, count++] }
+      ELSE
+        discard record
     end note
 
     note over cur
