@@ -2,8 +2,9 @@
 
 Discards records that have already been processed in past from historical performance data list.  
 Accepts both AirInterface and EthernetContainer PM records.  
+Also counts the number of received and not filtered out 15min PM slices.
 
-Also returns an updated offset containing the mostRecentPeriodEndTimes seen in the current batch.  
+Returns the updated mostRecentPeriodEndTime information along with information about the number of received 15min PM slices. 
 
 ### Diagram  
 

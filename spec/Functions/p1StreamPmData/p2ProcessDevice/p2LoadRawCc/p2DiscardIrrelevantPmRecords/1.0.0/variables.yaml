@@ -2,7 +2,8 @@ discard-irrelevant-pm-records:
   type: object
   required:
     - historical-performance-data-list
-    - offset
+    - former-most-recent-period-end-time
+    - former-most-recent-period-end-time-24
   properties:
     historical-performance-data-list:
       type: array
@@ -25,47 +26,58 @@ discard-irrelevant-pm-records:
           performance-data:
             type: object
             description: 'The object containing actual PM data'
-    offset:
-      type: object
+    former-most-recent-period-end-time:
+      type: string
       description: >
-        'The offset for the currently processed interface instance,
-          from {$input#/offset}
-          modified by {$updateOffset.output#/offset}
-          ! simplified representation, just relevant attributes documented !'
-      properties:
-        # TODO: shall uuid be listed here (not required for processing, but included in input and output)
-        uuid:
-          type: string
-          description: >
-            'The uuid of the processed interface'
-        most-recent-period-end-time:
-          type: string
-          description: >
-            'The newest 15min periodEndTime seen during previous runs (or the default value)
-            15min PM records not newer than the initial timestamp value are to be discarded'
-        most-recent-period-end-time-24:
-          type: string
-          description: >
-            'The newest 24h periodEndTime seen during previous runs (or default value).
-            24h PM records not newer than the initial timestamp value are to be discarded'
-
-    filtered-historical-performance-data-list:
-      type: array
+        'mostRecentPeriodEndTime from past processing, 15min PM slices not newer than this timestamp are to be discarded,
+        from {$input#/former-most-recent-period-end-time}'
+    former-most-recent-period-end-time-24:
+      type: string
       description: >
-        'The filtered list of historical PM records, after discarding irrelevant records
-        from [/discard-irrelevant-pm-records/historical-performance-data-list]'
+        'mostRecentPeriodEndTime24 from past processing, 24h PM slices not newer than this timestamp are to be discarded,
+        from {$input#/former-most-recent-period-end-time-24}'
 
     new-most-recent-period-end-time:
       type: string
       pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
         'newMostRecentPeriodEndTime
-        initial value from {2010-11-20T14:00:00+01:00}
+        initialized from [/discard-irrelevant-pm-records/former-most-recent-period-end-time]
         overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
     new-most-recent-period-end-time-24:
       type: string
       pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
         'newMostRecentPeriodEndTime24
-        initial value from {2010-11-20T14:00:00+01:00}
+        initialized from [/discard-irrelevant-pm-records/former-most-recent-period-end-time-24]
         overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
+
+    received:
+      type: array
+      x-key: day
+      description: >
+        'Array of received 15min PM slices for the currently processed interface instance in the current batch,
+        initialized with empty array,
+        updated for each processed 15min PM slice, which is not discarded'
+      items:
+        type: object
+        required:
+          - day
+          - count
+        properties:
+          day:
+            type: integer
+            description: >
+              'The day (1-31) parsed from periodEndTime of the currently processed 15min PM slice,
+              new day added, if a new parsed day is seen for the current 15min PM slice'
+          count:
+            type: integer
+            description: >
+              'The count of received 15min PM slices for the day, initialized by 0,
+              incremented by 1 for each processed and kept 15min PM slice for the specific day'
+
+    filtered-historical-performance-data-list:
+      type: array
+      description: >
+        'The filtered list of historical PM records, after discarding irrelevant records
+        initialized from [/discard-irrelevant-pm-records/historical-performance-data-list]'

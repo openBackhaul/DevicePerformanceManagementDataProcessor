@@ -9,12 +9,8 @@ participant "requestor\n(e.g. p2LoadRawCc)" as requestor
 participant "p2DiscardIrrelevant\nPmRecords" as cur
 
 
-requestor -> cur: { [historicalPerformanceDataList],\n{offset} }
-note right requestor #Cyan
-  replace {offset} by
-  formerMostRecentPeriodEndTime and
-  formerMostRecentPeriodEndTime24
-end note
+requestor -> cur: { [historicalPerformanceDataList],\nformerMostRecentPeriodEndTime,\nformerMostRecentPeriodEndTime24 }
+
 activate cur
 
   note over cur
@@ -22,28 +18,25 @@ activate cur
       newMostRecentPeriodEndTime
       newMostRecentPeriodEndTime24
   end note
-  note over cur #Cyan
+  note over cur
     Initializes:
       received = { [day, count] }
   end note
 
   loop FOR EACH record in [historicalPerformanceDataList]
 
-    note over cur #LightGray
-      IF record.periodEndTime is not newer than:
-        - 15min: /offset/mostRecentPeriodEndTime
-        - 24h: /offset/mostRecentPeriodEndTime24
-      THEN discard record
-    end note
-    note over cur #Cyan
-      IF record.periodEndTime is not newer than:
+    note over cur
+      IF (record.periodEndTime) is not newer than:
         - 15min: formerMostRecentPeriodEndTime
         - 24h: formerMostRecentPeriodEndTime24
-      THEN discard record
     end note
-    note over cur #Cyan
-      add
-      "ELSE { [day, count++] }"
+    note right cur
+      THEN
+        discard record
+      ELSE
+        update received for day parsed
+        from record.periodEndTime as
+        { [day, count++] }
     end note
 
     note over cur
@@ -52,21 +45,7 @@ activate cur
 
   end loop
 
-  note over cur
-    updateOffset
-  end note
-  note over cur #Cyan
-    delete
-    "updateOffset"
-  end note
-
-requestor <-- cur: { [filteredHistoricalPerformanceDataList],\n{offset} }
-note right requestor #Cyan
-  replace {offset} by
-  newMostRecentPeriodEndTime and
-  newMostRecentPeriodEndTime24 and
-  received
-end note
+requestor <-- cur: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\nreceived }
 
 deactivate cur
 
