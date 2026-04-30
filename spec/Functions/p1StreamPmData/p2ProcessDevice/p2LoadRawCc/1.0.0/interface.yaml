@@ -144,18 +144,30 @@ x-javascript-interface:
                 type: object
                 required:
                   - historical-performance-data-list
-                  - offset
+                  #- offset
+                  - former-most-recent-period-end-time
+                  - former-most-recent-period-end-time-24
                 properties:
                   historical-performance-data-list:
                     type: array
                     description: >
                       'The list of historical PM records, that shall be filtered
                       from [/load-raw-cc/raw-cc/logical-termination-point={uuid}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list or /load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
-                  offset:
-                    type: object
+                  #offset:
+                  #  type: object
+                  #  description: >
+                  #    'InterfaceOffset for the currently processed ltp
+                  #    from [/load-raw-cc/interface-offset]'
+                  former-most-recent-period-end-time:
+                    type: string
                     description: >
-                      'InterfaceOffset for the currently processed ltp
-                      from [/load-raw-cc/interface-offset]'
+                      'mostRecentPeriodEndTime during past processing of the currently processed interface
+                      from [/load-raw-cc/former-most-recent-period-end-time]'
+                  former-most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime24 during past processing of the currently processed interface
+                      from [/load-raw-cc/former-most-recent-period-end-time-24]'
         output:
           success:
             description: 'filteredHistoricalPerformanceDataList provided'
@@ -170,10 +182,18 @@ x-javascript-interface:
                       type: array
                       description: >
                         'Filtered list of historical PM records'
-                    offset:
-                      type: object
+                    #offset:
+                    #  type: object
+                    #  description: >
+                    #    'Updated (interface) offset'
+                    new-most-recent-period-end-time:
+                      type: string
                       description: >
-                        'Updated (interface) offset'
+                        'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface'
+                    new-most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface'
           error:
             description: 'filteredHistoricalPerformanceDataList could not be provided'
             content:
@@ -227,7 +247,6 @@ x-javascript-interface:
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
                       - 'general processing error'
-
       updateInterfaceOffsets:
         input:
           required: true
@@ -237,18 +256,35 @@ x-javascript-interface:
                 type: object
                 required:
                   - interface-offsets
-                  - interface-offset
+                  - uuid
+                  - new-most-recent-period-end-time
+                  - new-most-recent-period-end-time-24
                 properties:
                   interface-offsets:
                     type: array
                     description: > 
                       'Array of offsets of all interfaces at the device
-                      from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets]'
-                  interface-offset:
-                    type: object
+                      from [/load-raw-cc/offsets=p2LoadRawCc/offset/interface-offsets]'
+                  #interface-offset:
+                  #  type: object
+                  #  description: >
+                  #    'Offset for the currently processed interface
+                  #    from [/load-raw-cc/interface-offset]'
+                  uuid:
+                    type: string
                     description: >
-                      'Offset for the currently processed interface
-                      from [/load-raw-cc/interface-offset]'
+                      'uuid of the currently processed interface
+                      from [/load-raw-cc/uuid]'
+                  new-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
+                      from [/load-raw-cc/new-most-recent-period-end-time]'
+                  new-most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface
+                      from [/load-raw-cc/new-most-recent-period-end-time-24]'
         output:
           success:
             description: 'Updated offsets array of all interfaces provided'
@@ -266,8 +302,9 @@ x-javascript-interface:
                       items:
                         type: object
                         description: >
-                          'With curUuid = {$updateInterfaceOffsets.input#/interface-offset/uuid},
-                          (Over)write {$updateInterfaceOffsets.input#/interface-offsets[curUuid]} = {$updateInterfaceOffsets.input#/interface-offset}'
+                          'Array of offsets of all interfaces at the device, but updated for the currently processed interface
+                          (Over)write {$interface-offsets={$input#/uuid}/most-recent-period-end-time} = {$input#/new-most-recent-period-end-time}
+                          (Over)write {$interface-offsets={$input#/uuid}/most-recent-period-end-time-24} = {$input#/new-most-recent-period-end-time-24}'
           error:
             description: 'Updated array of offsets of all interfaces could not be provided'
             content:

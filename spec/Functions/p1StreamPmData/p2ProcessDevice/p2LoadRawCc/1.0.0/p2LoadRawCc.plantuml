@@ -35,9 +35,14 @@ activate cur
 
   loop FOR all [/raw-cc/logical-termination-point]
 
-    note over cur
+    note over cur #LightGrey
       Initialize offset (=interfaceOffset)
       if not existing
+    end note
+    note over cur #Cyan
+      extract from offsets or initialize, if not already existing:
+        - formerMostRecentPeriodEndTime
+        - formerMostRecentPeriodEndTime24
     end note
 
     note over cur
@@ -49,6 +54,12 @@ activate cur
     end note
 
     cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      formerMostRecentPeriodEndTime and
+      formerMostRecentPeriodEndTime24
+    end note
+
     activate filterPm
     note over filterPm
       Discards records that are
@@ -56,7 +67,21 @@ activate cur
       historicalPerformanceDataList,
       updates interfaceOffset
     end note
+    note over filterPm #Cyan
+      delete
+      "updates interfaceOffset"
+      add
+      "counts received"
+    end note
+
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      newMostRecentPeriodEndTime and
+      newMostRecentPeriodEndTime24 and
+      received
+    end note
+
     deactivate filterPm
 
     note right cur
@@ -65,6 +90,9 @@ activate cur
 
     note right cur
       updateInterfaceOffsets
+    end note
+    note right cur #Cyan
+      delete "updateInterfaceOffsets"
     end note
 
     note over cur
@@ -76,6 +104,17 @@ activate cur
     end note
 
     cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      formerMostRecentPeriodEndTime and
+      formerMostRecentPeriodEndTime24
+    end note
+
+    note right cur #Cyan
+      calculate expected from 
+      (formerMostRecentPeriodEndTime - newMostRecentPeriodEndTime) / 15
+    end note
+
     activate filterPm
     note over filterPm
       Discards records that are
@@ -83,11 +122,41 @@ activate cur
       historicalPerformanceDataList,
       updates interfaceOffset
     end note
+    note over filterPm #Cyan
+      delete
+      "updates interfaceOffset"
+      add
+      "counts received"
+    end note
+
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      newMostRecentPeriodEndTime and
+      newMostRecentPeriodEndTime24 and
+      received
+    end note
+
+    note right cur #Cyan
+      calculate expected from 
+      (formerMostRecentPeriodEndTime - newMostRecentPeriodEndTime) / 15
+    end note
+
     deactivate filterPm
 
     note right cur
       updateInterfaceOffsets
+    end note
+    note right cur #Cyan
+      delete "updateInterfaceOffsets"
+    end note
+    note over cur #Cyan
+      [/offsets=p2LoadRawCc/offset/interface-offsets={uuid}/most-recent-period-end-time]=newMostRecentPeriodEndTime
+      [/offsets=p2LoadRawCc/offset/interface-offsets={uuid}/most-recent-period-end-time-24]=newMostRecentPeriodEndTime24
+    end note
+
+    note over cur #Red
+      Hier fehlt noch der Übertrag von received and expected in das quality objekt
     end note
 
   end loop

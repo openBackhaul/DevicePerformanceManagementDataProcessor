@@ -29,7 +29,7 @@ load-raw-cc:
         from {$input#/offsets}'
       items:
         oneOf:
-          - description: 'offset for p2DiscardIrrelevantPmRecords'
+          - description: 'offset for p2LoadRawCc'
             type: object
             required:
               - function-name
@@ -38,7 +38,7 @@ load-raw-cc:
               function-name:
                 type: string
                 enum:
-                  - 'p2DiscardIrrelevantPmRecords'
+                  - 'p2LoadRawCc'
               offset:
                 type: object
                 properties:
@@ -62,25 +62,50 @@ load-raw-cc:
                             'uuid of the interface'
                         most-recent-period-end-time:
                           type: string
-                          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+                          #pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
                           description: >
                             'mostRecentPeriodEndTime
-                            if to be initialized, from {2010-11-20T14:00:00+01:00}'
+                          #  if to be initialized, from {2010-11-20T14:00:00+01:00}'
                         most-recent-period-end-time-24:
                           type: string
-                          pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+                          #pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
                           description: >
                             'mostRecentPeriodEndTime24
-                            if to be initialized, from {2010-11-20T14:00:00+01:00}'
+                          #  if to be initialized, from {2010-11-20T14:00:00+01:00}'
 
-    interface-offset:
-      type: object
+    #interface-offset:
+      #type: object
+      #description: >
+      #  'The interfaceOffset for the currently processed ltp
+      #  from [/load-raw-cc/offsets=p2LoadRawCc/offset/interface-offsets=*],
+      #  if not existing, initialized with uuid of currently processed ltp and default values for mostRecentPeriodEndTimes,
+      #  overwritten by {$p2DiscardIrrelevantPmRecords.output#/offset}'
+    uuid:
+      type: string
       description: >
-        'The interfaceOffset for the currently processed ltp
-        from [/load-raw-cc/offsets=p2DiscardIrrelevantPmRecords/offset/interface-offsets=*],
-        if not existing, initialized with uuid of currently processed ltp and default values for mostRecentPeriodEndTimes,
-        overwritten by {$p2DiscardIrrelevantPmRecords.output#/offset}'
-
+        'uuid of the currently processed interface'
+    former-most-recent-period-end-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'mostRecentPeriodEndTime during past processing of the currently processed interface
+        from { [/load-raw-cc/offsets=p2LoadRawCc/offset/interface-offsets={/load-raw-cc/uuid}/most-recent-period-end-time] or if not existing to be initialized from {2010-11-20T14:00:00+01:00} }'
+    former-most-recent-period-end-time-24:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'mostRecentPeriodEndTime24 during past processing of the currently processed interface
+        from { [/load-raw-cc/offsets=p2LoadRawCc/offset/interface-offsets={/load-raw-cc/uuid}/most-recent-period-end-time-24] or if not existing to be initialized from {2010-11-20T14:00:00+01:00} }'
+    new-most-recent-period-end-time:
+      type: string
+      description: >
+        'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
+        from {$p2DiscardIrrelevantPmRecords.output#/new-most-recent-period-end-time}'
+    new-most-recent-period-end-time-24:
+      type: string
+      description: >
+        'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface
+        from {$p2DiscardIrrelevantPmRecords.output#/new-most-recent-period-end-time-24}'
     mwdi-replica-url:
       type: string
       description: >
@@ -93,6 +118,7 @@ load-raw-cc:
         'Fields filter to be applied to reduce the raw ControlConstruct data
         from [/load-raw-cc/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
     relevant-granularities:
+      # wird dieses Attribut noch benötigt?
       type: string
       enum:
         - ':GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$'

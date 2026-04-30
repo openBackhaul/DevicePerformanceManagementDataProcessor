@@ -10,6 +10,11 @@ participant "p2DiscardIrrelevant\nPmRecords" as cur
 
 
 requestor -> cur: { [historicalPerformanceDataList],\n{offset} }
+note right requestor #Cyan
+  replace {offset} by
+  formerMostRecentPeriodEndTime and
+  formerMostRecentPeriodEndTime24
+end note
 activate cur
 
   note over cur
@@ -17,28 +22,51 @@ activate cur
       newMostRecentPeriodEndTime
       newMostRecentPeriodEndTime24
   end note
-
-
-loop FOR EACH record in [historicalPerformanceDataList]
-
-  note over cur
-    IF record.periodEndTime is not newer than:
-      - 15min: /offset/mostRecentPeriodEndTime
-      - 24h: /offset/mostRecentPeriodEndTime24
-    THEN discard record
+  note over cur #Cyan
+    Initializes:
+      received = { [day, count] }
   end note
 
+  loop FOR EACH record in [historicalPerformanceDataList]
+
+    note over cur #LightGray
+      IF record.periodEndTime is not newer than:
+        - 15min: /offset/mostRecentPeriodEndTime
+        - 24h: /offset/mostRecentPeriodEndTime24
+      THEN discard record
+    end note
+    note over cur #Cyan
+      IF record.periodEndTime is not newer than:
+        - 15min: formerMostRecentPeriodEndTime
+        - 24h: formerMostRecentPeriodEndTime24
+      THEN discard record
+    end note
+    note over cur #Cyan
+      add
+      "ELSE { [day, count++] }"
+    end note
+
+    note over cur
+      updateNewMostRecentPeriodEndTime
+    end note
+
+  end loop
+
   note over cur
-    updateNewMostRecentPeriodEndTime
+    updateOffset
   end note
-
-end loop
-
-note over cur
-  updateOffset
-end note
+  note over cur #Cyan
+    delete
+    "updateOffset"
+  end note
 
 requestor <-- cur: { [filteredHistoricalPerformanceDataList],\n{offset} }
+note right requestor #Cyan
+  replace {offset} by
+  newMostRecentPeriodEndTime and
+  newMostRecentPeriodEndTime24 and
+  received
+end note
 
 deactivate cur
 

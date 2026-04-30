@@ -1,6 +1,7 @@
 # Possible output for quality statistics
 
 The possible output for quality statistics could include:
+
 - statistics for several days
 - with following metrics per day:
   - overall datav (%)
@@ -22,7 +23,6 @@ The possible output for quality statistics could include:
   - Note: datav only reported from SDN point of view: we report what data we could gather in relation to what from SDN side is expected to be there
     - if a device is e.g. offline from some time it does not appear in the datav statistics
     - but for APT this may be missing data - systems using datav metrics may have to take this into account
-
 
 ```
 sample-output:
