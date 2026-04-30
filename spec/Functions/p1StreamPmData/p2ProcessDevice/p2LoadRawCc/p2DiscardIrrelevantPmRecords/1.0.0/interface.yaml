@@ -59,7 +59,7 @@ x-javascript-interface:
                 received:
                   type: array
                   description: >
-                    'The received number of 15min PM slices per day seen in the current batch
+                    'The received number of 15min PM slices per date seen in the current batch
                     from [/discard-irrelevant-pm-records/received]'
       error:
         description: 'filteredHistoricalPerformanceDataList and updated offset could not be provided'

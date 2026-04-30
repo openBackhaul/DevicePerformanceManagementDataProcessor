@@ -54,7 +54,7 @@ discard-irrelevant-pm-records:
 
     received:
       type: array
-      x-key: day
+      x-key: date
       description: >
         'Array of received 15min PM slices for the currently processed interface instance in the current batch,
         initialized with empty array,
@@ -62,19 +62,19 @@ discard-irrelevant-pm-records:
       items:
         type: object
         required:
-          - day
+          - date
           - count
         properties:
-          day:
+          date:
             type: integer
             description: >
-              'The day (1-31) parsed from periodEndTime of the currently processed 15min PM slice,
-              new day added, if a new parsed day is seen for the current 15min PM slice'
+              'The date (yyyy-mm-dd) parsed from periodEndTime of the currently processed 15min PM slice,
+              new date added, if a new parsed date is seen for the current 15min PM slice'
           count:
             type: integer
             description: >
-              'The count of received 15min PM slices for the day, initialized by 0,
-              incremented by 1 for each processed and kept 15min PM slice for the specific day'
+              'The count of received 15min PM slices for the date, initialized by 0,
+              incremented by 1 for each processed and kept 15min PM slice for the specific date'
 
     filtered-historical-performance-data-list:
       type: array

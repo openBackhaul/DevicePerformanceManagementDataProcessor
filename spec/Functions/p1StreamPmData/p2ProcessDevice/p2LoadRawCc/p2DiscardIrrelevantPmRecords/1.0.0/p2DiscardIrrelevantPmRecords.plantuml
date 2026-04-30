@@ -20,7 +20,7 @@ activate cur
   end note
   note over cur
     Initializes:
-      received = { [day, count] }
+      received = { [date, count] }
   end note
 
   loop FOR EACH record in [historicalPerformanceDataList]
@@ -34,9 +34,9 @@ activate cur
       THEN
         discard record
       ELSE
-        update received for day parsed
+        update received for date parsed
         from record.periodEndTime as
-        { [day, count++] }
+        { [date, count++] }
     end note
 
     note over cur
