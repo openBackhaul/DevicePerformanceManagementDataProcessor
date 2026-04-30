@@ -1,7 +1,13 @@
 
 const ERRORS = require ('./ErrorsEnum');
 
-let parameterStruct;
+let parameterStruct = {};
+const paramAllowed = [
+  "lower-tx-level-limit",
+  "upper-tx-level-limit",
+  "lower-rx-level-limit",
+  "upper-rx-level-limit"
+]
 
 function checkOutOfRange(value, isTX) {
 
@@ -15,29 +21,53 @@ function checkOutOfRange(value, isTX) {
   return true;
 }
 
+function validateParameters(paramArray) {
+  let res = true;
+  paramArray.forEach(paramElem => {
+    if (paramElem['parameter-name'] == null || paramElem['value'] == null) {
+      res = false;
+    }
+
+    if (!paramAllowed.includes(paramElem['parameter-name'])) {
+      res = false;
+    }
+
+    if (typeof paramElem["value"] != "string") {
+      res = false;
+    }
+
+    parameterStruct[paramElem['parameter-name']] = paramElem['value'];
+  });
+
+  paramAllowed.forEach(paramElem => {
+    if (!parameterStruct.hasOwnProperty(paramElem)) {
+      res = false;
+    }
+  });
+
+  return res;
+}
+
 const p1RemoveOutOfRangeLevels = (input) => {
+
+  // Re-init variable everytime
+  parameterStruct = {};
+
   try {
-    parameterStruct = input["parameters"];
+    const parameters = input["parameters"];
     const performanceData = input["performance-data"];
 
-    // Check paramenters
-    if (!parameterStruct) {
+    // Check parameters
+    if (!parameters) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
-
-      if (parameterStruct["lower-tx-level-limit"] == undefined || typeof parameterStruct["lower-tx-level-limit"] != "string") {
+      if (parameters['parameter'] == null) { 
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct["upper-tx-level-limit"] == undefined || typeof parameterStruct["upper-tx-level-limit"] != "string") {
-        return ERRORS.PARAM_INVALID;
-      }
+      let paramArray = parameters['parameter'];
 
-      if (parameterStruct["lower-rx-level-limit"] == undefined || typeof parameterStruct["lower-rx-level-limit"] != "string") {
-        return ERRORS.PARAM_INVALID;
-      }
-
-      if (parameterStruct["upper-rx-level-limit"] == undefined || typeof parameterStruct["upper-rx-level-limit"] != "string") {
+      if (!validateParameters(paramArray)) {
         return ERRORS.PARAM_INVALID;
       }
     }

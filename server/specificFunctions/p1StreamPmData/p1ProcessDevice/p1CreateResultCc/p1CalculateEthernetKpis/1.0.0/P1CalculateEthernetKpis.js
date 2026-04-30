@@ -1,21 +1,21 @@
-const ERR = require('./ErrorsEnum');
+const ERRORS = require('./ErrorsEnum');
 
 function calculateTransmitTraffic(totalBytesOutput, timePeriod) {
   if (totalBytesOutput == null) {
-    throw new Error(ERR.TOTAL_BYTES_OUTPUT_NOT_PROVIDED);
+    return ERRORS.TOTAL_BYTES_OUTPUT_NOT_PROVIDED;
   }
 
   const bytes = Number(totalBytesOutput);
   const time = Number(timePeriod);
 
   if (Number.isNaN(bytes)) {
-    throw new Error(ERR.TOTAL_BYTES_OUTPUT_INVALID);
+    return ERRORS.TOTAL_BYTES_OUTPUT_INVALID;
   }
   if (timePeriod == null) {
-    throw new Error(ERR.TIME_PERIOD_NOT_PROVIDED);
+    return ERRORS.TIME_PERIOD_NOT_PROVIDED;
   }
   if (Number.isNaN(time) || time <= 0) {
-    throw new Error(ERR.TIME_PERIOD_INVALID);
+    return ERRORS.TIME_PERIOD_INVALID;
   }
 
   return Math.floor((bytes * 8) / (time * 1000000));
@@ -23,20 +23,20 @@ function calculateTransmitTraffic(totalBytesOutput, timePeriod) {
 
 function calculateReceiveTraffic(totalBytesInput, timePeriod) {
   if (totalBytesInput == null) {
-    throw new Error(ERR.TOTAL_BYTES_INPUT_NOT_PROVIDED);
+    return ERRORS.TOTAL_BYTES_INPUT_NOT_PROVIDED;
   }
 
   const bytes = Number(totalBytesInput);
   const time = Number(timePeriod);
 
   if (Number.isNaN(bytes)) {
-    throw new Error(ERR.TOTAL_BYTES_INPUT_INVALID);
+    return ERRORS.TOTAL_BYTES_INPUT_INVALID;
   }
   if (timePeriod == null) {
-    throw new Error(ERR.TIME_PERIOD_NOT_PROVIDED);
+    return ERRORS.TIME_PERIOD_NOT_PROVIDED;
   }
   if (Number.isNaN(time) || time <= 0) {
-    throw new Error(ERR.TIME_PERIOD_INVALID);
+    return ERRORS.TIME_PERIOD_INVALID;
   }
 
   return Math.floor((bytes * 8) / (time * 1000000));
@@ -44,20 +44,20 @@ function calculateReceiveTraffic(totalBytesInput, timePeriod) {
 
 function calculateFrameLossInput(err, drop) {
   if (err == null) {
-    throw new Error(ERR.ERRORED_FRAMES_INPUT_NOT_PROVIDED);
+    return ERRORS.ERRORED_FRAMES_INPUT_NOT_PROVIDED;
   }
   if (drop == null) {
-    throw new Error(ERR.DROPPED_FRAMES_INPUT_NOT_PROVIDED);
+    return ERRORS.DROPPED_FRAMES_INPUT_NOT_PROVIDED;
   }
 
   const errNum = Number(err);
   const dropNum = Number(drop);
 
   if (Number.isNaN(errNum)) {
-    throw new Error(ERR.ERRORED_FRAMES_INPUT_INVALID);
+    return ERRORS.ERRORED_FRAMES_INPUT_INVALID;
   }
   if (Number.isNaN(dropNum)) {
-    throw new Error(ERR.DROPPED_FRAMES_INPUT_INVALID);
+    return ERRORS.DROPPED_FRAMES_INPUT_INVALID;
   }
 
   const safeErr = Math.max(0, errNum);
@@ -68,20 +68,20 @@ function calculateFrameLossInput(err, drop) {
 
 function calculateFrameLossOutput(err, drop) {
   if (err == null) {
-    throw new Error(ERR.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED);
+    return ERRORS.ERRORED_FRAMES_OUTPUT_NOT_PROVIDED;
   }
   if (drop == null) {
-    throw new Error(ERR.DROPPED_FRAMES_OUTPUT_NOT_PROVIDED);
+    return ERRORS.DROPPED_FRAMES_OUTPUT_NOT_PROVIDED;
   }
 
   const errNum = Number(err);
   const dropNum = Number(drop);
 
   if (Number.isNaN(errNum)) {
-    throw new Error(ERR.ERRORED_FRAMES_OUTPUT_INVALID);
+    return ERRORS.ERRORED_FRAMES_OUTPUT_INVALID;
   }
   if (Number.isNaN(dropNum)) {
-    throw new Error(ERR.DROPPED_FRAMES_OUTPUT_INVALID);
+    return ERRORS.DROPPED_FRAMES_OUTPUT_INVALID;
   }
 
   const safeErr = Math.max(0, errNum);
@@ -90,17 +90,16 @@ function calculateFrameLossOutput(err, drop) {
   return safeErr + safeDrop;
 }
 
-
 function p1CalculateEthernetKpis(input) {
   try {
     if (!input || !input['historical-performance-data']) {
-      throw new Error(ERR.HISTORICAL_DATA_NOT_PROVIDED);
+      return ERRORS.HISTORICAL_DATA_NOT_PROVIDED;
     }
 
     const dataList = input['historical-performance-data'];
 
     if (!Array.isArray(dataList) || dataList.length === 0) {
-      throw new Error(ERR.HISTORICAL_DATA_INCOMPLETE);
+      return ERRORS.HISTORICAL_DATA_INCOMPLETE;
     }
 
     const result = dataList.map(item => {
@@ -111,11 +110,13 @@ function p1CalculateEthernetKpis(input) {
           item['total-bytes-output'],
           item['time-period']
         );
-      } catch (error) {
-        if (Object.values(ERR).includes(error.message)) {
-          throw error;
+
+        if (typeof transmitTraffic === "string") {
+          return ERRORS.TRANSMIT_TRAFFIC_ERROR;
         }
-        throw new Error(ERR.TRANSMIT_TRAFFIC_ERROR);
+
+      } catch (error) {
+        return ERRORS.TRANSMIT_TRAFFIC_ERROR;
       }
 
       try {
@@ -123,11 +124,12 @@ function p1CalculateEthernetKpis(input) {
           item['total-bytes-input'],
           item['time-period']
         );
-      } catch (error) {
-        if (Object.values(ERR).includes(error.message)) {
-          throw error;
+
+        if (typeof receiveTraffic === "string") {
+          return ERRORS.RECEIVE_TRAFFIC_ERROR;
         }
-        throw new Error(ERR.RECEIVE_TRAFFIC_ERROR);
+      } catch (error) {
+        return ERRORS.RECEIVE_TRAFFIC_ERROR;
       }
 
       try {
@@ -135,11 +137,12 @@ function p1CalculateEthernetKpis(input) {
           item['errored-frames-input'],
           item['dropped-frames-input']
         );
-      } catch (error) {
-        if (Object.values(ERR).includes(error.message)) {
-          throw error;
+
+        if (typeof frameLossInput === "string") {
+          return ERRORS.FRAME_LOSS_INPUT_ERROR;
         }
-        throw new Error(ERR.FRAME_LOSS_INPUT_ERROR);
+      } catch (error) {
+        return ERRORS.FRAME_LOSS_INPUT_ERROR;
       }
 
       try {
@@ -147,11 +150,12 @@ function p1CalculateEthernetKpis(input) {
           item['errored-frames-output'],
           item['dropped-frames-output']
         );
-      } catch (error) {
-        if (Object.values(ERR).includes(error.message)) {
-          throw error;
+
+        if (typeof frameLossOutput === "string") {
+          return ERRORS.FRAME_LOSS_OUTPUT_ERROR;
         }
-        throw new Error(ERR.FRAME_LOSS_OUTPUT_ERROR);
+      } catch (error) {
+        return ERRORS.FRAME_LOSS_OUTPUT_ERROR;
       }
 
       return {
@@ -163,16 +167,16 @@ function p1CalculateEthernetKpis(input) {
       };
     });
 
+    if (typeof result === "object" && typeof result[0] === "string") {
+      return result[0];
+    }
+
     return {
       'historical-performance-data': result
     };
 
   } catch (error) {
-
-    if (Object.values(ERR).includes(error.message)) {
-      throw error;
-    }
-    throw new Error(ERR.GENERAL_ERROR);
+    return ERRORS.GENERAL_ERROR;
   }
 }
 

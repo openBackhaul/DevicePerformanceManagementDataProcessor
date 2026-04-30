@@ -1,5 +1,5 @@
+const ERRORS = require('./ErrorsEnum');
 const p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
-const ERRORS = require ('./ErrorsEnum');
 
 const performanceStruct1 = {
   "es": 0,
@@ -13,9 +13,9 @@ const performanceStruct1 = {
   "rx-level-max": 10000,
   "rx-level-avg": 5000,
   "time-xstates-list": [
-    {"transmission-mode": "A"},
-    {"transmission-mode": "B"},
-    {"transmission-mode": "C"},
+    { "transmission-mode": "A" },
+    { "transmission-mode": "B" },
+    { "transmission-mode": "C" },
   ],
   "interval-capacity": 0,
   "snir-min": 0,
@@ -40,9 +40,9 @@ const performanceStruct2 = {
   "rx-level-max": 100000,
   "rx-level-avg": 5000,
   "time-xstates-list": [
-    {"transmission-mode": "A"},
-    {"transmission-mode": "B"},
-    {"transmission-mode": "C"},
+    { "transmission-mode": "A" },
+    { "transmission-mode": "B" },
+    { "transmission-mode": "C" },
   ],
   "interval-capacity": 0,
   "snir-min": 0,
@@ -66,9 +66,9 @@ const wrongPerformanceStruct1 = {
   "rx-level-max": 100000,
   "rx-level-avg": 5000,
   "time-xstates-list": [
-    {"transmission-mode": "A"},
-    {"transmission-mode": "B"},
-    {"transmission-mode": "C"},
+    { "transmission-mode": "A" },
+    { "transmission-mode": "B" },
+    { "transmission-mode": "C" },
   ],
   "interval-capacity": 0,
   "snir-min": 0,
@@ -82,6 +82,40 @@ const wrongPerformanceStruct1 = {
 }
 
 const parameterStruct1 = {
+  "function-name": "p1RemoveOutOfRangeLevels",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lower-tx-level-limit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "upper-tx-level-limit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "lower-rx-level-limit",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "1000"
+    },
+    {
+      "parameter-name": "upper-rx-level-limit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "10000"
+    }
+  ],
+  "sub-function": []
+};
+
+
+const OLDparameterStruct1 = {
   "lower-tx-level-limit": "10",
   "upper-tx-level-limit": "100",
   "lower-rx-level-limit": "1000",
@@ -105,11 +139,11 @@ describe('Positive Tests - Happy Path @positive', () => {
 
   test('All levels are ok @positive', () => {
     expect(p1RemoveOutOfRangeLevels({
-        "performance-data": performanceStruct1,
-        "parameters": parameterStruct1
+      "performance-data": performanceStruct1,
+      "parameters": parameterStruct1
     }))
-    .toMatchObject({
-      "performance-data": performanceStruct1
+      .toMatchObject({
+        "performance-data": performanceStruct1
       });
   });
 
@@ -138,7 +172,7 @@ describe('Negative Tests - Error Cases @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,
     }))
-    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+      .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Missing parameters (undefined) @negative', () => {
@@ -146,7 +180,7 @@ describe('Negative Tests - Error Cases @negative', () => {
       "performance-data": performanceStruct2,
       "parameters": undefined
     }))
-    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+      .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Missing parameters (null) @negative', () => {
@@ -154,7 +188,7 @@ describe('Negative Tests - Error Cases @negative', () => {
       "performance-data": performanceStruct2,
       "parameters": null
     }))
-    .toBe(ERRORS.PARAM_NOT_PROVIDED);
+      .toBe(ERRORS.PARAM_NOT_PROVIDED);
   });
 
   test('Missing parameters (string) @negative', () => {
@@ -162,7 +196,7 @@ describe('Negative Tests - Error Cases @negative', () => {
       "performance-data": performanceStruct2,
       "parameters": "ciao"
     }))
-    .toBe(ERRORS.PARAM_INVALID);
+      .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('Missing some property of parameters @negative', () => {
@@ -170,7 +204,7 @@ describe('Negative Tests - Error Cases @negative', () => {
       "performance-data": performanceStruct2,
       "parameters": wrongParameterStruct1
     }))
-    .toBe(ERRORS.PARAM_INVALID);
+      .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('String on property of parameters @negative', () => {
@@ -178,14 +212,14 @@ describe('Negative Tests - Error Cases @negative', () => {
       "performance-data": performanceStruct2,
       "parameters": wrongParameterStruct2
     }))
-    .toBe(ERRORS.PARAM_INVALID);
+      .toBe(ERRORS.PARAM_INVALID);
   });
 
   test('Missing performance data @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "parameters": parameterStruct1
     }))
-    .toBe(ERRORS.PERF_NOT_PROVIDED);
+      .toBe(ERRORS.PERF_NOT_PROVIDED);
   });
 
   test('Missing some property of performance @negative', () => {
@@ -193,7 +227,7 @@ describe('Negative Tests - Error Cases @negative', () => {
       "performance-data": wrongPerformanceStruct1,
       "parameters": parameterStruct1
     }))
-    .toBe(ERRORS.PERF_INVALID);
+      .toBe(ERRORS.PERF_INVALID);
   });
 
 });

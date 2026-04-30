@@ -52,7 +52,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
   });
 
   test('should filter records correctly (full scenario)', () => {
-    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
@@ -66,7 +66,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
   });
 
   test('should filter records correctly (full scenario) - only 15 minutes', () => {
-    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
@@ -80,7 +80,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
   });
 
   test('should filter records correctly (full scenario) - only 15 minutes, entries already processed', () => {
-    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
@@ -94,7 +94,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
   });
 
   test('should filter records correctly (full scenario) - only 24 hours', () => {
-    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
@@ -108,7 +108,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
   });
 
   test('should filter records correctly (full scenario) - only 24 hours, entries already processed', () => {
-    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
@@ -163,7 +163,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
   });
 
   test('load real data', () => {
-    let dataFile = fs.readFileSync(__dirname + '/historicalDataFull.json', 'utf8');
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalDataList = JSON.parse(dataFile);
 
     const input = {

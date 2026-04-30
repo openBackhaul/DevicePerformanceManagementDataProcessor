@@ -1,35 +1,73 @@
 const ERRORS = require('./ErrorsEnum');
 
-let parameterStruct;
+let parameterStruct = {};
+const paramAllowed = [
+  "lower-temperature-limit",
+  "upper-temperature-limit"
+]
 
 // DAMN JavaScript
 function isThisNaN(value) {
   return value !== value
 };
 
+function validateParameters(paramArray) {
+  let res = true;
+  paramArray.forEach(paramElem => {
+    if (paramElem['parameter-name'] == null || paramElem['value'] == null) {
+      res = false;
+    }
+
+    if (!paramAllowed.includes(paramElem['parameter-name'])) {
+      res = false;
+    }
+
+    if (typeof paramElem["value"] != "string") {
+      res = false;
+    }
+
+    let paramValue = parseInt(paramElem["value"]);
+
+    // Check if is Number or also NaN
+    if (typeof paramValue != "number" || isThisNaN(paramValue)) {
+      res = false;
+    }
+
+    parameterStruct[paramElem['parameter-name']] = paramElem['value'];
+  });
+
+  paramAllowed.forEach(paramElem => {
+    if (!parameterStruct.hasOwnProperty(paramElem)) {
+      res = false;
+    }
+  });
+
+  return res;
+}
+
 const p1RemoveOutOfRangeTemperature = (input) => {
+
+  // Re-init variable everytime
+  parameterStruct = {};
+
   try {
-    parameterStruct = input["parameters"];
+    const parameters = input["parameters"];
     const equipmentsArray = input["equipment"];
 
-    // Check paramenters
-    if (!parameterStruct) {
+    // Check parameters
+    if (!parameters && !equipmentsArray) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    if (!parameters) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
-
-      if (parameterStruct["lower-temperature-limit"] == undefined || typeof parameterStruct["lower-temperature-limit"] != "string") {
+      if (parameters['parameter'] == null) {
         return ERRORS.PARAM_INVALID;
       }
+      let paramArray = parameters['parameter'];
 
-      if (parameterStruct["upper-temperature-limit"] == undefined || typeof parameterStruct["upper-temperature-limit"] != "string") {
-        return ERRORS.PARAM_INVALID;
-      }
-
-      let lowParam = parseInt(parameterStruct["lower-temperature-limit"]);
-      let highParam = parseInt(parameterStruct["upper-temperature-limit"]);
-
-      // Check if is Number or also NaN
-      if ((typeof lowParam != "number" || isThisNaN(lowParam)) || (typeof highParam != "number" || isThisNaN(highParam))) {
+      if (!validateParameters(paramArray)) {
         return ERRORS.PARAM_INVALID;
       }
     }
@@ -37,7 +75,7 @@ const p1RemoveOutOfRangeTemperature = (input) => {
     if (!equipmentsArray) {
       return ERRORS.EQUIP_NOT_PROVIDED
     } else {
-      for (let i=0; i < equipmentsArray.length; i++) {
+      for (let i = 0; i < equipmentsArray.length; i++) {
         if (equipmentsArray[i]) {
           const equipData = equipmentsArray[i];
 
@@ -47,7 +85,7 @@ const p1RemoveOutOfRangeTemperature = (input) => {
           }
 
           if ((equipData["actual-equipment"] == undefined) ||
-             (equipData["actual-equipment"] != undefined && typeof equipData["actual-equipment"] != "object")) {
+            (equipData["actual-equipment"] != undefined && typeof equipData["actual-equipment"] != "object")) {
             return ERRORS.EQUIP_INVALID;
           }
 
@@ -79,7 +117,7 @@ const p1RemoveOutOfRangeTemperature = (input) => {
 
     let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
 
-    for (let i=0; i < equipClean.length; i++) {
+    for (let i = 0; i < equipClean.length; i++) {
       if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
         highParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
 
