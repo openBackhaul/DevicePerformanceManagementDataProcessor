@@ -114,7 +114,7 @@ Es ist den konsumieren Tools überlassen die Daten über die einzelnen Batches z
 Das nach Kafka übergebene Datenobjekt hat das folgende Format:
 
 ```yaml
-quality:
+pm-data-quality:
   type: object
   required:
     - device

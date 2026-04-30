@@ -10,6 +10,7 @@ participant "p2LoadRawCc\n" as cur
 database "MWDI ES Replica" as MwdiEs
 participant "p1FieldsFilter\n" as fieldsFilter
 participant "p2DiscardIrrelevant\nPmRecords" as filterPm
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual #Cyan
 
 requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
 activate cur
@@ -31,6 +32,10 @@ activate cur
   note over cur
     Initialize interfaceOffsets
     if not existing
+  end note
+
+  note over cur #Cyan
+    Initialize pmDataQuality
   end note
 
   loop FOR all [/raw-cc/logical-termination-point]
@@ -59,20 +64,20 @@ activate cur
       formerMostRecentPeriodEndTime and
       formerMostRecentPeriodEndTime24
     end note
-
     activate filterPm
-    note over filterPm
-      Discards records that are
-      already processed from
-      historicalPerformanceDataList,
-      updates interfaceOffset
-    end note
-    note over filterPm #Cyan
-      delete
-      "updates interfaceOffset"
-      add
-      "counts received"
-    end note
+
+      note over filterPm
+        Discards records that are
+        already processed from
+        historicalPerformanceDataList,
+        updates interfaceOffset
+      end note
+      note over filterPm #Cyan
+        delete
+        "updates interfaceOffset"
+        add
+        "counts received"
+      end note
 
     cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
     note right cur #Cyan
@@ -81,11 +86,34 @@ activate cur
       newMostRecentPeriodEndTime24 and
       received
     end note
-
     deactivate filterPm
+    note over fieldsFilter #Salmon
+      Bitte überprüfen:
+      Verhält sich das Programm bzgl. MostRecentPeriodEndTime24 wie gewünscht, 
+      wenn in der Vergangenheit schon 24-hours Daten verarbeitet wurden, aber
+      im aktuellen Durchlauf keine 24-hours Daten enthalten sind?
+      Könnte es sein, dass in diesem Fall die MostRecentPeriodEndTime24 aus
+      dem früheren Durchlauf fälschlicherweise mit dem Initialwert von
+      NewMostRecentPeriodEndTime24 überschrieben wird?
+    end note
 
     note right cur
       addBatchTimestamp
+    end note
+
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n{received} }
+    activate calPmQual #Cyan
+
+      note over calPmQual #Cyan
+        calculates the quality
+        of the provided PM data
+      end note
+
+    cur <-- calPmQual: { {interfacePmDataQuality} }
+    deactivate calPmQual
+
+    note right cur #Cyan
+      attach interfacePmDataQuality to pmDataQuality
     end note
 
     note right cur
@@ -110,11 +138,6 @@ activate cur
       formerMostRecentPeriodEndTime24
     end note
 
-    note right cur #Cyan
-      calculate expected from 
-      (formerMostRecentPeriodEndTime - newMostRecentPeriodEndTime) / 15
-    end note
-
     activate filterPm
     note over filterPm
       Discards records that are
@@ -136,13 +159,22 @@ activate cur
       newMostRecentPeriodEndTime24 and
       received
     end note
+    deactivate filterPm
+
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n{received} }
+    activate calPmQual #Cyan
+
+      note over calPmQual #Cyan
+        calculates the quality
+        of the provided PM data
+      end note
+
+    cur <-- calPmQual: { {interfacePmDataQuality} }
+    deactivate calPmQual
 
     note right cur #Cyan
-      calculate expected from 
-      (formerMostRecentPeriodEndTime - newMostRecentPeriodEndTime) / 15
+      attach interfacePmDataQuality to pmDataQuality
     end note
-
-    deactivate filterPm
 
     note right cur
       updateInterfaceOffsets
@@ -151,17 +183,16 @@ activate cur
       delete "updateInterfaceOffsets"
     end note
     note over cur #Cyan
-      [/offsets=p2LoadRawCc/offset/interface-offsets={uuid}/most-recent-period-end-time]=newMostRecentPeriodEndTime
-      [/offsets=p2LoadRawCc/offset/interface-offsets={uuid}/most-recent-period-end-time-24]=newMostRecentPeriodEndTime24
-    end note
-
-    note over cur #Red
-      Hier fehlt noch der Übertrag von received and expected in das quality objekt
+      Update offsets for the
+      currently processed interface
     end note
 
   end loop
 
 requestor <-- cur: { {rawCc},\n[offsets] }
+note right requestor #Cyan
+  add {pmDataQuality}
+end note
 deactivate cur
 
 @enduml

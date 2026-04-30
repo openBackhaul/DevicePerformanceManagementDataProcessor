@@ -161,12 +161,12 @@ x-javascript-interface:
                   former-most-recent-period-end-time:
                     type: string
                     description: >
-                      'mostRecentPeriodEndTime during past processing of the currently processed interface
+                      'mostRecentPeriodEndTime during former processing of the currently processed interface
                       from [/load-raw-cc/former-most-recent-period-end-time]'
                   former-most-recent-period-end-time-24:
                     type: string
                     description: >
-                      'mostRecentPeriodEndTime24 during past processing of the currently processed interface
+                      'mostRecentPeriodEndTime24 during former processing of the currently processed interface
                       from [/load-raw-cc/former-most-recent-period-end-time-24]'
         output:
           success:
@@ -194,6 +194,10 @@ x-javascript-interface:
                       type: string
                       description: >
                         'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface'
+                    received:
+                      type: object
+                      description: >
+                        'Number of received 15min PM records categorized by date'
           error:
             description: 'filteredHistoricalPerformanceDataList could not be provided'
             content:
@@ -247,6 +251,59 @@ x-javascript-interface:
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
                       - 'general processing error'
+      p1CalculateInterfacePmDataQuality:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - uuid
+                  - former-most-recent-period-end-time
+                  - new-most-recent-period-end-time
+                  - received
+                properties:
+                  uuid:
+                    type: string
+                    description: >
+                      'uuid of the currently processed interface
+                      from [/load-raw-cc/uuid]'
+                  former-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime during former processing of the currently processed interface
+                      from [/load-raw-cc/former-most-recent-period-end-time]'
+                  new-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
+                      from [/load-raw-cc/new-most-recent-period-end-time]'
+                  received:
+                    type: object
+                    description: >
+                      'Number of received 15min PM records categorized by date
+                      from [/load-raw-cc/received]'
+        output:
+          success:
+            description: 'Interface PM data quality calculated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - interface-pm-data-quality
+                  properties:
+                    interface-pm-data-quality:
+                      type: object
+                      description: >
+                        'PM data quality level at the currently processed interface'
+          error:
+            description: 'Interface PM data quality could not be calculated'
+            content:
+              application/json:
+                schema:
+                  type: string
       updateInterfaceOffsets:
         input:
           required: true
