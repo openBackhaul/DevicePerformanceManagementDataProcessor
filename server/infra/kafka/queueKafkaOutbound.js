@@ -1,59 +1,79 @@
-const { getParamFromFunction } = require("../../utils/functionTree");
-const { readKafkaAddress } = require("../../utils/ltpResolution");
 const redisQueue = require("../redis/redisStreamQueue");
 
-async function run(request) {
-  const { parameters, configFile, logger } = request;
-  const outputFormat = request.output;
+function normalizeOutputs(request) {
+  const output = request.outputs || request.output;
 
-  if (!parameters || !configFile || outputFormat === undefined) {
-    throw new Error("parameters, configFile and outputFormat are mandatory");
+  if (!output) {
+    throw new Error("output or outputs is mandatory");
   }
 
-  const formats = Array.isArray(outputFormat) ? outputFormat : [outputFormat];
+  return Array.isArray(output) ? output : [output];
+}
+
+function normalizeOutputMessage(output) {
+  const mountName =
+    output.mountName ||
+    output.deviceId ||
+    output.devicId ||
+    output["mount-name"] ||
+    null;
+
+  return {
+    targetConsumer: String(output.targetConsumer || "").toUpperCase(),
+    messageType: output.messageType || "PERFORMANCE_OUTPUT",
+    mountName,
+    correlationId: output.correlationId || null,
+    payloadVersion: output.payloadVersion || output.version || "1.0",
+    eventTime: output.eventTime || output.batchTimestamp || new Date().toISOString(),
+    payload: output.payload || {}
+  };
+}
+
+/**
+ * Request:
+ * {
+ *   output: {
+ *     targetConsumer,
+ *     messageType,
+ *     mountName,
+ *     correlationId,
+ *     payloadVersion,
+ *     payload
+ *   }
+ * }
+ *
+ * Response:
+ * {
+ *   queuedResultList
+ * }
+ */
+async function run(request) {
+  const { logger } = request;
+  const outputs = normalizeOutputs(request);
   const queuedResultList = [];
 
   await redisQueue.ensureKafkaOutboundGroup(logger);
 
-  for (const format of formats) {
-    const kafkaClientUuid = getParamFromFunction(
-      parameters,
-      "p1TransmittingKafka",
-      format.formatName,
-      null
-    );
+  for (const output of outputs) {
+    const normalized = normalizeOutputMessage(output);
 
-    if (!kafkaClientUuid) {
-      // Testing purpose: For tracking in the response, we optimistically mark it as QUEUED. If enqueueing fails, it will be retried and marked as failed in the logs, but won't be reflected in the response.
-      /* queuedResultList.push({
-        formatName: format.formatName,
+    if (!normalized.targetConsumer) {
+      queuedResultList.push({
         status: "SKIPPED",
-        reason: "No kafka client configured"
-      }); */
+        reason: "targetConsumer is mandatory",
+        mountName: normalized.mountName
+      });
       continue;
     }
 
-    const kafkaClient = await readKafkaAddress(configFile, kafkaClientUuid);
+    await redisQueue.enqueueKafkaOutbound(normalized, logger);
 
-    await redisQueue.enqueueKafkaOutbound(
-      {
-        formatName: format.formatName,
-        kafkaClientUuid,
-        topicName: kafkaClient.topicName,
-        clientId: kafkaClient.clientId,
-        brokerList: kafkaClient.brokerList,
-        message: format
-      },
-      logger
-    );
-
-    // Testing purpose: For tracking in the response, we optimistically mark it as QUEUED. If enqueueing fails, it will be retried and marked as failed in the logs, but won't be reflected in the response.
-    /* queuedResultList.push({
-      formatName: format.formatName,
-      kafkaClientUuid,
-      topicName: kafkaClient.topicName,
+    queuedResultList.push({
+      targetConsumer: normalized.targetConsumer,
+      messageType: normalized.messageType,
+      mountName: normalized.mountName,
       status: "QUEUED"
-    }); */
+    });
   }
 
   return { queuedResultList };

@@ -10,7 +10,9 @@
     "lastReplicaTime": "1970-06-01T00:00:00.000Z",
     "workerIdleSleepMs": 1000,
     "shutdownGraceMs": 30000,
-    "httpPort": 8080
+    "httpPort": 8080,
+    "kafkaOutboundConcurrency": 1,
+    "kafkaOutboundBatchSize": 500
   },
   "redis": {
     "url": "redis://127.0.0.1:6379",

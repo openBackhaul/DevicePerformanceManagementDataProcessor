@@ -1,34 +1,55 @@
 const redisQueue = require("../../infra/redis/redisStreamQueue");
-const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/P1TransmittingKafka");
+const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1TransmittingKafka/P1TransmittingKafka");
 const { sleep } = require("../../utils/retry");
 
-async function handleKafkaOutboundMessage(message, context) {
-  const { id, message: fields } = message;
+function parseRedisPayload(rawPayload) {
+  if (!rawPayload) {
+    return {};
+  }
 
   try {
-    await p1TransmittingKafka.run({
-      parameters: context.transmitKafkaParameters,
-      configFile: context.configFile,
-      outputFormat: {
-        formatName: fields.formatName,
-        outputFormat: JSON.parse(fields.message)
-      },
-      logger: context.logger
-    });
-
-    await redisQueue.ackKafkaOutbound(id, context.logger);
-    await redisQueue.deleteKafkaOutboundMessage(id, context.logger);
+    return JSON.parse(rawPayload);
   } catch (error) {
-    context.logger.error(
-      {
-        messageId: id,
-        error: error.message || error
-      },
-      "Kafka outbound send failed"
-    );
-
-    await sleep(5000);
+    return {};
   }
+}
+
+function parseRedisMessage(redisMessage) {
+  const fields = redisMessage.message || {};
+
+  return {
+    redisMessageId: redisMessage.id,
+    targetConsumer: fields.targetConsumer,
+    messageType: fields.messageType,
+    mountName: fields.mountName || null,
+    correlationId: fields.correlationId || null,
+    payloadVersion: fields.payloadVersion || "1.0",
+    eventTime: fields.eventTime,
+    payload: parseRedisPayload(fields.payload)
+  };
+}
+
+async function processKafkaOutboundBatch(messages, context) {
+  if (!messages || messages.length === 0) {
+    return;
+  }
+
+  const outputMessages = messages.map(parseRedisMessage);
+
+  await p1TransmittingKafka.run({
+    outputMessages,
+    logger: context.logger
+  });
+
+  for (const msg of messages) {
+    await redisQueue.ackKafkaOutbound(msg.id, context.logger);
+    await redisQueue.deleteKafkaOutboundMessage(msg.id, context.logger);
+  }
+
+  context.logger.info(
+    { messageCount: messages.length },
+    "Kafka outbound batch sent successfully"
+  );
 }
 
 async function kafkaOutboundWorkerLoop(context, consumerName) {
@@ -41,26 +62,27 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
       context.logger
     );
 
-    for (const message of reclaimed) {
-      if (context.appState.isShuttingDown) break;
-      await handleKafkaOutboundMessage(message, context);
+    if (reclaimed.length > 0) {
+      await processKafkaOutboundBatch(reclaimed, context);
+      continue;
     }
 
     const streams = await redisQueue.readNextKafkaOutbound(
       consumerName,
       5000,
-      10,
+      context.batchSize || 500,
       context.logger
     );
 
+    let batch = [];
+
     for (const stream of streams) {
-      for (const message of stream.messages || []) {
-        if (context.appState.isShuttingDown) break;
-        await handleKafkaOutboundMessage(message, context);
-      }
+      batch = batch.concat(stream.messages || []);
     }
 
-    if (!streams.length && !reclaimed.length) {
+    if (batch.length > 0) {
+      await processKafkaOutboundBatch(batch, context);
+    } else {
       await sleep(1000);
     }
   }
@@ -68,7 +90,7 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
 
 async function startKafkaOutboundWorkerPool(context) {
   const workers = [];
-  const workerCount = context.workerCount || 2;
+  const workerCount = context.workerCount || 1;
 
   for (let i = 0; i < workerCount; i += 1) {
     const consumerName = `${context.instanceId}-kafka-outbound-${i + 1}`;
