@@ -13,7 +13,7 @@ function buildProducerConfig(options) {
   const brokers =
     options && Array.isArray(options.brokers) && options.brokers.length > 0
       ? options.brokers
-      : String(process.env.KAFKA_BROKERS || "127.0.0.1:9092")
+      : String(global.KAFKA_BROKERS || "127.0.0.1:9092")
           .split(",")
           .map((x) => x.trim())
           .filter(Boolean);

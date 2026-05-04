@@ -1,4 +1,14 @@
 const redisQueue = require("../redis/redisStreamQueue");
+const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
+
+const DEFAULT_MAX_REDIS_PAYLOAD_BYTES = 512 * 1024;
+
+function getMaxRedisPayloadBytes() {
+  const configured = Number(process.env.MAX_REDIS_KAFKA_PAYLOAD_BYTES);
+  return Number.isFinite(configured) && configured > 0
+    ? configured
+    : DEFAULT_MAX_REDIS_PAYLOAD_BYTES;
+}
 
 function normalizeOutputs(request) {
   const output = request.outputs || request.output;
@@ -24,31 +34,64 @@ function normalizeOutputMessage(output) {
     mountName,
     correlationId: output.correlationId || null,
     payloadVersion: output.payloadVersion || output.version || "1.0",
-    eventTime: output.eventTime || output.batchTimestamp || new Date().toISOString(),
-    payload: output.payload || {}
+    eventTime: output.eventTime || output.batchTimestamp || new Date().toJSON(),
+    payload: output.payload === undefined ? {} : output.payload
+  };
+}
+
+async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
+  const serializedPayload = JSON.stringify(normalized.payload);
+  const payloadBytes = Buffer.byteLength(serializedPayload, "utf8");
+  const maxRedisPayloadBytes = getMaxRedisPayloadBytes();
+
+  if (payloadBytes <= maxRedisPayloadBytes) {
+    return {
+      targetConsumer: normalized.targetConsumer,
+      messageType: normalized.messageType,
+      mountName: normalized.mountName,
+      correlationId: normalized.correlationId,
+      payloadVersion: normalized.payloadVersion,
+      eventTime: normalized.eventTime,
+      payloadStorage: "REDIS",
+      payload: serializedPayload,
+      payloadRefId: "",
+      payloadBytes
+    };
+  }
+
+  const payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
+    dataStoreEsClient,
+    targetConsumer: normalized.targetConsumer,
+    mountName: normalized.mountName,
+    payload: normalized.payload,
+    payloadBytes,
+    logger
+  });
+
+  return {
+    targetConsumer: normalized.targetConsumer,
+    messageType: normalized.messageType,
+    mountName: normalized.mountName,
+    correlationId: normalized.correlationId,
+    payloadVersion: normalized.payloadVersion,
+    eventTime: normalized.eventTime,
+    payloadStorage: "ES",
+    payload: "",
+    payloadRefId,
+    payloadBytes
   };
 }
 
 /**
  * Request:
  * {
- *   output: {
- *     targetConsumer,
- *     messageType,
- *     mountName,
- *     correlationId,
- *     payloadVersion,
- *     payload
- *   }
- * }
- *
- * Response:
- * {
- *   queuedResultList
+ *   output or outputs,
+ *   dataStoreEsClient, // mandatory only when payload is larger than MAX_REDIS_KAFKA_PAYLOAD_BYTES
+ *   logger
  * }
  */
 async function run(request) {
-  const { logger } = request;
+  const { logger, dataStoreEsClient } = request;
   const outputs = normalizeOutputs(request);
   const queuedResultList = [];
 
@@ -66,12 +109,20 @@ async function run(request) {
       continue;
     }
 
-    await redisQueue.enqueueKafkaOutbound(normalized, logger);
+    const queueMessage = await buildRedisQueueMessage(
+      normalized,
+      dataStoreEsClient,
+      logger
+    );
+
+    await redisQueue.enqueueKafkaOutbound(queueMessage, logger);
 
     queuedResultList.push({
-      targetConsumer: normalized.targetConsumer,
-      messageType: normalized.messageType,
-      mountName: normalized.mountName,
+      targetConsumer: queueMessage.targetConsumer,
+      messageType: queueMessage.messageType,
+      mountName: queueMessage.mountName,
+      payloadStorage: queueMessage.payloadStorage,
+      payloadBytes: queueMessage.payloadBytes,
       status: "QUEUED"
     });
   }

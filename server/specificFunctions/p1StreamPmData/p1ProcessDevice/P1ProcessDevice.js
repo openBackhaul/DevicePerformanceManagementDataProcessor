@@ -3,7 +3,7 @@ const p1CreateResultCc = require("./p1CreateResultCc/P1CreateResultCc");
 const redisQueueKafkaOutbound = require("../../../infra/kafka/queueKafkaOutbound");
 const p1Storing = require("./p1Storing/P1Storing");
 
-/*function getTargetConsumers() {
+/* function getTargetConsumers() {
   return String(
     global.DPMDP_KAFKA_TARGET_CONSUMERS ||
       "APT,MYCOM,NETEXPLORER,IVERITAS"
@@ -17,40 +17,52 @@ function shouldPublishDataQuality() {
   return String(global.DPMDP_ENABLE_DATAQUALITY_TOPIC || "true") === "true";
 }
 
- function buildKafkaOutputs(mountName, resultCc, correlationId) {
-  const outputs = [];
+async function queueKafkaOutputsOneByOne(request) {
+  const {
+    mountName,
+    resultCc,
+    correlationId,
+    dataStoreEsClient,
+    logger
+  } = request;
 
   for (const targetConsumer of getTargetConsumers()) {
-    outputs.push({
-      targetConsumer,
-      messageType: "PERFORMANCE_OUTPUT",
-      mountName,
-      correlationId,
-      payloadVersion: "1.0",
-      payload: resultCc
+    await redisQueueKafkaOutbound.run({
+      dataStoreEsClient,
+      output: {
+        targetConsumer,
+        messageType: "PERFORMANCE_OUTPUT",
+        mountName,
+        correlationId,
+        payloadVersion: "1.0",
+        payload: resultCc
+      },
+      logger
     });
   }
 
   if (shouldPublishDataQuality()) {
-    outputs.push({
-      targetConsumer: "DATAQUALITY",
-      messageType: "DATA_QUALITY_RESULT",
-      mountName,
-      correlationId,
-      payloadVersion: "1.0",
-      payload: {
-        qualityStatus: "PASSED",
-        checks: [
-          {
-            checkName: "dpmmp-processing-completed",
-            status: "PASSED"
-          }
-        ]
-      }
+    await redisQueueKafkaOutbound.run({
+      dataStoreEsClient,
+      output: {
+        targetConsumer: "DATAQUALITY",
+        messageType: "DATA_QUALITY_RESULT",
+        mountName,
+        correlationId,
+        payloadVersion: "1.0",
+        payload: {
+          qualityStatus: "PASSED",
+          checks: [
+            {
+              checkName: "dpmmp-processing-completed",
+              status: "PASSED"
+            }
+          ]
+        }
+      },
+      logger
     });
   }
-
-  return outputs;
 } */
 
 /**
@@ -117,14 +129,13 @@ async function run(request) {
 
     const correlationId = `dpmdp-${resultMountName}-${Date.now()}`;
 
-     await redisQueueKafkaOutbound.run({
-      output: buildKafkaOutputs(
-        resultMountName,
-        createResultCcResponse.resultCc,
-        correlationId
-      ),
-      logger
-    });
+      await queueKafkaOutputsOneByOne({
+        mountName: resultMountName,
+        resultCc: createResultCcResponse.resultCc,
+        correlationId,
+        dataStoreEsClient,
+        logger: request.logger
+    }); 
 
     await p1Storing.run({
       dataStoreEsClient,
@@ -132,7 +143,7 @@ async function run(request) {
       interfaceMetadataList: createResultCcResponse.interfaceMetadataList,
       mountName: resultMountName,
       logger
-    }); */
+    });*/
 
     return {
       resultCc: createResultCcResponse.resultCc,

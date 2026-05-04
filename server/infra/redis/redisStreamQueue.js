@@ -205,7 +205,11 @@ async function enqueueKafkaOutbound(outputMessage, logger) {
     correlationId: outputMessage.correlationId || "",
     payloadVersion: outputMessage.payloadVersion || "1.0",
     eventTime: outputMessage.eventTime || new Date().toISOString(),
-    payload: JSON.stringify(outputMessage.payload || {})
+
+    payloadStorage: outputMessage.payloadStorage || "REDIS",
+    payload: outputMessage.payload || "",
+    payloadRefId: outputMessage.payloadRefId || "",
+    payloadBytes: String(outputMessage.payloadBytes || 0)
   });
 }
 
@@ -217,7 +221,7 @@ async function readNextKafkaOutbound(consumerName, blockMs, count, logger) {
     consumerName,
     { key: KAFKA_OUTBOUND_STREAM, id: ">" },
     {
-      COUNT: count || 500,
+      COUNT: count || 100,
       BLOCK: blockMs || 5000
     }
   );
@@ -240,7 +244,7 @@ async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, logger) {
     minIdleMs,
     "0-0",
     {
-      COUNT: 500
+      COUNT: 100
     }
   );
 
