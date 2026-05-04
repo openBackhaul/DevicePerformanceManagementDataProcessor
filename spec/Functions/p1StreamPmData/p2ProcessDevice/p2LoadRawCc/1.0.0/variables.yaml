@@ -174,7 +174,7 @@ load-raw-cc:
           items:
             type: object
             description: >
-              'PM data quality level at an interfaces
+              'PM data quality level at an interface
               from {$p1CalculateInterfacePmDataQuality.output#/interface-pm-data-quality}'
     #interface-offset:
       #type: object

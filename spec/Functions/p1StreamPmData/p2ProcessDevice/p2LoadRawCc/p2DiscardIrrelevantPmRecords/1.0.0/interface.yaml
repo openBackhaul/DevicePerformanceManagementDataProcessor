@@ -200,17 +200,17 @@ x-javascript-interface:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime
-                        if {$input#granularity-period} indicates 15-MIN
+                        IF {$input#granularity-period} indicates 15-MIN
                           from { max ( {$input#period-end-time}, {$input#new-most-recent-period-end-time} ) }
-                        else
+                        ELSE
                           from {$input#new-most-recent-period-end-time} (unchanged)'
                     new-most-recent-period-end-time-24:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime24
-                        if {$input#granularity-period} indicates 24-HOURS
+                        IF {$input#granularity-period} indicates 24-HOURS
                           from { max ( {$input#period-end-time}, {$input#new-most-recent-period-end-time-24} ) }
-                        else
+                        ELSE
                           from {$input#new-most-recent-period-end-time-24} (unchanged)'
           error:
             description: 'newMostRecentPeriodEndTime could not be provided'
