@@ -1,0 +1,124 @@
+# testing/p1CalculateUtilization/1.0.0/scenarios.yaml
+#
+# Scenario list derived from:
+# - Spec: interface.yaml + variables.yaml
+# - Behavior summary: (early return if not 15min, else aggregate capacity + compute utilization)
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../../server/functions/p1CalculateUtilization/1.0.0/p1CalculateUtilization.js"
+    exportName: "p1CalculateUtilization"
+
+processingSteps: []
+errorMapping: {}
+
+scenarios:
+  # ---------------------------------------------------------
+  # Input validation
+  # ---------------------------------------------------------
+
+  - id: "errHistoricalPerformanceDataNotProvided"
+    description: "Should return error when historical-performance-data is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData not provided"
+
+  - id: "errHistoricalPerformanceDataInvalid"
+    description: "Should return error when historical-performance-data is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+
+  - id: "errAggregationGroupNotProvided"
+    description: "Should return error when aggregation-group is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup not provided"
+
+  - id: "errAggregationGroupInvalid"
+    description: "Should return error when aggregation-group is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup invalid"
+
+  - id: "errResultCcNotProvided"
+    description: "Should return error when result-cc is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc not provided"
+
+  - id: "errResultCcInvalid"
+    description: "Should return error when result-cc is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errGeneralProcessingErrorNullInput"
+    description: "Should return error when input is null"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+
+  # ---------------------------------------------------------
+  # PlantUML branch: IF granularity-period != 15min => return unchanged
+  # (variables.yaml: terminate without change or error message)
+  # ---------------------------------------------------------
+
+  - id: "okTerminateWithoutChangeGranularity24Hours"
+    description: "Should terminate without change when granularity-period is PERIOD-24-HOURS"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okTerminateWithoutChangeGranularityUnknown"
+    description: "Should terminate without change when granularity-period is PERIOD-UNKNOWN"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okTerminateWithoutChangeGranularityNotYetDefined"
+    description: "Should terminate without change when granularity-period is PERIOD-NOT_YET_DEFINED"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  # ---------------------------------------------------------
+  # IF granularity-period == 15min => aggregate capacity + compute utilization
+  # ---------------------------------------------------------
+
+  - id: "okAddTotalAirInterfaceIntervalCapacityGranularity15Min"
+    description: "Should add total-air-interface-interval-capacity when granularity-period is PERIOD-15-MIN"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okAddUtilization_Granularity15Min"
+    description: "Should add utilization when granularity-period is PERIOD-15-MIN"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  # ---------------------------------------------------------
+  # Failure path
+  # Examples: missing interval-capacity data for listed LTPs, total capacity = 0, invalid totals, etc.
+  # ---------------------------------------------------------
+
+  - id: "errUtilizationCouldNotBeAdded"
+    description: "Should return error when utilization could not be added"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be added"
