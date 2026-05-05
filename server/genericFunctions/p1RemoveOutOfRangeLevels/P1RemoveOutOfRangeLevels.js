@@ -58,19 +58,9 @@ const p1RemoveOutOfRangeLevels = (input) => {
     const performanceData = input["performance-data"];
 
     // Check parameters
-<<<<<<< HEAD:genericFunctions/p1RemoveOutOfRangeLevels/1.0.0/P1RemoveOutOfRangeLevels.js
     if (!parameters || parameters['parameter'] == null) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
-=======
-    if (!parameters) {
-      return ERRORS.PARAM_NOT_PROVIDED;
-    } else {
-      if (parameters['parameter'] == null) { 
-        return ERRORS.PARAM_INVALID;
-      }
-
->>>>>>> origin/siae/develop_1.0.0:server/genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels.js
       let paramArray = parameters['parameter'];
 
       if (!validateParameters(paramArray)) {

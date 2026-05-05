@@ -1,9 +1,6 @@
 const ERRORS = require('./ErrorsEnum');
 const p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
-<<<<<<< HEAD:genericFunctions/p1RemoveOutOfRangeLevels/1.0.0/P1RemoveOutOfRangeLevels.test.js
 const ERRORS = require('./ErrorsEnum');
-=======
->>>>>>> origin/siae/develop_1.0.0:server/genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels.test.js
 
 const performanceStruct1 = {
   "es": 0,
