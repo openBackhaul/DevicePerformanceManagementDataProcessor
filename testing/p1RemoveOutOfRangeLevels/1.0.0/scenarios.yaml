@@ -6,7 +6,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../genericFunctions/p1RemoveOutOfRangeLevels/1.0.0/P1RemoveOutOfRangeLevels.js"
+    modulePath: "../../../server/genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels.js"
     exportName: ""
 
 processingSteps: []

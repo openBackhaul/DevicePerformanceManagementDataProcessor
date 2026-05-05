@@ -6,7 +6,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../genericFunctions/p1DiscardIrrelevantPmRecords/1.0.0/P1DiscardIrrelevantPmRecords.js"
+    modulePath: "../../../server/genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords.js"
     exportName: ""
 
 processingSteps: []

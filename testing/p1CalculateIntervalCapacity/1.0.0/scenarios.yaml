@@ -1,6 +1,6 @@
 module:
   functionUnderTest:
-    modulePath: "../../../genericFunctions/p1CalculateIntervalCapacity/1.0.0/P1CalculateIntervalCapacity"
+    modulePath: "../../../server/genericFunctions/p1CalculateIntervalCapacity/P1CalculateIntervalCapacity"
     exportName: ""
 
 # No dependencies/processing steps for this function (no consumed sub-functions)

@@ -6,7 +6,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/1.0.0/P1CalculateEthernetKpis.js"
+    modulePath: "../../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis/P1CalculateEthernetKpis.js"
     exportName: "p1CalculateEthernetKpis"
 
 processingSteps: []

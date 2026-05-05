@@ -7,7 +7,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../genericFunctions/p1CalculateAiCapacity/1.0.0/P1CalculateAiCapacity.js"
+    modulePath: "../../../server/genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity.js"
     exportName: ""
 
 processingSteps: []
