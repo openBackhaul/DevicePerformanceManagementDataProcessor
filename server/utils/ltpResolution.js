@@ -72,6 +72,7 @@ async function readKafkaAddress(configFile, kafkaClientUuid) {
     groupId: kafkaCfg[attrs.KAFKA_CLIENT.GROUP_ID] || "dpmdp-group",
     topicName: kafkaCfg[attrs.KAFKA_CLIENT.TOPIC_NAME] || "",
     type: kafkaCfg.type || "provider",
+    auth: kafkaCfg[attrs.KAFKA_CLIENT.AUTH] || {},
     brokerList: [onfAdapter.remoteAddressToHost(remoteAddress) + ":" + remotePort]
   };
 }

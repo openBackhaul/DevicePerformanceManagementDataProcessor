@@ -195,27 +195,22 @@ async function ensureKafkaOutboundGroup(logger) {
   }
 }
 
-async function enqueueKafkaOutbound(payload, logger) {
+async function enqueueKafkaOutbound(outputMessage, logger) {
   const redis = await getRedisClient(logger);
 
   await redis.xAdd(KAFKA_OUTBOUND_STREAM, "*", {
-    formatName: payload.formatName,
-    kafkaClientUuid: payload.kafkaClientUuid || "",
-    topicName: payload.topicName || "",
-    clientId: payload.clientId || "",
-    brokerList: JSON.stringify(payload.brokerList || []),
-    message: JSON.stringify(payload.message || {}),
-    createdAt: new Date().toISOString()
-  },
-  /* {
-    TRIM: {
-      strategy: "MAXLEN",
-      strategyModifier: "~",
-      threshold: 10
-    }
-  } */
+    targetConsumer: String(outputMessage.targetConsumer || "").toUpperCase(),
+    messageType: outputMessage.messageType || "PERFORMANCE_OUTPUT",
+    mountName: outputMessage.mountName || "",
+    correlationId: outputMessage.correlationId || "",
+    payloadVersion: outputMessage.payloadVersion || "1.0",
+    eventTime: outputMessage.eventTime || new Date().toISOString(),
 
-);
+    payloadStorage: outputMessage.payloadStorage || "REDIS",
+    payload: outputMessage.payload || "",
+    payloadRefId: outputMessage.payloadRefId || "",
+    payloadBytes: String(outputMessage.payloadBytes || 0)
+  });
 }
 
 async function readNextKafkaOutbound(consumerName, blockMs, count, logger) {
@@ -226,7 +221,7 @@ async function readNextKafkaOutbound(consumerName, blockMs, count, logger) {
     consumerName,
     { key: KAFKA_OUTBOUND_STREAM, id: ">" },
     {
-      COUNT: count || 10,
+      COUNT: count || 100,
       BLOCK: blockMs || 5000
     }
   );
@@ -249,7 +244,7 @@ async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, logger) {
     minIdleMs,
     "0-0",
     {
-      COUNT: 10
+      COUNT: 100
     }
   );
 
@@ -276,6 +271,8 @@ module.exports = {
     DEVICE_GROUP,
     RETRY_STREAM,
     RETRY_GROUP,
+    KAFKA_OUTBOUND_STREAM,
+    KAFKA_OUTBOUND_GROUP,
     ensureGroup,
     enqueueMountNames,
     readNext,
