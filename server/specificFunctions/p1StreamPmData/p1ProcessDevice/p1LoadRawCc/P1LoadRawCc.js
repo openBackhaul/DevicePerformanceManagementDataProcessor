@@ -64,8 +64,9 @@ async function filterHistoricalList(
     mostRecentPeriodEndTime24 */
     ...list,
     "relevant-granularities":relevantGranularities,
-    "most-recent-period-end-time": mostRecentPeriodEndTime,
-    "most-recent-period-end-time-24": mostRecentPeriodEndTime24
+    "most-recent-period-end-time": (mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
+    "most-recent-period-end-time-24": (mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
+
   });
 
   //return response.filteredHistoricalPerformanceDataList;
