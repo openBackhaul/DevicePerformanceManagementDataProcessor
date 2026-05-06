@@ -2617,8 +2617,14 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
+                "auth": {
+                  "user-name": "dpmdp",
+                  "password": " >>> password <<< "
+                },
                 "topic-name": "apt_format",
-                "type": "provider"
+                "type": "provider",
+                "client-id": "dpmdp-client",
+                "group-id": "dpmdp-group"
               }
             }
           }
@@ -2637,8 +2643,14 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
+                "auth": {
+                  "user-name": "dpmdp",
+                  "password": " >>> password <<< "
+                },
                 "topic-name": "onf_format",
-                "type": "provider"
+                "type": "provider",
+                "client-id": "dpmdp-client",
+                "group-id": "dpmdp-group"
               }
             }
           }
