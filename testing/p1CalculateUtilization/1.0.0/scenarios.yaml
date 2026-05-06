@@ -7,7 +7,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../server/functions/p1CalculateUtilization/1.0.0/p1CalculateUtilization.js"
+    modulePath: "../../../server/functions/p1CalculateUtilization/p1CalculateUtilization.js"
     exportName: "p1CalculateUtilization"
 
 processingSteps: []
