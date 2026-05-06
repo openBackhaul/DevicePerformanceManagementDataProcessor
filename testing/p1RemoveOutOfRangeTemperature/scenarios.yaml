@@ -7,7 +7,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../server/genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature.js"
+    modulePath: "../../server/genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature.js"
     exportName: ""
 
 processingSteps: []

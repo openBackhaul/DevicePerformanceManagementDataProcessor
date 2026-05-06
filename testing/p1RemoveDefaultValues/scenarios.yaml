@@ -7,7 +7,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
+    modulePath: "../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
     exportName: ""
 
 processingSteps: []

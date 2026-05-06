@@ -4,7 +4,7 @@
  */
 
 const path = require("path");
-const { runFunctionVersionFromScenarios } = require("../../../tools/functionTestRunner");
+const { runFunctionVersionFromScenarios } = require("../../tools/functionTestRunner");
 
 const repoRoot = path.resolve(__dirname, "../../../..");
 

@@ -76,7 +76,7 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
  * Called by generated Jest tests.
  */
 function runFunctionVersionFromScenarios({ repoRoot, functionName, version }) {
-  const baseDir = path.join(repoRoot, "testing", functionName, version);
+  const baseDir = path.join(repoRoot, "testing", functionName);
   const scenariosPath = path.join(baseDir, "scenarios.yaml");
 
   const spec = readYaml(scenariosPath);

@@ -1,0 +1,259 @@
+# testing/p1StreamPmData/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/1.0.0/variables.yaml
+#
+# Purpose:
+# - Spec-driven scenarios for p1StreamPmData 1.0.0
+# - Deterministic: all processing dependencies are mocked (per HLD)
+# - Scenarios cover:
+#   - required input validation for p1LoadParameters input (function-name required)
+#   - happy path: all dependencies succeed
+#   - dependency failures: each step fails and maps to a stable function-level error enum
+#
+
+
+module:
+  functionUnderTest:
+    # TODO: adjust to actual module path in DevicePerformanceManagementDataProcessor
+    modulePath: "../../../genericFunctions/p1StreamPmData/1.0.0/P1StreamPmData.js"
+    exportName: ""
+
+processingSteps:
+  - stepId: "p1LoadParameters"
+    # TODO: adjust path
+    modulePath: "../../../genericFunctions/p1LoadParameters/1.0.0/P1LoadParameters.js"
+    exportName: ""
+
+  - stepId: "p1ResolveEsAddress"
+    # TODO: adjust path
+    modulePath: "../../../genericFunctions/p1ResolveEsAddress/1.0.0/P1ResolveEsAddress.js"
+    exportName: ""
+
+  - stepId: "p1InitKafka"
+    # TODO: adjust path
+    modulePath: "../../../genericFunctions/p1InitKafka/1.0.0/P1InitKafka.js"
+    exportName: ""
+
+  - stepId: "p1MaintainDs"
+    # TODO: adjust path
+    modulePath: "../../../genericFunctions/p1MaintainDs/1.0.0/P1MaintainDs.js"
+    exportName: ""
+
+  - stepId: "p1UpdateMwdiReplica"
+    # TODO: adjust path
+    modulePath: "../../../genericFunctions/p1UpdateMwdiReplica/1.0.0/P1UpdateMwdiReplica.js"
+    exportName: ""
+
+  - stepId: "p1ProcessDevice"
+    # TODO: adjust path
+    modulePath: "../../../genericFunctions/p1ProcessDevice/1.0.0/P1ProcessDevice.js"
+    exportName: ""
+
+errorMapping:
+  # Load parameters
+  "Parameters could not be loaded": "Parameters could not be loaded"
+
+  # Resolve ES address
+  "ES address could not be resolved": "ES address could not be resolved"
+
+  # Init kafka
+  "Kafka session could not be established": "Kafka session could not be established"
+
+  # Maintain datastore
+  "DataStore maintenance could not be processed": "DataStore maintenance could not be processed"
+
+  # Update MWDI replica
+  "Updated CCs could not be replicated": "Updated CCs could not be replicated"
+
+  # Process device
+  "Processing of PM data failed": "Processing of PM data failed"
+
+  # Fallback (optional): if a dependency throws an unknown string
+  "General processing error": "General processing error"
+
+scenarios:
+  # -------------------------
+  # Input validation (spec: p1LoadParameters input requires function-name)
+  # -------------------------
+
+  - id: "errFunctionNameNotProvided"
+    description: "Should return error when function-name is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Parameters could not be loaded"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "throw"
+        # The runner throws this exact string; mapping makes it deterministic.
+        error: "Parameters could not be loaded"
+
+  - id: "errFunctionNameInvalid"
+    description: "Should return error when function-name is not a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Parameters could not be loaded"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "throw"
+        error: "Parameters could not be loaded"
+
+  # -------------------------
+  # Happy path
+  # -------------------------
+
+  - id: "okAllStepsSucceed"
+    description: "Should stream PM data when all processing steps succeed"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "return"
+        fixture: "p1LoadParameters.json"
+
+      # p1StreamPmData will likely resolve multiple ES names (mwdiEsClient, mwdiReplicaEsClient, loggingEsClient, dataStoreEsClient).
+      # If it calls p1ResolveEsAddress multiple times, your runner must support multiple invocations.
+      # If not supported, implement p1ResolveEsAddress adapter to return based on input.es-name, or extend runner.
+      - stepId: "p1ResolveEsAddress"
+        type: "return"
+        fixture: "p1ResolveEsAddress.json"
+
+      - stepId: "p1InitKafka"
+        type: "return"
+        fixture: "p1InitKafka.json"
+
+      - stepId: "p1MaintainDs"
+        type: "return"
+        fixture: "p1MaintainDs.json"
+
+      - stepId: "p1UpdateMwdiReplica"
+        type: "return"
+        fixture: "p1UpdateMwdiReplica.json"
+
+      # p1ProcessDevice is likely invoked N times (for each mount-name).
+      # If your runner doesn't support sequential fixtures per call, you can:
+      # - provide one fixture and keep mount list length 1 in input+updateMwdiReplica fixture
+      # - or extend the runner to support fixture arrays.
+      - stepId: "p1ProcessDevice"
+        type: "return"
+        fixture: "p1ProcessDevice.json"
+
+  # -------------------------
+  # Dependency failure scenarios (deterministic mapping)
+  # -------------------------
+
+  - id: "errLoadParametersFails"
+    description: "Should return error when p1LoadParameters fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Parameters could not be loaded"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "throw"
+        error: "Parameters could not be loaded"
+
+  - id: "errResolveEsAddressFails"
+    description: "Should return error when p1ResolveEsAddress fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "ES address could not be resolved"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "return"
+        fixture: "p1LoadParameters.json"
+      - stepId: "p1ResolveEsAddress"
+        type: "throw"
+        error: "ES address could not be resolved"
+
+  - id: "errInitKafkaFails"
+    description: "Should return error when p1InitKafka fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Kafka session could not be established"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "return"
+        fixture: "p1LoadParameters.json"
+      - stepId: "p1ResolveEsAddress"
+        type: "return"
+        fixture: "p1ResolveEsAddress.json"
+      - stepId: "p1InitKafka"
+        type: "throw"
+        error: "Kafka session could not be established"
+
+  - id: "errMaintainDsFails"
+    description: "Should return error when p1MaintainDs fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "DataStore maintenance could not be processed"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "return"
+        fixture: "p1LoadParameters.json"
+      - stepId: "p1ResolveEsAddress"
+        type: "return"
+        fixture: "p1ResolveEsAddress.json"
+      - stepId: "p1InitKafka"
+        type: "return"
+        fixture: "p1InitKafka.json"
+      - stepId: "p1MaintainDs"
+        type: "throw"
+        error: "DataStore maintenance could not be processed"
+
+  - id: "errUpdateMwdiReplicaFails"
+    description: "Should return error when p1UpdateMwdiReplica fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Updated CCs could not be replicated"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "return"
+        fixture: "p1LoadParameters.json"
+      - stepId: "p1ResolveEsAddress"
+        type: "return"
+        fixture: "p1ResolveEsAddress.json"
+      - stepId: "p1InitKafka"
+        type: "return"
+        fixture: "p1InitKafka.json"
+      - stepId: "p1MaintainDs"
+        type: "return"
+        fixture: "p1MaintainDs.json"
+      - stepId: "p1UpdateMwdiReplica"
+        type: "throw"
+        error: "Updated CCs could not be replicated"
+
+  - id: "errProcessDeviceFails"
+    description: "Should return error when p1ProcessDevice fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Processing of PM data failed"
+    mocks:
+      - stepId: "p1LoadParameters"
+        type: "return"
+        fixture: "p1LoadParameters.json"
+      - stepId: "p1ResolveEsAddress"
+        type: "return"
+        fixture: "p1ResolveEsAddress.json"
+      - stepId: "p1InitKafka"
+        type: "return"
+        fixture: "p1InitKafka.json"
+      - stepId: "p1MaintainDs"
+        type: "return"
+        fixture: "p1MaintainDs.json"
+      - stepId: "p1UpdateMwdiReplica"
+        type: "return"
+        fixture: "p1UpdateMwdiReplica.json"
+      - stepId: "p1ProcessDevice"
+        type: "throw"
+        error: "Processing of PM data failed"

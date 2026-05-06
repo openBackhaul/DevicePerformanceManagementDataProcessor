@@ -4,9 +4,9 @@
  */
 
 const path = require("path");
-const { runFunctionVersionFromScenarios } = require("../../../tools/functionTestRunner");
+const { runFunctionVersionFromScenarios } = require("../../tools/functionTestRunner");
 
-const repoRoot = path.resolve(__dirname, "../../../..");
+const repoRoot = path.resolve(__dirname, "../../..");
 
 describe("p1RemoveOutOfRangeLevels 1.0.0 (generated)", () => {
   runFunctionVersionFromScenarios({
