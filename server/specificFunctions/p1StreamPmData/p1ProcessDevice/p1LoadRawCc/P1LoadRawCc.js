@@ -57,14 +57,19 @@ async function filterHistoricalList(
   mostRecentPeriodEndTime,
   mostRecentPeriodEndTime24
 ) {
-  const response = await p1DiscardIrrelevantPmRecords.run({
-    historicalPerformanceDataList: list,
+  const response = await p1DiscardIrrelevantPmRecords({
+    /* historicalPerformanceDataList: list,
     relevantGranularities,
     mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime24
+    mostRecentPeriodEndTime24 */
+    ...list,
+    "relevant-granularities":relevantGranularities,
+    "most-recent-period-end-time": mostRecentPeriodEndTime,
+    "most-recent-period-end-time-24": mostRecentPeriodEndTime24
   });
 
-  return response.filteredHistoricalPerformanceDataList;
+  //return response.filteredHistoricalPerformanceDataList;
+  return response["filtered-historical-performance-data-list"];
 }
 
 /**

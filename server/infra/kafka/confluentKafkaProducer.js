@@ -31,7 +31,7 @@ function buildProducerConfig(options) {
       String(global.KAFKA_ENABLE_IDEMPOTENCE || "true") === "true",
 
     // Throughput optimization
-    "linger.ms": asNumber(pglobal.KAFKA_LINGER_MS, 50),
+    "linger.ms": asNumber(global.KAFKA_LINGER_MS, 50),
     "batch.size": asNumber(global.KAFKA_BATCH_SIZE, 1048576),
     "batch.num.messages": asNumber(global.KAFKA_BATCH_NUM_MESSAGES, 500),
 

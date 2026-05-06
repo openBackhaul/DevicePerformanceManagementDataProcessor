@@ -33,7 +33,7 @@ const p1DiscardIrrelevantPmRecords = (input) => {
     if (recent24 != undefined && typeof recent24 != "string") {
       return ERRORS.GENERAL_ERROR;
     } else if (recent24 == undefined) {
-      mostRecent24 == new Date(null);  // Process all data
+      mostRecent24 = new Date(null);  // Process all data
     } else {
       mostRecent24 = recent24;
     }
