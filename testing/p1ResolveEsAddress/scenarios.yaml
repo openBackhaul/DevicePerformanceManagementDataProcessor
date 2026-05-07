@@ -1,0 +1,162 @@
+# testing/p1ResolveEsAddress/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ResolveEsAddress/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ResolveEsAddress/1.0.0/variables.yaml
+#
+# Function:
+# - p1ResolveEsAddress (1.0.0)
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress.js"
+    exportName: "run"
+
+processingSteps: []
+
+
+dependencies:
+  - name: "@confluentinc/kafka-javascript"
+  - name: "pino"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errMissingParameters"
+    description: "Should return error when input.parameters is missing (required)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "unknown error occurred"
+
+  - id: "errMissingConfigFile"
+    description: "Should return error when input.config-file is missing (required)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "unknown error occurred"
+
+  - id: "errMissingEsName"
+    description: "Should return error when input.es-name is missing (required)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "unknown error occurred"
+
+  # -------------------------
+  # Spec-defined deterministic error enums
+  # -------------------------
+
+  - id: "errEsNameNotFoundInParameters"
+    description: "Should return 'es-name not found in parameters' when es-name is not present in parameters"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "es-name not found in parameters"
+
+  - id: "errEsClientUuidCouldNotBeResolved"
+    description: "Should return 'es-client-uuid could not be resolved' when es-client UUID cannot be determined"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "es-client-uuid could not be resolved"
+
+  - id: "errEsClientLtpNotFoundInConfigFile"
+    description: "Should return 'es-client LTP could not be found in config-file' when ES client LTP is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "es-client LTP could not be found in config-file"
+
+  - id: "errHttpClientUuidCouldNotBeResolved"
+    description: "Should return 'http-client-uuid could not be resolved' when HTTP client UUID cannot be determined"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "http-client-uuid could not be resolved"
+
+  - id: "errHttpClientLtpNotFoundInConfigFile"
+    description: "Should return 'http-client LTP could not be found in config-file' when HTTP client LTP is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "http-client LTP could not be found in config-file"
+
+  - id: "errTcpClientUuidCouldNotBeResolved"
+    description: "Should return 'tcp-client-uuid could not be resolved' when TCP client UUID cannot be determined"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "tcp-client-uuid could not be resolved"
+
+  - id: "errTcpClientLtpNotFoundInConfigFile"
+    description: "Should return 'tcp-client LTP could not be found in config-file' when TCP client LTP is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "tcp-client LTP could not be found in config-file"
+
+  - id: "errUrlCouldNotBeResolved"
+    description: "Should return 'url could not be resolved' when ES URL cannot be resolved from config-file"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "url could not be resolved"
+
+  - id: "errApiKeyCouldNotBeResolved"
+    description: "Should return 'api-key could not be resolved' when api-key cannot be resolved from config-file"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "api-key could not be resolved"
+
+  - id: "errIndexAliasCouldNotBeResolved"
+    description: "Should return 'index-alias could not be resolved' when index-alias cannot be resolved from config-file"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "index-alias could not be resolved"
+
+  - id: "errServiceRecordsPolicyCouldNotBeResolved"
+    description: "Should return 'service-records-policy could not be resolved' when service-records-policy cannot be resolved"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "service-records-policy could not be resolved"
+
+  - id: "errOperationalStateCouldNotBeResolved"
+    description: "Should return 'operational-state could not be resolved' when operational-state cannot be resolved"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "operational-state could not be resolved"
+
+  - id: "errLifeCycleStateCouldNotBeResolved"
+    description: "Should return 'life-cycle-state could not be resolved' when life-cycle-state could not be resolved"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "life-cycle-state could not be resolved"
+
+  - id: "errUnknownErrorOccurred"
+    description: "Should return 'unknown error occurred' for unexpected/uncategorized failures"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "unknown error occurred"
+
+  # -------------------------
+  # Happy path
+  # -------------------------
+
+  - id: "okResolveEsAddress"
+    description: "Should resolve ES address successfully and return es-address with all required fields"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"

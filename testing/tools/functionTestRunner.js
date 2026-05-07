@@ -3,6 +3,7 @@
  * - reads scenarios.yaml
  * - for each scenario:
  *   - loads input/output fixtures
+ *   - installs dependency mocks (jest.doMock) BEFORE requiring FUT
  *   - installs mocks for each processing step (jest.doMock) based on scenario config
  *   - requires the function under test AFTER mocks
  *   - executes and asserts
@@ -20,6 +21,49 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function installDependencyMocks(deps = []) {
+  for (const dep of deps) {
+    if (!dep?.name) continue;
+
+    if (dep.name === "@confluentinc/kafka-javascript") {
+      // Stub just enough for the require() chain to succeed
+      jest.doMock(
+        "@confluentinc/kafka-javascript",
+        () => ({
+          KafkaJS: {
+            Kafka: function Kafka() {
+              return {
+                producer: () => ({
+                  connect: async () => {},
+                  disconnect: async () => {},
+                  send: async () => {},
+                }),
+              };
+            },
+          },
+        }),
+        { virtual: true }
+      );
+      continue;
+    }
+
+    if (dep.name === "pino") {
+      jest.doMock("pino", () => {
+        return () => ({
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+          trace: jest.fn(),
+        });
+      });
+      continue;
+    }
+
+    throw new Error(`No dependency mock registered for '${dep.name}'`);
+  }
+}
+
 function loadFunctionUnderTest(absModulePath, exportName) {
   const mod = require(absModulePath);
 
@@ -30,14 +74,6 @@ function loadFunctionUnderTest(absModulePath, exportName) {
     }
     return mod;
   }
-
-  jest.mock('pino', () => {
-  return () => ({
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn()
-  });
-});
 
   const fn = mod[exportName];
   if (typeof fn !== "function") {
@@ -66,14 +102,15 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
         }
 
         if (m.type === "throw") {
-          if (isAsync) {
-            return Promise.reject(m.error);
-          }
+          if (isAsync) return Promise.reject(m.error);
           throw m.error;
         }
 
         throw new Error(`Unknown mock type '${m.type}' for step '${step.stepId}'`);
       });
+
+      // If exportName is empty, assume module.exports = fn
+      if (!step.exportName) return fn;
 
       return { [step.exportName]: fn };
     });
@@ -83,14 +120,15 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
 /**
  * Called by generated Jest tests.
  */
-function runFunctionVersionFromScenarios({ repoRoot, functionName, version }) {
-  const baseDir = path.join(repoRoot, "testing", functionName, version);
+function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
+  const baseDir = path.join(repoRoot, "testing", functionName);
   const scenariosPath = path.join(baseDir, "scenarios.yaml");
 
   const spec = readYaml(scenariosPath);
 
   const fut = spec?.module?.functionUnderTest;
   const processingSteps = spec.processingSteps || [];
+  const dependencies = spec.dependencies || [];
   const scenarios = spec.scenarios || [];
 
   if (!fut?.modulePath) {
@@ -102,13 +140,15 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName, version }) {
       jest.resetModules();
       jest.clearAllMocks();
 
-      const scenarioDir = path.join(baseDir,"fixture", s.id);
+      // MUST mock dependencies before requiring FUT or any of its transitive imports
+      installDependencyMocks(dependencies);
+
+      const scenarioDir = path.join(baseDir, "fixture", s.id);
 
       // 1) Load input
       const input = readJson(path.join(scenarioDir, s.inputFixture || "input.json"));
 
-
-      // 2) Install mocks (dynamic per scenario)
+      // 2) Install processing-step mocks (dynamic per scenario)
       installMocks({
         scenarioDir,
         processingSteps,
@@ -125,22 +165,15 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName, version }) {
           path.join(scenarioDir, s.expected.outputFixture || "output.json")
         );
         const actual = await fn(input);
-
         expect(actual).toEqual(expectedOutput);
         return;
       }
 
       if (s.expected?.type === "error") {
-        // Two patterns are common:
-        // A) function RETURNS error enum string 
-        // B) function THROWS error enum string
-
         try {
           const actual = await fn(input);
-          // If it returned, compare returned value to expected enum:
           expect(actual).toBe(s.expected.errorEnum);
         } catch (err) {
-          // If it threw, compare thrown string/message:
           const thrown = typeof err === "string" ? err : err?.message;
           expect(thrown).toBe(s.expected.errorEnum);
         }
