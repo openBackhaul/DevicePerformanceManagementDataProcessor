@@ -11,7 +11,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../genericFunctions/p1ResolveEsAddress/1.0.0/P1ResolveEsAddress.js"
+    modulePath: "../../server/genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress.js"
     exportName: ""
 
 processingSteps: []

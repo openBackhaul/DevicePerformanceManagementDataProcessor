@@ -22,7 +22,7 @@ function readYaml(filePath) {
 }
 
 function generate({ repoRoot, functionName, version }) {
-  const baseDir = path.join(repoRoot, "testing", functionName, version);
+  const baseDir = path.join(repoRoot, "testing", functionName);
   const scenariosPath = path.join(baseDir, "scenarios.yaml");
 
   const spec = readYaml(scenariosPath);
@@ -47,9 +47,9 @@ function generate({ repoRoot, functionName, version }) {
  */
 
 const path = require("path");
-const { runFunctionVersionFromScenarios } = require("../../../tools/functionTestRunner");
+const { runFunctionVersionFromScenarios } = require("../../tools/functionTestRunner");
 
-const repoRoot = path.resolve(__dirname, "../../../..");
+const repoRoot = path.resolve(__dirname, "../../..");
 
 describe("${functionName} ${version} (generated)", () => {
   runFunctionVersionFromScenarios({
@@ -74,7 +74,7 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  const out = generate({ repoRoot, functionName, version });
+  const out = generate({ repoRoot, functionName});
   console.log(`Generated: ${out}`);
 }
 

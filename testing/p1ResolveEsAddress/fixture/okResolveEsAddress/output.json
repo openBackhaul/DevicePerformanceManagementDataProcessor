@@ -1,0 +1,10 @@
+{
+  "es-address": {
+    "url": "https://127.0.0.1:3015",
+    "api-key": "API key not yet defined.",
+    "index-alias": "18",
+    "service-records-policy": "default-policy",
+    "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+    "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED"
+  }
+}
