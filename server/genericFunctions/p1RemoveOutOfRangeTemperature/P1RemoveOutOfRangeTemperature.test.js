@@ -10,13 +10,13 @@ const parameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
@@ -31,7 +31,7 @@ const wrongParameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
@@ -58,7 +58,7 @@ const wrongParameterStruct2 = {
     //   "value": "10"
     // },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "50"
@@ -73,13 +73,13 @@ const wrongParameterStruct3 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "xyz"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
@@ -94,13 +94,13 @@ const wrongParameterStruct4 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": 10
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": 100
@@ -109,19 +109,41 @@ const wrongParameterStruct4 = {
   "sub-function": []
 };
 
+const wrongParameterStruct5 = {
+  "function-name": "p1RemoveOutOfRangeTemperature",
+  "description": "",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lowerTemperatureLimit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "upperTemperatureLimit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    }
+  ],
+  "sub-function": []
+};
+
+
 const parameterStructWithLowUpperLimit = {
   "function-name": "p1RemoveOutOfRangeTemperature",
   "description": "",
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "50"
@@ -136,13 +158,13 @@ const parameterStructWithSameValue = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "70"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "70"
@@ -152,11 +174,6 @@ const parameterStructWithSameValue = {
 };
 
 describe('p1RemoveOutOfRangeTemperature', () => {
-  // beforeEach(() => {
-  //   jest.resetModules();
-  //   p1RemoveOutOfRangeTemperature = require('./P1RemoveOutOfRangeTemperature');
-  // });
-
   let dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
 
@@ -166,12 +183,12 @@ describe('p1RemoveOutOfRangeTemperature', () => {
   describe('Positive Tests @positive', () => {
     test('All levels are ok', () => {
       expect(p1RemoveOutOfRangeTemperature({
-          "equipment": equipmentData,
-          "parameters": parameterStruct1
+        "equipment": equipmentData,
+        "parameters": parameterStruct1
       }))
-      .toMatchObject({
-        "equipment": equipmentData
-      });
+        .toMatchObject({
+          "equipment": equipmentData
+        });
     });
 
     test('Should remove out of range temperature (upper limit exceeded)', () => {
@@ -244,41 +261,41 @@ describe('p1RemoveOutOfRangeTemperature', () => {
   describe('Negative Tests @negative', () => {
     test('Equipment not provided', () => {
       expect(p1RemoveOutOfRangeTemperature({
-          // "equipment": nothing,
-          "parameters": parameterStruct1
+        // "equipment": nothing,
+        "parameters": parameterStruct1
       }))
-      .toBe(ERRORS.EQUIP_NOT_PROVIDED);
+        .toBe(ERRORS.EQUIP_NOT_PROVIDED);
     });
 
     test('Equipment not provided (undefined)', () => {
       expect(p1RemoveOutOfRangeTemperature({
-          "equipment": undefined,
-          "parameters": parameterStruct1
+        "equipment": undefined,
+        "parameters": parameterStruct1
       }))
-      .toBe(ERRORS.EQUIP_NOT_PROVIDED);
+        .toBe(ERRORS.EQUIP_NOT_PROVIDED);
     });
 
     test('Equipment not provided (null)', () => {
       expect(p1RemoveOutOfRangeTemperature({
-          "equipment": null,
-          "parameters": parameterStruct1
+        "equipment": null,
+        "parameters": parameterStruct1
       }))
-      .toBe(ERRORS.EQUIP_NOT_PROVIDED);
+        .toBe(ERRORS.EQUIP_NOT_PROVIDED);
     });
 
     test('Eqp KO', () => {
       expect(p1RemoveOutOfRangeTemperature({
-          "equipment": equipmentWrongData,
-          "parameters": parameterStruct1
+        "equipment": equipmentWrongData,
+        "parameters": parameterStruct1
       }))
-      .toBe(ERRORS.EQUIP_INVALID);
+        .toBe(ERRORS.EQUIP_INVALID);
     });
 
     test('Missing parameters', () => {
       expect(p1RemoveOutOfRangeTemperature({
         "equipment": equipmentData,
       }))
-      .toBe(ERRORS.PARAM_NOT_PROVIDED);
+        .toBe(ERRORS.PARAM_NOT_PROVIDED);
     });
 
     test('Missing parameters (null)', () => {
@@ -286,7 +303,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "equipment": equipmentData,
         "parameters": null
       }))
-      .toBe(ERRORS.PARAM_NOT_PROVIDED);
+        .toBe(ERRORS.PARAM_NOT_PROVIDED);
     });
 
     test('Missing parameters (undefined)', () => {
@@ -294,7 +311,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "equipment": equipmentData,
         "parameters": undefined
       }))
-      .toBe(ERRORS.PARAM_NOT_PROVIDED);
+        .toBe(ERRORS.PARAM_NOT_PROVIDED);
     });
 
     test('Missing some property of parameters', () => {
@@ -302,7 +319,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "performance-data": equipmentData,
         "parameters": wrongParameterStruct1
       }))
-      .toBe(ERRORS.PARAM_INVALID);  // business logic is not working properly
+        .toBe(ERRORS.PARAM_INVALID);  // business logic is not working properly
     });
 
     test('Missing some property of parameters (missing lower limit)', () => {
@@ -310,7 +327,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "performance-data": equipmentData,
         "parameters": wrongParameterStruct2
       }))
-      .toBe(ERRORS.PARAM_INVALID);  // business logic is not working properly
+        .toBe(ERRORS.PARAM_INVALID);  // business logic is not working properly
     });
 
     test('String on property of parameters', () => {
@@ -318,7 +335,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "performance-data": equipmentData,
         "parameters": wrongParameterStruct3
       }))
-      .toBe(ERRORS.PARAM_INVALID);  // business logic is not working properly
+        .toBe(ERRORS.PARAM_INVALID);  // business logic is not working properly
     });
 
     test('String on property of parameters (numeric values)', () => {
@@ -326,7 +343,16 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "performance-data": equipmentData,
         "parameters": wrongParameterStruct4
       }))
-      .toBe(ERRORS.PARAM_INVALID);
+        .toBe(ERRORS.PARAM_INVALID);
+    });
+
+
+    test('Parameters are inverted (min > max)', () => {
+      expect(p1RemoveOutOfRangeTemperature({
+        "performance-data": equipmentData,
+        "parameters": wrongParameterStruct5
+      }))
+        .toBe(ERRORS.PARAM_INVALID);
     });
   });
 
