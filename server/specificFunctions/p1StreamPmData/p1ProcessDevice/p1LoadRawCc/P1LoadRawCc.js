@@ -3,6 +3,7 @@ const { getParamFromFunction } = require("../../../../utils/functionTree");
 const { withRetry } = require("../../../../utils/retry");
 const p1FieldsFilter = require("./../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter");
 const p1DiscardIrrelevantPmRecords = require("./../../../../genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords");
+const logger = require('../../../../service/LoggingService.js').getLogger();
 
 async function loadInterfaceMetadataList(
   dataStoreClient,
@@ -12,23 +13,7 @@ async function loadInterfaceMetadataList(
 ) {
   const response = await withRetry(
     async () =>
-      /* dataStoreClient.search({
-        index: dataStoreIndex,
-        size: 1,
-        body: {
-          query: {
-            bool: {
-              should: [
-                { term: { "mountName.keyword": mountName } },
-                { term: { "mount-name.keyword": mountName } }
-              ],
-              minimum_should_match: 1
-            }
-          }
-        }
-      }), */
       dataStoreClient.get({
-        //size: 1,
         index: dataStoreIndex,
         id: mountName
       }),
@@ -51,26 +36,65 @@ async function loadInterfaceMetadataList(
   return source["interface-metadata-list"] || [];
 }
 
+function isValidDiscardResponse(response) {
+  return (
+    response &&
+    typeof response === "object" &&
+    Array.isArray(response["filtered-historical-performance-data-list"])
+  );
+}
+
+function buildDiscardPmError(response, inputSummary) {
+  const error = new Error(
+    `p1DiscardIrrelevantPmRecords returned error response: ${JSON.stringify(response)}`
+  );
+
+  error.stage = "p1DiscardIrrelevantPmRecords";
+  error.vendorResponse = response;
+  error.inputSummary = inputSummary;
+
+  return error;
+}
+
 async function filterHistoricalList(
   list,
   relevantGranularities,
   mostRecentPeriodEndTime,
-  mostRecentPeriodEndTime24
+  mostRecentPeriodEndTime24,
+  logger
 ) {
-  const response = await p1DiscardIrrelevantPmRecords({
-    /* historicalPerformanceDataList: list,
-    relevantGranularities,
-    mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime24 */
+
+  const discardInput = {
     ...list,
     "relevant-granularities":relevantGranularities,
     "most-recent-period-end-time": (mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
     "most-recent-period-end-time-24": (mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
+  };
+  const response = await p1DiscardIrrelevantPmRecords(discardInput);
 
-  });
+  if (isValidDiscardResponse(response)) {
+    return response["filtered-historical-performance-data-list"];
+  }
+  
+  const inputSummary = {
+    inputRecordCount: list.length,
+    relevantGranularities,
+    mostRecentPeriodEndTime: discardInput["most-recent-period-end-time"],
+    mostRecentPeriodEndTime24: discardInput["most-recent-period-end-time-24"]
+  };
 
-  //return response.filteredHistoricalPerformanceDataList;
-  return response["filtered-historical-performance-data-list"];
+  if (logger && logger.error) {
+    logger.error(
+      {
+        label: "p1-discard-irrelevant-pm-records-error",
+        vendorResponse: response,
+        inputSummary
+      },
+      "p1DiscardIrrelevantPmRecords returned an error response"
+    );
+  }
+
+  throw buildDiscardPmError(response, inputSummary);
 }
 
 /**
@@ -94,7 +118,7 @@ async function run(request) {
     mwdiReplicaEsClient,
     dataStoreEsClient,
     mountName,
-    logger
+    //logger
   } = request;
 
   try {
@@ -107,24 +131,7 @@ async function run(request) {
 
     const rawResponse = await withRetry(
       async () =>
-        /* replicaClient.search({
-          index: mwdiReplicaEsClient["index-alias"],
-          size: 1,
-          body: {
-            query: {
-              bool: {
-                should: [
-                  { term: { "mountName.keyword": mountName } },
-                  { term: { "mount-name.keyword": mountName } },
-                  { term: { "uuid.keyword": mountName } }
-                ],
-                minimum_should_match: 1
-              }
-            }
-          }
-        }), */
         replicaClient.get({
-          //size: 1,
           index: mwdiReplicaEsClient["index-alias"],
           id: mountName
       }),
@@ -197,7 +204,8 @@ async function run(request) {
             pac["air-interface-historical-performances"] || [],
             relevantGranularities,
             meta.mostRecentPeriodEndTime,
-            meta.mostRecentPeriodEndTime24
+            meta.mostRecentPeriodEndTime24,
+            logger
           );
 
           for (const record of pac["air-interface-historical-performances"]) {
@@ -214,7 +222,8 @@ async function run(request) {
             pac["ethernet-container-historical-performances"] || [],
             relevantGranularities,
             meta.mostRecentPeriodEndTime,
-            meta.mostRecentPeriodEndTime24
+            meta.mostRecentPeriodEndTime24,
+            logger
           );
 
           layerProtocol["ethernet-container-2-0:ethernet-container-pac"] = pac;

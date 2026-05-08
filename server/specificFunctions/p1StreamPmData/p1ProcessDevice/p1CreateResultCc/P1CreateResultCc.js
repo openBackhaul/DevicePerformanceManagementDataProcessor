@@ -1,36 +1,64 @@
+const p1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature");
+const { getParamFromFunction } = require("../../../../utils/functionTree");
+const ERRORS = require('../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum');
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function deriveMostRecentTimes(records) {
-  let mostRecentPeriodEndTime = null;
-  let mostRecentPeriodEndTime24 = null;
+function getRemoveOutOfRangeTemperatureParameters(parameters) {
+  const temperatureFunctionNode = getParamFromFunction(
+    parameters,
+    "p1RemoveOutOfRangeTemperature",
+    "",
+    [],
+    true
+  );
 
-  for (const record of records || []) {
-    const periodEndTime =
-      record.periodEndTime || record["period-end-time"] || record.timestamp || null;
+  if (!temperatureFunctionNode) {
+    const error = new Error(
+      "p1RemoveOutOfRangeTemperature parameters not found"
+    );
 
-    const granularity = String(record.granularity || record["granularity-period"] || "");
+    error.stage = "p1RemoveOutOfRangeTemperature";
+    error.vendorResponse = "parameters not provided";
+    error.retryable = false;
 
-    if (!periodEndTime) {
-      continue;
-    }
-
-    if (!mostRecentPeriodEndTime || periodEndTime > mostRecentPeriodEndTime) {
-      mostRecentPeriodEndTime = periodEndTime;
-    }
-
-    if (/24-HOURS/.test(granularity)) {
-      if (!mostRecentPeriodEndTime24 || periodEndTime > mostRecentPeriodEndTime24) {
-        mostRecentPeriodEndTime24 = periodEndTime;
-      }
-    }
+    throw error;
   }
 
-  return {
-    mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime24
-  };
+  return temperatureFunctionNode;
+}
+
+function isValidRemoveTemperatureResponse(response) {
+  return (
+    response &&
+    typeof response === "object" &&
+    Array.isArray(response["equipment"])
+  );
+}
+
+function buildRemoveTemperatureError(response, mountName) {
+  const error = new Error(
+    `p1RemoveOutOfRangeTemperature returned error response: ${JSON.stringify(response)}`
+  );
+
+  error.stage = "p1RemoveOutOfRangeTemperature";
+  error.vendorResponse = response;
+  error.mountName = mountName;
+
+  if (
+    response === ERRORS.PARAM_NOT_PROVIDED ||
+    response === ERRORS.PARAM_INVALID ||
+    response === ERRORS.EQUIP_NOT_PROVIDED ||
+    response === ERRORS.EQUIP_INVALID
+  ) {
+    error.retryable = false;
+  } else {
+    error.retryable = true;
+  }
+
+  return error;
 }
 
 /**
@@ -62,58 +90,29 @@ async function run(request) {
     }
 
     const resultCc = clone(rawCc);
-    const interfaceMetadataList = [];
+    const response = await p1RemoveOutOfRangeTemperature({
+        equipment: resultCc["equipment"],
+        parameters: {parameter: getRemoveOutOfRangeTemperatureParameters(parameters)}
+    });
 
-    for (const ltp of resultCc["logical-termination-point"] || []) {
-      let mostRecentPeriodEndTime = null;
-      let mostRecentPeriodEndTime24 = null;
-
-      for (const layerProtocol of ltp["layer-protocol"] || []) {
-        const aiPac = layerProtocol["air-interface-2-0:air-interface-pac"];
-        if (aiPac) {
-          const times = deriveMostRecentTimes(
-            aiPac["air-interface-historical-performances"]["historical-performance-data-list"] || []
-          );
-
-          mostRecentPeriodEndTime =
-            [mostRecentPeriodEndTime, times.mostRecentPeriodEndTime]
-              .filter(Boolean)
-              .sort()
-              .slice(-1)[0] || mostRecentPeriodEndTime;
-
-          mostRecentPeriodEndTime24 =
-            [mostRecentPeriodEndTime24, times.mostRecentPeriodEndTime24]
-              .filter(Boolean)
-              .sort()
-              .slice(-1)[0] || mostRecentPeriodEndTime24;
+    if (!isValidRemoveTemperatureResponse(response)) {
+        if (logger && logger.error) {
+            logger.error(
+            {
+                label: "p1-remove-out-of-range-temperature-error",
+                mountName,
+                vendorResponse: response
+            },
+            "p1RemoveOutOfRangeTemperature returned an error response"
+            );
         }
 
-        const ecPac = layerProtocol["ethernet-container-2-0:ethernet-container-pac"];
-        if (ecPac) {
-          const times = deriveMostRecentTimes(
-            ecPac["ethernet-container-historical-performances"] || []
-          );
-
-          mostRecentPeriodEndTime =
-            [mostRecentPeriodEndTime, times.mostRecentPeriodEndTime]
-              .filter(Boolean)
-              .sort()
-              .slice(-1)[0] || mostRecentPeriodEndTime;
-
-          mostRecentPeriodEndTime24 =
-            [mostRecentPeriodEndTime24, times.mostRecentPeriodEndTime24]
-              .filter(Boolean)
-              .sort()
-              .slice(-1)[0] || mostRecentPeriodEndTime24;
-        }
-      }
-
-      interfaceMetadataList.push({
-        uuid: ltp.uuid,
-        mostRecentPeriodEndTime,
-        mostRecentPeriodEndTime24
-      });
+        throw buildRemoveTemperatureError(response, mountName);
     }
+
+    resultCc["equipment"] = response["equipment"];
+
+    const interfaceMetadataList = [];
 
     resultCc["interface-metadata-list"] = interfaceMetadataList;
 

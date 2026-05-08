@@ -2,8 +2,8 @@ const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct = {};
 const paramAllowed = [
-  "lower-temperature-limit",
-  "upper-temperature-limit"
+  "lowerTemperatureLimit",
+  "upperTemperatureLimit"
 ]
 
 // DAMN JavaScript
@@ -112,8 +112,8 @@ const p1RemoveOutOfRangeTemperature = (input) => {
     }
 
     // Check values
-    let lowParam = parseInt(parameterStruct["lower-temperature-limit"]);
-    let highParam = parseInt(parameterStruct["upper-temperature-limit"]);
+    let lowParam = parseInt(parameterStruct["lowerTemperatureLimit"]);
+    let highParam = parseInt(parameterStruct["upperTemperatureLimit"]);
 
     let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
 

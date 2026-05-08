@@ -2,6 +2,8 @@ const p1LoadRawCc = require("./p1LoadRawCc/P1LoadRawCc");
 const p1CreateResultCc = require("./p1CreateResultCc/P1CreateResultCc");
 const redisQueueKafkaOutbound = require("../../../infra/kafka/queueKafkaOutbound");
 const p1Storing = require("./p1Storing/P1Storing");
+const { findFunctionNode } = require("../../../utils/functionTree.js");
+const logger = require('../../../service/LoggingService.js').getLogger();
 
 /* function getTargetConsumers() {
   return String(
@@ -88,10 +90,11 @@ async function run(request) {
     parameters,
     configFile,
     mwdiReplicaEsClient,
-    dataStoreEsClient
+    dataStoreEsClient,
+    //logger
   } = request;
 
-  const logger = request.logger || console;
+  //const logger = request.logger || console;
   let createResultCcResponse = null;
 
   if (
@@ -107,16 +110,19 @@ async function run(request) {
   }
 
   try {
+    const p1LoadRawCcParameters = findFunctionNode(parameters, "p1LoadRawCc");
+    const p1CreateResultCcParameters = findFunctionNode(parameters, "p1CreateResultCc");
+
     const loadRawCcResponse = await p1LoadRawCc.run({
       mountName,
-      parameters,
+      parameters: p1LoadRawCcParameters,
       mwdiReplicaEsClient,
       dataStoreEsClient,
       logger
     });
 
     createResultCcResponse = await p1CreateResultCc.run({
-      parameters,
+      parameters: p1CreateResultCcParameters,
       rawCc: loadRawCcResponse.rawCc,
       mountName: loadRawCcResponse.mountName || mountName,
       logger
