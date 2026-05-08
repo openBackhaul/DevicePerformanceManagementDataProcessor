@@ -11,7 +11,7 @@ participant "p1LoadParameters\n" as p1LP
 participant "p1ResolveEsAddress\n" as p1REA
 participant "p1InitKafka\n" as p1InitKafka
 participant "p1UpdateMwdiReplica\n" as p1UMR
-participant "p1ProcessDevice\n" as p1ProcessPm
+participant "p2ProcessDevice\n" as p1ProcessPm
 participant "p1MaintainDs\n" as p1MDS
 
 note right embed

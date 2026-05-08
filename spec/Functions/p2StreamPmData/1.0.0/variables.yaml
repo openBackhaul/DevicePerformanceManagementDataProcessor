@@ -53,6 +53,20 @@ stream-pm-data:
       description: >
         'Array of mount names to be processed
         new values to be added from {$p1UpdateMwdiReplica.output#/updated-mount-names}
-        existing value to be removed after initiating p1ProcessDevice with it'
+        existing value to be removed after initiating p2ProcessDevice with it'
       items:
         type: string
+
+    pm-data-quality:
+      type: object
+      required:
+        - device
+      properties:
+        device:
+          type: array
+          x-key: mount-name
+          items:
+            type: object
+            description: >
+              'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+              from {$p2ProcessDevice.output#/pm-data-quality}'

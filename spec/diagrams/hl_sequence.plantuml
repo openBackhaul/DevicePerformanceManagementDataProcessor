@@ -475,7 +475,7 @@ activate p1StreamPm
         p2ProcessPm <-- p2Store
         deactivate p2Store
 
-      p1StreamPm <-- p2ProcessPm
+      p1StreamPm <-- p2ProcessPm : {pmDataQuality}
       deactivate p2ProcessPm
 
       note over p1StreamPm #Cyan

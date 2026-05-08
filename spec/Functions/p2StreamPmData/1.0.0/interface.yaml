@@ -207,7 +207,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1ProcessDevice:
+      p2ProcessDevice:
         description: 'Number of parallel processes to be managed for avoiding massive peak loads'
         input:
           required: true
@@ -226,7 +226,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/stream-pm-data/parameters/sub-function=p1ProcessDevice]'
+                      from [/stream-pm-data/parameters/sub-function=p2ProcessDevice]'
                   config-file:
                     type: object
                     description: >
@@ -250,8 +250,23 @@ x-javascript-interface:
         output:
           success:
             description: 'PM data processed, sent and stored'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - pm-data-quality
+                  properties:
+                    pm-data-quality:
+                      type: object
+                      description: >
+                        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device'
           error:
             description: 'Processing of PM data failed'
+            content:
+              application/json:
+                schema:
+                  type: string
 
 paths:
   /:
