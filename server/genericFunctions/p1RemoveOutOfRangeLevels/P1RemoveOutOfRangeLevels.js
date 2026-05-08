@@ -65,9 +65,15 @@ const p1RemoveOutOfRangeLevels = (input) => {
         return ERRORS.PARAM_INVALID;
       }
 
-      let paramArray = parameters['parameter'];
+      let paramArray = parameters["parameter"];
 
       if (!validateParameters(paramArray)) {
+        return ERRORS.PARAM_INVALID;
+      }
+
+      if (parameterStruct["lowerTxLevelLimit"] > parameterStruct["upperTxLevelLimit"]) {
+        return ERRORS.PARAM_INVALID;
+      } else if (parameterStruct["lowerRxLevelLimit"] > parameterStruct["upperRxLevelLimit"]) {
         return ERRORS.PARAM_INVALID;
       }
     }
