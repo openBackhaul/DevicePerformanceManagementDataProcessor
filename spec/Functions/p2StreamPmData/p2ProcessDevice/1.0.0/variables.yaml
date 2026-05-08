@@ -1,0 +1,81 @@
+process-device:
+  type: object
+  required:
+    - parameters
+    - config-file
+    - mount-name
+    - mwdi-replica-es-client
+    - data-store-es-client
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$input#/config-file}'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from {$input#/mount-name}'
+    mwdi-replica-es-client:
+      type: object
+      description: >
+        'MWDI Replica ElasticSearch address
+        from {$input#/mwdi-replica-es-client}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$input#/data-store-es-client}'
+
+    offsets:
+      type: array
+      description: >
+        'The offsets
+        from {$p1LoadOffsetsAndStatusData.output#/offsets}
+        overwriting by {$p2LoadRawCc.output#/offsets}'
+    status-data:
+      type: array
+      description: >
+        'The statusData
+        from {$p1LoadOffsetsAndStatusData.output/#status-data}
+        overwriting by {$p2CreateResultCc.output#/status-data}'
+    raw-cc:
+      type: object
+      description: >
+        'rawCc read from Replica ES, but reduced by irrelevant data
+        from {$p2LoadRawCc.output#/raw-cc}'
+    pm-data-quality:
+      type: object
+      description: >
+        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+        from {$p2LoadRawCc.output#/pm-data-quality}'
+    result-cc:
+      type: object
+      description: >
+        'The result control construct data created from the raw control construct data, following ONF structure.
+        from {$p2CreateResultCc.output#/result-cc}'
+    output-format:
+      type: array
+      x-key: format-name
+      items:
+        type: object
+        required:
+          - format-name
+          - output-format
+        properties:
+          format-name:
+            type: string
+            description: >
+              'Name of the output format
+              from [{$p1FormattingOutputApt.output#/format-name} or {$p1FormattingOutputOnf.output#/format-name}]'
+          output-format:
+            type: object
+            description: >
+              'outputFormat
+              from [{$p1FormattingOutputApt.output#/output-format} or {$p1FormattingOutputOnf.output#/output-format}]'

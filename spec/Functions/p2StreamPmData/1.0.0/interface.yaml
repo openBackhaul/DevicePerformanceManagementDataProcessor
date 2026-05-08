@@ -1,0 +1,258 @@
+openapi: 3.0.0
+info:
+  title: p2StreamPmData
+  version: 1.0.0
+
+x-javascript-interface:
+  p2StreamPmData:
+    summary: 'Streams PM data'
+    processing:
+      p1LoadParameters:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - function-name
+                properties:
+                  function-name:
+                    type: string
+                    description: >
+                      'Name of the Function whose parameters are to be loaded from the configFile
+                      from [/stream-pm-data/function-name]'
+        output:
+          success:
+            description: 'Parameters successfully loaded'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    parameters:
+                      type: object
+                    config-file:
+                      type: object
+          error:
+            description: 'Parameters could not be loaded'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1ResolveEsAddress:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - config-file
+                  - es-name
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1ResolveEsAddress]'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content
+                      from [/stream-pm-data/config-file]'
+                  es-name:
+                    type: string
+                    description: >
+                      'ElasticSearch name
+                      from [/stream-pm-data/es-address=*/name]'
+        output:
+          success:
+            description: 'ES address successfully resolved'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    es-address:
+                      type: object
+          error:
+            description: 'ES address could not be resolved'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1InitKafka:
+        summary: 'Resolves Kafka address and initializes the Kafka producer session'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - config-file
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1InitKafka]'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content
+                      from [/stream-pm-data/config-file]'
+        output:
+          success:
+            description: 'Kafka session successfully established'
+          error:
+            description: 'Kafka session could not be established'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1MaintainDs:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - data-store-es-client
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1MaintainDs]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'DataStore ElasticSearch address
+                      from [/stream-pm-data/es-address=dataStoreEsClient/address]'
+        output:
+          success:
+            description: 'DataStore maintenance processed'
+          error:
+            description: 'DataStore maintenance could not be processed'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1UpdateMwdiReplica:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - last-replica-time
+                  - mwdi-es-client
+                  - mwdi-replica-es-client
+                  - logging-es-client
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1UpdateMwdiReplica]'
+                  last-replica-time:
+                    type: string
+                    description: >
+                      'Timestamp of the last successful replication
+                      from [/stream-pm-data/last-replica-time]'
+                  mwdi-es-client:
+                    type: object
+                    description: >
+                      'MWDI ElasticSearch address
+                      from [/stream-pm-data/es-address=mwdiEsClient/address]'
+                  mwdi-replica-es-client:
+                    type: object
+                    description: >
+                      'MWDI Replica ElasticSearch address
+                      from [/stream-pm-data/es-address=mwdiReplicaEsClient/address]'
+                  logging-es-client:
+                    type: object
+                    description: >
+                      'MWDI Replica ElasticSearch address
+                      from [/stream-pm-data/es-address=loggingEsClient/address]'
+        output:
+          success:
+            description: 'Updated CCs successfully replicated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    updated-mount-names:
+                      type: array
+                      description: >
+                        'List of MountNames of updated ControlConstructs'
+                      items:
+                        type: string
+                    timestamp:
+                      type: string
+                      description: >
+                        'Timestamp marking the end of the replication period'
+          error:
+            description: 'Updated CCs could not be replicated'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1ProcessDevice:
+        description: 'Number of parallel processes to be managed for avoiding massive peak loads'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - config-file
+                  - mount-name
+                  - mwdi-replica-es-client
+                  - data-store-es-client
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/stream-pm-data/parameters/sub-function=p1ProcessDevice]'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content
+                      from [/stream-pm-data/config-file]'
+                  mount-name:
+                    type: string
+                    description: >
+                      'MountName
+                      from [/stream-pm-data/to-be-processed-mount-names[n]]'
+                  mwdi-replica-es-client:
+                    type: object
+                    description: >
+                      'MWDI Replica ElasticSearch address
+                      from [/stream-pm-data/es-address=mwdiReplicaEsClient/address]'
+                  data-store-es-client:
+                    type: object
+                    description: >
+                      'Data Store ElasticSearch address
+                      from [/stream-pm-data/es-address=dataStoreEsClient/address]'
+        output:
+          success:
+            description: 'PM data processed, sent and stored'
+          error:
+            description: 'Processing of PM data failed'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
