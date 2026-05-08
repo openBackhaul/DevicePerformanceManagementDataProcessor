@@ -42,6 +42,18 @@ x-javascript-interface:
     output:
       success:
         description: 'PM data processed, sent and stored'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pm-data-quality
+              properties:
+                pm-data-quality:
+                  type: object
+                  description: >
+                    'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+                    from [/process-device/pm-data-quality]'
       error:
         description: 'Processing of PM data failed'
         content:
@@ -49,15 +61,22 @@ x-javascript-interface:
             schema:
               type: string
               enum:
-                - 'input data missing or invalid'
-                - 'mount name not found'
-                - 'parameters missing or invalid'
-                - 'config file missing or invalid'
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'configFile not provided'
+                - 'configFile invalid'
+                - 'mountName not provided'
+                - 'mountName invalid'
+                - 'mwdiReplicaEsClient not provided'
+                - 'mwdiReplicaEsClient invalid'
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
                 - 'raw CC data missing or invalid'
                 - 'result CC data missing or invalid'
                 - 'output format missing or invalid'
                 - 'kafka transmission failed'
                 - 'storing resultCc failed'
+                - 'pmDataQuality could not be provided'
                 - 'general processing error'
     processing:
       p1LoadOffsetsAndStatusData:
@@ -149,15 +168,20 @@ x-javascript-interface:
                   required:
                     - raw-cc
                     - offsets
+                    - pm-data-quality
                   properties:
                     raw-cc:
                       type: object
                       description: >
-                        'rawCc'
+                        'rawCc read from Replica ES, but reduced by irrelevant data'
                     offsets:
                       type: array
                       description: >
-                        'offsets'
+                        'Array of all Offsets'
+                    pm-data-quality:
+                      type: object
+                      description: >
+                        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device'
           error:
             description: 'rawCc could not be loaded'
             content:

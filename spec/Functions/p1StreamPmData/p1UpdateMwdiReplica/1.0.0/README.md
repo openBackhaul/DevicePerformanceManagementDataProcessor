@@ -1,6 +1,6 @@
 # p1UpdateMwdiReplica
 
-The p1StreamPmData function performs an incremental replication of the MWDI ElasticSearch index into the MWDI ES Replica.  
+The p2StreamPmData function performs an incremental replication of the MWDI ElasticSearch index into the MWDI ES Replica.  
 A new value of the lastCompleteControlConstructUpdateTimeAttempt attribute at a ControlConstruct in the MWDI ES index triggers the same ControlConstruct being replicated into the MWDI ES Replica.  
 
 

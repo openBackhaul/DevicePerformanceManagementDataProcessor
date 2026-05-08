@@ -18,6 +18,7 @@ participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
 participant "p2LoadRawCc\n" as p2AddRaw #LightYellow
 participant "p1FieldsFilter\n" as p1FieldsFilter
 participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual #LightSalmon
 
 participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
 participant "p1Prepare\nTxModes" as p1prepTxModes 
@@ -50,6 +51,54 @@ embed -> p1StreamPm
 ' Release Notes
 ===== Changes for Measuring Quality =====
 
+note over p2AddRaw
+  - Change from handling {offset} to handling 
+    former/newMostRecentPeriodEndTime/24
+end note
+
+note over p2filterPm
+  - Add counting the number of received
+    but not filtered out 15min PM slices
+  - Add return number of received but not
+    filtered out 15min PM slices
+end note
+
+note over p2AddRaw
+  - Add returned number of received
+    but not filtered out 15min PM slices
+    to variables
+  - Add interface to new function
+    p1CalculateInterfacePmDataQuality
+end note
+
+note over calPmQual
+  - Calculate the quality of the
+    provided PM data
+  - Return interfaceQuality of the provided 
+    PM data
+end note
+
+note over p2AddRaw
+  - Add consolidating returned interfaceQuality
+    information into deviceQuality
+  - Add returning the deviceQuality of the 
+    provided PM data
+end note
+
+note over p2ProcessPm
+  - Add returned deviceQuality
+    information to variables
+  - Add returning the deviceQuality
+    of the provided PM data
+end note
+
+note over p1StreamPm #Cyan
+  - Consolidate deviceQuality information
+    into list of multiple devices
+  - Add interface to existing function
+    p1TransmittingKafka for streaming
+    quality information to Kafka
+end note
 
 == End of Changes ==
 
@@ -165,6 +214,18 @@ activate p1StreamPm
 
           p2AddRaw <-- p2filterPm
           deactivate p2filterPm
+
+          ' Calculate PM data quality
+          p2AddRaw -> calPmQual
+          activate calPmQual
+
+            note over calPmQual
+              Calculates quality
+              of PM data
+            end note
+
+          p2AddRaw <-- calPmQual
+          deactivate calPmQual
 
           note over p2AddRaw
             addBatchTimestamp
@@ -395,8 +456,8 @@ activate p1StreamPm
         activate p1Trans
 
           note over p1Trans
-            Transmit object to
-            KafkaProducerService
+            Transmit object (PmData)
+            to KafkaProducerService
           end note
 
         p2ProcessPm <-- p1Trans
@@ -414,9 +475,27 @@ activate p1StreamPm
         p2ProcessPm <-- p2Store
         deactivate p2Store
 
+      p1StreamPm <-- p2ProcessPm
       deactivate p2ProcessPm
 
+      note over p1StreamPm #Cyan
+        Consolidates device related
+        quality information
+      end note
+
     end Loop
+
+    ' KafkaTransmission
+    p1StreamPm -> p1Trans
+    activate p1Trans
+
+      note over p1Trans
+        Transmit object (quality)
+        to KafkaProducerService
+      end note
+
+    p1StreamPm <-- p1Trans
+    deactivate p1Trans
 
   end Loop
 

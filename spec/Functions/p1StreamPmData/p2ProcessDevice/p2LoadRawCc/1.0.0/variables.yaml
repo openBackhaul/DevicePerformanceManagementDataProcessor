@@ -47,8 +47,7 @@ load-raw-cc:
                     x-key: uuid
                     description: >
                       'Array of offsets of all interfaces at the device,
-                      if not existing initialized with an empty array,
-                      overwritten by {$updateInterfaceOffsets.output#/interface-offsets}'
+                      if not existing initialized with an empty array'
                     items:
                       type: object
                       required:
@@ -62,16 +61,16 @@ load-raw-cc:
                             'uuid of the interface'
                         most-recent-period-end-time:
                           type: string
-                          #pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
                           description: >
                             'mostRecentPeriodEndTime
-                          #  if to be initialized, from {2010-11-20T14:00:00+01:00}'
+                            for uuid = uuid of the interface being processed during the current loop iteration
+                            overwritten from [/load-raw-cc/new-most-recent-period-end-time]'
                         most-recent-period-end-time-24:
                           type: string
-                          #pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
                           description: >
                             'mostRecentPeriodEndTime24
-                          #  if to be initialized, from {2010-11-20T14:00:00+01:00}'
+                            for uuid = uuid of the interface being processed during the current loop iteration
+                            overwritten from [/load-raw-cc/new-most-recent-period-end-time-24]'
 
     mwdi-replica-url:
       type: string
@@ -157,7 +156,7 @@ load-raw-cc:
     pm-data-quality:
       type: object
       description: >
-        'List of PM data quality levels at all interfaces of this device
+        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
         to be initialized with empty array of interfaces'
       required:
         - mount-name
@@ -174,15 +173,8 @@ load-raw-cc:
           items:
             type: object
             description: >
-              'PM data quality level at an interface
+              'Information about the quality of the provided PM data for an individual interface
               from {$p1CalculateInterfacePmDataQuality.output#/interface-pm-data-quality}'
-    #interface-offset:
-      #type: object
-      #description: >
-      #  'The interfaceOffset for the currently processed ltp
-      #  from [/load-raw-cc/offsets=p2LoadRawCc/offset/interface-offsets=*],
-      #  if not existing, initialized with uuid of currently processed ltp and default values for mostRecentPeriodEndTimes,
-      #  overwritten by {$p2DiscardIrrelevantPmRecords.output#/offset}'
     uuid:
       type: string
       description: >
@@ -209,8 +201,8 @@ load-raw-cc:
       description: >
         'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface
         from {$p2DiscardIrrelevantPmRecords.output#/new-most-recent-period-end-time-24}'
-    received:
+    amount-received:
       type: object
       description: >
-        'Number of received 15min PM records categorized by date
-        from {$p2DiscardIrrelevantPmRecords.output#/received}'
+        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+        from {$p2DiscardIrrelevantPmRecords.output#/amount-received}'

@@ -4,61 +4,36 @@ calculate-interface-pm-data-quality:
     - uuid
     - former-most-recent-period-end-time
     - new-most-recent-period-end-time
-    - received
+    - amount-received
   properties:
     uuid:
       type: string
       description: >
-        'uuid of the currently processed interface
-        from '
+        'uuid of the interface being processed during the current loop iteration
+        from {$input#/uuid}'
     former-most-recent-period-end-time:
       type: string
       description: >
-        'mostRecentPeriodEndTime during past processing of the currently processed interface
-        from '
+        'mostRecentPeriodEndTime during former processing of the currently processed interface
+        from {$input#/former-most-recent-period-end-time}'
     new-most-recent-period-end-time:
       type: string
       description: >
         'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
-        from '
-    received:
-      type: object
+        from {$input#/new-most-recent-period-end-time}'
+    amount-received:
+      type: array
       description: >
-        'Number of received 15min PM records categorized date
-        from '
+        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+        from {$input#/amount-received}'
 
+    amount-expected:
+      type: array
+      description: >
+        'Number of expected 15min PM records categorized by date
+        from {$calculateAmountExpected.output#/amount-expected}'
     interface-pm-data-quality:
       type: object
-      required:
-        - uuid
-        - quality
-      properties:
-        uuid:
-          type: string
-          description: >
-            'uuid of the interface
-            from '
-        quality:
-          type: array
-          items:
-            type: object
-            required:
-              - date
-              - received
-              - expected
-            properties:
-              date:
-                type: string
-                description: >
-                  'day for which the quality has been measured
-                  from '
-              received:
-                type: integer
-                description: >
-                  'number of 15min PM records that have been received during the measurement period
-                  from '
-              expected:
-                type: integer
-                description: >
-                  'number of 15min PM records that have been expected to arrive during the measurement period
-                  from '
+      description: >
+        'Information about the quality of the provided PM data for an individual interface
+        from {$composeInterfacePmDataQuality.output#/interface-pm-data-quality}'

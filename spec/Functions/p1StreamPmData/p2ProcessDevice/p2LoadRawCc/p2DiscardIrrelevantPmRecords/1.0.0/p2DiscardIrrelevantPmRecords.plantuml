@@ -20,7 +20,7 @@ activate cur
   end note
   note over cur
     Initializes:
-      {received} = { [date, count] }
+      [amountReceived] = [ {date, count} ]
   end note
 
   loop FOR EACH record in [historicalPerformanceDataList]
@@ -32,9 +32,9 @@ activate cur
     end note
     note right cur
       THEN
-        update {received} for date parsed
-        from record.periodEndTime as
-        { [date, count++] }
+        countReceived15MinPmSlice
+    end note
+    note right cur
       ELSE
         discard record
     end note
@@ -45,7 +45,7 @@ activate cur
 
   end loop
 
-requestor <-- cur: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\nreceived }
+requestor <-- cur: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\n[amountReceived] }
 
 deactivate cur
 

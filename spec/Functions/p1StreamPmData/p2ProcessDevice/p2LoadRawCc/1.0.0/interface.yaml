@@ -39,6 +39,8 @@ x-javascript-interface:
               type: object
               required:
                 - raw-cc
+                - offsets
+                - pm-data-quality
               properties:
                 raw-cc:
                   type: object
@@ -50,6 +52,11 @@ x-javascript-interface:
                   description: >
                     'Array of all Offsets
                     from [/load-raw-cc/offsets]'
+                pm-data-quality:
+                  type: object
+                  description: >
+                    'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+                    from [/load-raw-cc/pm-data-quality]'
       error:
         description: 'rawCc could not be loaded'
         content:
@@ -66,6 +73,8 @@ x-javascript-interface:
                 - 'offsets not provided'
                 - 'offsets invalid'
                 - 'rawCc could not be provided'
+                - 'offsets could not be provided'
+                - 'pmDataQuality could not be provided'
                 - 'general processing error'
     processing:
       readControlConstructFromReplica:
@@ -144,7 +153,6 @@ x-javascript-interface:
                 type: object
                 required:
                   - historical-performance-data-list
-                  #- offset
                   - former-most-recent-period-end-time
                   - former-most-recent-period-end-time-24
                 properties:
@@ -153,11 +161,6 @@ x-javascript-interface:
                     description: >
                       'The list of historical PM records, that shall be filtered
                       from [/load-raw-cc/raw-cc/logical-termination-point={uuid}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list or /load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
-                  #offset:
-                  #  type: object
-                  #  description: >
-                  #    'InterfaceOffset for the currently processed ltp
-                  #    from [/load-raw-cc/interface-offset]'
                   former-most-recent-period-end-time:
                     type: string
                     description: >
@@ -177,15 +180,14 @@ x-javascript-interface:
                   type: object
                   required:
                     - filtered-historical-performance-data-list
+                    - new-most-recent-period-end-time
+                    - new-most-recent-period-end-time-24
+                    - amount-received
                   properties:
                     filtered-historical-performance-data-list:
                       type: array
                       description: >
                         'Filtered list of historical PM records'
-                    #offset:
-                    #  type: object
-                    #  description: >
-                    #    'Updated (interface) offset'
                     new-most-recent-period-end-time:
                       type: string
                       description: >
@@ -194,10 +196,10 @@ x-javascript-interface:
                       type: string
                       description: >
                         'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface'
-                    received:
-                      type: object
+                    amount-received:
+                      type: array
                       description: >
-                        'Number of received 15min PM records categorized by date'
+                        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date'
           error:
             description: 'filteredHistoricalPerformanceDataList could not be provided'
             content:
@@ -238,7 +240,7 @@ x-javascript-interface:
                       type: string
                       description: >
                         'Timestamp when the CC was read from the device
-                        from { max ( {$input#current-performance-timestamp}, {$input#batch-timestamp} ) }'
+                        from { max ( {$input#/current-performance-timestamp}, {$input#/batch-timestamp} ) }'
             error:
               description: 'batchTimestamp could not be provided'
               content:
@@ -262,12 +264,12 @@ x-javascript-interface:
                   - uuid
                   - former-most-recent-period-end-time
                   - new-most-recent-period-end-time
-                  - received
+                  - amount-received
                 properties:
                   uuid:
                     type: string
                     description: >
-                      'uuid of the currently processed interface
+                      'uuid of the interface being processed during the current loop iteration
                       from [/load-raw-cc/uuid]'
                   former-most-recent-period-end-time:
                     type: string
@@ -279,11 +281,11 @@ x-javascript-interface:
                     description: >
                       'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
                       from [/load-raw-cc/new-most-recent-period-end-time]'
-                  received:
-                    type: object
+                  amount-received:
+                    type: array
                     description: >
-                      'Number of received 15min PM records categorized by date
-                      from [/load-raw-cc/received]'
+                      'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+                      from [/load-raw-cc/amount-received]'
         output:
           success:
             description: 'Interface PM data quality calculated'
@@ -297,85 +299,13 @@ x-javascript-interface:
                     interface-pm-data-quality:
                       type: object
                       description: >
-                        'PM data quality level at the currently processed interface'
+                        'Information about the quality of the provided PM data for an individual interface'
           error:
             description: 'Interface PM data quality could not be calculated'
             content:
               application/json:
                 schema:
                   type: string
-      updateInterfaceOffsets:
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - interface-offsets
-                  - uuid
-                  - new-most-recent-period-end-time
-                  - new-most-recent-period-end-time-24
-                properties:
-                  interface-offsets:
-                    type: array
-                    description: > 
-                      'Array of offsets of all interfaces at the device
-                      from [/load-raw-cc/offsets=p2LoadRawCc/offset/interface-offsets]'
-                  #interface-offset:
-                  #  type: object
-                  #  description: >
-                  #    'Offset for the currently processed interface
-                  #    from [/load-raw-cc/interface-offset]'
-                  uuid:
-                    type: string
-                    description: >
-                      'uuid of the currently processed interface
-                      from [/load-raw-cc/uuid]'
-                  new-most-recent-period-end-time:
-                    type: string
-                    description: >
-                      'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
-                      from [/load-raw-cc/new-most-recent-period-end-time]'
-                  new-most-recent-period-end-time-24:
-                    type: string
-                    description: >
-                      'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface
-                      from [/load-raw-cc/new-most-recent-period-end-time-24]'
-        output:
-          success:
-            description: 'Updated offsets array of all interfaces provided'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - interface-offsets
-                  properties:
-                    interface-offsets:
-                      type: array
-                      description: > 
-                        'Array of offsets of all interfaces at the device'
-                      items:
-                        type: object
-                        description: >
-                          'Array of offsets of all interfaces at the device, but updated for the currently processed interface
-                          (Over)write {$interface-offsets={$input#/uuid}/most-recent-period-end-time} = {$input#/new-most-recent-period-end-time}
-                          (Over)write {$interface-offsets={$input#/uuid}/most-recent-period-end-time-24} = {$input#/new-most-recent-period-end-time-24}'
-          error:
-            description: 'Updated array of offsets of all interfaces could not be provided'
-            content:
-              application/json:
-                schema:
-                  type: string
-                  enum:
-                    - 'interfaceOffsets not provided'
-                    - 'interfaceOffsets invalid'
-                    - 'interfaceOffset not provided'
-                    - 'interfaceOffset invalid'
-                    - 'general processing error'
-
-
 
 paths:
   /:

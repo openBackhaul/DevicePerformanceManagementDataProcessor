@@ -61,36 +61,6 @@ Bei Vorhandensein des 15min PM Datensets (Datenobjekt) gelten die PM Daten als g
 Das Vorhandensein individueller Attribute wird nicht abgeprüft.  
 Die Funktion muss aus der Schleife zur Iteration der 15min PM Datensets heraus aufgerufen werden, so dass ggf. die PM Daten beurteilt werden können.  
 
-```yaml
-deliveries:
-  type: object
-  required:
-    - most-recent-period-end-time
-    - delivery
-  properties:
-    most-recent-period-end-time:
-      type: string
-      description: >
-        'mostRecentPeriodEndTime of the processed set of 15-min slice at this interface'
-    delivery:
-      type: array
-      x-key: day
-      items:
-        type: object
-        required:
-          - day
-          - count
-        properties:
-          day:
-            type: integer
-            description: >
-              'day of month, during which the PM data has been received'
-          count:
-            type: integer
-            description: >
-              'amount of 15-min slices that complied with the quality requirements'
-```
-
 **Kriterium für "erwartet"**  
 Die jüngste [period-end-time] im gegenwärtig ausgewerteten Batch markiert das Ende der aktuellen Beobachtungsperiode.  
 Die jüngste [period-end-time] des zuvor ausgewerteten Batches markiert den Beginn der aktuellen Beobachtungsperiode.  
@@ -147,18 +117,17 @@ pm-data-quality:
                     'uuid of AirInterface or EthernetContainer'
                 quality:
                   type: array
-                  x-key: day
                   items:
                     type: object
                     required:
-                      - day
+                      - date
                       - received
                       - expected
                     properties:
-                      day:
-                        type: integer
+                      date:
+                        type: string
                         description: >
-                          'day of month, during which the PM data has been received'
+                          'day for which the quality has been measured'
                       received:
                         type: integer
                         description: >

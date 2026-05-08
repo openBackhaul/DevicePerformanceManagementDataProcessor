@@ -5,7 +5,7 @@ title
   p1MaintainDs
 end title
 
-participant "p1StreamPmData\n" as requestor
+participant "p2StreamPmData\n" as requestor
 participant "p1MaintainDs\n" as p1Main
 database "DataStore" as ds
 

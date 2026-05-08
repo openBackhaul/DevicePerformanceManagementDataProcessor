@@ -1,0 +1,189 @@
+@startuml p2LoadRawCc_sicherung_changes
+skinparam responseMessageBelowArrow true
+
+title
+  p2LoadRawCc
+end title
+
+participant "p2ProcessDevice\n" as requestor
+participant "p2LoadRawCc\n" as cur
+database "MWDI ES Replica" as MwdiEs
+participant "p1FieldsFilter\n" as fieldsFilter
+participant "p2DiscardIrrelevant\nPmRecords" as filterPm
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual #Cyan
+
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
+activate cur
+
+  note over cur
+    readControlConstructFromReplica
+  end note
+  cur -> MwdiEs: { mountName }
+  cur <-- MwdiEs: { {rawControlConstruct} }
+
+  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilter }
+  activate fieldsFilter
+    note over fieldsFilter
+      Applies FieldsFilter
+    end note
+  cur <-- fieldsFilter: { {rawControlConstruct} }
+  deactivate fieldsFilter
+
+  note over cur
+    Initialize interfaceOffsets
+    if not existing
+  end note
+
+  note over cur #Cyan
+    Initialize pmDataQuality
+  end note
+
+  loop FOR all [/raw-cc/logical-termination-point]
+
+    note over cur #LightGrey
+      Initialize offset (=interfaceOffset)
+      if not existing
+    end note
+    note over cur #Cyan
+      extract from offsets or initialize, if not already existing:
+        - formerMostRecentPeriodEndTime
+        - formerMostRecentPeriodEndTime24
+    end note
+
+    note over cur
+      IF layerProtocolName == AirInterface
+    end note
+
+    note right cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      formerMostRecentPeriodEndTime and
+      formerMostRecentPeriodEndTime24
+    end note
+    activate filterPm
+
+      note over filterPm
+        Discards records that are
+        already processed from
+        historicalPerformanceDataList,
+        updates interfaceOffset
+      end note
+      note over filterPm #Cyan
+        delete
+        "updates interfaceOffset"
+        add
+        "counts received"
+      end note
+
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      newMostRecentPeriodEndTime and
+      newMostRecentPeriodEndTime24 and
+      received
+    end note
+    deactivate filterPm
+
+    note right cur
+      addBatchTimestamp
+    end note
+
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n{received} }
+    activate calPmQual #Cyan
+
+      note over calPmQual #Cyan
+        calculates the quality
+        of the provided PM data
+      end note
+
+    cur <-- calPmQual: { {interfacePmDataQuality} }
+    deactivate calPmQual
+
+    note right cur #Cyan
+      attach interfacePmDataQuality to pmDataQuality
+    end note
+
+    note right cur
+      updateInterfaceOffsets
+    end note
+    note right cur #Cyan
+      delete "updateInterfaceOffsets"
+    end note
+
+    note over cur
+      IF layerProtocolName == EthernetContainer
+    end note
+
+    note right cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      formerMostRecentPeriodEndTime and
+      formerMostRecentPeriodEndTime24
+    end note
+
+    activate filterPm
+    note over filterPm
+      Discards records that are
+      already processed from
+      historicalPerformanceDataList,
+      updates interfaceOffset
+    end note
+    note over filterPm #Cyan
+      delete
+      "updates interfaceOffset"
+      add
+      "counts received"
+    end note
+
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
+    note right cur #Cyan
+      replace {offset} by
+      newMostRecentPeriodEndTime and
+      newMostRecentPeriodEndTime24 and
+      received
+    end note
+    deactivate filterPm
+
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n{received} }
+    activate calPmQual #Cyan
+
+      note over calPmQual #Cyan
+        calculates the quality
+        of the provided PM data
+      end note
+
+    cur <-- calPmQual: { {interfacePmDataQuality} }
+    deactivate calPmQual
+
+    note right cur #Cyan
+      attach interfacePmDataQuality to pmDataQuality
+    end note
+
+    note right cur
+      updateInterfaceOffsets
+    end note
+    note right cur #Cyan
+      delete "updateInterfaceOffsets"
+    end note
+    note over cur #Cyan
+      Update offsets for the
+      currently processed interface
+    end note
+
+  end loop
+
+requestor <-- cur: { {rawCc},\n[offsets] }
+note right requestor #Cyan
+  add {pmDataQuality}
+end note
+deactivate cur
+
+@enduml

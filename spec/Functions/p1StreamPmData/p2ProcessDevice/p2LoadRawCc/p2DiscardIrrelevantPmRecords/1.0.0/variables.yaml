@@ -52,27 +52,13 @@ discard-irrelevant-pm-records:
         initialized from [/discard-irrelevant-pm-records/former-most-recent-period-end-time-24]
         overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
 
-    received:
+    amount-received:
       type: array
       x-key: date
       description: >
-        'Number of received 15min PM records categorized by date
+        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
         initialized with empty array
-        overwritten by {$countReceived15MinPmSlices.output#/received}'
-      items:
-        type: object
-        required:
-          - date
-          - count
-        properties:
-          date:
-            type: integer
-            description: >
-              'date'
-          count:
-            type: integer
-            description: >
-              'The count of received 15min PM slices for that date'
+        overwritten by {$countReceived15MinPmSlice.output#/amount-received}'
 
     filtered-historical-performance-data-list:
       type: array

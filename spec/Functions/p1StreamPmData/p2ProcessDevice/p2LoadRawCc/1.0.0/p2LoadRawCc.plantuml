@@ -10,7 +10,7 @@ participant "p2LoadRawCc\n" as cur
 database "MWDI ES Replica" as MwdiEs
 participant "p1FieldsFilter\n" as fieldsFilter
 participant "p2DiscardIrrelevant\nPmRecords" as filterPm
-participant "p1CalculateInterface\nPmDataQuality" as calPmQual #Cyan
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual
 
 requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
 activate cur
@@ -30,22 +30,18 @@ activate cur
   deactivate fieldsFilter
 
   note over cur
-    Initialize interfaceOffsets
+    Initializes interfaceOffsets
     if not existing
   end note
 
-  note over cur #Cyan
-    Initialize pmDataQuality
+  note over cur
+    Initializes pmDataQuality
   end note
 
   loop FOR all [/raw-cc/logical-termination-point]
 
-    note over cur #LightGrey
-      Initialize offset (=interfaceOffset)
-      if not existing
-    end note
-    note over cur #Cyan
-      extract from offsets or initialize, if not already existing:
+    note over cur
+      extracts from offsets or initialize, if not already existing:
         - formerMostRecentPeriodEndTime
         - formerMostRecentPeriodEndTime24
     end note
@@ -58,53 +54,29 @@ activate cur
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
-    note right cur #Cyan
-      replace {offset} by
-      formerMostRecentPeriodEndTime and
-      formerMostRecentPeriodEndTime24
-    end note
+    cur -> filterPm: { [historicalPerformanceDataList],\nformerMostRecentPeriodEndTime,\nformerMostRecentPeriodEndTime24 }
     activate filterPm
 
       note over filterPm
         Discards records that are
         already processed from
-        historicalPerformanceDataList,
-        updates interfaceOffset
+        historicalPerformanceDataList
       end note
-      note over filterPm #Cyan
-        delete
-        "updates interfaceOffset"
-        add
-        "counts received"
+      note over filterPm
+        Counts new records
       end note
 
-    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
-    note right cur #Cyan
-      replace {offset} by
-      newMostRecentPeriodEndTime and
-      newMostRecentPeriodEndTime24 and
-      received
-    end note
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\n[amountReceived] }
     deactivate filterPm
-    note over fieldsFilter #Salmon
-      Bitte überprüfen:
-      Verhält sich das Programm bzgl. MostRecentPeriodEndTime24 wie gewünscht, 
-      wenn in der Vergangenheit schon 24-hours Daten verarbeitet wurden, aber
-      im aktuellen Durchlauf keine 24-hours Daten enthalten sind?
-      Könnte es sein, dass in diesem Fall die MostRecentPeriodEndTime24 aus
-      dem früheren Durchlauf fälschlicherweise mit dem Initialwert von
-      NewMostRecentPeriodEndTime24 überschrieben wird?
-    end note
 
     note right cur
       addBatchTimestamp
     end note
 
-    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n{received} }
-    activate calPmQual #Cyan
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n[amountReceived] }
+    activate calPmQual
 
-      note over calPmQual #Cyan
+      note over calPmQual
         calculates the quality
         of the provided PM data
       end note
@@ -112,15 +84,12 @@ activate cur
     cur <-- calPmQual: { {interfacePmDataQuality} }
     deactivate calPmQual
 
-    note right cur #Cyan
+    note right cur
       attach interfacePmDataQuality to pmDataQuality
     end note
 
     note right cur
-      updateInterfaceOffsets
-    end note
-    note right cur #Cyan
-      delete "updateInterfaceOffsets"
+      updateOffsets by newMostRecentPeriodEndTime/24
     end note
 
     note over cur
@@ -131,40 +100,25 @@ activate cur
       THEN
     end note
 
-    cur -> filterPm: { [historicalPerformanceDataList],\n{offset} }
-    note right cur #Cyan
-      replace {offset} by
-      formerMostRecentPeriodEndTime and
-      formerMostRecentPeriodEndTime24
-    end note
-
+    cur -> filterPm: { [historicalPerformanceDataList],\nformerMostRecentPeriodEndTime,\nformerMostRecentPeriodEndTime24 }
     activate filterPm
-    note over filterPm
+
+      note over filterPm
       Discards records that are
       already processed from
-      historicalPerformanceDataList,
-      updates interfaceOffset
+      historicalPerformanceDataList 
     end note
-    note over filterPm #Cyan
-      delete
-      "updates interfaceOffset"
-      add
-      "counts received"
+    note over filterPm
+      Counts new records
     end note
 
-    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\n{offset} }
-    note right cur #Cyan
-      replace {offset} by
-      newMostRecentPeriodEndTime and
-      newMostRecentPeriodEndTime24 and
-      received
-    end note
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\n[amountReceived] }
     deactivate filterPm
 
-    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n{received} }
-    activate calPmQual #Cyan
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n[amountReceived] }
+    activate calPmQual
 
-      note over calPmQual #Cyan
+      note over calPmQual
         calculates the quality
         of the provided PM data
       end note
@@ -172,27 +126,17 @@ activate cur
     cur <-- calPmQual: { {interfacePmDataQuality} }
     deactivate calPmQual
 
-    note right cur #Cyan
+    note right cur
       attach interfacePmDataQuality to pmDataQuality
     end note
 
     note right cur
-      updateInterfaceOffsets
-    end note
-    note right cur #Cyan
-      delete "updateInterfaceOffsets"
-    end note
-    note over cur #Cyan
-      Update offsets for the
-      currently processed interface
+      updateOffsets by newMostRecentPeriodEndTime/24
     end note
 
   end loop
 
-requestor <-- cur: { {rawCc},\n[offsets] }
-note right requestor #Cyan
-  add {pmDataQuality}
-end note
+requestor <-- cur: { {rawCc},\n[offsets],\n{pmDataQuality} }
 deactivate cur
 
 @enduml

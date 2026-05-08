@@ -48,9 +48,13 @@ process-device:
     raw-cc:
       type: object
       description: >
-        'The raw control construct data read from ES, following ONF structure.
-        Only relevant classes and attributes listed.
-        from {$p1LoadRawCc.output#/raw-cc}'
+        'rawCc read from Replica ES, but reduced by irrelevant data
+        from {$p2LoadRawCc.output#/raw-cc}'
+    pm-data-quality:
+      type: object
+      description: >
+        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+        from {$p2LoadRawCc.output#/pm-data-quality}'
     result-cc:
       type: object
       description: >

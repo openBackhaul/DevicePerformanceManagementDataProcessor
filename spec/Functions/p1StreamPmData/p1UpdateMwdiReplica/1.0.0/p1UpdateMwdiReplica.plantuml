@@ -5,7 +5,7 @@ title
   p1UpdateMwdiReplica
 end title
 
-participant "p1StreamPmData\n" as p1SPMD
+participant "p2StreamPmData\n" as p1SPMD
 participant "p1UpdateMwdiReplica\n" as p1UMWR
 database "MwdiEsIndex" as mwdiEs
 database "MwdiReplicaEsIndex" as mwdiReplicaEs

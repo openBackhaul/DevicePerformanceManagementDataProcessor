@@ -23,11 +23,11 @@ x-javascript-interface:
               former-most-recent-period-end-time:
                 type: string
                 description: >
-                  'mostRecentPeriodEndTime from past processing'
+                  'mostRecentPeriodEndTime during former processing of the currently processed interface'
               former-most-recent-period-end-time-24:
                 type: string
                 description: >
-                  'mostRecentPeriodEndTime from past processing'
+                  'mostRecentPeriodEndTime24 during former processing of the currently processed interface'
     output:
       success:
         description: 'filteredHistoricalPerformanceDataList provided'
@@ -39,7 +39,7 @@ x-javascript-interface:
                 - filtered-historical-performance-data-list
                 - new-most-recent-period-end-time
                 - new-most-recent-period-end-time-24
-                - received
+                - amount-received
               properties:
                 filtered-historical-performance-data-list:
                   type: array
@@ -49,18 +49,18 @@ x-javascript-interface:
                 new-most-recent-period-end-time:
                   type: string
                   description: >
-                    'newMostRecentPeriodEndTime
+                    'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
                     from [/discard-irrelevant-pm-records/new-most-recent-period-end-time]'
                 new-most-recent-period-end-time-24:
                   type: string
                   description: >
-                    'newMostRecentPeriodEndTime24
+                    'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface
                     from [/discard-irrelevant-pm-records/new-most-recent-period-end-time-24]''
-                received:
+                amount-received:
                   type: array
                   description: >
-                    'Number of received 15min PM records categorized by date
-                    from [/discard-irrelevant-pm-records/received]'
+                    'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+                    from [/discard-irrelevant-pm-records/amount-received]'
       error:
         description: 'filteredHistoricalPerformanceDataList could not be provided'
         content:
@@ -79,7 +79,7 @@ x-javascript-interface:
                 - 'number of received 15min PM records could not be updated'
                 - 'general processing error'
     processing:
-      countReceived15MinPmSlices:
+      countReceived15MinPmSlice:
         summary: 'Counts the number of received, but not filtered out 15min PM slices per date'
         input:
           content:
@@ -87,15 +87,15 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
-                  - received
+                  - amount-received
                   - granularity-period
                   - period-end-time
                 properties:
-                  received:
+                  amount-received:
                     type: array
                     description: >
-                      'Number of received 15min PM records categorized by date
-                      from [/discard-irrelevant-pm-records/received]'
+                      'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+                      from [/discard-irrelevant-pm-records/amount-received]'
                   granularity-period:
                     type: string
                     description: >
@@ -114,9 +114,9 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - received
+                    - amount-received
                   properties:
-                    received:
+                    amount-received:
                       type: array
                       x-key: date
                       items:
@@ -130,14 +130,13 @@ x-javascript-interface:
                             description: >
                               'date
                               receivedDate = parsing periodEndTime of the currently processed 15min PM slice and expressing in the format YYYY/MM/DD
-                              new instance in [received] to be added, if {$input#received={receivedDate}} not yet existing
-                              already existing as {receivedDate} or created from {receivedDate}'
+                              new instance in [amount-received] to be added, if instance {$input#/amount-received={receivedDate}} is not yet existing'
                           count:
                             type: integer
                             description: >
                               'The count of received 15min PM slices for that date
-                              if {receivedDate} not yet exists, initialized with 0
-                              from {IF {$input#granularity-period==15-MIN} THEN {$input#received={receivedDate}/count to be incremented by 1} }'
+                              if {receivedDate} not yet exists, initialized with 0 (and then potentially be incremented by 1)
+                              from {IF {$input#/granularity-period==15-MIN} THEN {$input#/amount-received={receivedDate}/count to be incremented by 1} }'
           error:
             description: 'Received 15min PM record could not be counted'
             content:
@@ -200,18 +199,18 @@ x-javascript-interface:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime
-                        IF {$input#granularity-period} indicates 15-MIN
-                          from { max ( {$input#period-end-time}, {$input#new-most-recent-period-end-time} ) }
+                        IF { {$input#/granularity-period} == 15-MIN }
+                          from { max ( {$input#/period-end-time}, {$input#/new-most-recent-period-end-time} ) }
                         ELSE
-                          from {$input#new-most-recent-period-end-time} (unchanged)'
+                          from {$input#/new-most-recent-period-end-time} (means no change)'
                     new-most-recent-period-end-time-24:
                       type: string
                       description: >
                         'newMostRecentPeriodEndTime24
-                        IF {$input#granularity-period} indicates 24-HOURS
-                          from { max ( {$input#period-end-time}, {$input#new-most-recent-period-end-time-24} ) }
+                        IF { {$input#/granularity-period} == 24-HOURS }
+                          from { max ( {$input#/period-end-time}, {$input#/new-most-recent-period-end-time-24} ) }
                         ELSE
-                          from {$input#new-most-recent-period-end-time-24} (unchanged)'
+                          from {$input#/new-most-recent-period-end-time-24} (means no change)'
           error:
             description: 'newMostRecentPeriodEndTime could not be provided'
             content:

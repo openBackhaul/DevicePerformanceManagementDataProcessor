@@ -1,0 +1,239 @@
+openapi: 3.0.0
+info:
+  title: p1CalculateInterfacePmDataQuality
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CalculateInterfacePmDataQuality:
+    summary: 'Calculates the number of expected 15min PM records and forms an array categorizing expected and received amounts by date'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - uuid
+              - former-most-recent-period-end-time
+              - new-most-recent-period-end-time
+              - amount-received
+            properties:
+              uuid:
+                type: string
+                description: >
+                  'uuid of the interface being processed during the current loop iteration'
+              former-most-recent-period-end-time:
+                type: string
+                description: >
+                  'mostRecentPeriodEndTime during former processing of the currently processed interface'
+              new-most-recent-period-end-time:
+                type: string
+                description: >
+                  'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface'
+              amount-received:
+                type: array
+                description: >
+                  'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date'
+    output:
+      success:
+        description: 'Interface PM data quality calculated'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - interface-pm-data-quality
+              properties:
+                interface-pm-data-quality:
+                  type: object
+                  description: >
+                    'Information about the quality of the provided PM data for an individual interface
+                    from [/calculate-interface-pm-data-quality/interface-pm-data-quality]'
+      error:
+        description: 'Interface PM data quality could not be calculated'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'uuid not provided'
+                - 'uuid invalid'
+                - 'formerMostRecentPeriodEndTime not provided'
+                - 'formerMostRecentPeriodEndTime invalid'
+                - 'newMostRecentPeriodEndTime not provided'
+                - 'newMostRecentPeriodEndTime invalid'
+                - 'amountReceived not provided'
+                - 'amountReceived invalid'
+                - 'expected amount could not be calculated'
+                - 'interfacePmDataQuality could not be calculated'
+                - 'general processing error'
+    processing:
+      calculateAmountExpected:
+        description: 'Calculates the number of expected 15min PM records categorized by date'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - former-most-recent-period-end-time
+                  - new-most-recent-period-end-time
+                properties:
+                  former-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime during former processing of the currently processed interface
+                      from [/calculate-interface-pm-data-quality/former-most-recent-period-end-time]'
+                  new-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
+                      from [/calculate-interface-pm-data-quality/new-most-recent-period-end-time]'
+        output:
+          success:
+            description: 'Number of expected records calculated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - amount-expected
+                  properties:
+                    amount-expected:
+                      type: array
+                      x-key: date
+                      description: >
+                        'Number of expected 15min PM records categorized by date
+                        Instance to be created for every day from {$input#/former-most-recent-period-end-time} to {$input#/new-most-recent-period-end-time} (inclusive)'
+                      items:
+                        type: object
+                        required:
+                          - date
+                          - monitoring-period-length
+                          - number
+                        properties:
+                          date:
+                            type: string
+                            description: >
+                              'date
+                              from { {$input#/former-most-recent-period-end-time} to {$input#/new-most-recent-period-end-time} }'
+                          monitoring-period-length:
+                            type: integer
+                            description: >
+                              'Monitoring period distributed over the days from former-most-recent-period-end-time to new-most-recent-period-end-time in minutes'
+                          number:
+                            type: integer
+                            description: >
+                              'Number of 15min PM records expected for the given day
+                              from { round( {$output#/amount-expected/monitoring-period-length} divided by 15 minutes ) }'
+          error:
+            description: 'Number of expected records could not be calculated'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'formerMostRecentPeriodEndTime not provided'
+                    - 'formerMostRecentPeriodEndTime invalid'
+                    - 'newMostRecentPeriodEndTime not provided'
+                    - 'newMostRecentPeriodEndTime invalid'
+                    - 'monitoring period length could not be calculated'
+                    - 'amount expected could not be calculated'
+                    - 'general processing error'
+      composeInterfacePmDataQuality:
+        description: 'Composes the information about the quality of the provided PM data for an individual interface'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - uuid
+                  - amount-received
+                  - amount-expected
+                properties:
+                  uuid:
+                    type: string
+                    description: >
+                      'uuid of the interface
+                      from [/calculate-interface-pm-data-quality/uuid]'
+                  amount-received:
+                    type: array
+                    description: >
+                      'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+                      from [/calculate-interface-pm-data-quality/amount-received]'
+                  amount-expected:
+                    type: array
+                    description: >
+                      'Number of expected 15min PM records categorized by date
+                      from [/calculate-interface-pm-data-quality/amount-expected]'
+        output:
+          success:
+            description: 'Quality of interface PM data composed'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - interface-pm-data-quality
+                  properties:
+                    interface-pm-data-quality:
+                      type: object
+                      description: >
+                        'Information about the quality of the provided PM data for an individual interface'
+                      required:
+                        - uuid
+                        - quality
+                      properties:
+                        uuid:
+                          type: string
+                          description: >
+                            'uuid of the interface
+                            from {$input#/uuid}'
+                        quality:
+                          type: array
+                          items:
+                            type: object
+                            description: >
+                              'An instance to be created for every instance in {$input#/amount-expected}'
+                            required:
+                              - date
+                              - received
+                              - expected
+                            properties:
+                              date:
+                                type: string
+                                description: >
+                                  'date in the format YYYY/MM/DD
+                                  from {$input#/amount-expected=*/date}'
+                              received:
+                                type: integer
+                                description: >
+                                  'number of 15min PM records that have been received during the measurement period
+                                  from {$input#/amount-received={$output#/interface-pm-data-quality/quality/date}/count}'
+                              expected:
+                                type: integer
+                                description: >
+                                  'number of 15min PM records that have been expected to arrive during the measurement period
+                                  from {$input#/amount-expected={$output#/interface-pm-data-quality/quality/date}/number}'
+          error:
+            description: 'Quality of interface PM data could not be composed'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'uuid not provided'
+                    - 'uuid invalid'
+                    - 'amountReceived not provided'
+                    - 'amountReceived invalid'
+                    - 'amountExpected not provided'
+                    - 'amountExpected invalid'
+                    - 'interfacePmDataQuality could not be calculated'
+                    - 'general processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

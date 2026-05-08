@@ -5,7 +5,7 @@ title
   p2ProcessDevice
 end title
 
-participant "p1StreamPmData\n" as requestor
+participant "p2StreamPmData\n" as requestor
 participant "p2ProcessDevice\n" as cur
 participant "p1LoadOffsets\nAndStatusData" as p1Offset
 participant "p2LoadRawCc\n" as p2AddRaw
