@@ -1,5 +1,5 @@
-const ERRORS = require('./ErrorsEnum');
 const p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
+const ERRORS = require('./ErrorsEnum');
 
 const performanceStruct1 = {
   "es": 0,
@@ -87,25 +87,25 @@ const parameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-tx-level-limit",
+      "parameter-name": "lowerTxLevelLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-tx-level-limit",
+      "parameter-name": "upperTxLevelLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
     },
     {
-      "parameter-name": "lower-rx-level-limit",
+      "parameter-name": "lowerRxLevelLimit",
       "purpose": "Lower bound of valid values of the receive level",
       "owner": "engineering",
       "value": "1000"
     },
     {
-      "parameter-name": "upper-rx-level-limit",
+      "parameter-name": "upperRxLevelLimit",
       "purpose": "Upper bound of valid values of the receive level",
       "owner": "engineering",
       "value": "10000"
@@ -114,25 +114,17 @@ const parameterStruct1 = {
   "sub-function": []
 };
 
-
-const OLDparameterStruct1 = {
-  "lower-tx-level-limit": "10",
-  "upper-tx-level-limit": "100",
-  "lower-rx-level-limit": "1000",
-  "upper-rx-level-limit": "10000",
-}
-
 const wrongParameterStruct1 = {
-  "lower-tx-level-limit": "10",
-  "upper-tx-level-limit": "100",
-  "upper-rx-level-limit": "10000",
+  "lowerTxLevelLimit": "10",
+  "upperTxLevelLimit": "100",
+  "upperRxLevelLimit": "10000",
 }
 
 const wrongParameterStruct2 = {
-  "lower-tx-level-limit": "dsgf",
-  "upper-tx-level-limit": 100,
-  "lower-rx-level-limit": 1000,
-  "upper-rx-level-limit": ":",
+  "lowerTxLevelLimit": "dsgf",
+  "upperTxLevelLimit": 100,
+  "lowerRxLevelLimit": 1000,
+  "upperRxLevelLimit": ":",
 }
 
 describe('Positive Tests - Happy Path @positive', () => {

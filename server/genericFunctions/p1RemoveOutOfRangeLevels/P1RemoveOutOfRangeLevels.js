@@ -3,16 +3,16 @@ const ERRORS = require ('./ErrorsEnum');
 
 let parameterStruct = {};
 const paramAllowed = [
-  "lower-tx-level-limit",
-  "upper-tx-level-limit",
-  "lower-rx-level-limit",
-  "upper-rx-level-limit"
+  "lowerTxLevelLimit",
+  "upperTxLevelLimit",
+  "lowerRxLevelLimit",
+  "upperRxLevelLimit"
 ]
 
 function checkOutOfRange(value, isTX) {
 
-  let min = isTX ? parameterStruct["lower-tx-level-limit"] : parameterStruct["lower-rx-level-limit"];
-  let max = isTX ? parameterStruct["upper-tx-level-limit"] : parameterStruct["upper-rx-level-limit"];
+  let min = isTX ? parameterStruct["lowerTxLevelLimit"] : parameterStruct["lowerRxLevelLimit"];
+  let max = isTX ? parameterStruct["upperTxLevelLimit"] : parameterStruct["upperRxLevelLimit"];
 
   if (value < min || value > max ) {
     return false;
