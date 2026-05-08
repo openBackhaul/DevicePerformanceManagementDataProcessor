@@ -2,8 +2,8 @@ const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct = {};
 const paramAllowed = [
-  "lower-temperature-limit",
-  "upper-temperature-limit"
+  "lowerTemperatureLimit",
+  "upperTemperatureLimit"
 ]
 
 // DAMN JavaScript
@@ -75,10 +75,11 @@ const p1RemoveOutOfRangeTemperature = (input) => {
     if (!equipmentsArray) {
       return ERRORS.EQUIP_NOT_PROVIDED
     } else {
+      if (!Array.isArray(equipmentsArray)) {
+        return ERRORS.EQUIP_INVALID;
+      }
       for (let i = 0; i < equipmentsArray.length; i++) {
-        if (equipmentsArray[i]) {
-          const equipData = equipmentsArray[i];
-
+        equipmentsArray.forEach(equipData => {
           if ((equipData["uuid"] == undefined) ||
             (equipData["uuid"] != undefined && typeof equipData["uuid"] != "string")) {
             return ERRORS.EQUIP_INVALID;
@@ -105,33 +106,30 @@ const p1RemoveOutOfRangeTemperature = (input) => {
             (physicalProps["temperature"] != undefined && typeof physicalProps["temperature"] != "string")) {
             return ERRORS.EQUIP_INVALID;
           }
-        } else {
-          return ERRORS.EQUIP_INVALID;
+        });
+      }
+
+      // Check values
+      let lowParam = parseInt(parameterStruct["lowerTemperatureLimit"]);
+      let highParam = parseInt(parameterStruct["upperTemperatureLimit"]);
+
+      let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
+
+      for (let i = 0; i < equipClean.length; i++) {
+        if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
+          highParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
+
+          delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
         }
       }
-    }
 
-    // Check values
-    let lowParam = parseInt(parameterStruct["lower-temperature-limit"]);
-    let highParam = parseInt(parameterStruct["upper-temperature-limit"]);
-
-    let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
-
-    for (let i = 0; i < equipClean.length; i++) {
-      if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
-        highParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
-
-        delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
+      return {
+        "equipment": equipClean
       }
+    } catch (e) {
+      return ERRORS.GENERAL_ERROR;
     }
 
-    return {
-      "equipment": equipClean
-    }
-  } catch (e) {
-    return ERRORS.GENERAL_ERROR;
   }
-
-}
 
 module.exports = p1RemoveOutOfRangeTemperature;

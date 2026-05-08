@@ -10,13 +10,13 @@ const parameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
@@ -31,7 +31,7 @@ const wrongParameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
@@ -58,7 +58,7 @@ const wrongParameterStruct2 = {
     //   "value": "10"
     // },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "50"
@@ -73,13 +73,13 @@ const wrongParameterStruct3 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "xyz"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
@@ -94,13 +94,13 @@ const wrongParameterStruct4 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": 10
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": 100
@@ -115,13 +115,13 @@ const parameterStructWithLowUpperLimit = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "50"
@@ -136,13 +136,13 @@ const parameterStructWithSameValue = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-temperature-limit",
+      "parameter-name": "lowerTemperatureLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "70"
     },
     {
-      "parameter-name": "upper-temperature-limit",
+      "parameter-name": "upperTemperatureLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "70"
@@ -152,11 +152,6 @@ const parameterStructWithSameValue = {
 };
 
 describe('p1RemoveOutOfRangeTemperature', () => {
-  // beforeEach(() => {
-  //   jest.resetModules();
-  //   p1RemoveOutOfRangeTemperature = require('./P1RemoveOutOfRangeTemperature');
-  // });
-
   let dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
 
