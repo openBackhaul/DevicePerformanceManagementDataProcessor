@@ -348,10 +348,6 @@
                 {
                   "parameter": "dpmdp-1-0-0-string-p-094",
                   "owner": "platform"
-                },
-                {
-                  "parameter": "dpmdp-1-0-0-string-p-095",
-                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -414,20 +410,6 @@
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-003"
-            }
-          }
-        },
-        {
-          "uuid": "dpmdp-1-0-0-string-p-095",
-          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
-          "string-profile-1-0:string-profile-pac": {
-            "string-profile-capability": {
-              "string-name": "pmDataQualityProvider",
-              "string-purpose": "kafkaClient",
-              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
-            },
-            "string-profile-configuration": {
-              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-004"
             }
           }
         },
