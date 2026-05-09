@@ -401,6 +401,7 @@
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
               "string-name": "mycomProvider",
+              "string-name": "mycomProvider",
               "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
@@ -1961,6 +1962,7 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
+              "string-name": "mycom-output-format",
               "string-name": "mycom-output-format",
               "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
