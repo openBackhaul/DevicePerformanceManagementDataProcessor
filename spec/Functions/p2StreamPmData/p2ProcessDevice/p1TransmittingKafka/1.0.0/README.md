@@ -2,8 +2,7 @@
 
 Transfers outputFormats to their respective KafkaClient.  
 
-
-### Overview
+## Overview
 
 p1TransmittingKafka receives the list of outputFormats.  
 Each outputFormat is identified by its formatName.  
@@ -13,35 +12,29 @@ It uses the kafkaClientUuid to retrieve the kafkaClient's configuration from the
 Finally, it transmits the outputFormat to Kafka.  
 
 Limitation:  
-- Not supported are multiple kafkaClients for the same outputFormat.  
-  (parameterName==formatName is key attribute in parameters.)  
+Not supported are multiple kafkaClients for the same outputFormat.  
+(parameterName==formatName is key attribute in parameters.)  
 
-
-### Diagram  
+## Diagram
 
 <p align="center">  
   <img src="./p1TransmittingKafka.png" alt="p1TransmittingKafka diagram" width="400" />
 </p>  
 
-
-### Interface  
+## Interface
 
 Please find a detailed description of the [interface](./interface.yaml).  
 
-
-### Variables
+## Variables
 
 Please find a detailed description of the [variables](./variables.yaml).
 
+## Parameters
 
-### Parameters
+| Parameter Name | Description                                                                                                                                                                                                              |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [formatName]   | Special usage of the parameters. parameter-name is not static. For all parameters with purpose==kafkaClient, parameter-name is using the formatName for identifying a kafkaClient and value contains the kafkaClientUuid |
 
-| Parameter Name               | Description                                                                        |
-|------------------------------|------------------------------------------------------------------------------------|
-| [formatName]                 | Special usage of the parameters. parameter-name is not static. For all parameters with purpose==kafkaClient, parameter-name is using the formatName for identifying a kafkaClient and value contains the kafkaClientUuid |
-
-
-### NPM Module
+## NPM Module
 
 [mw-sdn-p1-transmitting-kafka](https://www.npmjs.com/package/mw-sdn-p1-transmitting-kafka)  
-

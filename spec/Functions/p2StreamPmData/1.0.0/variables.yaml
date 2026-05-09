@@ -57,16 +57,26 @@ stream-pm-data:
       items:
         type: string
 
-    pm-data-quality:
-      type: object
-      required:
-        - device
-      properties:
-        device:
-          type: array
-          x-key: mount-name
-          items:
+    output-format:
+      type: array
+      x-key: format-name
+      description: >
+        'Array of output formats potentially to be transmitted by p1TransmittingKafka
+        ! simplified representation !'
+      items:
+        type: object
+        required:
+          - format-name
+          - output-format
+        properties:
+          format-name:
+            type: string
+            enum:
+              - 'pm-data-quality-output-format'
+            description: >
+              'Name of the output format'
+          output-format:
             type: object
             description: >
-              'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+              'outputFormat
               from {$p2ProcessDevice.output#/pm-data-quality}'

@@ -92,9 +92,12 @@ note over p2ProcessPm
     of the provided PM data
 end note
 
-note over p1StreamPm #Cyan
+note over p1StreamPm
   - Consolidate deviceQuality information
     into list of multiple devices
+end note
+
+note over p1StreamPm #Cyan
   - Add interface to existing function
     p1TransmittingKafka for streaming
     quality information to Kafka
@@ -477,11 +480,6 @@ activate p1StreamPm
 
       p1StreamPm <-- p2ProcessPm : {pmDataQuality}
       deactivate p2ProcessPm
-
-      note over p1StreamPm #Cyan
-        Consolidates device related
-        quality information
-      end note
 
     end Loop
 

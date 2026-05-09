@@ -12,6 +12,7 @@ participant "p1ResolveEsAddress\n" as p1REA
 participant "p1InitKafka\n" as p1InitKafka
 participant "p1UpdateMwdiReplica\n" as p1UMR
 participant "p2ProcessDevice\n" as p1ProcessPm
+participant "p1Transmitting\nKafka" as p1Trans
 participant "p1MaintainDs\n" as p1MDS
 
 note right embed
@@ -77,6 +78,17 @@ activate p1RMWDI
       p1RMWDI <-- p1ProcessPm
       deactivate p1ProcessPm
     end loop
+  
+  p1RMWDI -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  activate p1Trans
+
+    note over p1Trans
+      Transmits object
+      to Kafka
+    end note
+
+  p1RMWDI <-- p1Trans
+  deactivate p1Trans
 
   end loop
 

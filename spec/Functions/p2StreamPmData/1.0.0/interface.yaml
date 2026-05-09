@@ -267,6 +267,41 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
+      p1TransmittingKafka:
+        description: 'Transmits payloads to kafka'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - config-file
+                  - output-format
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p1TransmittingKafka'
+                  config-file:
+                    type: object
+                    description: >
+                      'configFile content'
+                  output-format:
+                    type: array
+                    x-key: format-name
+                    description: >
+                      'Array of output formats potentially to be transmitted'
+        output:
+          success:
+            description: 'Objects sent via Kafka'
+          error:
+            description: 'Objects could not be sent via Kafka'
+            content:
+              application/json:
+                schema:
+                  type: string
 
 paths:
   /:
