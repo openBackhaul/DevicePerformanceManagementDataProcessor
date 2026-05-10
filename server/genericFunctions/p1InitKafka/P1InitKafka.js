@@ -51,6 +51,8 @@ async function run(request) {
       parameterName: param["parameter-name"],
       kafkaClientUuid: param.value,
       clientId: kafkaClient.clientId,
+      groupId: kafkaClient.groupId,
+      auth: kafkaClient.auth,
       brokerList: kafkaClient.brokerList,
       topicName: kafkaClient.topicName,
       type: kafkaClient.type

@@ -1,6 +1,6 @@
 const { loadConfigFile } = require("../../utils/config");
 const { Client } = require("@elastic/elasticsearch");
-const { Kafka } = require("kafkajs");
+const confluentKafkaProducer = require("../kafka/confluentKafkaProducer");
 const { withRetry } = require("../../utils/retry");
 
 function tryRequire(name) {
@@ -37,7 +37,6 @@ const ElasticsearchServiceModule = require(
 );
 
 const esClients = new Map();
-const producerSessions = new Map();
 
 function getConfig(configFile) {
   return configFile || loadConfigFile();
@@ -261,61 +260,29 @@ async function getEsClient(forceCreate, uuid, esAddress, logger) {
 }
 
 async function connectKafkaProducer(clientId, brokers, logger) {
-  const key = clientId + "|" + brokers.join(",");
-
-  if (producerSessions.has(key)) {
-    return producerSessions.get(key);
-  }
-
-  return withRetry(
-    async () => {
-      if (KafkaProducerService && KafkaProducerService.connect) {
-        const ok = await KafkaProducerService.connect(clientId, brokers);
-        const session = { via: "library", ok: ok !== false, clientId, brokers };
-        producerSessions.set(key, session);
-        return session;
-      }
-
-      const kafka = new Kafka({ clientId, brokers });
-      const producer = kafka.producer();
-      await producer.connect();
-
-      const session = { via: "local", producer, clientId, brokers };
-      producerSessions.set(key, session);
-
-      return session;
-    },
-    {
-      label: `connectKafkaProducer:${clientId}`,
-      retryIntervalMs: 10000,
-      logger
-    }
-  );
+  return await confluentKafkaProducer.initProducer({
+    clientId,
+    brokers,
+    logger
+  });
 }
 
 async function sendKafkaMessage(topic, message, clientId, brokers, logger) {
-  return withRetry(
-    async () => {
-      if (KafkaProducerService && KafkaProducerService.sendMessage) {
-        return await KafkaProducerService.sendMessage(topic, message);
+  await confluentKafkaProducer.initProducer({
+    clientId,
+    brokers,
+    logger
+  });
+
+  return await confluentKafkaProducer.sendBatch(
+    topic,
+    [
+      {
+        key: message && message.mountName ? String(message.mountName) : null,
+        value: typeof message === "string" ? message : JSON.stringify(message)
       }
-
-      const session = await connectKafkaProducer(clientId, brokers, logger);
-
-      return await session.producer.send({
-        topic,
-        messages: [
-          {
-            value: typeof message === "string" ? message : JSON.stringify(message)
-          }
-        ]
-      });
-    },
-    {
-      label: `sendKafkaMessage:${topic}`,
-      retryIntervalMs: 10000,
-      logger
-    }
+    ],
+    logger
   );
 }
 
