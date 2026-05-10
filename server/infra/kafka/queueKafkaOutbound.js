@@ -1,59 +1,130 @@
-const { getParamFromFunction } = require("../../utils/functionTree");
-const { readKafkaAddress } = require("../../utils/ltpResolution");
 const redisQueue = require("../redis/redisStreamQueue");
+const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
 
-async function run(request) {
-  const { parameters, configFile, logger } = request;
-  const outputFormat = request.output;
+const DEFAULT_MAX_REDIS_PAYLOAD_BYTES = 512 * 1024;
 
-  if (!parameters || !configFile || outputFormat === undefined) {
-    throw new Error("parameters, configFile and outputFormat are mandatory");
+function getMaxRedisPayloadBytes() {
+  const configured = Number(process.env.MAX_REDIS_KAFKA_PAYLOAD_BYTES);
+  return Number.isFinite(configured) && configured > 0
+    ? configured
+    : DEFAULT_MAX_REDIS_PAYLOAD_BYTES;
+}
+
+function normalizeOutputs(request) {
+  const output = request.outputs || request.output;
+
+  if (!output) {
+    throw new Error("output or outputs is mandatory");
   }
 
-  const formats = Array.isArray(outputFormat) ? outputFormat : [outputFormat];
+  return Array.isArray(output) ? output : [output];
+}
+
+function normalizeOutputMessage(output) {
+  const mountName =
+    output.mountName ||
+    output.deviceId ||
+    output.devicId ||
+    output["mount-name"] ||
+    null;
+
+  return {
+    targetConsumer: String(output.targetConsumer || "").toUpperCase(),
+    messageType: output.messageType || "PERFORMANCE_OUTPUT",
+    mountName,
+    correlationId: output.correlationId || null,
+    payloadVersion: output.payloadVersion || output.version || "1.0",
+    eventTime: output.eventTime || output.batchTimestamp || new Date().toJSON(),
+    payload: output.payload === undefined ? {} : output.payload
+  };
+}
+
+async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
+  const serializedPayload = JSON.stringify(normalized.payload);
+  const payloadBytes = Buffer.byteLength(serializedPayload, "utf8");
+  const maxRedisPayloadBytes = getMaxRedisPayloadBytes();
+
+  if (payloadBytes <= maxRedisPayloadBytes) {
+    return {
+      targetConsumer: normalized.targetConsumer,
+      messageType: normalized.messageType,
+      mountName: normalized.mountName,
+      correlationId: normalized.correlationId,
+      payloadVersion: normalized.payloadVersion,
+      eventTime: normalized.eventTime,
+      payloadStorage: "REDIS",
+      payload: serializedPayload,
+      payloadRefId: "",
+      payloadBytes
+    };
+  }
+
+  const payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
+    dataStoreEsClient,
+    targetConsumer: normalized.targetConsumer,
+    mountName: normalized.mountName,
+    payload: normalized.payload,
+    payloadBytes,
+    logger
+  });
+
+  return {
+    targetConsumer: normalized.targetConsumer,
+    messageType: normalized.messageType,
+    mountName: normalized.mountName,
+    correlationId: normalized.correlationId,
+    payloadVersion: normalized.payloadVersion,
+    eventTime: normalized.eventTime,
+    payloadStorage: "ES",
+    payload: "",
+    payloadRefId,
+    payloadBytes
+  };
+}
+
+/**
+ * Request:
+ * {
+ *   output or outputs,
+ *   dataStoreEsClient, // mandatory only when payload is larger than MAX_REDIS_KAFKA_PAYLOAD_BYTES
+ *   logger
+ * }
+ */
+async function run(request) {
+  const { logger, dataStoreEsClient } = request;
+  const outputs = normalizeOutputs(request);
   const queuedResultList = [];
 
   await redisQueue.ensureKafkaOutboundGroup(logger);
 
-  for (const format of formats) {
-    const kafkaClientUuid = getParamFromFunction(
-      parameters,
-      "p1TransmittingKafka",
-      format.formatName,
-      null
-    );
+  for (const output of outputs) {
+    const normalized = normalizeOutputMessage(output);
 
-    if (!kafkaClientUuid) {
-      // Testing purpose: For tracking in the response, we optimistically mark it as QUEUED. If enqueueing fails, it will be retried and marked as failed in the logs, but won't be reflected in the response.
-      /* queuedResultList.push({
-        formatName: format.formatName,
+    if (!normalized.targetConsumer) {
+      queuedResultList.push({
         status: "SKIPPED",
-        reason: "No kafka client configured"
-      }); */
+        reason: "targetConsumer is mandatory",
+        mountName: normalized.mountName
+      });
       continue;
     }
 
-    const kafkaClient = await readKafkaAddress(configFile, kafkaClientUuid);
-
-    await redisQueue.enqueueKafkaOutbound(
-      {
-        formatName: format.formatName,
-        kafkaClientUuid,
-        topicName: kafkaClient.topicName,
-        clientId: kafkaClient.clientId,
-        brokerList: kafkaClient.brokerList,
-        message: format
-      },
+    const queueMessage = await buildRedisQueueMessage(
+      normalized,
+      dataStoreEsClient,
       logger
     );
 
-    // Testing purpose: For tracking in the response, we optimistically mark it as QUEUED. If enqueueing fails, it will be retried and marked as failed in the logs, but won't be reflected in the response.
-    /* queuedResultList.push({
-      formatName: format.formatName,
-      kafkaClientUuid,
-      topicName: kafkaClient.topicName,
+    await redisQueue.enqueueKafkaOutbound(queueMessage, logger);
+
+    queuedResultList.push({
+      targetConsumer: queueMessage.targetConsumer,
+      messageType: queueMessage.messageType,
+      mountName: queueMessage.mountName,
+      payloadStorage: queueMessage.payloadStorage,
+      payloadBytes: queueMessage.payloadBytes,
       status: "QUEUED"
-    }); */
+    });
   }
 
   return { queuedResultList };

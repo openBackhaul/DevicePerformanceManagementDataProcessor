@@ -130,11 +130,15 @@ function findFunctionNode(tree, functionName) {
   return null;
 }
 
-function getParamFromFunction(tree, functionName, paramName, defaultValue) {
+function getParamFromFunction(tree, functionName, paramName, defaultValue, isParamList = false) {
   const functionNode = findFunctionNode(tree, functionName);
 
   if (!functionNode) {
     return defaultValue;
+  }
+
+  if (isParamList) {
+    return functionNode.parameter || defaultValue;
   }
 
   const found = (functionNode.parameter || []).find(

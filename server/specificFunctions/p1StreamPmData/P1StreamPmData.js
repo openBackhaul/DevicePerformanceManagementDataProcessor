@@ -166,7 +166,7 @@ async function run() {
     dataStoreEsClient,
     loggingEsClient,
     cleanupLockTtlMs: redisConfig.cleanupLockTtlMs || 300000
-  }).catch((error) => logger.error({ error }, "Cleanup leader loop crashed"));
+  }).catch((error) => logger.error({ error }, "Cleanup leader loop crashed"));*/
 
   startProcessingWorkerPoolRedis({
     logger,
@@ -181,15 +181,19 @@ async function run() {
     workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000)
   }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
-  startKafkaOutboundWorkerPool({
+  /* startKafkaOutboundWorkerPool({
     logger,
-    appState,
     instanceId,
-    workerCount: 2,
-    transmitKafkaParameters: p1TransmittingKafkaParameters,
-    configFile: loaded.configFile,
+    appState,
+    dataStoreEsClient,
+    workerCount: Number(serviceConfig.kafkaOutboundConcurrency || 1),
+    readCount: Number(serviceConfig.kafkaOutboundReadCount || 100),
+    batchSize: Number(serviceConfig.kafkaOutboundBatchSize || 100),
+    maxBatchBytes: Number(serviceConfig.kafkaOutboundMaxBatchBytes || 900 * 1024),
     staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000)
-  }).catch((error) => logger.error({ error }, "Kafka outbound worker pool crashed"));
+  }).catch((error) =>
+    logger.error({ error }, "Kafka outbound worker pool crashed")
+  ); */
 
   startRetryWorkerPool({
     logger,
@@ -198,7 +202,7 @@ async function run() {
     workerCount: 1,
     retryDelayMs: Number(redisConfig.retryIntervalMs || 10000),
     staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000)
-  }).catch((error) => logger.error({ error }, "Retry worker pool crashed")); */
+  }).catch((error) => logger.error({ error }, "Retry worker pool crashed")); 
 
   return {
     instanceId,
