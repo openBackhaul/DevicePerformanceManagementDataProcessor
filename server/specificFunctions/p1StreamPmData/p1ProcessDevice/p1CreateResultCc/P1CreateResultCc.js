@@ -114,7 +114,7 @@ async function run(request) {
 
     const interfaceMetadataList = [];
 
-    resultCc["interface-metadata-list"] = interfaceMetadataList;
+    //resultCc["interface-metadata-list"] = interfaceMetadataList;
 
     return {
       resultCc,
