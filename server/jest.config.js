@@ -1,6 +1,7 @@
 module.exports = {
   projects: [
+    '<rootDir>/genericFunctions/p1DiscardIrrelevantPmRecords',
     '<rootDir>/genericFunctions/p1RemoveOutOfRangeTemperature',
-    '<rootDir>/genericFunctions/p1DiscardIrrelevantPmRecords'
+    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt'
   ],
 };
