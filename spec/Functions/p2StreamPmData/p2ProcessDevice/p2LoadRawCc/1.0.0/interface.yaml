@@ -40,7 +40,7 @@ x-javascript-interface:
               required:
                 - raw-cc
                 - offsets
-                - pm-data-quality
+                - device-pm-data-quality
               properties:
                 raw-cc:
                   type: object
@@ -52,11 +52,11 @@ x-javascript-interface:
                   description: >
                     'Array of all Offsets
                     from [/load-raw-cc/offsets]'
-                pm-data-quality:
+                device-pm-data-quality:
                   type: object
                   description: >
                     'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
-                    from [/load-raw-cc/pm-data-quality]'
+                    from [/load-raw-cc/device-pm-data-quality]'
       error:
         description: 'rawCc could not be loaded'
         content:

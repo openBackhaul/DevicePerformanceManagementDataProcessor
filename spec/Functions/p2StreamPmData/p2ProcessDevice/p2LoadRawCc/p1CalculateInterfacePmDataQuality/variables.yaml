@@ -25,6 +25,7 @@ calculate-interface-pm-data-quality:
       type: array
       description: >
         'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+        defined by {$p2DiscardIrrelevantPmRecords.interface.processing.countReceived15MinPmSlice.output#/amount-received}
         from {$input#/amount-received}'
 
     amount-expected:

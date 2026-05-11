@@ -194,6 +194,7 @@ x-javascript-interface:
                             from {$input#/uuid}'
                         quality:
                           type: array
+                          x-key: date
                           items:
                             type: object
                             description: >
@@ -211,13 +212,13 @@ x-javascript-interface:
                               received:
                                 type: integer
                                 description: >
-                                  'number of 15min PM records that have been received during the measurement period
-                                  from {$input#/amount-received={$output#/interface-pm-data-quality/quality/date}/count}'
+                                  'number of 15min PM records that have been received during the monitoring period
+                                  from {$input#/amount-received={$output#/interface-pm-data-quality/quality=date/date}/count}'
                               expected:
                                 type: integer
                                 description: >
-                                  'number of 15min PM records that have been expected to arrive during the measurement period
-                                  from {$input#/amount-expected={$output#/interface-pm-data-quality/quality/date}/number}'
+                                  'number of 15min PM records that have been expected to arrive during the monitoring period
+                                  from {$input#/amount-expected={$output#/interface-pm-data-quality/quality=date/date}/number}'
           error:
             description: 'Quality of interface PM data could not be composed'
             content:

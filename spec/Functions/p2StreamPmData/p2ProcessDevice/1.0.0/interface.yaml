@@ -47,13 +47,13 @@ x-javascript-interface:
             schema:
               type: object
               required:
-                - pm-data-quality
+                - device-pm-data-quality
               properties:
-                pm-data-quality:
+                device-pm-data-quality:
                   type: object
                   description: >
                     'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
-                    from [/process-device/pm-data-quality]'
+                    from [/process-device/device-pm-data-quality]'
       error:
         description: 'Processing of PM data failed'
         content:
@@ -168,7 +168,7 @@ x-javascript-interface:
                   required:
                     - raw-cc
                     - offsets
-                    - pm-data-quality
+                    - device-pm-data-quality
                   properties:
                     raw-cc:
                       type: object
@@ -178,7 +178,7 @@ x-javascript-interface:
                       type: array
                       description: >
                         'Array of all Offsets'
-                    pm-data-quality:
+                    device-pm-data-quality:
                       type: object
                       description: >
                         'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device'

@@ -19,47 +19,53 @@
 
 - Vollständigkeit der gelieferten PM Daten ( gelieferte Daten / erwartete Daten in [%] )  
   - in Bezug auf Geräte und Gerätetypen  
+    Der Erhalt eines aktualisierten ControlConstructs (CC) startet die Bearbeitung des Gerätes durch den DPMDP.  
     Dem DPMDP ist nicht bekannt, für welche Geräte Daten zu erwarten wären.  
     D.h. es fehlt die Referenz für eine Vollständigkeitsaussage in Bezug auf Geräte und Gerätetypen.  
     Diese Anforderung wird im Rahmen des DPMDP nicht berücksichtigt.  
   - in Bezug auf 15min-Werte  
-    Aufgrund der 15min-Granularität der PM Daten ist es möglich, von der Beobachtungsdauer auf die Anzahl der zu erwartenden Werte zu schließen (z.B. 96 innerhalb eines Tages).  
+    Die gelieferten PM Daten sind mit Zeitstempeln versehen.  
+    Vom letzten in der Vergangenheit erhaltenen Zeitstempel und dem letzten Zeitstempel aus dem aktuellen Batch lässt sich eine Beobachtungsdauer ableiten.  
+    Aufgrund der 15min-Granularität der PM Daten ist es möglich, von dieser Beobachtungsdauer auf die Anzahl der zu erwartenden Werte zu schließen (z.B. 12 innerhalb einer Beobachtungsdauer von 3 Stunden).  
     In diese Richtung wird entwickelt.  
-
-Hinweise:  
-Der Erhalt eines aktualisierten ControlConstructs (CC) startet die Bearbeitung des Gerätes durch den DPMDP.  
-Folglich kann ein Nichterhalten des CCs nicht als Indikator für fehlende PM Daten herangezogen werden.  
-Der Erhalt des 24hours PM Datensets startet die Berechnung der Service Quality Parameter.  
-Folglich kann ein Nichterhalten des 24hours PM Datensets nicht als Indikator für fehlende PM Daten herangezogen werden.  
-=> Der DPMDP kann also immer nur über unvollständige, nicht jedoch über vollständig fehlende PM Daten informieren.
 
 ## Gespräch mit Performance Management am 2026-04-28
 
-Die Anforderungen waren noch nicht klar.  
-In den vorbereiteten Fragestellungen konnten keine Entschlüsse gefasst werden.  
+Die Anforderungen waren noch nicht klar, bzw. widersprüchlich hinsichtlich des Detaillierungsgrads und des Ziels der darauf aufbauenden Analysen.  
 
-## Vorübergehendes Design
+## Design
 
-### Erfassung
+Mit nachfolgendem Design soll ein schneller Überblick über die zuletzt gelieferten PM Daten ermöglicht werden.  
+Eine detailliertere Analyse könnte zunächst in den konsumierenden Tools erfolgen.  
 
 **Methode**  
-Die Daten zur Qualität werden permanent erfasst und gespeichert.  
-Die Erfassung ist Teil der Bearbeitung der Batches.  
-Sie geschieht in einer dedizierten Funktion, so dass ggf. unter verschiedenen Methoden ausgewählt werden kann.  
+Die Daten zu den erhaltenen PM Daten werden permanent erfasst und weitergegeben.  
+
+Die Erhebung erfolgt zusammen mit der Aufarbeitung der PM Daten eines Gerätes.  
+Die Weitergabe über Kafka erfolgt am Ende der Bearbeitung aller Geräte eines MwdiReplica Updates.  
+
+Die Erfassung der erhaltenen PM Daten ist Teil der Aufarbeitung der Rohdaten.  
+Die Berechnung der erwarteten PM Daten geschieht in einer dedizierten Funktion, so dass die Berechnung der PM Daten Qualität ggf. gezielt erweitert oder ersetzt werden kann.  
 
 **Ergebnisstruktur**  
-Das Ergebnis der Qualitätserfassung ist in einem Objekt verpackt, so dass dieses generisch durch die Hierarchie der Funktionen gereicht werden kann.  
-Das Objekt bezieht sich auf ein Gerät und es löst die Qualität an den einzelnen Interfaces auf.  
+Die gelieferte Qualitätsinformation ist nach  
 
-**Qualitätsbegriff**  
-Zunächst wird die Qualität nur in Vollständigkeit der 15min PM Datensets gemessen.  
-Es werden absolute Anzahlen zu den erwarteten und den gelieferten Datensätzen dokumentiert, so dass diese über Batchgrenzen hinweg zusammengefügt und über Interfaces oder ganze Geräte hinweg aggregiert werden können.  
-Die Anzahlen werden nach Tag im Monat kategorisiert.  
+  |_Gerät  
+    |_Interface  
+      |_Datum (im Format YYYY/MM/DD)  
+
+strukturiert.  
+Die erhaltenen und erwarteten PM Daten werden in absoluten Anzahlen dokumentiert.  
+
+Eine Speicherung der Daten im konsumierenden Tool vorausgesetzt, ermöglicht dies in vielerlei Hinsicht zu zu filtern und zu aggregieren, beispielsweise  
+
+- die Daten eines Gerätes über einen längeren Zeitraum
+- die Daten eines Interfaces über einen längeren Zeitraum
+- die Daten mehrerer Geräte am selben Tag
 
 **Kriterium für "geliefert"**  
 Bei Vorhandensein des 15min PM Datensets (Datenobjekt) gelten die PM Daten als geliefert.  
 Das Vorhandensein individueller Attribute wird nicht abgeprüft.  
-Die Funktion muss aus der Schleife zur Iteration der 15min PM Datensets heraus aufgerufen werden, so dass ggf. die PM Daten beurteilt werden können.  
 
 **Kriterium für "erwartet"**  
 Die jüngste [period-end-time] im gegenwärtig ausgewerteten Batch markiert das Ende der aktuellen Beobachtungsperiode.  
@@ -68,18 +74,17 @@ Die Beobachtungsdauer ergibt sich aus der Differenz zwischen Ende und Beginn der
 Die Anzahl der erwarteten 15min PM Datensets berechnet sich zu Beobachtungsperiode / 15.  
 Gegebenenfalls ist bis 24:00Uhr und ab 0:00 zu rechnen um die erwarteten Datensets auf zwei Tage aufzuteilen.  
 
-### Visualisierung
-
+**Visualisierung**  
 Der DPMDP wird keine GUI haben; er wird die Daten zur Servicequalität nicht selbst darstellen.  
 
-### Datenauslieferung  
-
+**Datenauslieferung**  
 Im Prozess p1StreamPmData wird in einer Endlosschleife die Datenbank des MWDI nach dem DPMDP repliziert und anschließend alle geänderten CCs prozessiert.  
-Die nach Geräten und Interfaces sortierten und mit Tag markierten Daten werden am Ende eines Durchlaufs (alle geänderten CCs wurden prozessiert) nach Kafka übergeben und anschließend gelöscht.  
+Die nach Geräten und Interfaces sortierten und mit Datum markierten Daten werden am Ende eines Durchlaufs (alle geänderten CCs wurden prozessiert) nach Kafka übergeben und anschließend gelöscht.  
 
-Es ist den konsumieren Tools überlassen die Daten über die einzelnen Batches zu konsolidieren und nach eigenen Bedarfen ggf. über Interfaces und/oder Geräte zu aggregieren.  
+**Alarmierung**  
+Eine Alarmierung wird zunächst nicht unterstützt.  
 
-### Quality Output Format
+## Konkretes Format
 
 Das nach Kafka übergebene Datenobjekt hat das folgende Format:
 
@@ -117,6 +122,7 @@ pm-data-quality:
                     'uuid of AirInterface or EthernetContainer'
                 quality:
                   type: array
+                  x-key: date
                   items:
                     type: object
                     required:
@@ -127,17 +133,13 @@ pm-data-quality:
                       date:
                         type: string
                         description: >
-                          'day for which the quality has been measured'
+                          'date in the format YYYY/MM/DD'
                       received:
                         type: integer
                         description: >
-                          'amount of received 15-min slices'
+                          'number of 15min PM records that have been received during the monitoring period'
                       expected:
                         type: integer
                         description: >
-                          'amount of expected 15-min slices'
+                          'number of 15min PM records that have been expected to arrive during the monitoring period'
 ```
-
-### Alarmierung
-
-Eine Alarmierung wird zunächst nicht unterstützt.

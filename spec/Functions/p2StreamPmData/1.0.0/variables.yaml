@@ -78,5 +78,23 @@ stream-pm-data:
           output-format:
             type: object
             description: >
-              'outputFormat
-              from {$p2ProcessDevice.output#/pm-data-quality}'
+              'outputFormat'
+            required:
+              - pm-data-quality
+            properties:
+              pm-data-quality:
+                type: object
+                required:
+                  - device
+                properties:
+                  device:
+                    type: array
+                    x-key: mount-name
+                    description: >
+                      'Information about the quality of the provided PM data of all devices that had updated CCs with the latest MwdiReplica update'
+                    items:
+                      type: object
+                      description: >
+                        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+                        defined by {$p2LoadRawCc.variables#/device-pm-data-quality}
+                        from {$p2ProcessDevice.output#/device-pm-data-quality}'

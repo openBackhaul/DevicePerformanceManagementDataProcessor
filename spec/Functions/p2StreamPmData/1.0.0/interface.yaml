@@ -255,9 +255,9 @@ x-javascript-interface:
                 schema:
                   type: object
                   required:
-                    - pm-data-quality
+                    - device-pm-data-quality
                   properties:
-                    pm-data-quality:
+                    device-pm-data-quality:
                       type: object
                       description: >
                         'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device'
@@ -283,16 +283,19 @@ x-javascript-interface:
                   parameters:
                     type: object
                     description: >
-                      'Subtree of the parameters object for p1TransmittingKafka'
+                      'Subtree of the parameters object for p1TransmittingKafka
+                      from [/stream-pm-data/parameters/sub-function=p1TransmittingKafka]'
                   config-file:
                     type: object
                     description: >
-                      'configFile content'
+                      'configFile content
+                      from [/stream-pm-data/config-file]'
                   output-format:
                     type: array
                     x-key: format-name
                     description: >
-                      'Array of output formats potentially to be transmitted'
+                      'Array of output formats potentially to be transmitted
+                      from [/stream-pm-data/output-format]'
         output:
           success:
             description: 'Objects sent via Kafka'

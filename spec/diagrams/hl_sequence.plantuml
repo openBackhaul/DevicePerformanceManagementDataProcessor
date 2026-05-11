@@ -21,7 +21,7 @@ participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
 participant "p1CalculateInterface\nPmDataQuality" as calPmQual #LightSalmon
 
 participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
-participant "p1Prepare\nTxModes" as p1prepTxModes 
+participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
 participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
 participant "p1Calculate\nIntervalCapacity" as intCC
@@ -52,7 +52,7 @@ embed -> p1StreamPm
 ===== Changes for Measuring Quality =====
 
 note over p2AddRaw
-  - Change from handling {offset} to handling 
+  - Change from handling {offset} to handling
     former/newMostRecentPeriodEndTime/24
 end note
 
@@ -74,14 +74,14 @@ end note
 note over calPmQual
   - Calculate the quality of the
     provided PM data
-  - Return interfaceQuality of the provided 
+  - Return interfaceQuality of the provided
     PM data
 end note
 
 note over p2AddRaw
   - Add consolidating returned interfaceQuality
     information into deviceQuality
-  - Add returning the deviceQuality of the 
+  - Add returning the deviceQuality of the
     provided PM data
 end note
 
@@ -95,9 +95,6 @@ end note
 note over p1StreamPm
   - Consolidate deviceQuality information
     into list of multiple devices
-end note
-
-note over p1StreamPm #Cyan
   - Add interface to existing function
     p1TransmittingKafka for streaming
     quality information to Kafka

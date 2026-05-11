@@ -50,11 +50,11 @@ process-device:
       description: >
         'rawCc read from Replica ES, but reduced by irrelevant data
         from {$p2LoadRawCc.output#/raw-cc}'
-    pm-data-quality:
+    device-pm-data-quality:
       type: object
       description: >
         'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
-        from {$p2LoadRawCc.output#/pm-data-quality}'
+        from {$p2LoadRawCc.output#/device-pm-data-quality}'
     result-cc:
       type: object
       description: >
