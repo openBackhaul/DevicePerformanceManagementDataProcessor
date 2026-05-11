@@ -1,0 +1,104 @@
+{
+  "data-structure": {
+    "equipment-augment-1-0:control-construct-pac": {
+      "external-label": "my-device",
+      "device-model-name": "demo-model",
+      "should-be-removed": "x"
+    },
+    "equipment": [
+      {
+        "uuid": "eq-1",
+        "actual-equipment": {
+          "local-id": "1",
+          "physical-properties": {
+            "vendor": "acme",
+            "model": "x1",
+            "should-be-removed": true
+          },
+          "structure": {
+            "rack": "R1",
+            "should-be-removed": 123
+          }
+        },
+        "should-be-removed": "x"
+      }
+    ],
+    "core-model-1-4:profile-collection": {
+      "profile": [
+        {
+          "uuid": "p-1",
+          "profile-name": "some-profile",
+          "layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac": {
+            "layer-1-aggregation-profile-configuration": {
+              "client-ltp": [
+                "ltp-1"
+              ],
+              "server-ltp-list": [
+                "ltp-2",
+                "ltp-3"
+              ],
+              "should-be-removed": "x"
+            },
+            "should-be-removed": "x"
+          },
+          "should-be-removed": "x"
+        }
+      ],
+      "should-be-removed": "x"
+    },
+    "logical-termination-point": [
+      {
+        "uuid": "ltp-1",
+        "client-ltp": [
+          "ltp-0"
+        ],
+        "server-ltp": [
+          "ltp-2"
+        ],
+        "ltp-augment-1-0:ltp-augment-pac": {
+          "external-label": "LTP Label",
+          "original-ltp-name": "OriginalName",
+          "should-be-removed": "x"
+        },
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "air-interface",
+            "air-interface-2-0:air-interface-pac": {
+              "air-interface-configuration": {
+                "transmission-mode-min": "QPSK",
+                "transmission-mode-max": "256QAM",
+                "tx-power": 10,
+                "atpc-is-on": true,
+                "atpc-thresh-upper": 5,
+                "atpc-thresh-lower": 1,
+                "should-be-removed": "x"
+              },
+              "air-interface-capability": {
+                "transmission-mode-list": [
+                  "QPSK",
+                  "16QAM"
+                ],
+                "should-be-removed": "x"
+              },
+              "air-interface-current-performance": {
+                "timestamp": "2026-01-01T00:00:00Z",
+                "should-be-removed": "x"
+              },
+              "air-interface-historical-performances": [],
+              "should-be-removed": "x"
+            },
+            "ethernet-container-2-0:ethernet-container-pac": {
+              "ethernet-container-historical-performances": [],
+              "should-be-removed": "x"
+            },
+            "should-be-removed": "x"
+          }
+        ],
+        "should-be-removed": "x"
+      }
+    ],
+    "should-be-removed-root": "x"
+  },
+  "fields-filter-string": "does-not-exist"
+}

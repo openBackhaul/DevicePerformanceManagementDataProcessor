@@ -1,0 +1,8 @@
+{
+  "clientId": "aptProvider",
+  "groupId": null,
+  "auth": null,
+  "brokerList": ["127.0.0.1:9092"],
+  "topicName": "apt_format",
+  "type": "provider"
+}

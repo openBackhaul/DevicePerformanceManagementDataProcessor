@@ -1,0 +1,24 @@
+{
+  "parameters": {
+    "function-name": "p1InitKafka",
+    "description": "Resolves Kafka address and initializes the Kafka session",
+    "is-active": true,
+    "parameter": [
+      {
+        "parameter-name": "aptProvider",
+        "purpose": "kafkaClient",
+        "owner": "platform",
+        "value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000",
+        "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+      },
+      {
+        "parameter-name": "onfProvider",
+        "purpose": "kafkaClient",
+        "owner": "platform",
+        "value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001",
+        "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+      }
+    ],
+    "sub-function": []
+  }
+}

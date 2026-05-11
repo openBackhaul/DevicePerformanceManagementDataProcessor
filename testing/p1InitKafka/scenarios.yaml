@@ -1,0 +1,187 @@
+# testing/p1InitKafka/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1InitKafka/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1InitKafka/1.0.0/variables.yaml
+#
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1InitKafka/P1InitKafka.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "ltpResolution.readKafkaAddress"
+    modulePath: "../../server/utils/ltpResolution.js"
+    exportName: "readKafkaAddress"
+    isAsync: true
+
+  - stepId: "onfAdapter.connectKafkaProducer"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
+    exportName: "connectKafkaProducer"
+    isAsync: true
+
+# Transitive deps that may be imported elsewhere in the require stack
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation (spec enums)
+  # -------------------------
+
+  - id: "errParametersMissing"
+    description: "Spec: 'parameters missing' when input.parameters missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters missing"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  - id: "errParametersInvalid"
+    description: "Spec: 'parameters invalid' when input.parameters invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  - id: "errConfigFileMissing"
+    description: "Spec: 'config-file missing' when input.config-file missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "config-file missing"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  - id: "errConfigFileInvalid"
+    description: "Spec: 'config-file invalid' when input.config-file invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "config-file invalid"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  # -------------------------
+  # Address resolution / session init errors (spec enums)
+  # -------------------------
+
+  - id: "errKafkaAddressCouldNotBeResolved"
+    description: "Spec: 'Kafka address could not be resolved' when address resolution fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Kafka address could not be resolved"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "throw"
+        error: "Kafka address could not be resolved"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  - id: "errKafkaSessionInitializationFailed"
+    description: "Spec: 'Kafka session initialization failed' when internal init fails before connect"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Kafka session initialization failed"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "throw"
+        error: "Kafka session initialization failed"
+
+  # -------------------------
+  # Processing dependency failures (spec enums)
+  # -------------------------
+
+  - id: "errProducerConnectionToKafkaFailed"
+    description: "Spec: 'Producer connection to kafka failed' when connectKafkaProducer fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Producer connection to kafka failed"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "throw"
+        error: "Producer connection to kafka failed"
+
+  - id: "errConsumerConnectionToKafkaFailed"
+    description: "Spec: 'Consumer connection to kafka failed' (implementation currently does not connect consumer)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Consumer connection to kafka failed"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  - id: "errGeneralProcessingError"
+    description: "Spec: 'General processing error' on unexpected exception"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "throw"
+        error: "boom"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"
+
+  # -------------------------
+  # Happy path
+  # -------------------------
+
+  - id: "okInitKafka"
+    description: "Should establish Kafka session successfully"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "ltpResolution.readKafkaAddress"
+        type: "return"
+        fixture: "readKafkaAddress.aptProvider.json"
+      - stepId: "onfAdapter.connectKafkaProducer"
+        type: "return"
+        fixture: "connectKafkaProducer.true.json"

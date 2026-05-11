@@ -1,0 +1,82 @@
+# testing/p1FieldsFilter/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1FieldsFilter/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/p1FieldsFilter/1.0.0/variables.yaml
+#
+# Function:
+# - p1FieldsFilter (1.0.0)
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1FieldsFilter/P1FieldsFilter.js"
+    exportName: "run"
+
+processingSteps: []
+dependencies:
+  - name: "pino"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation (spec-defined error enums)
+  # -------------------------
+
+  - id: "errDataStructureNotProvided"
+    description: "Should return 'dataStructure not provided' when data-structure is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStructure not provided"
+
+  - id: "errDataStructureInvalid"
+    description: "Should return 'dataStructure invalid' when data-structure is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStructure invalid"
+
+  - id: "errFieldsFilterStringNotProvided"
+    description: "Should return 'fieldsFilterString not provided' when fields-filter-string is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "fieldsFilterString not provided"
+
+  - id: "errFieldsFilterStringInvalid"
+    description: "Should return 'fieldsFilterString invalid' when fields-filter-string is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "fieldsFilterString invalid"
+
+  # -------------------------
+  # Deterministic failure (spec-defined)
+  # -------------------------
+
+  - id: "errFilteredDataStructureCouldNotBeProvided"
+    description: "Should return 'filteredDataStructure could not be provided' when filtering yields no output"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "filteredDataStructure could not be provided"
+
+  - id: "errGeneralProcessingError"
+    description: "Should return 'General processing error' for unexpected/uncategorized failures"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+
+  # -------------------------
+  # Happy path
+  # -------------------------
+
+  - id: "okFilterFields"
+    description: "Should return filtered-data-structure according to fields-filter-string"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
