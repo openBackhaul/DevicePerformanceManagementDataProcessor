@@ -3,16 +3,31 @@ const ERRORS = require ('./ErrorsEnum');
 
 let parameterStruct = {};
 const paramAllowed = [
-  "lowerTxLevelLimit",
-  "upperTxLevelLimit",
-  "lowerRxLevelLimit",
-  "upperRxLevelLimit"
-]
+  "lower-tx-level-limit",
+  "upper-tx-level-limit",
+  "lower-rx-level-limit",
+  "upper-rx-level-limit"
+];
+
+
+function camelCaseToKebabCase(camelCaseString) {
+  if (camelCaseString.includes(":")) {
+    return camelCaseString
+  }
+  return camelCaseString
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/([0-9])([^0-9])/g, '$1-$2')
+    .replace(/([^0-9])([0-9])/g, '$1-$2')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+}
 
 function checkOutOfRange(value, isTX) {
 
-  let min = isTX ? parameterStruct["lowerTxLevelLimit"] : parameterStruct["lowerRxLevelLimit"];
-  let max = isTX ? parameterStruct["upperTxLevelLimit"] : parameterStruct["upperRxLevelLimit"];
+  let min = isTX ? parameterStruct["lower-tx-level-limit"] : parameterStruct["lower-rx-level-limit"];
+  let max = isTX ? parameterStruct["upper-tx-level-limit"] : parameterStruct["upper-rx-level-limit"];
 
   if (value < min || value > max ) {
     return false;
@@ -28,7 +43,7 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    if (!paramAllowed.includes(paramElem['parameter-name'])) {
+    if (!paramAllowed.includes(camelCaseToKebabCase(paramElem['parameter-name']))) {
       res = false;
     }
 
@@ -36,7 +51,7 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    parameterStruct[paramElem['parameter-name']] = paramElem['value'];
+    parameterStruct[camelCaseToKebabCase(paramElem['parameter-name'])] = paramElem['value'];
   });
 
   paramAllowed.forEach(paramElem => {
@@ -71,9 +86,9 @@ const p1RemoveOutOfRangeLevels = (input) => {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct["lowerTxLevelLimit"] > parameterStruct["upperTxLevelLimit"]) {
+      if (parameterStruct["lower-tx-level-limit"] > parameterStruct["upper-tx-level-limit"]) {
         return ERRORS.PARAM_INVALID;
-      } else if (parameterStruct["lowerRxLevelLimit"] > parameterStruct["upperRxLevelLimit"]) {
+      } else if (parameterStruct["lower-rx-level-limit"] > parameterStruct["upper-rx-level-limit"]) {
         return ERRORS.PARAM_INVALID;
       }
     }
