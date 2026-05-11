@@ -161,12 +161,36 @@ async function run(request) {
       ""
     );
 
-    rawCc = (
-      await p1FieldsFilter.run({
+    const fieldsFilterResponse = await p1FieldsFilter.run({
         dataStructure: rawCc,
         fieldsFilterString
-      })
-    ).filteredDataStructure;
+    });
+
+    if (typeof fieldsFilterResponse === "string") {
+        const error = new Error(
+            `p1FieldsFilter returned error response: ${fieldsFilterResponse}`
+        );
+
+        error.stage = "p1FieldsFilter";
+        error.vendorResponse = fieldsFilterResponse;
+        error.retryable = false;
+
+        throw error;
+    }
+
+    rawCc =
+    fieldsFilterResponse["filtered-data-structure"] ||
+    fieldsFilterResponse.filteredDataStructure;
+
+    if (!rawCc || typeof rawCc !== "object") {
+        const error = new Error("p1FieldsFilter did not return filtered data structure");
+
+        error.stage = "p1FieldsFilter";
+        error.vendorResponse = fieldsFilterResponse;
+        error.retryable = false;
+
+        throw error;
+    }
 
     const dataStoreClient = await onfAdapter.getEsClient(
       false,
