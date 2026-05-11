@@ -3,6 +3,17 @@ const ERRORS = require('./ErrorsEnum');
 
 let defaultValuesList = [];
 
+function camelCaseToKebabCase(camelCaseString) {
+  return camelCaseString
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/([0-9])([^0-9])/g, '$1-$2')
+    .replace(/([^0-9])([0-9])/g, '$1-$2')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+}
+
 function validateParameters(paramArray) {
   let res = true;
   paramArray.forEach(paramElem => {
@@ -15,7 +26,7 @@ function validateParameters(paramArray) {
     }
 
     const tempStruct = {};
-    tempStruct[paramElem['parameter-name']] = paramElem['value'];
+    tempStruct[camelCaseToKebabCase(paramElem['parameter-name'])] = paramElem['value'];
     defaultValuesList.push(tempStruct);
   });
 
