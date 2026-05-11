@@ -1,10 +1,23 @@
 const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct = {};
+const LOWER_LIMIT = "lower-temperature-limit";
+const UPPER_LIMIT = "upper-temperature-limit";
 const paramAllowed = [
-  "lowerTemperatureLimit",
-  "upperTemperatureLimit"
-]
+  LOWER_LIMIT,
+  UPPER_LIMIT
+];
+
+function camelCaseToKebabCase(camelCaseString) {
+  return camelCaseString
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/([0-9])([^0-9])/g, '$1-$2')
+    .replace(/([^0-9])([0-9])/g, '$1-$2')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+}
 
 // DAMN JavaScript
 function isThisNaN(value) {
@@ -18,7 +31,7 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    if (!paramAllowed.includes(paramElem['parameter-name'])) {
+    if (!paramAllowed.includes(camelCaseToKebabCase(paramElem['parameter-name']))) {
       res = false;
     }
 
@@ -33,7 +46,7 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    parameterStruct[paramElem['parameter-name']] = paramElem['value'];
+    parameterStruct[camelCaseToKebabCase(paramElem['parameter-name'])] = paramElem['value'];
   });
 
   paramAllowed.forEach(paramElem => {
@@ -43,7 +56,7 @@ function validateParameters(paramArray) {
   });
 
   if (res) {
-    if (parseInt(parameterStruct["lowerTemperatureLimit"]) > parseInt(parameterStruct["upperTemperatureLimit"])) {
+    if (parseInt(parameterStruct[LOWER_LIMIT]) > parseInt(parameterStruct[UPPER_LIMIT])) {
       res = false;
     }
   }
@@ -122,14 +135,14 @@ const p1RemoveOutOfRangeTemperature = (input) => {
     }
 
     // Check values
-    let lowParam = parseInt(parameterStruct["lowerTemperatureLimit"]);
-    let highParam = parseInt(parameterStruct["upperTemperatureLimit"]);
+    let lowParam = parseInt(parameterStruct[LOWER_LIMIT]);
+    let upperParam = parseInt(parameterStruct[UPPER_LIMIT]);
 
     let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
 
     for (let i = 0; i < equipClean.length; i++) {
       if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
-        highParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
+        upperParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
 
         delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
       }
