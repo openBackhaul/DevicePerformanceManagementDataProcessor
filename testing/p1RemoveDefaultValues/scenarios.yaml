@@ -66,28 +66,28 @@ scenarios:
   # Default-value-list derivation edge cases
   # ---------------------------------------
 
-  - id: "okNoParametersList"
-    description: "Should return success when parameters.parameter list is missing (no defaults removed)"
+  - id: "errNoParametersList"
+    description: "Should return error parameters invalid"
     inputFixture: "input.json"
     expected:
-      type: "success"
-      outputFixture: "output.json"
+      type: "error"
+      errorEnum: "parameters invalid"
     mocks: []
 
-  - id: "okEmptyParametersList"
-    description: "Should return success when parameters.parameter is empty (no defaults removed)"
+  - id: "errEmptyParametersList"
+    description: "Should return error parameters invalid"
     inputFixture: "input.json"
     expected:
-      type: "success"
-      outputFixture: "output.json"
+      type: "error"
+      errorEnum: "parameters invalid"
     mocks: []
 
-  - id: "okParameterEntryMissingNameOrValue"
-    description: "Should return success when a default-value entry is incomplete (skip invalid entries, remove nothing)"
+  - id: "errParameterEntryMissingNameOrValue"
+    description: "Should return  General processing error"
     inputFixture: "input.json"
     expected:
-      type: "success"
-      outputFixture: "output.json"
+      type: "error"
+      errorEnum: "General processing error"
     mocks: []
 
   # -------------------------
