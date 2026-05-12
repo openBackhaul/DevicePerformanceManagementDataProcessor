@@ -306,6 +306,34 @@ describe('Positive Tests - Happy Path @positive', () => {
 
 describe('Negative Tests - Error Cases @negative', () => {
 
+  test('Missing input @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({}))
+      .toBe(ERRORS.GENERAL_ERROR);
+  });
+
+  test('Missing input, both are undefined @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": undefined,
+      "parameters": undefined
+    }))
+      .toBe(ERRORS.GENERAL_ERROR);
+  });
+
+  test('Missing input, both null @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": null,
+      "parameters": null
+    }))
+      .toBe(ERRORS.GENERAL_ERROR);
+  });
+
+  test('Missing input, perfomance null and parameters missed @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": null,
+    }))
+      .toBe(ERRORS.GENERAL_ERROR);
+  });
+
   test('Missing parameters @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "performance-data": performanceStruct2,

@@ -74,6 +74,10 @@ const p1RemoveOutOfRangeLevels = (input) => {
     const performanceData = input["performance-data"];
 
     // Check parameters
+    if (!parameters && !performanceData) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
     if (!parameters) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
