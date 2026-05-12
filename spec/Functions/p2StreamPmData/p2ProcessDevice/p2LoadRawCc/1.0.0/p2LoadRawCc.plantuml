@@ -19,14 +19,19 @@ activate cur
     readControlConstructFromReplica
   end note
   cur -> MwdiEs: { mountName }
-  cur <-- MwdiEs: { {rawControlConstruct} }
+  cur <-- MwdiEs: {rawControlConstruct}
 
-  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilter }
+  note over cur
+    Extracts from parameters:
+    - [ {formatName, fieldsFilterString} ]
+  end note
+
+  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilterString }
   activate fieldsFilter
     note over fieldsFilter
       Applies FieldsFilter
     end note
-  cur <-- fieldsFilter: { {rawControlConstruct} }
+  cur <-- fieldsFilter: {filteredDataStructure}
   deactivate fieldsFilter
 
   note over cur

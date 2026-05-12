@@ -1,13 +1,12 @@
-# p2LoadRawCc
+# p2FormattingOutputOnf
 
-Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data.  
-It receives offsets from the dataStore and returns the updated offsets.  
-It returns information about the quality of the provided PM data of all AirInterfaces and EthernetContainers.  
+Creates a list of ONF based output formats from the resultCc.  
+Does not modify the data structure but allows applying an individually configurable fields filter.  
 
 ## Diagram
 
 <p align="center">
-  <img src="./p2LoadRawCc.png" alt="p2LoadRawCc diagram" width="400" />
+  <img src="./p2FormattingOutputOnf.png" alt="p2FormattingOutputOnf diagram" width="400" />
 </p>
 
 ## Interface
@@ -16,7 +15,7 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ## Variables
 
-Please find a detailed description of the [variables](./variables.yaml).
+Please find a detailed description of the [variables](variables.yaml).  
 
 ## Parameters
 
@@ -26,4 +25,4 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 ## NPM Module
 
-[mw-sdn-p2-load-raw-cc](https://www.npmjs.com/package/mw-sdn-p2-load-raw-cc)  
+[mw-sdn-p1-formatting-output-onf](https://www.npmjs.com/package/mw-sdn-p1-formatting-output-onf)  

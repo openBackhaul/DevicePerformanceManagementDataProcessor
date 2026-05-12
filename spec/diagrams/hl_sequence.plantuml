@@ -35,7 +35,7 @@ participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmo
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
 participant "p1Formatting\nOutputApt" as p1OutputApt
-participant "p1Formatting\nOutputOnf" as p1OutputOnf
+participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightYellow
 
 participant "p1Transmitting\nKafka" as p1Trans
 
@@ -98,6 +98,23 @@ note over p1StreamPm
   - Add interface to existing function
     p1TransmittingKafka for streaming
     quality information to Kafka
+end note
+
+===== Changes for multiple ONF Output formats =====
+
+note over p1OutputOnf
+  - Change extraction of parameters
+  - Loop creation of ONF output format
+  - Return list of ONF output formats
+end note
+
+note over p2AddRaw
+  - Change extraction of parameters
+end note
+
+note over p2ProcessPm
+  - Change interface to p2FormattingOutputOnf
+    to receive list of ONF output formats
 end note
 
 == End of Changes ==
@@ -433,22 +450,26 @@ activate p1StreamPm
         p2ProcessPm -> p1OutputOnf
         activate p1OutputOnf
 
-          note over p1OutputOnf
-            Create ONF format
-          end note
+          loop FOR all ONF output formats
 
-          p1OutputOnf -> p1FieldsFilter
-          activate p1FieldsFilter
-
-            note over p1FieldsFilter
-              Reduces structure of
-              ONF output format
+            note over p1OutputOnf
+              Create ONF format
             end note
 
-          p1OutputOnf <-- p1FieldsFilter
-          deactivate p1FieldsFilter
+            p1OutputOnf -> p1FieldsFilter
+            activate p1FieldsFilter
 
-        p2ProcessPm <-- p1OutputOnf : {onfOutputFormat}
+              note over p1FieldsFilter
+                Reduces structure of
+                ONF output format
+              end note
+
+            p1OutputOnf <-- p1FieldsFilter
+            deactivate p1FieldsFilter
+          
+          end loop
+
+        p2ProcessPm <-- p1OutputOnf : [onfOutputFormat]
         deactivate p1OutputOnf
 
         ' KafkaTransmission

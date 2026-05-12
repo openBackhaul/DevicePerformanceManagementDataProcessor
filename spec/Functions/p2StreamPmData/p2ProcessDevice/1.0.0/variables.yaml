@@ -73,9 +73,9 @@ process-device:
             type: string
             description: >
               'Name of the output format
-              from [{$p1FormattingOutputApt.output#/format-name} or {$p1FormattingOutputOnf.output#/format-name}]'
+              from [{$p1FormattingOutputApt.output#/format-name} or {$p2FormattingOutputOnf.output#/onf-output-format=*/format-name}]'
           output-format:
             type: object
             description: >
               'outputFormat
-              from [{$p1FormattingOutputApt.output#/output-format} or {$p1FormattingOutputOnf.output#/output-format}]'
+              from [{$p1FormattingOutputApt.output#/output-format} or {$p2FormattingOutputOnf.output#/onf-output-format=*/output-format}]'

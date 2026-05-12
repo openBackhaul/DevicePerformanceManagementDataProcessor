@@ -149,10 +149,26 @@ load-raw-cc:
             'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
             from {$addBatchTimestamp.output#/batch-timestamp}'
     fields-filter:
-      type: string
-      description: >
-        'Fields filter to be applied to reduce the raw ControlConstruct data
-        from [/load-raw-cc/parameters/sub-function=p1FieldsFilter/parameter=fieldsFilter/value]'
+      type: array
+      items:
+        type: object
+        required:
+          - format-name
+          - fields-filter-string
+        properties:
+          format-name:
+            type: string
+            enum:
+              - 'raw-cc'
+            description: >
+              'Name of the output format to which the fields filter should be applied
+              for all parameters with { [/load-raw-cc/parameters/parameter=*/purpose] == fieldsFilter }
+              from [/load-raw-cc/parameters/parameter=*/parameter-name]'
+          fields-filter-string:
+            type: string
+            description: >
+              'Fields filter to be applied to reduce the raw ControlConstruct data
+              from [/load-raw-cc/parameters/parameter=raw-cc/value]'
     device-pm-data-quality:
       type: object
       description: >

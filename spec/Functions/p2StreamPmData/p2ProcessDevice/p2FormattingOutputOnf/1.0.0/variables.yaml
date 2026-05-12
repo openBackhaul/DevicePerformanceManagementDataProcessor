@@ -1,0 +1,56 @@
+formatting-output-onf:
+  type: object
+  required:
+    - parameters
+    - result-cc
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    result-cc:
+      type: object
+      description: >
+        'ResultCc
+        from {$input#/result-cc}'
+
+    fields-filter:
+      type: array
+      items:
+        type: object
+        required:
+          - format-name
+          - fields-filter-string
+        properties:
+          format-name:
+            type: string
+            description: >
+              'Name of the output format to which the fields filter should be applied
+              for all parameters with { [/formatting-output-onf/parameters/parameter=*/purpose] == fieldsFilter }
+              from [/formatting-output-onf/parameters/parameter=*/parameter-name]'
+          fields-filter-string:
+            type: string
+            description: >
+              'Fields filter to be applied to reduce the onfOutputFormat
+              from [/formatting-output-onf/parameters/parameter={format-name}/value]'
+
+    onf-output-format:
+      type: array
+      x-key: format-name
+      items:
+        type: object
+        required:
+          - format-name
+          - output-format
+        properties:
+          format-name:
+            type: string
+            description: >
+              'Name of the output format
+              from [/formatting-output-onf/fields-filter[i]/format-name]'
+          output-format:
+            type: object
+            description: >
+              'onfOutputFormat
+              from { {$p1FieldsFilter.output#/filtered-data-structure} for {$p1FieldsFilter.input#/fields-filter-string}=[/formatting-output-onf/fields-filter[i]/fields-filter-string] }'

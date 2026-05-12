@@ -72,15 +72,15 @@ activate cur
   deactivate p1OutputApt
 
   'FormattingOutputOnf
-  cur -> p1OutputOnf : { {/parameters/sub-function=p1FormattingOutputOnf},\n{resultCc} }
+  cur -> p1OutputOnf : { {/parameters/sub-function=p2FormattingOutputOnf},\n{resultCc} }
   activate p1OutputOnf
 
     note over p1OutputOnf
-      Creates onfOutputFormat
+      Creates [onfOutputFormat]
       from resultCc
     end note
 
-  cur <-- p1OutputOnf : { formatName,\n{outputFormat} }
+  cur <-- p1OutputOnf : [ onfOutputFormat ]
   deactivate p1OutputOnf
 
   'TransmittingKafka

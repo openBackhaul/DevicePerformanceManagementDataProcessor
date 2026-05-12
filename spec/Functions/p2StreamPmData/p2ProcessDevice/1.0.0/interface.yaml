@@ -277,7 +277,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1FormattingOutputOnf:
+      p2FormattingOutputOnf:
         input:
           required: true
           content:
@@ -291,8 +291,8 @@ x-javascript-interface:
                   parameters:
                     type: object
                     description: >
-                      'Subtree of the parameters object for p1FormattingOutputOnf
-                      from [/process-device/parameters/sub-function=p1FormattingOutputOnf]'
+                      'Subtree of the parameters object for p2FormattingOutputOnf
+                      from [/process-device/parameters/sub-function=p2FormattingOutputOnf]'
                   result-cc:
                     type: object
                     description: >
@@ -300,25 +300,33 @@ x-javascript-interface:
                       from [/process-device/result-cc]'
         output:
           success:
-            description: 'onfOutputFormat created'
+            description: 'onfOutputFormats created'
             content:
               application/json:
                 schema:
                   type: object
                   required:
-                    - format-name
-                    - output-format
+                    - onf-output-format
                   properties:
-                    format-name:
-                      type: string
-                      description: >
-                        'Name of the output format'
-                    output-format:
-                      type: object
-                      description: >
-                        'outputFormat'
+                    onf-output-format:
+                      type: array
+                      x-key: format-name
+                      items:
+                        type: object
+                        required:
+                          - format-name
+                          - output-format
+                        properties:
+                          format-name:
+                            type: string
+                            description: >
+                              'Name of the output format'
+                          output-format:
+                            type: object
+                            description: >
+                              'onfOutputFormat'
           error:
-            description: 'onfOutputFormat could not be created'
+            description: 'onfOutputFormats could not be created'
             content:
               application/json:
                 schema:

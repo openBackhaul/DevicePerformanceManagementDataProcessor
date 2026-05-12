@@ -681,7 +681,12 @@
             "function-profile-capability": {
               "function-name": "p2LoadRawCc",
               "function-description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
-              "parameter-list": [],
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-181",
+                  "owner": "platform"
+                }
+              ],
               "sub-function-list": [
                 "dpmdp-1-1-0-function-p-210",
                 "dpmdp-1-1-0-function-p-240",
@@ -694,35 +699,30 @@
           }
         },
         {
+          "uuid": "dpmdp-1-1-0-string-p-181",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "raw-cc",
+              "string-purpose": "fieldsFilter"
+            },
+            "string-profile-configuration": {
+              "string-value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(timestamp);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))"
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-1-0-function-p-210",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
               "function-name": "p1FieldsFilter",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
-              "parameter-list": [
-                {
-                  "parameter": "dpmdp-1-1-0-string-p-211",
-                  "owner": "platform"
-                }
-              ],
+              "parameter-list": [],
               "sub-function-list": []
             },
             "function-profile-configuration": {
               "is-active": true
-            }
-          }
-        },
-        {
-          "uuid": "dpmdp-1-1-0-string-p-211",
-          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
-          "string-profile-1-0:string-profile-pac": {
-            "string-profile-capability": {
-              "string-name": "fieldsFilter",
-              "string-purpose": "Fields filter to be applied to reduce the raw ControlConstruct data"
-            },
-            "string-profile-configuration": {
-              "string-value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(timestamp);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))"
             }
           }
         },
@@ -1866,14 +1866,66 @@
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
               "function-name": "p1FormattingOutputOnf",
-              "function-description": "Creates the onfOutputFormat from resultCc",
-              "parameter-list": [],
+              "function-description": "Creates onfOutputFormats from resultCc",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-551",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-552",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-553",
+                  "owner": "platform"
+                }
+              ],
               "sub-function-list": [
                 "dpmdp-1-1-0-function-p-560"
               ]
             },
             "function-profile-configuration": {
               "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-551",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mycom-output-format",
+              "string-purpose": "D"
+            },
+            "string-profile-configuration": {
+              "string-value": "to_be_defined"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-552",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "netexplorer-output-format",
+              "string-purpose": "fieldsFilter"
+            },
+            "string-profile-configuration": {
+              "string-value": "to_be_defined"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-553",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "iveritas-output-format",
+              "string-purpose": "fieldsFilter"
+            },
+            "string-profile-configuration": {
+              "string-value": "to_be_defined"
             }
           }
         },
@@ -1894,19 +1946,6 @@
             },
             "function-profile-configuration": {
               "is-active": true
-            }
-          }
-        },
-        {
-          "uuid": "dpmdp-1-1-0-string-p-561",
-          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
-          "string-profile-1-0:string-profile-pac": {
-            "string-profile-capability": {
-              "string-name": "fieldsFilter",
-              "string-purpose": "Fields filter to be applied to reduce the onfOutputFormat"
-            },
-            "string-profile-configuration": {
-              "string-value": ""
             }
           }
         },
@@ -2608,8 +2647,8 @@
                   {
                     "local-id": "1",
                     "release-number": "1.1.0",
-                    "release-date": "31.04.2026",
-                    "changes": "Adds additional functionality"
+                    "release-date": "31.05.2026",
+                    "changes": "Fixes poison pill problem on mostRecentPeriodEndTime, adds busy hour kpis, adds PM data quality indicators, adds dedicated formats and Kafka producers per consuming tool"
                   }
                 ]
               }
@@ -2808,7 +2847,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "apt_format",
+                "topic-name": "raw.mw-sdnc-dpmdp.apt",
                 "type": "provider"
               }
             }
@@ -2828,7 +2867,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "mycom_format",
+                "topic-name": "raw.mw-sdnc-dpmdp.mycom",
                 "type": "provider"
               }
             }
@@ -2848,7 +2887,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "net_explorer_format",
+                "topic-name": "raw.mw-sdnc-dpmdp.netexplorer",
                 "type": "provider"
               }
             }
@@ -2868,7 +2907,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "iveritas_format",
+                "topic-name": "raw.mw-sdnc-dpmdp.iveritas",
                 "type": "provider"
               }
             }
@@ -2888,7 +2927,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "pm_data_quality_format",
+                "topic-name": "raw.mw-sdnc-dpmdp.dataquality",
                 "type": "provider"
               }
             }

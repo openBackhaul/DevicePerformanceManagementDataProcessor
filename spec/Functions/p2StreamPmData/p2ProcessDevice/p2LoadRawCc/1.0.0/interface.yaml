@@ -126,7 +126,7 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure,
-                      from [/load-raw-cc/fields-filter]'
+                      from [/load-raw-cc/fields-filter[0]/fields-filter-string]'
         output:
           success:
             description: 'Data structure successfully filtered according to the provided fields filter string'
