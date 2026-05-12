@@ -168,6 +168,5 @@ function p1IterateAiPmSlices(input) {
 }
 
 module.exports = {
-  p1IterateAiPmSlices,
-  updateMostRecentPeriodEndTime
+  p1IterateAiPmSlices
 };
