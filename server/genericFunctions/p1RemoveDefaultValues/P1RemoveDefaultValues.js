@@ -52,6 +52,8 @@ const p1RemoveDefaultValues = (input) => {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else if (inputObj == undefined) {
       return ERRORS.INPUTOBJ_NOT_PROVIDED;
+    } else if (typeof inputObj !== 'object') {
+      return ERRORS.INPUTOBJ_INVALID;
     } else {
       if (Object.keys(parameters).length === 0 && Object.keys(inputObj).length === 0) {
         return ERRORS.GENERAL_ERROR;

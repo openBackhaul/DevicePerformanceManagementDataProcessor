@@ -145,6 +145,30 @@ describe('Error Cases @negative', () => {
     }))
       .toBe(ERRORS.PARAM_INVALID);
   });
+
+  test('New @negative', () => {
+    expect(p1RemoveDefaultValues({
+      'parameters': {
+        'parameter': [
+          {
+            "parameter-name": "tx-level-min",
+            "purpose": "Remove attribute if it has default value",
+            "owner": "engineering",
+            "value": "-1"
+          },
+          {
+            "parameter-name": "tx-level-max",
+            "purpose": "Remove attribute if it has default value",
+            "owner": "engineering",
+            "value": "-1"
+          }
+        ],
+      },
+      "input-object": "not-an-object"
+    }))
+      .toBe(ERRORS.INPUTOBJ_INVALID);
+  });
+
 });
 
 describe('Positive Tests @positive', () => {
