@@ -7,25 +7,25 @@ const parameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-tx-level-limit",
+      "parameter-name": "lowerTxLevelLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-tx-level-limit",
+      "parameter-name": "upperTxLevelLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
     },
     {
-      "parameter-name": "lower-rx-level-limit",
+      "parameter-name": "lowerRxLevelLimit",
       "purpose": "Lower bound of valid values of the receive level",
       "owner": "engineering",
       "value": "1000"
     },
     {
-      "parameter-name": "upper-rx-level-limit",
+      "parameter-name": "upperRxLevelLimit",
       "purpose": "Upper bound of valid values of the receive level",
       "owner": "engineering",
       "value": "10000"
@@ -40,31 +40,31 @@ const parameterStruct2 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "abc-parameter",
+      "parameter-name": "abcParameter",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "123-parameter",
+      "parameter-name": "123Parameter",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "20"
     },
     {
-      "parameter-name": "xyz-parameter",
+      "parameter-name": "xyzParameter",
       "purpose": "Lower bound of valid values of the receive level",
       "owner": "engineering",
       "value": "30"
     },
     {
-      "parameter-name": "other-parameter",
+      "parameter-name": "otherParameter",
       "purpose": "Upper bound of valid values of the receive level",
       "owner": "engineering",
       "value": "SIAE"
     },
     {
-      "parameter-name": "default-parameter",
+      "parameter-name": "defaultParameter",
       "purpose": "Upper bound of valid values of the receive level",
       "owner": "engineering",
       "value": "Milano"
@@ -232,7 +232,7 @@ describe('Mutation Detection Tests @mutation', () => {
         "is-active": true,
         "parameter": [
           {
-            "parameter-name": "default-parameter",
+            "parameter-name": "defaultParameter",
             "purpose": "Lower bound of valid values of the transmit level",
             "owner": "engineering",
             "value": "value"
@@ -258,7 +258,7 @@ describe('Mutation Detection Tests @mutation', () => {
         "is-active": true,
         "parameter": [
           {
-            "parameter-name": "default-parameter",
+            "parameter-name": "defaultParameter",
             "purpose": "Lower bound of valid values of the transmit level",
             "owner": "engineering",
             "value": "value"

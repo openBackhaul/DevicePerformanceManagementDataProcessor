@@ -1,10 +1,23 @@
 const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct = {};
+const LOWER_LIMIT = "lower-temperature-limit";
+const UPPER_LIMIT = "upper-temperature-limit";
 const paramAllowed = [
-  "lower-temperature-limit",
-  "upper-temperature-limit"
-]
+  LOWER_LIMIT,
+  UPPER_LIMIT
+];
+
+function camelCaseToKebabCase(camelCaseString) {
+  return camelCaseString
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/([0-9])([^0-9])/g, '$1-$2')
+    .replace(/([^0-9])([0-9])/g, '$1-$2')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+}
 
 // DAMN JavaScript
 function isThisNaN(value) {
@@ -18,7 +31,7 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    if (!paramAllowed.includes(paramElem['parameter-name'])) {
+    if (!paramAllowed.includes(camelCaseToKebabCase(paramElem['parameter-name']))) {
       res = false;
     }
 
@@ -33,7 +46,7 @@ function validateParameters(paramArray) {
       res = false;
     }
 
-    parameterStruct[paramElem['parameter-name']] = paramElem['value'];
+    parameterStruct[camelCaseToKebabCase(paramElem['parameter-name'])] = paramElem['value'];
   });
 
   paramAllowed.forEach(paramElem => {
@@ -41,6 +54,12 @@ function validateParameters(paramArray) {
       res = false;
     }
   });
+
+  if (res) {
+    if (parseInt(parameterStruct[LOWER_LIMIT]) > parseInt(parameterStruct[UPPER_LIMIT])) {
+      res = false;
+    }
+  }
 
   return res;
 }
@@ -51,6 +70,7 @@ const p1RemoveOutOfRangeTemperature = (input) => {
   parameterStruct = {};
 
   try {
+
     const parameters = input["parameters"];
     const equipmentsArray = input["equipment"];
 
@@ -72,54 +92,57 @@ const p1RemoveOutOfRangeTemperature = (input) => {
       }
     }
 
+    let res = "";
     if (!equipmentsArray) {
       return ERRORS.EQUIP_NOT_PROVIDED
     } else {
-      for (let i = 0; i < equipmentsArray.length; i++) {
-        if (equipmentsArray[i]) {
-          const equipData = equipmentsArray[i];
-
-          if ((equipData["uuid"] == undefined) ||
-            (equipData["uuid"] != undefined && typeof equipData["uuid"] != "string")) {
-            return ERRORS.EQUIP_INVALID;
-          }
-
-          if ((equipData["actual-equipment"] == undefined) ||
-            (equipData["actual-equipment"] != undefined && typeof equipData["actual-equipment"] != "object")) {
-            return ERRORS.EQUIP_INVALID;
-          }
-
-          const actualEqp = equipData["actual-equipment"];
-          if ((actualEqp["local-id"] == undefined) ||
-            (actualEqp["local-id"] != undefined && typeof actualEqp["local-id"] != "string")) {
-            return ERRORS.EQUIP_INVALID;
-          }
-
-          const physicalProps = actualEqp["physical-properties"];
-          if ((physicalProps == undefined) ||
-            (physicalProps != undefined && typeof physicalProps != "object")) {
-            return ERRORS.EQUIP_INVALID;
-          }
-
-          if ((physicalProps["temperature"] == undefined) ||
-            (physicalProps["temperature"] != undefined && typeof physicalProps["temperature"] != "string")) {
-            return ERRORS.EQUIP_INVALID;
-          }
-        } else {
-          return ERRORS.EQUIP_INVALID;
-        }
+      if (!Array.isArray(equipmentsArray)) {
+        return ERRORS.EQUIP_INVALID;
       }
+
+      equipmentsArray.forEach(equipData => {
+        if ((equipData["uuid"] == undefined) ||
+          (equipData["uuid"] != undefined && typeof equipData["uuid"] != "string")) {
+          res = ERRORS.EQUIP_INVALID;
+        }
+
+        if ((equipData["actual-equipment"] == undefined) ||
+          (equipData["actual-equipment"] != undefined && typeof equipData["actual-equipment"] != "object")) {
+          res = ERRORS.EQUIP_INVALID;
+        }
+
+        const actualEqp = equipData["actual-equipment"];
+        if ((actualEqp["local-id"] == undefined) ||
+          (actualEqp["local-id"] != undefined && typeof actualEqp["local-id"] != "string")) {
+          res = ERRORS.EQUIP_INVALID;
+        }
+
+        const physicalProps = actualEqp["physical-properties"];
+        if ((physicalProps == undefined) ||
+          (physicalProps != undefined && typeof physicalProps != "object")) {
+          res = ERRORS.EQUIP_INVALID;
+        }
+
+        if ((physicalProps["temperature"] == undefined) ||
+          (physicalProps["temperature"] != undefined && typeof physicalProps["temperature"] != "string")) {
+          res = ERRORS.EQUIP_INVALID;
+        }
+      });
+    }
+
+    if (res != "") {
+      return res;
     }
 
     // Check values
-    let lowParam = parseInt(parameterStruct["lower-temperature-limit"]);
-    let highParam = parseInt(parameterStruct["upper-temperature-limit"]);
+    let lowParam = parseInt(parameterStruct[LOWER_LIMIT]);
+    let upperParam = parseInt(parameterStruct[UPPER_LIMIT]);
 
     let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
 
     for (let i = 0; i < equipClean.length; i++) {
       if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
-        highParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
+        upperParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
 
         delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
       }
@@ -127,8 +150,9 @@ const p1RemoveOutOfRangeTemperature = (input) => {
 
     return {
       "equipment": equipClean
-    }
-  } catch (e) {
+    };
+
+  } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }
 
