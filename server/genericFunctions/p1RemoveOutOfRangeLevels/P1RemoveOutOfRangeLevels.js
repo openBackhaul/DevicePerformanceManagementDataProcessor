@@ -30,7 +30,7 @@ function checkOutOfRange(value, isTX) {
   let min = isTX ? parameterStruct[LOWER_TX_LIMIT] : parameterStruct[LOWER_RX_LIMIT];
   let max = isTX ? parameterStruct[UPPER_TX_LIMIT] : parameterStruct[UPPER_RX_LIMIT];
 
-  if (value < min || value > max) {
+  if (value < Number(min) || value > Number(max)) {
     return false;
   }
 
@@ -87,9 +87,9 @@ const p1RemoveOutOfRangeLevels = (input) => {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct[LOWER_TX_LIMIT] > parameterStruct[UPPER_TX_LIMIT]) {
+      if (Number(parameterStruct[LOWER_TX_LIMIT]) > Number(parameterStruct[UPPER_TX_LIMIT])) {
         return ERRORS.PARAM_INVALID;
-      } else if (parameterStruct[LOWER_RX_LIMIT] > parameterStruct[UPPER_RX_LIMIT]) {
+      } else if (Number(parameterStruct[LOWER_RX_LIMIT]) > Number(parameterStruct[UPPER_RX_LIMIT])) {
         return ERRORS.PARAM_INVALID;
       }
     }
