@@ -1,7 +1,7 @@
 const ERRORS = require('./ErrorsEnum');
-const p1CalculateIntervalCapacity = require('../../../../../../genericFunctions/p1CalculateIntervalCapacity/P1CalculateIntervalCapacity');
-const p1RemoveOutOfRangeLevels = require('../../../../../../genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels');
-const p1RemoveDefaultValues = require('../../../../../../genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues');
+const p1CalculateIntervalCapacity = require('../../../../../genericFunctions/p1CalculateIntervalCapacity/P1CalculateIntervalCapacity');
+const p1RemoveOutOfRangeLevels = require('../../../../../genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels');
+const p1RemoveDefaultValues = require('../../../../../genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues');
 
 // Local helper for updateMostRecentPeriodEndTime
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
