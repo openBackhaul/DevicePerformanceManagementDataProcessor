@@ -50,9 +50,11 @@ Die Berechnung der erwarteten PM Daten geschieht in einer dedizierten Funktion, 
 **Ergebnisstruktur**  
 Die gelieferte Qualitätsinformation ist nach  
 
+```
   |_Gerät  
     |_Interface  
       |_Datum (im Format YYYY/MM/DD)  
+```
 
 strukturiert.  
 Die erhaltenen und erwarteten PM Daten werden in absoluten Anzahlen dokumentiert.  
