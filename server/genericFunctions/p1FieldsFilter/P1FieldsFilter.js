@@ -92,28 +92,12 @@ async function run(request) {
       return ERRORS.FIELDS_FILTER_STRING_INVALID;
     }
 
-    /* if (!filteredDataStructure || typeof filteredDataStructure !== "object") {
-      return ERRORS.FILTERED_DATA_STRUCTURE_COULD_NOT_BE_PROVIDED;
-    } */
-
-    let response = {
-      "filtered-data-structure": filteredDataStructure
-    };
-
-    if (!response["filtered-data-structure"] || typeof response["filtered-data-structure"] !== "object") {
+    if (!filteredDataStructure || typeof filteredDataStructure !== "object" || Object.keys(filteredDataStructure).length === 0) {
       return ERRORS.FILTERED_DATA_STRUCTURE_COULD_NOT_BE_PROVIDED;
     }
 
-    return response;
-    /* {
-      "filtered-data-structure": filteredDataStructure,
-
-      /*
-       * Backward compatibility for your existing Lot 1 / Lot 2 code.
-       * Remove this later if the client tester requires exact output only.
-       
-      filteredDataStructure
-    }; */
+    return { "filtered-data-structure": filteredDataStructure };
+     
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }

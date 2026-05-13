@@ -181,7 +181,7 @@ async function run(request) {
     rawCc =
     fieldsFilterResponse["filtered-data-structure"];
 
-    if (!rawCc || typeof rawCc !== "object") {
+    /* if (!rawCc || typeof rawCc !== "object") {
         const error = new Error("p1FieldsFilter did not return filtered data structure");
 
         error.stage = "p1FieldsFilter";
@@ -189,7 +189,7 @@ async function run(request) {
         error.retryable = false;
 
         throw error;
-    }
+    } */
 
     const dataStoreClient = await onfAdapter.getEsClient(
       false,
