@@ -6,7 +6,7 @@ title
 end title
 
 participant "embedYourself\n" as embed
-participant "p2StreamPmData\n" as p2StreamPm
+participant "p2StreamPmData\n" as p2StreamPm #LightYellow
 participant "p1LoadParameters\n" as p1LoadParams
 participant "p1ResolveEsAddress\n" as p1ResolveAddress
 participant "p1InitKafka\n" as p1InitKafka
