@@ -108,24 +108,25 @@ const p1RemoveOutOfRangeTemperature = (input) => {
 
         if ((equipData["actual-equipment"] == undefined) ||
           (equipData["actual-equipment"] != undefined && typeof equipData["actual-equipment"] != "object")) {
-          res = ERRORS.EQUIP_INVALID;
-        }
+          // res = ERRORS.EQUIP_INVALID;
+        } else {
+          const actualEqp = equipData["actual-equipment"];
+          if ((actualEqp["local-id"] == undefined) ||
+            (actualEqp["local-id"] != undefined && typeof actualEqp["local-id"] != "string")) {
+            // res = ERRORS.EQUIP_INVALID;
+          } else {
+            const physicalProps = actualEqp["physical-properties"];
+            if (physicalProps != undefined) {
+              if (typeof physicalProps != "object") {
+                res = ERRORS.EQUIP_INVALID;
+              }
 
-        const actualEqp = equipData["actual-equipment"];
-        if ((actualEqp["local-id"] == undefined) ||
-          (actualEqp["local-id"] != undefined && typeof actualEqp["local-id"] != "string")) {
-          res = ERRORS.EQUIP_INVALID;
-        }
-
-        const physicalProps = actualEqp["physical-properties"];
-        if ((physicalProps == undefined) ||
-          (physicalProps != undefined && typeof physicalProps != "object")) {
-          res = ERRORS.EQUIP_INVALID;
-        }
-
-        if ((physicalProps["temperature"] == undefined) ||
-          (physicalProps["temperature"] != undefined && typeof physicalProps["temperature"] != "string")) {
-          res = ERRORS.EQUIP_INVALID;
+              if ((physicalProps["temperature"] == undefined) ||
+                (physicalProps["temperature"] != undefined && typeof physicalProps["temperature"] != "string")) {
+                res = ERRORS.EQUIP_INVALID;
+              }
+            }
+          }
         }
       });
     }
@@ -140,13 +141,14 @@ const p1RemoveOutOfRangeTemperature = (input) => {
 
     let equipClean = JSON.parse(JSON.stringify(equipmentsArray));
 
-    for (let i = 0; i < equipClean.length; i++) {
-      if (lowParam > parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"]) ||
-        upperParam < parseInt(equipClean[i]["actual-equipment"]["physical-properties"]["temperature"])) {
-
-        delete equipClean[i]["actual-equipment"]["physical-properties"]["temperature"];
+    equipClean.forEach(equip => {
+      if (equip["actual-equipment"] && equip["actual-equipment"]["physical-properties"]) {
+        if (lowParam > parseInt(equip["actual-equipment"]["physical-properties"]["temperature"]) ||
+          upperParam < parseInt(equip["actual-equipment"]["physical-properties"]["temperature"])) {
+          delete equip["actual-equipment"]["physical-properties"]["temperature"];
+        }
       }
-    }
+    });
 
     return {
       "equipment": equipClean
