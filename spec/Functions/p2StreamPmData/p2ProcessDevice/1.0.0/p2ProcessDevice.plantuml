@@ -41,9 +41,10 @@ activate cur
         already been processed in past
       - Returns updated offsets
         (mostRecentPeriodEndTimes)
+      - Returns device PM quality data
     end note
 
-  cur <-- p2AddRaw : { {rawCc},\n[offsets] }
+  cur <-- p2AddRaw : { {rawCc},\n[offsets],\n{deviceQualityPmData} }
   deactivate p2AddRaw
 
   'CreateResultCc
@@ -105,6 +106,8 @@ activate cur
 
   cur <-- p2Store
   deactivate p2Store
+
+  requestor <-- cur: { {deviceQualityPmData} }
 
 deactivate cur
 

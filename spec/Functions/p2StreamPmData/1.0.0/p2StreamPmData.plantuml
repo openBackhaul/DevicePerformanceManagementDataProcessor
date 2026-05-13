@@ -6,12 +6,12 @@ title
 end title
 
 participant "embedYourself\n" as embed
-participant "p2StreamPmData\n" as p1RMWDI
+participant "p2StreamPmData\n" as p2Stream
 participant "p1LoadParameters\n" as p1LP
 participant "p1ResolveEsAddress\n" as p1REA
 participant "p1InitKafka\n" as p1InitKafka
 participant "p1UpdateMwdiReplica\n" as p1UMR
-participant "p2ProcessDevice\n" as p1ProcessPm
+participant "p2ProcessDevice\n" as p2ProcessDev
 participant "p1Transmitting\nKafka" as p1Trans
 participant "p1MaintainDs\n" as p1MDS
 
@@ -19,29 +19,29 @@ note right embed
   Automatically starts
   p2StreamPmData
 end note
-embed -> p1RMWDI : {}
-activate p1RMWDI
+embed -> p2Stream : {}
+activate p2Stream
 
-  p1RMWDI -> p1LP : {functionName=\n"p2StreamPmData"}
+  p2Stream -> p1LP : {functionName=\n"p2StreamPmData"}
   activate p1LP
     note over p1LP
       Loads parameters
       from configFile
     end note
-  p1RMWDI <-- p1LP : { {parameters}\n{configFile} }
+  p2Stream <-- p1LP : { {parameters}\n{configFile} }
   deactivate p1LP
 
   Loop FOR all esName
-    p1RMWDI -> p1REA : { {parameters}\n{configFile}\nesName }
+    p2Stream -> p1REA : { {parameters}\n{configFile}\nesName }
     activate p1REA
       note over p1REA
         Resolves ES address
       end note
-    p1RMWDI <-- p1REA : { {esAddress} }
+    p2Stream <-- p1REA : { {esAddress} }
     deactivate p1REA
   end Loop
 
-    p1RMWDI -> p1InitKafka : { {parameters}\n{configFile} }
+    p2Stream -> p1InitKafka : { {parameters}\n{configFile} }
     activate p1InitKafka
 
       note over p1InitKafka
@@ -49,10 +49,10 @@ activate p1RMWDI
         Establishes session
       end note
 
-    p1RMWDI <-- p1InitKafka
+    p2Stream <-- p1InitKafka
     deactivate p1InitKafka
 
-  p1RMWDI -> p1MDS : { {parameters}\n{dataStoreEsClient} }
+  p2Stream -> p1MDS : { {parameters}\n{dataStoreEsClient} }
   activate p1MDS
     note over p1MDS
       Periodically deletes
@@ -61,25 +61,25 @@ activate p1RMWDI
 
   loop endless
 
-    p1RMWDI -> p1UMR : { {parameters}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
+    p2Stream -> p1UMR : { {parameters}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
     activate p1UMR
       note over p1UMR
         Replicates updated CCs
       end note
-    p1RMWDI <-- p1UMR : { [updatedMountNames]\ntimestamp }
+    p2Stream <-- p1UMR : { [updatedMountNames]\ntimestamp }
     deactivate p1UMR
 
     loop FOR all [updatedMountNames]
-      p1RMWDI -> p1ProcessPm : { {parameters}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
-      activate p1ProcessPm
-        note over p1ProcessPm
+      p2Stream -> p2ProcessDev : { {parameters}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
+      activate p2ProcessDev
+        note over p2ProcessDev
           Processes PM data
         end note
-      p1RMWDI <-- p1ProcessPm
-      deactivate p1ProcessPm
+      p2Stream <-- p2ProcessDev: { {deviceQualityPmData} }
+      deactivate p2ProcessDev
     end loop
   
-  p1RMWDI -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  p2Stream -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
   activate p1Trans
 
     note over p1Trans
@@ -87,7 +87,7 @@ activate p1RMWDI
       to Kafka
     end note
 
-  p1RMWDI <-- p1Trans
+  p2Stream <-- p1Trans
   deactivate p1Trans
 
   end loop
