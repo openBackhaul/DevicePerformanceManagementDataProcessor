@@ -28,7 +28,10 @@
     "enqueuePauseMs": 50,
     "maxQueueLengthBeforeReplicaPause": 20000,
     "replicaPauseMsWhenBacklogged": 30000,
-    "retryIntervalMs": 10000
+    "retryIntervalMs": 7200000,
+    "maxRetryCount": 1,
+    "retryReadCount": 500,
+    "retryMaxRequeuePerCycle": 20000
   },
   "monitoring": {
     "enabled": true

@@ -1,10 +1,12 @@
 const { getRedisClient } = require("./redisClient");
+const { sleep } = require("../../utils/retry");
 
 const DEVICE_STREAM = "dpmdp:stream:device-processing";
 const DEVICE_GROUP = "dpmdp:group:device-processing";
 const DEVICE_DEDUP_SET = "dpmdp:set:device-processing";
 const RETRY_STREAM = "dpmdp:stream:retry";
 const RETRY_GROUP = "dpmdp:group:retry";
+const RETRY_DEAD_LETTER_STREAM = "dpmdp:stream:retry-dead-letter";
 const KAFKA_OUTBOUND_STREAM = "dpmdp:stream:kafka-outbound";
 const KAFKA_OUTBOUND_GROUP = "dpmdp:group:kafka-outbound";
 
@@ -62,15 +64,34 @@ async function reclaimStale(consumerName, minIdleMs, logger) {
     return response ? response.messages || [] : [];
 }
 
-async function enqueueRetry(mountName, stage, lastError, logger) {
-    const redis = await getRedisClient(logger);
+function toRedisValue(value) {
+  if (value === undefined || value === null) {
+    return "";
+  }
 
-    await redis.xAdd(RETRY_STREAM, "*", {
-        mountName,
-        stage: stage || "unknown",
-        lastError: lastError || "",
-        createdAt: new Date().toJSON()
-    });
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+
+  return String(value);
+}
+
+async function enqueueRetry(
+  mountName,
+  stage,
+  lastError,
+  retryCount,
+  logger
+) {
+  const redis = await getRedisClient(logger);
+
+  await redis.xAdd(RETRY_STREAM, "*", {
+    mountName: toRedisValue(mountName),
+    stage: toRedisValue(stage || "unknown"),
+    lastError: toRedisValue(lastError || ""),
+    retryCount: toRedisValue(retryCount || 1),
+    createdAt: new Date().toISOString()
+  });
 }
 
 async function ensureRetryGroup(logger) {
@@ -113,6 +134,31 @@ async function deleteRetryMessage(messageId, logger) {
   await redis.xDel(RETRY_STREAM, messageId);
 }
 
+async function enqueueRetryDeadLetter(
+  mountName,
+  stage,
+  lastError,
+  retryCount,
+  reason,
+  logger
+) {
+  const redis = await getRedisClient(logger);
+
+  await redis.xAdd(RETRY_DEAD_LETTER_STREAM, "*", {
+    mountName: toRedisValue(mountName),
+    stage: toRedisValue(stage || "unknown"),
+    lastError: toRedisValue(lastError || ""),
+    retryCount: toRedisValue(retryCount || 0),
+    reason: toRedisValue(reason || "MAX_RETRY_EXCEEDED"),
+    createdAt: new Date().toISOString()
+  });
+}
+
+async function getRetryQueueLength(logger) {
+  const redis = await getRedisClient(logger);
+  return Number(await redis.xLen(RETRY_STREAM).catch(() => 0));
+}
+
 async function reclaimStaleRetry(consumerName, minIdleMs, logger) {
   const redis = await getRedisClient(logger);
 
@@ -139,33 +185,51 @@ async function enqueueMountNames(mountNames, options, logger) {
   const redis = await getRedisClient(logger);
   const batchSize = (options || {}).batchSize || 500;
   const pauseMs = (options || {}).pauseMs || 50;
+  const extraFields = (options || {}).extraFields || {};
+
+  let enqueued = 0;
+  let skipped = 0;
+  let failed = 0;
 
   for (let i = 0; i < (mountNames || []).length; i += batchSize) {
     const batch = mountNames.slice(i, i + batchSize);
 
     for (const mountName of batch) {
       try {
-        // SETNX-like behavior using SADD
         const isNew = await redis.sAdd(DEVICE_DEDUP_SET, mountName);
 
-        // sAdd returns 1 if added, 0 if already exists
         if (isNew === 1) {
           await redis.xAdd(DEVICE_STREAM, "*", {
-            mountName,
-            createdAt: new Date().toISOString()
+            mountName: toRedisValue(mountName),
+            createdAt: new Date().toISOString(),
+            ...Object.fromEntries(
+              Object.entries(extraFields).map(([key, value]) => [
+                key,
+                toRedisValue(value)
+              ])
+            )
           });
+
+          enqueued += 1;
         } else {
-          // Already in queue → skip
-          logger && logger.debug && logger.debug(
-            { mountName },
-            "Skipped duplicate mountName enqueue"
-          );
+          skipped += 1;
+
+          logger &&
+            logger.debug &&
+            logger.debug(
+              { mountName },
+              "Skipped duplicate mountName enqueue"
+            );
         }
       } catch (error) {
-        logger && logger.error(
-          { mountName, error },
-          "Failed to enqueue mountName"
-        );
+        failed += 1;
+
+        logger &&
+          logger.error &&
+          logger.error(
+            { mountName, error },
+            "Failed to enqueue mountName"
+          );
       }
     }
 
@@ -173,6 +237,12 @@ async function enqueueMountNames(mountNames, options, logger) {
       await sleep(pauseMs);
     }
   }
+
+  return {
+    enqueued,
+    skipped,
+    failed
+  };
 }
 
 /*Redis queue functions for Kafka outbound messages*/
@@ -273,6 +343,7 @@ module.exports = {
     RETRY_GROUP,
     KAFKA_OUTBOUND_STREAM,
     KAFKA_OUTBOUND_GROUP,
+    RETRY_DEAD_LETTER_STREAM,
     ensureGroup,
     enqueueMountNames,
     readNext,
@@ -292,5 +363,7 @@ module.exports = {
     readNextRetry,
     ackRetryMessage,
     deleteRetryMessage,
-    reclaimStaleRetry
+    reclaimStaleRetry,
+    enqueueRetryDeadLetter,
+    getRetryQueueLength,
 };

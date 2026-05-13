@@ -179,8 +179,7 @@ async function run(request) {
     }
 
     rawCc =
-    fieldsFilterResponse["filtered-data-structure"] ||
-    fieldsFilterResponse.filteredDataStructure;
+    fieldsFilterResponse["filtered-data-structure"];
 
     if (!rawCc || typeof rawCc !== "object") {
         const error = new Error("p1FieldsFilter did not return filtered data structure");

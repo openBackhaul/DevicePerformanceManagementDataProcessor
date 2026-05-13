@@ -178,7 +178,9 @@ async function run() {
     mwdiReplicaEsClient,
     dataStoreEsClient,
     staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
-    workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000)
+    workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000),
+    // retry control
+    maxRetryCount: Number(redisConfig.maxRetryCount || 1)
   }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
   /* startKafkaOutboundWorkerPool({
@@ -199,9 +201,19 @@ async function run() {
     logger,
     instanceId,
     appState,
-    workerCount: 1,
-    retryDelayMs: Number(redisConfig.retryIntervalMs || 10000),
-    staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000)
+     // keep one retry worker; it only requeues metadata, not full CCs
+    workerCount: Number(redisConfig.retryWorkerCount || 1),
+     // run retry cycle every 2 hours by default
+    retryIntervalMs: Number(redisConfig.retryIntervalMs || 2 * 60 * 60 * 1000),
+    // read small chunks, not 10k/20k into memory
+    retryReadCount: Number(redisConfig.retryReadCount || 500),
+     // allow large retry queue, but requeue up to this per cycle
+    retryMaxRequeuePerCycle: Number(redisConfig.retryMaxRequeuePerCycle || 20000),
+
+    staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
+
+    // false means do not retry immediately on startup
+    retryRunImmediately: redisConfig.retryRunImmediately === false
   }).catch((error) => logger.error({ error }, "Retry worker pool crashed")); 
 
   return {
