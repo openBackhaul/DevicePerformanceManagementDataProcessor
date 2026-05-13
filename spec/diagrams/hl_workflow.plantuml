@@ -3,6 +3,7 @@ skinparam responseMessageBelowArrow true
 
 title
   DevicePerformanceManagementDataProcessor
+  (v1.0.x)
 end title
 
 participant "Test\nDesign\n0" as testDesign #PapayaWhip
@@ -13,7 +14,7 @@ participant "iVeritas\nDesign\n0" as iVeritas #LightCyan
 participant "NEP\n1.2.0\n0" as nep #LightCyan
 
 participant "embedYourself\n\n1" as embed #PapayaWhip
-participant "p2StreamPmData\n\n1" as p2StreamPm #PapayaWhip
+participant "p1StreamPmData\n\n1" as p1StreamPm #PapayaWhip
 participant "p1LoadParameters\n\n1" as p1LoadParams #PapayaWhip
 participant "p1ResolveEsAddress\n\n2" as p1ResolveAddress #PapayaWhip
 participant "p1InitKafka\n\n4" as p1InitKafka #PapayaWhip
@@ -49,33 +50,33 @@ participant "CDM\n1.0.0\n7" as cdm #PapayaWhip
 
 note right embed
   Automatically starts
-  p2StreamPmData
+  p1StreamPmData
 end note
-embed -> p2StreamPm
+embed -> p1StreamPm
 
-activate p2StreamPm
+activate p1StreamPm
 
-  p2StreamPm -> p1LoadParams
+  p1StreamPm -> p1LoadParams
   activate p1LoadParams
     note over p1LoadParams
       Loads parameters
       from configFile
     end note
-  p2StreamPm <-- p1LoadParams
+  p1StreamPm <-- p1LoadParams
   deactivate p1LoadParams
 
   Loop FOR all esName
-    p2StreamPm -> p1ResolveAddress
+    p1StreamPm -> p1ResolveAddress
     activate p1ResolveAddress
       note over p1ResolveAddress
         Resolves ES address
       end note
-    p2StreamPm <-- p1ResolveAddress
+    p1StreamPm <-- p1ResolveAddress
     deactivate p1ResolveAddress
 
   end Loop
 
-  p2StreamPm -> p1InitKafka
+  p1StreamPm -> p1InitKafka
   activate p1InitKafka
 
     note over p1InitKafka
@@ -88,10 +89,10 @@ activate p2StreamPm
       session
     end note
 
-  p2StreamPm <-- p1InitKafka
+  p1StreamPm <-- p1InitKafka
   deactivate p1InitKafka
 
-  p2StreamPm -> p1MaintainDs
+  p1StreamPm -> p1MaintainDs
   activate p1MaintainDs
 
   Loop endless
@@ -103,17 +104,17 @@ activate p2StreamPm
 
   Loop endless
 
-    p2StreamPm -> p1UpdateMwdiRep
+    p1StreamPm -> p1UpdateMwdiRep
     activate p1UpdateMwdiRep
       note over p1UpdateMwdiRep
         Replicates updated CCs
       end note
-    p2StreamPm <-- p1UpdateMwdiRep
+    p1StreamPm <-- p1UpdateMwdiRep
     deactivate p1UpdateMwdiRep
 
     Loop for every updated CC
 
-      p2StreamPm -> p1ProcessPm
+      p1StreamPm -> p1ProcessPm
       activate p1ProcessPm
 
         p1ProcessPm -> p1AddRaw
