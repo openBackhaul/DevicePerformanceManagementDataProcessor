@@ -6,6 +6,7 @@ title
 end title
 
 participant "embedYourself\n" as embed
+participant "provideDevice\nDataStoreDump" as deviceDump #LightSalmon
 participant "p2StreamPmData\n" as p2StreamPm #LightYellow
 participant "p1LoadParameters\n" as p1LoadParams
 participant "p1ResolveEsAddress\n" as p1ResolveAddress
@@ -41,12 +42,8 @@ participant "p1Transmitting\nKafka" as p1Trans
 
 participant "p2Storing\n" as p2Store #LightYellow
 participant "p1MaintainDs\n" as p1MaintainDs
+participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
 
-note right embed
-  Automatically starts
-  p2StreamPmData
-end note
-embed -> p2StreamPm
 
 ' Release Notes
 ===== Changes for Measuring Quality =====
@@ -119,6 +116,11 @@ end note
 
 == End of Changes ==
 
+note right embed
+  Automatically starts
+  p2StreamPmData
+end note
+embed -> p2StreamPm
 activate p2StreamPm
 
   ' Load parameters
@@ -514,5 +516,43 @@ activate p2StreamPm
     deactivate p1Trans
 
   end Loop
+
+
+-> deviceDump
+activate deviceDump
+
+  ' Load parameters
+  deviceDump -> p1LoadParams
+  activate p1LoadParams
+    note over p1LoadParams
+      Loads parameters
+      from configFile
+    end note
+  deviceDump <-- p1LoadParams
+  deactivate p1LoadParams
+
+  ' Resolve ES address
+    deviceDump -> p1ResolveAddress
+    activate p1ResolveAddress
+      note over p1ResolveAddress
+        Resolves ES address
+      end note
+    deviceDump <-- p1ResolveAddress
+    deactivate p1ResolveAddress
+
+  ' Load device PM data from DS
+    deviceDump -> p1ReadDevice
+    activate p1ReadDevice
+      note over p1ReadDevice
+        - Reads device PM
+          data from DataStore
+        - Consolidates batches
+          into one structure
+      end note
+    deviceDump <-- p1ReadDevice
+    deactivate p1ReadDevice
+
+<-- deviceDump
+deactivate deviceDump
 
 @enduml

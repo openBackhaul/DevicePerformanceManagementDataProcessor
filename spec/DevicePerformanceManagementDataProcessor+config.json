@@ -224,11 +224,28 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
+              "function-name": "embedYourself",
+              "function-description": "Embed yourself into the MBH SDN application layer",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-020"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-020",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
               "function-name": "p1StreamPmData",
               "function-description": "Cyclically triggers the replication of MWDI and initiates the processing of the PM data",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-030",
+                "dpmdp-1-1-0-function-p-040",
                 "dpmdp-1-1-0-function-p-060",
                 "dpmdp-1-1-0-function-p-090",
                 "dpmdp-1-1-0-function-p-100",
@@ -243,7 +260,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-030",
+          "uuid": "dpmdp-1-1-0-function-p-040",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2083,6 +2100,89 @@
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-700",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "provideDeviceDataStoreDump",
+              "function-description": "Provides a dump of the PM data of a device from the data store",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-730",
+                "dpmdp-1-1-0-function-p-760",
+                "dpmdp-1-1-0-function-p-790"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-730",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1LoadParameters",
+              "function-description": "Loads the parameters from the configFile",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-760",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1ResolveEsAddress",
+              "function-description": "Composes the address information of an ElasticSearchClient",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-761",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-761",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "dataStoreEsClient",
+              "string-purpose": "UUID of the ElasticsearchClient LTP for storing the resultCc",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-1-0-es-c-es-1-0-0-021"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-790",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1ReadDataStoreDeviceData",
+              "function-description": "Reads the PM data of a device from the data store",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
             }
           }
         }
