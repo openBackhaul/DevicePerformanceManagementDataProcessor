@@ -5,10 +5,10 @@ title
   provideDeviceDataStoreDump
 end title
 
-participant "requestor" as requestor
+participant "requestor\n" as requestor
 participant "provideDeviceDataStoreDump\n" as cur
-participant "p1LoadParameters" as loadParams
-participant "p1ResolveEsAddress" as resolveEsAddress
+participant "p1LoadParameters\n" as loadParams
+participant "p1ResolveEsAddress\n" as resolveEsAddress
 participant "p1ReadDataStoreDeviceData\n" as p1Read
 database "DataStore" as ds
 
@@ -18,15 +18,7 @@ activate cur
 
 
   ' get parameters
-  note right of cur #LightCoral
-    was wird hier als functionName übergeben?
-    eigentlich müsste ja hier "provideDeviceDataStoreDump"
-    übergeben werden, weil das der Aufrufer ist
-    (das ist aber ein Service, keine Function;
-    darf man das trotzdem angeben?)
-  end note
-
-  cur -> loadParams: { functionName=\n"p1ReadDataStoreDeviceData"}
+  cur -> loadParams: { functionName=\n"provideDeviceDataStoreDump"}
   activate loadParams
 
     note over loadParams
