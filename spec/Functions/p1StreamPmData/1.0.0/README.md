@@ -1,6 +1,6 @@
-# p2StreamPmData  
+# p1StreamPmData  
 
-The p2StreamPmData is cyclically processing:  
+The p1StreamPmData is cyclically processing:  
 - Replicate updated ControlConstructs from the MWDI ES index into the MWDI ES Replica index (which holds the raw data for processing PM data in the DPMDP)  
 - Initiate the processing of PM data of the updated ControlConstructs  
 
@@ -8,7 +8,7 @@ The p2StreamPmData is cyclically processing:
 ### Diagram  
 
 <p align="center">
-  <img src="./p2StreamPmData.png" alt="p2StreamPmData diagram" width="400" />
+  <img src="./p1StreamPmData.png" alt="p1StreamPmData diagram" width="400" />
 </p>
 
 

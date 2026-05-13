@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p2StreamPmData
+  title: p1StreamPmData
   version: 1.0.0
 
 x-javascript-interface:
-  p2StreamPmData:
+  p1StreamPmData:
     summary: 'Streams PM data'
     processing:
       p1LoadParameters:
