@@ -90,7 +90,7 @@ activate cur
     deactivate calPmQual
 
     note right cur
-      attach interfacePmDataQuality to pmDataQuality
+      attach interfacePmDataQuality to devicePmDataQuality
     end note
 
     note right cur
@@ -132,7 +132,7 @@ activate cur
     deactivate calPmQual
 
     note right cur
-      attach interfacePmDataQuality to pmDataQuality
+      attach interfacePmDataQuality to devicePmDataQuality
     end note
 
     note right cur
@@ -141,7 +141,7 @@ activate cur
 
   end loop
 
-requestor <-- cur: { {rawCc},\n[offsets],\n{pmDataQuality} }
+requestor <-- cur: { {rawCc},\n[offsets],\n{devicePmDataQuality} }
 deactivate cur
 
 @enduml
