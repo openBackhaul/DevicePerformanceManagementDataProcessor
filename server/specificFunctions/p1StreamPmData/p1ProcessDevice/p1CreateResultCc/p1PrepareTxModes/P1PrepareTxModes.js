@@ -1,5 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
-const p1CalculateAiCapacity = require('../../../../../../genericFunctions/p1CalculateAiCapacity/1.0.0/P1CalculateAiCapacity');
+const p1CalculateAiCapacity = require('../../../../../genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity');
 
 const p1PrepareTxModes = (input) => {
   try {
