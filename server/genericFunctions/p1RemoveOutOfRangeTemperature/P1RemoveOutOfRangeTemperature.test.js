@@ -177,6 +177,9 @@ describe('p1RemoveOutOfRangeTemperature', () => {
   let dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
 
+  dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEOK.json', 'utf8');
+  let equipDataMissingValues = JSON.parse(dataFile);
+
   let dataWrongFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEwrong.json', 'utf8');
   let equipmentWrongData = JSON.parse(dataWrongFile);
 
@@ -188,6 +191,16 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       }))
         .toMatchObject({
           "equipment": equipmentData
+        });
+    });
+
+    test('All levels are ok - with missing properties', () => {
+      expect(p1RemoveOutOfRangeTemperature({
+        "equipment": equipDataMissingValues,
+        "parameters": parameterStruct1
+      }))
+        .toMatchObject({
+          "equipment": equipDataMissingValues
         });
     });
 

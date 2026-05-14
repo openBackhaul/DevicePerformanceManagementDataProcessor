@@ -1,9 +1,8 @@
-# testing/p1RemoveOutOfRangeTemperature/1.0.0/scenarios.yaml
 #
 # Spec sources:
 # - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1RemoveOutOfRangeTemperature/1.0.0/interface.yaml
 # - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1RemoveOutOfRangeTemperature/1.0.0/variables.yaml
-
+#
 
 module:
   functionUnderTest:
@@ -34,6 +33,54 @@ scenarios:
       errorEnum: "parameters invalid"
     mocks: []
 
+  - id: "errNoParameterList"
+    description: "Should return error when parameters exists but parameter list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errEmptyParameterList"
+    description: "Should return error when parameters.parameter is empty"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errLowerLimitMissing"
+    description: "Should return error when lowerTemperatureLimit is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errUpperLimitMissing"
+    description: "Should return error when upperTemperatureLimit is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errLimitsInvalidNonNumeric"
+    description: "Should return error when temperature limits are non-numeric"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errLimitsReversed"
+    description: "Should return error when lowerTemperatureLimit is greater than upperTemperatureLimit"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
   # -------------------------
   # equipment validation
   # -------------------------
@@ -53,65 +100,13 @@ scenarios:
       type: "error"
       errorEnum: "equipment invalid"
     mocks: []
-
-  - id: "errMissingInput"
-    description: "Should return General processing error when input is null"
+  
+  - id: "errTemperatureAttributeMissing"
+    description: "Should return an error when temperature attribute is missing"
     inputFixture: "input.json"
     expected:
       type: "error"
-      errorEnum: "General processing error"
-    mocks: []
-
-  # ---------------------------------------
-  # parameter extraction / limit edge cases
-  # ---------------------------------------
-
-  - id: "okNoParameterList"
-    description: "Should succeed when parameters.parameter list is missing (no temperature removal performed)"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-    mocks: []
-
-  - id: "okEmptyParameterList"
-    description: "Should succeed when parameters.parameter is empty (no temperature removal performed)"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-    mocks: []
-
-  - id: "okLowerLimitMissing"
-    description: "Should succeed when lowerTemperatureLimit is missing (temperature not removed because range is incomplete)"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-    mocks: []
-
-  - id: "okUpperLimitMissing"
-    description: "Should succeed when upperTemperatureLimit is missing (temperature not removed because range is incomplete)"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-    mocks: []
-
-  - id: "okLimitsInvalidNonNumeric"
-    description: "Should succeed when limits are non-numeric strings (implementation should not crash; treat as cannot-compare => keep temperature)"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-    mocks: []
-
-  - id: "okLimitsReversed"
-    description: "Should succeed when lower limit > upper limit (treat as invalid configuration; keep temperature values)"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
+      errorEnum: "equipment invalid"
     mocks: []
 
   # -------------------------
@@ -126,13 +121,6 @@ scenarios:
       outputFixture: "output.json"
     mocks: []
 
-  - id: "okTemperatureMissing"
-    description: "Should keep equipment unchanged when temperature attribute is missing"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-    mocks: []
 
   - id: "okTemperatureWithinRangeKeep"
     description: "Should keep temperature when within configured inclusive range"
@@ -143,7 +131,7 @@ scenarios:
     mocks: []
 
   - id: "okTemperatureEqualsLowerLimitKeep"
-    description: "Should keep temperature when exactly equal to lower limit (spec says delete if < lower)"
+    description: "Should keep temperature when exactly equal to lowerTemperatureLimit"
     inputFixture: "input.json"
     expected:
       type: "success"
@@ -151,7 +139,7 @@ scenarios:
     mocks: []
 
   - id: "okTemperatureEqualsUpperLimitKeep"
-    description: "Should keep temperature when exactly equal to upper limit (spec says delete if > upper)"
+    description: "Should keep temperature when exactly equal to upperTemperatureLimit"
     inputFixture: "input.json"
     expected:
       type: "success"
@@ -159,7 +147,7 @@ scenarios:
     mocks: []
 
   - id: "okTemperatureBelowLowerDeleted"
-    description: "Should delete temperature when temperature < lowerTemperatureLimit"
+    description: "Should delete temperature when temperature is below lowerTemperatureLimit"
     inputFixture: "input.json"
     expected:
       type: "success"
@@ -167,7 +155,7 @@ scenarios:
     mocks: []
 
   - id: "okTemperatureAboveUpperDeleted"
-    description: "Should delete temperature when temperature > upperTemperatureLimit"
+    description: "Should delete temperature when temperature is above upperTemperatureLimit"
     inputFixture: "input.json"
     expected:
       type: "success"
@@ -175,7 +163,7 @@ scenarios:
     mocks: []
 
   - id: "okMultipleEquipmentMixed"
-    description: "Should delete temperature only for equipment entries out of range; keep others"
+    description: "Should delete temperature only for equipment entries with out-of-range values and keep others unchanged"
     inputFixture: "input.json"
     expected:
       type: "success"
@@ -183,7 +171,7 @@ scenarios:
     mocks: []
 
   - id: "okNestedStructuresMissing"
-    description: "Should not crash if actual-equipment/physical-properties path is missing; keep entry unchanged"
+    description: "Should not crash if actual-equipment or physical-properties path is missing; keep equipment entry unchanged"
     inputFixture: "input.json"
     expected:
       type: "success"
