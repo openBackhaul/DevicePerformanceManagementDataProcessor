@@ -1,6 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
-const p1CalculateAiCapacity =
-  require('../../../../../../../genericFunctions/p1CalculateAiCapacity/1.0.0/P1CalculateAiCapacity');
+const p1CalculateAiCapacity = require('../../../../../../genericFunctions/p1CalculateAiCapacity/1.0.0/P1CalculateAiCapacity');
 
 const p1PrepareTxModes = (input) => {
   try {
@@ -74,7 +73,7 @@ const p1PrepareTxModes = (input) => {
         'code-rate': mode['code-rate']
       });
 
-    
+
       if (typeof capacityResult === 'string') {
         return ERRORS.TX_MODE_LIST_COULD_NOT_BE_PROVIDED;
       }
@@ -85,17 +84,17 @@ const p1PrepareTxModes = (input) => {
       };
     });
 
-    console.log(
-  '[RESULT] p1PrepareTxModes output:',
-  JSON.stringify(
-    {
-      'historical-performance-data-list': cleanedHistList,
-      'transmission-mode-list': enrichedTxModes
-    },
-    null,
-    2
-  )
-);
+    // console.log(
+    //   '[RESULT] p1PrepareTxModes output:',
+    //   JSON.stringify(
+    //     {
+    //       'historical-performance-data-list': cleanedHistList,
+    //       'transmission-mode-list': enrichedTxModes
+    //     },
+    //     null,
+    //     2
+    //   )
+    // );
 
     return {
       'historical-performance-data-list': cleanedHistList,
