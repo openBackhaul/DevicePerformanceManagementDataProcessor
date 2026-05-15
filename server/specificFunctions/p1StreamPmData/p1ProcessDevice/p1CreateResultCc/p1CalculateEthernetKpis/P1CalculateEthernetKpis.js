@@ -92,20 +92,28 @@ function calculateFrameLossOutput(err, drop) {
 
 function p1CalculateEthernetKpis(input) {
   try {
-    if (!input || !input['historical-performance-data']) {
+    if (!input) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    if (input['historical-performance-data'] == undefined) {
       return ERRORS.HISTORICAL_DATA_NOT_PROVIDED;
     }
 
     const dataList = input['historical-performance-data'];
 
     if (!Array.isArray(dataList) || dataList.length === 0) {
-      return ERRORS.HISTORICAL_DATA_INCOMPLETE;
+      return ERRORS.HISTORICAL_DATA_INVALID;
     }
 
     const result = dataList.map(item => {
       let transmitTraffic, receiveTraffic, frameLossInput, frameLossOutput;
 
       try {
+        if (Object.keys(item).length === 0 && item.constructor === Object) {
+          return ERRORS.HISTORICAL_DATA_INCOMPLETE;
+        }
+
         transmitTraffic = calculateTransmitTraffic(
           item['total-bytes-output'],
           item['time-period']
