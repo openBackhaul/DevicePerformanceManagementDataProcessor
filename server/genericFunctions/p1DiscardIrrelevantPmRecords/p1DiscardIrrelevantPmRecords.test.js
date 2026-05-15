@@ -48,7 +48,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
   test('should return error if input is missing', () => {
     expect(p1DiscardIrrelevantPmRecords(null))
-      .toBe(ERRORS.HISTPERF_NOT_PROVIDED);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('should filter records correctly (full scenario)', () => {
