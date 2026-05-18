@@ -1139,6 +1139,30 @@ profile-instances:
     configuration:
       is-active: true
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-551'
+    capability:
+      string-name: 'mycom-output-format'
+      purpose: 'fieldsFilter'
+    configuration:
+      string-value: 'to_be_defined'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-552'
+    capability:
+      string-name: 'netexplorer-output-format'
+      purpose: 'fieldsFilter'
+    configuration:
+      string-value: 'to_be_defined'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-553'
+    capability:
+      string-name: 'iveritas-output-format'
+      purpose: 'fieldsFilter'
+    configuration:
+      string-value: 'to_be_defined'
+
 
   # p1FieldsFilter
   - profile-name: 'FunctionProfile'
@@ -1147,19 +1171,9 @@ profile-instances:
       function-name: 'p1FieldsFilter'
       function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
       parameter-list:
-        - parameter: 'dpmdp-1-1-0-string-p-561'
-          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-561'
-    capability:
-      string-name: 'fieldsFilter'
-      purpose: 'Fields filter to be applied to reduce the onfOutputFormat'
-    configuration:
-      string-value: ''
 
 
   # p1TransmittingKafka
@@ -1172,6 +1186,10 @@ profile-instances:
         - parameter: 'dpmdp-1-1-0-string-p-601'
           owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-602'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-603'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-604'
           owner: 'platform'
       sub-function-list:
     configuration:
@@ -1189,11 +1207,29 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-1-0-string-p-602'
     capability:
-      string-name: 'onf-output-format'
+      string-name: 'mycom-output-format'
       purpose: 'kafkaClient'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-001'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-603'
+    capability:
+      string-name: 'netexplorer-output-format'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-002'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-604'
+    capability:
+      string-name: 'iveritas-output-format'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-003'
 
 
   # p2Storing
@@ -1202,6 +1238,91 @@ profile-instances:
     capability:
       function-name: 'p2Storing'
       function-description: 'Stores the resultCc into the DataStore'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1TransmittingPmData
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-640'
+    capability:
+      function-name: 'p1TransmittingKafka'
+      function-description: 'Transfers outputFormats to their respective KafkaClient'
+      parameter-list:
+        - parameter: 'dpmdp-1-1-0-string-p-641'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-641'
+    capability:
+      string-name: 'pm-data-quality-output-format'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-004'
+
+
+  # provideDeviceDataStoreDump
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-700'
+    capability:
+      function-name: 'provideDeviceDataStoreDump'
+      function-description: 'Provides a dump of the PM data of a device from the data store'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-730'
+        - 'dpmdp-1-1-0-function-p-760'
+        - 'dpmdp-1-1-0-function-p-790'
+    configuration:
+      is-active: true
+
+
+  # p1LoadParameters
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-730'
+    capability:
+      function-name: 'p1LoadParameters'
+      function-description: 'Loads the parameters from the configFile'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1ResolveEsAddress
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-760'
+    capability:
+      function-name: 'p1ResolveEsAddress'
+      function-description: 'Composes the address information of an ElasticSearchClient'
+      parameter-list:
+        - parameter: 'dpmdp-1-1-0-string-p-761'
+          owner: 'platform'
+      sub-function-list:
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-761'
+    capability:
+      string-name: 'dataStoreEsClient'
+      purpose: 'UUID of the ElasticsearchClient LTP for storing the resultCc'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-es-c-es-1-0-0-021'
+
+
+  # p1ReadDataStoreDeviceData
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-790'
+    capability:
+      function-name: 'p1ReadDataStoreDeviceData'
+      function-description: 'Reads the PM data of a device from the data store'
       parameter-list:
       sub-function-list:
     configuration:

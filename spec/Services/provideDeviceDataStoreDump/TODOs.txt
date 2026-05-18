@@ -1,8 +1,0 @@
-- add new service in serviceList
-- add service to OAS
-- add profileInstances for parameters
-- add forwardings
-- update configFile
-
-
-- to clarify: what to use as functionName for p1LoadParameters

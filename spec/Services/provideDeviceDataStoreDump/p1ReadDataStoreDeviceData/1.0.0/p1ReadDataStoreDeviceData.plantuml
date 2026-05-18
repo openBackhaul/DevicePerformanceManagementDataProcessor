@@ -1,28 +1,21 @@
 @startuml p1ReadDataStoreDeviceData
-skinparam responseMessageBelowArrequestorw true
+skinparam responseMessageBelowArrow true
 
 title
   p1ReadDataStoreDeviceData
 end title
 
-participant "requestor" as requestor
+participant "requestor\n" as requestor
 participant "p1ReadDataStoreDeviceData\n" as cur
 database "DataStore" as ds
 
-
-requestor -> cur: { ressourcePath }
+requestor -> cur: { {dataStoreEsClient},\nmountName }
 activate cur
 
-    cur -> ds: { ressourcePath }
-      note over ds
-        return data addressed
-        by ressourcePath
-      end note
+  cur -> ds
+  cur <-- ds: { [devicePmData] }
 
-    cur <-- ds: { {deviceData} }
-
-
-  requestor <-- cur: { {deviceData} }
+requestor <-- cur: { [devicePmData] }
 deactivate cur
 
 @enduml

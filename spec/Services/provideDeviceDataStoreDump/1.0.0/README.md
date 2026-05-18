@@ -1,24 +1,20 @@
-# provideDeviceDataStoreDump    
+# provideDeviceDataStoreDump
 
-
-### Overview  
+## Overview
 
 The provideDeviceDataStoreDump service can be called on demand.  
-It requires the mountName of a target device as input, and reads and returns the deviceData stored for this device from
-the dataStore.
+It requires the mountName of a target device as input, and reads and returns the PM data for this device from the dataStore.  
 
-It compiles the path for accessing the dataStore by using the mountName.
-
-### Diagram  
+## Diagram
 
 <p align="center">
   <img src="./provideDeviceDataStoreDump.png" alt="provideDeviceDataStoreDump diagram" width="400" />
 </p>
 
+## Interface
 
-### Interface  
+Please find a detailed description of the interface in the [openAPI specification](../../../DevicePerformanceManagementDataProcessor.yaml).  
 
-Please find a detailed description of the interface in the [openAPI specification](../../DevicePerformanceManagementDataProcessor.yaml).  
+## Variables
 
-
-
+Please find a detailed description of the [variables](variables.yaml).  

@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p1LoadOffsetsAndStatusData:
-    summary: 'Loads offsets and statusData for a device from the dataStore'
+    summary: 'Loads offsets and statusData for a device from the DataStore'
     input:
       required: true
       content:
@@ -18,14 +18,14 @@ x-javascript-interface:
             properties:
               data-store-es-client:
                 type: object
-                description: 'Data Store ElasticSearch address'
+                description: 'DataStore ElasticSearch address'
               mount-name:
                 type: string
                 description: 'mountName of the device for which ControlConstruct data shall be read'
                 mount-name: '100250001'
     output:
       success:
-        description: 'Offsets and statusData from dataStore provided'
+        description: 'Offsets and statusData from DataStore provided'
         content:
           application/json:
             schema:
@@ -42,7 +42,7 @@ x-javascript-interface:
                     'StatusData
                     from [/load-offsets-and-status-data/status-data]'
       error:
-        description: 'Offsets and statusData could not be read from dataStore'
+        description: 'Offsets and statusData could not be read from DataStore'
         content:
           application/json:
             schema:
@@ -56,11 +56,11 @@ x-javascript-interface:
                 - 'general processing error'
     processing:
       retrieveOffsetsFromDs:
-        url: # [{/p1-load-offsets-and-status-data/data-store-url}][/data-store/device={/p1-load-offsets-and-status-data/mount-name}/offsets]
-          description: 'Load offsets from dataStore'
+        url: # [{/load-offsets-and-status-data/data-store-url}][/data-store/device={/load-offsets-and-status-data/mount-name}/offsets]
+          description: 'Load offsets from DataStore'
           output:
             success:
-              description: 'Offsets from dataStore provided'
+              description: 'Offsets from DataStore provided'
               content:
                 application/json:
                   schema:
@@ -68,7 +68,7 @@ x-javascript-interface:
                     description: >
                       'Offsets for the device'
             error:
-              description: 'Offsets from dataStore could not be provided'
+              description: 'Offsets from DataStore could not be provided'
               content:
                 application/json:
                   schema:
@@ -81,11 +81,11 @@ x-javascript-interface:
                       - 'ElasticSearch read error for offsets'
                       - 'general processing error'
       retrieveStatusDataFromDs:
-        url: # [{/p1-load-offsets-and-status-data/data-store-url}][/data-store/device={/p1-load-offsets-and-status-data/mount-name}/status-data]
-          description: 'Load statusData from dataStore'
+        url: # [{/load-offsets-and-status-data/data-store-url}][/data-store/device={/load-offsets-and-status-data/mount-name}/status-data]
+          description: 'Load statusData from DataStore'
           output:
             success:
-              description: 'StatusData from dataStore provided'
+              description: 'StatusData from DataStore provided'
               content:
                 application/json:
                   schema:
@@ -93,7 +93,7 @@ x-javascript-interface:
                     description: >
                       'StatusData for the device'
             error:
-              description: 'StatusData from dataStore could not be provided'
+              description: 'StatusData from DataStore could not be provided'
               content:
                 application/json:
                   schema:
@@ -105,7 +105,7 @@ x-javascript-interface:
                       - 'mountName invalid'
                       - 'ElasticSearch read error for status-data'
                       - 'general processing error'
-  
+
 paths:
   /:
     description: 'no rest path provided by this module'

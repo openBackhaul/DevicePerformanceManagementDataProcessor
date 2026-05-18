@@ -1913,7 +1913,7 @@
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
               "string-name": "mycom-output-format",
-              "string-purpose": "D"
+              "string-purpose": "fieldsFilter"
             },
             "string-profile-configuration": {
               "string-value": "to_be_defined"
@@ -1953,12 +1953,7 @@
             "function-profile-capability": {
               "function-name": "p1FieldsFilter",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
-              "parameter-list": [
-                {
-                  "parameter": "dpmdp-1-1-0-string-p-561",
-                  "owner": "platform"
-                }
-              ],
+              "parameter-list": [],
               "sub-function-list": []
             },
             "function-profile-configuration": {
@@ -2696,6 +2691,29 @@
         ]
       },
       {
+        "uuid": "dpmdp-1-1-0-op-s-is-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-1-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/provide-device-data-store-dump"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
         "uuid": "dpmdp-1-1-0-http-s-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [
@@ -2720,7 +2738,8 @@
           "dpmdp-1-1-0-op-s-bs-002",
           "dpmdp-1-1-0-op-s-bs-003",
           "dpmdp-1-1-0-op-s-bs-004",
-          "dpmdp-1-1-0-op-s-bs-005"
+          "dpmdp-1-1-0-op-s-bs-005",
+          "dpmdp-1-1-0-op-s-is-000"
         ],
         "server-ltp": [
           "dpmdp-1-1-0-tcp-s-000"

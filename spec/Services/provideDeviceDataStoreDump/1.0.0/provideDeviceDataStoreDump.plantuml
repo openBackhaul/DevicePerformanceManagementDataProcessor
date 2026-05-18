@@ -1,5 +1,5 @@
 @startuml provideDeviceDataStoreDump
-skinparam responseMessageBelowArrequestorw true
+skinparam responseMessageBelowArrow true
 
 title
   provideDeviceDataStoreDump
@@ -10,12 +10,10 @@ participant "provideDeviceDataStoreDump\n" as cur
 participant "p1LoadParameters\n" as loadParams
 participant "p1ResolveEsAddress\n" as resolveEsAddress
 participant "p1ReadDataStoreDeviceData\n" as p1Read
-database "DataStore" as ds
 
 
 requestor -> cur: { mountName }
 activate cur
-
 
   ' get parameters
   cur -> loadParams: { functionName=\n"provideDeviceDataStoreDump"}
@@ -26,43 +24,32 @@ activate cur
       from configFile
     end note
     
-    cur <-- loadParams: { {parameters} \n{configFile} }
+  cur <-- loadParams: { {parameters} \n{configFile} }
   deactivate loadParams
 
   ' get ES address
-  cur -> resolveEsAddress: { {parameters} \n{configFile} \nesName }
+  cur -> resolveEsAddress: { {/parameters/sub-function=p1ResolveEsAddress} \n{configFile} \nesName }
   activate resolveEsAddress
 
     note over resolveEsAddress
       Resolves ES address
-      from configFile
     end note
     
-    cur <-- resolveEsAddress: { esAddress }
+  cur <-- resolveEsAddress: { {dataStoreEsClient} }
   deactivate resolveEsAddress 
 
-  note right of cur
-    Build ressourcePath from esAddress and mountName:
-    ressourcePath := [{esAddress.url}://data-store/device={mountName}]
-  end note
-
-
-  cur -> p1Read: { ressourcePath }
+  cur -> p1Read: { {dataStoreEsClient},\nmountName }
   activate p1Read
 
-    p1Read -> ds
-      note over ds
-        return device data
-        corresponding to
-        ressourcePath
-      end note
-    p1Read <-- ds: { {deviceData} }
+    note over p1Read
+      Reads PM data 
+      from DataStore
+    end note
 
-    cur <-- p1Read: { {deviceData} }
-
+  cur <-- p1Read: { [devicePmData] }
   deactivate p1Read
 
-  requestor <-- cur: { {deviceData} }
+requestor <-- cur: { [devicePmData] }
 deactivate cur
 
 @enduml

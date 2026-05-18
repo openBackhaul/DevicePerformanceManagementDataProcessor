@@ -9,7 +9,7 @@ storing:
     data-store-es-client:
       type: object
       description: >
-        'Data Store ElasticSearch address
+        'DataStore ElasticSearch address
         from {$input#/data-store-es-client}'
     result-cc:
       type: object
@@ -30,7 +30,7 @@ storing:
     data-store-url:
       type: string
       description: >
-        'ElasticSearch URL of Data Store ES
+        'ElasticSearch URL of DataStore ES
         from [/storing/data-store-es-client/url]'
     mount-name:
       type: string

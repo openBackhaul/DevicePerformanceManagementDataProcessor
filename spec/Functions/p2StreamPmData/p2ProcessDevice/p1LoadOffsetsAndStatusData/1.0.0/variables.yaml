@@ -7,18 +7,18 @@ load-offsets-and-status-data:
     data-store-es-client:
       type: object
       description: >
-        'Data Store ElasticSearch address
+        'DataStore ElasticSearch address
         from {$input#/data-store-es-client}'
     mount-name:
       type: string
       description: >
-        'MountName
+        'mountName
         from {$input#/mount-name}'
 
     data-store-url:
       type: string
       description: >
-        'ElasticSearch URL of Data Store ES
+        'ElasticSearch URL of DataStore ES
         from [/load-offsets-and-status-data/data-store-es-client/url]'
 
     offsets:

@@ -110,6 +110,8 @@ forwardings:
         uuid: dpmdp-1-1-0-op-s-bs-004
       - server-name: /docs
         uuid: dpmdp-1-1-0-op-s-bs-005
+      - server-name: /provide-device-data-store-dump
+        uuid: dpmdp-1-1-0-op-s-is-000
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
         uuid: dpmdp-1-1-0-op-c-bs-eatl-2-1-2-000

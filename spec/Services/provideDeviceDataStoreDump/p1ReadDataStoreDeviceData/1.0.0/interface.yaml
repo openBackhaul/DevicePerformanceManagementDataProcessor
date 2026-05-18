@@ -5,69 +5,75 @@ info:
 
 x-javascript-interface:
   p1ReadDataStoreDeviceData:
-    summary: 'Reads and returns device data from dataStore'
+    summary: 'Loads PM data of a device from the DataStore'
     input:
       required: true
       content:
         application/json:
           schema:
+            type: object
             required:
-              - ressource-path
+              - data-store-es-client
+              - mount-name
             properties:
-              ressource-path:
+              data-store-es-client:
+                type: object
+                description: 'DataStore ElasticSearch address'
+              mount-name:
                 type: string
-                description: >
-                  'The ressourcePath for addressing the dataStore including ES client address information,
-                  must target a specific device.'
-                example: '<ES-client-address>://data-store/device=inputMountName'
+                description: 'mountName of the device for which PM data shall be read'
     output:
       success:
-        description: 'deviceData provided'
+        description: 'PmData of the device provided'
         content:
           application/json:
             schema:
               type: object
-              required:
-                - device-data
               properties:
-                device-data:
-                  type: object
+                device-pm-data:
+                  type: array
                   description: >
-                    'The device data from dataStore addressed by the ressourcePath'
+                    'The PM data of the device as a list of resultCc of diverse batches
+                    from [/read-data-store-device-data/device-pm-data]'
       error:
-        description: 'deviceData could not be provided'
+        description: 'PmData of the device could not be provided'
         content:
           application/json:
             schema:
               type: string
               enum:
-                - 'ressourcePath not provided'
-                - 'ressourcePath invalid'
-                - 'deviceData could not be provided'
+                - 'dataStoreUrl not provided'
+                - 'dataStoreUrl invalid'
+                - 'mountName not provided'
+                - 'mountName invalid'
+                - 'ElasticSearch read error'
+                - 'mountName not found in DataStore'
                 - 'general processing error'
     processing:
-      retrieveDeviceDataFromDs:
-        url: # [/read-data-store-device-data/ressource-path]
-          description: 'Load deviceData from dataStore'
+      retrieveDevicePmDataFromDs:
+        url: # [{/read-data-store-device-data/data-store-es-client/url}][/data-store/device={/read-data-store-device-data/mount-name}/result-data]
+          description: 'Load resultData from DataStore'
           output:
             success:
-              description: 'DeviceData from dataStore provided'
+              description: 'resultData from DataStore provided'
               content:
                 application/json:
                   schema:
-                    type: object
+                    type: array
                     description: >
-                      'Target data for the device'
+                      'resultData for the device'
             error:
-              description: 'Device data from dataStore could not be provided'
+              description: 'resultData from DataStore could not be provided'
               content:
                 application/json:
                   schema:
                     type: string
                     enum:
-                      - 'ressourcePath not provided'
-                      - 'ressourcePath invalid'
-                      - 'ElasticSearch read error for deviceData'
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'mountName not provided'
+                      - 'mountName invalid'
+                      - 'ElasticSearch read error'
                       - 'general processing error'
 
 paths:

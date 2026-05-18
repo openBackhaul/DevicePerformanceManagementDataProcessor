@@ -546,8 +546,6 @@ activate deviceDump
       note over p1ReadDevice
         - Reads device PM
           data from DataStore
-        - Consolidates batches
-          into one structure
       end note
     deviceDump <-- p1ReadDevice
     deactivate p1ReadDevice

@@ -38,7 +38,7 @@ x-javascript-interface:
               data-store-es-client:
                 type: object
                 description: >
-                  'Data Store ElasticSearch address'
+                  'DataStore ElasticSearch address'
     output:
       success:
         description: 'PM data processed, sent and stored'
@@ -98,7 +98,7 @@ x-javascript-interface:
                   data-store-es-client:
                     type: object
                     description: >
-                      'Data Store ElasticSearch address
+                      'DataStore ElasticSearch address
                       from [/process-device/data-store-es-client]'
         output:
           success:
@@ -384,7 +384,7 @@ x-javascript-interface:
                   data-store-es-client:
                     type: object
                     description: >
-                      'Data Store ElasticSearch address
+                      'DataStore ElasticSearch address
                       from [/process-device/data-store-es-client]'
                   result-cc:
                     type: object

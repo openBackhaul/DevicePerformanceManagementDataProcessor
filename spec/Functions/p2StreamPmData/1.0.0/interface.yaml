@@ -245,7 +245,7 @@ x-javascript-interface:
                   data-store-es-client:
                     type: object
                     description: >
-                      'Data Store ElasticSearch address
+                      'DataStore ElasticSearch address
                       from [/stream-pm-data/es-address=dataStoreEsClient/address]'
         output:
           success:

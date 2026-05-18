@@ -32,7 +32,7 @@ activate p2Stream
   deactivate p1LP
 
   Loop FOR all esName
-    p2Stream -> p1REA : { {parameters}\n{configFile}\nesName }
+    p2Stream -> p1REA : { {/parameters/sub-function=p1ResolveEsAddress}\n{configFile}\nesName }
     activate p1REA
       note over p1REA
         Resolves ES address
@@ -41,7 +41,7 @@ activate p2Stream
     deactivate p1REA
   end Loop
 
-    p2Stream -> p1InitKafka : { {parameters}\n{configFile} }
+    p2Stream -> p1InitKafka : { {/parameters/sub-function=p1InitKafka}\n{configFile} }
     activate p1InitKafka
 
       note over p1InitKafka
@@ -52,7 +52,7 @@ activate p2Stream
     p2Stream <-- p1InitKafka
     deactivate p1InitKafka
 
-  p2Stream -> p1MDS : { {parameters}\n{dataStoreEsClient} }
+  p2Stream -> p1MDS : { {/parameters/sub-function=p1MaintainDs}\n{dataStoreEsClient} }
   activate p1MDS
     note over p1MDS
       Periodically deletes
@@ -61,7 +61,7 @@ activate p2Stream
 
   loop endless
 
-    p2Stream -> p1UMR : { {parameters}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
+    p2Stream -> p1UMR : { {/parameters/sub-function=p1UpdateMwdiReplica}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
     activate p1UMR
       note over p1UMR
         Replicates updated CCs
@@ -70,7 +70,7 @@ activate p2Stream
     deactivate p1UMR
 
     loop FOR all [updatedMountNames]
-      p2Stream -> p2ProcessDev : { {parameters}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
+      p2Stream -> p2ProcessDev : { {/parameters/sub-function=p2ProcessDevice}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
       activate p2ProcessDev
         note over p2ProcessDev
           Processes PM data

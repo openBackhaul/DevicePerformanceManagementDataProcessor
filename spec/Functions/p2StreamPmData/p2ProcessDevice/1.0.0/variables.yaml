@@ -30,7 +30,7 @@ process-device:
     data-store-es-client:
       type: object
       description: >
-        'Data Store ElasticSearch address
+        'DataStore ElasticSearch address
         from {$input#/data-store-es-client}'
 
     offsets:

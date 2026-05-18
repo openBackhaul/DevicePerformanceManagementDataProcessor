@@ -5,7 +5,7 @@ info:
 
 x-javascript-interface:
   p2Storing:
-    summary: 'Stores the resultCc in the dataStore and updates dataStore offset and statusData information.'
+    summary: 'Stores the resultCc in the DataStore and updates DataStore offset and statusData information.'
     input:
       required: true
       content:
@@ -98,8 +98,8 @@ x-javascript-interface:
                 type: array
                 x-key: function-name
                 description: >
-                  'Replaces the offsets array of a specific device in the dataStore
-                  if the mountName would not already exist, a new device object to be created in the dataStore
+                  'Replaces the offsets array of a specific device in the DataStore
+                  if the mountName would not already exist, a new device object to be created in the DataStore
                   from [/storing/offsets]'
         output:
           success:
@@ -116,7 +116,7 @@ x-javascript-interface:
                     - 'mountName not provided'
                     - 'offsets not provided'
                     - 'offsets invalid'
-                    - 'Writing to dataStore failed'
+                    - 'Writing to DataStore failed'
                     - 'general processing error'
       storeStatusData:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/status-data]
@@ -128,12 +128,12 @@ x-javascript-interface:
                 type: array
                 x-key: function-name
                 description: >
-                  'Replaces the statusData array of a specific device in the dataStore
-                  if the mountName would not already exist, a new device object to be created in the dataStore
+                  'Replaces the statusData array of a specific device in the DataStore
+                  if the mountName would not already exist, a new device object to be created in the DataStore
                   from [/storing/status-data]'
         output:
           success:
-            description: 'StatusData stored'
+            description: 'StatusDataStored'
           error:
             description: 'StatusData could not be stored'
             content:
@@ -146,7 +146,7 @@ x-javascript-interface:
                     - 'mountName not provided'
                     - 'statusData not provided'
                     - 'statusData invalid'
-                    - 'Writing to dataStore failed'
+                    - 'Writing to DataStore failed'
                     - 'general processing error'
       storeResultCc:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/result-data={/storing/batch-timestamp}]
@@ -157,7 +157,7 @@ x-javascript-interface:
               schema:
                 type: object
                 description: >
-                  'Creates a new entry in the resultData array of a specific device in the dataStore
+                  'Creates a new entry in the resultData array of a specific device in the DataStore
                   from [/storing/result-cc]'
         output:
           success:
@@ -172,7 +172,7 @@ x-javascript-interface:
                     - 'batchTimestamp not provided'
                     - 'batchTimestamp invalid'
                     - 'resultCc not provided'
-                    - 'Writing to dataStore failed'
+                    - 'Writing to DataStore failed'
                     - 'general processing error'
       unlockDevice:
         url:  # [{/storing/data-store-url}]
