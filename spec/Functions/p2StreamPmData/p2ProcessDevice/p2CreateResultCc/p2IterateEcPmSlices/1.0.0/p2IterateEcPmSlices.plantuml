@@ -39,7 +39,7 @@ activate iterateSlices
       Please note:
       {performance-data} and
       {historical-performance-data}
-      pass two slightly different 
+      pass two slightly different
       sub-objects of
       [historical-performance-data-list].
     end note

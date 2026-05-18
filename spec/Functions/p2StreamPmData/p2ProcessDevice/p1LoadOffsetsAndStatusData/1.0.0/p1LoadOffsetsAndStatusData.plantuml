@@ -23,7 +23,7 @@ activate cur
   end note
   cur -> datastore: { dataStoreEsClient://data-store/device=mountName/status-data }
   cur <-- datastore: { [statusData] }
-  
+
 requestor <-- cur: { [offsets],\n[statusData] }
 deactivate cur
 

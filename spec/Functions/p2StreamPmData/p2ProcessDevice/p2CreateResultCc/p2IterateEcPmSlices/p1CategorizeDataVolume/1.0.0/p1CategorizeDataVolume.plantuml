@@ -43,7 +43,7 @@ activate p1CatDataVo
 
   note over p1CatDataVo
     transfer values
-      from [/historical-performance-data/performance-data/*] 
+      from [/historical-performance-data/performance-data/*]
       to [/interface-status/15-minute-values-by-day={day}/15-minute-values-by-hour={hour}/15-minute-values[n]/*]
   end note
 

@@ -78,7 +78,7 @@ activate p2Stream
       p2Stream <-- p2ProcessDev: { {deviceQualityPmData} }
       deactivate p2ProcessDev
     end loop
-  
+
   p2Stream -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
   activate p1Trans
 

@@ -23,7 +23,7 @@ activate cur
       Loads parameters
       from configFile
     end note
-    
+
   cur <-- loadParams: { {parameters} \n{configFile} }
   deactivate loadParams
 
@@ -34,15 +34,15 @@ activate cur
     note over resolveEsAddress
       Resolves ES address
     end note
-    
+
   cur <-- resolveEsAddress: { {dataStoreEsClient} }
-  deactivate resolveEsAddress 
+  deactivate resolveEsAddress
 
   cur -> p1Read: { {dataStoreEsClient},\nmountName }
   activate p1Read
 
     note over p1Read
-      Reads PM data 
+      Reads PM data
       from DataStore
     end note
 

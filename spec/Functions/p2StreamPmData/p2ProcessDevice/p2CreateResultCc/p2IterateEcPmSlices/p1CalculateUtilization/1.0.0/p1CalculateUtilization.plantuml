@@ -15,7 +15,7 @@ activate p1CalcUtil
   note over p1CalcUtil
     IF /historical-performance-data/granularity-period == '15min'
   end note
-  
+
   note left p1CalcUtil
     ELSE
   end note

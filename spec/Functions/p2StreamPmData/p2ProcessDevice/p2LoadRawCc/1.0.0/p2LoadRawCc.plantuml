@@ -111,7 +111,7 @@ activate cur
       note over filterPm
       Discards records that are
       already processed from
-      historicalPerformanceDataList 
+      historicalPerformanceDataList
     end note
     note over filterPm
       Counts new records

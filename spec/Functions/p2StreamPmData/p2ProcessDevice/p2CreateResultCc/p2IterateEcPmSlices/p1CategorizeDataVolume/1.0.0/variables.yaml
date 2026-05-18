@@ -102,6 +102,3 @@ categorize-data-volume:
       description: >
         'hour of day to be categorized from periodEndTime of the currently processed 15-min period
         parsing the hour from [/historical-performance-data/period-end-time]'
-
-
-    

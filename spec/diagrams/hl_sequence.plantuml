@@ -468,7 +468,7 @@ activate p2StreamPm
 
             p1OutputOnf <-- p1FieldsFilter
             deactivate p1FieldsFilter
-          
+
           end loop
 
         p2ProcessPm <-- p1OutputOnf : [onfOutputFormat]

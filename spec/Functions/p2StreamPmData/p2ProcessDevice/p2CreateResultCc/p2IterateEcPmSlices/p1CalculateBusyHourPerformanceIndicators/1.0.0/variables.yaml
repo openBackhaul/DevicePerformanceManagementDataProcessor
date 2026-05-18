@@ -41,7 +41,7 @@ calculate-busy-hour-performance-indicators:
           minItems: 1
           maxItems: 2
           description: >
-            'instance to be initialized, if not already existing for [/categorize-data-volume/day] 
+            'instance to be initialized, if not already existing for [/categorize-data-volume/day]
             eldest entry to be deleted first'
           items:
             type: object

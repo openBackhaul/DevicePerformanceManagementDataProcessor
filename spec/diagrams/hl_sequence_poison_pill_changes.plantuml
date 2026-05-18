@@ -20,7 +20,7 @@ participant "p1FieldsFilter\n" as p1FieldsFilter
 participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
 
 participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
-participant "p1Prepare\nTxModes" as p1prepTxModes 
+participant "p1Prepare\nTxModes" as p1prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
 participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
 participant "p1Calculate\nIntervalCapacity" as intCC
@@ -63,7 +63,7 @@ note over p2AddRaw
   - Complement own input interface by:
     - offsets
   - Remove from own input interface:
-    - dataStoreEsClient (mostRecentPeriodEndTimes 
+    - dataStoreEsClient (mostRecentPeriodEndTimes
       have been loaded in p1LoadOffsetsAndStatusData)
   - Remove loading mostRecentPeriodEndTimes from DataStore
   - Complement interface to p2DiscardIrrelevantPmRecords by:
