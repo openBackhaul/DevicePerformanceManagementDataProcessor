@@ -188,6 +188,8 @@ load-raw-cc:
           x-key: uuid
           items:
             type: object
+            # TODO: das defined by statement finde ich etwas unglücklich... muss man das hier überhaupt angeben?
+            # im variables von calcualteInterfacePmQualityData wird ja angegeben, woher das kommt.
             description: >
               'Information about the quality of the provided PM data for an individual interface
               defined by {$p1CalculateInterfacePmDataQuality.interface.processing.composeInterfacePmDataQuality.output#/interface-pm-data-quality}
@@ -219,7 +221,7 @@ load-raw-cc:
         'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface
         from {$p2DiscardIrrelevantPmRecords.output#/new-most-recent-period-end-time-24}'
     amount-received:
-      type: object
+      type: array
       description: >
         'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
         from {$p2DiscardIrrelevantPmRecords.output#/amount-received}'

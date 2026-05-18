@@ -118,6 +118,8 @@ x-javascript-interface:
                             description: >
                               'date
                               from { {$input#/former-most-recent-period-end-time} to {$input#/new-most-recent-period-end-time} }'
+                          # TODO: die monitoring-period-length braucht man doch eigentlich nicht als eigenes Attribut. Die wird außer bei number nirgends mehr benutzt.
+                          # d.h. man könnte die Info doch stattdessen in der description von number unterbringen.
                           monitoring-period-length:
                             type: integer
                             description: >
