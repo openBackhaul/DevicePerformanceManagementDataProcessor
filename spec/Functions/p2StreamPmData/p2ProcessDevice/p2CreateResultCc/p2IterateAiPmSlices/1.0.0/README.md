@@ -6,29 +6,24 @@ Iterates through all AirInterface historical performance data slices and calls t
 The key attributes for iterating through the PM slices are periodEndTime and granularity.  
 It must be ensured that the function first iterates through all 15min PM slices, before potentially contained 24h PM slices are processed.  
 
-### Diagram
+## Diagram
 
 <p align="center">
   <img src="p2IterateAiPmSlices.png" alt="p2IterateAiPmSlices" width="400"/>
 </p>
 
+## Interface
 
-### Interface
+Please find a detailed description of the [interface](interface.yaml).  
 
-Please find a detailed description of the [interface](interface.yaml).
+## Variables
 
+Please find a detailed description of the [variables](variables.yaml).  
 
-### Variables
-
-Please find a detailed description of the [variables](variables.yaml).
-
-
-### Parameters
+## Parameters
 
 Just passing through parameters to sub-functions.  
 
-
-### NPM Module  
+## NPM Module
 
 [mw-sdn-p1-iterate-ai-pm-slices](https://www.npmjs.com/package/mw-sdn-p1-iterate-ai-pm-slices)  
-

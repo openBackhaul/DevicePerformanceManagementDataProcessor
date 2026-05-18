@@ -3,64 +3,59 @@
 The p2StreamPmData function performs an incremental replication of the MWDI ElasticSearch index into the MWDI ES Replica.  
 A new value of the lastCompleteControlConstructUpdateTimeAttempt attribute at a ControlConstruct in the MWDI ES index triggers the same ControlConstruct being replicated into the MWDI ES Replica.  
 
-
-### Overview  
+## Overview
 
 After getting called, the p1UpdateMwdiReplica ...  
 
-  - Determines the replication time period  
-    - periodStartTime = lastReplicaTime - overlapMs  
-      (The overlap ensures that no updates at the period boundary are missed)  
-    - periodEndTime = current time  
+- Determines the replication time period
+  - periodStartTime = lastReplicaTime - overlapMs
+    (The overlap ensures that no updates at the period boundary are missed)
+  - periodEndTime = current time
 
-  - Copies all ControlConstructs that changed during this period  
-    - Uses the ElasticSearch _reindex API with a range filter on  
-      periodStartTime < lastCompleteControlConstructUpdateTimeAttempt <= periodEndTime  
-    - Source index: sourceIndex  
-    - Destination index: destinationIndex  
-    - Existing documents in the Replica are overwritten with the latest version  
+- Copies all ControlConstructs that changed during this period
+  - Uses the ElasticSearch _reindex API with a range filter on
+    periodStartTime < lastCompleteControlConstructUpdateTimeAttempt <= periodEndTime
+  - Source index: sourceIndex
+  - Destination index: destinationIndex
+  - Existing documents in the Replica are overwritten with the latest version
 
-  - Updates the replication log in the LoggingEs with  
-    - periodStartTime
-    - periodEndTime
-    - number of replicated ControlConstructs
-    - status message
+- Updates the replication log in the LoggingEs with
+  - periodStartTime
+  - periodEndTime
+  - number of replicated ControlConstructs
+  - status message
 
-  - returns the list of MountNames of the updated ControlConstructs to the caller
+- returns the list of MountNames of the updated ControlConstructs to the caller
 
-
-### Diagram  
+## Diagram
 
 <p align="center">
   <img src="./p1UpdateMwdiReplica.png" alt="p1UpdateMwdiReplica diagram" width="200" />
 </p>
 
-
-### Variables  
+## Variables
 
 Detailed description of the [internal variables](./variables.yaml).  
 
-
-### Interface  
+## Interface
 
 Detailed description of the [interface](./interface.yaml).  
 
+## Parameters
 
-### Parameters
-
-| Parameter Name               | Description                                                                        |
-|------------------------------|------------------------------------------------------------------------------------|
-| jobName                      | Name of the replication job                                                        |
-| syncPeriod                   | Duration between two replications of the MWDI ES in seconds                        |
-| lastUpdatedField             |                                                                                    |
-| overlapMs                    | Overlap in milliseconds to avoid missing updates at period boundaries              |
+| Parameter Name               | Description                                                                                        |
+|------------------------------|----------------------------------------------------------------------------------------------------|
+| jobName                      | Name of the replication job                                                                        |
+| syncPeriod                   | Duration between two replications of the MWDI ES in seconds                                        |
+| lastUpdatedField             |                                                                                                    |
+| overlapMs                    | Overlap in milliseconds to avoid missing updates at period boundaries                              |
 | reqPerSec                    | NThrottles re-indexing to number of copy operations per second, preventing high load on the server |
-| scrollSize                   | Number of documents returned per page when Elasticsearch performs a scroll search  |
-| scrollTtl                    | How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window |
+| scrollSize                   | Number of documents returned per page when Elasticsearch performs a scroll search                  |
+| scrollTtl                    | How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window          |
 
+## Sample code
 
-### Sample code:
-```
+```javascript
 es.reindex({
   refresh: false,
   wait_for_completion: true,
@@ -86,8 +81,6 @@ es.reindex({
 });
 ```
 
-
-### NPM Module
+## NPM Module
 
 [mw-sdn-p1-update-mwdi-replica](https://www.npmjs.com/package/mw-sdn-p1-update-mwdi-replica)  
-

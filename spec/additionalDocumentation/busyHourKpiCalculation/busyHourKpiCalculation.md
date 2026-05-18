@@ -3,14 +3,15 @@
 This document relates to the design applied for the DPMDP v1.1.  
 There is no process established for updating it in case of later releases.  
 
-### Problem
+## Problem
 
 The basic structure of the DPMDP has been designed to optimize the speed of processing newly available PM data.  
 
 This means:  
+
 - The processing inside the DPMDP is triggered by the availability of an updated ControlConstruct in the MWDI.
 - The first step in the processing is to exclude old data from further processing.
-  
+
 The DPMDP thinks and works in batches of 15 minutes PM data (24 hours PM data provided by the device is not relevant for busy hour KPIs).  
 On the other hand, for calculating the busy hour KPIs, data relating to hours must be processed in the context of data relating to days.  
 15 minutes PM data slices must be aggregated to hours.  
@@ -19,7 +20,7 @@ Multiple batches are needed to get the full data of a day.
 
 This requires storing status information and spill-over data between the processing of different batches.  
 
-### Busy Hour Definition
+## Busy Hour Definition
 
 Die busy hour bezieht sich auf einen individuellen EthernetContainer (logisches Ethernet Interface).  
 Es gibt genau eine busy hour pro Kalendertag.  
@@ -38,7 +39,7 @@ Die Maßeinheit des Messwertes lautet: Byte
 Es handelt sich damit um eine reine Mengenangabe, keine Flussgröße.  
 Sollten weniger als die vier erwarteten Messwerte vorliegen, werden nur die vorhandenen Messwerte addiert.  
 
-### Busy Hour Performance Indicators
+## Busy Hour Performance Indicators
 
 Die Busy Hour Performance Indikatoren werden zusammen mit den anderen Performance Indikatoren des selben Kalendertages prozessiert und im resultCc gespeichert.  
 Es wird unterstellt, dass die Geräte so programmiert sind, dass die 24-Stunden-Messperioden jeweils mit dem Kalendertag beginnen.  
@@ -48,6 +49,7 @@ Der Name und der Ort des kombinierte Datentyps lautet:
 Er erscheint ausschließlich in Instanzen von historical-performance-data-list mit einer granularity-period von 24 Stunden.  
 
 Der kombinierte Datentyp enthält folgende Attribute:  
+
 - period-end-time-list  
 - label  
 - throughput  
@@ -57,15 +59,18 @@ Der kombinierte Datentyp enthält folgende Attribute:
 - dropped-frames  
 - suspicious-result-flag  
 
-#### busy-hour::period-end-time-list
+### busy-hour::period-end-time-list
+
 Liste der Werte des period-end-time Attributes der bis zu vier Messperioden, die zusammen die busy hour bilden.  
 Mit diesen Werten können die Messperioden für weitere Analysen adressiert werden.  
 
-#### busy-hour::label
+### busy-hour::label
+
 Die volle Stunde zu Beginn der busy hour wird in folgendem Format dargestellt: YYYY/MM/DD/hh/mm.  
 Mit diesen Werten wird die busy hour in anderen Tools und Datenvorräten bezeichnet.  
 
-#### busy-hour::throughput
+### busy-hour::throughput
+
 Der busy hour throughput ist die Datenmenge, die während der busy hour hypothetisch im Mittel in einer (=1) der 3600 Sekunden gesendet wurde.  
 Es handelt sich also um eine Flussgröße keine reine Menge.  
 Die Einheit des busy hour throughput ist bit/s.  
@@ -73,7 +78,8 @@ D.h. die in Bytes ausgedrückte Datenmenge in der busy hour ist in bits umzurech
 Die Mittelwertbildung über 3600 Sekunden wirkt stark glättend.  
 Dass die aufsummierte Länge der Messperioden von 3600 Sekunden abweichen könnte, wird ignoriert.  
 
-#### busy-hour::capacity
+### busy-hour::capacity
+
 Die in der busy hour verfügbare capacity, ist die dem EthernetContainer während der busy hour im Mittel bereitgestellte Übertragungskapazität.  
 Hierfür werden die total-air-interface-interval-capacity Werte, die in den bis zu vier Messperioden, die in die busy hour fallen, dokumentiert wurden, addiert.  
 Die semantische Definition des total-air-interface-interval-capacity Attributes lautet: "Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps."  
@@ -83,26 +89,28 @@ Sie Summe der total-air-interface-interval-capacity Werte wird statisch durch vi
 Die Einheit der busy-hour::capacity Werte ist bit/s.  
 Dass weniger als vier Werte zu Verfügung stehen könnten, wird ignoriert.  
 
-#### busy-hour::utilization
+### busy-hour::utilization
+
 Die busy-hour::utilization berechnet sich als Quotient aus busy-hour::throughput und busy-hour::capacity und wird mit 100 multipliziert.  
 Die Einheit der busy-hour::utilization Werte ist %.  
 Es wird angenommen, dass im Falle von unvollständigen Messwerten nicht einzelne Performancewerte innerhalb einer Messperiode, sondern alle Daten einer Messperiode fehlen.  
 D.h. obwohl das Fehlen von Messwerten sowohl bei der Berechnung des throughput als auch bei der Berechnung der capacity ignoriert wird, könnte sich dennoch ein halbwegs repräsentativer busy-hour::utilization Wert ergeben.  
 
-#### busy-hour::errored-frames
+### busy-hour::errored-frames
+
 Die bis zu vier errored-frames-input [frame] Werte, die in den Messperioden, die in die busy hour fallen, dokumentiert wurden, werden addiert.  
 Die offizielle semantische Definition des errored-frames-input Attributes lautet: "Total number of errored frames received at this interface."  
 Die errored-frames sind eine reine Mengenangabe und die Einheit ist frame.  
 Dass weniger als vier Werte zu Verfügung stehen könnten, wird ignoriert.  
 
-#### busy-hour::dropped-frames
+### busy-hour::dropped-frames
+
 Die bis zu vier dropped-frames-input [frame] Werte, die in den Messperioden, die in die busy hour fallen, dokumentiert wurden, werden addiert.  
 Die offizielle semantische Definition des dropped-frames-input Attributes lautet: "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)."  
 Die dropped-frames sind eine reine Mengenangabe und die Einheit ist frame.  
 Dass weniger als vier Werte zu Verfügung stehen könnten, wird ignoriert.  
 
-
-# Module
+## Module
 
 Das Problem zerfällt in folgende Segmente:  
 
@@ -127,16 +135,15 @@ Das Problem zerfällt in folgende Segmente:
 - Speichern der Statusdaten => p2Storing  
   Statusdaten (total-bytes-output values of already processed 15-minute periods) werden am Ende der Verarbeitung eines Batches in den DataStore geschrieben.  
 
-- Weiterreichen der Statusdaten
-  Mehrere Module (e.g., p2ProcessDevice, p2CreateResultCc, p2IterateEcPmSlices) müssen die Statusdaten zwischen Lesen, Verarbeiten und Speichern weiterreichen.
+- Weiterreichen der Statusdaten  
+  Mehrere Module (e.g., p2ProcessDevice, p2CreateResultCc, p2IterateEcPmSlices) müssen die Statusdaten zwischen Lesen, Verarbeiten und Speichern weiterreichen.  
 
-- Rückbau von Löschen von Granularitäten
+- Rückbau von Löschen von Granularitäten  
   DPMDP v1.0 bot die Möglichkeit die 15-Minuten-Messwerte oder die 24-Stunden-Messwerte von der Bearbeitung auszuschließen.  
   Nun werden die 15-Minuten-Messwerte für die Berechnung der busy hour KPIs benötigt,  
   und die 24-Stunden-Messwerte werden für das Speichern der busy hour KPIs benötigt.  
-  Die Möglichkeit zum Löschen von Granularitäten wurde zurückgebaut.
+  Die Möglichkeit zum Löschen von Granularitäten wurde zurückgebaut.  
 
 <p align="center">
   <img src="./diagrams/bh_calculation.png" alt="Module der Busy Hour KPI Calculation" width="400"/>
 </p>
-
