@@ -1,0 +1,96 @@
+@startuml onDemandUpdate
+skinparam responseMessageBelowArrow true
+
+title
+  On demand update of the PM data
+end title
+
+participant "requestor\n" as tool
+participant "initiatePmDataUpdate\n" as initUpdate #Cyan
+participant "p2StreamPmData\n" as p2StreamPm
+participant "MWDI://live/cc\n" as mwdi
+database "Device" as device
+database "MWDI ES" as cache
+participant "p2ProcessDevice\n" as p2ProcessPm
+
+activate p2StreamPm
+
+tool -[#Cyan]> initUpdate : { [mountNames],\ntimeOutPeriod,\nurlAsynchronousResponse }
+activate initUpdate #Cyan
+
+  loop FOR all [mountNames] - (partly parallel executed)
+
+    initUpdate -> mwdi : { mountName }
+    activate mwdi
+
+      mwdi -> device : { mountName }
+      activate device
+
+          note left device
+            takes 8min
+            in average
+          end note
+      
+      mwdi <-- device : { {controlConstruct} }
+      deactivate device
+
+      mwdi -> cache : { {controlConstruct} }
+
+      note over mwdi
+        updates latestUpdateDate
+        of device in metadata
+      end note
+
+    initUpdate <-- mwdi : { {controlConstruct} }
+    deactivate mwdi
+
+    note over initUpdate
+      drops {controlConstruct}
+    end note
+
+  end loop
+
+  loop endless
+
+    note over p2StreamPm
+      - replicates MWDI ES into DPMDP replica
+      - reads latestUpdateDate from metadata 
+    end note
+
+    loop for every updated CC
+
+      p2StreamPm -> p2ProcessPm
+      activate p2ProcessPm
+
+        note over p2ProcessPm
+          - processes PM data
+          - transmits PM data
+        end note
+
+      p2StreamPm <-- p2ProcessPm
+      deactivate p2ProcessPm
+
+    end loop
+
+    note over p2StreamPm
+      transmits quality data
+    end note
+
+  initUpdate <[#Orange]- p2StreamPm
+  end loop
+  note over initUpdate #Orange
+    Communication of the processed mountNames is unclear
+    Particularly, there is no trigger for sending any info from p2StreamPm to an existing instance of initUpdate
+    Maybe making quality data available for internal use
+  end note
+  initUpdate <[#Orange]- p2StreamPm
+
+note over initUpdate
+  IF PM data of all [mountNames] could be transmitted
+  ELSE IF timeOutPeriod ended
+end note
+
+tool <-[#Cyan]- initUpdate : { [updatedMountNames],\n[unsuccessfulMountNames] }
+deactivate initUpdate
+
+@enduml
