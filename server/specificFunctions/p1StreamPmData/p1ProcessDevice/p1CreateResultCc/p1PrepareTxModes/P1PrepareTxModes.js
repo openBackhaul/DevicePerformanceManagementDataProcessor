@@ -11,10 +11,11 @@ const p1PrepareTxModes = (input) => {
     const histList = input['historical-performance-data-list'];
     const txModeList = input['transmission-mode-list'];
 
-    if ((!histList && !txModeList) || (histList== undefined && txModeList == undefined)) {
+    if ((!histList && !txModeList) || (histList == undefined && txModeList == undefined)) {
       return ERRORS.GENERAL_ERROR;
     }
 
+    // Checking Historical Performance
     if (histList === undefined) {
       return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
     }
@@ -22,12 +23,14 @@ const p1PrepareTxModes = (input) => {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
 
+    // Checking TX Mode list
     if (txModeList === undefined) {
       return ERRORS.TX_MODE_LIST_NOT_PROVIDED;
     }
     if (!Array.isArray(txModeList)) {
       return ERRORS.TX_MODE_LIST_INVALID;
     }
+
     for (const entry of histList) {
       if (
         !entry['performance-data'] ||
@@ -69,6 +72,7 @@ const p1PrepareTxModes = (input) => {
         }
       };
     });
+
     const hasValidData = cleanedHistList.some(entry =>
       entry['performance-data']['time-xstates-list'].length > 0
     );
@@ -107,18 +111,6 @@ const p1PrepareTxModes = (input) => {
         capacity: capacityResult['air-interface-capacity']
       });
     }
-
-    // console.log(
-    //   '[RESULT] p1PrepareTxModes output:',
-    //   JSON.stringify(
-    //     {
-    //       'historical-performance-data-list': cleanedHistList,
-    //       'transmission-mode-list': enrichedTxModes
-    //     },
-    //     null,
-    //     2
-    //   )
-    // );
 
     return {
       'historical-performance-data-list': cleanedHistList,
