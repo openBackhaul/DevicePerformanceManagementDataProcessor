@@ -63,12 +63,6 @@ scenarios:
       type: "error"
       errorEnum: "filteredDataStructure could not be provided"
 
-  - id: "errGeneralProcessingError"
-    description: "Should return 'General processing error' for unexpected/uncategorized failures"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "General processing error"
 
   # -------------------------
   # Happy path

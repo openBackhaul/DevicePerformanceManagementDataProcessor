@@ -1823,9 +1823,11 @@
               "air-interface-current-performance": {
                 "current-performance-data-list": [
                   {
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                     "timestamp": "2026-05-11T18:30:08.0+00:00"
                   },
                   {
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
                     "timestamp": "2026-05-11T18:30:08.0+00:00"
                   }
                 ]
@@ -44704,9 +44706,11 @@
               "air-interface-current-performance": {
                 "current-performance-data-list": [
                   {
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                     "timestamp": "2026-05-11T18:29:58.0+00:00"
                   },
                   {
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
                     "timestamp": "2026-05-11T18:29:58.0+00:00"
                   }
                 ]
