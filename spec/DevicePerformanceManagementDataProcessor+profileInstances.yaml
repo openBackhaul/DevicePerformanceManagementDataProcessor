@@ -1153,7 +1153,7 @@ profile-instances:
       string-name: 'netexplorer-output-format'
       purpose: 'fieldsFilter'
     configuration:
-      string-value: 'to_be_defined'
+      string-value: 'equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-1-0-string-p-553'
