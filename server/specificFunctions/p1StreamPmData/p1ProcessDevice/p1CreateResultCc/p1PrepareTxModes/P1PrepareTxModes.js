@@ -1,16 +1,19 @@
 const ERRORS = require('./ErrorsEnum');
-const p1CalculateAiCapacity =
-  require('../../../../../../genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity');
+const p1CalculateAiCapacity = require('../../../../../genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity');
 
 const p1PrepareTxModes = (input) => {
   try {
 
     if (!input) {
-      return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
+      return ERRORS.GENERAL_ERROR;
     }
 
     const histList = input['historical-performance-data-list'];
     const txModeList = input['transmission-mode-list'];
+
+    if ((!histList && !txModeList) || (histList== undefined && txModeList == undefined)) {
+      return ERRORS.GENERAL_ERROR;
+    }
 
     if (histList === undefined) {
       return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
@@ -93,6 +96,7 @@ const p1PrepareTxModes = (input) => {
           mode['modulation-scheme'],
         'code-rate': mode['code-rate']
       });
+
 
       if (typeof capacityResult === 'string') {
         return ERRORS.TX_MODE_LIST_COULD_NOT_BE_PROVIDED;
