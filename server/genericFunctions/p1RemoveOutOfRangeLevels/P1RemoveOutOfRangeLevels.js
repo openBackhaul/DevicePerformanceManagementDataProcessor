@@ -1,4 +1,3 @@
-
 const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct = {};
@@ -41,6 +40,11 @@ function camelCaseToKebabCase(camelCaseString) {
     .toLowerCase();
 }
 
+// DAMN JavaScript
+function isThisNaN(value) {
+  return value !== value
+};
+
 function checkOutOfRange(value, isTX) {
 
   let min = isTX ? parameterStruct[LOWER_TX_LIMIT] : parameterStruct[LOWER_RX_LIMIT];
@@ -65,6 +69,13 @@ function validateParameters(paramArray) {
     }
 
     if (typeof paramElem["value"] != "string") {
+      res = false;
+    }
+
+    let paramValue = parseInt(paramElem["value"]);
+
+    // Check if is Number or also NaN
+    if (typeof paramValue != "number" || isThisNaN(paramValue)) {
       res = false;
     }
 
