@@ -1,14 +1,3 @@
-/**
- * Runner:
- * - reads scenarios.yaml
- * - for each scenario:
- *   - loads input/output fixtures
- *   - installs dependency mocks (jest.doMock) BEFORE requiring FUT
- *   - installs mocks for each processing step (jest.doMock) based on scenario config
- *   - requires the function under test AFTER mocks
- *   - executes and asserts
- */
-
 const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
@@ -21,53 +10,9 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
-function installDependencyMocks(deps = []) {
-  for (const dep of deps) {
-    if (!dep?.name) continue;
-
-    if (dep.name === "@confluentinc/kafka-javascript") {
-      // Stub just enough for the require() chain to succeed
-      jest.doMock(
-        "@confluentinc/kafka-javascript",
-        () => ({
-          KafkaJS: {
-            Kafka: function Kafka() {
-              return {
-                producer: () => ({
-                  connect: async () => {},
-                  disconnect: async () => {},
-                  send: async () => {},
-                }),
-              };
-            },
-          },
-        }),
-        { virtual: true }
-      );
-      continue;
-    }
-
-    if (dep.name === "pino") {
-      jest.doMock("pino", () => {
-        return () => ({
-          info: jest.fn(),
-          error: jest.fn(),
-          warn: jest.fn(),
-          debug: jest.fn(),
-          trace: jest.fn(),
-        });
-      });
-      continue;
-    }
-
-    throw new Error(`No dependency mock registered for '${dep.name}'`);
-  }
-}
-
 function loadFunctionUnderTest(absModulePath, exportName) {
   const mod = require(absModulePath);
 
-  // "" or undefined => CommonJS default export (module.exports = fn)
   if (!exportName) {
     if (typeof mod !== "function") {
       throw new Error(`Expected default export to be a function in '${absModulePath}'`);
@@ -82,6 +27,27 @@ function loadFunctionUnderTest(absModulePath, exportName) {
   return fn;
 }
 
+function getSequenceItem(sequence, index, stepId, kind, repeatLast = true) {
+  if (!Array.isArray(sequence) || sequence.length === 0) {
+    throw new Error(
+      `Mock for step '${stepId}' declared ${kind}Sequence but it is empty or invalid`
+    );
+  }
+
+  if (index < sequence.length) {
+    return sequence[index];
+  }
+
+  if (repeatLast) {
+    return sequence[sequence.length - 1];
+  }
+
+  throw new Error(
+    `Mock for step '${stepId}' was called more times than configured in ${kind}Sequence ` +
+      `(call #${index + 1}, configured ${sequence.length})`
+  );
+}
+
 function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   const mockByStepId = new Map((scenarioMocks || []).map((m) => [m.stepId, m]));
 
@@ -89,28 +55,75 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
     const m = mockByStepId.get(step.stepId);
 
     if (!m) {
-      throw new Error(`Missing mock for step '${step.stepId}'`);
+      continue;
     }
 
     const isAsync = step.isAsync === true;
 
     jest.doMock(step.modulePath, () => {
+      let callIndex = 0;
+
       const fn = jest.fn(() => {
+        const currentCallIndex = callIndex;
+        console.log(`[Mock] ${step.stepId} called #${currentCallIndex+1}`);
+        callIndex += 1;
+
+        const repeatLast = m.repeatLast !== false;
+
         if (m.type === "return") {
-          const val = readJson(path.join(scenarioDir, m.fixture));
+          let val;
+
+          if (m.fixtureSequence !== undefined) {
+            const fixtureName = getSequenceItem(
+              m.fixtureSequence,
+              currentCallIndex,
+              step.stepId,
+              "fixture",
+              repeatLast
+            );
+            val = readJson(path.join(scenarioDir, fixtureName));
+          } else if (m.fixture) {
+            val = readJson(path.join(scenarioDir, m.fixture));
+          } else {
+            throw new Error(
+              `Mock for step '${step.stepId}' with type 'return' requires 'fixture' or 'fixtureSequence'`
+            );
+          }
+
           return isAsync ? Promise.resolve(val) : val;
         }
 
         if (m.type === "throw") {
-          if (isAsync) return Promise.reject(m.error);
-          throw m.error;
+          let errVal;
+
+          if (m.errorSequence !== undefined) {
+            errVal = getSequenceItem(
+              m.errorSequence,
+              currentCallIndex,
+              step.stepId,
+              "error",
+              repeatLast
+            );
+          } else if (m.error !== undefined) {
+            errVal = m.error;
+          } else {
+            throw new Error(
+              `Mock for step '${step.stepId}' with type 'throw' requires 'error' or 'errorSequence'`
+            );
+          }
+
+          if (isAsync) {
+            return Promise.reject(errVal);
+          }
+          throw errVal;
         }
 
         throw new Error(`Unknown mock type '${m.type}' for step '${step.stepId}'`);
       });
 
-      // If exportName is empty, assume module.exports = fn
-      if (!step.exportName) return fn;
+      if (!step.exportName) {
+        return fn;
+      }
 
       return { [step.exportName]: fn };
     });
@@ -128,7 +141,6 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
 
   const fut = spec?.module?.functionUnderTest;
   const processingSteps = spec.processingSteps || [];
-  const dependencies = spec.dependencies || [];
   const scenarios = spec.scenarios || [];
 
   if (!fut?.modulePath) {
@@ -140,31 +152,27 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
       jest.resetModules();
       jest.clearAllMocks();
 
-      // MUST mock dependencies before requiring FUT or any of its transitive imports
-      installDependencyMocks(dependencies);
-
       const scenarioDir = path.join(baseDir, "fixture", s.id);
 
-      // 1) Load input
       const input = readJson(path.join(scenarioDir, s.inputFixture || "input.json"));
 
-      // 2) Install processing-step mocks (dynamic per scenario)
       installMocks({
         scenarioDir,
         processingSteps,
         scenarioMocks: s.mocks || [],
       });
 
-      // 3) Execute function under test (require AFTER mocks)
       const futAbsPath = path.resolve(baseDir, fut.modulePath);
       const fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
 
-      // 4) Assert
       if (s.expected?.type === "success") {
         const expectedOutput = readJson(
           path.join(scenarioDir, s.expected.outputFixture || "output.json")
         );
         const actual = await fn(input);
+      const actualOutputPath = path.join(scenarioDir, "actual_output.json");
+      fs.writeFileSync(actualOutputPath, JSON.stringify(actual, null, 2), "utf8");
+
         expect(actual).toEqual(expectedOutput);
         return;
       }
