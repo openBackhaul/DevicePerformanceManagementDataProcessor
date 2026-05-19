@@ -48,7 +48,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
   test('should return error if input is missing', () => {
     expect(p1DiscardIrrelevantPmRecords(null))
-      .toBe(ERRORS.HISTPERF_NOT_PROVIDED);
+      .toBe(ERRORS.GENERAL_ERROR);
   });
 
   test('should filter records correctly (full scenario)', () => {
@@ -195,7 +195,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
     const result = p1DiscardIrrelevantPmRecords(input);
 
-    expect(result).toBe(ERRORS.HISTPERF_NOT_PROVIDED);
+    expect(result).toBe(ERRORS.HISTPERF_INVALID);
   });
 
   test('should return error when input is not an array (number)', () => {
@@ -205,7 +205,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
     const result = p1DiscardIrrelevantPmRecords(input);
 
-    expect(result).toBe(ERRORS.HISTPERF_NOT_PROVIDED);
+    expect(result).toBe(ERRORS.HISTPERF_INVALID);
   });
 
   test('should return error when input is not an array (object)', () => {
@@ -215,7 +215,7 @@ describe('p1DiscardIrrelevantPmRecords', () => {
 
     const result = p1DiscardIrrelevantPmRecords(input);
 
-    expect(result).toBe(ERRORS.HISTPERF_NOT_PROVIDED);
+    expect(result).toBe(ERRORS.HISTPERF_INVALID);
   });
 
   test('should return empty array when all records are filtered by granularity', () => {
