@@ -1,6 +1,6 @@
 const ERRORS = require('./ErrorsEnum');
 const p1CalculateAiCapacity =
-  require('../../../../../../../genericFunctions/p1CalculateAiCapacity/1.0.0/P1CalculateAiCapacity');
+  require('../../../../../../genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity');
 
 const p1PrepareTxModes = (input) => {
   try {
@@ -25,18 +25,29 @@ const p1PrepareTxModes = (input) => {
     if (!Array.isArray(txModeList)) {
       return ERRORS.TX_MODE_LIST_INVALID;
     }
+    for (const entry of histList) {
+      if (
+        !entry['performance-data'] ||
+        !Array.isArray(entry['performance-data']['time-xstates-list'])
+      ) {
+        return ERRORS.HIST_PERF_DATA_INCOMPLETE;
+      }
+    }
+    for (const mode of txModeList) {
+      if (
+        mode['channel-bandwidth'] === undefined ||
+        mode['symbol-rate-reduction-factor'] === undefined ||
+        mode['modulation-scheme'] === undefined ||
+        mode['code-rate'] === undefined
+      ) {
+        return ERRORS.TX_MODE_LIST_INCOMPLETE;
+      }
+    }
 
     const usedTxModes = new Set();
 
     const cleanedHistList = histList.map(histEntry => {
       const perfData = histEntry['performance-data'];
-
-      if (
-        !perfData ||
-        !Array.isArray(perfData['time-xstates-list'])
-      ) {
-        return histEntry;
-      }
 
       const cleanedXstates =
         perfData['time-xstates-list'].filter(xstate => {
@@ -55,6 +66,13 @@ const p1PrepareTxModes = (input) => {
         }
       };
     });
+    const hasValidData = cleanedHistList.some(entry =>
+      entry['performance-data']['time-xstates-list'].length > 0
+    );
+
+    if (!hasValidData) {
+      return ERRORS.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED;
+    }
 
     const filteredTxModes = txModeList.filter(mode =>
       usedTxModes.has(mode['transmission-mode-name'])
@@ -64,7 +82,9 @@ const p1PrepareTxModes = (input) => {
       return ERRORS.TX_MODE_LIST_COULD_NOT_BE_PROVIDED;
     }
 
-    const enrichedTxModes = filteredTxModes.map(mode => {
+    const enrichedTxModes = [];
+
+    for (const mode of filteredTxModes) {
       const capacityResult = p1CalculateAiCapacity({
         'channel-bandwidth': mode['channel-bandwidth'],
         'symbol-rate-reduction-factor':
@@ -74,28 +94,27 @@ const p1PrepareTxModes = (input) => {
         'code-rate': mode['code-rate']
       });
 
-    
       if (typeof capacityResult === 'string') {
         return ERRORS.TX_MODE_LIST_COULD_NOT_BE_PROVIDED;
       }
 
-      return {
+      enrichedTxModes.push({
         ...mode,
         capacity: capacityResult['air-interface-capacity']
-      };
-    });
+      });
+    }
 
-    console.log(
-  '[RESULT] p1PrepareTxModes output:',
-  JSON.stringify(
-    {
-      'historical-performance-data-list': cleanedHistList,
-      'transmission-mode-list': enrichedTxModes
-    },
-    null,
-    2
-  )
-);
+    // console.log(
+    //   '[RESULT] p1PrepareTxModes output:',
+    //   JSON.stringify(
+    //     {
+    //       'historical-performance-data-list': cleanedHistList,
+    //       'transmission-mode-list': enrichedTxModes
+    //     },
+    //     null,
+    //     2
+    //   )
+    // );
 
     return {
       'historical-performance-data-list': cleanedHistList,

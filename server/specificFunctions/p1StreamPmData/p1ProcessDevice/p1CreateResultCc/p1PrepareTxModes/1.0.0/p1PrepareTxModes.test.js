@@ -103,4 +103,56 @@ describe('p1PrepareTxModes', () => {
       'transmission-mode-list'
     ]);
   });
+  /* ------------------------------------------------------------------
+ * Missing error handling tests (TODO coverage)
+ * ------------------------------------------------------------------ */
+
+test('returns error when historical-performance-data is incomplete', () => {
+  const invalidHistList = [
+    {
+      // missing performance-data
+    }
+  ];
+
+  const result = p1PrepareTxModes({
+    'historical-performance-data-list': invalidHistList,
+    'transmission-mode-list': validTransmissionModeList
+  });
+
+  expect(result).toBe(ERRORS.HIST_PERF_DATA_INCOMPLETE);
+});
+
+test('returns error when tx mode list is incomplete', () => {
+  const incompleteTxModes = [
+    {
+      'transmission-mode-name': 'MODE-A'
+      // missing required fields like bandwidth, modulation, code-rate
+    }
+  ];
+
+  const result = p1PrepareTxModes({
+    'historical-performance-data-list': validHistoricalPerformanceDataList,
+    'transmission-mode-list': incompleteTxModes
+  });
+
+  expect(result).toBe(ERRORS.TX_MODE_LIST_INCOMPLETE);
+});
+
+test('returns error when historical-performance-data cannot be used', () => {
+  const invalidHistList = [
+    {
+      'performance-data': {
+        'time-xstates-list': [] // nothing usable
+      }
+    }
+  ];
+
+  const result = p1PrepareTxModes({
+    'historical-performance-data-list': invalidHistList,
+    'transmission-mode-list': validTransmissionModeList
+  });
+
+  expect(result).toBe(ERRORS.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED);
+});
+
 });
