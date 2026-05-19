@@ -31,7 +31,9 @@
     "retryIntervalMs": 7200000,
     "maxRetryCount": 1,
     "retryReadCount": 500,
-    "retryMaxRequeuePerCycle": 20000
+    "retryMaxRequeuePerCycle": 20000,
+    "retryWorkerCount": 1,
+    "retryRunImmediately": true
   },
   "monitoring": {
     "enabled": true

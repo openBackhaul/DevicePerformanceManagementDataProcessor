@@ -39,6 +39,7 @@ async function requeueRetryMessage(message, context) {
   if (result.enqueued > 0 || result.skipped > 0) {
     await redisQueue.ackRetryMessage(id, context.logger);
     await redisQueue.deleteRetryMessage(id, context.logger);
+    await redisQueue.completeRetryRequeue(mountName, context.logger);
 
     context.logger.warn(
       {

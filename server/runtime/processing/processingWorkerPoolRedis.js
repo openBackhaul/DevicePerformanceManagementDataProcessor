@@ -1,75 +1,7 @@
 const redisQueue = require("../../infra/redis/redisStreamQueue");
 const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
 const { sleep } = require("../../utils/retry");
-
-function getErrorMessage(error) {
-  return error && error.message ? error.message : String(error);
-}
-
-function getRetryCountFromMessage(fields) {
-  const retryCount = Number(fields.retryCount || 0);
-  return Number.isFinite(retryCount) ? retryCount : 0;
-}
-
-function isRetryableError(error) {
-  return !(error && error.retryable === false);
-}
-
-async function moveToRetryOrDeadLetter(message, error, context) {
-  const { message: fields } = message;
-  const mountName = fields.mountName;
-
-  const currentRetryCount = getRetryCountFromMessage(fields);
-  const nextRetryCount = currentRetryCount + 1;
-  const maxRetryCount = Number(context.maxRetryCount || 1);
-
-  const retryable = isRetryableError(error);
-  const stage = error.stage || "p1ProcessDevice";
-  const lastError = getErrorMessage(error);
-
-  if (retryable && nextRetryCount <= maxRetryCount) {
-    await redisQueue.enqueueRetry(
-      mountName,
-      stage,
-      lastError,
-      nextRetryCount,
-      context.logger
-    );
-
-    context.logger.warn(
-      {
-        mountName,
-        stage,
-        retryCount: nextRetryCount,
-        maxRetryCount
-      },
-      "Processing failed; item moved to retry stream"
-    );
-
-    return;
-  }
-
-  await redisQueue.enqueueRetryDeadLetter(
-    mountName,
-    stage,
-    lastError,
-    currentRetryCount,
-    retryable ? "MAX_RETRY_EXCEEDED" : "NON_RETRYABLE_ERROR",
-    context.logger
-  );
-
-  context.logger.error(
-    {
-      mountName,
-      stage,
-      retryCount: currentRetryCount,
-      maxRetryCount,
-      retryable,
-      error: lastError
-    },
-    "Processing failed; item moved to retry dead-letter stream"
-  );
-}
+const logger = require('../../service/LoggingService.js').getLogger();
 
 async function handleMessage(message, context) {
   const { id, message: fields } = message;
@@ -85,15 +17,35 @@ async function handleMessage(message, context) {
       logger: context.logger
     });
 
+    await redisQueue.clearRetryState(mountName, context.logger);
+    
     await redisQueue.ackMessage(id, context.logger);
     await redisQueue.removeFromDedupSet(mountName, context.logger);
     await redisQueue.deleteMessage(id, context.logger);
   } catch (error) {
-    await moveToRetryOrDeadLetter(message, error, context);
+    //await moveToRetryOrDeadLetter(message, error, context);
 
     await redisQueue.ackMessage(id, context.logger);
     await redisQueue.removeFromDedupSet(mountName, context.logger);
     await redisQueue.deleteMessage(id, context.logger);
+
+    const retryResult = await redisQueue.enqueueRetry(
+        mountName,
+        error.stage || "p1ProcessDevice",
+        error.message || String(error),
+        context.maxRetryCount || 1,
+        context.logger
+    );
+
+    logger.error(
+        {
+            mountName,
+            stage: error.stage || "unknown",
+            error: error.message || error,
+            retryResult
+        },
+        "Processing failed; retry decision completed"
+    );
   }
 }
 

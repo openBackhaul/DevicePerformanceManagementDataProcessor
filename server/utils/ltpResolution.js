@@ -28,17 +28,20 @@ async function readEsAddress(configFile, esClientUuid) {
     getLayerProtocol(esLtp)[attrs.LAYER_PROTOCOL.ES_CLIENT_INTERFACE_PAC] || {};
 
   const esCfg = esPac[attrs.ES_CLIENT.CONFIGURATION] || {};
+  const esStatus = esPac['elasticsearch-client-interface-status'] || {};
 
   return {
     uuid: esClientUuid,
-    node:
+    url:
       String(remoteProtocol || "").toLowerCase() +
       "://" +
       onfAdapter.remoteAddressToHost(remoteAddress) +
       ":" +
       remotePort,
     "index-alias": esCfg[attrs.ES_CLIENT.INDEX_ALIAS] || "",
-    "api-key": ((esCfg[attrs.ES_CLIENT.AUTH] || {})[attrs.ES_CLIENT.API_KEY]) || ""
+    "api-key": ((esCfg[attrs.ES_CLIENT.AUTH] || {})[attrs.ES_CLIENT.API_KEY]) || "",
+    "operational-state": esStatus["operational-state"] || "",
+    "life-cycle-state": esStatus["life-cycle-state"] || ""
   };
 }
 

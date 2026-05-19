@@ -237,7 +237,7 @@ async function getEsClient(forceCreate, uuid, esAddress, logger) {
       }
 
       const options = {
-        node: esAddress.node,
+        node: esAddress.url,
         requestTimeout: 60000
       };
 

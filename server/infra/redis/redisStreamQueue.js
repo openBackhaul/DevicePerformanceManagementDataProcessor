@@ -1,5 +1,6 @@
 const { getRedisClient } = require("./redisClient");
 const { sleep } = require("../../utils/retry");
+const logger = require('../../service/LoggingService.js').getLogger();
 
 const DEVICE_STREAM = "dpmdp:stream:device-processing";
 const DEVICE_GROUP = "dpmdp:group:device-processing";
@@ -7,10 +8,14 @@ const DEVICE_DEDUP_SET = "dpmdp:set:device-processing";
 const RETRY_STREAM = "dpmdp:stream:retry";
 const RETRY_GROUP = "dpmdp:group:retry";
 const RETRY_DEAD_LETTER_STREAM = "dpmdp:stream:retry-dead-letter";
+const RETRY_DEAD_LETTER_SET = "dpmdp:set:retry-dead-letter";
+const RETRY_PENDING_SET = "dpmdp:set:retry-pending";
+const RETRY_COUNT_HASH = "dpmdp:hash:retry-count";
+const RETRY_STATE_HASH = "dpmdp:hash:retry-state";
 const KAFKA_OUTBOUND_STREAM = "dpmdp:stream:kafka-outbound";
 const KAFKA_OUTBOUND_GROUP = "dpmdp:group:kafka-outbound";
 
-async function ensureGroup(logger) {
+async function ensureGroup(loggers) {
     const redis = await getRedisClient(logger);
 
     try {
@@ -33,7 +38,7 @@ async function ensureGroup(logger) {
     }
 }*/
 
-async function readNext(consumerName, blockMs, count, logger) {
+async function readNext(consumerName, blockMs, count, loggers) {
     const redis = await getRedisClient(logger);
 
     return (
@@ -46,12 +51,12 @@ async function readNext(consumerName, blockMs, count, logger) {
     ) || [];
 }
 
-async function ackMessage(messageId, logger) {
+async function ackMessage(messageId, loggers) {
     const redis = await getRedisClient(logger);
     await redis.xAck(DEVICE_STREAM, DEVICE_GROUP, messageId);
 }
 
-async function reclaimStale(consumerName, minIdleMs, logger) {
+async function reclaimStale(consumerName, minIdleMs, loggers) {
     const redis = await getRedisClient(logger);
     const response = await redis.xAutoClaim(
         DEVICE_STREAM,
@@ -80,21 +85,183 @@ async function enqueueRetry(
   mountName,
   stage,
   lastError,
-  retryCount,
-  logger
+  maxRetryCount,
+  loggers
 ) {
   const redis = await getRedisClient(logger);
+  const safeMountName = String(mountName || "").trim();
+
+  if (!safeMountName) {
+    return {
+      status: "SKIPPED",
+      reason: "EMPTY_MOUNTNAME"
+    };
+  }
+
+  const maxRetry = Number(maxRetryCount || 1);
+
+  const alreadyDeadLettered = await redis.sIsMember(
+    RETRY_DEAD_LETTER_SET,
+    safeMountName
+  );
+
+  if (alreadyDeadLettered) {
+    return {
+      status: "ALREADY_DEAD_LETTER",
+      mountName: safeMountName
+    };
+  }
+
+  /*
+   * This prevents duplicate retry-stream entries for the same mountName.
+   * If mountName is already waiting in retry stream, do not XADD again.
+   */
+  const pendingAdded = await redis.sAdd(RETRY_PENDING_SET, safeMountName);
+  const currentRetryCount = Number(
+    (await redis.hGet(RETRY_COUNT_HASH, safeMountName)) || 0
+  );
+
+  if (pendingAdded === 0) {
+    await redis.hSet(
+      RETRY_STATE_HASH,
+      safeMountName,
+      JSON.stringify({
+        mountName: safeMountName,
+        stage: stage || "unknown",
+        lastError: lastError || "",
+        retryCount: currentRetryCount,
+        status: "PENDING_RETRY",
+        updatedAt: new Date().toISOString()
+      })
+    );
+
+    return {
+      status: "ALREADY_PENDING",
+      mountName: safeMountName,
+      retryCount: currentRetryCount
+    };
+  }
+
+  const nextRetryCount = currentRetryCount + 1;
+
+  if (nextRetryCount > maxRetry) {
+    await redis.sRem(RETRY_PENDING_SET, safeMountName);
+    await redis.sAdd(RETRY_DEAD_LETTER_SET, safeMountName);
+
+    await redis.xAdd(RETRY_DEAD_LETTER_STREAM, "*", {
+      mountName: safeMountName,
+      stage: toRedisValue(stage || "unknown"),
+      lastError: toRedisValue(lastError || ""),
+      retryCount: toRedisValue(currentRetryCount),
+      maxRetryCount: toRedisValue(maxRetry),
+      reason: "MAX_RETRY_EXCEEDED",
+      createdAt: new Date().toISOString()
+    });
+
+    await redis.hSet(
+      RETRY_STATE_HASH,
+      safeMountName,
+      JSON.stringify({
+        mountName: safeMountName,
+        stage: stage || "unknown",
+        lastError: lastError || "",
+        retryCount: currentRetryCount,
+        maxRetryCount: maxRetry,
+        status: "DEAD_LETTER",
+        updatedAt: new Date().toISOString()
+      })
+    );
+
+    return {
+      status: "DEAD_LETTER",
+      mountName: safeMountName,
+      retryCount: currentRetryCount,
+      maxRetryCount: maxRetry
+    };
+  }
+
+  await redis.hSet(RETRY_COUNT_HASH, safeMountName, String(nextRetryCount));
+
+  await redis.hSet(
+    RETRY_STATE_HASH,
+    safeMountName,
+    JSON.stringify({
+      mountName: safeMountName,
+      stage: stage || "unknown",
+      lastError: lastError || "",
+      retryCount: nextRetryCount,
+      maxRetryCount: maxRetry,
+      status: "PENDING_RETRY",
+      updatedAt: new Date().toISOString()
+    })
+  );
 
   await redis.xAdd(RETRY_STREAM, "*", {
-    mountName: toRedisValue(mountName),
+    mountName: safeMountName,
     stage: toRedisValue(stage || "unknown"),
     lastError: toRedisValue(lastError || ""),
-    retryCount: toRedisValue(retryCount || 1),
+    retryCount: toRedisValue(nextRetryCount),
+    maxRetryCount: toRedisValue(maxRetry),
     createdAt: new Date().toISOString()
   });
+
+  return {
+    status: "ENQUEUED",
+    mountName: safeMountName,
+    retryCount: nextRetryCount,
+    maxRetryCount: maxRetry
+  };
 }
 
-async function ensureRetryGroup(logger) {
+async function completeRetryRequeue(mountName, logger) {
+  const redis = await getRedisClient(logger);
+
+  if (!mountName) {
+    return;
+  }
+
+  const safeMountName = String(mountName);
+
+  await redis.sRem(RETRY_PENDING_SET, safeMountName);
+
+  const existingStateRaw = await redis.hGet(RETRY_STATE_HASH, safeMountName);
+  let existingState = {};
+
+  try {
+    existingState = existingStateRaw ? JSON.parse(existingStateRaw) : {};
+  } catch (error) {
+    existingState = {};
+  }
+
+  await redis.hSet(
+    RETRY_STATE_HASH,
+    safeMountName,
+    JSON.stringify({
+      ...existingState,
+      mountName: safeMountName,
+      status: "REQUEUED",
+      requeuedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    })
+  );
+}
+
+async function clearRetryState(mountName, loggers) {
+  const redis = await getRedisClient(logger);
+
+  if (!mountName) {
+    return;
+  }
+
+  const safeMountName = String(mountName);
+
+  await redis.sRem(RETRY_PENDING_SET, safeMountName);
+  await redis.sRem(RETRY_DEAD_LETTER_SET, safeMountName);
+  await redis.hDel(RETRY_COUNT_HASH, safeMountName);
+  await redis.hDel(RETRY_STATE_HASH, safeMountName);
+}
+
+async function ensureRetryGroup(loggers) {
   const redis = await getRedisClient(logger);
 
   try {
@@ -108,7 +275,7 @@ async function ensureRetryGroup(logger) {
   }
 }
 
-async function readNextRetry(consumerName, blockMs, count, logger) {
+async function readNextRetry(consumerName, blockMs, count, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xReadGroup(
@@ -124,12 +291,12 @@ async function readNextRetry(consumerName, blockMs, count, logger) {
   return response || [];
 }
 
-async function ackRetryMessage(messageId, logger) {
+async function ackRetryMessage(messageId, loggers) {
   const redis = await getRedisClient(logger);
   await redis.xAck(RETRY_STREAM, RETRY_GROUP, messageId);
 }
 
-async function deleteRetryMessage(messageId, logger) {
+async function deleteRetryMessage(messageId, loggers) {
   const redis = await getRedisClient(logger);
   await redis.xDel(RETRY_STREAM, messageId);
 }
@@ -140,7 +307,7 @@ async function enqueueRetryDeadLetter(
   lastError,
   retryCount,
   reason,
-  logger
+  loggers
 ) {
   const redis = await getRedisClient(logger);
 
@@ -154,12 +321,12 @@ async function enqueueRetryDeadLetter(
   });
 }
 
-async function getRetryQueueLength(logger) {
+async function getRetryQueueLength(loggers) {
   const redis = await getRedisClient(logger);
   return Number(await redis.xLen(RETRY_STREAM).catch(() => 0));
 }
 
-async function reclaimStaleRetry(consumerName, minIdleMs, logger) {
+async function reclaimStaleRetry(consumerName, minIdleMs, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xAutoClaim(
@@ -176,12 +343,12 @@ async function reclaimStaleRetry(consumerName, minIdleMs, logger) {
   return response ? response.messages || [] : [];
 }
 
-async function getQueueLength(logger) {
+async function getQueueLength(loggers) {
     const redis = await getRedisClient(logger);
     return Number(await redis.xLen(DEVICE_STREAM).catch(() => 0));
 }
 
-async function enqueueMountNames(mountNames, options, logger) {
+async function enqueueMountNames(mountNames, options, loggers) {
   const redis = await getRedisClient(logger);
   const batchSize = (options || {}).batchSize || 500;
   const pauseMs = (options || {}).pauseMs || 50;
@@ -247,7 +414,7 @@ async function enqueueMountNames(mountNames, options, logger) {
 
 /*Redis queue functions for Kafka outbound messages*/
 
-async function ensureKafkaOutboundGroup(logger) {
+async function ensureKafkaOutboundGroup(loggers) {
   const redis = await getRedisClient(logger);
 
   try {
@@ -265,7 +432,7 @@ async function ensureKafkaOutboundGroup(logger) {
   }
 }
 
-async function enqueueKafkaOutbound(outputMessage, logger) {
+async function enqueueKafkaOutbound(outputMessage, loggers) {
   const redis = await getRedisClient(logger);
 
   await redis.xAdd(KAFKA_OUTBOUND_STREAM, "*", {
@@ -283,7 +450,7 @@ async function enqueueKafkaOutbound(outputMessage, logger) {
   });
 }
 
-async function readNextKafkaOutbound(consumerName, blockMs, count, logger) {
+async function readNextKafkaOutbound(consumerName, blockMs, count, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xReadGroup(
@@ -299,12 +466,12 @@ async function readNextKafkaOutbound(consumerName, blockMs, count, logger) {
   return response || [];
 }
 
-async function ackKafkaOutbound(messageId, logger) {
+async function ackKafkaOutbound(messageId, loggers) {
   const redis = await getRedisClient(logger);
   await redis.xAck(KAFKA_OUTBOUND_STREAM, KAFKA_OUTBOUND_GROUP, messageId);
 }
 
-async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, logger) {
+async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xAutoClaim(
@@ -321,17 +488,17 @@ async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, logger) {
   return response ? response.messages || [] : [];
 }
 
-async function removeFromDedupSet(mountName, logger) {
+async function removeFromDedupSet(mountName, loggers) {
   const redis = await getRedisClient(logger);
   await redis.sRem(DEVICE_DEDUP_SET, mountName);
 }
 
-async function deleteMessage(messageId, logger) {
+async function deleteMessage(messageId, loggers) {
   const redis = await getRedisClient(logger);
   await redis.xDel(DEVICE_STREAM, messageId);
 }
 
-async function deleteKafkaOutboundMessage(messageId, logger) {
+async function deleteKafkaOutboundMessage(messageId, loggers) {
   const redis = await getRedisClient(logger);
   await redis.xDel(KAFKA_OUTBOUND_STREAM, messageId);
 }
@@ -343,7 +510,13 @@ module.exports = {
     RETRY_GROUP,
     KAFKA_OUTBOUND_STREAM,
     KAFKA_OUTBOUND_GROUP,
+    RETRY_PENDING_SET,
+    RETRY_COUNT_HASH,
+    RETRY_STATE_HASH,
     RETRY_DEAD_LETTER_STREAM,
+    RETRY_DEAD_LETTER_SET,
+    completeRetryRequeue,
+    clearRetryState,
     ensureGroup,
     enqueueMountNames,
     readNext,
