@@ -5,16 +5,6 @@ const JSON5 = require('json5');
 const p1PrepareTxModes = require('./P1PrepareTxModes');
 const ERRORS = require('./ErrorsEnum');
 
-describe('p1PrepareTxModes', () => {
-
-  beforeAll(() => {
-    const ccFile = fs.readFileSync(
-      path.join(__dirname, 'dataset', 'p1CreateResultCc-input_latest.json'),
-      'utf8'
-    );
-    JSON5.parse(ccFile);
-  });
-
   const validHistoricalPerformanceDataList = [
     {
       'performance-data': {
@@ -50,6 +40,17 @@ describe('p1PrepareTxModes', () => {
     }
   ];
 
+
+  beforeAll(() => {
+    const ccFile = fs.readFileSync(
+      path.join(__dirname, 'dataset', 'p1CreateResultCc-input_latest.json'),
+      'utf8'
+    );
+    JSON5.parse(ccFile);
+  });
+
+describe('p1PrepareTxModes', () => {
+
   test(
     'removes unused transmission modes and enriches used ones with AI capacity',
     () => {
@@ -73,25 +74,7 @@ describe('p1PrepareTxModes', () => {
     }
   );
 
-  test('returns error when input is missing', () => {
-    const result = p1PrepareTxModes();
-    expect(result).toBe(ERRORS.HIST_PERF_DATA_NOT_PROVIDED);
-  });
-
-  test('returns error when historical-performance-data-list missing', () => {
-    const result = p1PrepareTxModes({
-      'transmission-mode-list': validTransmissionModeList
-    });
-    expect(result).toBe(ERRORS.HIST_PERF_DATA_NOT_PROVIDED);
-  });
-
-  test('returns error when transmission-mode-list invalid', () => {
-    const result = p1PrepareTxModes({
-      'historical-performance-data-list': validHistoricalPerformanceDataList,
-      'transmission-mode-list': {}
-    });
-    expect(result).toBe(ERRORS.TX_MODE_LIST_INVALID);
-  });
+  
   test('output contains only expected keys', () => {
     const result = p1PrepareTxModes({
       'historical-performance-data-list': validHistoricalPerformanceDataList,
@@ -104,3 +87,49 @@ describe('p1PrepareTxModes', () => {
     ]);
   });
 });
+
+describe('p1PrepareTxModes - @Negative tests', () => {
+  test('Returns error when input is missing - General Error', () => {
+    const result = p1PrepareTxModes();
+    expect(result).toBe(ERRORS.GENERAL_ERROR);
+  });
+
+  test('Returns error when input is null - General Error', () => {
+    const result = p1PrepareTxModes(null);
+    expect(result).toBe(ERRORS.GENERAL_ERROR);
+  });
+
+  test('Returns error when historical-performance-data-list missing', () => {
+    const result = p1PrepareTxModes({
+      'transmission-mode-list': validTransmissionModeList
+    });
+    expect(result).toBe(ERRORS.HIST_PERF_DATA_NOT_PROVIDED);
+  });
+
+  test('Returns error when historical-performance-data-list missing', () => {
+    const result = p1PrepareTxModes({
+      'transmission-mode-list': validTransmissionModeList,
+      'historical-performance-data-list': ""
+    });
+    expect(result).toBe(ERRORS.HIST_PERF_DATA_INVALID);
+  });
+
+    test('Returns error when historical-performance-data-list missing', () => {
+    const result = p1PrepareTxModes({
+      'transmission-mode-list': validTransmissionModeList,
+      'historical-performance-data-list': {}
+    });
+    expect(result).toBe(ERRORS.HIST_PERF_DATA_INVALID);
+  });
+
+  test('Returns error when transmission-mode-list invalid', () => {
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': validHistoricalPerformanceDataList,
+      'transmission-mode-list': {}
+    });
+    expect(result).toBe(ERRORS.TX_MODE_LIST_INVALID);
+  });
+
+
+})
+
