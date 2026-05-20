@@ -10,6 +10,6 @@ module.exports = {
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1CalculateEthernetKpis',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf',
-    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/1.0.0'
+    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes'
   ],
 };
