@@ -71,6 +71,98 @@ function isEmptyObject(value) {
   );
 }
 
+const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
+const ETHERNET_CONTAINER_PAC_KEY = "ethernet-container-2-0:ethernet-container-pac";
+const CURRENT_PERFORMANCE_DATA_LIST_KEY = "current-performance-data-list";
+
+function isValidValue(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function isRelevantLayerProtocol(layerProtocol) {
+  if (!isPlainObject(layerProtocol)) {
+    return false;
+  }
+
+  return (
+    isPlainObject(layerProtocol[AIR_INTERFACE_PAC_KEY]) ||
+    isPlainObject(layerProtocol[ETHERNET_CONTAINER_PAC_KEY])
+  );
+}
+
+function filterLayerProtocolList(value) {
+  if (Array.isArray(value)) {
+    return value.filter(isRelevantLayerProtocol);
+  }
+
+  if (isRelevantLayerProtocol(value)) {
+    return value;
+  }
+
+  return undefined;
+}
+
+function filterLogicalTerminationPointList(value) {
+  if (!Array.isArray(value)) {
+    return value;
+  }
+
+  return value.filter((ltp) => {
+    if (!isPlainObject(ltp)) {
+      return false;
+    }
+
+    const layerProtocolList = ltp["layer-protocol"];
+
+    return (
+      Array.isArray(layerProtocolList) &&
+      layerProtocolList.length > 0
+    );
+  });
+}
+
+function filterCurrentPerformanceDataList(value) {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  return value
+    .map((record) => {
+      if (!isPlainObject(record)) {
+        return undefined;
+      }
+
+      if (
+        !isValidValue(record["granularity-period"]) ||
+        !isValidValue(record.timestamp)
+      ) {
+        return undefined;
+      }
+
+      return {
+        "granularity-period": record["granularity-period"],
+        timestamp: record.timestamp
+      };
+    })
+    .filter(Boolean);
+}
+
+function applySpecialProjectionRules(actualKey, value) {
+  if (actualKey === CURRENT_PERFORMANCE_DATA_LIST_KEY) {
+    return filterCurrentPerformanceDataList(value);
+  }
+
+  if (actualKey === "layer-protocol") {
+    return filterLayerProtocolList(value);
+  }
+
+  if (actualKey === "logical-termination-point") {
+    return filterLogicalTerminationPointList(value);
+  }
+
+  return value;
+}
+
 function hasOwn(data, key) {
   return Object.prototype.hasOwnProperty.call(data, key);
 }
@@ -295,8 +387,10 @@ function project(data, tree) {
     const candidateKeys = getCandidateKeys(data, requestedKey);
 
     for (const actualKey of candidateKeys) {
-      const value =
-        subTree === true ? data[actualKey] : project(data[actualKey], subTree);
+      let value =
+      subTree === true ? data[actualKey] : project(data[actualKey], subTree);
+
+      value = applySpecialProjectionRules(actualKey, value);
 
       if (value === undefined || value === null) {
         continue;
