@@ -2,42 +2,49 @@ const redisQueue = require("../../infra/redis/redisStreamQueue");
 const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
 const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
+const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
 
 async function handleMessage(message, context) {
   const { id, message: fields } = message;
   const mountName = fields.mountName;
+  const lockKey = `dpmdp:lock:process:${mountName}`;
+  const lockTtlMs = Number(context.deviceProcessingLockTtlMs || 30 * 60 * 1000);
 
-  try {
-    await p1ProcessDevice.run({
-      mountName,
-      parameters: context.processDeviceParameters,
-      configFile: context.configFile,
-      mwdiReplicaEsClient: context.mwdiReplicaEsClient,
-      dataStoreEsClient: context.dataStoreEsClient,
-      logger: context.logger
-    });
+  const lockToken = await acquireLock(lockKey, lockTtlMs, context.logger);
+   if (!lockToken) {
+    logger.warn(
+      { mountName },
+      "Skipped processing because another worker is already processing this mountName"
+    );
 
-    await redisQueue.clearRetryState(mountName, context.logger);
-    
-    await redisQueue.ackMessage(id, context.logger);
-    await redisQueue.removeFromDedupSet(mountName, context.logger);
-    await redisQueue.deleteMessage(id, context.logger);
-  } catch (error) {
-    //await moveToRetryOrDeadLetter(message, error, context);
+    return;
+  }
+  try{
+    try {
+        await p1ProcessDevice.run({
+        mountName,
+        parameters: context.processDeviceParameters,
+        configFile: context.configFile,
+        mwdiReplicaEsClient: context.mwdiReplicaEsClient,
+        dataStoreEsClient: context.dataStoreEsClient,
+        logger: context.logger
+        });
 
-    await redisQueue.ackMessage(id, context.logger);
-    await redisQueue.removeFromDedupSet(mountName, context.logger);
-    await redisQueue.deleteMessage(id, context.logger);
-
-    const retryResult = await redisQueue.enqueueRetry(
+        await redisQueue.clearRetryState(mountName, context.logger);
+        
+        await redisQueue.ackMessage(id, context.logger);
+        await redisQueue.removeFromDedupSet(mountName, context.logger);
+        await redisQueue.deleteMessage(id, context.logger);
+    } catch (error) {
+        const retryResult = await redisQueue.enqueueRetry(
         mountName,
         error.stage || "p1ProcessDevice",
         error.message || String(error),
         context.maxRetryCount || 1,
         context.logger
-    );
+        );
 
-    logger.error(
+        logger.error(
         {
             mountName,
             stage: error.stage || "unknown",
@@ -45,8 +52,15 @@ async function handleMessage(message, context) {
             retryResult
         },
         "Processing failed; retry decision completed"
-    );
-  }
+        );
+
+        await redisQueue.ackMessage(id, context.logger);
+        await redisQueue.removeFromDedupSet(mountName, context.logger);
+        await redisQueue.deleteMessage(id, context.logger);
+    }
+   } finally {
+        await releaseLock(lockKey, lockToken, context.logger).catch(() => {});
+   }
 }
 
 async function workerLoop(context, consumerName) {

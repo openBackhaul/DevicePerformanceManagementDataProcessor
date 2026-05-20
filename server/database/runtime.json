@@ -2,7 +2,7 @@
   "service": {
     "port": 4031,
     "pollIntervalMs": 15000,
-    "concurrency": 4,
+    "concurrency": 1,
     "maxUpdatedPerCycle": 5000,
     "processRetryCount": 3,
     "retryIntervalMs": 5000,
@@ -20,7 +20,7 @@
     "url": "redis://127.0.0.1:6379",
     "replicaLockTtlMs": 60000,
     "cleanupLockTtlMs": 300000,
-    "staleMessageIdleMs": 60000,
+    "staleMessageIdleMs": 3600000,
     "reconnectBaseDelayMs": 250,
     "reconnectMaxDelayMs": 5000,
     "queueMaxLength": 20000,
@@ -33,9 +33,10 @@
     "retryReadCount": 500,
     "retryMaxRequeuePerCycle": 20000,
     "retryWorkerCount": 1,
-    "retryRunImmediately": true
+    "retryRunImmediately": false,
+    "deviceProcessingLockTtlMs": 1800000
   },
   "monitoring": {
-    "enabled": true
+    "enabled": false
   }
 }

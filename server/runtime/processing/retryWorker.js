@@ -22,6 +22,14 @@ async function requeueRetryMessage(message, context) {
     {
       batchSize: 1,
       pauseMs: 0,
+
+      /*
+      * Retry worker is allowed to requeue a mountName that is currently
+      * present in dpmdp:set:retry-pending.
+      */
+      allowRetryPending: true,
+      allowDeadLetter: false,
+
       extraFields: {
         retryCount: fields.retryCount || "1",
         retryStage: fields.stage || "",

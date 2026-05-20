@@ -1,14 +1,15 @@
 const crypto = require("crypto");
 const { getRedisClient } = require("./redisClient");
+const logger = require('../../service/LoggingService.js').getLogger();
 
-async function acquireLock(lockKey, ttlMs, logger) {
+async function acquireLock(lockKey, ttlMs, loggers) {
   const redis = await getRedisClient(logger);
   const token = crypto.randomUUID();
   const result = await redis.set(lockKey, token, { NX: true, PX: ttlMs });
   return result === "OK" ? token : null;
 }
 
-async function renewLock(lockKey, token, ttlMs, logger) {
+async function renewLock(lockKey, token, ttlMs, loggers) {
   const redis = await getRedisClient(logger);
   const current = await redis.get(lockKey);
 
@@ -18,7 +19,7 @@ async function renewLock(lockKey, token, ttlMs, logger) {
   return result === "OK";
 }
 
-async function releaseLock(lockKey, token, logger) {
+async function releaseLock(lockKey, token, loggers) {
   const redis = await getRedisClient(logger);
   const current = await redis.get(lockKey);
 

@@ -180,7 +180,8 @@ async function run() {
     staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
     workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000),
     // retry control
-    maxRetryCount: Number(redisConfig.maxRetryCount || 1)
+    maxRetryCount: Number(redisConfig.maxRetryCount || 1),
+    deviceProcessingLockTtlMs: Number(redisConfig.deviceProcessingLockTtlMs || 30 * 60 * 1000)
   }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
   /* startKafkaOutboundWorkerPool({
@@ -213,7 +214,7 @@ async function run() {
     staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
 
     // false means do not retry immediately on startup
-    retryRunImmediately: redisConfig.retryRunImmediately === false
+    retryRunImmediately: redisConfig.retryRunImmediately === true,
   }).catch((error) => logger.error({ error }, "Retry worker pool crashed")); 
 
   return {

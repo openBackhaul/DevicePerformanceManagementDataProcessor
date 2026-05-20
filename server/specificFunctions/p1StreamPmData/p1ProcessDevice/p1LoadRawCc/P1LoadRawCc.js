@@ -30,6 +30,9 @@ async function loadInterfaceMetadataList(
         },
         "Failed to load interface metadata list"
       ); */
+      //if (error.meta && error.meta.statusCode === 404) {
+        return [];
+      //}
     });
 
   const source = (response || {}).body?._source || {};

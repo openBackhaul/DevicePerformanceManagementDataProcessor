@@ -354,6 +354,16 @@ async function enqueueMountNames(mountNames, options, loggers) {
   const pauseMs = (options || {}).pauseMs || 50;
   const extraFields = (options || {}).extraFields || {};
 
+  /*
+   * Normal replica enqueue must not enqueue mountNames that are waiting in retry
+   * or already dead-lettered.
+   *
+   * Retry worker is allowed to requeue from retry-pending by passing:
+   * allowRetryPending: true
+   */
+  const allowRetryPending = (options || {}).allowRetryPending === true;
+  const allowDeadLetter = (options || {}).allowDeadLetter === true;
+
   let enqueued = 0;
   let skipped = 0;
   let failed = 0;
@@ -362,12 +372,59 @@ async function enqueueMountNames(mountNames, options, loggers) {
     const batch = mountNames.slice(i, i + batchSize);
 
     for (const mountName of batch) {
+      const safeMountName = String(mountName || "").trim();
+
+      if (!safeMountName) {
+        skipped += 1;
+        continue;
+      }
+
       try {
-        const isNew = await redis.sAdd(DEVICE_DEDUP_SET, mountName);
+        if (!allowDeadLetter) {
+          const isDeadLettered = await redis.sIsMember(
+            RETRY_DEAD_LETTER_SET,
+            safeMountName
+          );
+
+          if (isDeadLettered) {
+            skipped += 1;
+
+            logger &&
+              logger.warn &&
+              logger.warn(
+                { mountName: safeMountName },
+                "Skipped enqueue because mountName is already dead-lettered"
+              );
+
+            continue;
+          }
+        }
+
+        if (!allowRetryPending) {
+          const isRetryPending = await redis.sIsMember(
+            RETRY_PENDING_SET,
+            safeMountName
+          );
+
+          if (isRetryPending) {
+            skipped += 1;
+
+            logger &&
+              logger.warn &&
+              logger.warn(
+                { mountName: safeMountName },
+                "Skipped enqueue because mountName is already pending retry"
+              );
+
+            continue;
+          }
+        }
+
+        const isNew = await redis.sAdd(DEVICE_DEDUP_SET, safeMountName);
 
         if (isNew === 1) {
           await redis.xAdd(DEVICE_STREAM, "*", {
-            mountName: toRedisValue(mountName),
+            mountName: toRedisValue(safeMountName),
             createdAt: new Date().toISOString(),
             ...Object.fromEntries(
               Object.entries(extraFields).map(([key, value]) => [
@@ -384,7 +441,7 @@ async function enqueueMountNames(mountNames, options, loggers) {
           logger &&
             logger.debug &&
             logger.debug(
-              { mountName },
+              { mountName: safeMountName },
               "Skipped duplicate mountName enqueue"
             );
         }
@@ -394,7 +451,7 @@ async function enqueueMountNames(mountNames, options, loggers) {
         logger &&
           logger.error &&
           logger.error(
-            { mountName, error },
+            { mountName: safeMountName, error },
             "Failed to enqueue mountName"
           );
       }

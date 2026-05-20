@@ -6,7 +6,7 @@ async function withRetry(task, options) {
     const {
         label = "retryable-task",
         retryIntervalMs = 10000,
-        maxAttempts = 2,
+        maxAttempts = 1,
         logger = console
     } = options || {};
 
