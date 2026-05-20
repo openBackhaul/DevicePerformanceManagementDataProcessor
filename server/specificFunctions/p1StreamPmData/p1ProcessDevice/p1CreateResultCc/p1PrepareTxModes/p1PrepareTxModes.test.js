@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const JSON5 = require('json5');
 
 const p1PrepareTxModes = require('./P1PrepareTxModes');
@@ -172,3 +171,74 @@ describe('p1PrepareTxModes - @Negative tests', () => {
 
 })
 
+describe('p1PrepareTxModes - Real dataset', () => {
+  test('Use CC-513250004 Dataset 1', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_004_1.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+
+  test('Use CC-513250004 Dataset 2', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_004_2.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+  
+  test('Use CC-513250005 Dataset 1', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_005_1.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+
+  test('Use CC-513250005 Dataset 2', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_005_2.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+
+  test('Use CC-513250007 Dataset 1', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_1.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+
+  test('Use CC-513250007 Dataset 2', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_2.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+
+  test('Use CC- 991A Dataset 1', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_991A_1.json', 'utf8');
+    let dataSet = JSON.parse(dataFile);
+    const result = p1PrepareTxModes({
+      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+    });
+    
+  });
+});
