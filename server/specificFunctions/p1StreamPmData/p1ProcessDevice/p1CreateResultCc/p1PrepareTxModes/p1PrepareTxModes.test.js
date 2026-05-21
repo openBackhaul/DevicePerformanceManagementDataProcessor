@@ -176,69 +176,139 @@ describe('p1PrepareTxModes - Real dataset', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_004_1.json', 'utf8');
     let dataSet = JSON.parse(dataFile);
     const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'historical-performance-data-list': dataSet['air-interface-historical-performances'],
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
-    
+
+    expect(result["transmission-mode-list"][0]).toEqual(
+      {
+        "modulation-scheme-name-at-lct": "QPSK",
+        "transmission-mode-name": "0056-QPSK-52680/61762-1",
+        "am-downshift-level": -76,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 4,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 23,
+        "transmission-mode-rank": 2,
+        "rx-threshold": -84,
+        "am-upshift-level": -72,
+        "symbol-rate-reduction-factor": 1,
+        "capacity": 82783
+      }
+    );
   });
 
   test('Use CC-513250004 Dataset 2', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_004_2.json', 'utf8');
     let dataSet = JSON.parse(dataFile);
     const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'historical-performance-data-list': dataSet['air-interface-historical-performances'],
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
-    
+
+    expect(result["transmission-mode-list"][0]).toEqual(
+      {
+        "modulation-scheme-name-at-lct": "QPSK",
+        "transmission-mode-name": "0056-QPSK-52680/61762-1",
+        "am-downshift-level": -76,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 4,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 2,
+        "rx-threshold": -84,
+        "am-upshift-level": -72,
+        "symbol-rate-reduction-factor": 1,
+        "capacity": 82783
+      }
+    );
   });
-  
+
   test('Use CC-513250005 Dataset 1', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_005_1.json', 'utf8');
     let dataSet = JSON.parse(dataFile);
     const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'historical-performance-data-list': dataSet['air-interface-historical-performances'],
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
-    
+
+    expect(result["transmission-mode-list"][0]).toEqual(
+            {
+            "modulation-scheme-name-at-lct": "QPSK",
+            "transmission-mode-name": "0056-QPSK-52680/61762-1",
+            "am-downshift-level": -76,
+            "supported-as-fixed-configuration": true,
+            "tx-power-min": -10,
+            "code-rate": 85,
+            "modulation-scheme": 4,
+            "xpic-is-avail": true,
+            "channel-bandwidth": 56000,
+            "tx-power-max": 23,
+            "transmission-mode-rank": 2,
+            "rx-threshold": -84,
+            "am-upshift-level": -72,
+            "symbol-rate-reduction-factor": 1,
+            "capacity": 82783
+        }
+      );
   });
 
   test('Use CC-513250005 Dataset 2', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_005_2.json', 'utf8');
     let dataSet = JSON.parse(dataFile);
     const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'historical-performance-data-list': dataSet['air-interface-historical-performances'],
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
-    
+
+    expect(result).toBe("historicalPerformanceDataList invalid");
   });
 
-  test('Use CC-513250007 Dataset 1', () => {
-    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_1.json', 'utf8');
-    let dataSet = JSON.parse(dataFile);
-    const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
-      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-    });
-    
-  });
+  // test('Use CC-513250007 Dataset 1', () => {
+  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_1.json', 'utf8');
+  //   let dataSet = JSON.parse(dataFile);
+  //   const result = p1PrepareTxModes({
+  //     'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+  //   });
 
-  test('Use CC-513250007 Dataset 2', () => {
-    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_2.json', 'utf8');
-    let dataSet = JSON.parse(dataFile);
-    const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
-      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-    });
-    
-  });
+  // });
 
-  test('Use CC- 991A Dataset 1', () => {
-    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_991A_1.json', 'utf8');
+  // test('Use CC-513250007 Dataset 2', () => {
+  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_2.json', 'utf8');
+  //   let dataSet = JSON.parse(dataFile);
+  //   const result = p1PrepareTxModes({
+  //     'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+  //   });
+
+  // });
+
+  // test('Use CC- 991A Dataset 1', () => {
+  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_991A_1.json', 'utf8');
+  //   let dataSet = JSON.parse(dataFile);
+  //   const result = p1PrepareTxModes({
+  //     'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
+  //   });
+  // });
+
+
+  test('Use CC- 991B Dataset 1', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_991B_1.json', 'utf8');
     let dataSet = JSON.parse(dataFile);
     const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
+      'historical-performance-data-list': dataSet['air-interface-historical-performances'],
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
-    
+
+
+    expect(result).toBe("historicalPerformanceDataList incomplete");
   });
 });
