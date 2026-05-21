@@ -208,6 +208,131 @@ async function filterHistoricalList(
   throw buildDiscardPmError(response, inputSummary);
 }
 
+const DEFAULT_BATCH_TIMESTAMP = "2010-11-20T14:00:00+01:00";
+
+function isValidTimestamp(value) {
+  if (value === undefined || value === null || value === "") {
+    return false;
+  }
+
+  const time = new Date(value).getTime();
+  return Number.isFinite(time);
+}
+
+function getTimestampEpoch(value) {
+  return new Date(value).getTime();
+}
+
+function getAirInterfaceCurrentPerformanceDataList(layerProtocol) {
+  const airPac = layerProtocol[AIR_INTERFACE_PAC_KEY];
+
+  if (!isPlainObject(airPac)) {
+    return [];
+  }
+
+  const currentPerformance =
+    airPac["air-interface-current-performance"];
+
+  if (!isPlainObject(currentPerformance)) {
+    return [];
+  }
+
+  const currentPerformanceDataList =
+    currentPerformance["current-performance-data-list"];
+
+  if (!Array.isArray(currentPerformanceDataList)) {
+    return [];
+  }
+
+  return currentPerformanceDataList;
+}
+
+function sortCurrentPerformanceDataListByTimestamp(layerProtocol) {
+  const airPac = layerProtocol[AIR_INTERFACE_PAC_KEY];
+
+  if (!isPlainObject(airPac)) {
+    return;
+  }
+
+  const currentPerformance =
+    airPac["air-interface-current-performance"];
+
+  if (!isPlainObject(currentPerformance)) {
+    return;
+  }
+
+  const currentPerformanceDataList =
+    currentPerformance["current-performance-data-list"];
+
+  if (!Array.isArray(currentPerformanceDataList)) {
+    return;
+  }
+
+  /*
+   * Keep only records having valid timestamp.
+   * Sort by timestamp so the latest record can be derived safely.
+   */
+  currentPerformance["current-performance-data-list"] =
+    currentPerformanceDataList
+      .filter((record) => {
+        return (
+          isPlainObject(record) &&
+          isValidTimestamp(record.timestamp)
+        );
+      })
+      .sort((left, right) => {
+        return getTimestampEpoch(left.timestamp) - getTimestampEpoch(right.timestamp);
+      });
+}
+
+function addBatchTimestamp(rawCc) {
+  if (!isPlainObject(rawCc)) {
+    return DEFAULT_BATCH_TIMESTAMP;
+  }
+
+  const timestamps = [];
+  const ltpList = Array.isArray(rawCc["logical-termination-point"])
+    ? rawCc["logical-termination-point"]
+    : [];
+
+  for (const ltp of ltpList) {
+    const layerProtocolList = Array.isArray(ltp["layer-protocol"])
+      ? ltp["layer-protocol"]
+      : [];
+
+    for (const layerProtocol of layerProtocolList) {
+      if (!isPlainObject(layerProtocol[AIR_INTERFACE_PAC_KEY])) {
+        continue;
+      }
+
+      sortCurrentPerformanceDataListByTimestamp(layerProtocol);
+
+      const currentPerformanceDataList =
+        getAirInterfaceCurrentPerformanceDataList(layerProtocol);
+
+      for (const record of currentPerformanceDataList) {
+        if (isValidTimestamp(record.timestamp)) {
+          timestamps.push(record.timestamp);
+        }
+      }
+    }
+  }
+
+  if (timestamps.length === 0) {
+    rawCc.batchTimestamp = DEFAULT_BATCH_TIMESTAMP;
+    return DEFAULT_BATCH_TIMESTAMP;
+  }
+
+  timestamps.sort((left, right) => {
+    return getTimestampEpoch(left) - getTimestampEpoch(right);
+  });
+
+  const latestTimestamp = timestamps[timestamps.length - 1];
+
+  rawCc.batchTimestamp = latestTimestamp;
+  return latestTimestamp;
+}
+
 /**
  * Request:
  * {
@@ -324,8 +449,6 @@ async function run(request) {
       ".*"
     );
 
-    const batchTimestamp = new Date().toISOString();
-
     for (const ltp of rawCc["logical-termination-point"] || []) {
       const meta = interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {};
 
@@ -342,10 +465,6 @@ async function run(request) {
             meta.mostRecentPeriodEndTime24,
             logger
           );
-
-          for (const record of pac["air-interface-historical-performances"]) {
-            record.batchTimestamp = batchTimestamp;
-          }
 
           layerProtocol["air-interface-2-0:air-interface-pac"] = pac;
         }
@@ -365,6 +484,8 @@ async function run(request) {
         }
       }
     }
+
+    addBatchTimestamp(rawCc);
 
     return { rawCc, mountName };
   } catch (error) {
