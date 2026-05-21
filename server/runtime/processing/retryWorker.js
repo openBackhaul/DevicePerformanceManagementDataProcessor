@@ -17,6 +17,26 @@ async function requeueRetryMessage(message, context) {
   const { id, message: fields } = message;
   const mountName = fields.mountName;
 
+  const stillPendingRetry = await redisQueue.isRetryPending(
+    mountName,
+    context.logger
+  );
+
+  if (!stillPendingRetry) {
+    await redisQueue.ackRetryMessage(id, context.logger);
+    await redisQueue.deleteRetryMessage(id, context.logger);
+
+    context.logger.warn(
+      {
+        mountName,
+        retryCount: fields.retryCount
+      },
+      "Skipped stale retry message because retry state was cleared by replica update"
+    );
+
+    return true;
+  }
+
   const result = await redisQueue.enqueueMountNames(
     [mountName],
     {

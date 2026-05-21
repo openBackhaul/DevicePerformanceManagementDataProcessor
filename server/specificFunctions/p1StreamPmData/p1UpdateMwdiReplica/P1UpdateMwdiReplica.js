@@ -209,13 +209,19 @@ async function run(request) {
 
   await redisQueue.ensureGroup(logger);
   await redisQueue.enqueueMountNames(
-    updatedMountNames,
-    {
-      batchSize: (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
-      pauseMs: (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50
-    },
-    logger
-  );
+  updatedMountNames,
+  {
+    batchSize: (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
+    pauseMs: (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
+
+    /*
+     * p1UpdateMwdiReplica provides only mountNames that have updated CCs.
+     * Therefore, old retry/dead-letter state must not block processing.
+     */
+    clearRetryAndDeadLetterBeforeEnqueue: true
+  },
+  logger
+);
 
   const timestamp = periodEndTime;
 

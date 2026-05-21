@@ -81,6 +81,129 @@ function toRedisValue(value) {
   return String(value);
 }
 
+function nextStreamId(id) {
+  const parts = String(id || "0-0").split("-");
+  const ms = Number(parts[0] || 0);
+  const seq = Number(parts[1] || 0);
+
+  return `${ms}-${seq + 1}`;
+}
+
+async function deleteStreamEntriesByMountName(streamKey, groupName, mountName, loggers) {
+  const redis = await getRedisClient(logger);
+  const safeMountName = String(mountName || "").trim();
+
+  if (!safeMountName) {
+    return 0;
+  }
+
+  let deletedCount = 0;
+  let startId = "-";
+  const count = 500;
+
+  while (true) {
+    const entries = await redis.xRange(
+      streamKey,
+      startId,
+      "+",
+      { COUNT: count }
+    );
+
+    if (!entries || entries.length === 0) {
+      break;
+    }
+
+    const idsToDelete = [];
+
+    for (const entry of entries) {
+      const fields = entry.message || {};
+
+      if (String(fields.mountName || "").trim() === safeMountName) {
+        idsToDelete.push(entry.id);
+      }
+    }
+
+    if (idsToDelete.length > 0) {
+      if (groupName) {
+        await redis.xAck(streamKey, groupName, idsToDelete).catch(() => {});
+      }
+
+      await redis.xDel(streamKey, idsToDelete);
+      deletedCount += idsToDelete.length;
+    }
+
+    const lastId = entries[entries.length - 1].id;
+    startId = nextStreamId(lastId);
+
+    if (entries.length < count) {
+      break;
+    }
+  }
+
+  return deletedCount;
+}
+
+async function clearRetryAndDeadLetterForReplicaUpdate(mountName, loggers) {
+  const redis = await getRedisClient(logger);
+  const safeMountName = String(mountName || "").trim();
+
+  if (!safeMountName) {
+    return {
+      mountName,
+      status: "SKIPPED",
+      reason: "EMPTY_MOUNTNAME"
+    };
+  }
+
+  const retryStreamDeleted = await deleteStreamEntriesByMountName(
+    RETRY_STREAM,
+    RETRY_GROUP,
+    safeMountName,
+    logger
+  );
+
+  const deadLetterStreamDeleted = await deleteStreamEntriesByMountName(
+    RETRY_DEAD_LETTER_STREAM,
+    null,
+    safeMountName,
+    logger
+  );
+
+  await redis.sRem(RETRY_PENDING_SET, safeMountName);
+  await redis.sRem(RETRY_DEAD_LETTER_SET, safeMountName);
+  await redis.hDel(RETRY_COUNT_HASH, safeMountName);
+  await redis.hDel(RETRY_STATE_HASH, safeMountName);
+
+  logger &&
+    logger.warn &&
+    logger.warn(
+      {
+        mountName: safeMountName,
+        retryStreamDeleted,
+        deadLetterStreamDeleted
+      },
+      "Cleared retry/dead-letter state because updated ControlConstruct was found"
+    );
+
+  return {
+    mountName: safeMountName,
+    status: "CLEARED",
+    retryStreamDeleted,
+    deadLetterStreamDeleted
+  };
+}
+
+async function isRetryPending(mountName, loggers) {
+  const redis = await getRedisClient(logger);
+  const safeMountName = String(mountName || "").trim();
+
+  if (!safeMountName) {
+    return false;
+  }
+
+  return await redis.sIsMember(RETRY_PENDING_SET, safeMountName);
+}
+
 async function enqueueRetry(
   mountName,
   stage,
@@ -364,6 +487,9 @@ async function enqueueMountNames(mountNames, options, loggers) {
   const allowRetryPending = (options || {}).allowRetryPending === true;
   const allowDeadLetter = (options || {}).allowDeadLetter === true;
 
+  const clearRetryAndDeadLetterBeforeEnqueue =
+  (options || {}).clearRetryAndDeadLetterBeforeEnqueue === true;
+
   let enqueued = 0;
   let skipped = 0;
   let failed = 0;
@@ -380,6 +506,13 @@ async function enqueueMountNames(mountNames, options, loggers) {
       }
 
       try {
+        if (clearRetryAndDeadLetterBeforeEnqueue) {
+          await clearRetryAndDeadLetterForReplicaUpdate(
+            safeMountName,
+            logger
+          );
+        }
+
         if (!allowDeadLetter) {
           const isDeadLettered = await redis.sIsMember(
             RETRY_DEAD_LETTER_SET,
@@ -596,4 +729,6 @@ module.exports = {
     reclaimStaleRetry,
     enqueueRetryDeadLetter,
     getRetryQueueLength,
+    clearRetryAndDeadLetterForReplicaUpdate,
+    isRetryPending
 };
