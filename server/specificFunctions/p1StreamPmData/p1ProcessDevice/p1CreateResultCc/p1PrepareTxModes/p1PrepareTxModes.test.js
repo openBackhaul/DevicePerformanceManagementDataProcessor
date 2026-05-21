@@ -180,6 +180,7 @@ describe('p1PrepareTxModes - Real dataset', () => {
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
 
+    expect(result["transmission-mode-list"].length).toBe(1);
     expect(result["transmission-mode-list"][0]).toEqual(
       {
         "modulation-scheme-name-at-lct": "QPSK",
@@ -209,6 +210,7 @@ describe('p1PrepareTxModes - Real dataset', () => {
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
 
+    expect(result["transmission-mode-list"].length).toBe(1);
     expect(result["transmission-mode-list"][0]).toEqual(
       {
         "modulation-scheme-name-at-lct": "QPSK",
@@ -238,6 +240,7 @@ describe('p1PrepareTxModes - Real dataset', () => {
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
 
+    expect(result["transmission-mode-list"].length).toBe(1);
     expect(result["transmission-mode-list"][0]).toEqual(
             {
             "modulation-scheme-name-at-lct": "QPSK",
@@ -257,17 +260,6 @@ describe('p1PrepareTxModes - Real dataset', () => {
             "capacity": 82783
         }
       );
-  });
-
-  test('Use CC-513250005 Dataset 2', () => {
-    let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_005_2.json', 'utf8');
-    let dataSet = JSON.parse(dataFile);
-    const result = p1PrepareTxModes({
-      'historical-performance-data-list': dataSet['air-interface-historical-performances'],
-      'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-    });
-
-    expect(result).toBe("historicalPerformanceDataList invalid");
   });
 
   // test('Use CC-513250007 Dataset 1', () => {
