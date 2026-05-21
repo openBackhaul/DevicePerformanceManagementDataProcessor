@@ -1,0 +1,54 @@
+{
+  "parameters": {
+    "function-name": "p1LoadRawCc",
+    "description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
+    "is-active": true,
+    "parameter": [],
+    "sub-function": [
+      {
+        "function-name": "p1FieldsFilter",
+        "description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "fieldsFilter",
+            "purpose": "Fields filter to be applied to reduce the raw ControlConstruct data",
+            "owner": "platform",
+            "value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(timestamp);air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))"
+          }
+        ],
+        "sub-function": []
+      },
+      {
+        "function-name": "p1DiscardIrrelevantPmRecords",
+        "description": "Discards irrelevant records from historical performance data list",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "relevantGranularities",
+            "purpose": "An regex pattern indicating which data granularities are to be kept",
+            "owner": "platform",
+            "value": ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$",
+            "enumeration": [
+              ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN$",
+              ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS$",
+              ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$"
+            ]
+          }
+        ],
+        "sub-function": []
+      }
+    ]
+  },
+  "mwdiReplicaEsClient": {
+    "node": "https://127.0.0.1:3015",
+    "api-key": "API key not yet defined",
+    "index-alias": "18",
+    "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-007",
+    "service-records-policy": "default-policy",
+    "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_ENABLED",
+    "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_INSTALLED"
+  },
+  "dataStoreEsClient": "invalid",
+  "mountName": "513250008"
+}

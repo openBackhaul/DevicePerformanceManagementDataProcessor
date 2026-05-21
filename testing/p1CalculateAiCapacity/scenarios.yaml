@@ -34,13 +34,7 @@ scenarios:
       errorEnum: "channelBandwidth invalid"
     mocks: []
 
-  - id: "errChannelBandwidthZero"
-    description: "Should return error when channel-bandwidth is 0 (invalid for capacity calc)"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "channelBandwidth invalid"
-    mocks: []
+
 
   - id: "errChannelBandwidthNegative"
     description: "Should return error when channel-bandwidth is negative"
@@ -150,13 +144,7 @@ scenarios:
       errorEnum: "codeRate invalid"
     mocks: []
 
-  - id: "errCodeRateZero"
-    description: "Should return error when code-rate is 0 percent (no effective payload)"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "codeRate invalid"
-    mocks: []
+
 
   # -------------------------
   # catch-all / robustness
@@ -184,6 +172,22 @@ scenarios:
 
   - id: "okTypicalValues"
     description: "Should calculate air-interface-capacity for typical valid values"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okChannelBandwidthZero"
+    description: "Should return 0 when channel-bandwidth is 0 "
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okCodeRateZero"
+    description: "Should return 0 when code-rate is 0 percent "
     inputFixture: "input.json"
     expected:
       type: "success"

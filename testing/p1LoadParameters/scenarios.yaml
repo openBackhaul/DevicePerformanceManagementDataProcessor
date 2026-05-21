@@ -1,0 +1,171 @@
+# testing/p1LoadParameters/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1LoadParameters/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1LoadParameters/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "onf.readControlConstruct"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
+    exportName: "readControlConstruct"
+    isAsync: true
+
+  - stepId: "config.loadConfigFile"
+    modulePath: "../../server/utils/config"
+    exportName: "loadConfigFile"
+    isAsync: false
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # happy path
+  # -------------------------
+
+  - id: "okConfigProvidedInRequest"
+    description: "Should use config-file from request and return expected parameters + configFile"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "onfControlConstruct.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"
+
+  # -------------------------
+  # fallback path 
+  # -------------------------
+
+  - id: "okFallbackToLoadConfigFile"
+    description: "Should fallback to loadConfigFile when config-file not provided and ONF returns null"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "nullObject.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"
+
+  - id: "okFunctionWithoutSubFunctionList"
+    description: "Should  return expected parameters + configFile"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "nullObject.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"
+
+  # -------------------------
+  # input validation
+  # -------------------------
+
+  - id: "errFunctionNameNotProvided"
+    description: "Should throw error when function-name is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "functionName is mandatory"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "onfControlConstruct.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"
+
+  # -------------------------
+  # file-access / config loading errors 
+  # -------------------------
+
+  - id: "errConfigFileNotFoundOrNotAccessible"
+    description: "Should fail with 'configFile not found or not accessible' when file-access fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile not found or not accessible"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "nullObject.json"
+      - stepId: "config.loadConfigFile"
+        type: "throw"
+        error: "configFile not found or not accessible"
+
+  - id: "errConfigFileIsNotValidJson"
+    description: "Should fail with 'configFile is not valid JSON' when file-access fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile is not valid JSON"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "nullObject.json"
+      - stepId: "config.loadConfigFile"
+        type: "throw"
+        error: "configFile is not valid JSON"
+
+  - id: "errConfigFileDoesNotConformToExpectedSchema"
+    description: "Should fail with 'configFile does not conform to the expected schema' when file-access fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile does not conform to the expected schema"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "nullObject.json"
+      - stepId: "config.loadConfigFile"
+        type: "throw"
+        error: "configFile does not conform to the expected schema"
+
+  - id: "errUnknownErrorOccurred"
+    description: "Should fail with 'unknown error occurred' when file-access fails unexpectedly"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "unknown error occurred"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "nullObject.json"
+      - stepId: "config.loadConfigFile"
+        type: "throw"
+        error: "unknown error occurred"
+
+  # -------------------------
+  # function not found in config
+  # -------------------------
+
+  - id: "errFunctionNameNotFoundInConfigFile"
+    description: "Should fail with 'functionName not found in configFile' when the function does not exist"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Function profile not found for dummyFunction"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "onfControlConstruct.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"

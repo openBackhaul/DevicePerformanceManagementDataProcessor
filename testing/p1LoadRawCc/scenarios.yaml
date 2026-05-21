@@ -1,0 +1,64 @@
+# testing/p1LoadRawCc/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/P1LoadRawCc.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "onfAdapter.getEsClient"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
+    exportName: "getEsClient"
+    isAsync: true
+
+  - stepId: "retry.withRetry"
+    modulePath: "../../server/utils/retry.js"
+    exportName: "withRetry"
+    isAsync: true
+
+  - stepId: "p1FieldsFilter.run"
+    modulePath: "../../server/genericFunctions/p1FieldsFilter/P1FieldsFilter.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1DiscardIrrelevantPmRecords"
+    modulePath: "../../server/genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords.js"
+    exportName: ""
+    isAsync: true
+
+# Transitive deps that may be imported elsewhere in the require stack
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation
+  # -------------------------
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when input.parameters is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "retry.withRetry"
+        type: "return"
+        fixture: "withRetry.rawResponse.json"
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.output.json"
+ 
+
+
+

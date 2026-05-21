@@ -6,7 +6,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../server/genericFunctions/p1PrepareTxModes/P1PrepareTxModes.js"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/P1PrepareTxModes.js"
     exportName: ""
 
 processingSteps:
