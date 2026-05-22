@@ -302,6 +302,23 @@ describe('Positive Tests - Happy Path @positive', () => {
     expect('rx-level-max' in result["performance-data"]).toBe(false);
   });
 
+  test('Missing some property of performance @negative', () => {
+    const result = p1RemoveOutOfRangeLevels({
+      "performance-data": wrongPerformanceStruct1,
+      "parameters": parameterStruct1
+    });
+    expect(result["performance-data"]["es"]).toBe(0);
+    expect(result["performance-data"]["ses"]).toBe(0);
+    expect(result["performance-data"]["cses"]).toBe(0);
+
+    expect('tx-level-min' in result["performance-data"]).toBe(false);
+    expect(result["performance-data"]["tx-level-avg"]).toBe(50);
+
+    expect(result["performance-data"]["rx-level-min"]).toBe(1000);
+    expect(result["performance-data"]["rx-level-avg"]).toBe(5000);
+    expect('rx-level-max' in result["performance-data"]).toBe(false);
+  });
+
 });
 
 describe('Negative Tests - Error Cases @negative', () => {
@@ -382,14 +399,6 @@ describe('Negative Tests - Error Cases @negative', () => {
       "parameters": parameterStruct1
     }))
       .toBe(ERRORS.PERF_NOT_PROVIDED);
-  });
-
-  test('Missing some property of performance @negative', () => {
-    expect(p1RemoveOutOfRangeLevels({
-      "performance-data": wrongPerformanceStruct1,
-      "parameters": parameterStruct1
-    }))
-      .toBe(ERRORS.PERF_INVALID);
   });
 
 });

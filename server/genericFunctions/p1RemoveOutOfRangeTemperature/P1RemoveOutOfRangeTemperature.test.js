@@ -177,8 +177,14 @@ describe('p1RemoveOutOfRangeTemperature', () => {
   let dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAE.json', 'utf8');
   let equipmentData = JSON.parse(dataFile);
 
-  let dataWrongFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEwrong.json', 'utf8');
-  let equipmentWrongData = JSON.parse(dataWrongFile);
+  dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEOK.json', 'utf8');
+  let equipDataMissingValues = JSON.parse(dataFile);
+
+  dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEwrong.json', 'utf8');
+  let equipmentWrongData = JSON.parse(dataFile);
+
+  dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEOK2.json', 'utf8');
+  let equipmentEmptyTemp = JSON.parse(dataFile);
 
   describe('Positive Tests @positive', () => {
     test('All levels are ok', () => {
@@ -188,6 +194,16 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       }))
         .toMatchObject({
           "equipment": equipmentData
+        });
+    });
+
+    test('All levels are ok - with missing properties', () => {
+      expect(p1RemoveOutOfRangeTemperature({
+        "equipment": equipDataMissingValues,
+        "parameters": parameterStruct1
+      }))
+        .toMatchObject({
+          "equipment": equipDataMissingValues
         });
     });
 
@@ -255,6 +271,17 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       });
 
       expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
+    });
+
+    test('Discard temperature value when is empty', () => {
+      const inputEquipment = equipmentEmptyTemp;
+      const result = p1RemoveOutOfRangeTemperature({
+        "equipment": inputEquipment,
+        "parameters": parameterStruct1
+      });
+
+      expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBe("32");
+      expect(result["equipment"][1]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
     });
   });
 

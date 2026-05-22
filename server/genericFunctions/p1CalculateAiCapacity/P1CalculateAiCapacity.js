@@ -2,7 +2,7 @@ const ERRORS = require('./ErrorsEnum.js');
 
 const p1CalculateAiCapacity = (input) => {
   try {
-    if (Object.keys(input).length == 0) {
+    if (input == null || typeof input !== "object" || Object.keys(input).length == 0) {
       return ERRORS.GENERAL_ERROR;
     }
 
