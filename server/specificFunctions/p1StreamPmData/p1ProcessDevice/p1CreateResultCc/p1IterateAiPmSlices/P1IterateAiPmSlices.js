@@ -3,7 +3,6 @@ const p1CalculateIntervalCapacity = require('../../../../../genericFunctions/p1C
 const p1RemoveOutOfRangeLevels = require('../../../../../genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels');
 const p1RemoveDefaultValues = require('../../../../../genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues');
 
-// Local helper for updateMostRecentPeriodEndTime
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
   if (!mostRecentPeriodEndTime || !mostRecentPeriodEndTime24 || !granularityPeriod || !periodEndTime) {
     if (!mostRecentPeriodEndTime) return 'mostRecentPeriodEndTime not provided';
@@ -168,6 +167,5 @@ function p1IterateAiPmSlices(input) {
 }
 
 module.exports = {
-  p1IterateAiPmSlices,
-  updateMostRecentPeriodEndTime
+  p1IterateAiPmSlices
 };

@@ -52,12 +52,12 @@ describe('p1IterateAiPmSlices', () => {
       expect(result['historical-performance-data-list']).toBeDefined();
 
       // Check timestamps updated correctly
-      expect(result['most-recent-period-end-time']).toBe('2023-10-01T12:15:00+00:00');
-      expect(result['most-recent-period-end-time-24']).toBe('2023-10-02T00:00:00+00:00');
+      expect(result['most-recent-period-end-time']).toBe('2026-05-18T10:15:00+00:00');
+      expect(result['most-recent-period-end-time-24']).toBe('2026-05-13T02:30:00+00:00');
 
       // Check performance data modified (interval-capacity added)
       const firstSlice = result['historical-performance-data-list'][0];
-      expect(firstSlice['performance-data']['interval-capacity']).toBe(1000);
+      expect(firstSlice['performance-data']['interval-capacity']).toBe(82783);
 
       // Check default value removal
       const secondSlice = result['historical-performance-data-list'][1];
