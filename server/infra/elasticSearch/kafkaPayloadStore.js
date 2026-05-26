@@ -40,7 +40,7 @@ async function storeKafkaPayload(request) {
       client.index({
         index: dataStoreEsClient["index-alias"],
         id,
-        document: {
+        body: {
           docType: "kafka-outbound-payload",
           targetConsumer,
           mountName,

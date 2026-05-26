@@ -14,8 +14,19 @@
     "kafkaOutboundConcurrency": 1,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 100,
-    "kafkaOutboundMaxBatchBytes": 921600
+    "kafkaOutboundMaxBatchBytes": 921600,
+    "kafkaOutboundFailureSleepMs": 10000,
+
+    "kafkaOutboundWorkerIdleSleepMs": 1000,
+    "kafkaOutboundStaleMessageIdleMs": 60000,
+    "kafkaAcks": "all",
+    "kafkaEnableIdempotence": true,
+    "kafkaLingerMs": 50,
+    "kafkaBatchSize": 1048576,
+    "kafkaBatchNumMessages": 500,
+    "kafkaCompressionType": "lz4"
   },
+
   "redis": {
     "url": "redis://127.0.0.1:6379",
     "replicaLockTtlMs": 60000,
