@@ -50,19 +50,19 @@ iterate-ec-pm-slices:
               frame-loss-input:
                 type: integer
                 description: >
-                  'Sum of errored and dropped frames on the ingress
+                  'sum of errored and dropped frames on the ingress
                   requires {$p1CalculateEthernetKpis}'
               frame-loss-output:
                 type: integer
                 description: >
-                  'Sum of errored and dropped frames on the egress
+                  'sum of errored and dropped frames on the egress
                   requires {$p1CalculateEthernetKpis}'
-              # TODO: müssten hier nicht eigentlich auch die BH KPIs angegeben werden oder zumindest das top-level busy-hour object?
-              # busy-hour:
-              #   type: object
-              #   description: >
-              #     'busy hour performance indicators
-              #     requires {$p1CalculateBusyHourPerformanceIndicators}'
+              busy-hour:
+                type: object
+                description: >
+                  'busy hour KPIs
+                  exclusively if {granularity-period} indicates 24-HOURS
+                  requires {$p1CalculateBusyHourPerformanceIndicators}'
 
     aggregation-group:
       type: object

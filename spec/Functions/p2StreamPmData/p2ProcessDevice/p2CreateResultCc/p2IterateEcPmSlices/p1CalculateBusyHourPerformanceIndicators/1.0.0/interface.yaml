@@ -230,15 +230,14 @@ x-javascript-interface:
                           type: integer
                           description: >
                             'throughput during the busy hour
-                            aggregated-total-bytes-output transformed from byte to bit, and divided by assumed 3600 seconds of the measurement period
-                            from { {$input#/busy-hour-identifier/aggregated-total-bytes-output} * 8 / 3600 }'
+                            aggregated-total-bytes-output transformed from byte to kbit, and divided by assumed 3600 seconds of the measurement period
+                            from { {$input#/busy-hour-identifier/aggregated-total-bytes-output} * 8 / ( 1000 * 3600 ) }'
                         capacity:
                           type: integer
-                          # TODO: wieso geben wir die Capacity in bps an, statt bei kpbs zu bleiben?
                           description: >
                             'capacity during the busy hour
-                            sum of total-air-interface-interval-capacity values transformed from kbit/s to bit/s, and divided by assumed four 15-min periods
-                            from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/total-air-interface-interval-capacity} ) * 1000 / 4 }'
+                            sum of total-air-interface-interval-capacity values divided by assumed four 15-min periods
+                            from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/total-air-interface-interval-capacity} ) / 4 }'
                         utilization:
                           type: integer
                           description: >

@@ -347,7 +347,7 @@ x-javascript-interface:
                                     interval-capacity:
                                       type: integer
                                       description: >
-                                        'Averaged capacity, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period.
+                                        'Averaged capacity in kbps, calculated by weighting the operated transmission modes with the duration of their operation during the measurement period.
                                         from {$input#/result-cc/logical-termination-point/layer-protocol/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list/performance-data/interval-capacity}'
                                     errorred-seconds:
                                       type: integer
