@@ -188,11 +188,8 @@ load-raw-cc:
           x-key: uuid
           items:
             type: object
-            # TODO: das defined by statement finde ich etwas unglücklich... muss man das hier überhaupt angeben?
-            # im variables von calcualteInterfacePmQualityData wird ja angegeben, woher das kommt.
             description: >
               'Information about the quality of the provided PM data for an individual interface
-              defined by {$p1CalculateInterfacePmDataQuality.interface.processing.composeInterfacePmDataQuality.output#/interface-pm-data-quality}
               from {$p1CalculateInterfacePmDataQuality.output#/interface-pm-data-quality}'
     uuid:
       type: string

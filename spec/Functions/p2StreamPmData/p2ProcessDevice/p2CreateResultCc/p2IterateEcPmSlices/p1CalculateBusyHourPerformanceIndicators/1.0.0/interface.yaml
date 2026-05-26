@@ -132,12 +132,9 @@ x-javascript-interface:
                               'hour of day'
                           aggregated-total-bytes-output:
                             type: integer
-                            # TODO: müssten man nicht eigentlich statt $input und $output schreiben $processStepName.input und $processStepName.output?
-                            #       $input und $output beziehen sich ja normalerweise auf den input/output des Services bzw. der Function selbst
-                            #       analog unten
                             description: >
                               'aggregated total bytes output for this hour
-                              from { sum( {$input#/15-minute-values-by-hour={$output#/aggregated-total-bytes-output-by-hour=*/hour}/15-minute-values[*]/total-bytes-output} ) }'
+                              from { sum( {$aggregateTotalBytesOutput.input#/15-minute-values-by-hour={$aggregateTotalBytesOutput.output#/aggregated-total-bytes-output-by-hour=*/hour}/15-minute-values[*]/total-bytes-output} ) }'
       identifyBusyHour:
         summary: 'Identifies the busy hour'
         input:

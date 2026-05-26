@@ -118,17 +118,12 @@ x-javascript-interface:
                             description: >
                               'date
                               from { {$input#/former-most-recent-period-end-time} to {$input#/new-most-recent-period-end-time} }'
-                          # TODO: die monitoring-period-length braucht man doch eigentlich nicht als eigenes Attribut. Die wird außer bei number nirgends mehr benutzt.
-                          # d.h. man könnte die Info doch stattdessen in der description von number unterbringen.
-                          monitoring-period-length:
-                            type: integer
-                            description: >
-                              'Monitoring period distributed over the days from former-most-recent-period-end-time to new-most-recent-period-end-time in minutes'
                           number:
                             type: integer
                             description: >
                               'Number of 15min PM records expected for the given day
-                              from { round( {$output#/amount-expected/monitoring-period-length} divided by 15 minutes ) }'
+                              with monitoringPeriodLength = monitoring period distributed over the days from former-most-recent-period-end-time to new-most-recent-period-end-time in minutes
+                              from { round( monitoringPeriodLength divided by 15 minutes ) }'
           error:
             description: 'Number of expected records could not be calculated'
             content:
