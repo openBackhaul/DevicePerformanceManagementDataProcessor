@@ -1,0 +1,24 @@
+{
+  "clients": [
+    {
+      "getResult": {
+        "body": {
+          "_source": {
+            "core-model-1-4:control-construct": {
+              "logical-termination-point": []
+            }
+          }
+        }
+      }
+    },
+    {
+      "getResult": {
+        "body": {
+          "_source": {
+            "interface-metadata-list": []
+          }
+        }
+      }
+    }
+  ]
+}

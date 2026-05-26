@@ -5,6 +5,114 @@ const p1FieldsFilter = require("./../../../../genericFunctions/p1FieldsFilter/P1
 const p1DiscardIrrelevantPmRecords = require("./../../../../genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords");
 const logger = require('../../../../service/LoggingService.js').getLogger();
 
+const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
+const ETHERNET_CONTAINER_PAC_KEY = "ethernet-container-2-0:ethernet-container-pac";
+
+function isPlainObject(value) {
+  return value && typeof value === "object" && !Array.isArray(value);
+}
+
+function isRelevantLayerProtocol(layerProtocol) {
+  if (!isPlainObject(layerProtocol)) {
+    return false;
+  }
+
+  return (
+    isPlainObject(layerProtocol[AIR_INTERFACE_PAC_KEY]) ||
+    isPlainObject(layerProtocol[ETHERNET_CONTAINER_PAC_KEY])
+  );
+}
+
+function cleanupCurrentPerformanceDataList(layerProtocol) {
+  const airPac = layerProtocol[AIR_INTERFACE_PAC_KEY];
+
+  if (!isPlainObject(airPac)) {
+    return layerProtocol;
+  }
+
+  const currentPerformance =
+    airPac["air-interface-current-performance"];
+
+  if (!isPlainObject(currentPerformance)) {
+    return layerProtocol;
+  }
+
+  const currentPerformanceDataList =
+    currentPerformance["current-performance-data-list"];
+
+  if (!Array.isArray(currentPerformanceDataList)) {
+    delete currentPerformance["current-performance-data-list"];
+    return layerProtocol;
+  }
+
+  const cleanedList = currentPerformanceDataList
+    .map((record) => {
+      if (!isPlainObject(record)) {
+        return undefined;
+      }
+
+      if (
+        record["granularity-period"] === undefined ||
+        record.timestamp === undefined ||
+        record["granularity-period"] === "" ||
+        record.timestamp === ""
+      ) {
+        return undefined;
+      }
+
+      return {
+        "granularity-period": record["granularity-period"],
+        timestamp: record.timestamp
+      };
+    })
+    .filter(Boolean);
+
+  if (cleanedList.length > 0) {
+    currentPerformance["current-performance-data-list"] = cleanedList;
+  } else {
+    delete currentPerformance["current-performance-data-list"];
+  }
+
+  return layerProtocol;
+}
+
+function normalizeRawCcAfterFieldsFilter(rawCc) {
+  if (!rawCc || typeof rawCc !== "object") {
+    return rawCc;
+  }
+
+  const ltpList = Array.isArray(rawCc["logical-termination-point"])
+    ? rawCc["logical-termination-point"]
+    : [];
+
+  rawCc["logical-termination-point"] = ltpList
+    .map((ltp) => {
+      if (!isPlainObject(ltp)) {
+        return undefined;
+      }
+
+      const layerProtocolList = Array.isArray(ltp["layer-protocol"])
+        ? ltp["layer-protocol"]
+        : [];
+
+      const cleanedLayerProtocolList = layerProtocolList
+        .filter(isRelevantLayerProtocol)
+        .map(cleanupCurrentPerformanceDataList);
+
+      if (cleanedLayerProtocolList.length === 0) {
+        return undefined;
+      }
+
+      return {
+        ...ltp,
+        "layer-protocol": cleanedLayerProtocolList
+      };
+    })
+    .filter(Boolean);
+
+  return rawCc;
+}
+
 async function loadInterfaceMetadataList(
   dataStoreClient,
   dataStoreIndex,
@@ -30,6 +138,9 @@ async function loadInterfaceMetadataList(
         },
         "Failed to load interface metadata list"
       ); */
+      //if (error.meta && error.meta.statusCode === 404) {
+        return [];
+      //}
     });
 
   const source = (response || {}).body?._source || {};
@@ -179,10 +290,10 @@ async function run(request) {
     }
 
     rawCc =
-    fieldsFilterResponse["filtered-data-structure"] ||
-    fieldsFilterResponse.filteredDataStructure;
+    fieldsFilterResponse["filtered-data-structure"];
+    rawCc = normalizeRawCcAfterFieldsFilter(rawCc);
 
-    if (!rawCc || typeof rawCc !== "object") {
+    /* if (!rawCc || typeof rawCc !== "object") {
         const error = new Error("p1FieldsFilter did not return filtered data structure");
 
         error.stage = "p1FieldsFilter";
@@ -190,7 +301,7 @@ async function run(request) {
         error.retryable = false;
 
         throw error;
-    }
+    } */
 
     const dataStoreClient = await onfAdapter.getEsClient(
       false,
