@@ -1,0 +1,101 @@
+@startuml initiatePmDataUpdate
+skinparam responseMessageBelowArrow true
+
+title
+  initiatePmDataUpdate
+end title
+
+participant "requestor\n" as tool
+participant "initiatePmDataUpdate\n" as initUpdate #Cyan
+participant "MWDI:\n/provideDeviceStatusMetadata" as mwdiMeta
+participant "MWDI:\n/live/control-construct" as mwdiLive
+
+tool -[#Cyan]> initUpdate : { [mountNames] }
+activate initUpdate #Cyan
+
+  initUpdate -> mwdiMeta : { [mountNames] }
+  activate mwdiMeta
+    note over mwdiMeta
+      provides [metaData]
+      for [mountNames]
+    end note
+  initUpdate <-- mwdiMeta : { [metaData] }
+  deactivate mwdiMeta
+
+  note over initUpdate
+    IF all [mountNames] in [metaData]
+  end note
+  note left initUpdate
+    ELSE
+    - sends error message
+      server responds, but service/resource doesn't exist
+      application: 533 (hidden server: 404)
+    - terminates
+  end note
+  tool <-[#Cyan]- initUpdate : 533\n{ [missingMountNames] }
+  note over initUpdate
+    THEN
+  end note
+
+  note over initUpdate
+    IF all [mountNames] in connected state
+  end note
+  note left initUpdate
+    ELSE
+    - sends error message
+      server does not respond, even on ping
+      application: 532 (hidden server: no response)
+    - terminates
+  end note
+  tool <-[#Cyan]- initUpdate : 532\n{ [unconnectedMountNames] }
+  note over initUpdate
+    THEN
+  end note
+
+  note over initUpdate
+    IF [lastControlConstructNotificationUpdateTime] elder than 15min
+  end note
+  note left initUpdate
+    ELSE
+    - sends warning message
+    - removes up-to-date devices from list
+    - continues with remaining devices
+  end note
+  tool <-[#Cyan]- initUpdate : 200\n{ [alreadyUpToDateMountNames] }
+  note over initUpdate
+    THEN
+  end note
+
+  note right initUpdate
+    ignores that success rate of requests to
+    connected devices is little below 100%  
+  end note
+  tool <-[#Cyan]- initUpdate : 204
+
+  loop FOR all [mountNames]
+
+    note over initUpdate
+      sends requests at a configurable time interval
+    end note
+
+    initUpdate -> mwdiLive : { mountName }
+    activate mwdiLive
+
+deactivate initUpdate
+note over initUpdate
+  ignores responses (error messages
+  or {controlConstruct}) of MWDI
+end note
+
+      note over mwdiLive
+        - load {controlConstruct} from device to MWDI ES
+        - updates lastSuccessfulCompleteControlConstructUpdateTime
+          in [metaData]
+      end note
+
+    initUpdate <-- mwdiLive : { {controlConstruct} }
+    deactivate mwdiLive
+
+  end loop
+
+@enduml

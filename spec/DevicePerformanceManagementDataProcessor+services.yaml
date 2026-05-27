@@ -61,6 +61,8 @@ servers:
       individual:
         - operation-name: /provide-device-data-store-dump
           uuid: dpmdp-1-1-0-op-s-is-000
+        - operation-name: /initiatePmDataUpdate
+          uuid: dpmdp-1-1-0-op-s-is-010
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor
     own-release-number: 1.1.0
@@ -292,14 +294,14 @@ clients:
         individual:
 
   - http-client:
-      application-name: OperationKeyManagement
-      release-number: 2.1.2
-      uuid: dpmdp-1-1-0-http-c-okm-2-1-2-000
+      application-name: MicroWaveDeviceInventory
+      release-number: 1.1.2
+      uuid: dpmdp-1-1-0-http-c-mwdi-1-1-2-000
     tcp-client:
       remote-protocol: http
       ip-address: 127.0.0.1
-      tcp-port: 3037
-      uuid: dpmdp-1-1-0-tcp-c-okm-2-1-2-000
+      tcp-port: 4015
+      uuid: dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000
     operation-clients:
       own-oam:
         basic:
@@ -307,3 +309,7 @@ clients:
       service:
         basic:
         individual:
+          - operation-name: /v1/provide-device-status-metadata
+            uuid: dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000
+          - operation-name: /core-model-1-4:network-control-domain=live/control-construct={mountName}
+            uuid: dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001

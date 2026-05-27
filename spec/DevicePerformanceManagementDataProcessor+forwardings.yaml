@@ -408,3 +408,20 @@ forwardings:
     consequent-requests:
       - client-name: ApplicationLayerTopology://v1/delete-fc-port
         uuid: dpmdp-1-1-0-op-c-bm-alt-2-1-2-005
+
+  - forwarding-name: PromptForInitiatingPmDataUpdateInitiatesCcUpdateProcess
+    uuid: dpmdp-1-1-0-op-fc-is-010
+    forwarding-type: InvariantProcessSnippet
+    management-requests:
+      operation-client-update:
+      fc-port-update:
+      fc-port-deletion:
+      operation-client-deletion:
+    initiating-requests:
+      - server-name: /initiatePmDataUpdate
+        uuid: dpmdp-1-1-0-op-s-is-010
+    consequent-requests:
+      - client-name: MicroWaveDeviceInventory://v1/provide-device-status-metadata
+        uuid: dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000
+      - client-name: MicroWaveDeviceInventory://core-model-1-4:network-control-domain=live/control-construct={mountName}
+        uuid: dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001

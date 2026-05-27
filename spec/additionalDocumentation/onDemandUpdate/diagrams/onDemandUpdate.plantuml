@@ -8,22 +8,116 @@ end title
 participant "requestor\n" as tool
 participant "initiatePmDataUpdate\n" as initUpdate #Cyan
 participant "p2StreamPmData\n" as p2StreamPm
-participant "MWDI://live/cc\n" as mwdi
+participant "MWDI:\n/provideDeviceStatusMetadata" as mwdiMeta
+participant "MWDI:\n/live/control-construct" as mwdiLive
 database "Device" as device
 database "MWDI ES" as cache
 participant "p2ProcessDevice\n" as p2ProcessPm
 
 activate p2StreamPm
 
-tool -[#Cyan]> initUpdate : { [mountNames],\ntimeOutPeriod,\nurlAsynchronousResponse }
+tool -[#Cyan]> initUpdate : { [mountNames] }
 activate initUpdate #Cyan
 
-  loop FOR all [mountNames] - (partly parallel executed)
+  initUpdate -> mwdiMeta : { [mountNames] }
+  initUpdate <-- mwdiMeta : { [metaData] }
 
-    initUpdate -> mwdi : { mountName }
-    activate mwdi
+  note over device #Orange
+    Leider wird lastCompleteControlConstructUpdateTimeAttempt
+    nicht zum Zeitpunkt des Sendens an MWDI://live/control-construct
+    aktualisiert, sondern erst beim Abschluss des Uploads/Timeouts.
+    Darum kann nicht auf einen gegenwärtig laufenden CC Upload
+    geschlossen werden
+  end note
 
-      mwdi -> device : { mountName }
+  note over initUpdate
+    IF all [mountNames] in [metaData]
+  end note
+  note left initUpdate
+    ELSE
+    - sends error message
+      server responds, but service/resource doesn't exist
+      application: 533 (hidden server: 404)
+    - terminates
+  end note
+  tool <-[#Cyan]- initUpdate : 533\n{ [missingMountNames] }
+  note over initUpdate
+    THEN
+  end note
+  note over device #Orange
+    Soll neuen Zuschnitt des Simulationsgebietes ermöglichen
+  end note
+
+  note over initUpdate
+    IF all [mountNames] in connected state
+  end note
+  note left initUpdate
+    ELSE
+    - sends error message
+      server does not respond, even on ping
+      application: 532 (hidden server: no response)
+    - terminates
+  end note
+  tool <-[#Cyan]- initUpdate : 532\n{ [unconnectedMountNames] }
+  note over initUpdate
+    THEN
+  end note
+  note over device #Orange
+    Soll neuen Zuschnitt des Simulationsgebietes ermöglichen
+  end note
+
+  note over initUpdate
+    IF [lastControlConstructNotificationUpdateTime] elder than 15min
+  end note
+  note left initUpdate
+    ELSE
+    - sends warning message
+    - removes up-to-date devices from list
+    - continues with remaining devices
+  end note
+  tool <-[#Cyan]- initUpdate : 200\n{ [alreadyUpToDateMountNames] }
+  note over initUpdate
+    THEN
+  end note
+  note over device #Orange
+    Soll nur darüber informieren, dass für diese Geräte keine neuen Daten zu erwarten sind
+  end note
+  tool <-[#Cyan]- initUpdate : 204
+
+  loop FOR all [mountNames]
+
+    note over initUpdate
+      sends requests at a configurable time interval
+    end note
+
+    initUpdate -> mwdiLive : { mountName }
+    activate mwdiLive
+
+deactivate initUpdate
+
+      note right mwdiLive #LightGreen
+        MWDI to be changed (MWDI issue 1566)
+        in such a way that it refuses to forward
+        duplicate requests (same path, same device)
+      end note
+
+      note over mwdiLive  #LightGreen
+        IF CC upload already on-going
+      end note
+
+      note left mwdiLive #LightGreen
+        THEN
+      end note
+      initUpdate <-- mwdiLive : { errorMessage }
+      note over initUpdate #LightGreen
+        ignored
+      end note
+
+      note over mwdiLive #LightGreen
+        ELSE
+      end note
+
+      mwdiLive -> device : { mountName }
       activate device
 
           note left device
@@ -31,21 +125,21 @@ activate initUpdate #Cyan
             in average
           end note
       
-      mwdi <-- device : { {controlConstruct} }
+      mwdiLive <-- device : { {controlConstruct} }
       deactivate device
 
-      mwdi -> cache : { {controlConstruct} }
+      mwdiLive -> cache : { {controlConstruct} }
 
-      note over mwdi
-        updates latestUpdateDate
-        of device in metadata
+      note over mwdiLive
+        lastSuccessfulCompleteControlConstructUpdateTime
+        updated in [metaData]
       end note
 
-    initUpdate <-- mwdi : { {controlConstruct} }
-    deactivate mwdi
+    initUpdate <-- mwdiLive : { {controlConstruct} }
+    deactivate mwdiLive
 
     note over initUpdate
-      drops {controlConstruct}
+      ignored
     end note
 
   end loop
@@ -54,7 +148,7 @@ activate initUpdate #Cyan
 
     note over p2StreamPm
       - replicates MWDI ES into DPMDP replica
-      - reads latestUpdateDate from metadata 
+      - reads lastSuccessfulCompleteControlConstructUpdateTime from [metaData] 
     end note
 
     loop for every updated CC
@@ -71,26 +165,5 @@ activate initUpdate #Cyan
       deactivate p2ProcessPm
 
     end loop
-
-    note over p2StreamPm
-      transmits quality data
-    end note
-
-  initUpdate <[#Orange]- p2StreamPm
-  end loop
-  note over initUpdate #Orange
-    Communication of the processed mountNames is unclear
-    Particularly, there is no trigger for sending any info from p2StreamPm to an existing instance of initUpdate
-    Maybe making quality data available for internal use
-  end note
-  initUpdate <[#Orange]- p2StreamPm
-
-note over initUpdate
-  IF PM data of all [mountNames] could be transmitted
-  ELSE IF timeOutPeriod ended
-end note
-
-tool <-[#Cyan]- initUpdate : { [updatedMountNames],\n[unsuccessfulMountNames] }
-deactivate initUpdate
 
 @enduml
