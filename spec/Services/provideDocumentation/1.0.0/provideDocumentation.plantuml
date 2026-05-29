@@ -1,0 +1,38 @@
+@startuml provideDocumentation
+skinparam responseMessageBelowArrow true
+
+title
+  provideDocumentation
+end title
+
+participant "requestor\n" as requestor
+participant "provideDocumentation\n" as cur #LightCyan
+participant "p1CreateActiveFunctionsTxtDoc\n" as doc #LightCyan
+
+
+
+requestor -> cur: {optional targetFunctionName}
+activate cur
+
+  note over cur
+    Generate documentation
+    for targetFunctionName.
+    Default is "p2StreamPmData".
+  end note
+
+  cur -> doc: { functionName=\ntargetFunctionName }
+  activate doc
+
+    note over doc
+      Creates txt documentation
+      for targetFunctionName,
+      considers only active functions.
+    end note
+
+  cur <-- doc: { documentation }
+  deactivate doc
+
+requestor <-- cur: { documentation }
+deactivate cur
+
+@enduml

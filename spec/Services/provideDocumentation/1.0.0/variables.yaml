@@ -1,0 +1,13 @@
+provide-documentation:
+  type: object
+  properties:
+    target-function-name:
+      type: string
+      description: >
+        'Optional targetFunctionName for which the documentation shall be generated
+        from {$input#/target-function-name} if provided, otherwise default p2StreamPmData is used'
+    documentation:
+      type: string
+      description: >
+        'The generated documentation for the specified function including its sub-functions and parameters
+        from {TODO}'
