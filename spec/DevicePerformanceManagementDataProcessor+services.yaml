@@ -61,7 +61,9 @@ servers:
       individual:
         - operation-name: /provide-device-data-store-dump
           uuid: dpmdp-1-1-0-op-s-is-000
-        - operation-name: /initiatePmDataUpdate
+        - operation-name: /provide-documentation
+          uuid: dpmdp-1-1-0-op-s-is-001
+        - operation-name: /initiate-pm-data-update
           uuid: dpmdp-1-1-0-op-s-is-010
   http-server:
     own-application-name: DevicePerformanceManagementDataProcessor

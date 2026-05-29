@@ -1282,6 +1282,31 @@ profile-instances:
       is-active: true
 
 
+  # provideDocumentation
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-705'
+    capability:
+      function-name: 'provideDocumentation'
+      function-description: 'Provides documentation of active functions'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-725'
+    configuration:
+      is-active: true
+
+  # p1CreateActiveFunctionsTxtDoc
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-725'
+    capability:
+      function-name: 'p1CreateActiveFunctionsTxtDoc'
+      function-description: 'Created text documentation of active functions'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-730'
+        # TODO: muss hier eigene zweite ProfileInstance für p1LoadParameters angelegt werden?
+    configuration:
+      is-active: true
+
   # p1LoadParameters
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-730'

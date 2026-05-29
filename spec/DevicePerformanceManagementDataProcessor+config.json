@@ -2117,6 +2117,41 @@
             }
           }
         },
+
+        {
+          "uuid": "dpmdp-1-1-0-function-p-705",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "provideDocumentation",
+              "function-description": "Provides documentation of active functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-725"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-725",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CreateActiveFunctionsTxtDoc",
+              "function-description": "Created text documentation of active functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-730"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
         {
           "uuid": "dpmdp-1-1-0-function-p-730",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
@@ -2714,6 +2749,29 @@
         ]
       },
       {
+        "uuid": "dpmdp-1-1-0-op-s-is-001",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-1-0-http-s-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
+            "operation-server-interface-1-0:operation-server-interface-pac": {
+              "operation-server-interface-capability": {
+                "operation-name": "/provide-documentation"
+              },
+              "operation-server-interface-configuration": {
+                "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
+                "operation-key": "n.a."
+              }
+            }
+          }
+        ]
+      },
+      {
         "uuid": "dpmdp-1-1-0-http-s-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [
@@ -2739,7 +2797,8 @@
           "dpmdp-1-1-0-op-s-bs-003",
           "dpmdp-1-1-0-op-s-bs-004",
           "dpmdp-1-1-0-op-s-bs-005",
-          "dpmdp-1-1-0-op-s-is-000"
+          "dpmdp-1-1-0-op-s-is-000",
+          "dpmdp-1-1-0-op-s-is-001"
         ],
         "server-ltp": [
           "dpmdp-1-1-0-tcp-s-000"

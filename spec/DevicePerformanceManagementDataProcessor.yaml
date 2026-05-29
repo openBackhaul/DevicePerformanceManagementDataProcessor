@@ -953,6 +953,125 @@ paths:
                       schema:
                         type: string
 
+  /provide-documentation:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: provideDocumentation
+      summary: 'Provides documentation of active functions'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - target-function-name
+              properties:
+                target-function-name:
+                  type: string
+                  description: >
+                    'Optional targetFunctionName for which documentation shall be created.
+                    If not provided, default p2StreamPmData is used.'
+      responses:
+        '200':
+          description: 'Documentation provided'
+          content:
+            text/plain:
+              schema:
+                type: string
+                properties:
+                  documentation:
+                    type: string
+                    description: >
+                      'The generated documentation for the target function
+                      from [/provide-documentation/documentation]'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        PromptForDocumentationCausesCreatingDocumentation:
+          x-javascript-interface:
+            p1CreateActiveFunctionsTxtDoc:
+              summary: 'Generates documentation for the target function and its active sub-functions'
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - function-name
+                      properties:
+                        function-name:
+                          type: string
+                          description: >
+                            'Name of the Function for which documentation shall be generated
+                            from [/provide-documentation/target-function-name]'
+              output:
+                success:
+                  description: 'Documentation successfully generated'
+                  content:
+                    text/plain:
+                      schema:
+                        type: string
+                        properties:
+                          documentation:
+                            type: string
+                error:
+                  description: 'Documentation could not be generated'
+                  content:
+                    application/json:
+                      schema:
+                        type: string
+
+
 ########################################################################################################################
 #   Service Layer - Basic Part
 ########################################################################################################################
