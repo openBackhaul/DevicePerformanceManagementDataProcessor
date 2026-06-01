@@ -9,10 +9,10 @@ const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutpu
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
 const p1FormattingOutputOnf = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
 
-/* function getTargetConsumers() {
+function getTargetConsumers(kafkaConsumerTypes) {
   return String(
-    global.DPMDP_KAFKA_TARGET_CONSUMERS ||
-      "APT,MYCOM,NETEXPLORER,IVERITAS"
+    //global.DPMDP_KAFKA_TARGET_CONSUMERS ||
+      kafkaConsumerTypes
   )
     .split(",")
     .map((x) => x.trim().toUpperCase())
@@ -20,7 +20,7 @@ const p1FormattingOutputOnf = require("./p1FormattingOutputOnf/P1FormattingOutpu
 }
 
 function shouldPublishDataQuality() {
-  return String(global.DPMDP_ENABLE_DATAQUALITY_TOPIC || "true") === "true";
+  return String(global.DPMDP_ENABLE_DATAQUALITY_TOPIC || "false") === "false";
 }
 
 async function queueKafkaOutputsOneByOne(request) {
@@ -29,10 +29,11 @@ async function queueKafkaOutputsOneByOne(request) {
     resultCc,
     correlationId,
     dataStoreEsClient,
-    logger
+    logger,
+    kafkaConsumerTypes
   } = request;
 
-  for (const targetConsumer of getTargetConsumers()) {
+  for (const targetConsumer of getTargetConsumers(kafkaConsumerTypes)) {
     await redisQueueKafkaOutbound.run({
       dataStoreEsClient,
       output: {
@@ -69,7 +70,7 @@ async function queueKafkaOutputsOneByOne(request) {
       logger
     });
   }
-} */
+}
 
 /**
  * Request:
@@ -95,7 +96,7 @@ async function run(request) {
     configFile,
     mwdiReplicaEsClient,
     dataStoreEsClient,
-    //logger
+    kafkaConsumerTypes
   } = request;
 
   //const logger = request.logger || console;
@@ -183,7 +184,7 @@ async function run(request) {
     }
 
     
-    const responseApt = await p1FormattingOutputApt({
+    /* const responseApt = await p1FormattingOutputApt({
         "result-cc": createResultCcResponse.resultCc,
         parameters: p1FormattingOutputAptParameters
     });
@@ -203,7 +204,7 @@ async function run(request) {
         throw buildFormattingOutputAptError(responseApt, mountName);
     }
 
-    const resultCcApt = responseApt;//["output-format"];
+    const resultCcApt = responseApt;//["output-format"]; */
 
     /*   P1FormattingOutputOnf is an ONF function that formats the output result CC according to the ONF output format. 
         It also performs some basic validations on the result CC. If the formatting fails or the result CC is invalid, 
@@ -257,7 +258,7 @@ async function run(request) {
     }
 
     
-    const responseOnf = await p1FormattingOutputOnf({
+    /* const responseOnf = await p1FormattingOutputOnf({
         resultCc: createResultCcResponse.resultCc,
         parameters: p1FormattingOutputOnfParameters
     });
@@ -275,18 +276,18 @@ async function run(request) {
         }
 
         throw buildFormattingOutputOnfError(responseOnf, mountName);
-    }
+    } 
 
-    const resultCcOnf = responseOnf;
+    const resultCcOnf = responseOnf;*/
 
-   /* const resultMountName =
+   const resultMountName =
       createResultCcResponse.mountName ||
       loadRawCcResponse.mountName ||
       mountName;
 
     const correlationId = `dpmdp-${resultMountName}-${Date.now()}`;
 
-      await queueKafkaOutputsOneByOne({
+    await queueKafkaOutputsOneByOne({
         mountName: resultMountName,
         resultCc: createResultCcResponse.resultCc,
         correlationId,
@@ -294,13 +295,13 @@ async function run(request) {
         logger: request.logger
     }); 
 
-    await p1Storing.run({
+    /* await p1Storing.run({
       dataStoreEsClient,
       resultCc: createResultCcResponse.resultCc,
       interfaceMetadataList: createResultCcResponse.interfaceMetadataList,
       mountName: resultMountName,
       logger
-    });*/
+    }); */
 
     return {
       resultCc: createResultCcResponse.resultCc,

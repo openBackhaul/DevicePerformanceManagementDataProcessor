@@ -174,6 +174,7 @@ async function run() {
     appState,
     workerCount: Number(serviceConfig.concurrency || 4),
     processDeviceParameters: p1ProcessDeviceParameters,
+    kafkaConsumerTypes: serviceConfig.kafkaConsumerTypes,
     configFile: loaded.configFile,
     mwdiReplicaEsClient,
     dataStoreEsClient,
@@ -184,19 +185,28 @@ async function run() {
     deviceProcessingLockTtlMs: Number(redisConfig.deviceProcessingLockTtlMs || 30 * 60 * 1000)
   }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
-  /* startKafkaOutboundWorkerPool({
+  startKafkaOutboundWorkerPool({
     logger,
     instanceId,
     appState,
     dataStoreEsClient,
+    p1TransmittingKafkaParameters,
+    kafkaConnectionList: kafkaInit.kafkaConnectionList,
     workerCount: Number(serviceConfig.kafkaOutboundConcurrency || 1),
     readCount: Number(serviceConfig.kafkaOutboundReadCount || 100),
     batchSize: Number(serviceConfig.kafkaOutboundBatchSize || 100),
     maxBatchBytes: Number(serviceConfig.kafkaOutboundMaxBatchBytes || 900 * 1024),
-    staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000)
+    staleMessageIdleMs: Number(serviceConfig.kafkaOutboundStaleMessageIdleMs  || 60000),
+    kafkaFailureSleepMs: Number(serviceConfig.kafkaOutboundFailureSleepMs || 10000),
+    workerIdleSleepMs: Number(serviceConfig.kafkaOutboundWorkerIdleSleepMs || 1000),
+      // kafka producer config for sendBatch
+    kafkaProducerMessageMaxBytes:serviceConfig.kafkaProducerMessageMaxBytes || 5242880,
+    kafkaSocketRequestMaxBytes:serviceConfig.kafkaSocketRequestMaxBytes || 10485760,
+    kafkaMaxSingleMessageBytes:serviceConfig.kafkaMaxSingleMessageBytes || 4500000,
+    kafkaOversizedMessageMode:serviceConfig.kafkaOversizedMessageMode || "ERROR"
   }).catch((error) =>
     logger.error({ error }, "Kafka outbound worker pool crashed")
-  ); */
+  );
 
   startRetryWorkerPool({
     logger,

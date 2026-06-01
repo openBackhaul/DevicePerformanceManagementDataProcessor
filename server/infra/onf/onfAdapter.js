@@ -259,9 +259,20 @@ async function getEsClient(forceCreate, uuid, esAddress, logger) {
   );
 }
 
-async function connectKafkaProducer(clientId, brokers, logger) {
+async function connectKafkaProducer(clientIdOrOptions, brokers, logger) {
+  if (
+    clientIdOrOptions &&
+    typeof clientIdOrOptions === "object" &&
+    !Array.isArray(clientIdOrOptions)
+  ) {
+    return await confluentKafkaProducer.initProducer({
+      ...clientIdOrOptions,
+      logger: clientIdOrOptions.logger || brokers || logger
+    });
+  }
+
   return await confluentKafkaProducer.initProducer({
-    clientId,
+    clientId: clientIdOrOptions,
     brokers,
     logger
   });
@@ -282,7 +293,9 @@ async function sendKafkaMessage(topic, message, clientId, brokers, logger) {
         value: typeof message === "string" ? message : JSON.stringify(message)
       }
     ],
-    logger
+    logger,
+    clientId,
+    brokers
   );
 }
 

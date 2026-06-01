@@ -52,7 +52,7 @@ async function run(request) {
       kafkaClientUuid: param.value,
       clientId: kafkaClient.clientId,
       groupId: kafkaClient.groupId,
-      auth: kafkaClient.auth,
+      //auth: kafkaClient.auth,
       brokerList: kafkaClient.brokerList,
       topicName: kafkaClient.topicName,
       type: kafkaClient.type
