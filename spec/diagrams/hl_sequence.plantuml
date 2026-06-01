@@ -7,6 +7,7 @@ end title
 
 participant "embedYourself\n" as embed
 participant "provideDevice\nDataStoreDump" as deviceDump #LightSalmon
+participant "initiatePm\nDataUpdate" as initPmData #LightSalmon
 participant "p2StreamPmData\n" as p2StreamPm #LightYellow
 participant "p1LoadParameters\n" as p1LoadParams
 participant "p1ResolveEsAddress\n" as p1ResolveAddress
@@ -46,7 +47,7 @@ participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
 
 
 ' Release Notes
-===== Changes for Measuring Quality =====
+== Changes for Measuring Quality ==
 
 note over p2AddRaw
   - Change from handling {offset} to handling
@@ -97,7 +98,7 @@ note over p2StreamPm
     quality information to Kafka
 end note
 
-===== Changes for multiple ONF Output formats =====
+== Changes for multiple ONF Output formats ==
 
 note over p1OutputOnf
   - Change extraction of parameters
@@ -112,6 +113,12 @@ end note
 note over p2ProcessPm
   - Change interface to p2FormattingOutputOnf
     to receive list of ONF output formats
+end note
+
+== Changes for On-demand PmData ==
+
+note over initPmData
+  - Address live paths at MWDI
 end note
 
 == End of Changes ==
@@ -552,5 +559,29 @@ activate deviceDump
 
 <-- deviceDump
 deactivate deviceDump
+
+
+-> initPmData
+activate initPmData
+
+  ' Load parameters
+  initPmData -> p1LoadParams
+  activate p1LoadParams
+    note over p1LoadParams
+      Loads parameters
+      from configFile
+    end note
+  initPmData <-- p1LoadParams
+  deactivate p1LoadParams
+
+  loop
+    note over initPmData
+      trigger liveCC
+      path at MWDI
+    end note
+  end loop
+<-- initPmData
+deactivate initPmData
+
 
 @enduml

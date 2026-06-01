@@ -38,11 +38,10 @@ paths:
               properties:
                 mount-names:
                   type: array
+                  description: >
+                    'mountNames for which PM data update shall be initiated'
                   items:
                     type: string
-                  description: >
-                    'mountNames for which PM data update shall be initiated
-                    from '
               example:
                 mount-names:
                   - '305251234'
@@ -91,9 +90,11 @@ paths:
                 properties:
                   already-up-to-date-mount-names:
                     type: array
+                    description: >
+                      'mountNames that are already up-to-date
+                      from [/initiate-pm-data-update/already-up-to-date-mount-names]'
                     items:
                       type: string
-                    description: 'mountNames that are already up-to-date'
               example:
                 already-up-to-date-mount-names:
                   - '305251234'
@@ -149,9 +150,11 @@ paths:
                 properties:
                   unconnected-mount-names:
                     type: array
+                    description: >
+                      'mountNames that are not connected
+                      from [/initiate-pm-data-update/unconnected-mount-names]'
                     items:
                       type: string
-                    description: 'mountNames that are not connected'
               example:
                 unconnected-mount-names:
                   - '305251234'
@@ -187,21 +190,23 @@ paths:
                 'Life cycle state of the consumed service
                 from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '533':
-          description: 'Updating PM data terminated, as some devices are unknown'
+          description: 'Updating PM data terminated, as some devices are missing'
           content:
             application/json:
               schema:
                 type: object
                 required:
-                  - unknown-mount-names
+                  - missing-mount-names
                 properties:
-                  unknown-mount-names:
+                  missing-mount-names:
                     type: array
+                    description: >
+                      'mountNames that are missing
+                      from [/initiate-pm-data-update/missing-mount-names]'
                     items:
                       type: string
-                    description: 'mountNames that are unknown'
               example:
-                unknown-mount-names:
+                missing-mount-names:
                   - '305251234'
                   - '305251235'
           headers:
@@ -238,7 +243,7 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
         PromptForInitiatingPmDataUpdateInitiatesCcUpdateProcess:
-          MetaData: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+          loadMetaData: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             post:
               parameters:
                 - $ref: '#/components/parameters/user'
@@ -257,7 +262,7 @@ paths:
                           type: array
                           description: >
                             'List of names of devices for which the status metadata shall be provided
-                            from '
+                            from [/initiate-pm-data-update/mount-names]'
                           items:
                             type: string
               responses:
@@ -272,6 +277,7 @@ paths:
                         properties:
                           device-status-metadata:
                             type: array
+                            x-key: mount-name
                             items:
                               type: object
                               required:
@@ -350,7 +356,168 @@ paths:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-          LiveCc: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001=0/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+          listMissingMountNames:
+            summary: 'Lists mount names that are in input mountNames, but not in metaData'
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - mount-names
+                        - meta-data
+                      properties:
+                        mount-names:
+                          type: array
+                          description: >
+                            'mountNames for which PM data shall be updated
+                            from [/initiate-pm-data-update/mount-names]'
+                        meta-data:
+                          type: array
+                          description: >
+                            'meta data related to the PM data update process for the specific mountNames
+                            from [/initiate-pm-data-update/meta-data]'
+              output:
+                success:
+                  description: 'Missing mountNames provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          missing-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that are missing
+                              initiated as [] filled from { {$input#/mount-names} that are not included in {$input#/meta-data=*/mount-name} }
+              error:
+                description: 'ResultCc could not be provided'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'mountNames not provided'
+                        - 'mountNames invalid'
+                        - 'metaData not provided'
+                        - 'metaData invalid'
+                        - 'missingMountNames could not be provided'
+                        - 'general processing error'
+          listUnconnectedMountNames:
+            summary: 'Lists mount names that are in input mountNames, but not in connected state in metaData'
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - mount-names
+                        - meta-data
+                      properties:
+                        mount-names:
+                          type: array
+                          description: >
+                            'mountNames for which PM data shall be updated
+                            from [/initiate-pm-data-update/mount-names]'
+                        meta-data:
+                          type: array
+                          description: >
+                            'meta data related to the PM data update process for the specific mountNames
+                            from [/initiate-pm-data-update/meta-data]'
+              output:
+                success:
+                  description: 'Unconnected mountNames provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          unconnected-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that are currently not in connected state at the controller
+                              initiated as [] filled from { {$input#/mount-names[*]} with {$input#/meta-data={$input#/mount-names[*]}/connection-status}!={connected} }'
+              error:
+                description: 'ResultCc could not be provided'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'mountNames not provided'
+                        - 'mountNames invalid'
+                        - 'metaData not provided'
+                        - 'metaData invalid'
+                        - 'unconnectedMountNames could not be provided'
+                        - 'general processing error'
+          listUpToDateMountNames:
+            summary: 'Lists mount names that are in input mountNames, but already up-to-date in metaData'
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - mount-names
+                        - meta-data
+                      properties:
+                        mount-names:
+                          type: array
+                          description: >
+                            'mountNames for which PM data shall be updated
+                            from [/initiate-pm-data-update/mount-names]'
+                        meta-data:
+                          type: array
+                          description: >
+                            'meta data related to the PM data update process for the specific mountNames
+                            from [/initiate-pm-data-update/meta-data]'
+              output:
+                success:
+                  description: 'Up-to-date mountNames provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          already-up-to-date-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that are already up-to-date in metaData
+                              initiated as [] filled from { {$input#/mount-names[*]} with ( {current time} - {$input#/meta-data={$input#/mount-names[*]}/last-successful-complete-control-construct-update-time} < {15minutes} ) }'
+                          outdated-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that need an update for completing the PM data
+                              initiated as [] filled from { {$input#/mount-names[*]} with ( {current time} - {$input#/meta-data={$input#/mount-names[*]}/last-successful-complete-control-construct-update-time} >= {15minutes} ) }'
+              error:
+                description: 'ResultCc could not be provided'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'mountNames not provided'
+                        - 'mountNames invalid'
+                        - 'metaData not provided'
+                        - 'metaData invalid'
+                        - 'alreadyUpToDateMountNames could not be provided'
+                        - 'outdatedMountNames could not be provided'
+                        - 'general processing error'
+          requestLiveCc: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             get:
               parameters:
                 - $ref: '#/components/parameters/user'
@@ -358,7 +525,7 @@ paths:
                 - $ref: '#/components/parameters/x-correlator'
                 - $ref: '#/components/parameters/trace-indicator'
                 - $ref: '#/components/parameters/customer-journey'
-                - name: mount-name
+                - name: mountName
                   in: path
                   required: true
                   schema:
@@ -366,7 +533,7 @@ paths:
                     example: '222250001'
                   description: >
                     'The mount-name of the device that is addressed by this callback
-                    from '
+                    from [/initiate-pm-data-update/mount-names[*]]'
                 - name: fields
                   in: query
                   required: true
@@ -436,6 +603,40 @@ paths:
                   $ref: '#/components/responses/533'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
+          p1LoadParameters:
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - function-name
+                      properties:
+                        function-name:
+                          type: string
+                          description: >
+                            'Name of the Function whose parameters are to be loaded from the configFile
+                            from [/initiate-pm-data-update/function-name]'
+              output:
+                success:
+                  description: 'Parameters successfully loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          parameters:
+                            type: object
+                          config-file:
+                            type: object
+                error:
+                  description: 'Parameters could not be loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: string
 
 
 ########################################################################################################################

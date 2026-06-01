@@ -99,9 +99,9 @@ components:
                   'Owner of the parameter
                   from [/load-parameters/function-profile/function-profile-capability/parameter-list=*/owner]'
                 enum:
-                  - platform
-                  - engineering
-                  - user
+                  - 'platform'
+                  - 'engineering'
+                  - 'user'
               value:
                 type: string
                 description: >

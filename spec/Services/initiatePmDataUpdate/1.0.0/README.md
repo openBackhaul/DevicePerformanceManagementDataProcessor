@@ -2,9 +2,11 @@
 
 ## Overview
 
-The initiatePmDataUpdate service can be called on demand.  
-It requires a list of mountNames as input, and triggers updating the controlConstruct of these devices in the MWDI ES.  
-Updated controlConstructs trigger the processing and sending of PM data for these devices by the DPMDP.  
+The initiatePmDataUpdate service requires a list of mountNames as input.  
+It triggers updating the ControlConstructs of these devices in the MWDI ES.  
+Updated ControlConstructs trigger the processing and sending of contained PM data by the DPMDP.  
+
+Additional details on the [initial considerations](../../../additionalDocumentation/onDemandUpdate/onDemandUpdate.md) have been documented.  
 
 ## Diagram
 

@@ -41,7 +41,7 @@ participant "p1Transmitting\nKafka" as p1Trans
 participant "p2Storing\n" as p2Store #LightYellow
 participant "p1MaintainDs\n" as p1MaintainDs
 
-===== Changes for adding BH KPIs =====
+== Changes for adding BH KPIs ==
 
 note over p2ProcessPm
   - Add interface to p1LoadOffsetsAndStatusData

@@ -7,6 +7,7 @@ end title
 
 participant "requestor\n" as tool
 participant "initiatePmDataUpdate\n" as initUpdate #Cyan
+participant "p1LoadParameters\n" as p1LoadParams
 participant "MWDI:\n/provideDeviceStatusMetadata" as mwdiMeta
 participant "MWDI:\n/live/control-construct" as mwdiLive
 
@@ -28,7 +29,7 @@ activate initUpdate #Cyan
   note left initUpdate
     ELSE
     - sends error message
-      server responds, but service/resource doesn't exist
+      "server responds, but service/resource doesn't exist"
       application: 533 (hidden server: 404)
     - terminates
   end note
@@ -43,7 +44,7 @@ activate initUpdate #Cyan
   note left initUpdate
     ELSE
     - sends error message
-      server does not respond, even on ping
+      "server does not respond, even on ping"
       application: 532 (hidden server: no response)
     - terminates
   end note
@@ -58,31 +59,41 @@ activate initUpdate #Cyan
   note left initUpdate
     ELSE
     - sends warning message
-    - removes up-to-date devices from list
-    - continues with remaining devices
+    - removes up-to-date devices from [mountNames]
+    - continues with reduced [mountNames]
   end note
   tool <-[#Cyan]- initUpdate : 200\n{ [alreadyUpToDateMountNames] }
   note over initUpdate
     THEN
   end note
 
-  note right initUpdate
+  note right initUpdate #White
     ignores that success rate of requests to
     connected devices is little below 100%  
   end note
   tool <-[#Cyan]- initUpdate : 204
 
+  initUpdate -> p1LoadParams : {functionName=\n"initiatePmDataUpdate"}
+  activate p1LoadParams
+    note over p1LoadParams
+      Loads parameters
+      from configFile
+    end note
+  initUpdate <-- p1LoadParams : { {parameters}\n{configFile} }
+  deactivate p1LoadParams
+
   loop FOR all [mountNames]
 
     note over initUpdate
-      sends requests at a configurable time interval
+      sends requests at a configurable
+      time interval (waitTimeForSending)
     end note
 
     initUpdate -> mwdiLive : { mountName }
     activate mwdiLive
 
 deactivate initUpdate
-note over initUpdate
+note over initUpdate #White
   ignores responses (error messages
   or {controlConstruct}) of MWDI
 end note

@@ -2107,43 +2107,8 @@
               "function-description": "Provides a dump of the PM data of a device from the data store",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-730",
-                "dpmdp-1-1-0-function-p-760",
-                "dpmdp-1-1-0-function-p-790"
-              ]
-            },
-            "function-profile-configuration": {
-              "is-active": true
-            }
-          }
-        },
-
-        {
-          "uuid": "dpmdp-1-1-0-function-p-705",
-          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
-          "function-profile-1-0:function-profile-pac": {
-            "function-profile-capability": {
-              "function-name": "provideDocumentation",
-              "function-description": "Provides documentation of active functions",
-              "parameter-list": [],
-              "sub-function-list": [
-                "dpmdp-1-1-0-function-p-725"
-              ]
-            },
-            "function-profile-configuration": {
-              "is-active": true
-            }
-          }
-        },
-        {
-          "uuid": "dpmdp-1-1-0-function-p-725",
-          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
-          "function-profile-1-0:function-profile-pac": {
-            "function-profile-capability": {
-              "function-name": "p1CreateActiveFunctionsTxtDoc",
-              "function-description": "Created text documentation of active functions",
-              "parameter-list": [],
-              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-710",
+                "dpmdp-1-1-0-function-p-720",
                 "dpmdp-1-1-0-function-p-730"
               ]
             },
@@ -2153,7 +2118,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-730",
+          "uuid": "dpmdp-1-1-0-function-p-710",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2168,7 +2133,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-760",
+          "uuid": "dpmdp-1-1-0-function-p-720",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2176,7 +2141,7 @@
               "function-description": "Composes the address information of an ElasticSearchClient",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-761",
+                  "parameter": "dpmdp-1-1-0-string-p-721",
                   "owner": "platform"
                 }
               ],
@@ -2188,7 +2153,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-761",
+          "uuid": "dpmdp-1-1-0-string-p-721",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -2202,12 +2167,111 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-790",
+          "uuid": "dpmdp-1-1-0-function-p-730",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
               "function-name": "p1ReadDataStoreDeviceData",
               "function-description": "Reads the PM data of a device from the data store",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-750",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "provideDocumentation",
+              "function-description": "Provides documentation of active functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-760"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-760",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1CreateActiveFunctionsTxtDoc",
+              "function-description": "Created text documentation of active functions",
+              "parameter-list": [],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-770"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-770",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1LoadParameters",
+              "function-description": "Loads the parameters from the configFile",
+              "parameter-list": [],
+              "sub-function-list": []
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-800",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "initiatePmDataUpdate",
+              "function-description": "Initiates process of updating PM data for specified devices",
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-801",
+                  "owner": "platform"
+                }
+              ],
+              "sub-function-list": [
+                "dpmdp-1-1-0-function-p-810"
+              ]
+            },
+            "function-profile-configuration": {
+              "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-801",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "waitTimeForSending",
+              "string-purpose": "Wait time [in ms] between sending requests to the liveCC path at the MWDI"
+            },
+            "string-profile-configuration": {
+              "string-value": "200"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-function-p-810",
+          "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
+          "function-profile-1-0:function-profile-pac": {
+            "function-profile-capability": {
+              "function-name": "p1LoadParameters",
+              "function-description": "Loads the parameters from the configFile",
               "parameter-list": [],
               "sub-function-list": []
             },

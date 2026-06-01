@@ -1,0 +1,69 @@
+initiate-pm-data-update:
+  type: object
+  required:
+    - mount-names
+  properties:
+    mount-names:
+      type: array
+      items:
+        type: string
+      description: >
+        'mountNames for which PM data shall be updated
+        from {$input#/mount-names}
+        overwritten by {$listUpToDateMountNames.output#/outdated-mount-names}'
+
+    meta-data:
+      type: array
+      description: >
+        'meta data related to the PM data update process for the specific mountNames
+        from {$PromptForInitiatingPmDataUpdateInitiatesCcUpdateProcess.loadMetaData.200#/device-status-metadata}
+        ! simplified representation !'
+      items:
+        type: object
+        required:
+          - mount-name
+          - connection-status
+          - last-successful-complete-control-construct-update-time
+        properties:
+          mount-name:
+            type: string
+            description: >
+              'Identifier of the device at the Controller'
+          connection-status:
+            type: string
+            description: >
+              'The connection-status of the device (connected if, connected at the Controller; of disconnected of mounted at the Controller, but not in connected state)'
+          last-successful-complete-control-construct-update-time:
+            type: string
+            description: >
+              'Timestamp of the last time, when the controlConstruct was successfully updated completely'
+    missing-mount-names:
+      type: array
+      description: >
+        'mountNames that are missing
+        from {$listMissingMountNames.output#/missing-mount-names}'
+    unconnected-mount-names:
+      type: array
+      description: >
+        'mountNames that are currently unconnected
+        from {$listUnconnectedMountNames.output#/unconnected-mount-names}'
+    already-up-to-date-mount-names:
+      type: array
+      description: >
+        'mountNames that are already up-to-date
+        from {$listUpToDateMountNames.output#/already-up-to-date-mount-names}'
+
+    function-name:
+      type: string
+      enum:
+        - 'initiatePmDataUpdate'
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$p1LoadParameters.output#/parameters}'
+    waitTimeForSending:
+      type: integer
+      description: >
+        'Time in ms to wait before sending next request to liveCC path at MWDI
+        from [/parameters/parameter=waitTimeForSending/value]'

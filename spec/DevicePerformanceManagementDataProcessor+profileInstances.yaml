@@ -1275,41 +1275,16 @@ profile-instances:
       function-description: 'Provides a dump of the PM data of a device from the data store'
       parameter-list:
       sub-function-list:
-        - 'dpmdp-1-1-0-function-p-730'
-        - 'dpmdp-1-1-0-function-p-760'
-        - 'dpmdp-1-1-0-function-p-790'
+        - 'dpmdp-1-1-0-function-p-710'
+        - 'dpmdp-1-1-0-function-p-720'
+        - 'dpmdp-1-1-0-function-p-750'
     configuration:
       is-active: true
 
-
-  # provideDocumentation
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-705'
-    capability:
-      function-name: 'provideDocumentation'
-      function-description: 'Provides documentation of active functions'
-      parameter-list:
-      sub-function-list:
-        - 'dpmdp-1-1-0-function-p-725'
-    configuration:
-      is-active: true
-
-  # p1CreateActiveFunctionsTxtDoc
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-725'
-    capability:
-      function-name: 'p1CreateActiveFunctionsTxtDoc'
-      function-description: 'Created text documentation of active functions'
-      parameter-list:
-      sub-function-list:
-        - 'dpmdp-1-1-0-function-p-730'
-        # TODO: muss hier eigene zweite ProfileInstance für p1LoadParameters angelegt werden?
-    configuration:
-      is-active: true
 
   # p1LoadParameters
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-730'
+    uuid: 'dpmdp-1-1-0-function-p-710'
     capability:
       function-name: 'p1LoadParameters'
       function-description: 'Loads the parameters from the configFile'
@@ -1321,19 +1296,19 @@ profile-instances:
 
   # p1ResolveEsAddress
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-760'
+    uuid: 'dpmdp-1-1-0-function-p-720'
     capability:
       function-name: 'p1ResolveEsAddress'
       function-description: 'Composes the address information of an ElasticSearchClient'
       parameter-list:
-        - parameter: 'dpmdp-1-1-0-string-p-761'
+        - parameter: 'dpmdp-1-1-0-string-p-721'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-761'
+    uuid: 'dpmdp-1-1-0-string-p-721'
     capability:
       string-name: 'dataStoreEsClient'
       purpose: 'UUID of the ElasticsearchClient LTP for storing the resultCc'
@@ -1344,10 +1319,83 @@ profile-instances:
 
   # p1ReadDataStoreDeviceData
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-790'
+    uuid: 'dpmdp-1-1-0-function-p-730'
     capability:
       function-name: 'p1ReadDataStoreDeviceData'
       function-description: 'Reads the PM data of a device from the data store'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # provideDocumentation
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-750'
+    capability:
+      function-name: 'provideDocumentation'
+      function-description: 'Provides documentation of active functions'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-760'
+    configuration:
+      is-active: true
+
+
+  # p1CreateActiveFunctionsTxtDoc
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-760'
+    capability:
+      function-name: 'p1CreateActiveFunctionsTxtDoc'
+      function-description: 'Created text documentation of active functions'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-770'
+    configuration:
+      is-active: true
+
+
+  # p1LoadParameters
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-770'
+    capability:
+      function-name: 'p1LoadParameters'
+      function-description: 'Loads the parameters from the configFile'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # initiatePmDataUpdate
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-800'
+    capability:
+      function-name: 'initiatePmDataUpdate'
+      function-description: 'Initiates process of updating PM data for specified devices'
+      parameter-list:
+        - parameter: 'dpmdp-1-1-0-string-p-801'
+          owner: 'platform'
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-810'
+    configuration:
+      is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-801'
+    capability:
+      string-name: 'waitTimeForSending'
+      purpose: 'Wait time [in ms] between sending requests to the liveCC path at the MWDI'
+    configuration:
+      string-value: '200'
+
+
+  # p1LoadParameters
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-810'
+    capability:
+      function-name: 'p1LoadParameters'
+      function-description: 'Loads the parameters from the configFile'
       parameter-list:
       sub-function-list:
     configuration:
