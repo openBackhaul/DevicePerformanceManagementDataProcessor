@@ -47,57 +47,6 @@ participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
 
 
 ' Release Notes
-== Changes for Measuring Quality ==
-
-note over p2AddRaw
-  - Change from handling {offset} to handling
-    former/newMostRecentPeriodEndTime/24
-end note
-
-note over p2filterPm
-  - Add counting the number of received
-    but not filtered out 15min PM slices
-  - Add return number of received but not
-    filtered out 15min PM slices
-end note
-
-note over p2AddRaw
-  - Add returned number of received
-    but not filtered out 15min PM slices
-    to variables
-  - Add interface to new function
-    p1CalculateInterfacePmDataQuality
-end note
-
-note over calPmQual
-  - Calculate the quality of the
-    provided PM data
-  - Return interfaceQuality of the provided
-    PM data
-end note
-
-note over p2AddRaw
-  - Add consolidating returned interfaceQuality
-    information into deviceQuality
-  - Add returning the deviceQuality of the
-    provided PM data
-end note
-
-note over p2ProcessPm
-  - Add returned deviceQuality
-    information to variables
-  - Add returning the deviceQuality
-    of the provided PM data
-end note
-
-note over p2StreamPm
-  - Consolidate deviceQuality information
-    into list of multiple devices
-  - Add interface to existing function
-    p1TransmittingKafka for streaming
-    quality information to Kafka
-end note
-
 == Changes for multiple ONF Output formats ==
 
 note over p1OutputOnf

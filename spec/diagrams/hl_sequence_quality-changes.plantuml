@@ -1,0 +1,101 @@
+@startuml hl_sequence_quality-changes
+skinparam responseMessageBelowArrow true
+
+title
+  DevicePerformanceManagementDataProcessor
+end title
+
+participant "embedYourself\n" as embed
+participant "provideDevice\nDataStoreDump" as deviceDump #LightSalmon
+participant "initiatePm\nDataUpdate" as initPmData #LightSalmon
+participant "p2StreamPmData\n" as p2StreamPm #LightYellow
+participant "p1LoadParameters\n" as p1LoadParams
+participant "p1ResolveEsAddress\n" as p1ResolveAddress
+participant "p1InitKafka\n" as p1InitKafka
+participant "p1UpdateMwdiReplica\n" as p1UpdateMwdiRep
+
+participant "p2ProcessDevice\n" as p2ProcessPm #LightYellow
+
+participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
+participant "p2LoadRawCc\n" as p2AddRaw #LightYellow
+participant "p1FieldsFilter\n" as p1FieldsFilter
+participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual #LightSalmon
+
+participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
+participant "p1Prepare\nTxModes" as p1prepTxModes
+participant "p1Calculate\nAiCapacity" as aiCC
+participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
+participant "p1Calculate\nIntervalCapacity" as intCC
+participant "p1RemoveOutOf\nRangeLevels" as p1RORL
+participant "p1Remove\nDefaultValues" as p1RemDefault
+participant "p2IterateEc\nPmSlices" as ecSlices #LightYellow
+participant "p1Calculate\nEthernetKpis" as p1EthKpi
+participant "p1Calculate\nUtilization" as p1Util
+participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
+participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
+participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
+
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightYellow
+
+participant "p1Transmitting\nKafka" as p1Trans
+
+participant "p2Storing\n" as p2Store #LightYellow
+participant "p1MaintainDs\n" as p1MaintainDs
+participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
+
+
+' Release Notes
+== Changes for Measuring Quality ==
+
+note over p2AddRaw
+  - Change from handling {offset} to handling
+    former/newMostRecentPeriodEndTime/24
+end note
+
+note over p2filterPm
+  - Add counting the number of received
+    but not filtered out 15min PM slices
+  - Add return number of received but not
+    filtered out 15min PM slices
+end note
+
+note over p2AddRaw
+  - Add returned number of received
+    but not filtered out 15min PM slices
+    to variables
+  - Add interface to new function
+    p1CalculateInterfacePmDataQuality
+end note
+
+note over calPmQual
+  - Calculate the quality of the
+    provided PM data
+  - Return interfaceQuality of the provided
+    PM data
+end note
+
+note over p2AddRaw
+  - Add consolidating returned interfaceQuality
+    information into deviceQuality
+  - Add returning the deviceQuality of the
+    provided PM data
+end note
+
+note over p2ProcessPm
+  - Add returned deviceQuality
+    information to variables
+  - Add returning the deviceQuality
+    of the provided PM data
+end note
+
+note over p2StreamPm
+  - Consolidate deviceQuality information
+    into list of multiple devices
+  - Add interface to existing function
+    p1TransmittingKafka for streaming
+    quality information to Kafka
+end note
+
+@enduml
