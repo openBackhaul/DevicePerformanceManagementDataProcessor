@@ -47,6 +47,7 @@ paths:
                   - '305251234'
                   - '305251235'
       responses:
+        #TODO: listen wir die Responses nicht eigentlich immer numerisch sortiert auf?
         '204':
           description: 'Updating PM data initiated'
           headers:
@@ -78,7 +79,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                 'Life cycle state of the consumed service
-                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '200':
           description: 'Updating PM data initiated, but not for already up-to-date devices'
           content:
@@ -128,7 +129,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                 'Life cycle state of the consumed service
-                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '400':
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '401':
@@ -139,6 +140,10 @@ paths:
           $ref: '#/components/responses/responseForErroredServiceRequests'
         '500':
           $ref: '#/components/responses/responseForErroredServiceRequests'
+        # TODO: 532 und 533 sind ResponseCodes die wir schon bei vorher mal eingeführt hatten. Die sind unten auch mit einem Schema angegeben,
+        #       das aber anders ist. Hier wird zwar auf diese Schemata nicht referenziert, aber irgendwie ist das unglücklich, wenn wir jetzt
+        #       die gleichen ResponseCodes mit unterschiedlichen Inhalten in verschiedenen Apps haben.
+        #       Falls hier eine Änderung erfolgt, müssten die Diagramme auch angepasst werden.
         '532':
           description: 'Updating PM data terminated, as some devices are not connected'
           content:
@@ -188,7 +193,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                 'Life cycle state of the consumed service
-                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '533':
           description: 'Updating PM data terminated, as some devices are missing'
           content:
@@ -238,7 +243,7 @@ paths:
                 example: 'EXPERIMENTAL'
               description: >
                 'Life cycle state of the consumed service
-                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-001/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
@@ -391,6 +396,7 @@ paths:
                             type: array
                             items:
                               type: string
+                            #TODO: stimmt die Formulierung so: meta-data=* - es gibt ja keinen x-key; bzw. müsste man dem meta-data noch einen x-key hinzufügen?
                             description: >
                               'mountNames that are missing
                               initiated as [] filled from { {$input#/mount-names} that are not included in {$input#/meta-data=*/mount-name} }
@@ -603,6 +609,7 @@ paths:
                   $ref: '#/components/responses/533'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
+          # TODO: p1LoadParameters sollte vor requestLiveCc kommen
           p1LoadParameters:
             x-javascript-interface:
               input:

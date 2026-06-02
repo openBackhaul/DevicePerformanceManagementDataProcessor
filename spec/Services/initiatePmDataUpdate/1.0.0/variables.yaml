@@ -32,7 +32,7 @@ initiate-pm-data-update:
           connection-status:
             type: string
             description: >
-              'The connection-status of the device (connected if, connected at the Controller; of disconnected of mounted at the Controller, but not in connected state)'
+              'The connection-status of the device (connected if, connected at the Controller; of disconnected if mounted at the Controller, but not in connected state)'
           last-successful-complete-control-construct-update-time:
             type: string
             description: >

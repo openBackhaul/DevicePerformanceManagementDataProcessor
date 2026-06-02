@@ -46,10 +46,10 @@ Der streamPmData Prozess wird durch eine Aktualisierung der ControlConstructs im
 ### Anordnung
 
 Die on-demand Aktualisierung von Daten im MWDI wird durch die Adressierung der entsprechenden live-Pfade ausgelöst.  
-Der Vorgang erzeugt Last auf den Gerätecontrollern und im DCN aus.  
+Der Vorgang erzeugt Last auf den Gerätecontrollern und im DCN.  
 => Es sind Schutzmechanismen vorzusehen.  
 
-Durch die Auswertung domaininterner Daten lässt sich die Anzahl der Anfragen an die Geräte reduzieren.  
+Durch die Auswertung domain-interner Daten lässt sich die Anzahl der Anfragen an die Geräte reduzieren.  
 
 Die Adressierung der live-Pfade hinter einem Serviceaufruf zu verbergen, ermöglicht spezifischere Rückmeldungen an die Toolebene.  
 
