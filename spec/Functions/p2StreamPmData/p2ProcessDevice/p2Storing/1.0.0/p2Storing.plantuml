@@ -10,7 +10,7 @@ participant "p2Storing\n" as cur
 database "DataStore" as ds
 
 
-requestor -> cur : { {dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+requestor -> cur : { {/parameters/sub-function=p2Storing},\n{dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
 activate cur
 
   note over cur
@@ -20,22 +20,17 @@ activate cur
   cur -> ds: mountName
 
   note over cur
-    storeOffsets
+    storeProcessingData
   end note
-  cur -> ds: { [offsets] }
+  cur -> ds: { dataStoreEsClient://data-store/device=mountName/processing-data,\n[offsets], [statusData] }
   cur <-- ds
 
   note over cur
-    storeStatusData
+    IF storingResultCc == activated
+    THEN
+      storeResultCc into resultData array
   end note
-  cur -> ds: { [statusData] }
-  cur <-- ds
-
-  note over cur
-    storeResultCc
-    into resultData array
-  end note
-  cur -> ds: { {resultCc} }
+  cur -> ds: { dataStoreEsClient://data-store/device=mountName/result-data,\n{resultCc} }
   cur <-- ds
 
   note over cur

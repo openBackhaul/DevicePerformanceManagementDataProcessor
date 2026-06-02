@@ -1239,9 +1239,22 @@ profile-instances:
       function-name: 'p2Storing'
       function-description: 'Stores the resultCc into the DataStore'
       parameter-list:
+        - parameter: 'dpmdp-1-1-0-string-p-621'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-621'
+    capability:
+      string-name: 'storingResultCc'
+      purpose: 'Switch for de-/activating the storing of the resultCc into the DataStore'
+      enumeration:
+        - 'activated'
+        - 'deactivated'
+    configuration:
+      string-value: 'deactivated'
 
 
   # p1TransmittingPmData

@@ -10,9 +10,6 @@ data-store:
         type: object
         required:
           - mount-name
-          - offsets
-          - status-data
-          - result-data
         properties:
           mount-name:
             type: string
@@ -20,46 +17,48 @@ data-store:
               'mountName
               instance to be created during storing, if not existing
               from [ {$storeOffsets.url#device} or {$storeStatusData.url#device} or {$storeResultCc.url#device} ]'
-          offsets:
-            type: array
-            x-key: function-name
+          processing-data:
+            type: object
             description: >
-              'List of offsets of diverse functions
-              from {$storeOffsets.input#/}'
-            items:
-              type: object
-              required:
-                - function-name
-                - offset
-              properties:
-                function-name:
-                  type: string
-                  description: >
-                    'functionName'
-                offset:
+              'Status at the end of the processing of the latest batch
+              from {$storeProcessingData.input#/}'
+            properties:
+              offsets:
+                type: array
+                x-key: function-name
+                description: 'List of offsets of diverse functions'
+                items:
                   type: object
-                  description: >
-                    'one or several attributes describing the offset of a specific function'
-          status-data:
-            type: array
-            x-key: function-name
-            description: >
-              'List of status data of diverse functions
-              from {$storeStatusData.input#/}'
-            items:
-              type: object
-              required:
-                - function-name
-                - status
-              properties:
-                function-name:
-                  type: string
-                  description: >
-                    'functionName'
-                status:
+                  required:
+                    - function-name
+                    - offset
+                  properties:
+                    function-name:
+                      type: string
+                      description: >
+                        'functionName'
+                    offset:
+                      type: object
+                      description: >
+                        'one or several attributes describing the offset of a specific function'
+              status-data:
+                type: array
+                x-key: function-name
+                description: 'List of status data of diverse functions'
+                items:
                   type: object
-                  description: >
-                    'one or several attributes describing the status of a specific function'
+                  required:
+                    - function-name
+                    - status
+                  properties:
+                    function-name:
+                      type: string
+                      description: >
+                        'functionName'
+                    status:
+                      type: object
+                      description: >
+                        'one or several attributes describing the status of a specific function'
           result-data:
             type: array
             x-key: batch-timestamp

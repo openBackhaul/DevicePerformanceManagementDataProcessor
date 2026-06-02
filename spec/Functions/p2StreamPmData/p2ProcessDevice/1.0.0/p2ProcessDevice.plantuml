@@ -97,7 +97,7 @@ activate cur
   deactivate p1Trans
 
   'Storing
-  cur -> p2Store : { {dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+  cur -> p2Store : { {/parameters/sub-function=p2Storing},\n{dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
   activate p2Store
 
     note over p2Store

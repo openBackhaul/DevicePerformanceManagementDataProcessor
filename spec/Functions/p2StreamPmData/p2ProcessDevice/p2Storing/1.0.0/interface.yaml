@@ -13,11 +13,16 @@ x-javascript-interface:
           schema:
             type: object
             required:
+              - parameters
               - data-store-es-client
               - result-cc
               - offsets
               - status-data
             properties:
+              parameters:
+                type: object
+                description: >
+                  'Subtree of the parameters object for p2Storing'
               data-store-es-client:
                 type: object
                 description: >
@@ -44,6 +49,8 @@ x-javascript-interface:
             schema:
               type: string
               enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
                 - 'dataStoreEsClient not provided'
                 - 'dataStoreEsClient invalid'
                 - 'resultCc not provided'
@@ -59,53 +66,26 @@ x-javascript-interface:
     processing:
       lockDevice:
         url:  # [{/storing/data-store-url}]
-          description: >
-            'Parallel maintenance of a device shall be prevented'
-          input:
-            content:
-              application/json:
-                schema:
-                  type: object
-                  required:
-                    - mount-name
-                  properties:
-                    mount-name:
-                      type: string
-                      description: >
-                        'mountName of the device that shall be locked
-                        from [/storing/mount-name]'
-          output:
-            success:
-              description: 'Device locked'
-            error:
-              description: 'Device could not be locked'
-              content:
-                application/json:
-                  schema:
+        description: >
+          'Parallel maintenance of a device shall be prevented'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                properties:
+                  mount-name:
                     type: string
-                    enum:
-                      - 'dataStoreUrl not provided'
-                      - 'dataStoreUrl invalid'
-                      - 'ElasticSearch lock error'
-                      - 'general processing error'
-      storeOffsets:
-        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/offsets]
-        input:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: array
-                x-key: function-name
-                description: >
-                  'Replaces the offsets array of a specific device in the DataStore
-                  if the mountName would not already exist, a new device object to be created in the DataStore
-                  from [/storing/offsets]'
+                    description: >
+                      'mountName of the device that shall be locked
+                      from [/storing/mount-name]'
         output:
           success:
-            description: 'Offsets stored'
+            description: 'Device locked'
           error:
-            description: 'Offsets could not be stored'
+            description: 'Device could not be locked'
             content:
               application/json:
                 schema:
@@ -114,28 +94,27 @@ x-javascript-interface:
                     - 'dataStoreUrl not provided'
                     - 'dataStoreUrl invalid'
                     - 'mountName not provided'
-                    - 'offsets not provided'
-                    - 'offsets invalid'
-                    - 'Writing to DataStore failed'
+                    - 'ElasticSearch lock error'
                     - 'general processing error'
-      storeStatusData:
-        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/status-data]
+      storeProcessingData:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/processing-data]
+        description: >
+          'Replaces the offsets or/and the statusData arrays of a specific device in the DataStore
+          if the mountName would not already exist, a new device object to be created in the DataStore'
         input:
           required: true
           content:
             application/json:
               schema:
-                type: array
-                x-key: function-name
+                type: object
                 description: >
-                  'Replaces the statusData array of a specific device in the DataStore
-                  if the mountName would not already exist, a new device object to be created in the DataStore
-                  from [/storing/status-data]'
+                  'Status at the end of the processing of the latest batch
+                  from [/storing/processing-data]'
         output:
           success:
-            description: 'StatusDataStored'
+            description: 'ProcessingData stored'
           error:
-            description: 'StatusData could not be stored'
+            description: 'ProcessingData could not be stored'
             content:
               application/json:
                 schema:
@@ -144,12 +123,13 @@ x-javascript-interface:
                     - 'dataStoreUrl not provided'
                     - 'dataStoreUrl invalid'
                     - 'mountName not provided'
-                    - 'statusData not provided'
-                    - 'statusData invalid'
-                    - 'Writing to DataStore failed'
+                    - 'processingData not provided'
+                    - 'processingData invalid'
+                    - 'writing to DataStore failed'
                     - 'general processing error'
       storeResultCc:
         url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/result-data={/storing/batch-timestamp}]
+        description: 'to be called exclusively if [/storing/storing-result-cc]==activated'
         input:
           required: true
           content:
@@ -169,42 +149,45 @@ x-javascript-interface:
                 schema:
                   type: string
                   enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
                     - 'batchTimestamp not provided'
                     - 'batchTimestamp invalid'
                     - 'resultCc not provided'
-                    - 'Writing to DataStore failed'
+                    - 'writing to DataStore failed'
                     - 'general processing error'
       unlockDevice:
         url:  # [{/storing/data-store-url}]
-          description: >
-            'Maintenance of a device shall be enabled again'
-          input:
+        description: >
+          'Maintenance of a device shall be enabled again'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'mountName of the device that shall be unlocked
+                      from [/storing/mount-name]'
+        output:
+          success:
+            description: 'Device unlocked'
+          error:
+            description: 'Device could not be unlocked'
             content:
               application/json:
                 schema:
-                  type: object
-                  required:
-                    - mount-name
-                  properties:
-                    mount-name:
-                      type: string
-                      description: >
-                        'mountName of the device that shall be unlocked
-                        from [/storing/mount-name]'
-          output:
-            success:
-              description: 'Device unlocked'
-            error:
-              description: 'Device could not be unlocked'
-              content:
-                application/json:
-                  schema:
-                    type: string
-                    enum:
-                      - 'dataStoreUrl not provided'
-                      - 'dataStoreUrl invalid'
-                      - 'ElasticSearch unlock error'
-                      - 'general processing error'
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'ElasticSearch unlock error'
+                    - 'general processing error'
 
 paths:
   /:

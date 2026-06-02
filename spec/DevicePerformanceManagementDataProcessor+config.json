@@ -2056,11 +2056,33 @@
             "function-profile-capability": {
               "function-name": "p2Storing",
               "function-description": "Stores the resultCc into the DataStore",
-              "parameter-list": [],
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-621",
+                  "owner": "platform"
+                }
+              ],
               "sub-function-list": []
             },
             "function-profile-configuration": {
               "is-active": true
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-621",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "storingResultCc",
+              "string-purpose": "Switch for de-/activating the storing of the resultCc into the DataStore",
+              "enumeration": [
+                "activated",
+                "deactivated"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "deactivated"
             }
           }
         },

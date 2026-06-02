@@ -376,11 +376,17 @@ x-javascript-interface:
               schema:
                 type: object
                 required:
+                  - parameters
                   - data-store-es-client
                   - result-cc
                   - offsets
                   - status-data
                 properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Subtree of the parameters object for p2Storing
+                      from [/process-device/parameters/sub-function=p2Storing]'
                   data-store-es-client:
                     type: object
                     description: >
@@ -399,7 +405,7 @@ x-javascript-interface:
                   status-data:
                     type: array
                     description: >
-                      'offsets
+                      'statusData
                       from [/process-device/status-data]'
         output:
           success:

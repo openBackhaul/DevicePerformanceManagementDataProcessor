@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: p2LoadOffsetsAndStatusData
+  version: 1.0.0
+
+x-javascript-interface:
+  p2LoadOffsetsAndStatusData:
+    summary: 'Loads offsets and statusData for a device from the DataStore'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data-store-es-client
+              - mount-name
+            properties:
+              data-store-es-client:
+                type: object
+                description: 'DataStore ElasticSearch address'
+              mount-name:
+                type: string
+                description: 'mountName of the device for which ControlConstruct data shall be read'
+                mount-name: '100250001'
+    output:
+      success:
+        description: 'Offsets and statusData from DataStore provided'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offsets:
+                  type: array
+                  description: >
+                    'Offsets
+                    from [/load-offsets-and-status-data/offsets]'
+                status-data:
+                  type: array
+                  description: >
+                    'StatusData
+                    from [/load-offsets-and-status-data/status-data]'
+      error:
+        description: 'Offsets and statusData could not be read from DataStore'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'dataStoreUrl not provided'
+                - 'dataStoreUrl invalid'
+                - 'mountName not provided'
+                - 'mountName invalid'
+                - 'ElasticSearch read error'
+                - 'general processing error'
+    processing:
+      retrieveProcessingDataFromDs:
+        url: # [{/load-offsets-and-status-data/data-store-url}][/data-store/device={/load-offsets-and-status-data/mount-name}/processing-data]
+          description: >
+            'Load offsets and statusData arrays of a specific device from the DataStore
+            if the mountName would not already exist, an empty offsets array and an empty statusData array to be provided'
+          output:
+            success:
+              description: 'ProcessingData provided from DataStore'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    description: >
+                      'Status at the end of the processing of the former batch'
+            error:
+              description: 'ProcessingData could not be provided from DataStore'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'dataStoreUrl not provided'
+                      - 'dataStoreUrl invalid'
+                      - 'mountName not provided'
+                      - 'ElasticSearch read error'
+                      - 'processingData could not be provided'
+                      - 'general processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
