@@ -208,7 +208,7 @@ x-javascript-interface:
                 schema:
                   type: string
       p2ProcessDevice:
-        description: 'Number of parallel processes to be managed for avoiding massive peak loads'
+        description: 'Number of parallel processes to be automatically managed for avoiding massive peak loads'
         input:
           required: true
           content:

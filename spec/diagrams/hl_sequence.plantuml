@@ -90,7 +90,7 @@ activate p2StreamPm
   deactivate p1LoadParams
 
   ' Resolve ES address
-  Loop FOR all esName
+  loop FOR all esName
     p2StreamPm -> p1ResolveAddress
     activate p1ResolveAddress
       note over p1ResolveAddress
@@ -99,7 +99,7 @@ activate p2StreamPm
     p2StreamPm <-- p1ResolveAddress
     deactivate p1ResolveAddress
 
-  end Loop
+  end loop
 
   ' Init Kafka
   p2StreamPm -> p1InitKafka
@@ -122,14 +122,14 @@ activate p2StreamPm
   p2StreamPm -> p1MaintainDs
   activate p1MaintainDs
 
-  Loop endless
+  loop endless
     note over p1MaintainDs
       Deletes old
       resultCc
     end note
   end loop
 
-  Loop endless
+  loop endless
 
     ' Update MWDI replica
     p2StreamPm -> p1UpdateMwdiRep
@@ -140,7 +140,7 @@ activate p2StreamPm
     p2StreamPm <-- p1UpdateMwdiRep
     deactivate p1UpdateMwdiRep
 
-    Loop for every updated CC
+    group partially parallel execution of all updatedMountNames
 
       ' ProcessDevice
       p2StreamPm -> p2ProcessPm
@@ -457,7 +457,7 @@ activate p2StreamPm
       p2StreamPm <-- p2ProcessPm : {pmDataQuality}
       deactivate p2ProcessPm
 
-    end Loop
+    end loop
 
     ' KafkaTransmission
     p2StreamPm -> p1Trans
@@ -471,7 +471,7 @@ activate p2StreamPm
     p2StreamPm <-- p1Trans
     deactivate p1Trans
 
-  end Loop
+  end loop
 
 
 -> deviceDump

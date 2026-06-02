@@ -31,7 +31,7 @@ activate p2Stream
   p2Stream <-- p1LP : { {parameters}\n{configFile} }
   deactivate p1LP
 
-  Loop FOR all esName
+  loop FOR all esName
     p2Stream -> p1REA : { {/parameters/sub-function=p1ResolveEsAddress}\n{configFile}\nesName }
     activate p1REA
       note over p1REA
@@ -39,7 +39,7 @@ activate p2Stream
       end note
     p2Stream <-- p1REA : { {esAddress} }
     deactivate p1REA
-  end Loop
+  end loop
 
     p2Stream -> p1InitKafka : { {/parameters/sub-function=p1InitKafka}\n{configFile} }
     activate p1InitKafka
@@ -69,7 +69,7 @@ activate p2Stream
     p2Stream <-- p1UMR : { [updatedMountNames]\ntimestamp }
     deactivate p1UMR
 
-    loop FOR all [updatedMountNames]
+    group partially parallel execution of all updatedMountNames
       p2Stream -> p2ProcessDev : { {/parameters/sub-function=p2ProcessDevice}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
       activate p2ProcessDev
         note over p2ProcessDev
@@ -77,7 +77,7 @@ activate p2Stream
         end note
       p2Stream <-- p2ProcessDev: { {deviceQualityPmData} }
       deactivate p2ProcessDev
-    end loop
+    end group
 
   p2Stream -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
   activate p1Trans
