@@ -49,7 +49,10 @@ async function loadLastReplicaTimeFromEs(loggingEsClient, logger) {
     return null;
   }
 
-  return (response._source || {}).lastReplicaTime || null;
+  const source = (response || {}).body?._source;
+  return source.lastReplicaTime || null;
+
+  //return (response._source || {}).lastReplicaTime || null;
 }
 
 async function saveLastReplicaTimeToEs(loggingEsClient, timestamp, logger) {

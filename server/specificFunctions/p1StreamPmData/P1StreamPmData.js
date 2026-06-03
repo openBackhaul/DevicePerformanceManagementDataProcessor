@@ -160,14 +160,6 @@ async function run() {
     replicaLockTtlMs: redisConfig.replicaLockTtlMs || 60000
   }).catch((error) => logger.error({ error }, `Replica leader loop crashed: ${error.message || error}`));
 
-  /* startCleanupLeaderLoop({
-    logger,
-    cleanupParameters: p1MaintainDsParameters,
-    dataStoreEsClient,
-    loggingEsClient,
-    cleanupLockTtlMs: redisConfig.cleanupLockTtlMs || 300000
-  }).catch((error) => logger.error({ error }, "Cleanup leader loop crashed"));*/
-
   startProcessingWorkerPoolRedis({
     logger,
     instanceId,
@@ -226,6 +218,14 @@ async function run() {
     // false means do not retry immediately on startup
     retryRunImmediately: redisConfig.retryRunImmediately === true,
   }).catch((error) => logger.error({ error }, "Retry worker pool crashed")); 
+
+  startCleanupLeaderLoop({
+    logger,
+    cleanupParameters: p1MaintainDsParameters,
+    dataStoreEsClient,
+    loggingEsClient,
+    cleanupLockTtlMs: redisConfig.cleanupLockTtlMs || 300000
+  }).catch((error) => logger.error({ error }, "Cleanup leader loop crashed"));
 
   return {
     instanceId,

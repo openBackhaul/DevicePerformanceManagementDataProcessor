@@ -8,6 +8,8 @@ const formatAptOutputErrors = require('./p1FormattingOutputApt/ErrorsEnum');
 const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutputApt");
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
 const p1FormattingOutputOnf = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
+const fs = require("fs");
+const sampleResultCcApt = require("./outputAPTSample.json");
 
 function getTargetConsumers(kafkaConsumerTypes) {
   return String(
@@ -20,7 +22,7 @@ function getTargetConsumers(kafkaConsumerTypes) {
 }
 
 function shouldPublishDataQuality() {
-  return String(global.DPMDP_ENABLE_DATAQUALITY_TOPIC || "false") === "false";
+  return String(global.DPMDP_ENABLE_DATAQUALITY_TOPIC || "true") === "true";
 }
 
 async function queueKafkaOutputsOneByOne(request) {
@@ -48,7 +50,7 @@ async function queueKafkaOutputsOneByOne(request) {
     });
   }
 
-  if (shouldPublishDataQuality()) {
+  /* if (shouldPublishDataQuality()) {
     await redisQueueKafkaOutbound.run({
       dataStoreEsClient,
       output: {
@@ -69,7 +71,7 @@ async function queueKafkaOutputsOneByOne(request) {
       },
       logger
     });
-  }
+  } */
 }
 
 /**
@@ -287,21 +289,30 @@ async function run(request) {
 
     const correlationId = `dpmdp-${resultMountName}-${Date.now()}`;
 
+    /* function loadJsonToField(filePath) {
+      const fileContent = fs.readFileSync(filePath, "utf8");
+      const outputObject = JSON.parse(fileContent);
+      return outputObject;
+    }
+
+    const sampleOutputResultCcApt = loadJsonToField("./outputAPTSample.json"); */
+
     await queueKafkaOutputsOneByOne({
         mountName: resultMountName,
-        resultCc: createResultCcResponse.resultCc,
+        resultCc: sampleResultCcApt,//TODO: createResultCcResponse.resultCc,
         correlationId,
         dataStoreEsClient,
-        logger: request.logger
+        logger: request.logger,
+        kafkaConsumerTypes
     }); 
 
-    /* await p1Storing.run({
+    await p1Storing.run({
       dataStoreEsClient,
-      resultCc: createResultCcResponse.resultCc,
+      resultCc: sampleResultCcApt,//TODO: createResultCcResponse.resultCc,
       interfaceMetadataList: createResultCcResponse.interfaceMetadataList,
       mountName: resultMountName,
       logger
-    }); */
+    });
 
     return {
       resultCc: createResultCcResponse.resultCc,
