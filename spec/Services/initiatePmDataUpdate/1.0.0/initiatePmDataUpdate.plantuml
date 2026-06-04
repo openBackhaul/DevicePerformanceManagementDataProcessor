@@ -33,7 +33,7 @@ activate initUpdate
       application: 533 (hidden server: 404)
     - terminates
   end note
-  tool <-- initUpdate : 533\n{ [missingMountNames] }
+  tool <-- initUpdate : 533\n{ code,\nmessage,\n[missingMountNames] }
   note over initUpdate
     THEN
   end note
@@ -48,7 +48,7 @@ activate initUpdate
       application: 532 (hidden server: no response)
     - terminates
   end note
-  tool <-- initUpdate : 532\n{ [unconnectedMountNames] }
+  tool <-- initUpdate : 532\n{ code,\nmessage,\n[unconnectedMountNames] }
   note over initUpdate
     THEN
   end note

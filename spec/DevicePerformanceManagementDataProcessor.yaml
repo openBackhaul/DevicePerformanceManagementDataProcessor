@@ -1160,39 +1160,6 @@ paths:
                   - '305251234'
                   - '305251235'
       responses:
-        #TODO: listen wir die Responses nicht eigentlich immer numerisch sortiert auf?
-        '204':
-          description: 'Updating PM data initiated'
-          headers:
-            x-correlator:
-              schema:
-                type: string
-                example: '550e8400-e29b-11d4-a716-446655440000'
-              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
-            exec-time:
-              schema:
-                type: integer
-                example: 1100
-              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         '200':
           description: 'Updating PM data initiated, but not for already up-to-date devices'
           content:
@@ -1243,40 +1210,8 @@ paths:
               description: >
                 'Life cycle state of the consumed service
                 from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
-        '400':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '401':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '403':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '404':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        '500':
-          $ref: '#/components/responses/responseForErroredServiceRequests'
-        # TODO: 532 und 533 sind ResponseCodes die wir schon bei vorher mal eingeführt hatten. Die sind unten auch mit einem Schema angegeben,
-        #       das aber anders ist. Hier wird zwar auf diese Schemata nicht referenziert, aber irgendwie ist das unglücklich, wenn wir jetzt
-        #       die gleichen ResponseCodes mit unterschiedlichen Inhalten in verschiedenen Apps haben.
-        #       Falls hier eine Änderung erfolgt, müssten die Diagramme auch angepasst werden.
-        '532':
-          description: 'Updating PM data terminated, as some devices are not connected'
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - unconnected-mount-names
-                properties:
-                  unconnected-mount-names:
-                    type: array
-                    description: >
-                      'mountNames that are not connected
-                      from [/initiate-pm-data-update/unconnected-mount-names]'
-                    items:
-                      type: string
-              example:
-                unconnected-mount-names:
-                  - '305251234'
-                  - '305251235'
+        '204':
+          description: 'Updating PM data initiated'
           headers:
             x-correlator:
               schema:
@@ -1307,15 +1242,84 @@ paths:
               description: >
                 'Life cycle state of the consumed service
                 from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
-        '533':
-          description: 'Updating PM data terminated, as some devices are missing'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '532':
+          description: >
+            'Updating PM data terminated, as some devices are not connected
+            Response in case the server is acting as a gateway or proxy and was unable to connect to the upstream server (device or application providing a consumed service)'
           content:
             application/json:
               schema:
                 type: object
                 required:
+                  - code
+                  - message
+                  - unconnected-mount-names
+                properties:
+                  code:
+                    type: integer
+                    minimum: 532
+                    maximum: 532
+                    format: int32
+                  message:
+                    type: string
+                    enum:
+                      - 'Bad Gateway. Upstream server not responding.'
+                  unconnected-mount-names:
+                    type: array
+                    description: >
+                      'mountNames that are not connected
+                      from [/initiate-pm-data-update/unconnected-mount-names]'
+                    items:
+                      type: string
+              example:
+                code: 532
+                message: 'Bad Gateway. Upstream server not responding.'
+                unconnected-mount-names:
+                  - '305251234'
+                  - '305251235'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+        '533':
+          description: >
+            'Updating PM data terminated, as some devices are missing
+            Response in case the referenced resource for an connected device does not exist at the controller.'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
                   - missing-mount-names
                 properties:
+                  code:
+                    type: integer
+                    minimum: 533
+                    maximum: 533
+                    format: int32
+                  message:
+                    type: string
+                    enum:
+                      - 'Resource unknown. The resource for the connected device does not exist at the Controller'
                   missing-mount-names:
                     type: array
                     description: >
@@ -1338,25 +1342,6 @@ paths:
                 type: integer
                 example: 1100
               description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
-            backend-time:
-              schema:
-                type: integer
-                example: 850
-              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
-            life-cycle-state:
-              schema:
-                type: string
-                enum:
-                  - 'EXPERIMENTAL'
-                  - 'OPERATIONAL'
-                  - 'DEPRECATED'
-                  - 'OBSOLETE'
-                  - 'UNKNOWN'
-                  - 'NOT_YET_DEFINED'
-                example: 'EXPERIMENTAL'
-              description: >
-                'Life cycle state of the consumed service
-                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
@@ -1509,7 +1494,6 @@ paths:
                             type: array
                             items:
                               type: string
-                            #TODO: stimmt die Formulierung so: meta-data=* - es gibt ja keinen x-key; bzw. müsste man dem meta-data noch einen x-key hinzufügen?
                             description: >
                               'mountNames that are missing
                               initiated as [] filled from { {$input#/mount-names} that are not included in {$input#/meta-data=*/mount-name} }
@@ -1636,6 +1620,40 @@ paths:
                         - 'alreadyUpToDateMountNames could not be provided'
                         - 'outdatedMountNames could not be provided'
                         - 'general processing error'
+          p1LoadParameters:
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - function-name
+                      properties:
+                        function-name:
+                          type: string
+                          description: >
+                            'Name of the Function whose parameters are to be loaded from the configFile
+                            from [/initiate-pm-data-update/function-name]'
+              output:
+                success:
+                  description: 'Parameters successfully loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          parameters:
+                            type: object
+                          config-file:
+                            type: object
+                error:
+                  description: 'Parameters could not be loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: string
           requestLiveCc: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
             get:
               parameters:
@@ -1722,41 +1740,6 @@ paths:
                   $ref: '#/components/responses/533'
                 default:
                   $ref: '#/components/responses/responseForErroredServiceRequests'
-          # TODO: p1LoadParameters sollte vor requestLiveCc kommen
-          p1LoadParameters:
-            x-javascript-interface:
-              input:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      required:
-                        - function-name
-                      properties:
-                        function-name:
-                          type: string
-                          description: >
-                            'Name of the Function whose parameters are to be loaded from the configFile
-                            from [/initiate-pm-data-update/function-name]'
-              output:
-                success:
-                  description: 'Parameters successfully loaded'
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          parameters:
-                            type: object
-                          config-file:
-                            type: object
-                error:
-                  description: 'Parameters could not be loaded'
-                  content:
-                    application/json:
-                      schema:
-                        type: string
 
 ########################################################################################################################
 #   Service Layer - Basic Part
