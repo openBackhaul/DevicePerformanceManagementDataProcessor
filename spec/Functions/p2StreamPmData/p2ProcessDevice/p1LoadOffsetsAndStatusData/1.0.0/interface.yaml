@@ -55,20 +55,22 @@ x-javascript-interface:
                 - 'ElasticSearch read error'
                 - 'general processing error'
     processing:
-      retrieveOffsetsFromDs:
-        url: # [{/load-offsets-and-status-data/data-store-url}][/data-store/device={/load-offsets-and-status-data/mount-name}/offsets]
-          description: 'Load offsets from DataStore'
+      retrieveProcessingDataFromDs:
+        url: # [{/load-offsets-and-status-data/data-store-url}][/data-store/device={/load-offsets-and-status-data/mount-name}/processing-data]
+          description: >
+            'Load offsets and statusData arrays of a specific device from the DataStore
+            if the mountName would not already exist, an empty offsets array and an empty statusData array to be provided'
           output:
             success:
-              description: 'Offsets from DataStore provided'
+              description: 'ProcessingData provided from DataStore'
               content:
                 application/json:
                   schema:
-                    type: array
+                    type: object
                     description: >
-                      'Offsets for the device'
+                      'Status at the end of the processing of the former batch'
             error:
-              description: 'Offsets from DataStore could not be provided'
+              description: 'ProcessingData could not be provided from DataStore'
               content:
                 application/json:
                   schema:
@@ -77,33 +79,8 @@ x-javascript-interface:
                       - 'dataStoreUrl not provided'
                       - 'dataStoreUrl invalid'
                       - 'mountName not provided'
-                      - 'mountName invalid'
-                      - 'ElasticSearch read error for offsets'
-                      - 'general processing error'
-      retrieveStatusDataFromDs:
-        url: # [{/load-offsets-and-status-data/data-store-url}][/data-store/device={/load-offsets-and-status-data/mount-name}/status-data]
-          description: 'Load statusData from DataStore'
-          output:
-            success:
-              description: 'StatusData from DataStore provided'
-              content:
-                application/json:
-                  schema:
-                    type: array
-                    description: >
-                      'StatusData for the device'
-            error:
-              description: 'StatusData from DataStore could not be provided'
-              content:
-                application/json:
-                  schema:
-                    type: string
-                    enum:
-                      - 'dataStoreUrl not provided'
-                      - 'dataStoreUrl invalid'
-                      - 'mountName not provided'
-                      - 'mountName invalid'
-                      - 'ElasticSearch read error for status-data'
+                      - 'ElasticSearch read error'
+                      - 'processingData could not be provided'
                       - 'general processing error'
 
 paths:

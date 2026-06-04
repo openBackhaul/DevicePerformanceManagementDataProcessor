@@ -13,16 +13,10 @@ requestor -> cur: { {dataStoreEsClient},\nmountName }
 activate cur
 
   note over cur
-    retrieveOffsets
+    retrieveProcessingDataFromDs
   end note
-  cur -> datastore: { dataStoreEsClient://data-store/device=mountName/offsets }
-  cur <-- datastore: { [offsets] }
-
-  note over cur
-    retrieveStatusData
-  end note
-  cur -> datastore: { dataStoreEsClient://data-store/device=mountName/status-data }
-  cur <-- datastore: { [statusData] }
+  cur -> datastore: { dataStoreEsClient://data-store/device=mountName/processing-data }
+  cur <-- datastore: { [offsets], [statusData] }
 
 requestor <-- cur: { [offsets],\n[statusData] }
 deactivate cur
