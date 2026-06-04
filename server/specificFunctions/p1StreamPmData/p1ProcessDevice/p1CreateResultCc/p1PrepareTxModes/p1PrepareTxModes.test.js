@@ -300,7 +300,6 @@ describe('p1PrepareTxModes - Real dataset', () => {
       'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
     });
 
-
-    expect(result).toBe("historicalPerformanceDataList incomplete");
+    expect(result["transmission-mode-list"].length).toBe(1);
   });
 });

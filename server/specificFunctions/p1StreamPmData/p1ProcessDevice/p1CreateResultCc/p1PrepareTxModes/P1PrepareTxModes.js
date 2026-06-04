@@ -31,14 +31,18 @@ const p1PrepareTxModes = (input) => {
       return ERRORS.TX_MODE_LIST_INVALID;
     }
 
-    for (const entry of histList) {
-      if (
-        !entry['performance-data'] ||
-        !Array.isArray(entry['performance-data']['time-xstates-list'])
-      ) {
+    for (let i = 0; i< histList.length; i++) {
+      const entry = histList[i];
+      if (!entry['performance-data']) {
         return ERRORS.HIST_PERF_DATA_INCOMPLETE;
+      } else if (!Array.isArray(entry['performance-data']['time-xstates-list'])) {
+        // Skip PM data where 'time-xstate-list' is not present
+        const idx = histList.indexOf(entry);
+        histList.splice(i, 1);
+        i = i-1;
       }
     }
+
     for (const mode of txModeList) {
       if (
         mode['channel-bandwidth'] === undefined ||
