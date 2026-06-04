@@ -53,10 +53,10 @@ activate cur
       Creates documentation
       from {parameters}
     end note
-  cur <-- p1Doc: { documentation }
+  cur <-- p1Doc: documentation
   deactivate p1Doc
 
-requestor <-- cur: { documentation }
+requestor <-- cur: documentation
 deactivate cur
 
 @enduml

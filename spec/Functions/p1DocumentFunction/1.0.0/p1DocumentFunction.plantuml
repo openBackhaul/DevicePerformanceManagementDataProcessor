@@ -20,7 +20,7 @@ activate cur
     Keep formatting rules provided in readme.md
   end note
 
-requestor <-- cur: { documentation }
+requestor <-- cur: documentation
 deactivate cur
 
 @enduml

@@ -45,7 +45,7 @@ participant "p1Transmitting\nKafka" as p1Trans
 participant "p2Storing\n" as p2Store #LightYellow
 participant "p1MaintainDs\n" as p1MaintainDs
 participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
-participant "p1DocumentFunction\n" as p1Doc #LightSalmon
+participant "p1Document\nFunction" as p1Doc #LightSalmon
 
 ' Release Notes
 == Changes for multiple ONF Output formats ==
@@ -65,7 +65,28 @@ note over p2ProcessPm
     to receive list of ONF output formats
 end note
 
-== Changes for On-demand PmData ==
+== Changes for DeviceDump Service ==
+
+note over deviceDump
+  - Load ES address
+end note
+
+note over p1ReadDevice
+  - Read device data
+end note
+
+== Changes for ProcessingDocumentation Service ==
+
+note over docuPm
+  - Load parameters
+end note
+
+note over p1Doc
+  - Create documentation
+    from parameters
+end note
+
+== Changes for On-demand PmData Service ==
 
 note over initPmData
   - Address live paths at MWDI
