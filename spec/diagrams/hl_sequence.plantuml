@@ -7,6 +7,7 @@ end title
 
 participant "embedYourself\n" as embed
 participant "provideDevice\nDataStoreDump" as deviceDump #LightSalmon
+participant "documentPmData\nProcessing" as docuPm #LightSalmon
 participant "initiatePm\nDataUpdate" as initPmData #LightSalmon
 participant "p2StreamPmData\n" as p2StreamPm #LightYellow
 participant "p1LoadParameters\n" as p1LoadParams
@@ -44,7 +45,7 @@ participant "p1Transmitting\nKafka" as p1Trans
 participant "p2Storing\n" as p2Store #LightYellow
 participant "p1MaintainDs\n" as p1MaintainDs
 participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
-
+participant "p1DocumentFunction\n" as p1Doc #LightSalmon
 
 ' Release Notes
 == Changes for multiple ONF Output formats ==
@@ -477,7 +478,6 @@ activate p2StreamPm
 -> deviceDump
 activate deviceDump
 
-  ' Load parameters
   deviceDump -> p1LoadParams
   activate p1LoadParams
     note over p1LoadParams
@@ -487,7 +487,6 @@ activate deviceDump
   deviceDump <-- p1LoadParams
   deactivate p1LoadParams
 
-  ' Resolve ES address
     deviceDump -> p1ResolveAddress
     activate p1ResolveAddress
       note over p1ResolveAddress
@@ -496,12 +495,11 @@ activate deviceDump
     deviceDump <-- p1ResolveAddress
     deactivate p1ResolveAddress
 
-  ' Load device PM data from DS
     deviceDump -> p1ReadDevice
     activate p1ReadDevice
       note over p1ReadDevice
-        - Reads device PM
-          data from DataStore
+        Reads device PM
+        data from DataStore
       end note
     deviceDump <-- p1ReadDevice
     deactivate p1ReadDevice
@@ -510,10 +508,44 @@ activate deviceDump
 deactivate deviceDump
 
 
+-> docuPm
+activate docuPm
+
+  docuPm -> p1LoadParams
+  activate p1LoadParams
+    note over p1LoadParams
+      Loads own parameters
+      from configFile
+    end note
+  docuPm <-- p1LoadParams
+  deactivate p1LoadParams
+
+  docuPm -> p1LoadParams
+  activate p1LoadParams
+    note over p1LoadParams
+      Loads parameters of PM
+      data processing function
+      from configFile
+    end note
+  docuPm <-- p1LoadParams
+  deactivate p1LoadParams
+
+  docuPm -> p1Doc
+  activate p1Doc
+    note over p1Doc
+      Creates documentation
+      from {parameters}
+    end note
+  docuPm <-- p1Doc
+  deactivate p1Doc
+
+<-- docuPm
+deactivate docuPm
+
+
 -> initPmData
 activate initPmData
 
-  ' Load parameters
   initPmData -> p1LoadParams
   activate p1LoadParams
     note over p1LoadParams
@@ -525,7 +557,7 @@ activate initPmData
 
   loop
     note over initPmData
-      trigger liveCC
+      Triggers liveCC
       path at MWDI
     end note
   end loop

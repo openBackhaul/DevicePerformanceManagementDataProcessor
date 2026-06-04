@@ -16,8 +16,8 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ## Variables
 
-Please find a detailed description of the [variables](variables.yaml).
+Please find a detailed description of the [variables](./variables.yaml).
 
 ## NPM Module  
 
-[mw-sdn-p1-discard-irrelevant-pm-records](https://www.npmjs.com/package/mw-sdn-p1-discard-irrelevant-pm-records)  
+[mw-sdn-p2-discard-irrelevant-pm-records](https://www.npmjs.com/package/mw-sdn-p2-discard-irrelevant-pm-records)  

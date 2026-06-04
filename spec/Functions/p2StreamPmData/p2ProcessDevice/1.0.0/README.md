@@ -40,3 +40,7 @@ Please find a detailed description of the [variables](./variables.yaml).
 ## Parameters
 
 Just passing through parameters to sub-functions.  
+
+## NPM Module
+
+[mw-sdn-p2-process-device](https://www.npmjs.com/package/mw-sdn-p2-process-device)  

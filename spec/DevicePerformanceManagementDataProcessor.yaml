@@ -953,7 +953,7 @@ paths:
                       schema:
                         type: string
 
-  /provide-documentation:
+  /document-pm-data-processing:
     parameters:
       - $ref: '#/components/parameters/user'
       - $ref: '#/components/parameters/originator'
@@ -961,25 +961,12 @@ paths:
       - $ref: '#/components/parameters/trace-indicator'
       - $ref: '#/components/parameters/customer-journey'
     post:
-      operationId: provideDocumentation
-      summary: 'Provides documentation of active functions'
+      operationId: documentPmDataProcessing
+      summary: 'Provides documentation about the PM data processing'
       tags:
         - IndividualServices
       security:
         - apiKeyAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - target-function-name
-              properties:
-                target-function-name:
-                  type: string
-                  description: >
-                    'Optional targetFunctionName for which documentation shall be created.
-                    If not provided, default p2StreamPmData is used.'
       responses:
         '200':
           description: 'Documentation provided'
@@ -991,8 +978,8 @@ paths:
                   documentation:
                     type: string
                     description: >
-                      'The generated documentation for the target function
-                      from [/provide-documentation/documentation]'
+                      'Documentation of the PM data processing
+                      from [/document-pm-data-processing/documentation]'
           headers:
             x-correlator:
               schema:
@@ -1036,10 +1023,9 @@ paths:
         default:
           $ref: '#/components/responses/responseForErroredServiceRequests'
       callbacks:
-        PromptForDocumentationCausesCreatingDocumentation:
+        PromptForPmDataProcessingDocumentationCausesLoadingParameters:
           x-javascript-interface:
-            p1CreateActiveFunctionsTxtDoc:
-              summary: 'Generates documentation for the target function and its active sub-functions'
+            p1LoadParameters:
               input:
                 required: true
                 content:
@@ -1052,8 +1038,78 @@ paths:
                         function-name:
                           type: string
                           description: >
-                            'Name of the Function for which documentation shall be generated
-                            from [/provide-documentation/target-function-name]'
+                            'Name of the Function whose parameters are to be loaded from the configFile
+                            from [/document-pm-data-processing/own-function-name]'
+              output:
+                success:
+                  description: 'Parameters successfully loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          parameters:
+                            type: object
+                          config-file:
+                            type: object
+                error:
+                  description: 'Parameters could not be loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: string
+        PromptForPmDataProcessingDocumentationCausesLoadingParametersOfProcessingFunction:
+          x-javascript-interface:
+            p1LoadParameters:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - function-name
+                      properties:
+                        function-name:
+                          type: string
+                          description: >
+                            'Name of the Function whose parameters are to be loaded from the configFile
+                            from [/document-pm-data-processing/name-of-to-be-documented-function]'
+              output:
+                success:
+                  description: 'Parameters successfully loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          parameters:
+                            type: object
+                          config-file:
+                            type: object
+                error:
+                  description: 'Parameters could not be loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: string
+        PromptForPmDataProcessingDocumentationCausesCreatingDocumentation:
+          x-javascript-interface:
+            p1DocumentFunction:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - parameters-of-to-be-documented-function
+                      properties:
+                        parameters-of-to-be-documented-function:
+                          type: object
+                          description: >
+                            'Parameters of the function for which the documentation shall be generated
+                            from [/document-pm-data-processing/parameters-of-to-be-documented-function]'
               output:
                 success:
                   description: 'Documentation successfully generated'
@@ -1061,9 +1117,8 @@ paths:
                     text/plain:
                       schema:
                         type: string
-                        properties:
-                          documentation:
-                            type: string
+                        description: >
+                          'Plain text documentation of the active functions'
                 error:
                   description: 'Documentation could not be generated'
                   content:
@@ -1071,6 +1126,637 @@ paths:
                       schema:
                         type: string
 
+  /initiate-pm-data-update:
+    parameters:
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/originator'
+      - $ref: '#/components/parameters/x-correlator'
+      - $ref: '#/components/parameters/trace-indicator'
+      - $ref: '#/components/parameters/customer-journey'
+    post:
+      operationId: initiatePmDataUpdate
+      summary: 'Initiates process of updating PM data for specified devices'
+      tags:
+        - IndividualServices
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mount-names
+              properties:
+                mount-names:
+                  type: array
+                  description: >
+                    'mountNames for which PM data update shall be initiated'
+                  items:
+                    type: string
+              example:
+                mount-names:
+                  - '305251234'
+                  - '305251235'
+      responses:
+        #TODO: listen wir die Responses nicht eigentlich immer numerisch sortiert auf?
+        '204':
+          description: 'Updating PM data initiated'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '200':
+          description: 'Updating PM data initiated, but not for already up-to-date devices'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - already-up-to-date-mount-names
+                properties:
+                  already-up-to-date-mount-names:
+                    type: array
+                    description: >
+                      'mountNames that are already up-to-date
+                      from [/initiate-pm-data-update/already-up-to-date-mount-names]'
+                    items:
+                      type: string
+              example:
+                already-up-to-date-mount-names:
+                  - '305251234'
+                  - '305251235'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '400':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '401':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '403':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '404':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        '500':
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+        # TODO: 532 und 533 sind ResponseCodes die wir schon bei vorher mal eingeführt hatten. Die sind unten auch mit einem Schema angegeben,
+        #       das aber anders ist. Hier wird zwar auf diese Schemata nicht referenziert, aber irgendwie ist das unglücklich, wenn wir jetzt
+        #       die gleichen ResponseCodes mit unterschiedlichen Inhalten in verschiedenen Apps haben.
+        #       Falls hier eine Änderung erfolgt, müssten die Diagramme auch angepasst werden.
+        '532':
+          description: 'Updating PM data terminated, as some devices are not connected'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - unconnected-mount-names
+                properties:
+                  unconnected-mount-names:
+                    type: array
+                    description: >
+                      'mountNames that are not connected
+                      from [/initiate-pm-data-update/unconnected-mount-names]'
+                    items:
+                      type: string
+              example:
+                unconnected-mount-names:
+                  - '305251234'
+                  - '305251235'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        '533':
+          description: 'Updating PM data terminated, as some devices are missing'
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - missing-mount-names
+                properties:
+                  missing-mount-names:
+                    type: array
+                    description: >
+                      'mountNames that are missing
+                      from [/initiate-pm-data-update/missing-mount-names]'
+                    items:
+                      type: string
+              example:
+                missing-mount-names:
+                  - '305251234'
+                  - '305251235'
+          headers:
+            x-correlator:
+              schema:
+                type: string
+                example: '550e8400-e29b-11d4-a716-446655440000'
+              description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+            exec-time:
+              schema:
+                type: integer
+                example: 1100
+              description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+            backend-time:
+              schema:
+                type: integer
+                example: 850
+              description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+            life-cycle-state:
+              schema:
+                type: string
+                enum:
+                  - 'EXPERIMENTAL'
+                  - 'OPERATIONAL'
+                  - 'DEPRECATED'
+                  - 'OBSOLETE'
+                  - 'UNKNOWN'
+                  - 'NOT_YET_DEFINED'
+                example: 'EXPERIMENTAL'
+              description: >
+                'Life cycle state of the consumed service
+                from [/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-is-010/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-configuration/life-cycle-state]'
+        default:
+          $ref: '#/components/responses/responseForErroredServiceRequests'
+      callbacks:
+        PromptForInitiatingPmDataUpdateInitiatesCcUpdateProcess:
+          loadMetaData: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            post:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        mount-name-list:
+                          type: array
+                          description: >
+                            'List of names of devices for which the status metadata shall be provided
+                            from [/initiate-pm-data-update/mount-names]'
+                          items:
+                            type: string
+              responses:
+                '200':
+                  description: 'Device status metadata provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        required:
+                          - device-status-metadata
+                        properties:
+                          device-status-metadata:
+                            type: array
+                            x-key: mount-name
+                            items:
+                              type: object
+                              required:
+                                - mount-name
+                                - connection-status
+                                - changed-to-disconnected-time
+                                - added-to-device-list-time
+                                - last-complete-control-construct-update-time-attempt
+                                - last-successful-complete-control-construct-update-time
+                                - last-control-construct-notification-update-time
+                                - number-of-partial-updates-since-last-complete-update
+                                - schema-cache-directory
+                                - device-type
+                                - vendor
+                              properties:
+                                mount-name:
+                                  type: string
+                                connection-status:
+                                  type: string
+                                changed-to-disconnected-time:
+                                  type: string
+                                added-to-device-list-time:
+                                  type: string
+                                last-complete-control-construct-update-time-attempt:
+                                  type: string
+                                last-successful-complete-control-construct-update-time:
+                                  type: string
+                                last-control-construct-notification-update-time:
+                                  type: string
+                                number-of-partial-updates-since-last-complete-update:
+                                  type: integer
+                                schema-cache-directory:
+                                  type: string
+                                device-type:
+                                  type: string
+                                vendor:
+                                  type: string
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: >
+                        'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          listMissingMountNames:
+            summary: 'Lists mount names that are in input mountNames, but not in metaData'
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - mount-names
+                        - meta-data
+                      properties:
+                        mount-names:
+                          type: array
+                          description: >
+                            'mountNames for which PM data shall be updated
+                            from [/initiate-pm-data-update/mount-names]'
+                        meta-data:
+                          type: array
+                          description: >
+                            'meta data related to the PM data update process for the specific mountNames
+                            from [/initiate-pm-data-update/meta-data]'
+              output:
+                success:
+                  description: 'Missing mountNames provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          missing-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            #TODO: stimmt die Formulierung so: meta-data=* - es gibt ja keinen x-key; bzw. müsste man dem meta-data noch einen x-key hinzufügen?
+                            description: >
+                              'mountNames that are missing
+                              initiated as [] filled from { {$input#/mount-names} that are not included in {$input#/meta-data=*/mount-name} }
+              error:
+                description: 'ResultCc could not be provided'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'mountNames not provided'
+                        - 'mountNames invalid'
+                        - 'metaData not provided'
+                        - 'metaData invalid'
+                        - 'missingMountNames could not be provided'
+                        - 'general processing error'
+          listUnconnectedMountNames:
+            summary: 'Lists mount names that are in input mountNames, but not in connected state in metaData'
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - mount-names
+                        - meta-data
+                      properties:
+                        mount-names:
+                          type: array
+                          description: >
+                            'mountNames for which PM data shall be updated
+                            from [/initiate-pm-data-update/mount-names]'
+                        meta-data:
+                          type: array
+                          description: >
+                            'meta data related to the PM data update process for the specific mountNames
+                            from [/initiate-pm-data-update/meta-data]'
+              output:
+                success:
+                  description: 'Unconnected mountNames provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          unconnected-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that are currently not in connected state at the controller
+                              initiated as [] filled from { {$input#/mount-names[*]} with {$input#/meta-data={$input#/mount-names[*]}/connection-status}!={connected} }'
+              error:
+                description: 'ResultCc could not be provided'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'mountNames not provided'
+                        - 'mountNames invalid'
+                        - 'metaData not provided'
+                        - 'metaData invalid'
+                        - 'unconnectedMountNames could not be provided'
+                        - 'general processing error'
+          listUpToDateMountNames:
+            summary: 'Lists mount names that are in input mountNames, but already up-to-date in metaData'
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - mount-names
+                        - meta-data
+                      properties:
+                        mount-names:
+                          type: array
+                          description: >
+                            'mountNames for which PM data shall be updated
+                            from [/initiate-pm-data-update/mount-names]'
+                        meta-data:
+                          type: array
+                          description: >
+                            'meta data related to the PM data update process for the specific mountNames
+                            from [/initiate-pm-data-update/meta-data]'
+              output:
+                success:
+                  description: 'Up-to-date mountNames provided'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          already-up-to-date-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that are already up-to-date in metaData
+                              initiated as [] filled from { {$input#/mount-names[*]} with ( {current time} - {$input#/meta-data={$input#/mount-names[*]}/last-successful-complete-control-construct-update-time} < {15minutes} ) }'
+                          outdated-mount-names:
+                            type: array
+                            items:
+                              type: string
+                            description: >
+                              'mountNames that need an update for completing the PM data
+                              initiated as [] filled from { {$input#/mount-names[*]} with ( {current time} - {$input#/meta-data={$input#/mount-names[*]}/last-successful-complete-control-construct-update-time} >= {15minutes} ) }'
+              error:
+                description: 'ResultCc could not be provided'
+                content:
+                  application/json:
+                    schema:
+                      type: string
+                      enum:
+                        - 'mountNames not provided'
+                        - 'mountNames invalid'
+                        - 'metaData not provided'
+                        - 'metaData invalid'
+                        - 'alreadyUpToDateMountNames could not be provided'
+                        - 'outdatedMountNames could not be provided'
+                        - 'general processing error'
+          requestLiveCc: #[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-protocol]://[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/domain-name or /core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-address/ip-address/ipv-4-address]:[/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000/layer-protocol=0/tcp-client-interface-1-0:tcp-client-interface-pac/tcp-client-interface-configuration/remote-port][/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001/operation-client-interface-1-0:operation-client-interface-pac/operation-client-interface-configuration/operation-name]
+            get:
+              parameters:
+                - $ref: '#/components/parameters/user'
+                - $ref: '#/components/parameters/originator'
+                - $ref: '#/components/parameters/x-correlator'
+                - $ref: '#/components/parameters/trace-indicator'
+                - $ref: '#/components/parameters/customer-journey'
+                - name: mountName
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    example: '222250001'
+                  description: >
+                    'The mount-name of the device that is addressed by this callback
+                    from [/initiate-pm-data-update/mount-names[*]]'
+                - name: fields
+                  in: query
+                  required: true
+                  schema:
+                    type: string
+                    enum:
+                      - ''
+              responses:
+                '200':
+                  description: 'ControlConstruct provided from live network'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          core-model-1-4:control-construct:
+                            type: array
+                            items:
+                              type: object
+                  headers:
+                    x-correlator:
+                      schema:
+                        type: string
+                        example: '550e8400-e29b-11d4-a716-446655440000'
+                      description: 'UUID for the service execution flow that allows to correlate requests and responses. Its value must be identical at the response compared with its corresponding request'
+                    exec-time:
+                      schema:
+                        type: integer
+                        example: 1100
+                      description: 'Value written by the service provider, reporting the total elapsed time for the execution, including all the additional processing needed to retrieve the data from the backend service. Expressed in milliseconds'
+                    backend-time:
+                      schema:
+                        type: integer
+                        example: 850
+                      description: 'Value written by the service provider, reporting the elapsed time for data retrieval from the backend (service invocation, database access…). Expressed in milliseconds'
+                    life-cycle-state:
+                      schema:
+                        type: string
+                        enum:
+                          - 'EXPERIMENTAL'
+                          - 'OPERATIONAL'
+                          - 'DEPRECATED'
+                          - 'OBSOLETE'
+                          - 'UNKNOWN'
+                          - 'NOT_YET_DEFINED'
+                        example: 'EXPERIMENTAL'
+                      description: 'Life cycle state of the consumed service'
+                '400':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '401':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '403':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '404':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '500':
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+                '502':
+                  $ref: '#/components/responses/502'
+                '530':
+                  $ref: '#/components/responses/530'
+                '531':
+                  $ref: '#/components/responses/531'
+                '532':
+                  $ref: '#/components/responses/532'
+                '533':
+                  $ref: '#/components/responses/533'
+                default:
+                  $ref: '#/components/responses/responseForErroredServiceRequests'
+          # TODO: p1LoadParameters sollte vor requestLiveCc kommen
+          p1LoadParameters:
+            x-javascript-interface:
+              input:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - function-name
+                      properties:
+                        function-name:
+                          type: string
+                          description: >
+                            'Name of the Function whose parameters are to be loaded from the configFile
+                            from [/initiate-pm-data-update/function-name]'
+              output:
+                success:
+                  description: 'Parameters successfully loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          parameters:
+                            type: object
+                          config-file:
+                            type: object
+                error:
+                  description: 'Parameters could not be loaded'
+                  content:
+                    application/json:
+                      schema:
+                        type: string
 
 ########################################################################################################################
 #   Service Layer - Basic Part

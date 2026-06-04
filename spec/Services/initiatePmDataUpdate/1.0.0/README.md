@@ -20,4 +20,10 @@ Please find a detailed description of the interface in the [openAPI specificatio
 
 ## Variables
 
-Please find a detailed description of the [variables](variables.yaml).  
+Please find a detailed description of the [variables](./variables.yaml).  
+
+## Parameters
+
+| Parameter Name     | Description                                                               |
+|--------------------|---------------------------------------------------------------------------|
+| waitTimeForSending | Wait time [in ms] between sending requests to the liveCC path at the MWDI |

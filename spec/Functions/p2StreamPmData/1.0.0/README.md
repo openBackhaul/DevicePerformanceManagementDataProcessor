@@ -19,3 +19,7 @@ Detailed description of the [interface](./interface.yaml).
 ## Variables
 
 Detailed description of the [internal variables](./variables.yaml).  
+
+## NPM Module
+
+[mw-sdn-p2-stream-pm-data](https://www.npmjs.com/package/mw-sdn-p2-stream-pm-data)  

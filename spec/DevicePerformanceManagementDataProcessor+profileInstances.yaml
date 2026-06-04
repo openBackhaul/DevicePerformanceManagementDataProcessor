@@ -1342,24 +1342,34 @@ profile-instances:
       is-active: true
 
 
-  # provideDocumentation
+  # documentPmDataProcessing
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-750'
     capability:
-      function-name: 'provideDocumentation'
-      function-description: 'Provides documentation of active functions'
+      function-name: 'documentPmDataProcessing'
+      function-description: 'Provides documentation about the PM data processing'
       parameter-list:
+        - parameter: 'dpmdp-1-1-0-string-p-751'
+          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-1-0-function-p-760'
     configuration:
       is-active: true
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-751'
+    capability:
+      string-name: 'nameOfToBeDocumentedFunction'
+      purpose: 'Name of the function for which the documentation shall be generated'
+    configuration:
+      string-value: 'p2ProcessDevice'
 
-  # p1CreateActiveFunctionsTxtDoc
+
+  # p1DocumentFunction
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-760'
     capability:
-      function-name: 'p1CreateActiveFunctionsTxtDoc'
+      function-name: 'p1DocumentFunction'
       function-description: 'Created text documentation of active functions'
       parameter-list:
       sub-function-list:

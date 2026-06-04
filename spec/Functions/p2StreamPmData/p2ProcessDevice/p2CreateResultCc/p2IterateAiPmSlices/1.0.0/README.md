@@ -9,16 +9,16 @@ It must be ensured that the function first iterates through all 15min PM slices,
 ## Diagram
 
 <p align="center">
-  <img src="p2IterateAiPmSlices.png" alt="p2IterateAiPmSlices" width="400"/>
+  <img src="./p2IterateAiPmSlices.png" alt="p2IterateAiPmSlices diagram" width="400"/>
 </p>
 
 ## Interface
 
-Please find a detailed description of the [interface](interface.yaml).  
+Please find a detailed description of the [interface](./interface.yaml).  
 
 ## Variables
 
-Please find a detailed description of the [variables](variables.yaml).  
+Please find a detailed description of the [variables](./variables.yaml).  
 
 ## Parameters
 
@@ -26,4 +26,4 @@ Just passing through parameters to sub-functions.
 
 ## NPM Module
 
-[mw-sdn-p1-iterate-ai-pm-slices](https://www.npmjs.com/package/mw-sdn-p1-iterate-ai-pm-slices)  
+[mw-sdn-p2-iterate-ai-pm-slices](https://www.npmjs.com/package/mw-sdn-p2-iterate-ai-pm-slices)  

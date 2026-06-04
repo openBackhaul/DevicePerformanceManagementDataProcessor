@@ -93,27 +93,27 @@ update-mwdi-replica:
       type: string
       description: >
         '?
-        from [/parameters/parameter=lastUpdatedField/value]'
+        from [/update-mwdi-replica/parameters/parameter=lastUpdatedField/value]'
     overlap-ms:
       type: string
       description: >
         'Overlap in milliseconds to avoid missing updates at period boundaries
-        from [/parameters/parameter=overlapMs/value]'
+        from [/update-mwdi-replica/parameters/parameter=overlapMs/value]'
     req-per-sec:
       type: string
       description: >
         'Throttles re-indexing to number of copy operations per second, preventing high load on the server
-        from [/parameters/parameter=reqPerSec/value]'
+        from [/update-mwdi-replica/parameters/parameter=reqPerSec/value]'
     scroll-size:
       type: string
       description: >
         'Number of documents returned per page when Elasticsearch performs a scroll search
-        from [/parameters/parameter=scrollSize/value]'
+        from [/update-mwdi-replica/parameters/parameter=scrollSize/value]'
     scroll-ttl:
       type: string
       description: >
         'How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window
-        from [/parameters/parameter=scrollTtl/value]'
+        from [/update-mwdi-replica/parameters/parameter=scrollTtl/value]'
 
     period-start-time:
       type: string

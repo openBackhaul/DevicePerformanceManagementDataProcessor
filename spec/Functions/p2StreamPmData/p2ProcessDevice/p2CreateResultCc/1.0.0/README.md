@@ -20,8 +20,12 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ## Variables
 
-Please find a detailed description of the [variables](variables.yaml).  
+Please find a detailed description of the [variables](./variables.yaml).  
 
 ## Parameters
 
 Just passing through parameters to sub-functions.  
+
+## NPM Module
+
+[mw-sdn-p2-create-result-cc](https://www.npmjs.com/package/mw-sdn-p2-create-result-cc)  

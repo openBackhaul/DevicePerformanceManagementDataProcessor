@@ -7,7 +7,7 @@ end title
 
 participant "requestor\n" as p1RMWDI
 participant "p1LoadParameters\n" as p1LP
-participant "configFile\n" as p1CF
+database "configFile" as config
 
 activate p1RMWDI
 
@@ -19,8 +19,8 @@ activate p1LP
     CC from configFile
   end note
 
-  p1LP -> p1CF
-  p1LP <-- p1CF
+  p1LP -> config
+  p1LP <-- config
 
   note right p1LP
     Finds uuid of FunctionProfile

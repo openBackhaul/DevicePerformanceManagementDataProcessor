@@ -23,3 +23,7 @@ Please find a detailed description of the [variables](./variables.yaml).
 ## Schema of the DataStore
 
 Please find a detailed description of the [schema](./data-store-schema/dataStore.yaml).  
+
+## NPM Module  
+
+[mw-sdn-p2-storing](https://www.npmjs.com/package/mw-sdn-p2-storing)  

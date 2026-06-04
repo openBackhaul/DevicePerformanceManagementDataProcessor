@@ -15,7 +15,7 @@ Please find a detailed description of the [interface](./interface.yaml).
 
 ## Variables
 
-Please find a detailed description of the [variables](variables.yaml).  
+Please find a detailed description of the [variables](./variables.yaml).  
 
 ## Parameters
 
@@ -25,4 +25,4 @@ Please find a detailed description of the [variables](variables.yaml).
 
 ## NPM Module
 
-[mw-sdn-p1-formatting-output-onf](https://www.npmjs.com/package/mw-sdn-p1-formatting-output-onf)  
+[mw-sdn-p2-formatting-output-onf](https://www.npmjs.com/package/mw-sdn-p2-formatting-output-onf)  

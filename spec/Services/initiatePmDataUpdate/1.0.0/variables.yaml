@@ -66,4 +66,4 @@ initiate-pm-data-update:
       type: integer
       description: >
         'Time in ms to wait before sending next request to liveCC path at MWDI
-        from [/parameters/parameter=waitTimeForSending/value]'
+        from [/initiate-pm-data-update/parameters/parameter=waitTimeForSending/value]'

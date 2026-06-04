@@ -9,16 +9,16 @@ It must be ensured that the function first iterates through all 15min PM slices,
 ## Diagram
 
 <p align="center">
-  <img src="p2IterateEcPmSlices.png" alt="p2IterateEcPmSlices" width="400"/>
+  <img src="./p2IterateEcPmSlices.png" alt="p2IterateEcPmSlices diagram" width="400"/>
 </p>
 
 ## Interface
 
-Please find a detailed description of the [interface](interface.yaml).  
+Please find a detailed description of the [interface](./interface.yaml).  
 
 ## Variables
 
-Please find a detailed description of the [variables](variables.yaml).  
+Please find a detailed description of the [variables](./variables.yaml).  
 
 ## Parameters
 

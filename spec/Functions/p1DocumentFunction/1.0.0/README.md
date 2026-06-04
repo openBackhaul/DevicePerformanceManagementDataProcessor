@@ -1,29 +1,35 @@
-# p1CreateActiveFunctionsTxtDoc
+# p1DocumentFunction
 
-The function p1CreateActiveFunctionsTxtDoc first reads the information for an input functionName from the Application's configFile. The thus obtained information, is recursively combined.
-Then it parses this information by the rules laid out below, and generates the documentation as plain text according to the later described format.
-
+p1DocumentFunction receives the hierarchical parameters object of a function.  
+It uses a recursive approach to create the documentation for that function and all of its active sub‑functions from that.  
+The documentation is a formatted string.  
 
 ## Parsing rules
 
-- Only active functions are to be considered. If a function's IsActive field is not true, the entire function — including all of its sub‑functions at every depth — is skipped.
-- For each function object that is active, retain only:
+- Only active functions are to be considered.  
+  If a function's IsActive field is not true, the entire function — including its parameters and sub‑functions — is skipped.
+- Retain of the active functions:
   - functionName
   - description
   - all string parameters, keeping only their
-    - parameterName, purpose, and value
+    - parameterName
+    - purpose, and
+    - value
 - A function can contain string parameters and sub‑functions, but it may also have none of them, depending on the specific function
 - Sub‑functions are parsed recursively using the same rules
 
 ## Documentation output format
 
-The documentation shall be provided as text in format example given below.
+The documentation shall be provided as text in format example given below.  
+
 - (Sub-)Function entries must use a hyphen (-) as bullet point
 - String parameters must use a dot (.) as bullet point
-- Indentation levels must follow a fixed, YAML‑style structure: each nested element is indented consistently using spaces, and all text aligns exactly as shown in the schema.
+- Indentation levels must follow a fixed, YAML‑style structure:
+  - each nested element is indented consistently using 2 spaces,
+  - and all text aligns exactly as shown in the example.
 - Descriptions always appear directly under their respective item, using the same indentation level as the item's label.
 
-```
+``` text
 - functionName
   text of the functionDescription
   . stringName
@@ -49,12 +55,10 @@ The documentation shall be provided as text in format example given below.
       text of the functionDescription
 ```
 
-
-
 ## Diagram
 
 <p align="center">
-  <img src="./p1CreateActiveFunctionsTxtDoc.png" alt="p1CreateActiveFunctionsTxtDoc diagram" width="400" />
+  <img src="./p1DocumentFunction.png" alt="p1DocumentFunction diagram" width="400" />
 </p>
 
 ## Interface
@@ -67,4 +71,4 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 ## NPM Module
 
-[mw-sdn-p1-read-data-store-device-data](https://www.npmjs.com/package/mw-sdn-p1-read-data-store-device-data)  
+[mw-sdn-p1-document-function](https://www.npmjs.com/package/mw-sdn-p1-document-function)  

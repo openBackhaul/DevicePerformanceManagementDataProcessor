@@ -61,7 +61,7 @@ servers:
       individual:
         - operation-name: /provide-device-data-store-dump
           uuid: dpmdp-1-1-0-op-s-is-000
-        - operation-name: /provide-documentation
+        - operation-name: /document-pm-data-processing
           uuid: dpmdp-1-1-0-op-s-is-001
         - operation-name: /initiate-pm-data-update
           uuid: dpmdp-1-1-0-op-s-is-010

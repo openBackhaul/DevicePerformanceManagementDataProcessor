@@ -2208,9 +2208,14 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "provideDocumentation",
+              "function-name": "documentPmDataProcessing",
               "function-description": "Provides documentation of active functions",
-              "parameter-list": [],
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-751",
+                  "owner": "platform"
+                }
+              ],
               "sub-function-list": [
                 "dpmdp-1-1-0-function-p-760"
               ]
@@ -2221,11 +2226,24 @@
           }
         },
         {
+          "uuid": "dpmdp-1-1-0-string-p-751",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "nameOfToBeDocumentedFunction",
+              "string-purpose": "Name of the function for which the documentation shall be generated"
+            },
+            "string-profile-configuration": {
+              "string-value": "p2ProcessDevice"
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-1-0-function-p-760",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1CreateActiveFunctionsTxtDoc",
+              "function-name": "p1DocumentFunction",
               "function-description": "Created text documentation of active functions",
               "parameter-list": [],
               "sub-function-list": [
@@ -2847,7 +2865,7 @@
             "layer-protocol-name": "operation-server-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_OPERATION_LAYER",
             "operation-server-interface-1-0:operation-server-interface-pac": {
               "operation-server-interface-capability": {
-                "operation-name": "/provide-documentation"
+                "operation-name": "/document-pm-data-processing"
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
