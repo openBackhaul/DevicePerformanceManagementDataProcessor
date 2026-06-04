@@ -488,7 +488,7 @@
               "sub-function-list": []
             },
             "function-profile-configuration": {
-              "is-active": true
+              "is-active": false
             }
           }
         },

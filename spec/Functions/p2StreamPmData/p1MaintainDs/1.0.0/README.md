@@ -1,6 +1,12 @@
 # p1MaintainDs
 
-Periodically deletes resultsCc (with batchTimestamp older than dataStoreRetentionPeriod) from the DataStore  
+Periodically deletes resultCc (with batchTimestamp older than dataStoreRetentionPeriod) from the DataStore.  
+
+**Attention**  
+Storing of the resultCc is deactivated by default.  
+Activating it requires activating the p1MaintainDs function, too!  
+Please be aware that the deactivation of the p1MaintainDs function must be done a long while (maybe even several days) after the deactivation of the storing of the resultCc.  
+Otherwise, the DataStore would stay permanently inflated with useless data.  
 
 ## Diagram  
 

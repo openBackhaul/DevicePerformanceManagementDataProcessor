@@ -254,7 +254,7 @@ profile-instances:
           owner: 'platform'
       sub-function-list:
     configuration:
-      is-active: true
+      is-active: false   # deactivated by purpose, see also comments in readme of p1MaintainDs
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-1-0-string-p-101'
