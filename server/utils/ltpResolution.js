@@ -7,41 +7,89 @@ function getLayerProtocol(ltp) {
 async function readEsAddress(configFile, esClientUuid) {
   const attrs = onfAdapter.getOnfAttributes();
 
+  if (!esClientUuid) {
+    throw new Error("es-client-uuid could not be resolved");
+  }
+
   const esLtp = await onfAdapter.getLogicalTerminationPointAsync(
     esClientUuid,
     configFile
   );
-
   if (!esLtp) {
-    throw new Error("ES client LTP not found: " + esClientUuid);
+    throw new Error("es-client LTP could not be found in config-file");
   }
 
   const httpUuid = (esLtp[attrs.LOGICAL_TERMINATION_POINT.SERVER_LTP] || [])[0];
+  if (!httpUuid) {
+    throw new Error("http-client-uuid could not be resolved");
+  }
+
   const httpLtp = await onfAdapter.getLogicalTerminationPointAsync(httpUuid, configFile);
-  const tcpUuid = ((httpLtp || {})[attrs.LOGICAL_TERMINATION_POINT.SERVER_LTP] || [])[0];
+  if (!httpLtp) {
+    throw new Error("http-client LTP could not be found in config-file");
+  }
+
+  const tcpUuid = (httpLtp[attrs.LOGICAL_TERMINATION_POINT.SERVER_LTP] || [])[0];
+  if (!tcpUuid) {
+    throw new Error("tcp-client-uuid could not be resolved");
+  }
+
+  const tcpLtp = await onfAdapter.getLogicalTerminationPointAsync(tcpUuid, configFile);
+  if (!tcpLtp) {
+    throw new Error("tcp-client LTP could not be found in config-file");
+  }
 
   const remoteAddress = await onfAdapter.getRemoteAddressAsync(tcpUuid, configFile);
   const remotePort = await onfAdapter.getRemotePortAsync(tcpUuid, configFile);
   const remoteProtocol = await onfAdapter.getRemoteProtocolAsync(tcpUuid, configFile);
 
+  if (!remoteProtocol || !remoteAddress || remotePort === undefined || remotePort === null) {
+    throw new Error("url could not be resolved");
+  }
+
   const esPac =
     getLayerProtocol(esLtp)[attrs.LAYER_PROTOCOL.ES_CLIENT_INTERFACE_PAC] || {};
-
   const esCfg = esPac[attrs.ES_CLIENT.CONFIGURATION] || {};
-  const esStatus = esPac['elasticsearch-client-interface-status'] || {};
+  const esStatus = esPac["elasticsearch-client-interface-status"] || {};
+
+  const indexAlias = esCfg[attrs.ES_CLIENT.INDEX_ALIAS];
+  if (!indexAlias) {
+    throw new Error("index-alias could not be resolved");
+  }
+
+  const apiKey = ((esCfg[attrs.ES_CLIENT.AUTH] || {})[attrs.ES_CLIENT.API_KEY]);
+  if (apiKey === undefined || apiKey === null) {
+    throw new Error("api-key could not be resolved");
+  }
+
+  const serviceRecordsPolicy = esCfg["service-records-policy"];
+  if (!serviceRecordsPolicy) {
+    throw new Error("service-records-policy could not be resolved");
+  }
+
+  const operationalState = esStatus["operational-state"];
+  if (!operationalState) {
+    throw new Error("operational-state could not be resolved");
+  }
+
+  const lifeCycleState = esStatus["life-cycle-state"];
+  if (!lifeCycleState) {
+    throw new Error("life-cycle-state could not be resolved");
+  }
 
   return {
     uuid: esClientUuid,
     url:
-      String(remoteProtocol || "").toLowerCase() +
+      String(remoteProtocol).toLowerCase() +
       "://" +
       onfAdapter.remoteAddressToHost(remoteAddress) +
       ":" +
       remotePort,
-    "index-alias": esCfg[attrs.ES_CLIENT.INDEX_ALIAS] || "",
-    "api-key": ((esCfg[attrs.ES_CLIENT.AUTH] || {})[attrs.ES_CLIENT.API_KEY]) || "",
-    "operational-state": esStatus["operational-state"] || "",
-    "life-cycle-state": esStatus["life-cycle-state"] || ""
+    "index-alias": indexAlias,
+    "api-key": apiKey,
+    "service-records-policy": serviceRecordsPolicy,
+    "operational-state": operationalState,
+    "life-cycle-state": lifeCycleState
   };
 }
 
