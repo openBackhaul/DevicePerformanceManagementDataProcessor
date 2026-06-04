@@ -2,7 +2,7 @@ const { loadConfigFile } = require("../../utils/config");
 const onfAdapter = require("../../infra/onf/onfAdapter.js");
 const { loadFunctionParameters } = require("../../utils/functionTree");
 const logger = require('./../../service/LoggingService.js').getLogger();
-const { ERRORS, knownErrors } = require("./ErrorsEnum");
+const { ERRORS } = require("./ErrorsEnum");
 
 function isConfigSchemaValid(configFile) {
   if (!configFile || typeof configFile !== "object") {
@@ -27,6 +27,10 @@ function isConfigSchemaValid(configFile) {
  */
 async function run(request) {
   try {
+
+    if (!request || typeof request !== "object") {
+      throw new Error(ERRORS.ERR_UNKNOWN);
+    }
     const functionName = request.functionName || request["function-name"];
 
     if (!functionName) {
@@ -56,14 +60,14 @@ async function run(request) {
     }
 
     if (!configFile) {
-    /*  configFile = loadConfigFile(); */
+      /*  configFile = loadConfigFile(); */
 
       try {
         configFile = loadConfigFile();
       } catch (error) {
         if (error instanceof SyntaxError) {
           logger.error("Config file contains invalid JSON:", error);
-            throw new Error(ERRORS.ERR_INVALID_JSON);
+          throw new Error(ERRORS.ERR_INVALID_JSON);
         }
         logger.error("Error occurred while loading config file:", error);
         throw new Error(ERRORS.ERR_CONFIG_NOT_ACCESSIBLE);
@@ -87,7 +91,7 @@ async function run(request) {
         throw new Error(ERRORS.ERR_FUNCTION_NOT_FOUND);
       }
       logger.error("Unexpected error occurred while loading function parameters:", error);
-      throw error;
+      throw new Error(ERRORS.ERR_UNKNOWN);
     }
 
     return {
@@ -96,12 +100,12 @@ async function run(request) {
     };
   } catch (error) {
     const message = String((error && error.message) || "");
-    if (knownErrors.has(message)) {
+    if (ERRORS.knownErrors.has(message)) {
       logger.error(`Error in p1LoadParameters: ${message}`);
       throw new Error(message);
-    } 
+    }
     logger.error("Unexpected error in p1LoadParameters:", error);
-    throw new Error(ERRORS.ERR_UNKNOWN); 
+    throw new Error(ERRORS.ERR_UNKNOWN);
   }
 }
 

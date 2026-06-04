@@ -4,16 +4,9 @@ const ERRORS = {
     ERR_INVALID_SCHEMA : "configFile does not conform to the expected schema",
     ERR_FUNCTION_NOT_FOUND : "functionName not found in configFile",
     ERR_UNKNOWN : "unknown error occurred",
-    ERR_FUNCTION_NAME_NOT_PROVIDED : "functionName is mandatory"
-}
+    ERR_FUNCTION_NAME_NOT_PROVIDED : "functionName is mandatory" //not provided in spec but added for better error handling
+};
 
-const knownErrors = new Set([
-    ERRORS.ERR_CONFIG_NOT_ACCESSIBLE,
-    ERRORS.ERR_INVALID_JSON,
-    ERRORS.ERR_INVALID_SCHEMA,
-    ERRORS.ERR_FUNCTION_NOT_FOUND,
-    ERRORS.ERR_UNKNOWN,
-    ERRORS.ERR_FUNCTION_NAME_NOT_PROVIDED //not provided in spec but added for better error handling
-]);
+ERRORS.knownErrors = new Set(Object.values(ERRORS));
 
-module.exports = { ERRORS, knownErrors };
+module.exports = { ERRORS };
