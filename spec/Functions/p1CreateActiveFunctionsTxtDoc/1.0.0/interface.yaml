@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: p1CreateActiveFunctionsTxtDoc
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CreateActiveFunctionsTxtDoc:
+    summary: 'Creates an plain text documentation of this Application`s active functions from its configFile.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - function-name
+            properties:
+              function-name:
+                type: string
+                description: 'Name of the Function whose parameters are to be loaded from the configFile'
+    output:
+      success:
+        description: 'Documentation successfully created'
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: >
+                'Plain text documentation of the active functions
+                from [/create-active-functions-txt-doc/documentation]'
+      error:
+        description: 'Documentation could not be created'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'functionName not provided'
+                - 'functionName invalid'
+                - 'general processing error'
+    processing:
+      p1LoadParameters:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  function-name:
+                    type: string
+                    description: >
+                      'Input functionName
+                      from [create-active-functions-txt-doc/function-name]'
+        output:
+          success:
+            description: 'Parameters successfully loaded'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - parameters
+                    - config-file
+                  properties:
+                    parameters:
+                      description: >
+                        'Parameters of the Function'
+                    config-file:
+                      type: object
+                      description: >
+                        'configFile content, not used'
+          error:
+            description: 'Parameters could not be loaded'
+            content:
+              application/json:
+                schema:
+                  type: string
+      formatParameters:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  parameters:
+                    description: >
+                      'Parameters
+                      from [p1LoadParameters/parameters]'
+        output:
+          success:
+            description: 'Parameters successfully formatted'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - documentation
+                  properties:
+                    documentation:
+                      type: string
+                      description: >
+                        'Text documentation of active functions extracted from parameters
+                        according to rules and output format documented in function README.md'
+          error:
+            description: 'Documentation could not be created'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'parameters not provided'
+                    - 'parameters invalid'
+                    - 'general processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

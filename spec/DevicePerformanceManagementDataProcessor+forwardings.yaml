@@ -114,6 +114,8 @@ forwardings:
         uuid: dpmdp-1-1-0-op-s-is-000
       - server-name: /provide-documentation
         uuid: dpmdp-1-1-0-op-s-is-001
+      - server-name: /initiate-pm-data-update
+        uuid: dpmdp-1-1-0-op-s-is-010
     consequent-requests:
       - client-name: ExecutionAndTraceLog://v1/record-service-request
         uuid: dpmdp-1-1-0-op-c-bs-eatl-2-1-2-000

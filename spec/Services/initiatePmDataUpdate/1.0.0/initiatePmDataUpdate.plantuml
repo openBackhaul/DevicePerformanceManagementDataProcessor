@@ -6,13 +6,13 @@ title
 end title
 
 participant "requestor\n" as tool
-participant "initiatePmDataUpdate\n" as initUpdate #Cyan
+participant "initiatePmDataUpdate\n" as initUpdate
 participant "p1LoadParameters\n" as p1LoadParams
 participant "MWDI:\n/provideDeviceStatusMetadata" as mwdiMeta
 participant "MWDI:\n/live/control-construct" as mwdiLive
 
 tool -[#Cyan]> initUpdate : { [mountNames] }
-activate initUpdate #Cyan
+activate initUpdate
 
   initUpdate -> mwdiMeta : { [mountNames] }
   activate mwdiMeta
