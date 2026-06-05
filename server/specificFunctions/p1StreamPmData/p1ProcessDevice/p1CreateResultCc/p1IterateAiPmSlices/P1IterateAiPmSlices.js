@@ -3,20 +3,35 @@ const p1CalculateIntervalCapacity = require('../../../../../genericFunctions/p1C
 const p1RemoveOutOfRangeLevels = require('../../../../../genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels');
 const p1RemoveDefaultValues = require('../../../../../genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues');
 
+const GRANU_PERIOD_15M = "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN";
+const GRANU_PERIOD_24H = "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS";
+
+const EPOCH_TIME = "1970-01-01T00:00:00+00:00";
+
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
-  if (!mostRecentPeriodEndTime || !mostRecentPeriodEndTime24 || !granularityPeriod || !periodEndTime) {
-    if (!mostRecentPeriodEndTime) return 'mostRecentPeriodEndTime not provided';
-    if (!mostRecentPeriodEndTime24) return 'mostRecentPeriodEndTime24 not provided';
-    if (!granularityPeriod) return 'granularityPeriod not provided';
-    if (!periodEndTime) return 'periodEndTime not provided';
+
+  if (!mostRecentPeriodEndTime) {
+    return 'mostRecentPeriodEndTime not provided';
+  }
+
+  if (!mostRecentPeriodEndTime24) {
+    return 'mostRecentPeriodEndTime24 not provided';
+  }
+
+  if (!granularityPeriod) {
+    return 'granularityPeriod not provided';
+  }
+
+  if (!periodEndTime) {
+    return 'periodEndTime not provided';
   }
 
   let updated15 = mostRecentPeriodEndTime;
   let updated24 = mostRecentPeriodEndTime24;
 
-  if (granularityPeriod === 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') {
+  if (granularityPeriod === GRANU_PERIOD_15M) {
     updated15 = periodEndTime;
-  } else if (granularityPeriod === 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS') {
+  } else if (granularityPeriod === GRANU_PERIOD_24H) {
     updated24 = periodEndTime;
   }
 
@@ -43,8 +58,14 @@ function extractSubFunctionParameters(parameters, functionName) {
 
 function p1IterateAiPmSlices(input) {
   try {
-    if (!input || input.parameters === undefined) {
-      return ERRORS.PARAMETERS_NOT_PROVIDED;
+    if (!input) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    if (input.parameters == undefined &&
+      input["historical-performance-data-list"] == undefined &&
+      input["transmission-mode-list"] == undefined) {
+      return ERRORS.GENERAL_ERROR;
     }
 
     const {
@@ -52,6 +73,11 @@ function p1IterateAiPmSlices(input) {
       "historical-performance-data-list": historicalPerformanceDataList,
       "transmission-mode-list": transmissionModeList
     } = input;
+
+
+    if (!input || input.parameters === undefined) {
+      return ERRORS.PARAMETERS_NOT_PROVIDED;
+    }
 
     if (typeof parameters !== 'object' || Array.isArray(parameters) || parameters === null) {
       return ERRORS.PARAMETERS_INVALID;
@@ -71,8 +97,8 @@ function p1IterateAiPmSlices(input) {
       return ERRORS.TRANSMISSION_MODE_LIST_INVALID;
     }
 
-    let mostRecentPeriodEndTime = '2010-11-20T14:00:00+01:00';
-    let mostRecentPeriodEndTime24 = '2010-11-20T14:00:00+01:00';
+    let mostRecentPeriodEndTime = EPOCH_TIME;  // maybe to be use from epoch
+    let mostRecentPeriodEndTime24 = EPOCH_TIME;
 
     const processedDataList = [];
 
@@ -86,9 +112,9 @@ function p1IterateAiPmSlices(input) {
           "time-xstates-list": timeXStatesList,
           "transmission-mode-list": transmissionModeList
         });
-        
+
         if (typeof capacityResult === 'string') {
-           return ERRORS.INTERVAL_CAPACITY_ERROR;
+          return ERRORS.INTERVAL_CAPACITY_ERROR;
         }
 
         currentPerformanceData['interval-capacity'] = capacityResult['interval-capacity'];
