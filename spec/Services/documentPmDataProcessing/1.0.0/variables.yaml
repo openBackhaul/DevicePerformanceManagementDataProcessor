@@ -1,0 +1,30 @@
+document-pm-data-processing:
+  type: object
+  properties:
+
+    own-function-name:
+      type: string
+      enum:
+        - 'documentPmDataProcessing'
+      description: >
+        'Name of this service for creating documentation'
+    own-parameters:
+      type: object
+      description: >
+        'Hierarchical object holding this service's own parameter settings
+        from {$PromptForPmDataProcessingDocumentationCausesLoadingParameters.p1LoadParameters.output#/parameters}'
+    name-of-to-be-documented-function:
+      type: string
+      description: >
+        'Name of the function for which the documentation shall be generated
+        from [/document-pm-data-processing/own-parameters/parameter=nameOfToBeDocumentedFunction/value]'
+    parameters-of-to-be-documented-function:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings of the function for which the documentation shall be generated
+        from {$PromptForPmDataProcessingDocumentationCausesLoadingParametersOfProcessingFunction.p1LoadParameters.output#/parameters}'
+    documentation:
+      type: string
+      description: >
+        'Documentation of the PM data processing
+        from {$PromptForPmDataProcessingDocumentationCausesCreatingDocumentation.p1DocumentFunction.output#/}'

@@ -62,7 +62,7 @@ x-javascript-interface:
                 - 'mountName not provided'
                 - 'mountName invalid'
                 - 'rawCc could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       readControlConstructFromReplica:
         url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
@@ -156,7 +156,7 @@ x-javascript-interface:
                       - 'mountName not provided'
                       - 'mountName invalid'
                       - 'interfaceMetadataList could not be provided'
-                      - 'General processing error'
+                      - 'general processing error'
       p1DiscardIrrelevantPmRecords:
         input:
           required: true
@@ -262,7 +262,7 @@ x-javascript-interface:
                       - 'batchTimestamp not provided'
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
-                      - 'General processing error'
+                      - 'general processing error'
 
 paths:
   /:

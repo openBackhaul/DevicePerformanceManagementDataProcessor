@@ -1,0 +1,146 @@
+update-mwdi-replica:
+  type: object
+  required:
+    - parameters
+    - mwdi-es-client
+    - mwdi-replica-es-client
+    - logging-es-client
+    - last-replica-time
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$input#/parameters}'
+    mwdi-es-client:
+      type: object
+      description: >
+        'MWDI ElasticSearch address
+        from {$input#/mwdi-es-client}'
+    mwdi-replica-es-client:
+      type: object
+      description: >
+        'MWDI Replica ElasticSearch address
+        from {$input#/mwdi-replica-es-client}'
+    logging-es-client:
+      type: object
+      description: >
+        'Logging ElasticSearch address
+        from {$input#/logging-es-client}'
+    last-replica-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'Timestamp of the last successful replication
+        from {$input#/last-replica-time}'
+
+    job-name:
+      type: string
+      description: >
+        'Name of the replication job
+        from [/update-mwdi-replica/parameters/parameter=jobName/value]'
+    synch-period:
+      type: string
+      description: >
+        'Duration between two replications of the MWDI ES in seconds
+        from [/update-mwdi-replica/parameters/parameter=syncPeriod/value]'
+    source-url:
+      type: string
+      description: >
+        'ElasticSearch URL of MWDI ES
+        from [/update-mwdi-replica/mwdi-es-client/url]'
+    destination-url:
+      type: string
+      description: >
+        'ElasticSearch URL of MWDI Replica ES
+        from [/update-mwdi-replica/mwdi-replica-es-client/url]'
+    logging-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Logging ES
+        from [/update-mwdi-replica/logging-es-client/url]'
+    source-index:
+      type: string
+      description: >
+        'ElasticSearch index of MWDI ES
+        from [/update-mwdi-replica/mwdi-es-client/index-alias]'
+    destination-index:
+      type: string
+      description: >
+        'ElasticSearch index of MWDI Replica ES
+        from [/update-mwdi-replica/mwdi-replica-es-client/index-alias]'
+    logging-index:
+      type: string
+      description: >
+        'ElasticSearch index of Logging ES
+        from [/update-mwdi-replica/logging-es-client/index-alias]'
+    source-api-key:
+      type: string
+      description: >
+        'ElasticSearch API key of MWDI ES
+        from [/update-mwdi-replica/mwdi-es-client/api-key]'
+    destination-api-key:
+      type: string
+      description: >
+        'ElasticSearch API key of MWDI Replica ES
+        from [/update-mwdi-replica/mwdi-replica-es-client/api-key]'
+    logging-api-key:
+      type: string
+      description: >
+        'ElasticSearch API key of Logging ES
+        from [/update-mwdi-replica/logging-es-client/api-key]'
+    last-updated-field:
+      type: string
+      description: >
+        '?
+        from [/update-mwdi-replica/parameters/parameter=lastUpdatedField/value]'
+    overlap-ms:
+      type: string
+      description: >
+        'Overlap in milliseconds to avoid missing updates at period boundaries
+        from [/update-mwdi-replica/parameters/parameter=overlapMs/value]'
+    req-per-sec:
+      type: string
+      description: >
+        'Throttles re-indexing to number of copy operations per second, preventing high load on the server
+        from [/update-mwdi-replica/parameters/parameter=reqPerSec/value]'
+    scroll-size:
+      type: string
+      description: >
+        'Number of documents returned per page when Elasticsearch performs a scroll search
+        from [/update-mwdi-replica/parameters/parameter=scrollSize/value]'
+    scroll-ttl:
+      type: string
+      description: >
+        'How long (time limit) Elasticsearch keeps the scroll context alive for each scroll window
+        from [/update-mwdi-replica/parameters/parameter=scrollTtl/value]'
+
+    period-start-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'Timestamp marking the start of the replication period
+        from {[/update-mwdi-replica/last-replica-time] - [/update-mwdi-replica/overlap-ms]}'
+    period-end-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'Timestamp marking the end of the replication period
+        from {current time}'
+
+    updated-mount-names:
+      type: array
+      description: >
+        'List of MountNames of updated ControlConstructs
+        from {$_reindex.output#/updated-mount-names}'
+    last-replication-timestamp:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'End timestamp of the replication period
+        from {$_reindex.output#/last-replication-timestamp}'
+    status-message:
+      type: string
+      description: >
+        'Status message of the replication process
+        from {$_reindex.output#/status-message}'

@@ -1,0 +1,300 @@
+openapi: 3.0.0
+info:
+  title: p2IterateEcPmSlices
+  version: 1.0.0
+
+x-javascript-interface:
+  p2IterateEcPmSlices:
+    summary: 'Iterates through all EthernetContainer historical performance data slices and calls the processing Functions'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - historical-performance-data-list
+              - aggregation-group
+              - result-cc
+              - interface-status
+            properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              historical-performance-data-list:
+                type: array
+                description: >
+                  'historicalPerformanceDataList'
+              aggregation-group:
+                type: object
+                description: >
+                  'aggregationGroup'
+              result-cc:
+                type: object
+                description: >
+                  'resultCc'
+              interface-status:
+                type: object
+                description: >
+                  'status at the interface based on already processed batches'
+    output:
+      success:
+        description: 'historicalPerformanceDataList processed'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - historical-performance-data-list
+                - interface-status
+              properties:
+                historical-performance-data-list:
+                  type: array
+                  description: >
+                    'historicalPerformanceDataList
+                    from [/iterate-ec-pm-slices/historical-performance-data-list]'
+                interface-status:
+                  type: object
+                  description: >
+                    'Interface status
+                    from [/iterate-ec-pm-slices/interface-status]'
+      error:
+        description: 'historicalPerformanceDataList could not be processed'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'historicalPerformanceDataList not provided'
+                - 'historicalPerformanceDataList invalid'
+                - 'aggregationGroup not provided'
+                - 'aggregationGroup invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'interfaceStatus not provided'
+                - 'interfaceStatus invalid'
+                - 'ethernet KPIs could not be added'
+                - 'default values could not be removed'
+                - 'utilization could not be calculated'
+                - 'data volume could not be categorized'
+                - 'busyHour KPIs could not be calculated'
+                - 'historicalPerformanceDataList could not be provided'
+                - 'general processing error'
+    processing:
+      p1CalculateEthernetKpis:
+        summary: 'Adds Ethernet KPIs to a historicalPerformanceData set'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - performance-data
+                properties:
+                  performance-data:
+                    type: object
+                    description: >
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+        output:
+          success:
+            description: 'Ethernet KPIs added'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - performance-data
+                  properties:
+                    performance-data:
+                      type: object
+                      description: >
+                        'historicalPerformanceData set with added Ethernet KPIs'
+          error:
+            description: 'Ethernet KPIs could not be added'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1RemoveDefaultValues:
+        summary: 'Deletes attributes with default values from the transferred object'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - parameters
+                  - input-object
+                properties:
+                  parameters:
+                    type: object
+                    description: >
+                      'Hierarchical object holding the parameter settings
+                      from [/iterate-ec-pm-slices/parameters/sub-function=p1RemoveDefaultValues]'
+                  input-object:
+                    type: object
+                    description: >
+                      'performanceData set of a single time period
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*/performance-data]'
+        output:
+          success:
+            description: 'Input object cleaned from attributes with default values'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - cleaned-object
+                  properties:
+                    cleaned-object:
+                      type: object
+                      description: >
+                        'Data object from which attributes with default values have been removed'
+          error:
+            description: 'Input object could not be cleaned from attributes with default values'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1CalculateUtilization:
+        summary: 'Calculates utilization of the aggregated physical resources in a performance data slice'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data
+                  - aggregation-group
+                  - result-cc
+                properties:
+                  historical-performance-data:
+                    type: object
+                    description: >
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*]'
+                  aggregation-group:
+                    type: object
+                    description: >
+                      'aggregationGroup
+                      from [/iterate-ec-pm-slices/aggregation-group]'
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc
+                      from [/iterate-ec-pm-slices/result-cc]'
+        output:
+          success:
+            description: 'Utilization added'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data
+                  properties:
+                    historical-performance-data:
+                      type: object
+                      description: >
+                        'historicalPerformanceData with added utilization'
+          error:
+            description: 'Utilization could not be added'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1CategorizeDataVolume:
+        summary: 'Categorizes PM data by day and hour'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data
+                  - interface-status
+                properties:
+                  historical-performance-data:
+                    type: object
+                    description: >
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*]'
+                  interface-status:
+                    type: object
+                    description: >
+                      'status at the interface
+                      from [/iterate-ec-pm-slices/interface-status]'
+        output:
+          success:
+            description: 'PM data categorized by day and hour'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - interface-status
+                  properties:
+                    interface-status:
+                      type: object
+                      description: >
+                        'new status at the interface after categorizing PM data of a 15-min period'
+          error:
+            description: 'PM data could not be categorized by day and hour'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p1CalculateBusyHourPerformanceIndicators:
+        summary: 'Calculates BusyHour KPIs based on the status data derived from iterating the 15-min periods'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data
+                  - interface-status
+                properties:
+                  historical-performance-data:
+                    type: object
+                    description: >
+                      'historicalPerformanceData set
+                      from [/iterate-ec-pm-slices/historical-performance-data-list=*]'
+                  interface-status:
+                    type: object
+                    description: >
+                      'interface status derived from iterating the 15-min periods
+                      from [/iterate-ec-pm-slices/interface-status]'
+        output:
+          success:
+            description: 'BusyHour KPIs added'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - historical-performance-data
+                  properties:
+                    historical-performance-data:
+                      type: object
+                      description: >
+                        'historicalPerformanceData set with added BusyHour KPIs'
+          error:
+            description: 'BusyHour KPIs could not be added'
+            content:
+              application/json:
+                schema:
+                  type: string
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

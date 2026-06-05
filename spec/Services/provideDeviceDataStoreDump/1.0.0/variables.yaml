@@ -1,0 +1,40 @@
+provide-device-data-store-dump:
+  type: object
+  required:
+    - mount-name
+  properties:
+    mount-name:
+      type: string
+      description: >
+        'Identifier of the device at the Controller
+        from {$input#/mount-name}'
+
+    function-name:
+      type: string
+      enum:
+        - 'provideDeviceDataStoreDump'
+    es-name:
+      type: string
+      enum:
+        - 'dataStoreEsClient'
+
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$p1LoadParameters.output#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$p1LoadParameters.output#/config-file}'
+    data-store-es-client:
+      type: object
+      description: >
+        'Data Store ElasticSearch address
+        from {$p1ResolveEsAddress.output#/es-address}'
+    device-pm-data:
+      type: array
+      description: >
+        'PM data of the device
+        from {$p1ReadDataStoreDeviceData.output#/device-pm-data}'

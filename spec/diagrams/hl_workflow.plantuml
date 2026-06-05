@@ -3,6 +3,7 @@ skinparam responseMessageBelowArrow true
 
 title
   DevicePerformanceManagementDataProcessor
+  (v1.0.x)
 end title
 
 participant "Test\nDesign\n0" as testDesign #PapayaWhip
@@ -64,7 +65,7 @@ activate p1StreamPm
   p1StreamPm <-- p1LoadParams
   deactivate p1LoadParams
 
-  Loop FOR all esName
+  loop FOR all esName
     p1StreamPm -> p1ResolveAddress
     activate p1ResolveAddress
       note over p1ResolveAddress
@@ -73,7 +74,7 @@ activate p1StreamPm
     p1StreamPm <-- p1ResolveAddress
     deactivate p1ResolveAddress
 
-  end Loop
+  end loop
 
   p1StreamPm -> p1InitKafka
   activate p1InitKafka
@@ -94,14 +95,14 @@ activate p1StreamPm
   p1StreamPm -> p1MaintainDs
   activate p1MaintainDs
 
-  Loop endless
+  loop endless
     note over p1MaintainDs
       Deletes old
       resultCc
     end note
   end loop
 
-  Loop endless
+  loop endless
 
     p1StreamPm -> p1UpdateMwdiRep
     activate p1UpdateMwdiRep
@@ -111,7 +112,7 @@ activate p1StreamPm
     p1StreamPm <-- p1UpdateMwdiRep
     deactivate p1UpdateMwdiRep
 
-    Loop for every updated CC
+    loop for every updated CC
 
       p1StreamPm -> p1ProcessPm
       activate p1ProcessPm
@@ -367,8 +368,8 @@ activate p1StreamPm
 
       deactivate p1ProcessPm
 
-    end Loop
+    end loop
 
-  end Loop
+  end loop
 
 @enduml

@@ -1,0 +1,104 @@
+categorize-data-volume:
+  type: object
+  required:
+    - historical-performance-data
+    - interface-status
+  properties:
+    historical-performance-data:
+      type: object
+      description: >
+        'historicalPerformanceData set
+        from {$input#/historical-performance-data}'
+    interface-status:
+      type: object
+      description: >
+        'status at the interface based on already processed batches
+        from {$input#/interface-status}'
+      required:
+        - uuid
+      properties:
+        uuid:
+          type: string
+          description: >
+            'UUID of the interface (EthernetContainer)'
+        15-minute-values-by-day:
+          type: array
+          x-key: day
+          minItems: 1
+          maxItems: 2
+          description: >
+            'instance to be initialized, if not already existing for [/categorize-data-volume/day]
+            eldest entry to be deleted first'
+          items:
+            type: object
+            required:
+              - day
+              - 15-minute-values-by-hour
+            properties:
+              day:
+                type: integer
+                minimum: 1
+                maximum: 31
+                description: >
+                  'day of month
+                  if to be initialized, to be parsed from [/categorize-data-volume/historical-performance-data/period-end-time]'
+              15-minute-values-by-hour:
+                type: array
+                x-key: hour
+                minItems: 24
+                maxItems: 24
+                description: >
+                  'to be initialized, if not already existing'
+                items:
+                  type: object
+                  required:
+                    - hour
+                    - 15-minute-values
+                  properties:
+                    hour:
+                      type: integer
+                      minimum: 0
+                      maximum: 23
+                      description: >
+                        'hour of day
+                        if to be initialized, from { [0,23] }'
+                    15-minute-values:
+                      type: array
+                      minItems: 0
+                      maxItems: 4
+                      description: >
+                        'PM data
+                        array content addressed based on index instead of key attribute
+                        if to be initialized, from { null }
+                        overwritten by {$categorizePmData.output#/15-minute-values}'
+                      items:
+                        type: object
+                        required:
+                          - period-end-time
+                        properties:
+                          period-end-time:
+                            type: string
+                          total-bytes-output:
+                            type: integer
+                          total-air-interface-interval-capacity:
+                            type: integer
+                          errored-frames-input:
+                            type: integer
+                          dropped-frames-input:
+                            type: integer
+
+
+    day:
+      type: integer
+      minimum: 1
+      maximum: 31
+      description: >
+        'day of month to be categorized from periodEndTime of the currently processed 15-min period
+        parsing the day from [/historical-performance-data/period-end-time]'
+    hour:
+      type: integer
+      minimum: 0
+      maximum: 23
+      description: >
+        'hour of day to be categorized from periodEndTime of the currently processed 15-min period
+        parsing the hour from [/historical-performance-data/period-end-time]'

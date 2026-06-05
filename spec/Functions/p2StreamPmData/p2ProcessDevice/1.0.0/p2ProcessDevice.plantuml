@@ -1,0 +1,114 @@
+@startuml p2ProcessDevice
+skinparam responseMessageBelowArrow true
+
+title
+  p2ProcessDevice
+end title
+
+participant "p2StreamPmData\n" as requestor
+participant "p2ProcessDevice\n" as cur
+participant "p1LoadOffsets\nAndStatusData" as p1Offset
+participant "p2LoadRawCc\n" as p2AddRaw
+participant "p2CreateResultCc\n" as p2CreateResCc
+participant "p1Formatting\nOutputApt" as p1OutputApt
+participant "p1Formatting\nOutputOnf" as p1OutputOnf
+participant "p1Transmitting\nKafka" as p1Trans
+participant "p2Storing\n" as p2Store
+
+requestor -> cur : { {parameters},\n{configFile},\nmountName,\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+activate cur
+
+  'LoadOffsetsAndStatusData
+  cur -> p1Offset: { mountName,\n{dataStoreEsClient} }
+  activate p1Offset
+
+    note over p1Offset
+      Loads offsets and statusData
+      from DataStore
+    end note
+
+  cur <-- p1Offset: { [offsets],\n[statusData] }
+  deactivate p1Offset
+
+  'LoadRawCc
+  cur -> p2AddRaw : { {/parameters/sub-function=p2LoadRawCc},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
+  activate p2AddRaw
+
+    note over p2AddRaw
+      - Loads rawCc from MWDI ES
+      - Reduces structure of rawCc
+      - Deletes PM data that has
+        already been processed in past
+      - Returns updated offsets
+        (mostRecentPeriodEndTimes)
+      - Returns device PM quality data
+    end note
+
+  cur <-- p2AddRaw : { {rawCc},\n[offsets],\n{deviceQualityPmData} }
+  deactivate p2AddRaw
+
+  'CreateResultCc
+  cur -> p2CreateResCc : { {/parameters/sub-function=p2CreateResultCc},\n{rawCc},\n[statusData] }
+  activate p2CreateResCc
+
+    note over p2CreateResCc
+      - Creates resultCc from rawCc
+      - Processes and complements PM data
+      - Updates statusData
+    end note
+
+  cur <-- p2CreateResCc :  { {resultCc},\n[statusData] }
+  deactivate p2CreateResCc
+
+  'FormattingOutputApt
+  cur -> p1OutputApt : { {resultCc} }
+  activate p1OutputApt
+
+    note over p1OutputApt
+      Creates aptOutputFormat
+      from resultCc
+    end note
+
+  cur <-- p1OutputApt : { formatName,\n{outputFormat} }
+  deactivate p1OutputApt
+
+  'FormattingOutputOnf
+  cur -> p1OutputOnf : { {/parameters/sub-function=p2FormattingOutputOnf},\n{resultCc} }
+  activate p1OutputOnf
+
+    note over p1OutputOnf
+      Creates [onfOutputFormat]
+      from resultCc
+    end note
+
+  cur <-- p1OutputOnf : [ onfOutputFormat ]
+  deactivate p1OutputOnf
+
+  'TransmittingKafka
+  cur -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  activate p1Trans
+
+    note over p1Trans
+      Transmits object
+      to Kafka
+    end note
+
+  cur <-- p1Trans
+  deactivate p1Trans
+
+  'Storing
+  cur -> p2Store : { {/parameters/sub-function=p2Storing},\n{dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+  activate p2Store
+
+    note over p2Store
+      Stores resultCc
+    end note
+
+  cur <-- p2Store
+  deactivate p2Store
+
+  requestor <-- cur: { {deviceQualityPmData} }
+
+deactivate cur
+
+@enduml

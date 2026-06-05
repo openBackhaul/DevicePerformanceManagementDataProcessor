@@ -1,0 +1,48 @@
+load-offsets-and-status-data:
+  type: object
+  required:
+    - data-store-es-client
+    - mount-name
+  properties:
+    data-store-es-client:
+      type: object
+      description: >
+        'DataStore ElasticSearch address
+        from {$input#/data-store-es-client}'
+    mount-name:
+      type: string
+      description: >
+        'mountName
+        from {$input#/mount-name}'
+
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of DataStore ES
+        from [/load-offsets-and-status-data/data-store-es-client/url]'
+
+    processing-data:
+      type: object
+      description: >
+        'Status at the end of the processing of the former batch
+        from {$retrieveProcessingDataFromDs.output#/}'
+      properties:
+        offsets:
+          type: array
+          x-key: function-name
+          description: 'List of offsets of diverse functions'
+        status-data:
+          type: array
+          x-key: function-name
+          description: 'List of status data of diverse functions'
+
+    offsets:
+      type: array
+      description: >
+        'Offsets for the device
+        from [/load-offsets-and-status-data/processing-data/offsets]'
+    status-data:
+      type: array
+      description: >
+        'StatusData for the device
+        from [/load-offsets-and-status-data/processing-data/status-data]'

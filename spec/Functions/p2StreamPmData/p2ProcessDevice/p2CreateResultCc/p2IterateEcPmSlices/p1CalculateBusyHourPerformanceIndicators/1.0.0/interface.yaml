@@ -1,0 +1,262 @@
+openapi: 3.0.0
+info:
+  title: p1CalculateBusyHourPerformanceIndicators
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CalculateBusyHourPerformanceIndicators:
+    summary: 'Calculates busy hour KPIs based on the status data derived from iterating the 15-min periods'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - historical-performance-data
+              - interface-status
+            properties:
+              historical-performance-data:
+                type: object
+                description: >
+                  'historicalPerformanceData set'
+              interface-status:
+                type: object
+                description: >
+                  'interface status derived from iterating the 15-min periods'
+    output:
+      success:
+        description: 'busy hour KPIs added'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - historical-performance-data
+              properties:
+                historical-performance-data:
+                  type: object
+                  description: >
+                    'historicalPerformanceData set with added busy hour KPIs
+                    from [/calculate-busy-hour-performance-indicators/historical-performance-data]'
+      error:
+        description: 'busy hour KPIs could not be added'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'historicalPerformanceData not provided'
+                - 'historicalPerformanceData of wrong granularity provided'
+                - 'historicalPerformanceData invalid'
+                - 'interfaceStatus not provided'
+                - 'interfaceStatus invalid'
+                - 'busy hour KPIs could not be added'
+                - 'general processing error'
+    processing:
+      checkGranularity:
+        summary: 'Checks for 24-hour granularity'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - granularity
+                properties:
+                  granularity:
+                    type: string
+                    description: >
+                      'Granularity of the currently processed PM data
+                      from [/calculate-busy-hour-performance-indicators/historical-performance-data/granularity-period]'
+        output:
+          success:
+            description: '24-hour granularity confirmed'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - is-of-24-hour-granularity
+                  properties:
+                    is-of-24-hour-granularity:
+                      type: boolean
+                      description: >
+                        'Indicates whether the currently processed PM data is of 24-hour granularity
+                        IF {$input#/granularity} == {ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS}
+                          THEN from {true}
+                          ELSE from {false}'
+      aggregateTotalBytesOutput:
+        summary: 'Aggregates total bytes output for each hour of the day'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - 15-minute-values-by-hour
+                properties:
+                  15-minute-values-by-hour:
+                    type: array
+                    description: >
+                      '15-minute-values grouped by hour of the day
+                      from [/calculate-busy-hour-performance-indicators/interface-status/15-minute-values-by-day={/calculate-busy-hour-performance-indicators/day}/15-minute-values-by-hour]'
+        output:
+          success:
+            description: 'total-bytes-output aggregated for each hour of the day'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - aggregated-total-bytes-output-by-hour
+                  properties:
+                    aggregated-total-bytes-output-by-hour:
+                      type: array
+                      x-key: hour
+                      minItems: 24
+                      maxItems: 24
+                      items:
+                        type: object
+                        required:
+                          - hour
+                          - aggregated-total-bytes-output
+                        properties:
+                          hour:
+                            type: integer
+                            minimum: 0
+                            maximum: 23
+                            description: >
+                              'hour of day'
+                          aggregated-total-bytes-output:
+                            type: integer
+                            description: >
+                              'aggregated total bytes output for this hour
+                              from { sum( {$aggregateTotalBytesOutput.input#/15-minute-values-by-hour={$aggregateTotalBytesOutput.output#/aggregated-total-bytes-output-by-hour=*/hour}/15-minute-values[*]/total-bytes-output} ) }'
+      identifyBusyHour:
+        summary: 'Identifies the busy hour'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - aggregated-total-bytes-output-by-hour
+                properties:
+                  aggregated-total-bytes-output-by-hour:
+                    type: array
+                    description: >
+                      'Aggregated total bytes output grouped by hour of the day
+                      from [/calculate-busy-hour-performance-indicators/aggregated-total-bytes-output-by-hour]'
+        output:
+          success:
+            description: 'busy hour identified'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - aggregated-total-bytes-output
+                    - hour
+                  properties:
+                    aggregated-total-bytes-output:
+                      type: integer
+                      description: >
+                        'highest aggregated total bytes output
+                        from { max( {$input#/aggregated-total-bytes-output-by-hour=*/aggregated-total-bytes-output} ) }'
+                    hour:
+                      type: integer
+                      minimum: 0
+                      maximum: 23
+                      description: >
+                        'hour of day with the highest aggregated total bytes output
+                        from { {$input#/aggregated-total-bytes-output-by-hour={hour}/hour} for which {$input#/aggregated-total-bytes-output-by-hour={hour}/aggregated-total-bytes-output} == {$output#/aggregated-total-bytes-output} }'
+      calculateBusyHourKpis:
+        summary: 'Calculates busy hour KPIs'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - 15-minute-values-by-hour
+                  - busy-hour-identifier
+                properties:
+                  15-minute-values-by-hour:
+                    type: array
+                    description: >
+                      '15-minute-values grouped by hour of the day
+                      from [/calculate-busy-hour-performance-indicators/interface-status/15-minute-values-by-day={/calculate-busy-hour-performance-indicators/day}/15-minute-values-by-hour]'
+                  busy-hour-identifier:
+                    type: object
+                    description: >
+                      'busy hour KPIs
+                      from [/calculate-busy-hour-performance-indicators/busy-hour-identifier]'
+        output:
+          success:
+            description: 'busy hour KPIs calculated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - busy-hour-values
+                  properties:
+                    busy-hour-values:
+                      type: object
+                      properties:
+                        period-end-time-list:
+                          type: array
+                          minItems: 1
+                          maxItems: 4
+                          description: >
+                            'list of period end times of the 15-min periods that are composing the busy hour
+                            from {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/period-end-time}'
+                          items:
+                            type: string
+                        label:
+                          type: string
+                          description: >
+                            'label of the busy hour with the format YYYY/MM/DD/hh/mm
+                            from { parsed and composed from earliest date in {$output#/busy-hour-values/period-end-time-list} }'
+                        throughput:
+                          type: integer
+                          description: >
+                            'throughput during the busy hour
+                            aggregated-total-bytes-output transformed from byte to kbit, and divided by assumed 3600 seconds of the measurement period
+                            from { {$input#/busy-hour-identifier/aggregated-total-bytes-output} * 8 / ( 1000 * 3600 ) }'
+                        capacity:
+                          type: integer
+                          description: >
+                            'capacity during the busy hour
+                            sum of total-air-interface-interval-capacity values divided by assumed four 15-min periods
+                            from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/total-air-interface-interval-capacity} ) / 4 }'
+                        utilization:
+                          type: integer
+                          description: >
+                            'utilization during the busy hour
+                            throughput / capacity, transformed to percentage
+                            from { {$output#/busy-hour-values/throughput} / {$output#/busy-hour-values/capacity} * 100 }'
+                        errored-frames:
+                          type: integer
+                          description: >
+                            'errored frames during the busy hour
+                            from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/errored-frames-input} ) }'
+                        dropped-frames:
+                          type: integer
+                          description: >
+                            'dropped frames during the busy hour
+                            from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/dropped-frames-input} ) }'
+                        suspicious-result-flag:
+                          type: boolean
+                          description: >
+                            'flag indicating suspicious busy hour KPIs
+                            from { {true} if in any of the period-end-time-list, capacity, errored-frames, or dropped-frames calculations less than 4 valid 15-minute values were available, otherwise {false} }'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

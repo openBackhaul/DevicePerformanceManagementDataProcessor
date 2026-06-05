@@ -1,0 +1,55 @@
+@startuml p2PrepareTxModes
+skinparam responseMessageBelowArrow true
+
+title
+  p2PrepareTxModes
+end title
+
+participant "p2CreateResultCc\n" as createRes
+
+participant "p2Prepare\nTxModes" as prepTxModes
+participant "p1Calculate\nAiCapacity" as aiCC
+
+
+createRes -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+activate prepTxModes
+
+  note over prepTxModes
+    [processedTransmissionModesList]=[]
+  end note
+
+  loop FOR all [historicalPerformanceDataList]
+    loop FOR all [timeXStatesList]
+      note over prepTxModes
+        IF time > 0
+          THEN add transmissionMode to
+                [processedTransmissionModesList]
+          ELSE delete transmissionMode
+                from [timeXStatesList]
+      end note
+    end loop
+  end loop
+
+  loop FOR all [processedTransmissionModesList]
+
+    note over prepTxModes
+      Complement entry in
+      [processedTransmissionModesList]
+      with AirInterfaceCapacity
+    end note
+
+    prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
+    activate aiCC
+      note over aiCC
+        Calculates airInterfaceCapacity
+        according to ONF TR-532 v2.0 Chapter 6.5
+      end note
+    prepTxModes <-- aiCC: {airInterfaceCapacity}
+    deactivate aiCC
+
+  end loop
+
+createRes <-- prepTxModes : { [historicalPerformanceDataList],\n[processedTransmissionModesList] }
+deactivate prepTxModes
+
+@enduml

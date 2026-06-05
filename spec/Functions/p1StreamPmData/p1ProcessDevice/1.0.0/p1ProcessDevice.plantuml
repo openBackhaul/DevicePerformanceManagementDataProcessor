@@ -5,7 +5,7 @@ title
   p1ProcessDevice
 end title
 
-participant "p1StreamPmData\n" as requestor
+participant "p2StreamPmData\n" as requestor
 participant "p1ProcessDevice\n" as p1ProOrch
 participant "p1LoadRawCc\n" as p1AddRaw
 participant "p1CreateResultCc\n" as p1CRC

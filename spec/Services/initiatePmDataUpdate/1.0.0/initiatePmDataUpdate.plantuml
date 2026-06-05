@@ -1,0 +1,112 @@
+@startuml initiatePmDataUpdate
+skinparam responseMessageBelowArrow true
+
+title
+  initiatePmDataUpdate
+end title
+
+participant "requestor\n" as tool
+participant "initiatePmDataUpdate\n" as initUpdate
+participant "p1LoadParameters\n" as p1LoadParams
+participant "MWDI:\n/provideDeviceStatusMetadata" as mwdiMeta
+participant "MWDI:\n/live/control-construct" as mwdiLive
+
+tool -> initUpdate : { [mountNames] }
+activate initUpdate
+
+  initUpdate -> mwdiMeta : { [mountNames] }
+  activate mwdiMeta
+    note over mwdiMeta
+      provides [metaData]
+      for [mountNames]
+    end note
+  initUpdate <-- mwdiMeta : { [metaData] }
+  deactivate mwdiMeta
+
+  note over initUpdate
+    IF all [mountNames] in [metaData]
+  end note
+  note left initUpdate
+    ELSE
+    - sends error message
+      "server responds, but service/resource doesn't exist"
+      application: 533 (hidden server: 404)
+    - terminates
+  end note
+  tool <-- initUpdate : 533\n{ code,\nmessage,\n[missingMountNames] }
+  note over initUpdate
+    THEN
+  end note
+
+  note over initUpdate
+    IF all [mountNames] in connected state
+  end note
+  note left initUpdate
+    ELSE
+    - sends error message
+      "server does not respond, even on ping"
+      application: 532 (hidden server: no response)
+    - terminates
+  end note
+  tool <-- initUpdate : 532\n{ code,\nmessage,\n[unconnectedMountNames] }
+  note over initUpdate
+    THEN
+  end note
+
+  note over initUpdate
+    IF [lastControlConstructNotificationUpdateTime] elder than 15min
+  end note
+  note left initUpdate
+    ELSE
+    - sends warning message
+    - removes up-to-date devices from [mountNames]
+    - continues with reduced [mountNames]
+  end note
+  tool <-- initUpdate : 200\n{ [alreadyUpToDateMountNames] }
+  note over initUpdate
+    THEN
+  end note
+
+  note right initUpdate #White
+    ignores that success rate of requests to
+    connected devices is little below 100%
+  end note
+  tool <-- initUpdate : 204
+
+  initUpdate -> p1LoadParams : {functionName=\n"initiatePmDataUpdate"}
+  activate p1LoadParams
+    note over p1LoadParams
+      Loads parameters
+      from configFile
+    end note
+  initUpdate <-- p1LoadParams : { {parameters}\n{configFile} }
+  deactivate p1LoadParams
+
+  loop FOR all [mountNames]
+
+    note over initUpdate
+      sends requests at a configurable
+      time interval (waitTimeForSending)
+    end note
+
+    initUpdate -> mwdiLive : { mountName }
+    activate mwdiLive
+
+deactivate initUpdate
+note over initUpdate #White
+  ignores responses (error messages
+  or {controlConstruct}) of MWDI
+end note
+
+      note over mwdiLive
+        - load {controlConstruct} from device to MWDI ES
+        - updates lastSuccessfulCompleteControlConstructUpdateTime
+          in [metaData]
+      end note
+
+    initUpdate <-- mwdiLive : { {controlConstruct} }
+    deactivate mwdiLive
+
+  end loop
+
+@enduml

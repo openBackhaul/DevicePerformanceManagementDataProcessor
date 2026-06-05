@@ -30,7 +30,7 @@ activate p1RMWDI
   p1RMWDI <-- p1LP : { {parameters}\n{configFile} }
   deactivate p1LP
 
-  Loop FOR all esName
+  loop FOR all esName
     p1RMWDI -> p1REA : { {parameters}\n{configFile}\nesName }
     activate p1REA
       note over p1REA
@@ -38,7 +38,7 @@ activate p1RMWDI
       end note
     p1RMWDI <-- p1REA : { {esAddress} }
     deactivate p1REA
-  end Loop
+  end loop
 
     p1RMWDI -> p1InitKafka : { {parameters}\n{configFile} }
     activate p1InitKafka

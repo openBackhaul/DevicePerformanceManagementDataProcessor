@@ -1,0 +1,72 @@
+storing:
+  type: object
+  required:
+    - parameters
+    - data-store-es-client
+    - result-cc
+    - offsets
+    - status-data
+  properties:
+    parameters:
+      type: object
+      description: >
+        'Subtree of the parameters object for p2Storing
+        from {$input#/parameters}'
+    data-store-es-client:
+      type: object
+      description: >
+        'DataStore ElasticSearch address
+        from {$input#/data-store-es-client}'
+    result-cc:
+      type: object
+      description: >
+        'resultCc
+        from {$input#/result-cc}'
+    offsets:
+      type: array
+      description: >
+        'offsets
+        from {$input#/offsets}'
+    status-data:
+      type: array
+      description: >
+        'statusData
+        from {$input#/status-data}'
+
+    storing-result-cc:
+      type: string
+      description: >
+        'Switch for de-/activating the storing of the resultCc into the DataStore
+        from [/storing/parameters/parameter=storingResultCc/value]'
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of DataStore ES
+        from [/storing/data-store-es-client/url]'
+    mount-name:
+      type: string
+      description: >
+        'MountName
+        from [/storing/result-cc/equipment-augment-1-0:control-construct-pac/external-label]'
+    batch-timestamp:
+      type: string
+      description: >
+        'Timestamp when the CC was read from the device (actually youngest air interface current performance data)
+        from [/storing/result-cc/batch-timestamp]'
+    processing-data:
+      type: object
+      description: >
+        'Status at the end of the processing of the latest batch'
+      properties:
+        offsets:
+          type: array
+          x-key: function-name
+          description: >
+            'List of offsets of diverse functions
+            from [/storing/offsets]'
+        status-data:
+          type: array
+          x-key: function-name
+          description: >
+            'List of status data of diverse functions
+            from [/storing/status-data]'

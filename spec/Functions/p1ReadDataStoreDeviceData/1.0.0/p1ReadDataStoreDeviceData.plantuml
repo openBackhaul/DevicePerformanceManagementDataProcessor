@@ -1,0 +1,21 @@
+@startuml p1ReadDataStoreDeviceData
+skinparam responseMessageBelowArrow true
+
+title
+  p1ReadDataStoreDeviceData
+end title
+
+participant "requestor\n" as requestor
+participant "p1ReadDataStoreDeviceData\n" as cur
+database "DataStore" as ds
+
+requestor -> cur: { {dataStoreEsClient},\nmountName }
+activate cur
+
+  cur -> ds
+  cur <-- ds: { [devicePmData] }
+
+requestor <-- cur: { [devicePmData] }
+deactivate cur
+
+@enduml

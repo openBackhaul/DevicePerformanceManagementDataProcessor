@@ -1,0 +1,52 @@
+@startuml p2DiscardIrrelevantPmRecords
+skinparam responseMessageBelowArrow true
+
+title
+  p2DiscardIrrelevantPmRecords
+end title
+
+participant "requestor\n(e.g. p2LoadRawCc)" as requestor
+participant "p2DiscardIrrelevant\nPmRecords" as cur
+
+
+requestor -> cur: { [historicalPerformanceDataList],\nformerMostRecentPeriodEndTime,\nformerMostRecentPeriodEndTime24 }
+
+activate cur
+
+  note over cur
+    Initializes:
+      newMostRecentPeriodEndTime
+      newMostRecentPeriodEndTime24
+  end note
+  note over cur
+    Initializes:
+      [amountReceived] = [ {date, count} ]
+  end note
+
+  loop FOR EACH record in [historicalPerformanceDataList]
+
+    note over cur
+      IF (record.periodEndTime) is newer than:
+        - 15min: formerMostRecentPeriodEndTime
+        - 24h: formerMostRecentPeriodEndTime24
+    end note
+    note right cur
+      THEN
+        countReceived15MinPmSlice
+    end note
+    note right cur
+      ELSE
+        discard record
+    end note
+
+    note over cur
+      updateNewMostRecentPeriodEndTime
+    end note
+
+  end loop
+
+requestor <-- cur: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\n[amountReceived] }
+
+deactivate cur
+
+@enduml

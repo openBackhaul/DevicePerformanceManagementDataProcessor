@@ -1,0 +1,47 @@
+@startuml p1CalculateBusyHourPerformanceIndicators
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateBusyHourPerformanceIndicators
+end title
+
+participant "p2IterateEcPmSlices\n" as requestor
+participant "p1CalculateBusyHour\nPerformanceIndicators" as calBh
+
+requestor -> calBh : { {historicalPerformanceData},\n{interfaceStatus} }
+activate calBh
+
+  note over calBh
+    IF granularityPeriod == 24-HOURS
+  end note
+
+  note left calBh
+    ELSE terminate
+  end note
+  requestor <-- calBh : { 'PM data of wrong granularity provided' }
+
+  note over calBh
+    THEN
+  end note
+
+  note over calBh
+    aggregateTotalBytesOutput
+    for every hour of the day
+  end note
+
+  note over calBh
+    identifyBusyHour by
+    highest totalBytesOutput
+  end note
+
+  note over calBh
+    calculateBusyHourKpis and add
+    them to {historicalPerformanceData}
+  end note
+
+requestor <-- calBh : { {historicalPerformanceData} }
+deactivate calBh
+
+deactivate requestor
+
+@enduml
