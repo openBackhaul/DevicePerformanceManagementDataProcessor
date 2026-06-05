@@ -419,9 +419,9 @@ x-javascript-interface:
                       description: >
                         'historicalPerformanceDataList'
                     interface-status:
-                       type: array
-                       description: >
-                         'new status at the interface after iterating through PM data of the 15-min periods of the currently processed batch'
+                      type: array
+                      description: >
+                        'new status at the interface after iterating through PM data of the 15-min periods of the currently processed batch'
           error:
             description: 'historicalPerformanceDataList could not be processed'
             content:
