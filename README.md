@@ -6,7 +6,7 @@ The DevicePerformanceManagementDataProcessor belongs to the Network Management I
 
 ## Description
 
-It retrieves PM data from MWDI, processes it, formats it, transmits it via Kafka, and stores it in its own database.  
+It retrieves PM data from MWDI, processes it, formats it, transmits it via Kafka, and facilitates storing it in its own database.  
 
 The DPMDP implements a hard coded workflow.  
 The individual processing steps are structured into Functions.  
@@ -28,13 +28,18 @@ This release adds new functionality and changes inner workings of DPMDP.
 New functionality and changes e.g. include:  
 
 - provisioning of Busy Hour metrics
-- quality service monitoring
-- a new service for device PM data dumps from DPMDP data store
-- hardening against poison pills during removal of "old" data
-  - when periodEndTimes are far in the future data loss might occur otherwise
-- changes the data storage concept (offsets, status, results)
+- quality of service monitoring
+- new services for
+  - device PM data dumps from DPMDP data store
+  - providing documentation about the PM data processing
+  - pre-poning the provisioning of PM data of specific devices
+- provisioning of diverse ONF based output formats
+- performance improvements
+- hardening against poison pills coming from false periodEndTimes values
+- improved data storage concept (offsets, status, results)
 
 Details on changes are found in [DPMDP v1.1.0_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/3).  
+More [detailed background information](./spec/additionalDocumentation/) on some new features (not part of the actual specification).
 
 ### v1.0.1
 
