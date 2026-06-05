@@ -14,7 +14,7 @@ It also starts Functions that run permanently during runtime of the new applicat
 
 ## Interface
 
-Please find a detailed description of the interface in the [openAPI specification](../../DevicePerformanceManagementDataProcessor.yaml).  
+Please find a detailed description of the interface in the [openAPI specification](../../../DevicePerformanceManagementDataProcessor.yaml).  
 
 ## NPM Module
 
