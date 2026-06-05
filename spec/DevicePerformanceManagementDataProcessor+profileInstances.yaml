@@ -121,11 +121,24 @@ profile-instances:
       value-reference: '/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/changes'
 
 
-  # p1StreamPmData
+  # embedYourself
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-000'
     capability:
-      function-name: 'p1StreamPmData'
+      function-name: 'embedYourself'
+      function-description: 'Service for organizing the embedding of the application into the MW SDN domain'
+      parameter-list:
+      sub-function-list:
+        - 'dpmdp-1-1-0-function-p-020'
+    configuration:
+      is-active: true
+
+
+  # p2StreamPmData
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-020'
+    capability:
+      function-name: 'p2StreamPmData'
       function-description: 'Cyclically triggers the replication of MWDI and initiates the processing of the PM data'
       parameter-list:
       sub-function-list:
@@ -135,6 +148,7 @@ profile-instances:
         - 'dpmdp-1-1-0-function-p-100'
         - 'dpmdp-1-1-0-function-p-120'
         - 'dpmdp-1-1-0-function-p-150'
+        - 'dpmdp-1-1-0-function-p-640'
     configuration:
       is-active: true
 
@@ -218,6 +232,12 @@ profile-instances:
           owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-092'
           owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-093'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-094'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-095'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -234,11 +254,38 @@ profile-instances:
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-1-0-string-p-092'
     capability:
-      string-name: 'onfProvider'
+      string-name: 'mycomProvider'
       purpose: 'kafkaClient'
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-001'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-093'
+    capability:
+      string-name: 'netexplorerProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-002'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-094'
+    capability:
+      string-name: 'iveritasProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-003'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-095'
+    capability:
+      string-name: 'pmDataQualityProvider'
+      purpose: 'kafkaClient'
+      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
+    configuration:
+      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-004'
 
 
   # p1MaintainDs
@@ -373,6 +420,7 @@ profile-instances:
     configuration:
       is-active: true
 
+
   # p1LoadOffsetsAndStatusData
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-160'
@@ -395,8 +443,17 @@ profile-instances:
       sub-function-list:
         - 'dpmdp-1-1-0-function-p-210'
         - 'dpmdp-1-1-0-function-p-240'
+        - 'dpmdp-1-1-0-function-p-250'
     configuration:
       is-active: true
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-181'
+    capability:
+      string-name: 'raw-cc'
+      purpose: 'fieldsFilter'
+    configuration:
+      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(current-performance-data-list(granularity-period;timestamp));air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
 
 
   # p1FieldsFilter
@@ -412,14 +469,6 @@ profile-instances:
     configuration:
       is-active: true
 
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-211'
-    capability:
-      string-name: 'fieldsFilter'
-      purpose: 'Fields filter to be applied to reduce the raw ControlConstruct data'
-    configuration:
-      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));core-model-1-4:profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(current-performance-data-list(granularity-period;timestamp));air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
-
 
   # p2DiscardIrrelevantPmRecords
   - profile-name: 'FunctionProfile'
@@ -427,6 +476,18 @@ profile-instances:
     capability:
       function-name: 'p2DiscardIrrelevantPmRecords'
       function-description: 'Discards irrelevant records from historical performance data list'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1CalculateInterfacePmDataQuality
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-250'
+    capability:
+      function-name: 'p1CalculateInterfacePmDataQuality'
+      function-description: 'Calculates the PM data quality'
       parameter-list:
       sub-function-list:
     configuration:
@@ -444,16 +505,16 @@ profile-instances:
         - 'dpmdp-1-1-0-function-p-300'
         - 'dpmdp-1-1-0-function-p-350'
         - 'dpmdp-1-1-0-function-p-440'
-        - 'dpmdp-1-1-0-function-p-510'
+        - 'dpmdp-1-1-0-function-p-530'
     configuration:
       is-active: true
 
 
-  # p1PrepareTxModes
+  # p2PrepareTxModes
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-300'
     capability:
-      function-name: 'p1PrepareTxModes'
+      function-name: 'p2PrepareTxModes'
       function-description: 'Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity'
       parameter-list:
       sub-function-list:
@@ -790,8 +851,8 @@ profile-instances:
         - 'dpmdp-1-1-0-function-p-450'
         - 'dpmdp-1-1-0-function-p-460'
         - 'dpmdp-1-1-0-function-p-500'
-        - 'dpmdp-1-1-0-function-p-504'
-        - 'dpmdp-1-1-0-function-p-507'
+        - 'dpmdp-1-1-0-function-p-510'
+        - 'dpmdp-1-1-0-function-p-520'
     configuration:
       is-active: true
 
@@ -1061,45 +1122,48 @@ profile-instances:
     configuration:
       is-active: true
 
-  # p2CategorizeDataVolume
+
+  # p1CategorizeDataVolume
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-504'
+    uuid: 'dpmdp-1-1-0-function-p-510'
     capability:
-      function-name: 'p2CategorizeDataVolume'
+      function-name: 'p1CategorizeDataVolume'
       function-description: 'Categorizes 15min PM data and stores info in status for Busy Hour computation'
       parameter-list:
       sub-function-list:
     configuration:
       is-active: true
 
-  # p2CalculateBusyHourPerformanceIndicators
+
+  # p1CalculateBusyHourPerformanceIndicators
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-507'
+    uuid: 'dpmdp-1-1-0-function-p-520'
     capability:
-      function-name: 'p2CalculateBusyHourPerformanceIndicators'
+      function-name: 'p1CalculateBusyHourPerformanceIndicators'
       function-description: 'Calculates Busy Hour performance indicators from status info'
       parameter-list:
       sub-function-list:
     configuration:
       is-active: true
 
+
   # p1RemoveOutOfRangeTemperature
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-510'
+    uuid: 'dpmdp-1-1-0-function-p-530'
     capability:
       function-name: 'p1RemoveOutOfRangeTemperature'
       function-description: 'Deletes temperature attributes with values outside pre-defined range from equipment'
       parameter-list:
-        - parameter: 'dpmdp-1-1-0-string-p-511'
+        - parameter: 'dpmdp-1-1-0-string-p-531'
           owner: 'engineering'
-        - parameter: 'dpmdp-1-1-0-string-p-512'
+        - parameter: 'dpmdp-1-1-0-string-p-532'
           owner: 'engineering'
       sub-function-list:
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-511'
+    uuid: 'dpmdp-1-1-0-string-p-531'
     capability:
       string-name: 'lowerTemperatureLimit'
       purpose: 'Lower bound of valid values of the temperature'
@@ -1107,7 +1171,7 @@ profile-instances:
       string-value: '-30'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-512'
+    uuid: 'dpmdp-1-1-0-string-p-532'
     capability:
       string-name: 'upperTemperatureLimit'
       purpose: 'Upper bound of valid values of the temperature'
@@ -1127,13 +1191,19 @@ profile-instances:
       is-active: true
 
 
-  # p1FormattingOutputOnf
+  # p2FormattingOutputOnf
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-550'
     capability:
-      function-name: 'p1FormattingOutputOnf'
+      function-name: 'p2FormattingOutputOnf'
       function-description: 'Creates the onfOutputFormat from resultCc'
       parameter-list:
+        - parameter: 'dpmdp-1-1-0-string-p-551'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-552'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-553'
+          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-1-0-function-p-560'
     configuration:
@@ -1290,7 +1360,7 @@ profile-instances:
       sub-function-list:
         - 'dpmdp-1-1-0-function-p-710'
         - 'dpmdp-1-1-0-function-p-720'
-        - 'dpmdp-1-1-0-function-p-750'
+        - 'dpmdp-1-1-0-function-p-730'
     configuration:
       is-active: true
 
@@ -1344,7 +1414,7 @@ profile-instances:
 
   # documentPmDataProcessing
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-750'
+    uuid: 'dpmdp-1-1-0-function-p-760'
     capability:
       function-name: 'documentPmDataProcessing'
       function-description: 'Provides documentation about the PM data processing'
@@ -1352,7 +1422,9 @@ profile-instances:
         - parameter: 'dpmdp-1-1-0-string-p-751'
           owner: 'platform'
       sub-function-list:
-        - 'dpmdp-1-1-0-function-p-760'
+        - 'dpmdp-1-1-0-function-p-780'
+        - 'dpmdp-1-1-0-function-p-800'
+        - 'dpmdp-1-1-0-function-p-820'
     configuration:
       is-active: true
 
@@ -1365,22 +1437,9 @@ profile-instances:
       string-value: 'p2ProcessDevice'
 
 
-  # p1DocumentFunction
-  - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-760'
-    capability:
-      function-name: 'p1DocumentFunction'
-      function-description: 'Created text documentation of active functions'
-      parameter-list:
-      sub-function-list:
-        - 'dpmdp-1-1-0-function-p-770'
-    configuration:
-      is-active: true
-
-
   # p1LoadParameters
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-770'
+    uuid: 'dpmdp-1-1-0-function-p-780'
     capability:
       function-name: 'p1LoadParameters'
       function-description: 'Loads the parameters from the configFile'
@@ -1390,22 +1449,46 @@ profile-instances:
       is-active: true
 
 
-  # initiatePmDataUpdate
+  # p1LoadParameters
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-800'
+    capability:
+      function-name: 'p1LoadParameters'
+      function-description: 'Loads the parameters from the configFile'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # p1DocumentFunction
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-820'
+    capability:
+      function-name: 'p1DocumentFunction'
+      function-description: 'Created text documentation of active functions'
+      parameter-list:
+      sub-function-list:
+    configuration:
+      is-active: true
+
+
+  # initiatePmDataUpdate
+  - profile-name: 'FunctionProfile'
+    uuid: 'dpmdp-1-1-0-function-p-870'
     capability:
       function-name: 'initiatePmDataUpdate'
       function-description: 'Initiates process of updating PM data for specified devices'
       parameter-list:
-        - parameter: 'dpmdp-1-1-0-string-p-801'
+        - parameter: 'dpmdp-1-1-0-string-p-871'
           owner: 'platform'
       sub-function-list:
-        - 'dpmdp-1-1-0-function-p-810'
+        - 'dpmdp-1-1-0-function-p-890'
     configuration:
       is-active: true
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-801'
+    uuid: 'dpmdp-1-1-0-string-p-871'
     capability:
       string-name: 'waitTimeForSending'
       purpose: 'Wait time [in ms] between sending requests to the liveCC path at the MWDI'
@@ -1415,7 +1498,7 @@ profile-instances:
 
   # p1LoadParameters
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-1-0-function-p-810'
+    uuid: 'dpmdp-1-1-0-function-p-890'
     capability:
       function-name: 'p1LoadParameters'
       function-description: 'Loads the parameters from the configFile'

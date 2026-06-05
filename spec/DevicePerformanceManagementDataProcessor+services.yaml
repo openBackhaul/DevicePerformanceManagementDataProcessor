@@ -77,8 +77,8 @@ servers:
         release-date: 31.01.2026
         changes: Initial version
       - release-number: 1.1.0
-        release-date: 31.05.2026
-        changes: Fixes poison pill problem on mostRecentPeriodEndTime, adds busy hour kpis, adds PM data quality indicators, adds dedicated formats and Kafka producers per consuming tool
+        release-date: 05.06.2026
+        changes: Adds busy hour KPIs, adds PM data quality monitoring, adds three new services for dumping device PM data and providing process documentation and advancing individual devices, provides diverse ONF based output, improves performance
   tcp-server:
     - description: Without TLS layer
       local-protocol: http

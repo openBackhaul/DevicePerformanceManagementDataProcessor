@@ -1,8 +1,8 @@
-@startuml hl_sequence
+@startuml hl_sequence_quality_changes
 skinparam responseMessageBelowArrow true
 
 title
-  DevicePerformanceManagementDataProcessor
+  New Quality Monitoring
 end title
 
 participant "embedYourself\n" as embed
@@ -47,6 +47,59 @@ participant "p1MaintainDs\n" as p1MaintainDs
 participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
 participant "p1Document\nFunction" as p1Doc #LightSalmon
 
+' Release Notes
+== Changes for Measuring Quality ==
+
+note over p2AddRaw
+  - Change from handling {offset} to handling
+    former/newMostRecentPeriodEndTime/24
+end note
+
+note over p2filterPm
+  - Add counting the number of received
+    but not filtered out 15min PM slices
+  - Add return number of received but not
+    filtered out 15min PM slices
+end note
+
+note over p2AddRaw
+  - Add returned number of received
+    but not filtered out 15min PM slices
+    to variables
+  - Add interface to new function
+    p1CalculateInterfacePmDataQuality
+end note
+
+note over calPmQual
+  - Calculate the quality of the
+    provided PM data
+  - Return interfaceQuality of the provided
+    PM data
+end note
+
+note over p2AddRaw
+  - Add consolidating returned interfaceQuality
+    information into deviceQuality
+  - Add returning the deviceQuality of the
+    provided PM data
+end note
+
+note over p2ProcessPm
+  - Add returned deviceQuality
+    information to variables
+  - Add returning the deviceQuality
+    of the provided PM data
+end note
+
+note over p2StreamPm
+  - Consolidate deviceQuality information
+    into list of multiple devices
+  - Add interface to existing function
+    p1TransmittingKafka for streaming
+    quality information to Kafka
+end note
+
+== End of Changes ==
 
 note right embed
   Automatically starts
@@ -448,95 +501,5 @@ activate p2StreamPm
     deactivate p1Trans
 
   end loop
-
-
--> deviceDump
-activate deviceDump
-
-  deviceDump -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads parameters
-      from configFile
-    end note
-  deviceDump <-- p1LoadParams
-  deactivate p1LoadParams
-
-    deviceDump -> p1ResolveAddress
-    activate p1ResolveAddress
-      note over p1ResolveAddress
-        Resolves ES address
-      end note
-    deviceDump <-- p1ResolveAddress
-    deactivate p1ResolveAddress
-
-    deviceDump -> p1ReadDevice
-    activate p1ReadDevice
-      note over p1ReadDevice
-        Reads device PM
-        data from DataStore
-      end note
-    deviceDump <-- p1ReadDevice
-    deactivate p1ReadDevice
-
-<-- deviceDump
-deactivate deviceDump
-
-
--> docuPm
-activate docuPm
-
-  docuPm -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads own parameters
-      from configFile
-    end note
-  docuPm <-- p1LoadParams
-  deactivate p1LoadParams
-
-  docuPm -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads parameters of PM
-      data processing function
-      from configFile
-    end note
-  docuPm <-- p1LoadParams
-  deactivate p1LoadParams
-
-  docuPm -> p1Doc
-  activate p1Doc
-    note over p1Doc
-      Creates documentation
-      from {parameters}
-    end note
-  docuPm <-- p1Doc
-  deactivate p1Doc
-
-<-- docuPm
-deactivate docuPm
-
-
--> initPmData
-activate initPmData
-
-  initPmData -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads parameters
-      from configFile
-    end note
-  initPmData <-- p1LoadParams
-  deactivate p1LoadParams
-
-  loop
-    note over initPmData
-      Triggers liveCC
-      path at MWDI
-    end note
-  end loop
-<-- initPmData
-deactivate initPmData
 
 @enduml

@@ -32,7 +32,7 @@ New functionality and changes e.g. include:
 - new services for
   - device PM data dumps from DPMDP data store
   - providing documentation about the PM data processing
-  - pre-poning the provisioning of PM data of specific devices
+  - advancing the provisioning of PM data of specific devices
 - provisioning of diverse ONF based output formats
 - performance improvements
 - hardening against poison pills coming from false periodEndTimes values

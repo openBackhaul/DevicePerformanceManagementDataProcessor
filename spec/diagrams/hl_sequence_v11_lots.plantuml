@@ -1,51 +1,51 @@
-@startuml hl_sequence
+@startuml hl_sequence_v11_lots
 skinparam responseMessageBelowArrow true
 
 title
-  DevicePerformanceManagementDataProcessor
+  Lots of the v1.1 Release
 end title
 
 participant "embedYourself\n" as embed
-participant "provideDevice\nDataStoreDump" as deviceDump #LightSalmon
-participant "documentPmData\nProcessing" as docuPm #LightSalmon
-participant "initiatePm\nDataUpdate" as initPmData #LightSalmon
-participant "p2Stream\nPmData" as p2StreamPm #LightYellow
+participant "provideDevice\nDataStoreDump" as deviceDump #Red
+participant "documentPmData\nProcessing" as docuPm #Red
+participant "initiatePm\nDataUpdate" as initPmData #Red
+participant "p2Stream\nPmData" as p2StreamPm #LightGreen
 participant "p1LoadParameters\n" as p1LoadParams
 participant "p1Resolve\nEsAddress" as p1ResolveAddress
 participant "p1InitKafka\n" as p1InitKafka
 participant "p1Update\nMwdiReplica" as p1UpdateMwdiRep
 
-participant "p2Process\nDevice" as p2ProcessPm #LightYellow
+participant "p2Process\nDevice" as p2ProcessPm #LightGreen
 
-participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
-participant "p2LoadRawCc\n" as p2AddRaw #LightYellow
+participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #Orange
+participant "p2LoadRawCc\n" as p2AddRaw #LightGreen
 participant "p1FieldsFilter\n" as p1FieldsFilter
-participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
-participant "p1CalculateInterface\nPmDataQuality" as calPmQual #LightSalmon
+participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightSkyBlue
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual #Orange
 
-participant "p2Create\nResultCc" as p2CreateResultCc #LightYellow
-participant "p2Prepare\nTxModes" as p1prepTxModes #LightYellow
+participant "p2Create\nResultCc" as p2CreateResultCc #LightGreen
+participant "p2Prepare\nTxModes" as p1prepTxModes #LightSkyBlue
 participant "p1Calculate\nAiCapacity" as aiCC
-participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
+participant "p2IterateAi\nPmSlices" as aiSlices #LightSkyBlue
 participant "p1Calculate\nIntervalCapacity" as intCC
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL
 participant "p1Remove\nDefaultValues" as p1RemDefault
-participant "p2IterateEc\nPmSlices" as ecSlices #LightYellow
+participant "p2IterateEc\nPmSlices" as ecSlices #LightSkyBlue
 participant "p1Calculate\nEthernetKpis" as p1EthKpi
 participant "p1Calculate\nUtilization" as p1Util
-participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
-participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
+participant "p1Categorize\nDataVolume" as p1CatDV #Orange
+participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #Orange
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
 participant "p1Formatting\nOutputApt" as p1OutputApt
-participant "p2Formatting\nOutputOnf" as p1OutputOnf #LightYellow
+participant "p2Formatting\nOutputOnf" as p1OutputOnf #LightSkyBlue
 
 participant "p1Transmitting\nKafka" as p1Trans
 
-participant "p2Storing\n" as p2Store #LightYellow
+participant "p2Storing\n" as p2Store #LightGreen
 participant "p1MaintainDs\n" as p1MaintainDs
-participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
-participant "p1Document\nFunction" as p1Doc #LightSalmon
+participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #Red
+participant "p1Document\nFunction" as p1Doc #Red
 
 
 note right embed

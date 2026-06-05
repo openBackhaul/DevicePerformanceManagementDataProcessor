@@ -1,8 +1,8 @@
-@startuml hl_sequence
+@startuml hl_sequence_other_changes
 skinparam responseMessageBelowArrow true
 
 title
-  DevicePerformanceManagementDataProcessor
+  Other Changes
 end title
 
 participant "embedYourself\n" as embed
@@ -47,6 +47,31 @@ participant "p1MaintainDs\n" as p1MaintainDs
 participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
 participant "p1Document\nFunction" as p1Doc #LightSalmon
 
+' Release Notes
+== Changes for multiple ONF Output formats ==
+
+note over p1OutputOnf
+  - Change extraction of parameters
+  - Loop creation of ONF output format
+  - Return list of ONF output formats
+end note
+
+note over p2AddRaw
+  - Change extraction of parameters
+end note
+
+note over p2ProcessPm
+  - Change interface to p2FormattingOutputOnf
+    to receive list of ONF output formats
+end note
+
+== Optimize p1PrepareTxModes ==
+
+note over p1prepTxModes
+  - Improve speed
+end note
+
+== End of Changes ==
 
 note right embed
   Automatically starts
@@ -448,95 +473,5 @@ activate p2StreamPm
     deactivate p1Trans
 
   end loop
-
-
--> deviceDump
-activate deviceDump
-
-  deviceDump -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads parameters
-      from configFile
-    end note
-  deviceDump <-- p1LoadParams
-  deactivate p1LoadParams
-
-    deviceDump -> p1ResolveAddress
-    activate p1ResolveAddress
-      note over p1ResolveAddress
-        Resolves ES address
-      end note
-    deviceDump <-- p1ResolveAddress
-    deactivate p1ResolveAddress
-
-    deviceDump -> p1ReadDevice
-    activate p1ReadDevice
-      note over p1ReadDevice
-        Reads device PM
-        data from DataStore
-      end note
-    deviceDump <-- p1ReadDevice
-    deactivate p1ReadDevice
-
-<-- deviceDump
-deactivate deviceDump
-
-
--> docuPm
-activate docuPm
-
-  docuPm -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads own parameters
-      from configFile
-    end note
-  docuPm <-- p1LoadParams
-  deactivate p1LoadParams
-
-  docuPm -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads parameters of PM
-      data processing function
-      from configFile
-    end note
-  docuPm <-- p1LoadParams
-  deactivate p1LoadParams
-
-  docuPm -> p1Doc
-  activate p1Doc
-    note over p1Doc
-      Creates documentation
-      from {parameters}
-    end note
-  docuPm <-- p1Doc
-  deactivate p1Doc
-
-<-- docuPm
-deactivate docuPm
-
-
--> initPmData
-activate initPmData
-
-  initPmData -> p1LoadParams
-  activate p1LoadParams
-    note over p1LoadParams
-      Loads parameters
-      from configFile
-    end note
-  initPmData <-- p1LoadParams
-  deactivate p1LoadParams
-
-  loop
-    note over initPmData
-      Triggers liveCC
-      path at MWDI
-    end note
-  end loop
-<-- initPmData
-deactivate initPmData
 
 @enduml
