@@ -1,0 +1,47 @@
+@startuml p1LoadParameters
+skinparam responseMessageBelowArrow true
+
+title
+  p1LoadParameters
+end title
+
+participant "requestor\n" as p1RMWDI
+participant "p1LoadParameters\n" as p1LP
+database "configFile" as config
+
+activate p1RMWDI
+
+p1RMWDI -> p1LP : {functionName}
+activate p1LP
+
+  note right p1LP
+    loads the application's
+    CC from configFile
+  end note
+
+  p1LP -> config
+  p1LP <-- config
+
+  note right p1LP
+    Finds uuid of FunctionProfile
+    instance with functionName
+  end note
+
+
+  loop
+    note right p1LP
+      Loads instance of FunctionProfile from
+      the internal copy of the configFile and
+      translate into internal parameters format
+    end note
+    p1LP -> p1LP
+
+    note right p1LP
+      Reads uuids of SubFunctions
+    end note
+  end loop
+
+p1RMWDI <-- p1LP : { {parameters},\n{configFile} }
+deactivate p1LP
+
+@enduml

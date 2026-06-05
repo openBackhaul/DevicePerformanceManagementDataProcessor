@@ -62,7 +62,7 @@ x-javascript-interface:
                 - 'mountName not provided'
                 - 'mountName invalid'
                 - 'rawCc could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       readControlConstructFromReplica:
         url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
@@ -156,7 +156,7 @@ x-javascript-interface:
                       - 'mountName not provided'
                       - 'mountName invalid'
                       - 'interfaceMetadataList could not be provided'
-                      - 'General processing error'
+                      - 'general processing error'
       p1DiscardIrrelevantPmRecords:
         input:
           required: true
@@ -228,7 +228,7 @@ x-javascript-interface:
                     type: string
                     description: >
                       'Timestamp of current performance data
-                      from [/load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-current-performance/timestamp]'
+                      from [/load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-current-performance/current-performance-data-list=air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN/timestamp]'
                   batch-timestamp:
                     type: string
                     description: >
@@ -262,7 +262,7 @@ x-javascript-interface:
                       - 'batchTimestamp not provided'
                       - 'batchTimestamp invalid'
                       - 'batchTimestamp could not be provided'
-                      - 'General processing error'
+                      - 'general processing error'
 
 paths:
   /:

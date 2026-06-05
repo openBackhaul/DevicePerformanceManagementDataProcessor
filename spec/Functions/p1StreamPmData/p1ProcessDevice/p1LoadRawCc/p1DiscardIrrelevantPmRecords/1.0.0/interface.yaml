@@ -58,7 +58,7 @@ x-javascript-interface:
               enum:
                 - 'historicalPerformanceDataList not provided'
                 - 'historicalPerformanceDataList invalid'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       description: 'No requests or calls to other Functions'
 

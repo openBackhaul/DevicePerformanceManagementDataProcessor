@@ -57,7 +57,7 @@ x-javascript-interface:
                 - 'resultCc not provided'
                 - 'resultCc invalid'
                 - 'onfOutputFormat could not be provided'
-                - 'General processing error'
+                - 'general processing error'
     processing:
       createOutputFromResultCc:
         description: >
@@ -95,7 +95,7 @@ x-javascript-interface:
                     - 'resultCc not provided'
                     - 'resultCc invalid'
                     - 'output could not be provided'
-                    - 'General processing error'
+                    - 'general processing error'
       p1FieldsFilter:
         input:
           required: true

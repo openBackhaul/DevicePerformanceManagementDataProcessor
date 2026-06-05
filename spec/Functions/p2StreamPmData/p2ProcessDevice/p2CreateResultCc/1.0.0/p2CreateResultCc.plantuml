@@ -1,0 +1,128 @@
+@startuml p2CreateResultCc
+skinparam responseMessageBelowArrow true
+
+title
+  p2CreateResultCc
+end title
+
+participant "p2ProcessDevice\n" as requestor
+participant "p2CreateResultCc\n" as cur
+participant "p1Prepare\nTxModes" as p1prepTxModes
+participant "p2IterateAi\nPmSlices" as p2IterateAi
+participant "p2IterateEc\nPmSlices" as p2IterateEc
+participant "p1RemoveOutOfRange\nTemperature" as p1RemoveTemp
+
+requestor -> cur : { {parameters},\n{rawCc},\n[statusData] }
+activate cur
+
+  note over cur
+    Copies rawCc to resultCc
+  end note
+
+  note over cur
+    Creates aggregationGroupList
+  end note
+
+  loop FOR all AirInterfaces in resultCc
+
+    cur -> p1prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p1prepTxModes
+
+      note over p1prepTxModes
+        Removes unused transmission modes
+        from historicalPerformanceDataList
+      end note
+
+      note over p1prepTxModes
+        Removes unused transmission modes
+        from transmissionModeList
+      end note
+
+      note over p1prepTxModes
+        Adds AirInterfaceCapacity to
+        used transmission modes
+      end note
+
+    cur <-- p1prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+    deactivate p1prepTxModes
+
+    cur -> p2IterateAi : { {/parameters/sub-function=p2IterateAiPmSlices},\n[historicalPerformanceDataList],\n[transmissionModeList] }
+    activate p2IterateAi
+
+      note over p2IterateAi
+        Adds IntervalCapacity
+        to Ai Pm data slice
+      end note
+
+      note over p2IterateAi
+        Deletes TX and RX levels
+        outside pre-defined range
+        from Ai Pm data
+      end note
+
+      note over p2IterateAi
+        Deletes default values
+        from Ai Pm data
+      end note
+
+
+    cur <-- p2IterateAi : { [historicalPerformanceDataList] }
+    deactivate p2IterateAi
+
+    note over cur
+      Adds linkId
+    end note
+
+    note over cur
+      Adds list of parallel LTPs
+    end note
+
+  end
+
+  loop FOR all EthernetContainers in resultCc
+
+    cur -> p2IterateEc : { {/parameters/sub-function=p2IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{/status-data=p2IterateEcPmSlices/status/interface-status=*} }
+    activate p2IterateEc
+
+      note over p2IterateEc
+        Adds Ethernet KPIs
+      end note
+
+      note over p2IterateEc
+        Deletes default values
+        from Ec Pm data
+      end note
+
+      note over p2IterateEc
+        Adds utilization
+      end note
+
+      note over p2IterateEc
+        Categorizes PM data
+        by day and hour
+      end note
+
+      note over p2IterateEc
+        Adds BusyHourKPIs
+      end note
+
+    cur <-- p2IterateEc : { [historicalPerformanceDataList],\n{interface-status} }
+    deactivate p2IterateEc
+
+  end loop
+
+  cur -> p1RemoveTemp : { {/parameters/sub-function=p1RemoveOutOfRangeTemperature},\n[equipment] }
+  activate p1RemoveTemp
+
+    note over p1RemoveTemp
+      Deletes temperature values
+      outside pre-defined range
+    end note
+
+  cur <-- p1RemoveTemp : { [equipment] }
+  deactivate p1RemoveTemp
+
+requestor <-- cur : { {resultCc},\n[statusData] }
+deactivate cur
+
+@enduml

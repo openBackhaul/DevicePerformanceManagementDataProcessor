@@ -1,0 +1,312 @@
+openapi: 3.0.0
+info:
+  title: p2LoadRawCc
+  version: 1.0.0
+
+x-javascript-interface:
+  p2LoadRawCc:
+    summary: 'Reads device ControlConstruct from MWDI ES replica, applies filtering and returns the remaining data to the caller'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - mwdi-replica-es-client
+              - mount-name
+              - offsets
+            properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              mwdi-replica-es-client:
+                type: object
+                description: 'MWDI Replica ElasticSearch address'
+              mount-name:
+                type: string
+                description: 'mountName of the device for which ControlConstruct data shall be read'
+              offsets:
+                type: array
+                description: 'Array of all Offsets'
+    output:
+      success:
+        description: 'rawCc loaded'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - raw-cc
+                - offsets
+                - device-pm-data-quality
+              properties:
+                raw-cc:
+                  type: object
+                  description: >
+                    'rawCc read from Replica ES, but reduced by irrelevant data
+                    from [/load-raw-cc/raw-cc]'
+                offsets:
+                  type: array
+                  description: >
+                    'Array of all Offsets
+                    from [/load-raw-cc/offsets]'
+                device-pm-data-quality:
+                  type: object
+                  description: >
+                    'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+                    from [/load-raw-cc/device-pm-data-quality]'
+      error:
+        description: 'rawCc could not be loaded'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'mwdiReplicaEsClient not provided'
+                - 'mwdiReplicaEsClient invalid'
+                - 'mountName not provided'
+                - 'mountName invalid'
+                - 'offsets not provided'
+                - 'offsets invalid'
+                - 'rawCc could not be provided'
+                - 'offsets could not be provided'
+                - 'pmDataQuality could not be provided'
+                - 'general processing error'
+    processing:
+      readControlConstructFromReplica:
+        url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
+          description: 'Reads the complete ControlConstruct for the currently processed device from MWDI ES replica.'
+          output:
+            success:
+              description: 'Raw ControlConstruct data read'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    required:
+                      - core-model-1-4:control-construct
+                    properties:
+                      core-model-1-4:control-construct:
+                        type: array
+                        x-key: uuid
+                        items:
+                          type: object
+            error:
+              description: 'Data structure could not be read from ElasticSearch'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'ata structure is missing or invalid'
+                      - 'elasticSearch read error'
+                      - 'general processing error during reading'
+      p1FieldsFilter:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data-structure
+                  - fields-filter-string
+                properties:
+                  data-structure:
+                    type: object
+                    description: >
+                      'The data structure to be filtered according to the provided fields filter string.
+                      It is the raw ControlConstruct content (the object found in the first array element of core-model-1-4:control-construct, without the core-model-1-4:control-construct keyword itself)
+                      from [/load-raw-cc/raw-cc]'
+                  fields-filter-string:
+                    type: string
+                    description: >
+                      'Fields filter string following NETCONF FieldsFilter syntax and semantics to be applied to the data structure,
+                      from [/load-raw-cc/fields-filter[0]/fields-filter-string]'
+        output:
+          success:
+            description: 'Data structure successfully filtered according to the provided fields filter string'
+            content:
+              application/json:
+                schema:
+                  type: object
+                properties:
+                  filtered-data-structure:
+                    type: object
+                    description: 'The data structure after filtering according to the provided fields filter string'
+          error:
+            description: 'Data structure could not be filtered according to the provided fields filter string'
+            content:
+              application/json:
+                schema:
+                  type: string
+      p2DiscardIrrelevantPmRecords:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - historical-performance-data-list
+                  - former-most-recent-period-end-time
+                  - former-most-recent-period-end-time-24
+                properties:
+                  historical-performance-data-list:
+                    type: array
+                    description: >
+                      'The list of historical PM records, that shall be filtered
+                      from [/load-raw-cc/raw-cc/logical-termination-point={uuid}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list or /load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/ethernet-container-2-0:ethernet-container-pac/ethernet-container-historical-performances/historical-performance-data-list]'
+                  former-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime during former processing of the currently processed interface
+                      from [/load-raw-cc/former-most-recent-period-end-time]'
+                  former-most-recent-period-end-time-24:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime24 during former processing of the currently processed interface
+                      from [/load-raw-cc/former-most-recent-period-end-time-24]'
+        output:
+          success:
+            description: 'filteredHistoricalPerformanceDataList provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - filtered-historical-performance-data-list
+                    - new-most-recent-period-end-time
+                    - new-most-recent-period-end-time-24
+                    - amount-received
+                  properties:
+                    filtered-historical-performance-data-list:
+                      type: array
+                      description: >
+                        'Filtered list of historical PM records'
+                    new-most-recent-period-end-time:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface'
+                    new-most-recent-period-end-time-24:
+                      type: string
+                      description: >
+                        'mostRecentPeriodEndTime24 in the currently processed batch of the currently processed interface'
+                    amount-received:
+                      type: array
+                      description: >
+                        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date'
+          error:
+            description: 'filteredHistoricalPerformanceDataList could not be provided'
+            content:
+              application/json:
+                schema:
+                  type: string
+      addBatchTimestamp:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - current-performance-timestamp
+                properties:
+                  current-performance-timestamp:
+                    type: string
+                    description: >
+                      'Timestamp of current performance data
+                      from [/load-raw-cc/raw-cc/logical-termination-point=*/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-current-performance/current-performance-data-list=air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN/timestamp]'
+                  batch-timestamp:
+                    type: string
+                    description: >
+                      'Timestamp when the CC was read from the device
+                      from [/load-raw-cc/raw-cc/batch-timestamp], if not already existing {2010-11-20T14:00:00+01:00} to be used'
+        output:
+          success:
+            description: 'batchTimestamp provided'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - batch-timestamp
+                  properties:
+                    batch-timestamp:
+                      type: string
+                      description: >
+                        'Timestamp when the CC was read from the device
+                        from { max ( {$input#/current-performance-timestamp}, {$input#/batch-timestamp} ) }'
+            error:
+              description: 'batchTimestamp could not be provided'
+              content:
+                application/json:
+                  schema:
+                    type: string
+                    enum:
+                      - 'currentPerformanceTimestamp not provided'
+                      - 'currentPerformanceTimestamp invalid'
+                      - 'batchTimestamp invalid'
+                      - 'batchTimestamp could not be provided'
+                      - 'general processing error'
+      p1CalculateInterfacePmDataQuality:
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - uuid
+                  - former-most-recent-period-end-time
+                  - new-most-recent-period-end-time
+                  - amount-received
+                properties:
+                  uuid:
+                    type: string
+                    description: >
+                      'uuid of the interface being processed during the current loop iteration
+                      from [/load-raw-cc/uuid]'
+                  former-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime during former processing of the currently processed interface
+                      from [/load-raw-cc/former-most-recent-period-end-time]'
+                  new-most-recent-period-end-time:
+                    type: string
+                    description: >
+                      'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
+                      from [/load-raw-cc/new-most-recent-period-end-time]'
+                  amount-received:
+                    type: array
+                    description: >
+                      'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+                      from [/load-raw-cc/amount-received]'
+        output:
+          success:
+            description: 'Interface PM data quality calculated'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - interface-pm-data-quality
+                  properties:
+                    interface-pm-data-quality:
+                      type: object
+                      description: >
+                        'Information about the quality of the provided PM data for an individual interface'
+          error:
+            description: 'Interface PM data quality could not be calculated'
+            content:
+              application/json:
+                schema:
+                  type: string
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

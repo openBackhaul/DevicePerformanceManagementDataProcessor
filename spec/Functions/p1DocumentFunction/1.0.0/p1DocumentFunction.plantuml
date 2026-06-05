@@ -1,0 +1,26 @@
+@startuml p1DocumentFunction
+skinparam responseMessageBelowArrow true
+
+title
+  p1DocumentFunction
+end title
+
+participant "requestor\n" as requestor
+participant "p1DocumentFunction\n" as cur
+
+
+requestor -> cur: { {parametersOfToBeDocumentedFunction} }
+activate cur
+
+  note over cur
+    Parse (sub)-function information for active functions only
+    Follow recursive approach for sub-functions
+    Describe parameters by name, purpose, and value
+    Describe functions by name and description
+    Keep formatting rules provided in readme.md
+  end note
+
+requestor <-- cur: documentation
+deactivate cur
+
+@enduml

@@ -1,0 +1,62 @@
+@startuml documentPmDataProcessing
+skinparam responseMessageBelowArrow true
+
+title
+  documentPmDataProcessing
+end title
+
+participant "requestor\n" as requestor
+participant "documentPmData\nProcessing" as cur
+participant "p1LoadParameters\n" as loadParams
+participant "p1DocumentFunction\n" as p1Doc
+
+requestor -> cur
+activate cur
+
+  note over cur
+    Loads own parameters
+  end note
+  cur -> loadParams: { functionName=\n"documentPmDataProcessing"}
+  activate loadParams
+    note over loadParams
+      Loads parameters
+      from configFile
+    end note
+  cur <-- loadParams: { {parameters} \n{configFile} }
+  deactivate loadParams
+
+  note over cur
+    Read nameOfToBeDocumentedFunction
+    from own {parameters}
+  end note
+
+  note over cur
+    Loads parameters of
+    PM data processing function
+  end note
+  cur -> loadParams: { functionName=\nnameOfToBeDocumentedFunction }
+  activate loadParams
+    note over loadParams
+      Loads parameters
+      from configFile
+    end note
+  cur <-- loadParams: { {parameters} \n{configFile} }
+  deactivate loadParams
+
+  note over cur
+    Creates documentation of PM data
+    processing function from {parameters}
+  end note
+  cur -> p1Doc: { {parameters} }
+  activate p1Doc
+    note over p1Doc
+      Creates documentation
+      from {parameters}
+    end note
+  cur <-- p1Doc: documentation
+  deactivate p1Doc
+
+requestor <-- cur: documentation
+deactivate cur
+
+@enduml

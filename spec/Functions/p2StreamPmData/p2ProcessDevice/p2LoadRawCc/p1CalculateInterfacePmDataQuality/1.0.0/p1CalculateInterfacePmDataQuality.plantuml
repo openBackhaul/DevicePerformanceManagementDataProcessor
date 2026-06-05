@@ -1,0 +1,27 @@
+@startuml p1CalculateInterfacePmDataQuality
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateInterfacePmDataQuality
+end title
+
+participant "requestor\n(e.g. p2LoadRawCc)" as requestor
+participant "p1CalculateInterface\nPmDataQuality" as cur
+
+
+requestor -> cur: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n[amountReceived] }
+activate cur
+
+
+  note over cur
+    calculate [amountExpected]
+  end note
+
+  note over cur
+    compose interfacePmDataQuality
+  end note
+
+requestor <-- cur: { {interfacePmDataQuality} }
+deactivate cur
+
+@enduml

@@ -1,0 +1,100 @@
+stream-pm-data:
+  type: object
+  properties:
+    function-name:
+      type: string
+      enum:
+        - 'p2StreamPmData'
+
+    parameters:
+      type: object
+      description: >
+        'Hierarchical object holding the parameter settings
+        from {$p1LoadParameters.output#/parameters}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$p1LoadParameters.output#/config-file}'
+
+    es-address:
+      type: array
+      x-key: name
+      items:
+        type: object
+        required:
+          - name
+          - address
+        properties:
+          name:
+            type: string
+            description: 'ElasticSearch name'
+            enum:
+              - 'mwdiEsClient'
+              - 'mwdiReplicaEsClient'
+              - 'loggingEsClient'
+              - 'dataStoreEsClient'
+          address:
+            type: object
+            description: >
+              'ElasticSearch address
+              from {$p1ResolveEsAddress.output#/es-address}'
+
+    last-replica-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'Timestamp of the last successful replication
+        initial value: {2010-11-20T14:00:00+01:00}
+        later from {$p1UpdateMwdiReplica.output#/timestamp}'
+
+    to-be-processed-mount-names:
+      type: array
+      description: >
+        'Array of mount names to be processed
+        new values to be added from {$p1UpdateMwdiReplica.output#/updated-mount-names}
+        existing value to be removed after initiating p2ProcessDevice with it'
+      items:
+        type: string
+
+    output-format:
+      type: array
+      x-key: format-name
+      description: >
+        'Array of output formats potentially to be transmitted by p1TransmittingKafka
+        ! simplified representation !'
+      items:
+        type: object
+        required:
+          - format-name
+          - output-format
+        properties:
+          format-name:
+            type: string
+            enum:
+              - 'pm-data-quality-output-format'
+            description: >
+              'Name of the output format'
+          output-format:
+            type: object
+            description: >
+              'outputFormat'
+            required:
+              - pm-data-quality
+            properties:
+              pm-data-quality:
+                type: object
+                required:
+                  - device
+                properties:
+                  device:
+                    type: array
+                    x-key: mount-name
+                    description: >
+                      'Information about the quality of the provided PM data of all devices that had updated CCs with the latest MwdiReplica update'
+                    items:
+                      type: object
+                      description: >
+                        'Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device
+                        defined by {$p2LoadRawCc.variables#/device-pm-data-quality}
+                        from {$p2ProcessDevice.output#/device-pm-data-quality}'

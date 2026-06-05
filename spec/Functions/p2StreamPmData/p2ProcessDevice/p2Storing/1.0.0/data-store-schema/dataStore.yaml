@@ -1,0 +1,82 @@
+data-store:
+  type: object
+  required:
+    - device
+  properties:
+    device:
+      type: array
+      x-key: mount-name
+      items:
+        type: object
+        required:
+          - mount-name
+        properties:
+          mount-name:
+            type: string
+            description: >
+              'mountName
+              instance to be created during storing, if not existing
+              from [ {$storeOffsets.url#device} or {$storeStatusData.url#device} or {$storeResultCc.url#device} ]'
+          processing-data:
+            type: object
+            description: >
+              'Status at the end of the processing of the latest batch
+              from {$storeProcessingData.input#/}'
+            properties:
+              offsets:
+                type: array
+                x-key: function-name
+                description: 'List of offsets of diverse functions'
+                items:
+                  type: object
+                  required:
+                    - function-name
+                    - offset
+                  properties:
+                    function-name:
+                      type: string
+                      description: >
+                        'functionName'
+                    offset:
+                      type: object
+                      description: >
+                        'one or several attributes describing the offset of a specific function'
+              status-data:
+                type: array
+                x-key: function-name
+                description: 'List of status data of diverse functions'
+                items:
+                  type: object
+                  required:
+                    - function-name
+                    - status
+                  properties:
+                    function-name:
+                      type: string
+                      description: >
+                        'functionName'
+                    status:
+                      type: object
+                      description: >
+                        'one or several attributes describing the status of a specific function'
+          result-data:
+            type: array
+            x-key: batch-timestamp
+            description: >
+              'List of resultCc of diverse batches'
+            items:
+              type: object
+              required:
+                - batch-timestamp
+                - result-cc
+              properties:
+                batch-timestamp:
+                  type: string
+                  description: >
+                    'batchTimestamp
+                    from {$storeResultCc.url#result-data}'
+                result-cc:
+                  type: object
+                  description: >
+                    'resultCc of a specific batch
+                    from {$storeResultCc.input#/}'

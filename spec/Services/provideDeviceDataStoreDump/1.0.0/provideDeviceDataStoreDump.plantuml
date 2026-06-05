@@ -1,0 +1,55 @@
+@startuml provideDeviceDataStoreDump
+skinparam responseMessageBelowArrow true
+
+title
+  provideDeviceDataStoreDump
+end title
+
+participant "requestor\n" as requestor
+participant "provideDeviceDataStoreDump\n" as cur
+participant "p1LoadParameters\n" as loadParams
+participant "p1ResolveEsAddress\n" as resolveEsAddress
+participant "p1ReadDataStoreDeviceData\n" as p1Read
+
+
+requestor -> cur: { mountName }
+activate cur
+
+  ' get parameters
+  cur -> loadParams: { functionName=\n"provideDeviceDataStoreDump"}
+  activate loadParams
+
+    note over loadParams
+      Loads parameters
+      from configFile
+    end note
+
+  cur <-- loadParams: { {parameters} \n{configFile} }
+  deactivate loadParams
+
+  ' get ES address
+  cur -> resolveEsAddress: { {/parameters/sub-function=p1ResolveEsAddress} \n{configFile} \nesName }
+  activate resolveEsAddress
+
+    note over resolveEsAddress
+      Resolves ES address
+    end note
+
+  cur <-- resolveEsAddress: { {dataStoreEsClient} }
+  deactivate resolveEsAddress
+
+  cur -> p1Read: { {dataStoreEsClient},\nmountName }
+  activate p1Read
+
+    note over p1Read
+      Reads PM data
+      from DataStore
+    end note
+
+  cur <-- p1Read: { [devicePmData] }
+  deactivate p1Read
+
+requestor <-- cur: { [devicePmData] }
+deactivate cur
+
+@enduml

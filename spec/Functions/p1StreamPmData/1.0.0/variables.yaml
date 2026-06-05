@@ -4,7 +4,7 @@ stream-pm-data:
     function-name:
       type: string
       enum:
-        - p1StreamPmData
+        - 'p1StreamPmData'
 
     parameters:
       type: object

@@ -1,0 +1,194 @@
+openapi: 3.0.0
+info:
+  title: p2Storing
+  version: 1.0.0
+
+x-javascript-interface:
+  p2Storing:
+    summary: 'Stores the resultCc in the DataStore and updates DataStore offset and statusData information.'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - data-store-es-client
+              - result-cc
+              - offsets
+              - status-data
+            properties:
+              parameters:
+                type: object
+                description: >
+                  'Subtree of the parameters object for p2Storing'
+              data-store-es-client:
+                type: object
+                description: >
+                  'DataStore ElasticSearch address'
+              result-cc:
+                type: object
+                description: >
+                  'The resultCc to be stored in resultData array'
+              offsets:
+                type: array
+                description: >
+                  'offsets'
+              status-data:
+                type: array
+                description: >
+                  'statusData'
+    output:
+      success:
+        description: 'resultCc stored'
+      error:
+        description: 'resultCc could not be stored'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'dataStoreEsClient not provided'
+                - 'dataStoreEsClient invalid'
+                - 'resultCc not provided'
+                - 'resultCc invalid'
+                - 'offsets not provided'
+                - 'offsets invalid'
+                - 'statusData not provided'
+                - 'statusData invalid'
+                - 'resultData could not be stored'
+                - 'offsets could not be stored'
+                - 'statusData could not be stored'
+                - 'general processing error'
+    processing:
+      lockDevice:
+        url:  # [{/storing/data-store-url}]
+        description: >
+          'Parallel maintenance of a device shall be prevented'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'mountName of the device that shall be locked
+                      from [/storing/mount-name]'
+        output:
+          success:
+            description: 'Device locked'
+          error:
+            description: 'Device could not be locked'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'ElasticSearch lock error'
+                    - 'general processing error'
+      storeProcessingData:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/processing-data]
+        description: >
+          'Replaces the offsets or/and the statusData arrays of a specific device in the DataStore
+          if the mountName would not already exist, a new device object to be created in the DataStore'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >
+                  'Status at the end of the processing of the latest batch
+                  from [/storing/processing-data]'
+        output:
+          success:
+            description: 'ProcessingData stored'
+          error:
+            description: 'ProcessingData could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'processingData not provided'
+                    - 'processingData invalid'
+                    - 'writing to DataStore failed'
+                    - 'general processing error'
+      storeResultCc:
+        url:  # [{/storing/data-store-url}][/data-store/device={/storing/mount-name}/result-data={/storing/batch-timestamp}]
+        description: 'to be called exclusively if [/storing/storing-result-cc]==activated'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >
+                  'Creates a new entry in the resultData array of a specific device in the DataStore
+                  from [/storing/result-cc]'
+        output:
+          success:
+            description: 'resultCc stored'
+          error:
+            description: 'resultCc could not be stored'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'mountName not provided'
+                    - 'batchTimestamp not provided'
+                    - 'batchTimestamp invalid'
+                    - 'resultCc not provided'
+                    - 'writing to DataStore failed'
+                    - 'general processing error'
+      unlockDevice:
+        url:  # [{/storing/data-store-url}]
+        description: >
+          'Maintenance of a device shall be enabled again'
+        input:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - mount-name
+                properties:
+                  mount-name:
+                    type: string
+                    description: >
+                      'mountName of the device that shall be unlocked
+                      from [/storing/mount-name]'
+        output:
+          success:
+            description: 'Device unlocked'
+          error:
+            description: 'Device could not be unlocked'
+            content:
+              application/json:
+                schema:
+                  type: string
+                  enum:
+                    - 'dataStoreUrl not provided'
+                    - 'dataStoreUrl invalid'
+                    - 'ElasticSearch unlock error'
+                    - 'general processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

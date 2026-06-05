@@ -1,0 +1,40 @@
+calculate-interface-pm-data-quality:
+  type: object
+  required:
+    - uuid
+    - former-most-recent-period-end-time
+    - new-most-recent-period-end-time
+    - amount-received
+  properties:
+    uuid:
+      type: string
+      description: >
+        'uuid of the interface being processed during the current loop iteration
+        from {$input#/uuid}'
+    former-most-recent-period-end-time:
+      type: string
+      description: >
+        'mostRecentPeriodEndTime during former processing of the currently processed interface
+        from {$input#/former-most-recent-period-end-time}'
+    new-most-recent-period-end-time:
+      type: string
+      description: >
+        'mostRecentPeriodEndTime in the currently processed batch of the currently processed interface
+        from {$input#/new-most-recent-period-end-time}'
+    amount-received:
+      type: array
+      description: >
+        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+        defined by {$p2DiscardIrrelevantPmRecords.interface.processing.countReceived15MinPmSlice.output#/amount-received}
+        from {$input#/amount-received}'
+
+    amount-expected:
+      type: array
+      description: >
+        'Number of expected 15min PM records categorized by date
+        from {$calculateAmountExpected.output#/amount-expected}'
+    interface-pm-data-quality:
+      type: object
+      description: >
+        'Information about the quality of the provided PM data for an individual interface
+        from {$composeInterfacePmDataQuality.output#/interface-pm-data-quality}'

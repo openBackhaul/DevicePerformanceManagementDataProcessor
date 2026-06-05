@@ -1,0 +1,16 @@
+document-function:
+  type: object
+  required:
+    - parameters-of-to-be-documented-function
+  properties:
+    parameters-of-to-be-documented-function:
+      type: string
+      description: >
+        'Parameters of the function for which the documentation shall be generated
+        from {$input#/parameters-of-to-be-documented-function}'
+
+    documentation:
+      type: string
+      description: >
+        'Text documentation of active functions extracted from parameters
+        from {$formatDocumentation.output#/documentation}'

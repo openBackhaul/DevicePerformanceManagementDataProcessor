@@ -1,0 +1,147 @@
+@startuml p2LoadRawCc
+skinparam responseMessageBelowArrow true
+
+title
+  p2LoadRawCc
+end title
+
+participant "p2ProcessDevice\n" as requestor
+participant "p2LoadRawCc\n" as cur
+database "MWDI ES Replica" as MwdiEs
+participant "p1FieldsFilter\n" as fieldsFilter
+participant "p2DiscardIrrelevant\nPmRecords" as filterPm
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual
+
+requestor -> cur: { {parameters},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
+activate cur
+
+  note over cur
+    readControlConstructFromReplica
+  end note
+  cur -> MwdiEs: { mountName }
+  cur <-- MwdiEs: {rawControlConstruct}
+
+  note over cur
+    Extracts from parameters:
+    - [ {formatName, fieldsFilterString} ]
+  end note
+
+  cur -> fieldsFilter: { {rawControlConstruct},\nfieldsFilterString }
+  activate fieldsFilter
+    note over fieldsFilter
+      Applies FieldsFilter
+    end note
+  cur <-- fieldsFilter: {filteredDataStructure}
+  deactivate fieldsFilter
+
+  note over cur
+    Initializes interfaceOffsets
+    if not existing
+  end note
+
+  note over cur
+    Initializes pmDataQuality
+  end note
+
+  loop FOR all [/raw-cc/logical-termination-point]
+
+    note over cur
+      extracts from offsets or initialize, if not already existing:
+        - formerMostRecentPeriodEndTime
+        - formerMostRecentPeriodEndTime24
+    end note
+
+    note over cur
+      IF layerProtocolName == AirInterface
+    end note
+
+    note right cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\nformerMostRecentPeriodEndTime,\nformerMostRecentPeriodEndTime24 }
+    activate filterPm
+
+      note over filterPm
+        Discards records that are
+        already processed from
+        historicalPerformanceDataList
+      end note
+      note over filterPm
+        Counts new records
+      end note
+
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\n[amountReceived] }
+    deactivate filterPm
+
+    note right cur
+      addBatchTimestamp
+    end note
+
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n[amountReceived] }
+    activate calPmQual
+
+      note over calPmQual
+        calculates the quality
+        of the provided PM data
+      end note
+
+    cur <-- calPmQual: { {interfacePmDataQuality} }
+    deactivate calPmQual
+
+    note right cur
+      attach interfacePmDataQuality to devicePmDataQuality
+    end note
+
+    note right cur
+      updateOffsets by newMostRecentPeriodEndTime/24
+    end note
+
+    note over cur
+      IF layerProtocolName == EthernetContainer
+    end note
+
+    note right cur
+      THEN
+    end note
+
+    cur -> filterPm: { [historicalPerformanceDataList],\nformerMostRecentPeriodEndTime,\nformerMostRecentPeriodEndTime24 }
+    activate filterPm
+
+      note over filterPm
+      Discards records that are
+      already processed from
+      historicalPerformanceDataList
+    end note
+    note over filterPm
+      Counts new records
+    end note
+
+    cur <-- filterPm: { [filteredHistoricalPerformanceDataList],\nnewMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime24,\n[amountReceived] }
+    deactivate filterPm
+
+    cur -> calPmQual: { uuid,\nformerMostRecentPeriodEndTime,\nnewMostRecentPeriodEndTime,\n[amountReceived] }
+    activate calPmQual
+
+      note over calPmQual
+        calculates the quality
+        of the provided PM data
+      end note
+
+    cur <-- calPmQual: { {interfacePmDataQuality} }
+    deactivate calPmQual
+
+    note right cur
+      attach interfacePmDataQuality to devicePmDataQuality
+    end note
+
+    note right cur
+      updateOffsets by newMostRecentPeriodEndTime/24
+    end note
+
+  end loop
+
+requestor <-- cur: { {rawCc},\n[offsets],\n{devicePmDataQuality} }
+deactivate cur
+
+@enduml

@@ -1,0 +1,67 @@
+discard-irrelevant-pm-records:
+  type: object
+  required:
+    - historical-performance-data-list
+    - former-most-recent-period-end-time
+    - former-most-recent-period-end-time-24
+  properties:
+    historical-performance-data-list:
+      type: array
+      description: >
+        'The list of historical PM records, that shall be filtered
+        from {$input#historical-performance-data-list}'
+      items:
+        type: object
+        required:
+          - granularity-period
+          - period-end-time
+          - performance-data
+        properties:
+          granularity-period:
+            type: string
+            description: 'Indicates the granularity of the PM record'
+          period-end-time:
+            type: string
+            description: 'The timestamp of this PM data record'
+          performance-data:
+            type: object
+            description: 'The object containing actual PM data'
+    former-most-recent-period-end-time:
+      type: string
+      description: >
+        'mostRecentPeriodEndTime from past processing, 15min PM slices not newer than this timestamp are to be discarded,
+        from {$input#/former-most-recent-period-end-time}'
+    former-most-recent-period-end-time-24:
+      type: string
+      description: >
+        'mostRecentPeriodEndTime24 from past processing, 24h PM slices not newer than this timestamp are to be discarded,
+        from {$input#/former-most-recent-period-end-time-24}'
+
+    new-most-recent-period-end-time:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'newMostRecentPeriodEndTime
+        initialized from [/discard-irrelevant-pm-records/former-most-recent-period-end-time]
+        overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time}'
+    new-most-recent-period-end-time-24:
+      type: string
+      pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
+      description: >
+        'newMostRecentPeriodEndTime24
+        initialized from [/discard-irrelevant-pm-records/former-most-recent-period-end-time-24]
+        overwritten by {$updateNewMostRecentPeriodEndTime.output#/most-recent-period-end-time-24}'
+
+    amount-received:
+      type: array
+      x-key: date
+      description: >
+        'Number of 15min PM records received at AirInterfaces and EthernetContainers categorized by date
+        initialized with empty array
+        overwritten by {$countReceived15MinPmSlice.output#/amount-received}'
+
+    filtered-historical-performance-data-list:
+      type: array
+      description: >
+        'The filtered list of historical PM records, after discarding irrelevant records
+        initialized from [/discard-irrelevant-pm-records/historical-performance-data-list]'

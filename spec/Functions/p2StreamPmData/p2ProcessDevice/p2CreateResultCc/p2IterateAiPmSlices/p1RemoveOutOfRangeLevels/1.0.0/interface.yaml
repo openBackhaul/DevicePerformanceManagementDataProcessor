@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: p1RemoveOutOfRangeLevels
+  version: 1.0.0
+
+x-javascript-interface:
+  p1RemoveOutOfRangeLevels:
+    summary: 'Removes out-of-range level attributes from a performance data slice'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - parameters
+              - performance-data
+            properties:
+              parameters:
+                type: object
+                description: 'Hierarchical object holding the parameter settings'
+              performance-data:
+                type: object
+                description: >
+                  'performanceData set of a single time period'
+    output:
+      success:
+        description: 'Performance data slice cleaned from out-of-range level attributes'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - performance-data
+              properties:
+                performance-data:
+                  type: object
+                  description: >
+                    'performanceData set of a single time period
+                    from [/remove-out-of-range-levels/performance-data]'
+      error:
+        description: 'Performance data slice could not be cleaned from out-of-range level attributes'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'parameters not provided'
+                - 'parameters invalid'
+                - 'performanceData not provided'
+                - 'performanceData invalid'
+                - 'general processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'

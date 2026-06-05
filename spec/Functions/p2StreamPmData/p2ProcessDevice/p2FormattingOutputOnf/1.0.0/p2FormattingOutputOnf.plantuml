@@ -1,0 +1,40 @@
+@startuml p2FormattingOutputOnf
+skinparam responseMessageBelowArrow true
+
+title
+  p2FormattingOutputOnf
+end title
+
+participant "requestor\n(e.g. p2ProcessDevice)" as requestor
+participant "p2FormattingOutputOnf\n" as cur
+participant "p1FieldsFilter\n" as fieldsFilter
+
+requestor -> cur: { {parameters},\n{resultCc} }
+activate cur
+
+  note over cur
+    Extracts from parameters:
+    - [ {formatName, fieldsFilterString} ]
+  end note
+
+  loop FOR all [{formatName, fieldsFilterString}]
+
+    cur -> fieldsFilter: { {resultCc},\nfieldsFilterString }
+    activate fieldsFilter
+      note over fieldsFilter
+        Applies FieldsFilter
+      end note
+    cur <-- fieldsFilter: {filteredDataStructure}
+    deactivate fieldsFilter
+
+    note over cur
+      Consolidates filteredDataStructure
+      into onfOutputFormat
+    end note
+
+  end loop
+
+requestor <-- cur: [onfOutputFormat]
+deactivate cur
+
+@enduml

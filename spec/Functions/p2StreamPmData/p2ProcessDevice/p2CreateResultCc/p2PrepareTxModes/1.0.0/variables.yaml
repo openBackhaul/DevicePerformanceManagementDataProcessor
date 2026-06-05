@@ -1,0 +1,71 @@
+prepare-tx-modes:
+  type: object
+  required:
+    - historical-performance-data-list
+    - transmission-mode-list
+  properties:
+    historical-performance-data-list:
+      type: array
+      x-key: granularity-period, period-end-time
+      description: >
+        'historicalPerformanceDataList
+        from {$input#/historical-performance-data-list}
+        ! simplified representation !'
+      items:
+        type: object
+        properties:
+          granularity-period:
+            type: string
+          period-end-time:
+            type: string
+          performance-data:
+            type: object
+            properties:
+              time-xstates-list:
+                type: array
+                x-key: transmission-mode
+                items:
+                  type: object
+                  description: >
+                    'timeXstateEntry
+                    entry to be deleted, if time == 0'
+                  required:
+                    - transmission-mode
+                  properties:
+                    transmission-mode:
+                      type: string
+                    time:
+                      type: integer
+    transmission-mode-list:
+      type: array
+      x-key: transmission-mode-name
+      description: >
+        'transmissionModeList
+        from {$input#/transmission-mode-list}'
+
+    processed-transmission-mode-list:
+      type: array
+      x-key: transmission-mode-name
+      description: >
+        'processedTransmissionModeList
+        instantiated as empty array
+        expanded by every instance of [/prepare-tx-modes/transmission-mode-list=*] that is referenced in [/prepare-tx-modes/historical-performance-data-list=**/performance-data/time-xstates-list=*/transmission-mode] with [/prepare-tx-modes/historical-performance-data-list=**/performance-data/time-xstates-list=*/time]>0
+        ! simplified representation !'
+      items:
+        type: object
+        properties:
+          transmission-mode-name:
+            type: string
+          channel-bandwidth:
+            type: integer
+          modulation-scheme:
+            type: integer
+          code-rate:
+            type: integer
+          symbol-rate-reduction-factor:
+            type: integer
+          capacity:
+            type: integer
+            description: >
+              'AirInterface capacity (according to chapter 6.5 of TR-532 v2.0) in kbps
+              from {$p1CalculateAiCapacity.output#/air-interface-capacity}'

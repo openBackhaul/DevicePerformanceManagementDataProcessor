@@ -1,0 +1,130 @@
+load-parameters:
+  type: object
+  required:
+    - function-name
+  properties:
+    function-name:
+      type: string
+      description: >
+        'Name of the Function whose parameters are to be loaded from the configFile
+        from {$input#/function-name}'
+    config-file:
+      type: object
+      description: >
+        'configFile content
+        from {$file-access.output#/config-file}'
+    function-uuid:
+      type: string
+      description: >
+        'UUID of the Function whose parameters are to be loaded from the configFile
+        search for uuid = [/load-parameters/config-file/core-model-1-4:control-construct/profile-collection/profile=uuid/uuid]
+            with [/load-parameters/config-file/core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/function-name] == [/load-parameters/function-name]'
+    sub-function-uuid:
+      type: string
+      description: >
+        'UUID of a sub-Function to the Function whose parameters are to be loaded from the configFile
+        from [/load-parameters/config-file/core-model-1-4:control-construct/profile-collection/profile=uuid/function-profile-1-0:function-profile-pac/function-profile-capability/sub-function-list[n]]'
+    function-profile:
+      type: object
+      description: >
+        'Function profile of the Function whose parameters are to be loaded or one of its sub-Functions
+        from [/load-parameters/config-file/core-model-1-4:control-construct/profile-collection/profile={uuid = function-uuid or sub-function-uuid}/function-profile-1-0:function-profile-pac]'
+    parameter-uuid:
+      type: string
+      description: >
+        'UUID of a parameter of the Function or one of its sub-Functions
+        from [/load-parameters/config-file/core-model-1-4:control-construct/profile-collection/profile={uuid = function-uuid or sub-function-uuid}/function-profile-1-0:function-profile-pac/function-profile-capability/parameter-list=*/parameter]'
+    string-profile:
+      type: object
+      description: >
+        'String profile of a parameter
+        from [/load-parameters/config-file/core-model-1-4:control-construct/profile-collection/profile={parameter-uuid}/string-profile-1-0:string-profile-pac]'
+    parameters:
+      type: object
+      $ref: '#/components/schemas/parameters-schema'
+      description: >
+        'Parameters of the Function and its sub-Functions
+        recursively composed from [/load-parameters/function-profile] and from [/load-parameters/string-profile]'
+
+components:
+  schemas:
+    parameters-schema:
+      type: object
+      required:
+        - function-name
+        - description
+        - is-active
+        - parameter
+        - sub-function
+      properties:
+        function-name:
+          type: string
+          description: >
+            'operationId (from the OAS) as a unique and invariant identifier of the module
+            from [/load-parameters/function-profile/function-profile-capability/function-name]'
+        description:
+          type: string
+          description: >
+            'Human readable description of the Function
+            from [/load-parameters/function-profile/function-profile-capability/function-description]'
+        is-active:
+          type: boolean
+          description: >
+            'true = the Function shall be executed
+            from [/load-parameters/function-profile/function-profile-configuration/is-active]
+        parameter:
+          type: array
+          x-key: parameter-name
+          items:
+            type: object
+            required:
+              - parameter-name
+              - purpose
+              - owner
+              - value
+            properties:
+              parameter-name:
+                type: string
+                description: >
+                  'Locally unique and invariant name of the parameter
+                  from [/load-parameters/string-profile/string-profile-capability/string-name]'
+              purpose:
+                type: string
+                description: >
+                  'Invariant description of the parameter
+                  from [/load-parameters/string-profile/string-profile-capability/purpose]'
+              owner:
+                type: string
+                description: >
+                  'Owner of the parameter
+                  from [/load-parameters/function-profile/function-profile-capability/parameter-list=*/owner]'
+                enum:
+                  - 'platform'
+                  - 'engineering'
+                  - 'user'
+              value:
+                type: string
+                description: >
+                  'Configurable value of the parameter
+                  from [/load-parameters/string-profile/string-profile-configuration/string-value]'
+              enumeration:
+                type: array
+                description: >
+                  'Optional: List of valid values for the parameter
+                  from [/load-parameters/string-profile/string-profile-capability/enumeration]'
+                items:
+                  type: string
+              pattern:
+                type: string
+                description: >
+                  'Optional: Regular expression defining valid values of the parameter
+                  from [/load-parameters/string-profile/string-profile-capability/pattern]'
+        sub-function:
+          type: array
+          x-key: function-name
+          description: 'List of sub-Functions incl. their parameter settings'
+          items:
+            description: >
+              'take next uuid from [/load-parameters/function-profile/function-profile-capability/sub-function-list]
+              and again apply the same recursive schema'
+            $ref: '#/components/schemas/parameters-schema'

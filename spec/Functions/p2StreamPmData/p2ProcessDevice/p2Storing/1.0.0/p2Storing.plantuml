@@ -1,0 +1,46 @@
+@startuml p2Storing
+skinparam responseMessageBelowArrow true
+
+title
+  p2Storing
+end title
+
+participant "p2ProcessDevice\n" as requestor
+participant "p2Storing\n" as cur
+database "DataStore" as ds
+
+
+requestor -> cur : { {/parameters/sub-function=p2Storing},\n{dataStoreEsClient},\n{resultCc},\n[offsets],\n[statusData] }
+activate cur
+
+  note over cur
+    Locks device
+    in DataStore
+  end note
+  cur -> ds: mountName
+
+  note over cur
+    storeProcessingData
+  end note
+  cur -> ds: { dataStoreEsClient://data-store/device=mountName/processing-data,\n[offsets], [statusData] }
+  cur <-- ds
+
+  note over cur
+    IF storingResultCc == activated
+    THEN
+      storeResultCc into resultData array
+  end note
+  cur -> ds: { dataStoreEsClient://data-store/device=mountName/result-data,\n{resultCc} }
+  cur <-- ds
+
+  note over cur
+    Unlocks device
+    in DataStore
+  end note
+  cur -> ds: mountName
+
+requestor <-- cur
+
+deactivate cur
+
+@enduml

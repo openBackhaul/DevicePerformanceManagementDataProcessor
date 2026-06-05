@@ -1,0 +1,44 @@
+read-data-store-device-data:
+  type: object
+  required:
+    - data-store-es-client
+    - mount-name
+  properties:
+    data-store-es-client:
+      type: object
+      description: >
+        'DataStore ElasticSearch address
+        defined by {$p1ResolveEsAddress.interface.output#/es-address}'
+        from {$input#/data-store-es-client}'
+    mount-name:
+      type: string
+      description: >
+        'mountName of the device for which the data shall be read
+        from {$input#/mount-name}'
+
+    data-store-url:
+      type: string
+      description: >
+        'ElasticSearch URL of Data Store ES
+        from [/read-data-store-device-data/data-store-es-client/url]'
+    device-pm-data:
+      type: array
+      x-key: batch-timestamp
+      description: >
+        'List of resultCc of diverse batches
+        from {$retrieveDevicePmDataFromDs.output#/}'
+      items:
+        type: object
+        required:
+          - batch-timestamp
+          - result-cc
+        properties:
+          batch-timestamp:
+            type: string
+            description: >
+              'batchTimestamp'
+          result-cc:
+            type: object
+            description: >
+              'resultCc of a specific batch
+              defined by {$p2CreateResultCc.variables#/result-cc}'

@@ -1,0 +1,24 @@
+@startuml p1LoadOffsetsAndStatusData
+skinparam responseMessageBelowArrow true
+
+title
+  p1LoadOffsetsAndStatusData
+end title
+
+participant "p2ProcessDevice\n" as requestor
+participant "p1LoadOffsetsAndStatusData\n" as cur
+database "DataStore" as datastore
+
+requestor -> cur: { {dataStoreEsClient},\nmountName }
+activate cur
+
+  note over cur
+    retrieveProcessingDataFromDs
+  end note
+  cur -> datastore: { dataStoreEsClient://data-store/device=mountName/processing-data }
+  cur <-- datastore: { [offsets], [statusData] }
+
+requestor <-- cur: { [offsets],\n[statusData] }
+deactivate cur
+
+@enduml
