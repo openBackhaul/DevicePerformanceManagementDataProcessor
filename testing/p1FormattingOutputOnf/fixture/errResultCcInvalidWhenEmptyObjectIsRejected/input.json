@@ -1,0 +1,4 @@
+{
+  "scenario": "errResultCcInvalidWhenEmptyObjectIsRejected",
+  "input": {}
+}

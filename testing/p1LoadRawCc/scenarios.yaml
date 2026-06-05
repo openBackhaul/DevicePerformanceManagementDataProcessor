@@ -42,23 +42,20 @@ scenarios:
   # -------------------------
   # Input validation
   # -------------------------
-  - id: "errParametersNotProvided"
-    description: "Should return 'parameters not provided' when input.parameters is missing"
+ 
+  - id: "okMixedLayerProtocolsProcessed"
+    description: "Should process both air-interface and ethernet-container layer protocols"
     inputFixture: "input.json"
     expected:
-      type: "error"
-      errorEnum: "parameters not provided"
+      type: "success"
+      outputFixture: "output.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
+        fixture: "onfAdapter.getEsClient.bothClients.json"
       - stepId: "retry.withRetry"
         type: "return"
-        fixture: "withRetry.rawResponse.json"
+        fixture: "withRetry.sequence.json"
       - stepId: "p1FieldsFilter.run"
         type: "return"
-        fixture: "p1FieldsFilter.output.json"
- 
-
-
-
+        fixture: "p1FieldsFilter.output.withMixedProtocols.json"

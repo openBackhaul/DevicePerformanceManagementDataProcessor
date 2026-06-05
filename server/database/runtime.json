@@ -2,7 +2,7 @@
   "service": {
     "port": 4031,
     "pollIntervalMs": 15000,
-    "concurrency": 4,
+    "concurrency": 1,
     "maxUpdatedPerCycle": 5000,
     "processRetryCount": 3,
     "retryIntervalMs": 5000,
@@ -14,13 +14,24 @@
     "kafkaOutboundConcurrency": 1,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 100,
-    "kafkaOutboundMaxBatchBytes": 921600
+    "kafkaOutboundMaxBatchBytes": 921600,
+    "kafkaOutboundFailureSleepMs": 10000,
+
+    "kafkaOutboundWorkerIdleSleepMs": 1000,
+    "kafkaOutboundStaleMessageIdleMs": 60000,
+    "kafkaAcks": "all",
+    "kafkaEnableIdempotence": true,
+    "kafkaLingerMs": 50,
+    "kafkaBatchSize": 1048576,
+    "kafkaBatchNumMessages": 500,
+    "kafkaCompressionType": "lz4"
   },
+
   "redis": {
     "url": "redis://127.0.0.1:6379",
     "replicaLockTtlMs": 60000,
     "cleanupLockTtlMs": 300000,
-    "staleMessageIdleMs": 60000,
+    "staleMessageIdleMs": 3600000,
     "reconnectBaseDelayMs": 250,
     "reconnectMaxDelayMs": 5000,
     "queueMaxLength": 20000,
@@ -28,9 +39,15 @@
     "enqueuePauseMs": 50,
     "maxQueueLengthBeforeReplicaPause": 20000,
     "replicaPauseMsWhenBacklogged": 30000,
-    "retryIntervalMs": 10000
+    "retryIntervalMs": 7200000,
+    "maxRetryCount": 1,
+    "retryReadCount": 500,
+    "retryMaxRequeuePerCycle": 20000,
+    "retryWorkerCount": 1,
+    "retryRunImmediately": false,
+    "deviceProcessingLockTtlMs": 1800000
   },
   "monitoring": {
-    "enabled": true
+    "enabled": false
   }
 }

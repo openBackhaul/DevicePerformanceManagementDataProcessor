@@ -9,21 +9,27 @@ function asNumber(value, defaultValue) {
   return Number.isFinite(numberValue) ? numberValue : defaultValue;
 }
 
+function getConfiguredBrokers(options) {
+  const params = (options && options.p1TransmittingKafkaParameters) || {};
+
+  const host =
+    params["ipv-4-address"] ||
+    "127.0.0.1";
+
+  const port =
+    params["remote-port"] ||
+    "29092";
+
+  return [`${host}:${port}`];
+}
+
 function buildProducerConfig(options) {
-  const brokers =
-    options && Array.isArray(options.brokers) && options.brokers.length > 0
-      ? options.brokers
-      : String(global.KAFKA_BROKERS || "127.0.0.1:9092")
-          .split(",")
-          .map((x) => x.trim())
-          .filter(Boolean);
+  const brokers = getConfiguredBrokers(options || {});
+  const params = (options && options.p1TransmittingKafkaParameters) || {};
 
   const config = {
     "bootstrap.servers": brokers.join(","),
-    "client.id":
-      (options && options.clientId) ||
-      global.KAFKA_CLIENT_ID ||
-      "dpmdp-producer",
+    "client.id": params["client-id"] || "dpmdp-producer",
 
     // Reliability
     "acks": global.KAFKA_ACKS || "all",
@@ -67,6 +73,30 @@ function getConfigKey(config) {
   });
 }
 
+async function resetProducer(logger, reason) {
+  if (!producer) {
+    producerConfigKey = null;
+    return;
+  }
+
+  try {
+    await producer.disconnect();
+  } catch (error) {
+    logger &&
+      logger.warn &&
+      logger.warn(
+        {
+          reason,
+          error: error.message || error
+        },
+        "Kafka producer disconnect during reset failed"
+      );
+  }
+
+  producer = null;
+  producerConfigKey = null;
+}
+
 async function initProducer(options) {
   const logger = (options && options.logger) || console;
   const config = buildProducerConfig(options || {});
@@ -77,39 +107,55 @@ async function initProducer(options) {
   }
 
   if (producer) {
-    await producer.disconnect().catch(() => {});
-    producer = null;
+    await resetProducer(logger, "CONFIG_CHANGED");
   }
 
   const kafka = new Kafka();
-
   producer = kafka.producer(config);
 
-  await withRetry(
-    async () => {
-      await producer.connect();
-    },
-    {
-      label: "confluentKafkaProducer.connect",
-      retryIntervalMs: 10000,
-      logger
-    }
-  );
+  try {
+    await withRetry(
+      async () => {
+        await producer.connect();
+      },
+      {
+        label: "confluentKafkaProducer.connect",
+        retryIntervalMs: Number(global.KAFKA_CONNECT_RETRY_INTERVAL_MS || 10000),
+        logger
+      }
+    );
 
-  producerConfigKey = key;
+    producerConfigKey = key;
 
-  logger.info(
-    {
-      bootstrapServers: config["bootstrap.servers"],
-      clientId: config["client.id"]
-    },
-    "Confluent Kafka producer connected"
-  );
+    logger.info(
+      {
+        bootstrapServers: config["bootstrap.servers"],
+        clientId: config["client.id"]
+      },
+      "Confluent Kafka producer connected"
+    );
 
-  return producer;
+    return producer;
+  } catch (error) {
+    await resetProducer(logger, "CONNECT_FAILED");
+
+    logger.error(
+      {
+        label: "confluentKafkaProducer.connect.failed",
+        bootstrapServers: config["bootstrap.servers"],
+        clientId: config["client.id"],
+        error: error.message || error,
+        code: error.code,
+        type: error.type
+      },
+      "Kafka producer connection failed; producer reset for reconnect"
+    );
+
+    throw error;
+  }
 }
 
-async function sendBatch(topic, messages, logger) {
+async function sendBatch(topic, messages, logger, p1TransmittingKafkaParameters) {
   if (!topic) {
     throw new Error("Kafka topic is mandatory");
   }
@@ -118,26 +164,49 @@ async function sendBatch(topic, messages, logger) {
     return { topic, sent: 0 };
   }
 
-  const kafkaProducer = await initProducer({ logger });
+  try {
+    const kafkaProducer = await initProducer({
+      logger,
+      p1TransmittingKafkaParameters
+    });
 
-  await withRetry(
-    async () => {
-      await kafkaProducer.send({
-        topic,
-        messages
-      });
-    },
-    {
-      label: `confluentKafkaProducer.sendBatch:${topic}`,
-      retryIntervalMs: 10000,
-      logger
-    }
-  );
+    await withRetry(
+      async () => {
+        await kafkaProducer.send({
+          topic,
+          messages
+        });
+      },
+      {
+        label: `confluentKafkaProducer.sendBatch:${topic}`,
+        retryIntervalMs: Number(global.KAFKA_SEND_RETRY_INTERVAL_MS || 10000),
+        logger
+      }
+    );
 
-  return {
-    topic,
-    sent: messages.length
-  };
+    return {
+      topic,
+      sent: messages.length
+    };
+  } catch (error) {
+    await resetProducer(logger, "SEND_FAILED");
+
+    logger &&
+      logger.error &&
+      logger.error(
+        {
+          label: "confluentKafkaProducer.sendBatch.failed",
+          topic,
+          messageCount: messages.length,
+          error: error.message || error,
+          code: error.code,
+          type: error.type
+        },
+        "Kafka send failed; producer reset for reconnect"
+      );
+
+    throw error;
+  }
 }
 
 async function flushProducer(logger) {
@@ -171,5 +240,6 @@ module.exports = {
   initProducer,
   sendBatch,
   flushProducer,
-  disconnectProducer
+  disconnectProducer,
+  resetProducer
 };

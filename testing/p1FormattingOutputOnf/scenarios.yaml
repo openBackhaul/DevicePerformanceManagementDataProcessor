@@ -1,0 +1,142 @@
+# testing/p1FormattingOutputOnf/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf/1.0.0/variables.yaml
+#
+# Function:
+# - p1FormattingOutputOnf (1.0.0)
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1FormattingOutputOnf/P1FormattingOutputOnf.js"
+    exportName: "run"
+
+processingSteps:
+  - name: "createOutputFromResultCc"
+  - name: "p1FieldsFilter"
+
+dependencies:
+  - name: "pino"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when parameters is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+
+  - id: "errParametersInvalid"
+    description: "Should return 'parameters invalid' when parameters is not an object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+
+  - id: "errResultCcNotProvided"
+    description: "Should return 'resultCc not provided' when result-cc is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc not provided"
+
+  - id: "errResultCcInvalid"
+    description: "Should return 'resultCc invalid' when result-cc is not an object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+
+  # -------------------------
+  # Processing failures
+  # -------------------------
+
+  - id: "errOnfOutputFormatCouldNotBeProvided"
+    description: "Should return 'onfOutputFormat could not be provided' when output creation fails deterministically"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "onfOutputFormat could not be provided"
+
+  - id: "errGeneralProcessingError"
+    description: "Should return 'General processing error' when an unexpected processing failure occurs"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+
+  # -------------------------
+  # Happy path without filter
+  # -------------------------
+
+  - id: "okReplicateResultCcWithoutFilter"
+    description: "Should create onf-output-format as a bare replication of result-cc when no fieldsFilter is provided"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okReturnMandatorySuccessStructure"
+    description: "Should return format-name and output-format on success"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  # -------------------------
+  # Happy path with filter
+  # -------------------------
+
+  - id: "okApplyTopLevelFieldsFilter"
+    description: "Should apply fieldsFilter and keep only the requested top-level structure"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okApplyNestedFieldsFilter"
+    description: "Should apply fieldsFilter and keep only the requested nested structure"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okOverwriteReplicatedOutputWithFilteredData"
+    description: "Should overwrite the replicated output with filtered-data-structure according to variables.yaml"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  # -------------------------
+  # Edge and contract cases
+  # -------------------------
+
+  - id: "okIgnoreUnrelatedParametersWhenNoFieldsFilterExists"
+    description: "Should return full replicated output when parameters do not contain p1FieldsFilter.fieldsFilter"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "okAllowEmptyResultCcIfSupported"
+    description: "Should return a valid onf-output-format for an empty result-cc if the implementation accepts empty objects"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "errResultCcInvalidWhenEmptyObjectIsRejected"
+    description: "Should return 'resultCc invalid' if the implementation rejects empty result-cc objects"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"

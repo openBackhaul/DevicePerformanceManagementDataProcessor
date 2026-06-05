@@ -1,6 +1,7 @@
 const p1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature");
 const { getParamFromFunction } = require("../../../../utils/functionTree");
 const ERRORS = require('../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum');
+const logger = require('../../../../service/LoggingService.js').getLogger();
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -76,7 +77,7 @@ function buildRemoveTemperatureError(response, mountName) {
  */
 async function run(request) {
   try {
-    const { parameters, rawCc, mountName, logger } = request;
+    const { parameters, rawCc, mountName } = request;
 
     if (!parameters || !rawCc) {
       logger.error(

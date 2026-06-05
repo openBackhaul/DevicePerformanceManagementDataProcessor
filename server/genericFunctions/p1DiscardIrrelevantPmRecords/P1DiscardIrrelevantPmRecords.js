@@ -1,11 +1,18 @@
 const ERRORS = require('./ErrorsEnum');
 
-
 const p1DiscardIrrelevantPmRecords = (input) => {
   try {
     // Validate input
-    if (!input || !Array.isArray(input["historical-performance-data-list"])) {
+    if (!input) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    if (input["historical-performance-data-list"] == undefined) {
       return ERRORS.HISTPERF_NOT_PROVIDED;
+    }
+
+    if (!Array.isArray(input["historical-performance-data-list"])) {
+      return ERRORS.HISTPERF_INVALID;
     }
 
     const records = input["historical-performance-data-list"];

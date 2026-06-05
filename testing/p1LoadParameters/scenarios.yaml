@@ -7,7 +7,7 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
+    modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
     exportName: "run"
 
 processingSteps:
