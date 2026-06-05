@@ -199,6 +199,16 @@ describe('p1PrepareTxModes - Real dataset', () => {
         "symbol-rate-reduction-factor": 1,
         "capacity": 82783
       }
+    )
+
+    expect(result['historical-performance-data-list'].length).toBe(22);
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
+      {
+        'time': 900,
+        'time-xstate-sequence-number': 1,
+        'transmission-mode': '0056-QPSK-52680/61762-1'
+      }
     );
   });
 
@@ -230,6 +240,15 @@ describe('p1PrepareTxModes - Real dataset', () => {
         "capacity": 82783
       }
     );
+
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
+      {
+        'time': 900,
+        'time-xstate-sequence-number': 1,
+        'transmission-mode': '0056-QPSK-52680/61762-1'
+      }
+    );
   });
 
   test('Use CC-513250005 Dataset 1', () => {
@@ -242,24 +261,32 @@ describe('p1PrepareTxModes - Real dataset', () => {
 
     expect(result["transmission-mode-list"].length).toBe(1);
     expect(result["transmission-mode-list"][0]).toEqual(
-            {
-            "modulation-scheme-name-at-lct": "QPSK",
-            "transmission-mode-name": "0056-QPSK-52680/61762-1",
-            "am-downshift-level": -76,
-            "supported-as-fixed-configuration": true,
-            "tx-power-min": -10,
-            "code-rate": 85,
-            "modulation-scheme": 4,
-            "xpic-is-avail": true,
-            "channel-bandwidth": 56000,
-            "tx-power-max": 23,
-            "transmission-mode-rank": 2,
-            "rx-threshold": -84,
-            "am-upshift-level": -72,
-            "symbol-rate-reduction-factor": 1,
-            "capacity": 82783
-        }
-      );
+      {
+        "modulation-scheme-name-at-lct": "QPSK",
+        "transmission-mode-name": "0056-QPSK-52680/61762-1",
+        "am-downshift-level": -76,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 4,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 23,
+        "transmission-mode-rank": 2,
+        "rx-threshold": -84,
+        "am-upshift-level": -72,
+        "symbol-rate-reduction-factor": 1,
+        "capacity": 82783
+      }
+    );
+
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
+      {
+        'time': 900,
+        'time-xstate-sequence-number': 1,
+        'transmission-mode': '0056-QPSK-52680/61762-1'
+      }
+    );
   });
 
   // test('Use CC-513250007 Dataset 1', () => {
@@ -301,5 +328,33 @@ describe('p1PrepareTxModes - Real dataset', () => {
     });
 
     expect(result["transmission-mode-list"].length).toBe(1);
+    expect(result["transmission-mode-list"][0]).toEqual(
+      {
+        "modulation-scheme-name-at-lct": "Half BPSK strong",
+        "transmission-mode-name": "782.1.1.6.3",
+        "am-downshift-level": 99,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 25,
+        "modulation-scheme": 2,
+        "xpic-is-avail": false,
+        "channel-bandwidth": 250000,
+        "tx-power-max": 18,
+        "transmission-mode-rank": 55,
+        "rx-threshold": 99,
+        "am-upshift-level": 99,
+        "symbol-rate-reduction-factor": 1,
+        'capacity': 54348,
+      }
+    );
+
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
+    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
+      {
+        'time': 900,
+        'time-xstate-sequence-number': 2,
+        'transmission-mode': '782.1.1.6.3'
+      }
+    );
   });
 });
