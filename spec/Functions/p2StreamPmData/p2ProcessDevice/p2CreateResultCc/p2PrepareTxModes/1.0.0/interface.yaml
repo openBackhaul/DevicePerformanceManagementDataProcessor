@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1PrepareTxModes
+  title: p2PrepareTxModes
   version: 1.0.0
 
 x-javascript-interface:
-  p1PrepareTxModes:
+  p2PrepareTxModes:
     summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
     input:
       required: true
@@ -25,27 +25,27 @@ x-javascript-interface:
                   'transmissionModeList'
     output:
       success:
-        description: 'transmissionModeList provided'
+        description: 'transmissionModeList processed'
         content:
           application/json:
             schema:
               type: object
               required:
                 - historical-performance-data-list
-                - transmission-mode-list
+                - processed-transmission-mode-list
               properties:
                 historical-performance-data-list:
                   type: array
                   description: >
                     'historicalPerformanceDataList
                     from [/prepare-tx-modes/historical-performance-data-list]
-                transmission-mode-list:
+                processed-transmission-mode-list:
                   type: array
                   description: >
-                    'transmissionModeList
-                    from [/prepare-tx-modes/transmission-mode-list]
+                    'processedTransmissionModeList
+                    from [/prepare-tx-modes/processed-transmission-mode-list]
       error:
-        description: 'transmissionModeList could not be provided'
+        description: 'transmissionModeList could not be processed'
         content:
           application/json:
             schema:
@@ -58,7 +58,7 @@ x-javascript-interface:
                 - 'transmissionModeList incomplete'
                 - 'transmissionModeList invalid'
                 - 'historicalPerformanceDataList could not be provided'
-                - 'transmissionModeList could not be provided'
+                - 'processedTransmissionModeList could not be provided'
                 - 'general processing error'
     processing:
       p1CalculateAiCapacity:
@@ -78,22 +78,22 @@ x-javascript-interface:
                     type: integer
                     description: >
                       'Channel bandwidth in kHz
-                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/channel-bandwidth]'
+                      from [/prepare-tx-modes/processed-transmission-mode-list=*/channel-bandwidth]'
                   symbol-rate-reduction-factor:
                     type: integer
                     description: >
                       'Symbol rate reduction factor
-                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/symbol-rate-reduction-factor]'
+                      from [/prepare-tx-modes/processed-transmission-mode-list=*/symbol-rate-reduction-factor]'
                   number-of-states-in-modulation:
                     type: integer
                     description: >
                       'Number of states in modulation
-                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/modulation-scheme]'
+                      from [/prepare-tx-modes/processed-transmission-mode-list=*/modulation-scheme]'
                   code-rate:
                     type: integer
                     description: >
                       'Code rate in percent
-                      from [/prepare-tx-modes/transmission-mode-list={transmission-mode-name}/code-rate]'
+                      from [/prepare-tx-modes/processed-transmission-mode-list=*/code-rate]'
         output:
           success:
             description: 'AirInterface capacity calculated'

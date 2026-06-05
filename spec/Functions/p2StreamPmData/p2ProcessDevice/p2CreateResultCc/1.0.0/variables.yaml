@@ -218,7 +218,7 @@ create-result-cc:
                                 transmission-mode-list:
                                   description: >
                                     'List of supported transmission modes
-                                    overwritten from {$prepareTxModes.output#/transmission-mode-list}'
+                                    overwritten from {$prepareTxModes.output#/processed-transmission-mode-list}'
                                   type: array
                                   x-key: transmission-mode-name
                                   items:
@@ -240,7 +240,7 @@ create-result-cc:
                                         type: integer
                                         description: >
                                           'AirInterface capacity in kbps
-                                          requires {$p1PrepareTxModes}'
+                                          requires {$p2PrepareTxModes}'
                             air-interface-historical-performances:
                               type: object
                               properties:
@@ -249,8 +249,8 @@ create-result-cc:
                                   x-key: granularity-period, period-end-time
                                   description: >
                                     'List of historical performance data slices
-                                    overwritten by {$p1PrepareTxModes.output#/historical-performance-data-list} (deprecated)
-                                    overwritten by {$p1IterateAiPmSlices.output#/historical-performance-data-list}'
+                                    overwritten by {$p2PrepareTxModes.output#/historical-performance-data-list} (deprecated)
+                                    overwritten by {$p2IterateAiPmSlices.output#/historical-performance-data-list}'
                                   items:
                                     type: object
                                     required:
@@ -306,7 +306,7 @@ create-result-cc:
                                             type: integer
                                             description: >
                                               'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
-                                              requires {$p1PrepareTxModes}'
+                                              requires {$p2PrepareTxModes}'
                                           snir-min:
                                             type: integer
                                           snir-max:

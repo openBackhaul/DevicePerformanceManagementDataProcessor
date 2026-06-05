@@ -1,43 +1,41 @@
-@startuml p1PrepareTxModes
+@startuml p2PrepareTxModes
 skinparam responseMessageBelowArrow true
 
 title
-  p1PrepareTxModes
+  p2PrepareTxModes
 end title
 
-participant "p2CreateResultCc\n" as cur
+participant "p2CreateResultCc\n" as createRes
 
-participant "p1Prepare\nTxModes" as prepTxModes
+participant "p2Prepare\nTxModes" as prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
 
 
-cur -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+createRes -> prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
 activate prepTxModes
+
+  note over prepTxModes
+    [processedTransmissionModesList]=[]
+  end note
 
   loop FOR all [historicalPerformanceDataList]
     loop FOR all [timeXStatesList]
       note over prepTxModes
         IF time > 0
           THEN add transmissionMode to
-                [usedTransmissionModesList]
+                [processedTransmissionModesList]
           ELSE delete transmissionMode
                 from [timeXStatesList]
       end note
     end loop
   end loop
 
-  loop FOR all [transmissionModeList]
+  loop FOR all [processedTransmissionModesList]
 
     note over prepTxModes
-      IF transmissionMode NOT IN
-          [usedTransmissionModesList]
-        THEN
-          - Delete transmissionMode
-            from [transmissionModeList]
-        ELSE
-          - Complement entry in
-            [transmissionModeList]
-            with AirInterfaceCapacity
+      Complement entry in
+      [processedTransmissionModesList]
+      with AirInterfaceCapacity
     end note
 
     prepTxModes -> aiCC : {channelBandwidth,\nsymbolRateReductionFactor,\nnumberOfStatesInModulation,\ncodeRate}
@@ -51,9 +49,7 @@ activate prepTxModes
 
   end loop
 
-cur <-- prepTxModes : { [historicalPerformanceDataList],\n[transmissionModeList] }
+createRes <-- prepTxModes : { [historicalPerformanceDataList],\n[processedTransmissionModesList] }
 deactivate prepTxModes
-
-deactivate cur
 
 @enduml

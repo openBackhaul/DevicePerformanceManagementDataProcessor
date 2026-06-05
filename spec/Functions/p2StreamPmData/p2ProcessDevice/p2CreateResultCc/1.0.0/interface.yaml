@@ -175,7 +175,7 @@ x-javascript-interface:
                   - 'rawCc invalid'
                   - 'aggregationGroupList could not be provided'
                   - 'general processing error'
-      p1PrepareTxModes:
+      p2PrepareTxModes:
         summary: 'Removes unused transmission modes and completes used ones with AirInterface capacity'
         input:
           required: true
@@ -199,25 +199,25 @@ x-javascript-interface:
                       from [/create-result-cc/result-cc/logical-termination-point={[/create-result-cc/air-interface-uuid[n]]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-capability/transmission-mode-list]'
         output:
           success:
-            description: 'transmissionModeList provided'
+            description: 'transmissionModeList processed'
             content:
               application/json:
                 schema:
                   type: object
                   required:
                     - historical-performance-data-list
-                    - transmission-mode-list
+                    - processed-transmission-mode-list
                   properties:
                     historical-performance-data-list:
                       type: array
                       description: >
                         'historicalPerformanceDataList'
-                    transmission-mode-list:
+                    processed-transmission-mode-list:
                       type: array
                       description: >
-                        'transmissionModeList'
+                        'processedTransmissionModeList'
           error:
-            description: 'transmissionModeList could not be provided'
+            description: 'transmissionModeList could not be processed'
             content:
               application/json:
                 schema:
@@ -239,7 +239,7 @@ x-javascript-interface:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/create-result-cc/parameters/sub-function=p1IterateAiPmSlices]'
+                      from [/create-result-cc/parameters/sub-function=p2IterateAiPmSlices]'
                   historical-performance-data-list:
                     type: array
                     description: >

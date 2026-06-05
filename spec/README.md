@@ -24,6 +24,11 @@
 
 - [DevicePerformanceManagementDataProcessor+config](./DevicePerformanceManagementDataProcessor+config.json)  
 
+> Dear implementers and testing team,  
+> Kafka interface configuration and function documentation are managed by CONFIGfile.  
+> Both might change in parallel to implementation phase.  
+> Please always use latest CONFIGfile from develop branch.  
+
 ### Details about Services
 
 - [embedYourself](./Services/embedYourself/1.0.0)  
@@ -102,4 +107,4 @@ Although the sequence of function calls is hard-coded, actually calling a functi
 
 ### Busy Hour KPI Calculation
 
-Details about the dependencies between functions for calculating the busy hour KPIs can be found [here](./additionalDocumentation/busyHourKpiCalculation.md).  
+Details about the dependencies between functions for calculating the busy hour KPIs can be found in [additional documentation](./additionalDocumentation/busyHourKpiCalculation.md).  

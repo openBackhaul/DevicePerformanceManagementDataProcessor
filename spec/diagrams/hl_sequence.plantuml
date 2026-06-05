@@ -24,7 +24,7 @@ participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
 participant "p1CalculateInterface\nPmDataQuality" as calPmQual #LightSalmon
 
 participant "p2CreateResultCc\n" as p2CreateResultCc #LightYellow
-participant "p1Prepare\nTxModes" as p1prepTxModes
+participant "p2Prepare\nTxModes" as p1prepTxModes #LightYellow
 participant "p1Calculate\nAiCapacity" as aiCC
 participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
 participant "p1Calculate\nIntervalCapacity" as intCC
@@ -38,7 +38,7 @@ participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmo
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
 participant "p1Formatting\nOutputApt" as p1OutputApt
-participant "p1Formatting\nOutputOnf" as p1OutputOnf #LightYellow
+participant "p2Formatting\nOutputOnf" as p1OutputOnf #LightYellow
 
 participant "p1Transmitting\nKafka" as p1Trans
 
@@ -90,6 +90,12 @@ end note
 
 note over initPmData
   - Address live paths at MWDI
+end note
+
+== Optimize p1PrepareTxModes ==
+
+note over initPmData
+  - Improve speed
 end note
 
 == End of Changes ==
