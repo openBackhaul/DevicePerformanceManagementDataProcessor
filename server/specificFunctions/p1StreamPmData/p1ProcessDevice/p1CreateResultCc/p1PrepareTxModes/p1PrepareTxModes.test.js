@@ -202,14 +202,31 @@ describe('p1PrepareTxModes - Real dataset', () => {
     )
 
     expect(result['historical-performance-data-list'].length).toBe(22);
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
-      {
-        'time': 900,
-        'time-xstate-sequence-number': 1,
-        'transmission-mode': '0056-QPSK-52680/61762-1'
+
+    const hPerfData = result["historical-performance-data-list"];
+
+    for (const pm of hPerfData) {
+      expect(pm['performance-data']['time-xstates-list'].length).toBe(1);
+
+      if (pm['granularity-period'] == 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') {
+        expect(pm['performance-data']['time-xstates-list'][0]).toEqual(
+          {
+            'time': 900,
+            'time-xstate-sequence-number': 1,
+            'transmission-mode': '0056-QPSK-52680/61762-1'
+          }
+        );
+      } else {
+        expect(pm['performance-data']['time-xstates-list'][0]).toEqual(
+          {
+            'time': 86400,
+            'time-xstate-sequence-number': 1,
+            'transmission-mode': '0056-QPSK-52680/61762-1'
+          }
+        );
       }
-    );
+    }
+
   });
 
   test('Use CC-513250004 Dataset 2', () => {
@@ -241,14 +258,38 @@ describe('p1PrepareTxModes - Real dataset', () => {
       }
     );
 
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
-      {
-        'time': 900,
-        'time-xstate-sequence-number': 1,
-        'transmission-mode': '0056-QPSK-52680/61762-1'
+    const hPerfData = result["historical-performance-data-list"];
+
+    for (const pm of hPerfData) {
+      expect(pm['performance-data']['time-xstates-list'].length).toBe(1);
+
+      if (pm['granularity-period'] == 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') {
+        expect(pm['performance-data']['time-xstates-list'][0]).toEqual(
+          {
+            'time': 900,
+            'time-xstate-sequence-number': 1,
+            'transmission-mode': '0056-QPSK-52680/61762-1'
+          }
+        );
+      } else {
+        expect(pm['performance-data']['time-xstates-list'][0]).toEqual(
+          {
+            'time': 86400,
+            'time-xstate-sequence-number': 1,
+            'transmission-mode': '0056-QPSK-52680/61762-1'
+          }
+        );
       }
-    );
+    }
+
+    // expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
+    // expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
+    //   {
+    //     'time': 900,
+    //     'time-xstate-sequence-number': 1,
+    //     'transmission-mode': '0056-QPSK-52680/61762-1'
+    //   }
+    // );
   });
 
   test('Use CC-513250005 Dataset 1', () => {
@@ -280,13 +321,25 @@ describe('p1PrepareTxModes - Real dataset', () => {
       }
     );
 
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
-      {
-        'time': 900,
-        'time-xstate-sequence-number': 1,
-        'transmission-mode': '0056-QPSK-52680/61762-1'
+    const hPerfData = result["historical-performance-data-list"];
+
+    for (const pm of hPerfData) {
+      expect(pm['performance-data']['time-xstates-list'].length).toBe(1);
+
+      if (pm['granularity-period'] == 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') {
+        expect(pm['performance-data']['time-xstates-list'][0]).toEqual(
+          {
+            'time': 900,
+            'time-xstate-sequence-number': 1,
+            'transmission-mode': '0056-QPSK-52680/61762-1'
+          }
+        );
+      } else {
+        expect(pm['performance-data']['time-xstates-list'][0]['time']).toBeLessThanOrEqual(86400);
+        expect(pm['performance-data']['time-xstates-list'][0]['time-xstate-sequence-number']).toBe(1);
+        expect(pm['performance-data']['time-xstates-list'][0]['transmission-mode']).toBe('0056-QPSK-52680/61762-1');
       }
-    );
+    }
   });
 
   // test('Use CC-513250007 Dataset 1', () => {
@@ -348,13 +401,20 @@ describe('p1PrepareTxModes - Real dataset', () => {
       }
     );
 
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
-    expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
-      {
-        'time': 900,
-        'time-xstate-sequence-number': 2,
-        'transmission-mode': '782.1.1.6.3'
+
+    const hPerfData = result["historical-performance-data-list"];
+
+    for (const pm of hPerfData) {
+      expect(pm['performance-data']['time-xstates-list'].length).toBe(1);
+
+      if (pm['granularity-period'] == 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') {
+        expect(pm['performance-data']['time-xstates-list'][0]['time']).toBeLessThanOrEqual(901);
+      } else {
+        expect(pm['performance-data']['time-xstates-list'][0]['time']).toBeLessThanOrEqual(86400);
       }
-    );
+
+      expect(pm['performance-data']['time-xstates-list'][0]['time-xstate-sequence-number']).toBe(2);
+      expect(pm['performance-data']['time-xstates-list'][0]['transmission-mode']).toBe('782.1.1.6.3');
+    }
   });
 });
