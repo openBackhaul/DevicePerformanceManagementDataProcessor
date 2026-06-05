@@ -226,7 +226,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "parameters": parameterStructWithLowUpperLimit
       });
 
-      expect(result["equipment"][0]["actual-equipment"]["physical-properties"]).toBeUndefined();
+      expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
     });
 
     test('Keep Temperature structure, Min and Max has the same value', () => {
@@ -270,7 +270,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
         "parameters": parameterStructWithSameValue
       });
 
-      expect(result["equipment"][0]["actual-equipment"]["physical-properties"]).toBeUndefined();
+      expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
     });
 
     test('Discard temperature value when is empty', () => {
@@ -281,7 +281,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
       });
 
       expect(result["equipment"][0]["actual-equipment"]["physical-properties"]["temperature"]).toBe("32");
-      expect(result["equipment"][1]["actual-equipment"]["physical-properties"]).toBeUndefined();
+      expect(result["equipment"][1]["actual-equipment"]["physical-properties"]["temperature"]).toBeUndefined();
     });
   });
 

@@ -4,6 +4,7 @@ const p1CalculateAiCapacity = require('../../../../../genericFunctions/p1Calcula
 const p1PrepareTxModes = (input) => {
   try {
 
+    // Start parameter Validation
     if (!input) {
       return ERRORS.GENERAL_ERROR;
     }
@@ -11,6 +12,7 @@ const p1PrepareTxModes = (input) => {
     const histList = input['historical-performance-data-list'];
     const txModeList = input['transmission-mode-list'];
 
+    // Validate Historical Performance data and transmission mode list
     if ((!histList && !txModeList) || (histList == undefined && txModeList == undefined)) {
       return ERRORS.GENERAL_ERROR;
     }
@@ -27,18 +29,25 @@ const p1PrepareTxModes = (input) => {
     if (txModeList === undefined) {
       return ERRORS.TX_MODE_LIST_NOT_PROVIDED;
     }
+    // Checking Historical PM datalist
     if (!Array.isArray(txModeList)) {
       return ERRORS.TX_MODE_LIST_INVALID;
     }
 
-    for (const entry of histList) {
-      if (
-        !entry['performance-data'] ||
-        !Array.isArray(entry['performance-data']['time-xstates-list'])
-      ) {
+    // Search for missing data in Historical PM
+    for (let i = 0; i< histList.length; i++) {
+      const entry = histList[i];
+      if (!entry['performance-data']) {
         return ERRORS.HIST_PERF_DATA_INCOMPLETE;
+      } else if (!Array.isArray(entry['performance-data']['time-xstates-list'])) {
+        // Skip PM data where 'time-xstate-list' is not present
+        const idx = histList.indexOf(entry);
+        histList.splice(i, 1);  // Remove element from array because time-xstate-list is not present
+        i = i-1; // Update the array cursor
       }
     }
+
+    // Search for missing data in TX Mode list
     for (const mode of txModeList) {
       if (
         mode['channel-bandwidth'] === undefined ||
@@ -52,10 +61,12 @@ const p1PrepareTxModes = (input) => {
 
     const usedTxModes = new Set();
 
+    // Preparing a clean Historical PM data list
     const cleanedHistList = histList.map(histEntry => {
       const perfData = histEntry['performance-data'];
 
       const cleanedXstates =
+      // Filter not used time-xstate-list
         perfData['time-xstates-list'].filter(xstate => {
           if (xstate.time > 0) {
             usedTxModes.add(xstate['transmission-mode']);
@@ -91,6 +102,7 @@ const p1PrepareTxModes = (input) => {
 
     const enrichedTxModes = [];
 
+    // Use the lib function to calculate Air Interface capacity
     for (const mode of filteredTxModes) {
       const capacityResult = p1CalculateAiCapacity({
         'channel-bandwidth': mode['channel-bandwidth'],

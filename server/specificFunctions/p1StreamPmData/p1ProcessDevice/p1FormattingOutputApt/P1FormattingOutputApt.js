@@ -93,7 +93,7 @@ function buildAirInterface(
     'air-interface-identifiers': {
       'mount-name': mountName,
       'link-endpoint-id': ltpAug?.['external-label'],
-      'link-id': ltpAug?.['link-id']?.substring(0, 9) ,
+      'link-id': ltpAug?.['link-id']?.substring(0, 9),
       'logical-termination-point-id': ltp.uuid,
       'link-aggregation-identifiers':
         resolveLinkAggregationIdentifiers(ltp, allLtps)
@@ -259,5 +259,3 @@ function buildEthernetContainer(ltp, layerProtocol, mountName) {
 
   return result;
 }
-
-

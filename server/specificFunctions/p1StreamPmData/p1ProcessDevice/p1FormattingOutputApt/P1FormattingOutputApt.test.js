@@ -152,7 +152,7 @@ describe('p1FormattingOutputApt', () => {
       expect(res['output-format']['air-interface-list'][0]['idu-cpu-temperature']).toBe(45);
     });
 
-    
+
 
     test('resolveTransmissionMode: should return null if mode not found', () => {
       const input = {
