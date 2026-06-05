@@ -28,6 +28,9 @@ remove-out-of-range-temperature:
                 type: string
               physical-properties:
                 type: object
+                description: >
+                  'physicalProperties
+                  to be deleted, if [ [{temperature}<{lower-temperature-limit}] OR [{temperature}>{upper-temperature-limit}] ]'
                 properties:
                   temperature:
                     type: string

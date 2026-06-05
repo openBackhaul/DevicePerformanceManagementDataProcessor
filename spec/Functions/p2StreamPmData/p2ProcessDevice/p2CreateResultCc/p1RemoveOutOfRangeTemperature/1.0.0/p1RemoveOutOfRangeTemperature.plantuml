@@ -16,7 +16,7 @@ participant "p1RemoveOutOfRange\nTemperature" as removeTemp
 
       note over removeTemp
         IF value of temperature outside [lowerTemperatureLimit, upperTemperatureLimit]
-          THEN delete temperature attribute
+          THEN delete {physicalProperties} incl. temperature attribute
       end note
 
     end loop
