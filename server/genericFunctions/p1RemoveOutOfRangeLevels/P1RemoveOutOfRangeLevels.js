@@ -1,4 +1,3 @@
-
 const ERRORS = require('./ErrorsEnum');
 
 let parameterStruct = {};
@@ -6,6 +5,14 @@ const LOWER_TX_LIMIT = "lower-tx-level-limit";
 const UPPER_TX_LIMIT = "upper-tx-level-limit";
 const LOWER_RX_LIMIT = "lower-rx-level-limit";
 const UPPER_RX_LIMIT = "upper-rx-level-limit";
+
+const TX_LEVEL_MIN = "tx-level-min";
+const TX_LEVEL_AVG = "tx-level-avg";
+const TX_LEVEL_MAX = "tx-level-max";
+const RX_LEVEL_MIN = "rx-level-min";
+const RX_LEVEL_AVG = "rx-level-avg";
+const RX_LEVEL_MAX = "rx-level-max";
+
 const paramAllowed = [
   LOWER_TX_LIMIT,
   UPPER_TX_LIMIT,
@@ -13,6 +20,14 @@ const paramAllowed = [
   UPPER_RX_LIMIT
 ];
 
+const propertyList = [
+  TX_LEVEL_MIN,
+  TX_LEVEL_AVG,
+  TX_LEVEL_MAX,
+  RX_LEVEL_MIN,
+  RX_LEVEL_AVG,
+  RX_LEVEL_MAX
+];
 
 function camelCaseToKebabCase(camelCaseString) {
   return camelCaseString
@@ -25,12 +40,17 @@ function camelCaseToKebabCase(camelCaseString) {
     .toLowerCase();
 }
 
+// DAMN JavaScript
+function isThisNaN(value) {
+  return value !== value
+};
+
 function checkOutOfRange(value, isTX) {
 
   let min = isTX ? parameterStruct[LOWER_TX_LIMIT] : parameterStruct[LOWER_RX_LIMIT];
   let max = isTX ? parameterStruct[UPPER_TX_LIMIT] : parameterStruct[UPPER_RX_LIMIT];
 
-  if (value < min || value > max) {
+  if (value < Number(min) || value > Number(max)) {
     return false;
   }
 
@@ -49,6 +69,13 @@ function validateParameters(paramArray) {
     }
 
     if (typeof paramElem["value"] != "string") {
+      res = false;
+    }
+
+    let paramValue = parseInt(paramElem["value"]);
+
+    // Check if is Number or also NaN
+    if (typeof paramValue != "number" || isThisNaN(paramValue)) {
       res = false;
     }
 
@@ -74,6 +101,10 @@ const p1RemoveOutOfRangeLevels = (input) => {
     const performanceData = input["performance-data"];
 
     // Check parameters
+    if (!parameters && !performanceData) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
     if (!parameters) {
       return ERRORS.PARAM_NOT_PROVIDED;
     } else {
@@ -87,71 +118,38 @@ const p1RemoveOutOfRangeLevels = (input) => {
         return ERRORS.PARAM_INVALID;
       }
 
-      if (parameterStruct[LOWER_TX_LIMIT] > parameterStruct[UPPER_TX_LIMIT]) {
+      if (Number(parameterStruct[LOWER_TX_LIMIT]) > Number(parameterStruct[UPPER_TX_LIMIT])) {
         return ERRORS.PARAM_INVALID;
-      } else if (parameterStruct[LOWER_RX_LIMIT] > parameterStruct[UPPER_RX_LIMIT]) {
+      } else if (Number(parameterStruct[LOWER_RX_LIMIT]) > Number(parameterStruct[UPPER_RX_LIMIT])) {
         return ERRORS.PARAM_INVALID;
       }
     }
 
     if (!performanceData) {
       return ERRORS.PERF_NOT_PROVIDED;
+    } else if (typeof performanceData !== 'object') {
+      return ERRORS.PERF_INVALID;
     } else {
+      let resProperty = "";
+      propertyList.forEach(property => {
+        if (performanceData[property] && typeof performanceData[property] != "number") {
+          resProperty = ERRORS.PERF_INVALID;
+        }
+      });
 
-      // TX
-      if (performanceData["tx-level-min"] == undefined || typeof performanceData["tx-level-min"] != "number") {
-        return ERRORS.PERF_INVALID;
-      }
-
-      if (performanceData["tx-level-max"] == undefined || typeof performanceData["tx-level-max"] != "number") {
-        return ERRORS.PERF_INVALID;
-      }
-
-      if (performanceData["tx-level-avg"] == undefined || typeof performanceData["tx-level-avg"] != "number") {
-        return ERRORS.PERF_INVALID;
-      }
-
-      // RX
-      if (performanceData["rx-level-min"] == undefined || typeof performanceData["rx-level-min"] != "number") {
-        return ERRORS.PERF_INVALID;
-      }
-
-      if (performanceData["rx-level-max"] == undefined || typeof performanceData["rx-level-max"] != "number") {
-        return ERRORS.PERF_INVALID;
-      }
-
-      if (performanceData["rx-level-avg"] == undefined || typeof performanceData["rx-level-avg"] != "number") {
-        return ERRORS.PERF_INVALID;
+      if (resProperty != "") {
+        return resProperty;
       }
     }
 
     let performanceDataClean = JSON.parse(JSON.stringify(performanceData)); // Initializate return value
-
-    // TX Data
-    if (!checkOutOfRange(performanceData["tx-level-min"], true)) {
-      delete performanceDataClean["tx-level-min"];
-    }
-
-    if (!checkOutOfRange(performanceData["tx-level-max"], true)) {
-      delete performanceDataClean["tx-level-max"];
-    }
-
-    if (!checkOutOfRange(performanceData["tx-level-avg"], true)) {
-      delete performanceDataClean["tx-level-avg"];
-    }
-
-    // RX Data
-    if (!checkOutOfRange(performanceData["rx-level-min"], false)) {
-      delete performanceDataClean["rx-level-min"];
-    }
-
-    if (!checkOutOfRange(performanceData["rx-level-max"], false)) {
-      delete performanceDataClean["rx-level-max"];
-    }
-
-    if (!checkOutOfRange(performanceData["rx-level-avg"], false)) {
-      delete performanceDataClean["rx-level-avg"];
-    }
+    propertyList.forEach(property => {
+      if (!(performanceDataClean[property] && typeof performanceDataClean[property] != "number")) {
+        if (!checkOutOfRange(performanceDataClean[property], property.startsWith("tx-"))) {
+          delete performanceDataClean[property];
+        }
+      }
+    });
 
     return {
       "performance-data": performanceDataClean

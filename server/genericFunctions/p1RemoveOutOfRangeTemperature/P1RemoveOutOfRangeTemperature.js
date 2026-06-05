@@ -143,10 +143,14 @@ const p1RemoveOutOfRangeTemperature = (input) => {
 
     equipClean.forEach(equip => {
       if (equip["actual-equipment"] && equip["actual-equipment"]["physical-properties"]) {
-        if (lowParam > parseInt(equip["actual-equipment"]["physical-properties"]["temperature"]) ||
-          upperParam < parseInt(equip["actual-equipment"]["physical-properties"]["temperature"])) {
-          delete equip["actual-equipment"]["physical-properties"]["temperature"];
-        }
+        if (equip["actual-equipment"]["physical-properties"]["temperature"] == "") {
+          delete equip["actual-equipment"]["physical-properties"];
+        } else {
+          if (lowParam > parseInt(equip["actual-equipment"]["physical-properties"]["temperature"]) ||
+            upperParam < parseInt(equip["actual-equipment"]["physical-properties"]["temperature"])) {
+            delete equip["actual-equipment"]["physical-properties"];
+          }
+      }
       }
     });
 
