@@ -459,7 +459,7 @@ async function run(request) {
           const pac = layerProtocol["air-interface-2-0:air-interface-pac"] || {};
 
           pac["air-interface-historical-performances"] = await filterHistoricalList(
-            pac["air-interface-historical-performances"] || [],
+            pac["air-interface-historical-performances"] || { "historical-performance-data-list": [] },
             relevantGranularities,
             meta.mostRecentPeriodEndTime,
             meta.mostRecentPeriodEndTime24,
@@ -473,7 +473,7 @@ async function run(request) {
           const pac = layerProtocol["ethernet-container-2-0:ethernet-container-pac"] || {};
 
           pac["ethernet-container-historical-performances"] = await filterHistoricalList(
-            pac["ethernet-container-historical-performances"] || [],
+            pac["ethernet-container-historical-performances"] || { "historical-performance-data-list": [] },
             relevantGranularities,
             meta.mostRecentPeriodEndTime,
             meta.mostRecentPeriodEndTime24,
