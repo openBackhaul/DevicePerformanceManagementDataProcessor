@@ -8,10 +8,9 @@ const { runFunctionVersionFromScenarios } = require("../../tools/functionTestRun
 
 const repoRoot = path.resolve(__dirname, "../../..");
 
-describe("p1PrepareTxModes undefined (generated)", () => {
+describe("p1PrepareTxModes testing", () => {
   runFunctionVersionFromScenarios({
     repoRoot,
-    functionName: "p1PrepareTxModes",
-    version: "undefined",
+    functionName: "p1PrepareTxModes"
   });
 });

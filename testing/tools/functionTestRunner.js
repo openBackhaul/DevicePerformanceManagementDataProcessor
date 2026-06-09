@@ -3,8 +3,9 @@
  * - reads scenarios.yaml
  * - for each scenario:
  *   - loads input/output fixtures
- *   - installs mocks for each processing step (jest.doMock) based on scenario config
- *   - requires the function under test AFTER mocks
+ *   - installs mocks only for processing steps explicitly declared in the scenario
+ *   - explicitly unmocks steps not declared in the scenario
+ *   - requires the function under test AFTER mocks, in an isolated module registry
  *   - executes and asserts
  */
 
@@ -18,6 +19,10 @@ function readYaml(filePath) {
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function cloneJson(value) {
+  return value == null ? value : JSON.parse(JSON.stringify(value));
 }
 
 function loadFunctionUnderTest(absModulePath, exportName) {
@@ -38,14 +43,27 @@ function loadFunctionUnderTest(absModulePath, exportName) {
   return fn;
 }
 
+function prepareScenarioModules({ processingSteps, scenarioMocks }) {
+  const declaredStepIds = new Set((scenarioMocks || []).map((m) => m.stepId));
+
+  for (const step of processingSteps || []) {
+    if (declaredStepIds.has(step.stepId)) {
+      continue;
+    }
+
+    jest.unmock(step.modulePath);
+  }
+}
+
 function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   const mockByStepId = new Map((scenarioMocks || []).map((m) => [m.stepId, m]));
+  const stepsById = new Map((processingSteps || []).map((step) => [step.stepId, step]));
 
-  for (const step of processingSteps) {
-    const m = mockByStepId.get(step.stepId);
+  for (const [stepId, m] of mockByStepId.entries()) {
+    const step = stepsById.get(stepId);
 
-    if (!m) {
-      throw new Error(`Missing mock for step '${step.stepId}'`);
+    if (!step) {
+      throw new Error(`Mock declared for unknown step '${stepId}'`);
     }
 
     const isAsync = step.isAsync === true;
@@ -53,7 +71,7 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
     jest.doMock(step.modulePath, () => {
       const fn = jest.fn(() => {
         if (m.type === "return") {
-          const val = readJson(path.join(scenarioDir, m.fixture));
+          const val = cloneJson(readJson(path.join(scenarioDir, m.fixture)));
           return isAsync ? Promise.resolve(val) : val;
         }
 
@@ -75,7 +93,7 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
 /**
  * Called by generated Jest tests.
  */
-function runFunctionVersionFromScenarios({ repoRoot, functionName}) {
+function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
   const baseDir = path.join(repoRoot, "testing", functionName);
   const scenariosPath = path.join(baseDir, "scenarios.yaml");
 
@@ -92,26 +110,35 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName}) {
   for (const s of scenarios) {
     test(`${s.id}${s.description ? ` - ${s.description}` : ""}`, async () => {
       jest.resetModules();
-      jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
 
-      const scenarioDir = path.join(baseDir,"fixture", s.id);
+      const scenarioDir = path.join(baseDir, "fixture", s.id);
 
       // 1) Load input
       const input = readJson(path.join(scenarioDir, s.inputFixture || "input.json"));
 
+      // 2) Prepare modules for this scenario
+      prepareScenarioModules({
+        processingSteps,
+        scenarioMocks: s.mocks || [],
+      });
 
-      // 2) Install mocks (dynamic per scenario)
+      // 3) Install only mocks explicitly declared in this scenario
       installMocks({
         scenarioDir,
         processingSteps,
         scenarioMocks: s.mocks || [],
       });
 
-      // 3) Execute function under test (require AFTER mocks)
-      const futAbsPath = path.resolve(baseDir, fut.modulePath);
-      const fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
+      // 4) Load function under test in isolated module context
+      let fn;
+      jest.isolateModules(() => {
+        const futAbsPath = path.resolve(baseDir, fut.modulePath);
+        fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
+      });
 
-      // 4) Assert
+      // 5) Assert
       if (s.expected?.type === "success") {
         const expectedOutput = readJson(
           path.join(scenarioDir, s.expected.outputFixture || "output.json")
@@ -123,16 +150,10 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName}) {
       }
 
       if (s.expected?.type === "error") {
-        // Two patterns are common:
-        // A) function RETURNS error enum string 
-        // B) function THROWS error enum string
-
         try {
           const actual = await fn(input);
-          // If it returned, compare returned value to expected enum:
           expect(actual).toBe(s.expected.errorEnum);
         } catch (err) {
-          // If it threw, compare thrown string/message:
           const thrown = typeof err === "string" ? err : err?.message;
           expect(thrown).toBe(s.expected.errorEnum);
         }

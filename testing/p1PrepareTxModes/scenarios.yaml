@@ -56,7 +56,10 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "transmissionModeList not provided"
-    mocks: []
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "throw"
+        error: "transmissionModeList not provided"
 
   - id: "errTransmissionModeListInvalid"
     description: "Should return error when transmission-mode-list is not an array"
@@ -64,7 +67,10 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "transmissionModeList invalid"
-    mocks: []
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "throw"
+        error: "transmissionModeList invalid"
 
   - id: "errTransmissionModeListIncompleteMissingName"
     description: "Should return error when a transmission-mode-list entry is missing transmission-mode-name"
@@ -72,7 +78,10 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "transmissionModeList incomplete"
-    mocks: []
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "throw"
+        error: "transmissionModeList incomplete"
 
   - id: "errTransmissionModeListIncompleteForCapacityCalculation"
     description: "Should return error when a used transmission mode is missing one of channel-bandwidth, modulation-scheme, code-rate, or symbol-rate-reduction-factor"
@@ -80,7 +89,10 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "transmissionModeList incomplete"
-    mocks: []
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "throw"
+        error: "transmissionModeList incomplete"
 
   # --------------------------------
   # success behavior
@@ -108,10 +120,6 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
 
   - id: "okKeepPositiveTimeEntries"
     description: "Should keep time-xstates-list entries where time is greater than 0"
@@ -119,10 +127,6 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
 
   - id: "okRemoveUnusedTransmissionModes"
     description: "Should remove transmission-mode-list entries not referenced by any positive-time time-xstates-list entry"
@@ -130,10 +134,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
+
 
   - id: "okKeepOnlyUsedTransmissionModes"
     description: "Should keep only transmission modes referenced by positive-time time-xstates-list entries"
@@ -141,10 +142,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
+
 
   - id: "okAddCapacityToUsedTransmissionModes"
     description: "Should complement each used transmission mode with capacity from p1CalculateAiCapacity"
@@ -152,10 +150,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
+
 
   - id: "okDuplicateUsageAcrossHistoricalEntries"
     description: "Should keep a transmission mode used in multiple historical entries only once in transmission-mode-list and complement it with capacity"
@@ -163,10 +158,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
+
 
   - id: "okMixedUsedAndUnusedTransmissionModes"
     description: "Should remove unused transmission modes, keep used ones, and add capacity only to the kept entries"
@@ -174,21 +166,18 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateAiCapacity"
-        type: "return"
-        fixture: "p1CalculateAiCapacity.output.json"
+
 
   # --------------------------------
   # processing-step error propagation
   # --------------------------------
 
   - id: "errCalculateAiCapacityReturnsError"
-    description: "Should return transmissionModeList could not be provided when p1CalculateAiCapacity returns an error for a used transmission mode"
+    description: "Should return historicalPerformanceDataList could not be provided when p1CalculateAiCapacity returns an error for a used transmission mode"
     inputFixture: "input.json"
     expected:
       type: "error"
-      errorEnum: "transmissionModeList could not be provided"
+      errorEnum: "historicalPerformanceDataList could not be provided"
     mocks:
       - stepId: "p1CalculateAiCapacity"
         type: "throw"
