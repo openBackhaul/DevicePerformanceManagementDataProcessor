@@ -177,8 +177,7 @@ function getSubFunctionParameters(parameters, functionName) {
     parameters,
     functionName,
     "",
-    undefined,
-    true
+    undefined
   );
 
   return functionNode || {};
@@ -561,7 +560,7 @@ function getEthernetContainerPac(layerProtocol) {
 
 function getHistoricalPerformanceDataList(pac, historicalPerformanceKey) {
   if (!isPlainObject(pac)) {
-    return [];
+    return undefined;
   }
 
   const historicalPerformances = pac[historicalPerformanceKey];
@@ -577,7 +576,7 @@ function getHistoricalPerformanceDataList(pac, historicalPerformanceKey) {
     return historicalPerformances[HIST_PERF_DATA_LIST_KEY];
   }
 
-  return [];
+  return undefined;
 }
 
 function setHistoricalPerformanceDataList(pac, historicalPerformanceKey, historicalPerformanceDataList) {
@@ -594,18 +593,18 @@ function setHistoricalPerformanceDataList(pac, historicalPerformanceKey, histori
 
 function getTransmissionModeList(pac) {
   if (!isPlainObject(pac)) {
-    return [];
+    return undefined;
   }
 
   const capability = pac[AIR_INTERFACE_CAPABILITY_KEY];
 
   if (!isPlainObject(capability)) {
-    return [];
+    return undefined;
   }
 
   return Array.isArray(capability[TRANSMISSION_MODE_LIST_KEY])
     ? capability[TRANSMISSION_MODE_LIST_KEY]
-    : [];
+    : undefined;
 }
 
 function setTransmissionModeList(pac, transmissionModeList) {
@@ -745,9 +744,9 @@ async function integrateP1PrepareTxModes(pac, mountName) {
 
   const response = await callVendorFunction(p1PrepareTxModes, {
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
-    historicalPerformanceDataList,
-    [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList,
-    transmissionModeList
+    //historicalPerformanceDataList,
+    [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList
+    //transmissionModeList
   });
 
   if (response === undefined) {
@@ -758,7 +757,9 @@ async function integrateP1PrepareTxModes(pac, mountName) {
   }
 
   if (!isValidPrepareTxModesResponse(response)) {
-    throw buildPrepareTxModesError(response, mountName);
+    logger.error(buildPrepareTxModesError(response, mountName).message);
+    return null;
+    //throw buildPrepareTxModesError(response, mountName);
   }
 
   return {
@@ -901,6 +902,10 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       }
 
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
+
+      if(prepareTxModesResult === null) {
+        continue;
+      }
 
       setHistoricalPerformanceDataList(
         pac,

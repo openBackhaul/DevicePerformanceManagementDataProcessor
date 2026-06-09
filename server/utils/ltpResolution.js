@@ -62,10 +62,11 @@ async function readEsAddress(configFile, esClientUuid) {
     throw new Error("api-key could not be resolved");
   }
 
-  const serviceRecordsPolicy = esCfg["service-records-policy"];
+  //TODO: check if service-records-policy is needed for DPMDP because its not specified in the \spec\DevicePerformanceManagementDataProcessor+config.json and database/config.json files.
+  /* const serviceRecordsPolicy = esCfg["service-records-policy"];
   if (!serviceRecordsPolicy) {
     throw new Error("service-records-policy could not be resolved");
-  }
+  } */
 
   const operationalState = esStatus["operational-state"];
   if (!operationalState) {
@@ -87,7 +88,8 @@ async function readEsAddress(configFile, esClientUuid) {
       remotePort,
     "index-alias": indexAlias,
     "api-key": apiKey,
-    "service-records-policy": serviceRecordsPolicy,
+    //TODO: check if service-records-policy is needed for DPMDP because its not specified in the \spec\DevicePerformanceManagementDataProcessor+config.json and database/config.json files.
+    /* "service-records-policy": serviceRecordsPolicy, */
     "operational-state": operationalState,
     "life-cycle-state": lifeCycleState
   };

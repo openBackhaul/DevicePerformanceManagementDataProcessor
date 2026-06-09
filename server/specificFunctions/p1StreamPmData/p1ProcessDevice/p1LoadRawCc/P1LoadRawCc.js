@@ -178,8 +178,8 @@ async function filterHistoricalList(
   const discardInput = {
     ...list,
     "relevant-granularities":relevantGranularities,
-    "most-recent-period-end-time": (mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
-    "most-recent-period-end-time-24": (mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
+    "most-recent-period-end-time": mostRecentPeriodEndTime,//(mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
+    "most-recent-period-end-time-24": mostRecentPeriodEndTime24,//(mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
   };
   const response = await p1DiscardIrrelevantPmRecords(discardInput);
 
@@ -458,29 +458,35 @@ async function run(request) {
         if (layerProtocolName.includes("air-interface")) {
           const pac = layerProtocol["air-interface-2-0:air-interface-pac"] || {};
 
-          pac["air-interface-historical-performances"] = await filterHistoricalList(
-            pac["air-interface-historical-performances"] || { "historical-performance-data-list": [] },
-            relevantGranularities,
-            meta.mostRecentPeriodEndTime,
-            meta.mostRecentPeriodEndTime24,
-            logger
-          );
+          if(pac["air-interface-historical-performances"] && pac["air-interface-historical-performances"]["historical-performance-data-list"]
+             && pac["air-interface-historical-performances"]["historical-performance-data-list"].length > 0) {
+              pac["air-interface-historical-performances"] = await filterHistoricalList(
+                          pac["air-interface-historical-performances"],
+                          relevantGranularities,
+                          meta.mostRecentPeriodEndTime,
+                          meta.mostRecentPeriodEndTime24,
+                          logger
+                        );
 
-          layerProtocol["air-interface-2-0:air-interface-pac"] = pac;
+              layerProtocol["air-interface-2-0:air-interface-pac"] = pac;
+          }
+          
         }
 
         if (layerProtocolName.includes("ethernet-container")) {
           const pac = layerProtocol["ethernet-container-2-0:ethernet-container-pac"] || {};
+          if(pac["ethernet-container-historical-performances"] && pac["ethernet-container-historical-performances"]["historical-performance-data-list"]
+             && pac["ethernet-container-historical-performances"]["historical-performance-data-list"].length > 0) {
+            pac["ethernet-container-historical-performances"] = await filterHistoricalList(
+              pac["ethernet-container-historical-performances"],
+              relevantGranularities,
+              meta.mostRecentPeriodEndTime,
+              meta.mostRecentPeriodEndTime24,
+              logger
+            );
 
-          pac["ethernet-container-historical-performances"] = await filterHistoricalList(
-            pac["ethernet-container-historical-performances"] || { "historical-performance-data-list": [] },
-            relevantGranularities,
-            meta.mostRecentPeriodEndTime,
-            meta.mostRecentPeriodEndTime24,
-            logger
-          );
-
-          layerProtocol["ethernet-container-2-0:ethernet-container-pac"] = pac;
+            layerProtocol["ethernet-container-2-0:ethernet-container-pac"] = pac;
+          }
         }
       }
     }
