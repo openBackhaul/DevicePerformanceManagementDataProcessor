@@ -1,5 +1,5 @@
 const p1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature");
-const { getParamFromFunction } = require("../../../../utils/functionTree");
+const { getParamFromFunction, findFunctionNode } = require("../../../../utils/functionTree");
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
 const ERRORS_P1PrepareTxModes = require("./p1PrepareTxModes/ErrorsEnum");
 const p1PrepareTxModes = require("./p1PrepareTxModes/P1PrepareTxModes.js");
@@ -173,11 +173,9 @@ function getRemoveOutOfRangeTemperatureParameters(parameters) {
 }
 
 function getSubFunctionParameters(parameters, functionName) {
-  const functionNode = getParamFromFunction(
+  const functionNode = findFunctionNode(
     parameters,
-    functionName,
-    "",
-    undefined
+    functionName
   );
 
   return functionNode || {};
@@ -918,7 +916,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         prepareTxModesResult.transmissionModeList
       );
 
-      const iterateAiResult = await integrateP1IterateAiPmSlices(
+      /* const iterateAiResult = await integrateP1IterateAiPmSlices(
         parameters,
         pac,
         prepareTxModesResult.transmissionModeList
@@ -944,7 +942,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
-      interfaceMetadataList.push(metadata);
+      interfaceMetadataList.push(metadata); */
     }
   }
 }
@@ -1064,12 +1062,12 @@ async function run(request) {
       mountName
     );
 
-    await processEthernetContainers(
+    /* await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
       interfaceMetadataList
-    );
+    ); */
 
     await applyP1RemoveOutOfRangeTemperature(
       parameters,

@@ -2689,7 +2689,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.apt",
+                "topic-name": "raw.mw-sdnc-dpmdp.Apt",
                 "type": "provider"
               }
             }
@@ -2709,7 +2709,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.mycom",
+                "topic-name": "raw.mw-sdnc-dpmdp.Mycom",
                 "type": "provider"
               }
             }
@@ -2729,7 +2729,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.netexplorer",
+                "topic-name": "raw.mw-sdnc-dpmdp.Netexplorer",
                 "type": "provider"
               }
             }
@@ -2749,7 +2749,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.iveritas",
+                "topic-name": "raw.mw-sdnc-dpmdp.Iveritas",
                 "type": "provider"
               }
             }
