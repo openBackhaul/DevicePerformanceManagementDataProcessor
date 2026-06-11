@@ -141,7 +141,7 @@ async function loadInterfaceMetadataList(
       "Failed to load interface metadata list from data store"
     );
     //return [];
-    throw new Error("interfaceMetadataList could not be provided");
+    //throw new Error("interfaceMetadataList could not be provided");
   });
 
   const source = (response || {}).body?._source || {};
@@ -536,7 +536,7 @@ async function run(request) {
 
     // --- Discard irrelevant PM records ---
     for (const ltp of rawCc["logical-termination-point"] || []) {
-      const meta = interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {};
+      const meta = (interfaceMetadataList)?interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {}:{};
 
       for (const layerProtocol of ltp["layer-protocol"] || []) {
         const layerProtocolName = String(layerProtocol["layer-protocol-name"] || "");

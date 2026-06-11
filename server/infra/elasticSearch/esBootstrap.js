@@ -116,6 +116,7 @@ async function ensureIndicesAndMappings(esClients, logger) {
           mountName: { type: "keyword" },
           "mount-name": { type: "keyword" },
           locked: { type: "boolean" },
+          timestamp: { type: "date" },
           batch: {
             type: "nested",
             properties: {
