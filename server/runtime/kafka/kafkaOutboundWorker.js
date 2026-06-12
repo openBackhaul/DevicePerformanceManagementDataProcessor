@@ -114,7 +114,7 @@ async function deleteEsPayloadReferences(messages, context) {
 }
 
 async function processKafkaOutboundChunk(messages, context) {
-    const {p1TransmittingKafkaParameters} = context;
+    const {p1TransmittingKafkaParameters, kafkaConnectionList} = context;
     if (!messages || messages.length === 0) {
         return;
     }
@@ -128,6 +128,7 @@ async function processKafkaOutboundChunk(messages, context) {
     await p1TransmittingKafka.run({
         outputMessages,
         p1TransmittingKafkaParameters,
+        kafkaConnectionList: kafkaConnectionList || [],
         logger: logger
     });
 
@@ -188,6 +189,57 @@ async function sleepAfterKafkaFailure(context, error) {
   await sleep(sleepMs);
 }
 
+function isNonRetryableKafkaOutboundError(error) {
+  return (
+    error &&
+    (
+      error.retryable === false ||
+      error.reason === "KAFKA_MESSAGE_SIZE_TOO_LARGE"
+    )
+  );
+}
+
+async function handleNonRetryableKafkaOutboundFailure(messages, context, source, error) {
+  /*
+   * Non-retryable Kafka errors should not stay forever in Redis pending state.
+   * Example: KAFKA_MESSAGE_SIZE_TOO_LARGE.
+   *
+   * For now:
+   * - log clearly
+   * - ACK and delete from Kafka outbound stream
+   * - do not delete ES payload reference here, so the payload can still be inspected
+   *
+   * Later this can be changed to move the message to a dedicated
+   * dpmdp:stream:kafka-outbound-dead-letter stream.
+   */
+
+  for (const msg of messages) {
+    const fields = msg.message || {};
+
+    logger.error(
+      {
+        label: "kafka-outbound-non-retryable-failure",
+        source,
+        redisMessageId: msg.id,
+        mountName: fields.mountName,
+        targetConsumer: fields.targetConsumer,
+        payloadStorage: fields.payloadStorage,
+        payloadRefId: fields.payloadRefId,
+        payloadBytes: fields.payloadBytes,
+        reason: error.reason,
+        stage: error.stage,
+        messageBytes: error.messageBytes,
+        maxBytes: error.maxBytes,
+        error: error.message || error
+      },
+      "Kafka outbound message moved out of retry flow because error is non-retryable"
+    );
+
+    await redisQueue.ackKafkaOutbound(msg.id, logger);
+    await redisQueue.deleteKafkaOutboundMessage(msg.id, logger);
+  }
+}
+
 async function tryProcessKafkaOutboundMessages(messages, context, source) {
   if (!messages || messages.length === 0) {
     return true;
@@ -196,12 +248,28 @@ async function tryProcessKafkaOutboundMessages(messages, context, source) {
   try {
     await processKafkaOutboundMessages(messages, context);
     return true;
-  } catch (error) {
+   } catch (error) {
     /*
-     * Important:
-     * processKafkaOutboundChunk only ACKs/deletes Redis messages after Kafka send succeeds.
-     * If Kafka send fails, the exception happens before ACK/delete.
-     * Therefore the Redis messages remain pending and can be reclaimed/retried.
+     * Non-retryable errors must not stay forever in Redis.
+     * Example:
+     * - KAFKA_MESSAGE_SIZE_TOO_LARGE
+     */
+    if (isNonRetryableKafkaOutboundError(error)) {
+      await handleNonRetryableKafkaOutboundFailure(
+        messages,
+        context,
+        source,
+        error
+      );
+
+      return false;
+    }
+
+    /*
+     * Retryable Kafka/infra failure:
+     * Do not ACK.
+     * Do not DELETE.
+     * Message remains pending and will be reclaimed/retried.
      */
     context.lastKafkaFailureAt = Date.now();
 

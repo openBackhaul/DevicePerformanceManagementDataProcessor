@@ -22,12 +22,12 @@ async function handleMessage(message, context) {
   try{
     try {
         await p1ProcessDevice.run({
-        mountName,
-        parameters: context.processDeviceParameters,
-        configFile: context.configFile,
-        mwdiReplicaEsClient: context.mwdiReplicaEsClient,
-        dataStoreEsClient: context.dataStoreEsClient,
-        logger: context.logger
+          mountName,
+          parameters: context.processDeviceParameters,
+          configFile: context.configFile,
+          mwdiReplicaEsClient: context.mwdiReplicaEsClient,
+          dataStoreEsClient: context.dataStoreEsClient,
+          kafkaConsumerTypes: context.kafkaConsumerTypes
         });
 
         await redisQueue.clearRetryState(mountName, context.logger);

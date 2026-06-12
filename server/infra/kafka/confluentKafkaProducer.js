@@ -1,5 +1,6 @@
 const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
 const { withRetry } = require("../../utils/retry");
+const logger = require('../../service/LoggingService.js').getLogger();
 
 let producer = null;
 let producerConfigKey = null;
@@ -9,32 +10,124 @@ function asNumber(value, defaultValue) {
   return Number.isFinite(numberValue) ? numberValue : defaultValue;
 }
 
+function normalizeBrokerList(value) {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+  }
+
+  return String(value)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function getConfiguredBrokers(options) {
   const params = (options && options.p1TransmittingKafkaParameters) || {};
 
+  /*
+   * Local/runtime override.
+   * Useful only for local Docker testing, for example 127.0.0.1:29092.
+   * In production, do not set global.KAFKA_BOOTSTRAP_SERVERS if the broker
+   * must come strictly from the KafkaClient LTP in configFile.
+   */
+  /* const runtimeOverride =
+    options.kafkaBootstrapServers ||
+    global.KAFKA_BOOTSTRAP_SERVERS ||
+    process.env.KAFKA_BOOTSTRAP_SERVERS;
+
+  if (runtimeOverride) {
+    const brokers = normalizeBrokerList(runtimeOverride);
+
+    if (brokers.length > 0) {
+      return brokers;
+    }
+  } */
+
+  /*
+   * This is the p1InitKafka/onfAdapter path:
+   * initProducer({ clientId, brokers, logger })
+   */
+  const directBrokers =
+    normalizeBrokerList(options && options.brokers);
+
+  if (directBrokers.length > 0) {
+    return directBrokers;
+  }
+
+  /*
+   * Optional alternative naming.
+   */
+  const directBrokerList =
+    normalizeBrokerList(options && options.brokerList);
+
+  if (directBrokerList.length > 0) {
+    return directBrokerList;
+  }
+
+  /*
+   * This is the p1TransmittingKafka path, if already resolved Kafka
+   * parameters are passed directly.
+   */
+  const paramBrokerList =
+    normalizeBrokerList(
+      params.brokers ||
+      params.brokerList 
+    );
+
+  if (paramBrokerList.length > 0) {
+    return paramBrokerList;
+  }
+
   const host =
     params["ipv-4-address"] ||
-    "127.0.0.1";
+    params["domain-name"] ||
+    params.host;
 
   const port =
     params["remote-port"] ||
-    "29092";
+    params.port;
 
-  return [`${host}:${port}`];
+  if (host && port) {
+    return [`${host}:${port}`];
+  }
+
+  throw new Error(
+    "Kafka broker configuration missing. Expected options.brokers, options.brokerList, or p1TransmittingKafkaParameters with brokerList/brokers or ipv-4-address + remote-port."
+  );
+}
+
+function getConfiguredClientId(options) {
+  const params = (options && options.p1TransmittingKafkaParameters) || {};
+
+  return (
+    (options && options.clientId) ||
+    params.clientId ||
+    "dpmdp-producer"
+  );
 }
 
 function buildProducerConfig(options) {
   const brokers = getConfiguredBrokers(options || {});
-  const params = (options && options.p1TransmittingKafkaParameters) || {};
+  const clientId = getConfiguredClientId(options || {});
 
   const config = {
     "bootstrap.servers": brokers.join(","),
-    "client.id": params["client-id"] || "dpmdp-producer",
+    "client.id": clientId,
 
     // Reliability
     "acks": global.KAFKA_ACKS || "all",
     "enable.idempotence":
       String(global.KAFKA_ENABLE_IDEMPOTENCE || "true") === "true",
+
+    // Message/request size
+    "message.max.bytes": asNumber(global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES, 5242880),
+    //"socket.request.max.bytes": asNumber(global.KAFKA_SOCKET_REQUEST_MAX_BYTES, 10485760),
 
     // Throughput optimization
     "linger.ms": asNumber(global.KAFKA_LINGER_MS, 50),
@@ -155,7 +248,37 @@ async function initProducer(options) {
   }
 }
 
-async function sendBatch(topic, messages, logger, p1TransmittingKafkaParameters) {
+function buildInitOptionsFromSendArgument(kafkaOptions, logger) {
+  /*
+   * Case 1:
+   * sendBatch(topic, messages, logger, { clientId, brokers })
+   */
+  if (
+    kafkaOptions &&
+    typeof kafkaOptions === "object" &&
+    (
+      kafkaOptions.clientId ||
+      kafkaOptions.brokers ||
+      kafkaOptions.brokerList
+    )
+  ) {
+    return {
+      ...kafkaOptions,
+      logger
+    };
+  }
+
+  /*
+   * Case 2:
+   * sendBatch(topic, messages, logger, p1TransmittingKafkaParameters)
+   */
+  return {
+    logger,
+    p1TransmittingKafkaParameters: kafkaOptions || {}
+  };
+}
+
+async function sendBatch(topic, messages, logger, kafkaOptions) {
   if (!topic) {
     throw new Error("Kafka topic is mandatory");
   }
@@ -165,10 +288,9 @@ async function sendBatch(topic, messages, logger, p1TransmittingKafkaParameters)
   }
 
   try {
-    const kafkaProducer = await initProducer({
-      logger,
-      p1TransmittingKafkaParameters
-    });
+    const kafkaProducer = await initProducer(
+      buildInitOptionsFromSendArgument(kafkaOptions, logger)
+    );
 
     await withRetry(
       async () => {
@@ -191,6 +313,12 @@ async function sendBatch(topic, messages, logger, p1TransmittingKafkaParameters)
   } catch (error) {
     await resetProducer(logger, "SEND_FAILED");
 
+    if (isKafkaMessageTooLargeError(error)) {
+      error.retryable = false;
+      error.stage = "confluentKafkaProducer.sendBatch";
+      error.reason = "KAFKA_MESSAGE_SIZE_TOO_LARGE";
+    }
+
     logger &&
       logger.error &&
       logger.error(
@@ -200,13 +328,34 @@ async function sendBatch(topic, messages, logger, p1TransmittingKafkaParameters)
           messageCount: messages.length,
           error: error.message || error,
           code: error.code,
-          type: error.type
+          type: error.type,
+          retryable: error.retryable,
+          reason: error.reason
         },
         "Kafka send failed; producer reset for reconnect"
       );
 
     throw error;
   }
+}
+
+function isKafkaMessageTooLargeError(error) {
+  const text = [
+    error && error.message,
+    error && error.type,
+    error && error.code,
+    error && error.name
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return (
+    text.includes("message size too large") ||
+    text.includes("msg_size_too_large") ||
+    text.includes("record too large") ||
+    text.includes("too large")
+  );
 }
 
 async function flushProducer(logger) {

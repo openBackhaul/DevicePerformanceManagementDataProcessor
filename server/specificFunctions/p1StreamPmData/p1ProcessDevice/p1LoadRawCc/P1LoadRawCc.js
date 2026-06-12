@@ -4,6 +4,7 @@ const { withRetry } = require("../../../../utils/retry");
 const p1FieldsFilter = require("./../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter");
 const p1DiscardIrrelevantPmRecords = require("./../../../../genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords");
 const logger = require('../../../../service/LoggingService.js').getLogger();
+const ERRORS = require('./ErrorsEnum.js');
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
 const ETHERNET_CONTAINER_PAC_KEY = "ethernet-container-2-0:ethernet-container-pac";
@@ -131,17 +132,17 @@ async function loadInterfaceMetadataList(
       logger
     }
   ).catch((error) => {
-      /* logger.error(
-        {
-          label: "load-interface-metadata-list",
-          error: error.message || error
-        },
-        "Failed to load interface metadata list"
-      ); */
-      //if (error.meta && error.meta.statusCode === 404) {
-        return [];
-      //}
-    });
+    logger.error(
+      {
+        label: "load-interface-metadata-list",
+        mountName,
+        error: error.message || error
+      },
+      "Failed to load interface metadata list from data store"
+    );
+    //return [];
+    //throw new Error("interfaceMetadataList could not be provided");
+  });
 
   const source = (response || {}).body?._source || {};
   return source["interface-metadata-list"] || [];
@@ -177,18 +178,22 @@ async function filterHistoricalList(
 
   const discardInput = {
     ...list,
-    "relevant-granularities":relevantGranularities,
-    "most-recent-period-end-time": (mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
-    "most-recent-period-end-time-24": (mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
+    "relevant-granularities": relevantGranularities,
+    "most-recent-period-end-time": mostRecentPeriodEndTime,//(mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
+    "most-recent-period-end-time-24": mostRecentPeriodEndTime24,//(mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
   };
   const response = await p1DiscardIrrelevantPmRecords(discardInput);
 
   if (isValidDiscardResponse(response)) {
     return response["filtered-historical-performance-data-list"];
   }
-  
+
   const inputSummary = {
-    inputRecordCount: list.length,
+    inputRecordCount:
+      Array.isArray(list["historical-performance-data-list"])
+        ? list["historical-performance-data-list"].length
+        : 0,
+    //list.length,
     relevantGranularities,
     mostRecentPeriodEndTime: discardInput["most-recent-period-end-time"],
     mostRecentPeriodEndTime24: discardInput["most-recent-period-end-time-24"]
@@ -205,7 +210,8 @@ async function filterHistoricalList(
     );
   }
 
-  throw buildDiscardPmError(response, inputSummary);
+  //throw buildDiscardPmError(response, inputSummary);
+  throw new Error(ERRORS.GENERAL_PROCESSING_ERROR);
 }
 
 const DEFAULT_BATCH_TIMESTAMP = "2010-11-20T14:00:00+01:00";
@@ -354,42 +360,82 @@ async function run(request) {
     mwdiReplicaEsClient,
     dataStoreEsClient,
     mountName,
-    //logger
-  } = request;
+  } = request || {};
 
   try {
-    const replicaClient = await onfAdapter.getEsClient(
-      false,
-      mwdiReplicaEsClient.uuid,
-      mwdiReplicaEsClient,
-      logger
-    );
+    // --- Input validation ---
+    if (parameters === undefined || parameters === null) {
+      throw new Error(ERRORS.PARAMETERS_NOT_PROVIDED);
+    }
+    if (!isPlainObject(parameters)) {
+      throw new Error(ERRORS.PARAMETERS_INVALID);
+    }
 
-    const rawResponse = await withRetry(
-      async () =>
-        replicaClient.get({
-          index: mwdiReplicaEsClient["index-alias"],
-          id: mountName
-      }),
-      {
-        label: `loadRawCc:${mountName}`,
-        retryIntervalMs: 10000,
+    if (mwdiReplicaEsClient === undefined || mwdiReplicaEsClient === null) {
+      throw new Error(ERRORS.MWDI_REPLICA_ES_CLIENT_NOT_PROVIDED);
+    }
+    if (!isPlainObject(mwdiReplicaEsClient) || !mwdiReplicaEsClient.uuid || !mwdiReplicaEsClient["index-alias"]) {
+      throw new Error(ERRORS.MWDI_REPLICA_ES_CLIENT_INVALID);
+    }
+
+    if (dataStoreEsClient === undefined || dataStoreEsClient === null) {
+      throw new Error(ERRORS.DATA_STORE_ES_CLIENT_NOT_PROVIDED);
+    }
+    if (!isPlainObject(dataStoreEsClient) || !dataStoreEsClient.uuid || !dataStoreEsClient["index-alias"]) {
+      throw new Error(ERRORS.DATA_STORE_ES_CLIENT_INVALID);
+    }
+
+    if (mountName === undefined || mountName === null) {
+      throw new Error(ERRORS.MOUNT_NAME_NOT_PROVIDED);
+    }
+    if (typeof mountName !== "string" || mountName.trim() === "") {
+      throw new Error(ERRORS.MOUNT_NAME_INVALID);
+    }
+
+    // --- Read ControlConstruct from Replica ES ---
+    let replicaClient;
+    try {
+      replicaClient = await onfAdapter.getEsClient(
+        false,
+        mwdiReplicaEsClient.uuid,
+        mwdiReplicaEsClient,
         logger
-      }
-    ).catch((error) => {
-      /* logger.error(
+      );
+    } catch (error) {
+      logger.error(
+        { label: "p1LoadRawCc:getReplicaClient", error: error.message || error },
+        "Failed to initialize MWDI replica ES client"
+      );
+      throw new Error(ERRORS.MWDI_REPLICA_ES_CLIENT_INVALID);
+    }
+
+    let rawResponse;
+    try {
+      rawResponse = await withRetry(
+        async () =>
+          replicaClient.get({
+            index: mwdiReplicaEsClient["index-alias"],
+            id: mountName
+          }),
         {
-          label: "load-raw-cc",
-          error: error.message || error
-        },
-        "Failed to load raw CC from replica"
-      ); */
-    });
+          label: `loadRawCc:${mountName}`,
+          retryIntervalMs: 10000,
+          logger
+        }
+      );
+    } catch (error) {
+      logger.error(
+        { label: "p1LoadRawCc:readControlConstruct", mountName, error: error.message || error },
+        "Failed to read ControlConstruct from replica ES"
+      );
+      throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
+    }
 
     let rawCc = (rawResponse || {}).body?._source["core-model-1-4:control-construct"] || {
       mountName
     };
 
+    // --- Apply fields filter ---
     const fieldsFilterString = getParamFromFunction(
       parameters,
       "p1FieldsFilter",
@@ -397,25 +443,53 @@ async function run(request) {
       ""
     );
 
-    const fieldsFilterResponse = await p1FieldsFilter.run({
+    let fieldsFilterResponse;
+    try {
+      fieldsFilterResponse = await p1FieldsFilter.run({
         dataStructure: rawCc,
         fieldsFilterString
-    });
-
-    if (typeof fieldsFilterResponse === "string") {
-        const error = new Error(
-            `p1FieldsFilter returned error response: ${fieldsFilterResponse}`
-        );
-
-        error.stage = "p1FieldsFilter";
-        error.vendorResponse = fieldsFilterResponse;
-        error.retryable = false;
-
-        throw error;
+      });
+    } catch (error) {
+      logger.error(
+        { label: "p1LoadRawCc:p1FieldsFilter", mountName, error: error.message || error },
+        "p1FieldsFilter threw an unexpected error"
+      );
+      throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
     }
 
-    rawCc =
-    fieldsFilterResponse["filtered-data-structure"];
+    if (typeof fieldsFilterResponse !== "object" || !fieldsFilterResponse ||
+      !fieldsFilterResponse["filtered-data-structure"]
+    ) {
+      logger.error(
+        {
+          label: "p1LoadRawCc:p1FieldsFilter",
+          mountName,
+          response: fieldsFilterResponse
+        },
+        "Invalid p1FieldsFilter response"
+      );
+
+      throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
+    }
+
+    //if (typeof fieldsFilterResponse === "string") {
+    //  const error = new Error(
+    //       `p1FieldsFilter returned error response: ${fieldsFilterResponse}`
+    //   );
+
+    //   error.stage = "p1FieldsFilter";
+    //   error.vendorResponse = fieldsFilterResponse;
+    //   error.retryable = false;
+
+    //   throw error;
+    //   logger.error(
+    //     { label: "p1LoadRawCc:p1FieldsFilter", mountName, vendorResponse: fieldsFilterResponse },
+    //     "p1FieldsFilter returned an error response"
+    //   );
+    //   throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
+    // }
+
+    rawCc = fieldsFilterResponse["filtered-data-structure"];
     rawCc = normalizeRawCcAfterFieldsFilter(rawCc);
 
     /* if (!rawCc || typeof rawCc !== "object") {
@@ -428,13 +502,24 @@ async function run(request) {
         throw error;
     } */
 
-    const dataStoreClient = await onfAdapter.getEsClient(
-      false,
-      dataStoreEsClient.uuid,
-      dataStoreEsClient,
-      logger
-    );
+    // --- Get data store client ---
+    let dataStoreClient;
+    try {
+      dataStoreClient = await onfAdapter.getEsClient(
+        false,
+        dataStoreEsClient.uuid,
+        dataStoreEsClient,
+        logger
+      );
+    } catch (error) {
+      logger.error(
+        { label: "p1LoadRawCc:getDataStoreClient", error: error.message || error },
+        "Failed to initialize data store ES client"
+      );
+      throw new Error(ERRORS.DATA_STORE_ES_CLIENT_INVALID);
+    }
 
+    // --- Retrieve most recent period end times from data store ---
     const interfaceMetadataList = await loadInterfaceMetadataList(
       dataStoreClient,
       dataStoreEsClient["index-alias"],
@@ -449,8 +534,9 @@ async function run(request) {
       ".*"
     );
 
+    // --- Discard irrelevant PM records ---
     for (const ltp of rawCc["logical-termination-point"] || []) {
-      const meta = interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {};
+      const meta = (interfaceMetadataList)?interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {}:{};
 
       for (const layerProtocol of ltp["layer-protocol"] || []) {
         const layerProtocolName = String(layerProtocol["layer-protocol-name"] || "");
@@ -458,46 +544,61 @@ async function run(request) {
         if (layerProtocolName.includes("air-interface")) {
           const pac = layerProtocol["air-interface-2-0:air-interface-pac"] || {};
 
-          pac["air-interface-historical-performances"] = await filterHistoricalList(
-            pac["air-interface-historical-performances"] || [],
-            relevantGranularities,
-            meta.mostRecentPeriodEndTime,
-            meta.mostRecentPeriodEndTime24,
-            logger
-          );
-
-          layerProtocol["air-interface-2-0:air-interface-pac"] = pac;
+          if (
+            pac["air-interface-historical-performances"] &&
+            pac["air-interface-historical-performances"]["historical-performance-data-list"] &&
+            pac["air-interface-historical-performances"]["historical-performance-data-list"].length > 0
+          ) {
+            pac["air-interface-historical-performances"] = await filterHistoricalList(
+              pac["air-interface-historical-performances"],
+              relevantGranularities,
+              meta.mostRecentPeriodEndTime,
+              meta.mostRecentPeriodEndTime24,
+              logger
+            );
+            layerProtocol["air-interface-2-0:air-interface-pac"] = pac;
+          }
         }
 
         if (layerProtocolName.includes("ethernet-container")) {
           const pac = layerProtocol["ethernet-container-2-0:ethernet-container-pac"] || {};
 
-          pac["ethernet-container-historical-performances"] = await filterHistoricalList(
-            pac["ethernet-container-historical-performances"] || [],
-            relevantGranularities,
-            meta.mostRecentPeriodEndTime,
-            meta.mostRecentPeriodEndTime24,
-            logger
-          );
-
-          layerProtocol["ethernet-container-2-0:ethernet-container-pac"] = pac;
+          if (
+            pac["ethernet-container-historical-performances"] &&
+            pac["ethernet-container-historical-performances"]["historical-performance-data-list"] &&
+            pac["ethernet-container-historical-performances"]["historical-performance-data-list"].length > 0
+          ) {
+            pac["ethernet-container-historical-performances"] = await filterHistoricalList(
+              pac["ethernet-container-historical-performances"],
+              relevantGranularities,
+              meta.mostRecentPeriodEndTime,
+              meta.mostRecentPeriodEndTime24,
+              logger
+            );
+            layerProtocol["ethernet-container-2-0:ethernet-container-pac"] = pac;
+          }
         }
       }
     }
 
+    // --- Add batch timestamp ---
     addBatchTimestamp(rawCc);
 
     return { rawCc, mountName };
   } catch (error) {
-    error.stage = "p1LoadRawCc";
+    const message = String((error && error.message) || "");
+    if (ERRORS.knownErrors.has(message)) {
+      logger.error(
+        { label: "p1LoadRawCc", mountName, error: message },
+        message
+      );
+      throw error;
+    }
     logger.error(
-        {
-          label: "process-device-p1LoadRawCc",
-          error: error.message || error
-        },
-        "Failed to process device in p1LoadRawCc"
+      { label: "p1LoadRawCc", mountName, error: error.message || error },
+      "Unexpected error in p1LoadRawCc"
     );
-    throw error;
+    throw new Error(ERRORS.GENERAL_PROCESSING_ERROR);
   }
 }
 

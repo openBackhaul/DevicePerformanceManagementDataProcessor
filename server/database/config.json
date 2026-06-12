@@ -340,6 +340,14 @@
                 {
                   "parameter": "dpmdp-1-0-0-string-p-092",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-093",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-094",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -368,12 +376,40 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "onfProvider",
+              "string-name": "mycomProvider",
               "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-093",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "netexplorerProvider",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-002"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-094",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "iveritasProvider",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-003"
             }
           }
         },
@@ -689,7 +725,7 @@
               ]
             },
             "function-profile-configuration": {
-              "is-active": false
+              "is-active": true
             }
           }
         },
@@ -826,7 +862,7 @@
               "string-purpose": "Lower bound of valid values of the receive level"
             },
             "string-profile-configuration": {
-              "string-value": "-10"
+              "string-value": "-129"
             }
           }
         },
@@ -839,7 +875,7 @@
               "string-purpose": "Upper bound of valid values of the receive level"
             },
             "string-profile-configuration": {
-              "string-value": "-129"
+              "string-value": "-10"
             }
           }
         },
@@ -1810,6 +1846,14 @@
                 {
                   "parameter": "dpmdp-1-0-0-string-p-602",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-603",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-0-0-string-p-604",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -1838,12 +1882,40 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "onf-output-format",
+              "string-name": "mycom-output-format",
               "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-603",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "netexplorer-output-format",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-002"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-0-0-string-p-604",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "iveritas-output-format",
+              "string-purpose": "kafkaClient",
+              "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-003"
             }
           }
         },
@@ -2617,14 +2689,8 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "auth": {
-                  "user-name": "dpmdp",
-                  "password": " >>> password <<< "
-                },
-                "topic-name": "apt_format",
-                "type": "provider",
-                "client-id": "dpmdp-client",
-                "group-id": "dpmdp-group"
+                "topic-name": "raw.mw-sdnc-dpmdp.Apt",
+                "type": "provider"
               }
             }
           }
@@ -2643,14 +2709,48 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "auth": {
-                  "user-name": "dpmdp",
-                  "password": " >>> password <<< "
-                },
-                "topic-name": "onf_format",
-                "type": "provider",
-                "client-id": "dpmdp-client",
-                "group-id": "dpmdp-group"
+                "topic-name": "raw.mw-sdnc-dpmdp.Mycom",
+                "type": "provider"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-002",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-kmb-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
+            "kafka-client-interface-1-0:kafka-client-interface-pac": {
+              "kafka-client-interface-configuration": {
+                "topic-name": "raw.mw-sdnc-dpmdp.Netexplorer",
+                "type": "provider"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-003",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-0-0-http-c-kmb-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
+            "kafka-client-interface-1-0:kafka-client-interface-pac": {
+              "kafka-client-interface-configuration": {
+                "topic-name": "raw.mw-sdnc-dpmdp.Iveritas",
+                "type": "provider"
               }
             }
           }
@@ -2661,7 +2761,9 @@
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
           "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000",
-          "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001"
+          "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001",
+          "dpmdp-1-0-0-kmb-c-kmb-1-0-0-002",
+          "dpmdp-1-0-0-kmb-c-kmb-1-0-0-003"
         ],
         "server-ltp": [
           "dpmdp-1-0-0-tcp-c-kmb-1-0-0-000"

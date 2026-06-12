@@ -82,7 +82,8 @@ async function loadKafkaPayload(request) {
     }
   );
 
-  return response._source ? response._source.payload : null;
+  const source = (response || {}).body?._source || {};
+  return source["payload"] || null;
 }
 
 async function deleteKafkaPayload(request) {
