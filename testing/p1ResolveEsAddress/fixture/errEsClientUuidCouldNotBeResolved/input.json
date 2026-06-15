@@ -1,25 +1,41 @@
 {
-  "parameters": {
-    "parameter": [
-      {
-        "parameter-name": "mwdiEsClient",
-        "value": "dpmdp-1-0-0-es-c-es-1-0-0-007"
+  "parameters":      {
+        "function-name": "p1ResolveEsAddress",
+        "description": "Composes the address information of an ElasticSearchClient",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "mwdiEsClient",
+            "purpose": "UUID of the MWDI ES ElasticsearchClient LTP",
+            "owner": "platform",
+            "value": null,
+            "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+          },
+          {
+            "parameter-name": "mwdiReplicaEsClient",
+            "purpose": "UUID of the MWDI ES Replica ElasticsearchClient LTP",
+            "owner": "platform",
+            "value": "dpmdp-1-0-0-es-c-es-1-0-0-018",
+            "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+          },
+          {
+            "parameter-name": "loggingEsClient",
+            "purpose": "UUID of the ElasticsearchClient LTP for logging the replication activities",
+            "owner": "platform",
+            "value": "dpmdp-1-0-0-es-c-es-1-0-0-020",
+            "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+          },
+          {
+            "parameter-name": "dataStoreEsClient",
+            "purpose": "UUID of the ElasticsearchClient LTP for storing the resultCc",
+            "owner": "platform",
+            "value": "dpmdp-1-0-0-es-c-es-1-0-0-021",
+            "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+          }
+        ],
+        "sub-function": []
       },
-      {
-        "parameter-name": "mwdiReplicaEsClient",
-        "value": "dpmdp-1-0-0-es-c-es-1-0-0-018"
-      },
-      {
-        "parameter-name": "loggingEsClient",
-        "value": "dpmdp-1-0-0-es-c-es-1-0-0-020"
-      },
-      {
-        "parameter-name": "dataStoreEsClient",
-        "value": "dpmdp-1-0-0-es-c-es-1-0-0-021"
-      }
-    ]
-  },
-  "config-file": {
+  "configFile": {
     "core-model-1-4:control-construct": {
       "uuid": "dpmdp-1-0-0",
       "profile-collection": {
@@ -4030,5 +4046,5 @@
       ]
     }
   },
-  "es-name": "mwdiReplicaEsClient"
+  "esName": "mwdiEsClient"
 }

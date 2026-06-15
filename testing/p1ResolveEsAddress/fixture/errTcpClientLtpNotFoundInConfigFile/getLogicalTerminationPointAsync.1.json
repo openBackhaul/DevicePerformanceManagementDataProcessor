@@ -1,0 +1,19 @@
+{
+  "server-ltp": ["http-client-uuid"],
+  "layer-protocol": [
+    {
+      "es-client-pac": {
+        "elasticsearch-client-interface-configuration": {
+          "index-alias": "mwdi-index",
+          "auth": {
+            "api-key": "secret"
+          }
+        },
+        "elasticsearch-client-interface-status": {
+          "operational-state": "ENABLED",
+          "life-cycle-state": "INSTALLED"
+        }
+      }
+    }
+  ]
+}

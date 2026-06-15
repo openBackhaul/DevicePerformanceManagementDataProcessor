@@ -21,7 +21,7 @@
     ],
     "sub-function": []
   },
-  "config-file": {
+  "configFile": {
     "core-model-1-4:control-construct": {
       "uuid": "dpmdp-1-0-0",
       "profile-collection": {

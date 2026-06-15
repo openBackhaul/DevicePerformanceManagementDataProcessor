@@ -1,0 +1,14 @@
+{
+  "LOGICAL_TERMINATION_POINT": {
+    "SERVER_LTP": "server-ltp"
+  },
+  "LAYER_PROTOCOL": {
+    "ES_CLIENT_INTERFACE_PAC": "es-client-pac"
+  },
+  "ES_CLIENT": {
+    "CONFIGURATION": "elasticsearch-client-interface-configuration",
+    "INDEX_ALIAS": "index-alias",
+    "AUTH": "auth",
+    "API_KEY": "api-key"
+  }
+}

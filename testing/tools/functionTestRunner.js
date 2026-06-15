@@ -48,77 +48,219 @@ function getSequenceItem(sequence, index, stepId, kind, repeatLast = true) {
   );
 }
 
+function resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex) {
+  const repeatLast = mockDef.repeatLast !== false;
+
+  if (mockDef.fixtureSequence !== undefined) {
+    const fixtureName = getSequenceItem(
+      mockDef.fixtureSequence,
+      currentCallIndex,
+      stepId,
+      "fixture",
+      repeatLast
+    );
+    return readJson(path.join(scenarioDir, fixtureName));
+  }
+
+  if (mockDef.fixture) {
+    return readJson(path.join(scenarioDir, mockDef.fixture));
+  }
+
+  if (mockDef.value !== undefined) {
+    return mockDef.value;
+  }
+
+  throw new Error(
+    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'fixture', 'fixtureSequence', or 'value'`
+  );
+}
+
+function resolveMockError(mockDef, stepId, currentCallIndex) {
+  const repeatLast = mockDef.repeatLast !== false;
+
+  if (mockDef.errorSequence !== undefined) {
+    return getSequenceItem(
+      mockDef.errorSequence,
+      currentCallIndex,
+      stepId,
+      "error",
+      repeatLast
+    );
+  }
+
+  if (mockDef.error !== undefined) {
+    return mockDef.error;
+  }
+
+  throw new Error(
+    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'error' or 'errorSequence'`
+  );
+}
+
+function toRealError(errVal) {
+  if (errVal instanceof Error) {
+    return errVal;
+  }
+
+  if (typeof errVal === "string") {
+    return new Error(errVal);
+  }
+
+  if (errVal && typeof errVal === "object") {
+    const message = errVal.message || "Mocked error";
+
+    if (errVal.name === "SyntaxError") {
+      const e = new SyntaxError(message);
+      Object.assign(e, errVal);
+      return e;
+    }
+
+    if (errVal.name === "TypeError") {
+      const e = new TypeError(message);
+      Object.assign(e, errVal);
+      return e;
+    }
+
+    if (errVal.name === "ReferenceError") {
+      const e = new ReferenceError(message);
+      Object.assign(e, errVal);
+      return e;
+    }
+
+    const e = new Error(message);
+    Object.assign(e, errVal);
+    if (errVal.name) {
+      e.name = errVal.name;
+    }
+    return e;
+  }
+
+  return new Error(String(errVal));
+}
+
+function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = false }) {
+  let callIndex = 0;
+  const isAsync = mockDef.isAsync === true || fallbackIsAsync === true;
+
+  return jest.fn(() => {
+    const currentCallIndex = callIndex;
+    callIndex += 1;
+
+    if (mockDef.type === "return" || mockDef.type === "returnSequence") {
+      const val = resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex);
+      return isAsync ? Promise.resolve(val) : val;
+    }
+
+    if (mockDef.type === "throw" || mockDef.type === "throwSequence") {
+      const errVal = toRealError(resolveMockError(mockDef, stepId, currentCallIndex));
+      if (isAsync) {
+        return Promise.reject(errVal);
+      }
+      throw errVal;
+    }
+
+    throw new Error(`Unknown mock type '${mockDef.type}' for step '${stepId}'`);
+  });
+}
+
+function installDependencyMocks(dependencies = []) {
+  for (const dep of dependencies) {
+    if (!dep || !dep.name) {
+      continue;
+    }
+
+    if (dep.name === "@confluentinc/kafka-javascript") {
+      jest.doMock(
+        dep.name,
+        () => ({
+          KafkaJS: {
+            Kafka: jest.fn(() => ({})),
+          },
+        }),
+        { virtual: true }
+      );
+      continue;
+    }
+
+    if (dep.name === "pino") {
+      jest.doMock(
+        dep.name,
+        () => {
+          const logger = {
+            info: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+            debug: jest.fn(),
+            fatal: jest.fn(),
+            trace: jest.fn(),
+            child: jest.fn(() => logger),
+          };
+
+          const pinoMock = jest.fn(() => logger);
+
+          pinoMock.transport = jest.fn(() => ({}));
+          pinoMock.destination = jest.fn(() => ({}));
+          pinoMock.stdTimeFunctions = {
+            isoTime: jest.fn(),
+          };
+
+          return pinoMock;
+        },
+        { virtual: true }
+      );
+      continue;
+    }
+
+    jest.doMock(dep.name, () => ({}), { virtual: true });
+  }
+}
+
 function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
-  const mockByStepId = new Map((scenarioMocks || []).map((m) => [m.stepId, m]));
+  const exactMockByStepId = new Map((scenarioMocks || []).map((m) => [m.stepId, m]));
 
   for (const step of processingSteps) {
-    const m = mockByStepId.get(step.stepId);
+    const exactMock = exactMockByStepId.get(step.stepId);
 
-    if (!m) {
+    const childMocks = (scenarioMocks || []).filter(
+      (m) => typeof m.stepId === "string" && m.stepId.startsWith(`${step.stepId}.`)
+    );
+
+    if (!exactMock && childMocks.length === 0) {
+      continue;
+    }
+
+    if (childMocks.length > 0) {
+      jest.doMock(step.modulePath, () => {
+        const mockedModule = {};
+
+        for (const childMock of childMocks) {
+          const exportName = childMock.stepId.slice(step.stepId.length + 1);
+
+          if (!exportName) {
+            throw new Error(`Invalid child mock stepId '${childMock.stepId}'`);
+          }
+
+          mockedModule[exportName] = createMockFunction({
+            scenarioDir,
+            stepId: childMock.stepId,
+            mockDef: childMock,
+            fallbackIsAsync: false,
+          });
+        }
+
+        return mockedModule;
+      });
       continue;
     }
 
     const isAsync = step.isAsync === true;
 
     jest.doMock(step.modulePath, () => {
-      let callIndex = 0;
-
-      const fn = jest.fn(() => {
-        const currentCallIndex = callIndex;
-        console.log(`[Mock] ${step.stepId} called #${currentCallIndex+1}`);
-        callIndex += 1;
-
-        const repeatLast = m.repeatLast !== false;
-
-        if (m.type === "return") {
-          let val;
-
-          if (m.fixtureSequence !== undefined) {
-            const fixtureName = getSequenceItem(
-              m.fixtureSequence,
-              currentCallIndex,
-              step.stepId,
-              "fixture",
-              repeatLast
-            );
-            val = readJson(path.join(scenarioDir, fixtureName));
-          } else if (m.fixture) {
-            val = readJson(path.join(scenarioDir, m.fixture));
-          } else {
-            throw new Error(
-              `Mock for step '${step.stepId}' with type 'return' requires 'fixture' or 'fixtureSequence'`
-            );
-          }
-
-          return isAsync ? Promise.resolve(val) : val;
-        }
-
-        if (m.type === "throw") {
-          let errVal;
-
-          if (m.errorSequence !== undefined) {
-            errVal = getSequenceItem(
-              m.errorSequence,
-              currentCallIndex,
-              step.stepId,
-              "error",
-              repeatLast
-            );
-          } else if (m.error !== undefined) {
-            errVal = m.error;
-          } else {
-            throw new Error(
-              `Mock for step '${step.stepId}' with type 'throw' requires 'error' or 'errorSequence'`
-            );
-          }
-
-          if (isAsync) {
-            return Promise.reject(errVal);
-          }
-          throw errVal;
-        }
-
-        throw new Error(`Unknown mock type '${m.type}' for step '${step.stepId}'`);
+      const fn = createMockFunction({
+        scenarioDir,
+        stepId: step.stepId,
+        mockDef: exactMock,
+        fallbackIsAsync: isAsync,
       });
 
       if (!step.exportName) {
@@ -142,6 +284,7 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
   const fut = spec?.module?.functionUnderTest;
   const processingSteps = spec.processingSteps || [];
   const scenarios = spec.scenarios || [];
+  const dependencies = spec.dependencies || [];
 
   if (!fut?.modulePath) {
     throw new Error(`Missing module.functionUnderTest.modulePath in ${scenariosPath}`);
@@ -153,8 +296,9 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
       jest.clearAllMocks();
 
       const scenarioDir = path.join(baseDir, "fixture", s.id);
-
       const input = readJson(path.join(scenarioDir, s.inputFixture || "input.json"));
+
+      installDependencyMocks(dependencies);
 
       installMocks({
         scenarioDir,
@@ -170,8 +314,9 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
           path.join(scenarioDir, s.expected.outputFixture || "output.json")
         );
         const actual = await fn(input);
-      const actualOutputPath = path.join(scenarioDir, "actual_output.json");
-      fs.writeFileSync(actualOutputPath, JSON.stringify(actual, null, 2), "utf8");
+
+        const actualOutputPath = path.join(scenarioDir, "actual_output.json");
+        fs.writeFileSync(actualOutputPath, JSON.stringify(actual, null, 2), "utf8");
 
         expect(actual).toEqual(expectedOutput);
         return;

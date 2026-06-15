@@ -1,0 +1,9 @@
+{
+  "uuid": "uuid-1",
+  "url": "http://localhost:9200",
+  "index-alias": "mwdi",
+  "api-key": "secret",
+  "service-records-policy": "keep",
+  "operational-state": "ENABLED",
+  "life-cycle-state": "PLANNED"
+}

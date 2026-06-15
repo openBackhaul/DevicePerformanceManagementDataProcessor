@@ -5,7 +5,6 @@
       "kafkaClientUuid": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-000",
       "clientId": "aptProvider",
       "groupId": null,
-      "auth": null,
       "brokerList": [
         "127.0.0.1:9092"
       ],
@@ -17,7 +16,6 @@
       "kafkaClientUuid": "dpmdp-1-0-0-kmb-c-kmb-1-0-0-001",
       "clientId": "aptProvider",
       "groupId": null,
-      "auth": null,
       "brokerList": [
         "127.0.0.1:9092"
       ],
