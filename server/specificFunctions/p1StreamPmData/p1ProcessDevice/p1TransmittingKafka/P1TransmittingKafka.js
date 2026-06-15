@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { sendBatch } = require("../../../../infra/kafka/confluentKafkaProducer");
 const ERRORS = require("./ErrorsEnum");
+const logger = require('../../../../service/LoggingService.js').getLogger();
 
 function isPlainObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -312,6 +313,7 @@ function normalizeInput(request) {
 
     if (request.outputMessages.length === 0) {
       throw new Error("outputMessages must not be empty");
+      //logger.error("outputMessages must not be empty");
     }
 
     return request.outputMessages;
