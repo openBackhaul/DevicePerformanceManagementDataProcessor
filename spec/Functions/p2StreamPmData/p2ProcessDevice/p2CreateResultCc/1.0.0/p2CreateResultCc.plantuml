@@ -81,7 +81,7 @@ activate cur
 
   loop FOR all EthernetContainers in resultCc
 
-    cur -> p2IterateEc : { {/parameters/sub-function=p2IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{/status-data=p2IterateEcPmSlices/status/interface-status=*} }
+    cur -> p2IterateEc : { {/parameters/sub-function=p2IterateEcPmSlices},\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{/status-data="p2IterateEcPmSlices"/status/interface-status=*},\nuuidOfEthernetContainer }
     activate p2IterateEc
 
       note over p2IterateEc

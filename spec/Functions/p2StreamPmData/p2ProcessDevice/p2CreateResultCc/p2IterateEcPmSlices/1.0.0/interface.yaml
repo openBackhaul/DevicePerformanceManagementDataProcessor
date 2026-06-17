@@ -15,9 +15,9 @@ x-javascript-interface:
             required:
               - parameters
               - historical-performance-data-list
-              - aggregation-group
               - result-cc
               - interface-status
+              - uuid-of-ethernet-container
             properties:
               parameters:
                 type: object
@@ -38,6 +38,10 @@ x-javascript-interface:
                 type: object
                 description: >
                   'status at the interface based on already processed batches'
+              uuid-of-ethernet-container:
+                type: string
+                description: >
+                  'UUID of the EthernetContainer that gets currently processed'
     output:
       success:
         description: 'historicalPerformanceDataList processed'
@@ -172,8 +176,8 @@ x-javascript-interface:
                 type: object
                 required:
                   - historical-performance-data
-                  - aggregation-group
                   - result-cc
+                  - uuid-of-ethernet-container
                 properties:
                   historical-performance-data:
                     type: object
@@ -190,6 +194,11 @@ x-javascript-interface:
                     description: >
                       'resultCc
                       from [/iterate-ec-pm-slices/result-cc]'
+                  uuid-of-ethernet-container:
+                    type: string
+                    description: >
+                      'UUID of the EthernetContainer that gets currently processed
+                      from [/iterate-ec-pm-slices/uuid-of-ethernet-container]'
         output:
           success:
             description: 'Utilization added'

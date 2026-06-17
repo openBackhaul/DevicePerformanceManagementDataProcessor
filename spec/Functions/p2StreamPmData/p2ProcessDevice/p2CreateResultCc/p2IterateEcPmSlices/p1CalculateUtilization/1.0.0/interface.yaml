@@ -14,8 +14,8 @@ x-javascript-interface:
             type: object
             required:
               - historical-performance-data
-              - aggregation-group
               - result-cc
+              - uuid-of-ethernet-container
             properties:
               historical-performance-data:
                 type: object
@@ -24,11 +24,15 @@ x-javascript-interface:
               aggregation-group:
                 type: object
                 description: >
-                  'aggregationGroup'
+                  'aggregationGroup, will not be provided, if EthernetContainer on single server'
               result-cc:
                 type: object
                 description: >
                   'resultCc'
+              uuid-of-ethernet-container:
+                type: string
+                description: >
+                  'UUID of the EthernetContainer that gets currently processed'
     output:
       success:
         description: 'Utilization added'
@@ -60,6 +64,55 @@ x-javascript-interface:
                 - 'Utilization could not be added'
                 - 'general processing error'
     processing:
+      preparePhysicalServerLtpList:
+        summary: 'Prepares the list of physical servers for either an individual link or an aggregation group'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                properties:
+                  aggregation-group:
+                    type: object
+                    description: >
+                      'aggregationGroup'
+                  result-cc:
+                    type: object
+                    description: >
+                      'resultCc'
+                  uuid-of-ethernet-container:
+                    type: string
+                    description: >
+                      'UUID of the EthernetContainer that gets currently processed'
+        output:
+          success:
+            description: 'physicalServerList provided'
+            content:
+              application/json:
+                schema:
+                  properties:
+                    type: object
+                    properties:
+                      physical-server-ltp-list:
+                        type: array
+                        description: >
+                          'List of UUIDs of transporting PhysicalServerLTPs
+                          IF {$preparePhysicalServerLtpList.input#/aggregation-group}!=null
+                            THEN from {$preparePhysicalServerLtpList.input#/aggregation-group/physical-server-ltp-list]
+                            ELSE from [ aggregation of {$preparePhysicalServerLtpList.input#/result-cc/logical-termination-point={serving-structure-ltp-list[*]}/server-ltp} with serving-structure-ltp-list={$preparePhysicalServerLtpList.input#/result-cc/logical-termination-point={$preparePhysicalServerLtpList.input#/uuid-of-ethernet-container}/server-ltp} ]'
+        error:
+          description: 'physicalServerList could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'neither aggregationGroup nor combination of resultCc and uuidOfEthernetContainer provided'
+                  - 'aggregationGroup invalid'
+                  - 'resultCc invalid'
+                  - 'uuidOfEthernetContainer invalid'
+                  - 'physicalServerLtpList could not be provided'
+                  - 'general processing error'
       calculateTotalAirInterfaceIntervalCapacity:
         summary: 'Aggregates the interval capacity of all transporting AirInterfaces'
         input:
@@ -81,7 +134,7 @@ x-javascript-interface:
                     type: array
                     description: >
                       'List of UUIDs of transporting PhysicalServerLTPs
-                      from [/calculate-utilization/aggregation-group/physical-server-ltp-list]'
+                      from [/calculate-utilization/physical-server-ltp-list]'
                   period-end-time:
                     type: string
                     description: >
