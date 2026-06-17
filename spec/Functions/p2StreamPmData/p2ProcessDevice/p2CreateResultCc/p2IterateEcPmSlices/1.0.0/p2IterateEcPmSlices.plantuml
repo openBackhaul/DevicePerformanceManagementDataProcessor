@@ -14,7 +14,7 @@ participant "p1Calculate\nUtilization" as p1CalcUtil
 participant "p1CategorizeDataVolume\n" as p1CatDataVo
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 
-cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{interfaceStatus} }
+cur -> iterateSlices : { parameters,\n[historicalPerformanceDataList],\n{aggregationGroup},\n{resultCc},\n{interfaceStatus},\nuuidOfEthernetContainer }
 activate iterateSlices
 
   loop FOR [historicalPerformanceDataList]   (15min slices to be processed first)
@@ -45,7 +45,7 @@ activate iterateSlices
     end note
 
 
-    iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
+    iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
     activate p1CalcUtil
       note over p1CalcUtil
         Adds utilization

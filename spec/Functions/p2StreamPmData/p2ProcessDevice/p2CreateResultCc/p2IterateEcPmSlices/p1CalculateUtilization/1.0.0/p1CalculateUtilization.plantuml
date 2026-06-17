@@ -9,7 +9,7 @@ participant "p2IterateEcPmSlices\n" as requestor
 participant "p1CalculateUtilization\n" as p1CalcUtil
 
 
-requestor -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc} }
+requestor -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
 activate p1CalcUtil
 
   note over p1CalcUtil
@@ -25,7 +25,13 @@ activate p1CalcUtil
     THEN
   end note
 
-  loop FOR /aggregation-group/physical-server-ltp-list[*]
+  note over p1CalcUtil
+    derive [physicalServerLtpList] from 
+      either {aggregationGroup} (if link aggregation)
+      or {EthernetContainerLtp} (if 1+0 configuration)
+  end note
+
+  loop FOR physicalServerLtpList[*]
     note over p1CalcUtil
       totalAirInterfaceIntervalCapacity += AirInterfaceIntervalCapacity
     end note

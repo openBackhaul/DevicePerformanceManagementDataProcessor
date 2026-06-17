@@ -3,9 +3,9 @@ iterate-ec-pm-slices:
   required:
     - parameters
     - historical-performance-data-list
-    - aggregation-group
     - result-cc
     - interface-status
+    - uuid-of-ethernet-container
   properties:
     parameters:
       type: object
@@ -63,7 +63,6 @@ iterate-ec-pm-slices:
                   'busy hour KPIs
                   exclusively if {granularity-period} indicates 24-HOURS
                   requires {$p1CalculateBusyHourPerformanceIndicators}'
-
     aggregation-group:
       type: object
       description: >
@@ -80,3 +79,8 @@ iterate-ec-pm-slices:
         'status at the interface based on already processed batches
         from {$input#/interface-status}
         overwritten by {$p1CategorizeDataVolume.output#/interface-status}'
+    uuid-of-ethernet-container:
+      type: string
+      description: >
+        'UUID of the EthernetContainer that gets currently processed
+        from {$input#/uuid-of-ethernet-container}'

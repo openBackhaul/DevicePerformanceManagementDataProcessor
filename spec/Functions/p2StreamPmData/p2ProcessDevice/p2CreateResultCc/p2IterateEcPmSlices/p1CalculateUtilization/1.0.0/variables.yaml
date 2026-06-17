@@ -2,8 +2,8 @@ calculate-utilization:
   type: object
   required:
     - historical-performance-data
-    - aggregation-group
     - result-cc
+    - uuid-of-ethernet-container
   properties:
     historical-performance-data:
       type: object
@@ -71,6 +71,10 @@ calculate-utilization:
             properties:
               uuid:
                 type: string
+              server-ltp:
+                type: array
+                items:
+                  type: string
               layer-protocol:
                 type: array
                 x-key: local-id
@@ -109,3 +113,14 @@ calculate-utilization:
                                         description: >
                                           'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
                                           requires {$p2PrepareTxModes}'
+    uuid-of-ethernet-container:
+      type: string
+      description: >
+        'UUID of the EthernetContainer that gets currently processed
+        from {$input#/uuid-of-ethernet-container}'
+
+    physical-server-ltp-list:
+      type: array
+      description: >
+        'List of UUIDs of transporting PhysicalServerLTPs
+        from {$preparePhysicalServerLtpList.output#/physical-server-ltp-list}'
