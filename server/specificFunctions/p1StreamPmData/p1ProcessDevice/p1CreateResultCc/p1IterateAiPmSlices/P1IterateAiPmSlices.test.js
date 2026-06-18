@@ -7,7 +7,7 @@ describe('p1IterateAiPmSlices', () => {
   let validInput;
 
   beforeEach(() => {
-    const dataPath = path.resolve(__dirname, './dataset.json');
+    const dataPath = path.resolve(__dirname, './datasets/dataset.json');
     validInput = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   });
 
