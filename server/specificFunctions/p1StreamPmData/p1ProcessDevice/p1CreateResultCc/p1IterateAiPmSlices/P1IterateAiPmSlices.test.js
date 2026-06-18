@@ -7,7 +7,7 @@ describe('p1IterateAiPmSlices', () => {
   let validInput;
 
   beforeEach(() => {
-    const dataPath = path.resolve(__dirname, './dataset.json');
+    const dataPath = path.resolve(__dirname, './datasets/dataset.json');
     validInput = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   });
 
@@ -40,6 +40,20 @@ describe('p1IterateAiPmSlices', () => {
     test('returns error if transmission-mode-list is not an array', () => {
       validInput['transmission-mode-list'] = 'invalid';
       expect(p1IterateAiPmSlices(validInput)).toBe(ERRORS.TRANSMISSION_MODE_LIST_INVALID);
+    });
+
+    test('Passing null, return General Error', () => {
+      const res = p1IterateAiPmSlices(null);
+      expect(res).toBe(ERRORS.GENERAL_ERROR);
+    });
+
+    test('Passing all 3 properties but with null value, return General Error', () => {
+      const res = p1IterateAiPmSlices({
+        'historical-performance-data-list': null,
+        'transmission-mode-list': null,
+        'parameters': null
+      });
+      expect(res).toBe(ERRORS.GENERAL_ERROR);
     });
   });
 
