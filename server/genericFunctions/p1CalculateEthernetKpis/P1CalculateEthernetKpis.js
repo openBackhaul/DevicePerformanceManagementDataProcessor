@@ -188,6 +188,4 @@ function p1CalculateEthernetKpis(input) {
   }
 }
 
-module.exports = {
-  p1CalculateEthernetKpis
-};
+module.exports = p1CalculateEthernetKpis;
