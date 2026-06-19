@@ -100,89 +100,85 @@ function p1CalculateEthernetKpis(input) {
       return ERRORS.HISTORICAL_DATA_NOT_PROVIDED;
     }
 
-    const dataList = input['historical-performance-data'];
+    const performanceData = input['historical-performance-data']['performance-data'];
 
-    if (!Array.isArray(dataList) || dataList.length === 0) {
+    //TODO @latta-siae Check about historical data invalid
+    if (!performanceData || performanceData == undefined) {
       return ERRORS.HISTORICAL_DATA_INVALID;
     }
 
-    const result = dataList.map(item => {
-      let transmitTraffic, receiveTraffic, frameLossInput, frameLossOutput;
+    let transmitTraffic, receiveTraffic, frameLossInput, frameLossOutput;
 
-      try {
-        if (Object.keys(item).length === 0 && item.constructor === Object) {
-          return ERRORS.HISTORICAL_DATA_INCOMPLETE;
-        }
+    try {
+      // TO Be review
+      // if (Object.keys(item).length === 0 && item.constructor === Object) {
+      //   return ERRORS.HISTORICAL_DATA_INCOMPLETE;
+      // }
 
-        transmitTraffic = calculateTransmitTraffic(
-          item['total-bytes-output'],
-          item['time-period']
-        );
+      transmitTraffic = calculateTransmitTraffic(
+        performanceData['total-bytes-output'],
+        performanceData['time-period']
+      );
 
-        if (typeof transmitTraffic === "string") {
-          return ERRORS.TRANSMIT_TRAFFIC_ERROR;
-        }
-
-      } catch (error) {
+      if (typeof transmitTraffic === "string") {
         return ERRORS.TRANSMIT_TRAFFIC_ERROR;
       }
 
-      try {
-        receiveTraffic = calculateReceiveTraffic(
-          item['total-bytes-input'],
-          item['time-period']
-        );
-
-        if (typeof receiveTraffic === "string") {
-          return ERRORS.RECEIVE_TRAFFIC_ERROR;
-        }
-      } catch (error) {
-        return ERRORS.RECEIVE_TRAFFIC_ERROR;
-      }
-
-      try {
-        frameLossInput = calculateFrameLossInput(
-          item['errored-frames-input'],
-          item['dropped-frames-input']
-        );
-
-        if (typeof frameLossInput === "string") {
-          return ERRORS.FRAME_LOSS_INPUT_ERROR;
-        }
-      } catch (error) {
-        return ERRORS.FRAME_LOSS_INPUT_ERROR;
-      }
-
-      try {
-        frameLossOutput = calculateFrameLossOutput(
-          item['errored-frames-output'],
-          item['dropped-frames-output']
-        );
-
-        if (typeof frameLossOutput === "string") {
-          return ERRORS.FRAME_LOSS_OUTPUT_ERROR;
-        }
-      } catch (error) {
-        return ERRORS.FRAME_LOSS_OUTPUT_ERROR;
-      }
-
-      return {
-        ...item,
-        'transmit-traffic': transmitTraffic,
-        'receive-traffic': receiveTraffic,
-        'frame-loss-input': frameLossInput,
-        'frame-loss-output': frameLossOutput
-      };
-    });
-
-    if (typeof result === "object" && typeof result[0] === "string") {
-      return result[0];
+    } catch (error) {
+      return ERRORS.TRANSMIT_TRAFFIC_ERROR;
     }
 
-    return {
-      'historical-performance-data': result
-    };
+    try {
+      receiveTraffic = calculateReceiveTraffic(
+        performanceData['total-bytes-input'],
+        performanceData['time-period']
+      );
 
+      if (typeof receiveTraffic === "string") {
+        return ERRORS.RECEIVE_TRAFFIC_ERROR;
+      }
+    } catch (error) {
+      return ERRORS.RECEIVE_TRAFFIC_ERROR;
+    }
+
+    try {
+      frameLossInput = calculateFrameLossInput(
+        performanceData['errored-frames-input'],
+        performanceData['dropped-frames-input']
+      );
+
+      if (typeof frameLossInput === "string") {
+        return ERRORS.FRAME_LOSS_INPUT_ERROR;
+      }
+    } catch (error) {
+      return ERRORS.FRAME_LOSS_INPUT_ERROR;
+    }
+
+    try {
+      frameLossOutput = calculateFrameLossOutput(
+        performanceData['errored-frames-output'],
+        performanceData['dropped-frames-output']
+      );
+
+      if (typeof frameLossOutput === "string") {
+        return ERRORS.FRAME_LOSS_OUTPUT_ERROR;
+      }
+    } catch (error) {
+      return ERRORS.FRAME_LOSS_OUTPUT_ERROR;
+    }
+
+
+    let retValue = input;
+
+    retValue['historical-performance-data']['performance-data'] = {
+      ...performanceData,
+      'transmit-traffic': transmitTraffic,
+      'receive-traffic': receiveTraffic,
+      'frame-loss-input': frameLossInput,
+      'frame-loss-output': frameLossOutput
+    }
+
+    return retValue;
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }
