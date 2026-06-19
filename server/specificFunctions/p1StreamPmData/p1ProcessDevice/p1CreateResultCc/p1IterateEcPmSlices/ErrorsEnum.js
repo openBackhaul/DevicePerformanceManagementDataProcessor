@@ -1,4 +1,4 @@
-module.exports = {
+const ERRORS = {
   // General
   GENERAL_ERROR: 'General processing error',
 
@@ -28,3 +28,5 @@ module.exports = {
   MOST_RECENT_PERIOD_END_TIME_FAILED: 'mostRecentPeriodEndTime could not be provided',
   MOST_RECENT_PERIOD_END_TIME_24_FAILED: 'mostRecentPeriodEndTime24 could not be provided',
 };
+
+module.exports = ERRORS;
