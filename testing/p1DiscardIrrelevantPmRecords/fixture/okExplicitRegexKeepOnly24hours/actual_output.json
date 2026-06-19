@@ -1,0 +1,12 @@
+{
+  "filtered-historical-performance-data-list": [
+    {
+      "history-data-id": "PM_RADIO_24H_01",
+      "period-end-time": "2026-02-09T00:00:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "performance-data": {
+        "some-kpi": 123
+      }
+    }
+  ]
+}
