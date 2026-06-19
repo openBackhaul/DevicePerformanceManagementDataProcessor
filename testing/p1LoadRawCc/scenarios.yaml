@@ -1,4 +1,3 @@
-# testing/p1LoadRawCc/scenarios.yaml
 #
 # Spec sources:
 # - spec/Functions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/1.0.0/interface.yaml
@@ -31,7 +30,6 @@ processingSteps:
     exportName: ""
     isAsync: true
 
-# Transitive deps that may be imported elsewhere in the require stack
 dependencies:
   - name: "pino"
   - name: "@confluentinc/kafka-javascript"
@@ -42,7 +40,76 @@ scenarios:
   # -------------------------
   # Input validation
   # -------------------------
- 
+
+
+  
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when input.parameters is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+    mocks: []
+
+  - id: "errParametersInvalid"
+    description: "Should return 'parameters invalid' when input.parameters is not a plain object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errMwdiReplicaEsClientNotProvided"
+    description: "Should return 'mwdiReplicaEsClient not provided' when input.mwdiReplicaEsClient is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "mwdiReplicaEsClient not provided"
+    mocks: []
+
+  - id: "errMwdiReplicaEsClientInvalid"
+    description: "Should return 'mwdiReplicaEsClient invalid' when input.mwdiReplicaEsClient is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "mwdiReplicaEsClient invalid"
+    mocks: []
+
+  - id: "errDataStoreEsClientNotProvided"
+    description: "Should return 'dataStoreEsClient not provided' when input.dataStoreEsClient is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient not provided"
+    mocks: []
+
+  - id: "errDataStoreEsClientInvalid"
+    description: "Should return 'dataStoreEsClient invalid' when input.dataStoreEsClient is invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+    mocks: []
+
+  - id: "errMountNameNotProvided"
+    description: "Should return 'mountName not provided' when input.mountName is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not provided"
+    mocks: []
+
+  - id: "errMountNameInvalid"
+    description: "Should return 'mountName invalid' when input.mountName is empty string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName invalid"
+    mocks: []
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
   - id: "okMixedLayerProtocolsProcessed"
     description: "Should process both air-interface and ethernet-container layer protocols"
     inputFixture: "input.json"
@@ -51,11 +118,319 @@ scenarios:
       outputFixture: "output.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.bothClients.json"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
       - stepId: "retry.withRetry"
-        type: "return"
-        fixture: "withRetry.sequence.json"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+
+  - id: "okBatchTimestampDefaultsWhenNoValidCurrentPerformanceTimestamp"
+    description: "Should set default batchTimestamp when no valid current performance timestamp exists"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+
+  - id: "okEthernetContainerHistoricalPmFiltered"
+    description: "Should filter ethernet-container historical performance data"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+  
+  - id: "okMinimalRawCcNoRelevantLtps"
+    description: "Should return rawCc and mountName when no logical-termination-point requires PM filtering"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+
+  - id: "okAirInterfaceHistoricalPmFiltered"
+    description: "Should filter air-interface historical performance data and add batchTimestamp"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.airInterface.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
       - stepId: "p1FieldsFilter.run"
         type: "return"
-        fixture: "p1FieldsFilter.output.withMixedProtocols.json"
+        fixture: "p1FieldsFilter.output.withAirInterface.json"
+      - stepId: "p1DiscardIrrelevantPmRecords"
+        type: "return"
+        fixture: "p1DiscardIrrelevantPmRecords.output.airInterface.json"
+
+
+
+
+
+  - id: "okRelevantGranularitiesMissingDefaultsToWildcard"
+    description: "Should default relevantGranularities to wildcard when parameter is missing"
+    inputFixture: "input.noRelevantGranularities.json"
+    expected:
+      type: "success"
+      outputFixture: "output.airInterface.defaultGranularity.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.output.withAirInterface.json"
+      - stepId: "p1DiscardIrrelevantPmRecords"
+        type: "return"
+        fixture: "p1DiscardIrrelevantPmRecords.output.airInterface.json"
+
+  - id: "okDataStoreReadFailsButProcessingContinues"
+    description: "Should continue with empty interface metadata list when data store read fails"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.dataStoreReadFails.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.failure.json"
+        repeatLast: false
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.output.withAirInterface.json"
+      - stepId: "p1DiscardIrrelevantPmRecords"
+        type: "return"
+        fixture: "p1DiscardIrrelevantPmRecords.output.airInterface.json"
+
+
+
+
+
+  # -------------------------
+  # ES client creation / read failures
+  # -------------------------
+
+  - id: "errReplicaClientCreationFails"
+    description: "Should return 'mwdiReplicaEsClient invalid' when replica ES client creation fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "mwdiReplicaEsClient invalid"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "throw"
+        error: "replica client creation failed"
+
+  - id: "errReplicaReadFails"
+    description: "Should return 'rawCc could not be provided' when reading ControlConstruct from replica fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "retry.withRetry"
+        type: "throw"
+        error: "ElasticSearch read error"
+
+
+
+  # -------------------------
+  # p1FieldsFilter failures
+  # -------------------------
+
+  - id: "errReplicaReadReturnsNoControlConstruct"
+    description: "Should return 'rawCc could not be provided' when replica response has no control construct data and fields filter throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "retry.withRetry"
+        type: "return"
+        fixture: "withRetry.noControlConstruct.json"
+      - stepId: "p1FieldsFilter.run"
+        type: "throw"
+        error: "dataStructure invalid"
+
+  - id: "errFieldsFilterReturnsErrorString"
+    description: "Should return 'rawCc could not be provided' when p1FieldsFilter returns a string instead of an object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "retry.withRetry"
+        type: "return"
+        fixture: "withRetry.rawResponse.json"
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.error.json"
+
+  - id: "errFieldsFilterReturnsMissingFilteredDataStructure"
+    description: "Should return 'rawCc could not be provided' when p1FieldsFilter returns malformed output"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "retry.withRetry"
+        type: "return"
+        fixture: "withRetry.rawResponse.json"
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.invalid-output.json"
+
+  - id: "errFieldsFilterThrowsUnexpectedly"
+    description: "Should return 'rawCc could not be provided' when p1FieldsFilter throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "retry.withRetry"
+        type: "return"
+        fixture: "withRetry.rawResponse.json"
+      - stepId: "p1FieldsFilter.run"
+        type: "throw"
+        error: "unexpected fields filter failure"
+
+  # -------------------------
+  # p1DiscardIrrelevantPmRecords failures
+  # -------------------------
+
+  - id: "errDiscardIrrelevantPmRecordsReturnsInvalidResponse"
+    description: "Should return 'General processing error' when p1DiscardIrrelevantPmRecords returns invalid response"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.output.json"
+      - stepId: "p1DiscardIrrelevantPmRecords"
+        type: "return"
+        fixture: "p1DiscardIrrelevantPmRecords.invalid-output.json"
+
+  - id: "errDiscardIrrelevantPmRecordsThrows"
+    description: "Should return 'General processing error' when p1DiscardIrrelevantPmRecords throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "onfAdapter.getEsClient.replica.json"
+          - "onfAdapter.getEsClient.dataStore.json"
+        repeatLast: false
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.rawResponse.json"
+          - "withRetry.interfaceMetadataResponse.json"
+        repeatLast: false
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.output.json"
+      - stepId: "p1DiscardIrrelevantPmRecords"
+        type: "throw"
+        error: "filteredHistoricalPerformanceDataList could not be provided"

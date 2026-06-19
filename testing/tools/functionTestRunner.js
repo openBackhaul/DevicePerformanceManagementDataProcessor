@@ -10,6 +10,17 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function cloneValue(value) {
+  if (value === undefined) {
+    return value;
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
+function readJsonCloned(filePath) {
+  return cloneValue(readJson(filePath));
+}
+
 function loadFunctionUnderTest(absModulePath, exportName) {
   const mod = require(absModulePath);
 
@@ -59,15 +70,15 @@ function resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex) {
       "fixture",
       repeatLast
     );
-    return readJson(path.join(scenarioDir, fixtureName));
+    return readJsonCloned(path.join(scenarioDir, fixtureName));
   }
 
   if (mockDef.fixture) {
-    return readJson(path.join(scenarioDir, mockDef.fixture));
+    return readJsonCloned(path.join(scenarioDir, mockDef.fixture));
   }
 
   if (mockDef.value !== undefined) {
-    return mockDef.value;
+    return cloneValue(mockDef.value);
   }
 
   throw new Error(
@@ -231,7 +242,8 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
 
     if (childMocks.length > 0) {
       jest.doMock(step.modulePath, () => {
-        const mockedModule = {};
+        const actualModule = jest.requireActual(step.modulePath);
+        const mockedModule = { ...actualModule };
 
         for (const childMock of childMocks) {
           const exportName = childMock.stepId.slice(step.stepId.length + 1);
@@ -292,11 +304,12 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
 
   for (const s of scenarios) {
     test(`${s.id}${s.description ? ` - ${s.description}` : ""}`, async () => {
+      jest.restoreAllMocks();
+      jest.resetAllMocks();
       jest.resetModules();
-      jest.clearAllMocks();
 
       const scenarioDir = path.join(baseDir, "fixture", s.id);
-      const input = readJson(path.join(scenarioDir, s.inputFixture || "input.json"));
+      const input = readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json"));
 
       installDependencyMocks(dependencies);
 
@@ -310,7 +323,7 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
       const fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
 
       if (s.expected?.type === "success") {
-        const expectedOutput = readJson(
+        const expectedOutput = readJsonCloned(
           path.join(scenarioDir, s.expected.outputFixture || "output.json")
         );
         const actual = await fn(input);

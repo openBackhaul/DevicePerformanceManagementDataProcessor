@@ -1,0 +1,72 @@
+{
+  "body": {
+    "_source": {
+      "interface-metadata-list": [
+  {
+    "uuid": "RF-2146435216",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639366",
+    "mostRecentPeriodEndTime": "2025-04-15T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2025-04-15T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639365",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639364",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639368",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639367",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134647415",
+    "mostRecentPeriodEndTime": "2025-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2025-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "RF-2146435729",
+    "mostRecentPeriodEndTime": "2025-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2025-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "RF-2146435233",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639106",
+    "mostRecentPeriodEndTime": "2024-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2024-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639105",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "ETH-2134639108",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  },
+  {
+    "uuid": "RF-2146435745",
+    "mostRecentPeriodEndTime": "2026-04-16T15:30:00+02:00",
+    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+  }
+]
+
+    }
+  }
+}
