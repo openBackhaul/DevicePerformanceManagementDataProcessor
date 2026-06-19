@@ -147,13 +147,13 @@ describe('p1CalculateEthernetKpis', () => {
     expect(result['historical-performance-data'].length).toBe(9);
   });
 
-  test('should throw error for empty historicalPerformanceData array', () => {
+  test('should return Data invalid error for empty historicalPerformanceData array', () => {
     const input = {
       'historical-performance-data': []
     };
 
     const result = p1CalculateEthernetKpis(input);
-    expect(result).toBe(ERRORS.HISTORICAL_DATA_INCOMPLETE);
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_INVALID);
   });
 
   test('should throw error for invalid totalBytesInput', () => {
@@ -273,7 +273,7 @@ describe('p1CalculateEthernetKpis', () => {
     };
 
     const result = p1CalculateEthernetKpis(input);
-    expect(result).toBe(ERRORS.HISTORICAL_DATA_INCOMPLETE);
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_INVALID);
   });
 
   test('should handle negative errored-frames-input as 0', () => {

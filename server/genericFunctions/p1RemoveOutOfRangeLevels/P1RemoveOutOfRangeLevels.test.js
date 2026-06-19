@@ -1,5 +1,5 @@
-const ERRORS = require('./ErrorsEnum');
 const p1RemoveOutOfRangeLevels = require('./P1RemoveOutOfRangeLevels');
+const ERRORS = require('./ErrorsEnum');
 
 const performanceStruct1 = {
   "es": 0,
@@ -26,7 +26,7 @@ const performanceStruct1 = {
   "xpd-avg": 0,
   "defect-blocks-sum": 0,
   "time-period": 100
-}
+};
 
 const performanceStruct2 = {
   "es": 0,
@@ -53,7 +53,7 @@ const performanceStruct2 = {
   "xpd-avg": 0,
   "defect-blocks-sum": 0,
   "time-period": 100
-}
+};
 
 const wrongPerformanceStruct1 = {
   "es": 0,
@@ -79,7 +79,7 @@ const wrongPerformanceStruct1 = {
   "xpd-avg": 0,
   "defect-blocks-sum": 0,
   "time-period": 100
-}
+};
 
 const parameterStruct1 = {
   "function-name": "p1RemoveOutOfRangeLevels",
@@ -87,25 +87,25 @@ const parameterStruct1 = {
   "is-active": true,
   "parameter": [
     {
-      "parameter-name": "lower-tx-level-limit",
+      "parameter-name": "lowerTxLevelLimit",
       "purpose": "Lower bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "10"
     },
     {
-      "parameter-name": "upper-tx-level-limit",
+      "parameter-name": "upperTxLevelLimit",
       "purpose": "Upper bound of valid values of the transmit level",
       "owner": "engineering",
       "value": "100"
     },
     {
-      "parameter-name": "lower-rx-level-limit",
+      "parameter-name": "lowerRxLevelLimit",
       "purpose": "Lower bound of valid values of the receive level",
       "owner": "engineering",
       "value": "1000"
     },
     {
-      "parameter-name": "upper-rx-level-limit",
+      "parameter-name": "upperRxLevelLimit",
       "purpose": "Upper bound of valid values of the receive level",
       "owner": "engineering",
       "value": "10000"
@@ -114,26 +114,164 @@ const parameterStruct1 = {
   "sub-function": []
 };
 
-
-const OLDparameterStruct1 = {
-  "lower-tx-level-limit": "10",
-  "upper-tx-level-limit": "100",
-  "lower-rx-level-limit": "1000",
-  "upper-rx-level-limit": "10000",
-}
-
 const wrongParameterStruct1 = {
-  "lower-tx-level-limit": "10",
-  "upper-tx-level-limit": "100",
-  "upper-rx-level-limit": "10000",
-}
+  "function-name": "p1RemoveOutOfRangeLevels",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lowerTxLevelLimit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "upperTxLevelLimit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "upperRxLevelLimit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "10000"
+    }
+  ],
+  "sub-function": []
+};
 
 const wrongParameterStruct2 = {
-  "lower-tx-level-limit": "dsgf",
-  "upper-tx-level-limit": 100,
-  "lower-rx-level-limit": 1000,
-  "upper-rx-level-limit": ":",
-}
+  "function-name": "p1RemoveOutOfRangeLevels",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lowerTxLevelLimit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "dsgf"
+    },
+    {
+      "parameter-name": "upperTxLevelLimit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": 100
+    },
+    {
+      "parameter-name": "lowerRxLevelLimit",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": 1000
+    },
+    {
+      "parameter-name": "upperRxLevelLimit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": ":"
+    }
+  ],
+  "sub-function": []
+};
+
+const wrongParameterStruct3 = {
+  "function-name": "p1RemoveOutOfRangeLevels",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lowerTxLevelLimit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "upperTxLevelLimit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "lowerRxLevelLimit",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "1000"
+    },
+    {
+      "parameter-name": "upperRxLevelLimit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "10000"
+    }
+  ],
+  "sub-function": []
+};
+
+const wrongParameterStruct4 = {
+  "function-name": "p1RemoveOutOfRangeLevels",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lowerTxLevelLimit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "upperTxLevelLimit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "lowerRxLevelLimit",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "10000"
+    },
+    {
+      "parameter-name": "upperRxLevelLimit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "1000"
+    }
+  ],
+  "sub-function": []
+};
+
+const wrongParameterStruct5 = {
+  "function-name": "p1RemoveOutOfRangeLevels",
+  "description": "Removes out-of-range level attributes from a performance data slice",
+  "is-active": true,
+  "parameter": [
+    {
+      "parameter-name": "lowerTxLevelLimit",
+      "purpose": "Lower bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "100"
+    },
+    {
+      "parameter-name": "upperTxLevelLimit",
+      "purpose": "Upper bound of valid values of the transmit level",
+      "owner": "engineering",
+      "value": "10"
+    },
+    {
+      "parameter-name": "lowerRxLevelLimit",
+      "purpose": "Lower bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "10000"
+    },
+    {
+      "parameter-name": "upperRxLevelLimit",
+      "purpose": "Upper bound of valid values of the receive level",
+      "owner": "engineering",
+      "value": "1000"
+    }
+  ],
+  "sub-function": []
+};
 
 describe('Positive Tests - Happy Path @positive', () => {
 
@@ -161,6 +299,23 @@ describe('Positive Tests - Happy Path @positive', () => {
 
     expect('tx-level-min' in result["performance-data"]).toBe(false);
     expect('tx-level-max' in result["performance-data"]).toBe(false);
+    expect('rx-level-max' in result["performance-data"]).toBe(false);
+  });
+
+  test('Missing some property of performance @negative', () => {
+    const result = p1RemoveOutOfRangeLevels({
+      "performance-data": wrongPerformanceStruct1,
+      "parameters": parameterStruct1
+    });
+    expect(result["performance-data"]["es"]).toBe(0);
+    expect(result["performance-data"]["ses"]).toBe(0);
+    expect(result["performance-data"]["cses"]).toBe(0);
+
+    expect('tx-level-min' in result["performance-data"]).toBe(false);
+    expect(result["performance-data"]["tx-level-avg"]).toBe(50);
+
+    expect(result["performance-data"]["rx-level-min"]).toBe(1000);
+    expect(result["performance-data"]["rx-level-avg"]).toBe(5000);
     expect('rx-level-max' in result["performance-data"]).toBe(false);
   });
 
@@ -215,19 +370,35 @@ describe('Negative Tests - Error Cases @negative', () => {
       .toBe(ERRORS.PARAM_INVALID);
   });
 
+  test('TX Min/Max are inverted @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": performanceStruct2,
+      "parameters": wrongParameterStruct3
+    }))
+      .toBe(ERRORS.PARAM_INVALID);
+  });
+
+  test('RX Min/Max are inverted @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": performanceStruct2,
+      "parameters": wrongParameterStruct4
+    }))
+      .toBe(ERRORS.PARAM_INVALID);
+  });
+
+  test('Both limits (TX and RX) are inverted @negative', () => {
+    expect(p1RemoveOutOfRangeLevels({
+      "performance-data": performanceStruct2,
+      "parameters": wrongParameterStruct5
+    }))
+      .toBe(ERRORS.PARAM_INVALID);
+  });
+
   test('Missing performance data @negative', () => {
     expect(p1RemoveOutOfRangeLevels({
       "parameters": parameterStruct1
     }))
       .toBe(ERRORS.PERF_NOT_PROVIDED);
-  });
-
-  test('Missing some property of performance @negative', () => {
-    expect(p1RemoveOutOfRangeLevels({
-      "performance-data": wrongPerformanceStruct1,
-      "parameters": parameterStruct1
-    }))
-      .toBe(ERRORS.PERF_INVALID);
   });
 
 });
