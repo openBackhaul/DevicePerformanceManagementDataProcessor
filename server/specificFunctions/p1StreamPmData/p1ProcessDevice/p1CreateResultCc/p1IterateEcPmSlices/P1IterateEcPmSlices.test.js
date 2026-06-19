@@ -1,18 +1,28 @@
 const p1IterateEcPmSlices = require('./P1IterateEcPmSlices');
 const Errors = require('./ErrorsEnum');
+const fs = require('fs');
 
 describe('p1IterateEcPmSlices', () => {
-  let service;
-  let mocks;
+  // let service;
+  // let mocks;
 
+  // beforeEach(() => {
+  //   mocks = {
+  //     kpiService: { calculate: jest.fn() },
+  //     removeDefaultService: { clean: jest.fn() },
+  //     utilizationService: { calculate: jest.fn() }
+  //   };
+
+  //   service = createService(mocks);
+  // });
+
+  let historicalData;
+  let parameters;
   beforeEach(() => {
-    mocks = {
-      kpiService: { calculate: jest.fn() },
-      removeDefaultService: { clean: jest.fn() },
-      utilizationService: { calculate: jest.fn() }
-    };
-
-    service = createService(mocks);
+    let fileParsed = fs.readFileSync(__dirname + '/datasets/historicalPerfEth1.json', 'utf8');
+    historicalData = JSON.parse(fileParsed);
+    fileParsed = fs.readFileSync(__dirname + '/datasets/parametersEc.json', 'utf8');
+    parameters =  JSON.parse(fileParsed);
   });
 
 
@@ -20,23 +30,10 @@ describe('p1IterateEcPmSlices', () => {
 
 
     const input = {
-      parameters: {},
+      'parameters': parameters,
       'aggregation-group': {},
       'result-cc': {},
-      'historical-performance-data-list': [
-        {
-          'granularity-period':
-            'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS',
-          'period-end-time': '2026-01-02T00:00:00Z',
-          'performance-data': {}
-        },
-        {
-          'granularity-period':
-            'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-          'period-end-time': '2026-01-01T10:00:00Z',
-          'performance-data': {}
-        }
-      ]
+      'historical-performance-data-list': historicalData['ethernet-container-historical-performances']['historical-performance-data-list']
     };
 
     let res = p1IterateEcPmSlices(input);
