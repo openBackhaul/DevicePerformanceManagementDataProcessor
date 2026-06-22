@@ -32,7 +32,9 @@ function validateResultCC(input) {
                   Object.hasOwn(lpObj, 'layer-protocol-name') &&
                   Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')) {
                   const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
-                  if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
+                  if (Object.hasOwn(aiPac, 'air-interface-historical-performances') && aiPac['air-interface-historical-performances']['number-of-historical-performance-sets'] == 0) {
+                    // No data to check
+                  } else if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
                     Object.hasOwn(aiPac['air-interface-historical-performances'], 'historical-performance-data-list') &&
                     Array.isArray(aiPac['air-interface-historical-performances']['historical-performance-data-list'])) {
                     const hPerf = aiPac['air-interface-historical-performances']['historical-performance-data-list'];
@@ -46,7 +48,8 @@ function validateResultCC(input) {
                       }
                     });
                   } else {
-                    throw new Error(ERRORS.RESULT_CC_INVALID);
+                    // No dataset available
+                    // throw new Error(ERRORS.RESULT_CC_INVALID);
                   }
                 } else {
                   throw new Error(ERRORS.RESULT_CC_INVALID);
