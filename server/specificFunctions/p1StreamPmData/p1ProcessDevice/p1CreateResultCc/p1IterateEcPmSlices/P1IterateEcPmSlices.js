@@ -71,31 +71,50 @@ const p1IterateEcPmSlices = (input) => {
     const resultCC = input['result-cc'];
 
     // Init Variables
-    let mostRecentPeriodEndTime = 0;
-    let mostRecentPeriodEndTime24 = 0;
+    let mostRecentPeriodEndTime = new Date(0);
+    let mostRecentPeriodEndTime24 = new Date(0);
+
+    let processedList = []; // = JSON.parse(JSON.stringify(historPerfDataList)); // Initializate return value
 
     for (const histPerfData of historPerfDataList) {
       let resultKpis = p1CalculateEthernetKpis({'historical-performance-data': histPerfData});
+      //TODO @latta-siae manage Errors
       // if (resultKpis instanceof "String") {
       //   result = resultKpis;
       //   break;
       // }
 
-      resultKPI = p1RemoveDefaultValues({
-        'historical-performance-data': histPerfData,
-        'parameters': parameters
+      let resultPerfData = p1RemoveDefaultValues({
+        // 'historical-performance-data': resultKpis,
+        'input-object': resultKpis['historical-performance-data']['performance-data'],
+        'parameters': parameters['sub-function'][1]
       });
-
       
+      resultKpis['historical-performance-data']['performance-data'] = resultPerfData['cleaned-object'];
+
+      let resCalculation = p1CalculateUtilization({
+        'historical-performance-data': resultKpis['historical-performance-data'],
+        'aggregation-group': aggrGroup,
+        'result-cc': resultCC
+      })
+
+      if (resCalculation['historical-performance-data']['granularity-period'] == GRANULARITY_15) {
+        if (mostRecentPeriodEndTime < (new Date(resCalculation['historical-performance-data']['period-end-time']))) {
+          mostRecentPeriodEndTime = new Date(resCalculation['historical-performance-data']['period-end-time']);
+        }
+      } else if (resCalculation['historical-performance-data']['granularity-period'] == GRANULARITY_24) {
+        if (mostRecentPeriodEndTime24 < (new Date(resCalculation['historical-performance-data']['period-end-time']))) {
+          mostRecentPeriodEndTime24 = new Date(resCalculation['historical-performance-data']['period-end-time']);
+        }
+      } else {
+        console.log("error");
+      }
+
+      processedList.push(resCalculation['historical-performance-data']);
     }
 
-    // if (result !== "OK") {
-    //   return result;
-    // }
-
-
     return {
-      // 'historical-performance-data-list': processedList,
+      'historical-performance-data-list': processedList,
       'most-recent-period-end-time': mostRecentPeriodEndTime,
       'most-recent-period-end-time-24': mostRecentPeriodEndTime24
     };
