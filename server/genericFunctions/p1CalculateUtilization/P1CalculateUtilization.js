@@ -118,6 +118,11 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
       let lp = currentLTP['layer-protocol'];
       lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER" );
       const resLP = lp.reduce((accLP, currentLP) => {
+        const airPerfHist = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
+        // In case of no pm history set Accumulator equal to 0
+        if (airPerfHist['number-of-historical-performance-sets'] == 0) {
+          return accLP + 0;
+        }
         // Pick-up historical performance data array
         const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
         // Filter out data that is not related to air-interface 15 minutes and should match period end time
@@ -185,7 +190,13 @@ function calculateUtilization(input) {
     //    from [ {total-bytes-output}*8 / ( {total-air-interface-interval-capacity}*1000 * {time-period} ) ]'
     const calcNum = Number(totalByteOutput) * 8;
     const calcDen = totalAirIfIntCap * 1000 * timePeriod;
-    const result = (calcNum / calcDen) * 100;
+    let result;
+    // Check if Denominator is 0, then set by default to 0
+    if (calcDen == 0) {
+      result = 0;
+    } else {
+      result = (calcNum / calcDen) * 100;
+    }
 
     // Return result
     return {
