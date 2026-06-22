@@ -18,11 +18,15 @@ describe('p1IterateEcPmSlices', () => {
 
   let historicalData;
   let parameters;
+  let resCC;
   beforeEach(() => {
     let fileParsed = fs.readFileSync(__dirname + '/datasets/historicalPerfEth1.json', 'utf8');
     historicalData = JSON.parse(fileParsed);
     fileParsed = fs.readFileSync(__dirname + '/datasets/parametersEc.json', 'utf8');
     parameters =  JSON.parse(fileParsed);
+
+    fileParsed = fs.readFileSync(__dirname + '/datasets/resultCC513250006.json', 'utf8');
+    resCC =  JSON.parse(fileParsed);
   });
 
 
@@ -31,8 +35,13 @@ describe('p1IterateEcPmSlices', () => {
 
     const input = {
       'parameters': parameters,
-      'aggregation-group': {},
-      'result-cc': {},
+      'aggregation-group': {
+        'physical-server-ltp-list': [
+          'LTP-MWPS-TTP-ODU-B',
+          'LTP-MWPS-TTP-ODU-A',
+        ]
+      },
+      'result-cc': resCC,
       'historical-performance-data-list': historicalData['ethernet-container-historical-performances']['historical-performance-data-list']
     };
 
