@@ -1,65 +1,78 @@
 [
   {
     "uuid": "RF-2146435217",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639366",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639365",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639364",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639368",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639367",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134647425",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "RF-2146435729",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "RF-2146435233",
-    "mostRecentPeriodEndTime24": "2026-04-16T00:00:00+02:00"
+    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+    "most-recent-period-end-time-24": "2026-04-16T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639106",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639105",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "ETH-2134639108",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   },
   {
     "uuid": "RF-2146435745",
-    "mostRecentPeriodEndTime": "2026-04-17T12:30:00+02:00",
-    "mostRecentPeriodEndTime24": "2026-04-17T00:00:00+02:00"
+    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
+    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
   }
 ]

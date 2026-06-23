@@ -325,7 +325,7 @@ function addBatchTimestamp(rawCc) {
   }
 
   if (timestamps.length === 0) {
-    rawCc.batchTimestamp = DEFAULT_BATCH_TIMESTAMP;
+    rawCc["batch-timestamp"] = DEFAULT_BATCH_TIMESTAMP;
     return DEFAULT_BATCH_TIMESTAMP;
   }
 
@@ -335,7 +335,7 @@ function addBatchTimestamp(rawCc) {
 
   const latestTimestamp = timestamps[timestamps.length - 1];
 
-  rawCc.batchTimestamp = latestTimestamp;
+  rawCc["batch-timestamp"] = latestTimestamp;
   return latestTimestamp;
 }
 

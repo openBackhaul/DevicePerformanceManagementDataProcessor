@@ -7,7 +7,7 @@ const logger = require('../../../service/LoggingService.js').getLogger();
 const formatAptOutputErrors = require('./p1FormattingOutputApt/ErrorsEnum');
 const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutputApt");
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
-const p1FormattingOutputOnf = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
+const {p1FormattingOutputOnf} = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
 const fs = require("fs");
 const sampleResultCcApt = require("./outputAPTSample.json");
 
@@ -28,7 +28,8 @@ function shouldPublishDataQuality() {
 async function queueKafkaOutputsOneByOne(request) {
   const {
     mountName,
-    resultCc,
+    aptPayload,
+    onfPayload,
     correlationId,
     dataStoreEsClient,
     logger,
@@ -44,7 +45,7 @@ async function queueKafkaOutputsOneByOne(request) {
         mountName,
         correlationId,
         payloadVersion: "1.0",
-        payload: resultCc
+        payload: (targetConsumer === "APT") ? aptPayload : onfPayload
       },
       logger
     });
@@ -186,7 +187,7 @@ async function run(request) {
     }
 
     
-    /* const responseApt = await p1FormattingOutputApt({
+    const responseApt = await p1FormattingOutputApt({
         "result-cc": createResultCcResponse.resultCc,
         parameters: p1FormattingOutputAptParameters
     });
@@ -206,7 +207,7 @@ async function run(request) {
         throw buildFormattingOutputAptError(responseApt, mountName);
     }
 
-    const resultCcApt = responseApt;//["output-format"]; */
+    const resultCcApt = responseApt["output-format"];
 
     /*   P1FormattingOutputOnf is an ONF function that formats the output result CC according to the ONF output format. 
         It also performs some basic validations on the result CC. If the formatting fails or the result CC is invalid, 
@@ -260,7 +261,7 @@ async function run(request) {
     }
 
     
-    /* const responseOnf = await p1FormattingOutputOnf({
+    const responseOnf = await p1FormattingOutputOnf({
         resultCc: createResultCcResponse.resultCc,
         parameters: p1FormattingOutputOnfParameters
     });
@@ -280,7 +281,7 @@ async function run(request) {
         throw buildFormattingOutputOnfError(responseOnf, mountName);
     } 
 
-    const resultCcOnf = responseOnf;*/
+    const resultCcOnf = responseOnf["output-format"];
 
    const resultMountName =
       createResultCcResponse.mountName ||
@@ -299,7 +300,8 @@ async function run(request) {
 
     await queueKafkaOutputsOneByOne({
         mountName: resultMountName,
-        resultCc: sampleResultCcApt,//TODO: createResultCcResponse.resultCc,
+        aptPayload: resultCcApt,
+        onfPayload: resultCcOnf,
         correlationId,
         dataStoreEsClient,
         logger: request.logger,
@@ -308,7 +310,7 @@ async function run(request) {
 
     await p1Storing.run({
       dataStoreEsClient,
-      resultCc: sampleResultCcApt,//TODO: createResultCcResponse.resultCc,
+      resultCc: createResultCcResponse.resultCc,
       interfaceMetadataList: createResultCcResponse.interfaceMetadataList,
       mountName: resultMountName,
       logger

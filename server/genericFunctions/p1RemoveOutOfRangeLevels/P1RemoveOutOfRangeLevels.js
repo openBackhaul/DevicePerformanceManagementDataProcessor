@@ -1,0 +1,163 @@
+const ERRORS = require('./ErrorsEnum');
+
+let parameterStruct = {};
+const LOWER_TX_LIMIT = "lower-tx-level-limit";
+const UPPER_TX_LIMIT = "upper-tx-level-limit";
+const LOWER_RX_LIMIT = "lower-rx-level-limit";
+const UPPER_RX_LIMIT = "upper-rx-level-limit";
+
+const TX_LEVEL_MIN = "tx-level-min";
+const TX_LEVEL_AVG = "tx-level-avg";
+const TX_LEVEL_MAX = "tx-level-max";
+const RX_LEVEL_MIN = "rx-level-min";
+const RX_LEVEL_AVG = "rx-level-avg";
+const RX_LEVEL_MAX = "rx-level-max";
+
+const paramAllowed = [
+  LOWER_TX_LIMIT,
+  UPPER_TX_LIMIT,
+  LOWER_RX_LIMIT,
+  UPPER_RX_LIMIT
+];
+
+const propertyList = [
+  TX_LEVEL_MIN,
+  TX_LEVEL_AVG,
+  TX_LEVEL_MAX,
+  RX_LEVEL_MIN,
+  RX_LEVEL_AVG,
+  RX_LEVEL_MAX
+];
+
+function camelCaseToKebabCase(camelCaseString) {
+  return camelCaseString
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/([0-9])([^0-9])/g, '$1-$2')
+    .replace(/([^0-9])([0-9])/g, '$1-$2')
+    .replace(/-+/g, '-')
+    .toLowerCase();
+}
+
+// DAMN JavaScript
+function isThisNaN(value) {
+  return value !== value
+};
+
+function checkOutOfRange(value, isTX) {
+
+  let min = isTX ? parameterStruct[LOWER_TX_LIMIT] : parameterStruct[LOWER_RX_LIMIT];
+  let max = isTX ? parameterStruct[UPPER_TX_LIMIT] : parameterStruct[UPPER_RX_LIMIT];
+
+  if (value < Number(min) || value > Number(max)) {
+    return false;
+  }
+
+  return true;
+}
+
+function validateParameters(paramArray) {
+  let res = true;
+  paramArray.forEach(paramElem => {
+    if (paramElem['parameter-name'] == null || paramElem['value'] == null) {
+      res = false;
+    }
+
+    if (!paramAllowed.includes(camelCaseToKebabCase(paramElem['parameter-name']))) {
+      res = false;
+    }
+
+    if (typeof paramElem["value"] != "string") {
+      res = false;
+    }
+
+    let paramValue = parseInt(paramElem["value"]);
+
+    // Check if is Number or also NaN
+    if (typeof paramValue != "number" || isThisNaN(paramValue)) {
+      res = false;
+    }
+
+    parameterStruct[camelCaseToKebabCase(paramElem['parameter-name'])] = paramElem['value'];
+  });
+
+  paramAllowed.forEach(paramElem => {
+    if (!parameterStruct.hasOwnProperty(paramElem)) {
+      res = false;
+    }
+  });
+
+  return res;
+}
+
+const p1RemoveOutOfRangeLevels = (input) => {
+
+  // Re-init variable everytime
+  parameterStruct = {};
+
+  try {
+    const parameters = input["parameters"];
+    const performanceData = input["performance-data"];
+
+    // Check parameters
+    if (!parameters && !performanceData) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    if (!parameters) {
+      return ERRORS.PARAM_NOT_PROVIDED;
+    } else {
+      if (parameters['parameter'] == null) {
+        return ERRORS.PARAM_INVALID;
+      }
+
+      let paramArray = parameters["parameter"];
+
+      if (!validateParameters(paramArray)) {
+        return ERRORS.PARAM_INVALID;
+      }
+
+      if (Number(parameterStruct[LOWER_TX_LIMIT]) > Number(parameterStruct[UPPER_TX_LIMIT])) {
+        return ERRORS.PARAM_INVALID;
+      } else if (Number(parameterStruct[LOWER_RX_LIMIT]) > Number(parameterStruct[UPPER_RX_LIMIT])) {
+        return ERRORS.PARAM_INVALID;
+      }
+    }
+
+    if (!performanceData) {
+      return ERRORS.PERF_NOT_PROVIDED;
+    } else if (typeof performanceData !== 'object') {
+      return ERRORS.PERF_INVALID;
+    } else {
+      let resProperty = "";
+      propertyList.forEach(property => {
+        if (performanceData[property] && typeof performanceData[property] != "number") {
+          resProperty = ERRORS.PERF_INVALID;
+        }
+      });
+
+      if (resProperty != "") {
+        return resProperty;
+      }
+    }
+
+    let performanceDataClean = JSON.parse(JSON.stringify(performanceData)); // Initializate return value
+    propertyList.forEach(property => {
+      if (!(performanceDataClean[property] && typeof performanceDataClean[property] != "number")) {
+        if (!checkOutOfRange(performanceDataClean[property], property.startsWith("tx-"))) {
+          delete performanceDataClean[property];
+        }
+      }
+    });
+
+    return {
+      "performance-data": performanceDataClean
+    }
+  } catch (e) {
+    return ERRORS.GENERAL_ERROR;
+  }
+
+}
+
+module.exports = p1RemoveOutOfRangeLevels;

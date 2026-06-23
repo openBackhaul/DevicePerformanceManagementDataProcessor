@@ -1,0 +1,316 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/P1IterateAiPmSlices.js"
+    exportName: "p1IterateAiPmSlices"
+
+processingSteps:
+  - stepId: "p1CalculateIntervalCapacity"
+    modulePath: "../../server/genericFunctions/p1CalculateIntervalCapacity/P1CalculateIntervalCapacity.js"
+    exportName: ""
+    isAsync: false
+
+  - stepId: "p1RemoveOutOfRangeLevels"
+    modulePath: "../../server/genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels.js"
+    exportName: ""
+    isAsync: false
+
+  - stepId: "p1RemoveDefaultValues"
+    modulePath: "../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
+    exportName: ""
+    isAsync: false
+
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errInputNotProvided"
+    description: "Should return 'General processing error' when input is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when input.parameters is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+    mocks: []
+
+  - id: "errParametersInvalid"
+    description: "Should return 'parameters invalid' when input.parameters is not a plain object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListNotProvided"
+    description: "Should return 'historicalPerformanceDataList not provided' when input.historical-performance-data-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalid"
+    description: "Should return 'historicalPerformanceDataList invalid' when input.historical-performance-data-list is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+    mocks: []
+
+  - id: "errTransmissionModeListNotProvided"
+    description: "Should return 'transmissionModeList not provided' when input.transmission-mode-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList not provided"
+    mocks: []
+
+  - id: "errTransmissionModeListInvalid"
+    description: "Should return 'transmissionModeList invalid' when input.transmission-mode-list is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList invalid"
+    mocks: []
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okSingle15mSliceProcessed"
+    description: "Should process one 15-minute historical performance slice successfully"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.output.json"
+
+  - id: "okSingle24hSliceProcessed"
+    description: "Should process one 24-hour historical performance slice successfully"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.output.json"
+
+  - id: "okMixed15mAnd24hSlicesProcessed"
+    description: "Should process mixed 15-minute and 24-hour slices and update both timestamps"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "returnSequence"
+        fixtureSequence:
+          - "p1CalculateIntervalCapacity.slice1.output.json"
+          - "p1CalculateIntervalCapacity.slice2.output.json"
+        repeatLast: false
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "returnSequence"
+        fixtureSequence:
+          - "p1RemoveOutOfRangeLevels.slice1.output.json"
+          - "p1RemoveOutOfRangeLevels.slice2.output.json"
+        repeatLast: false
+      - stepId: "p1RemoveDefaultValues"
+        type: "returnSequence"
+        fixtureSequence:
+          - "p1RemoveDefaultValues.slice1.output.json"
+          - "p1RemoveDefaultValues.slice2.output.json"
+        repeatLast: false
+
+  - id: "okEmptyHistoricalPerformanceDataList"
+    description: "Should return empty historical-performance-data-list and epoch timestamps when input list is empty"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okMissingSubFunctionParametersDefaultsToEmptyObject"
+    description: "Should process successfully when sub-function parameters are missing"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.output.json"
+
+  # -------------------------
+  # p1CalculateIntervalCapacity failures
+  # -------------------------
+
+  - id: "errIntervalCapacityReturnsErrorString"
+    description: "Should return 'interval capacity could not be calculated' when p1CalculateIntervalCapacity returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "interval capacity could not be calculated"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.error.json"
+
+  - id: "errIntervalCapacityThrows"
+    description: "Should return 'interval capacity could not be calculated' when p1CalculateIntervalCapacity throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "interval capacity could not be calculated"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "throw"
+        error: "interval capacity failure"
+
+  # -------------------------
+  # p1RemoveOutOfRangeLevels failures
+  # -------------------------
+
+  - id: "errRemoveOutOfRangeLevelsReturnsErrorString"
+    description: "Should return 'out of range levels could not be removed' when p1RemoveOutOfRangeLevels returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "out of range levels could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.error.json"
+
+  - id: "errRemoveOutOfRangeLevelsThrows"
+    description: "Should return 'out of range levels could not be removed' when p1RemoveOutOfRangeLevels throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "out of range levels could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "throw"
+        error: "remove out of range levels failure"
+
+  # -------------------------
+  # p1RemoveDefaultValues failures
+  # -------------------------
+
+  - id: "errRemoveDefaultValuesReturnsErrorString"
+    description: "Should return 'default values could not be removed' when p1RemoveDefaultValues returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.error.json"
+
+  - id: "errRemoveDefaultValuesThrows"
+    description: "Should return 'default values could not be removed' when p1RemoveDefaultValues throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "throw"
+        error: "remove default values failure"
+
+  # -------------------------
+  # Timestamp update / malformed slice failures
+  # -------------------------
+
+  - id: "errMissingGranularityPeriod"
+    description: "Should return 'General processing error' when granularity-period is missing in a slice"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.output.json"
+
+  - id: "errMissingPeriodEndTime"
+    description: "Should return 'General processing error' when period-end-time is missing in a slice"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        fixture: "p1CalculateIntervalCapacity.output.json"
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        fixture: "p1RemoveOutOfRangeLevels.output.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.output.json"

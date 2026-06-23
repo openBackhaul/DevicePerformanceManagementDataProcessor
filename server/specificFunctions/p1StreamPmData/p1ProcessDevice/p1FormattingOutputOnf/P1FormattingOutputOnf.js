@@ -9,7 +9,7 @@ function p1FormattingOutputOnf(input) {
       return ERRORS.PARAMETERS_NOT_PROVIDED;
     }
 
-    const { parameters, "result-cc": resultCc } = input;
+    const { parameters, resultCc } = input;
 
     if (parameters === null || parameters === undefined) {
       return ERRORS.PARAMETERS_NOT_PROVIDED;
@@ -142,10 +142,10 @@ function applyFilter(data, keys) {
 
 
 module.exports = {
-  p1FormattingOutputOnf,
-  _internal: {
+  p1FormattingOutputOnf
+  /* _internal: {
     createOutputFromResultCc,
     extractFieldsFilter,
     applyFilter
-  }
+  } */
 };

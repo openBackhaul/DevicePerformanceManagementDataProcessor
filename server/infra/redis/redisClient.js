@@ -36,7 +36,7 @@ async function getRedisClient(logger) {
     url: buildRedisUrl(),
     socket: {
       reconnectStrategy(retries) {
-        const base = Number(process.env.REDIS_RECONNECT_BASE_MS || 250);
+        const base = Number(process.env.REDIS_RECONNECT_BASE_MS || 30000);
         const max = Number(process.env.REDIS_RECONNECT_MAX_MS || 5000);
         return Math.min(base * Math.max(1, retries), max);
       }

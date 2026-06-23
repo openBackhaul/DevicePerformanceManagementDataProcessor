@@ -51,6 +51,7 @@ function getMostRecentPeriodEndTime(records, granularityMatcher) {
 
 function collectHistoricalRecords(layerProtocol) {
   const records = [];
+  const layerProtocolName = layerProtocol["layer-protocol-name"];
 
   const airPac = layerProtocol[AIR_INTERFACE_PAC_KEY];
   if (isPlainObject(airPac)) {
@@ -58,7 +59,12 @@ function collectHistoricalRecords(layerProtocol) {
       airPac["air-interface-historical-performances"]?.["historical-performance-data-list"];
 
     if (Array.isArray(airHistory)) {
-      records.push(...airHistory);
+      records.push(
+        ...airHistory.map((record) => ({
+          ...record,
+          "layer-protocol-name": layerProtocolName
+        }))
+      );
     }
   }
 
@@ -68,7 +74,12 @@ function collectHistoricalRecords(layerProtocol) {
       ethernetPac["ethernet-container-historical-performances"]?.["historical-performance-data-list"];
 
     if (Array.isArray(ethernetHistory)) {
-      records.push(...ethernetHistory);
+      records.push(
+        ...ethernetHistory.map((record) => ({
+          ...record,
+          "layer-protocol-name": layerProtocolName
+        }))
+      );
     }
   }
 
@@ -89,33 +100,36 @@ function extractInterfaceMetadataListFromRawResponse(rawResponse) {
 
   return ltpList
     .filter((ltp) => isPlainObject(ltp) && ltp.uuid)
-    .map((ltp) => {
+    .flatMap((ltp) => {
       const layerProtocolList = Array.isArray(ltp["layer-protocol"])
         ? ltp["layer-protocol"]
         : [];
 
-      const allRecords = layerProtocolList.flatMap(collectHistoricalRecords);
+      return layerProtocolList.map((layerProtocol) => {
+        const allRecords = collectHistoricalRecords(layerProtocol);
 
-      const mostRecentPeriodEndTime = getMostRecentPeriodEndTime(
-        allRecords,
-        is15MinGranularity
-      );
+        const mostRecentPeriodEndTime = getMostRecentPeriodEndTime(
+          allRecords,
+          is15MinGranularity
+        );
 
-      const mostRecentPeriodEndTime24 = getMostRecentPeriodEndTime(
-        allRecords,
-        is24HourGranularity
-      );
+        const mostRecentPeriodEndTime24 = getMostRecentPeriodEndTime(
+          allRecords,
+          is24HourGranularity
+        );
 
-      return {
-        uuid: ltp.uuid,
-        mostRecentPeriodEndTime,
-        mostRecentPeriodEndTime24
-      };
+        return {
+          uuid: ltp.uuid,
+          "layer-protocol-name": layerProtocol["layer-protocol-name"],
+          "most-recent-period-end-time": mostRecentPeriodEndTime,
+          "most-recent-period-end-time-24": mostRecentPeriodEndTime24
+        };
+      });
     })
     .filter(
       (item) =>
-        item.mostRecentPeriodEndTime !== undefined ||
-        item.mostRecentPeriodEndTime24 !== undefined
+        item["most-recent-period-end-time"] !== undefined ||
+        item["most-recent-period-end-time-24"] !== undefined
     );
 }
 
