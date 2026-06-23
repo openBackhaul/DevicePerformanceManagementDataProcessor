@@ -217,7 +217,7 @@ function resolveTemperature(equipmentStruct) {
   let iduTemp;
 
   for (const eq of equipmentStruct) {
-    const category = eq?.['structure']?.['category'];
+    const category = eq?.['actual-equipment']?.['structure']?.['category'];
 
     const temp = eq?.['actual-equipment']?.['physical-properties']?.['temperature'];
 

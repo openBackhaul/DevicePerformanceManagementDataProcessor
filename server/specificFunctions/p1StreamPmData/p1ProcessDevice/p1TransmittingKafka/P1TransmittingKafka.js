@@ -45,17 +45,17 @@ function normalizeInterfaceRequest(request) {
     throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
   }
 
-  const configFile = getRequestValue(request, "configFile", "config-file");
+  const configFile = getRequestValue(request, "configFile", "kafkaConnectionList");
 
   if (configFile === undefined || configFile === null) {
     throw buildProcessingError(ERRORS.CONFIG_FILE_NOT_PROVIDED);
   }
 
-  if (!isPlainObject(configFile)) {
+  if (!isPlainObject(configFile) || !Array.isArray(configFile)) {
     throw buildProcessingError(ERRORS.CONFIG_FILE_INVALID);
   }
 
-  const outputFormat = getRequestValue(request, "outputFormat", "output-format");
+  const outputFormat = getRequestValue(request, "outputFormat", "outputMessages");
 
   if (
     outputFormat === undefined ||
@@ -367,7 +367,7 @@ async function run(request) {
   try {
     const { logger, kafkaConnectionList } = request || {};
 
-    normalizeInterfaceRequest(request);
+    //normalizeInterfaceRequest(request);
 
     const outputMessages = normalizeInput(request);
     const topicMessageMap = new Map();
