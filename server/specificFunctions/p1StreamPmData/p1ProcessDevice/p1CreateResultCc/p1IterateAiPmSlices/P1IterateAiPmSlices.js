@@ -11,19 +11,19 @@ const EPOCH_TIME = "1970-01-01T00:00:00+00:00";
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
 
   if (!mostRecentPeriodEndTime) {
-    return 'mostRecentPeriodEndTime not provided';
+    return ERRORS.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED;
   }
 
   if (!mostRecentPeriodEndTime24) {
-    return 'mostRecentPeriodEndTime24 not provided';
+    return ERRORS.MOST_RECENT_PERIOD_END_TIME24_NOT_PROVIDED;
   }
 
   if (!granularityPeriod) {
-    return 'granularityPeriod not provided';
+    return ERRORS.GRANULARITY_PERIOD_NOT_PROVIDED;
   }
 
   if (!periodEndTime) {
-    return 'periodEndTime not provided';
+    return ERRORS.PERIOD_END_TIME_NOT_PROVIDED;
   }
 
   let updated15 = mostRecentPeriodEndTime;
