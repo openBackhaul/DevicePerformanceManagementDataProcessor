@@ -30,9 +30,9 @@ function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriod
   let updated24 = mostRecentPeriodEndTime24;
 
   if (granularityPeriod === GRANU_PERIOD_15M) {
-    updated15 = periodEndTime;
+    updated15 = mostRecentPeriodEndTime > periodEndTime ? mostRecentPeriodEndTime : periodEndTime;
   } else if (granularityPeriod === GRANU_PERIOD_24H) {
-    updated24 = periodEndTime;
+    updated24 = mostRecentPeriodEndTime24 > periodEndTime ? mostRecentPeriodEndTime24 : periodEndTime;
   }
 
   return {
@@ -181,12 +181,19 @@ function p1IterateAiPmSlices(input) {
       });
     }
 
-    return {
+    let retValue = {
       'historical-performance-data-list': processedDataList,
-      'most-recent-period-end-time': mostRecentPeriodEndTime,
-      'most-recent-period-end-time-24': mostRecentPeriodEndTime24
-    };
+    }
+    
+    if (mostRecentPeriodEndTime != EPOCH_TIME) {
+      retValue['most-recent-period-end-time'] = mostRecentPeriodEndTime;
+    }
 
+    if (mostRecentPeriodEndTime24 != EPOCH_TIME) {
+      retValue['most-recent-period-end-time-24'] = mostRecentPeriodEndTime24;
+    }
+
+    return retValue;
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }
