@@ -1,5 +1,5 @@
 {
-   "parameters": {
+"parameters": {
         "function-name": "p1IterateAiPmSlices",
         "description": "Iterates through all AirInterface historical performance data slices and calls the processing Functions",
         "is-active": true,
@@ -180,6 +180,25 @@
             }
         ]
         },
-  "historical-performance-data-list": [],
-  "transmission-mode-list": []
-}
+"historical-performance-data-list": [],
+"transmission-mode-list": [
+  {
+	"modulation-scheme-name-at-lct": "256QAM",
+	"transmission-mode-name": "56008",
+	"am-downshift-level": -60,
+	"supported-as-fixed-configuration": true,
+	"tx-power-min": -2,
+	"code-rate": 90,
+	"modulation-scheme": 256,
+	"xpic-is-avail": true,
+	"tx-power-max": 18,
+	"channel-bandwidth": 56000,
+	"transmission-mode-rank": 56008,
+	"rx-threshold": -65,
+	"symbol-rate-reduction-factor": 1,
+	"am-upshift-level": -57,
+	"capacity": 350609
+  }
+]
+              
+}   

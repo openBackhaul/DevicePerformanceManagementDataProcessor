@@ -1,5 +1,5 @@
 {
-   "parameters": {
+"parameters": {
         "function-name": "p1IterateAiPmSlices",
         "description": "Iterates through all AirInterface historical performance data slices and calls the processing Functions",
         "is-active": true,
@@ -180,6 +180,61 @@
             }
         ]
         },
-  "historical-performance-data-list": [],
-  "transmission-mode-list": []
-}
+"historical-performance-data-list": [
+  {
+	"history-data-id": "PM_RADIO_15M_13",
+	"granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+	"suspect-interval-flag": true,
+	"performance-data": {
+	  "ses": 0,
+	  "xpd-max": -99,
+	  "tx-level-max": 14,
+	  "rf-temp-max": -99,
+	  "snir-max": -99,
+	  "rx-level-avg": -51,
+	  "rx-level-min": -52,
+	  "es": 0,
+	  "unavailability": 0,
+	  "cses": 0,
+	  "xpd-min": -99,
+	  "xpd-avg": -99,
+	  "time-xstates-list": [
+		{
+		  "time-xstate-sequence-number": 8,
+		  "time": 100,
+		  "transmission-mode": "56008"
+		}
+	  ],
+	  "tx-level-min": 14,
+	  "tx-level-avg": 14,
+	  "rf-temp-min": -99,
+	  "rf-temp-avg": -99,
+	  "snir-avg": -99,
+	  "snir-min": -99,
+	  "time-period": 900,
+	  "defect-blocks-sum": 0,
+	  "rx-level-max": -51
+	}
+  }
+],
+"transmission-mode-list": [
+  {
+	"modulation-scheme-name-at-lct": "256QAM",
+	"transmission-mode-name": "56008",
+	"am-downshift-level": -60,
+	"supported-as-fixed-configuration": true,
+	"tx-power-min": -2,
+	"code-rate": 90,
+	"modulation-scheme": 256,
+	"xpic-is-avail": true,
+	"tx-power-max": 18,
+	"channel-bandwidth": 56000,
+	"transmission-mode-rank": 56008,
+	"rx-threshold": -65,
+	"symbol-rate-reduction-factor": 1,
+	"am-upshift-level": -57,
+	"capacity": 350609
+  }
+]
+              
+}   

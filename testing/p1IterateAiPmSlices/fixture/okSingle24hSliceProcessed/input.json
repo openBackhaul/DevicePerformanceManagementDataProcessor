@@ -184,6 +184,7 @@
   {
 	"history-data-id": "PM_RADIO_24H_1",
 	"period-end-time": "2026-05-11T00:00:00.0+00:00",
+	"granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
 	"suspect-interval-flag": true,
 	"performance-data": {
 	  "ses": 0,

@@ -1,0 +1,212 @@
+{
+  "historical-performance-data-list": [
+    {
+      "history-data-id": "PM_RADIO_15M_13",
+      "period-end-time": "2026-05-11T15:30:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 8,
+            "time": 100,
+            "transmission-mode": "56008",
+            "transmission-mode-capacity": 350609,
+            "offered-volume": 35060900
+          }
+        ],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 350609
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_16",
+      "period-end-time": "2026-05-11T14:45:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -52,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_24H_1",
+      "period-end-time": "2026-05-11T00:00:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 86400,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_14",
+      "period-end-time": "2026-05-11T15:15:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -51,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_02",
+      "period-end-time": "2026-05-11T18:15:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -52,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_03",
+      "period-end-time": "2026-05-11T18:00:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_06",
+      "period-end-time": "2026-05-11T17:15:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_10",
+      "period-end-time": "2026-05-11T16:15:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_04",
+      "period-end-time": "2026-05-11T17:45:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "tx-level-max": 14,
+        "rx-level-avg": -51,
+        "rx-level-min": -52,
+        "es": 0,
+        "unavailability": 0,
+        "cses": 0,
+        "time-xstates-list": [],
+        "tx-level-min": 14,
+        "tx-level-avg": 14,
+        "time-period": 900,
+        "defect-blocks-sum": 0,
+        "rx-level-max": -51,
+        "interval-capacity": 0
+      }
+    }
+  ],
+  "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
+  "most-recent-period-end-time-24": "2026-05-11T00:00:00.0+00:00"
+}
