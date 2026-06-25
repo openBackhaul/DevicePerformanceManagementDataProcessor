@@ -100,21 +100,23 @@ function p1CalculateEthernetKpis(input) {
       return ERRORS.HISTORICAL_DATA_NOT_PROVIDED;
     }
 
-    const performanceData = input['historical-performance-data']['performance-data'];
+    const performanceData = input['historical-performance-data'];
 
-    //TODO @latta-siae Check about historical data invalid
     if (!performanceData || performanceData == undefined) {
       return ERRORS.HISTORICAL_DATA_INVALID;
+    }
+
+    if (performanceData.constructor !== Object) {
+      return ERRORS.HISTORICAL_DATA_INVALID;
+    }
+
+    if (performanceData.constructor === Object && Object.keys(performanceData).length === 0) {
+      return ERRORS.HISTORICAL_DATA_INCOMPLETE;
     }
 
     let transmitTraffic, receiveTraffic, frameLossInput, frameLossOutput;
 
     try {
-      // TO Be review
-      // if (Object.keys(item).length === 0 && item.constructor === Object) {
-      //   return ERRORS.HISTORICAL_DATA_INCOMPLETE;
-      // }
-
       transmitTraffic = calculateTransmitTraffic(
         performanceData['total-bytes-output'],
         performanceData['time-period']
@@ -170,7 +172,7 @@ function p1CalculateEthernetKpis(input) {
 
     let retValue = input;
 
-    retValue['historical-performance-data']['performance-data'] = {
+    retValue['historical-performance-data'] = {
       ...performanceData,
       'transmit-traffic': transmitTraffic,
       'receive-traffic': receiveTraffic,
