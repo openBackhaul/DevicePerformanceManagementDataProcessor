@@ -8,10 +8,10 @@ module.exports = {
     '<rootDir>/genericFunctions/p1CalculateAiCapacity',
     '<rootDir>/genericFunctions/p1CalculateUtilization',
     '<rootDir>/genericFunctions/p1CalculateEthernetKpis',
-    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes',
-    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf',
-    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices'
+    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes',
+    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices'
+    // '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices'
   ],
 };
