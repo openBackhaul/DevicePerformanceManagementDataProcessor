@@ -18,15 +18,29 @@ const ERRORS = {
   // Output errors
   HISTORICAL_DATA_LIST_OUTPUT_FAILED: 'historicalPerformanceDataList could not be provided',
 
-  // Most recent timestamps
+  MOST_RECENT_PERIOD_END_TIME_FAILED: 'mostRecentPeriodEndTime could not be provided',
+  MOST_RECENT_PERIOD_END_TIME_24_FAILED: 'mostRecentPeriodEndTime24 could not be provided',
+
+  // p1CalculateEthernetKpis
+  // ETH_KPIS_COULDNT_ADDED: 'Ethernet KPIs could not be added',
+
+  // p1RemoveDefaultValues
+  // INPUT_OBJ_COULDNT_CLEAN: 'Input object could not be cleaned from attributes with default values',
+
+  // p1CalculateUtilization
+  // UTIL_COULDNT_ADD: 'Utilization could not be added',
+
+  // updateMostRecentPeriodEndTime
   MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED: 'mostRecentPeriodEndTime not provided',
   MOST_RECENT_PERIOD_END_TIME_INVALID: 'mostRecentPeriodEndTime invalid',
-
   MOST_RECENT_PERIOD_END_TIME_24_NOT_PROVIDED: 'mostRecentPeriodEndTime24 not provided',
   MOST_RECENT_PERIOD_END_TIME_24_INVALID: 'mostRecentPeriodEndTime24 invalid',
 
-  MOST_RECENT_PERIOD_END_TIME_FAILED: 'mostRecentPeriodEndTime could not be provided',
-  MOST_RECENT_PERIOD_END_TIME_24_FAILED: 'mostRecentPeriodEndTime24 could not be provided',
+  GRAN_PERIOD_NOT_PROV: 'granularityPeriod not provided',
+  GRAN_PERIOD_INVALID: 'granularityPeriod invalid',
+
+  PERIOD_ENDTIME_NOT_PROVIDED: 'periodEndTime not provided',
+  PERIOD_ENDTIME_INVALID: 'periodEndTime invalid'
 };
 
 module.exports = ERRORS;

@@ -76,19 +76,22 @@ const p1IterateEcPmSlices = (input) => {
 
     let processedList = []; // = JSON.parse(JSON.stringify(historPerfDataList)); // Initializate return value
 
+    let result = 'OK';
     for (const histPerfData of historPerfDataList) {
       let resultKpis = p1CalculateEthernetKpis({'historical-performance-data': histPerfData});
-      //TODO @latta-siae manage Errors
-      // if (resultKpis instanceof "String") {
-      //   result = resultKpis;
-      //   break;
-      // }
+      if (typeof resultKpis === "string") {
+        result = ERRORS.KPI_CALCULATION_FAILED;
+        break;
+      }
 
       let resultPerfData = p1RemoveDefaultValues({
-        // 'historical-performance-data': resultKpis,
         'input-object': resultKpis['historical-performance-data']['performance-data'],
         'parameters': parameters['sub-function'][1]
       });
+      if (typeof resultPerfData === "string") {
+        result = ERRORS.DEFAULT_VALUES_REMOVAL_FAILED;
+        break;
+      }
       
       resultKpis['historical-performance-data']['performance-data'] = resultPerfData['cleaned-object'];
 
@@ -97,6 +100,10 @@ const p1IterateEcPmSlices = (input) => {
         'aggregation-group': aggrGroup,
         'result-cc': resultCC
       })
+      if (typeof resCalculation === "string") {
+        result = ERRORS.UTILIZATION_CALCULATION_FAILED;
+        break;
+      }
 
       if (resCalculation['historical-performance-data']['granularity-period'] == GRANULARITY_15) {
         if (mostRecentPeriodEndTime < (new Date(resCalculation['historical-performance-data']['period-end-time']))) {
@@ -106,8 +113,6 @@ const p1IterateEcPmSlices = (input) => {
         if (mostRecentPeriodEndTime24 < (new Date(resCalculation['historical-performance-data']['period-end-time']))) {
           mostRecentPeriodEndTime24 = new Date(resCalculation['historical-performance-data']['period-end-time']);
         }
-      } else {
-        console.log("error");
       }
 
       processedList.push(resCalculation['historical-performance-data']);
