@@ -2538,7 +2538,8 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "mwdi"
+                "index-alias": "mwdi",
+                "service-records-policy": "keep"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2564,7 +2565,8 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "mwdireplica"
+                "index-alias": "mwdireplica",
+                "service-records-policy": "keep"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2590,7 +2592,8 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "dpmdplogging"
+                "index-alias": "dpmdplogging",
+                "service-records-policy": "keep"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2616,7 +2619,8 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "dpmdpdatastore"
+                "index-alias": "dpmdpdatastore",
+                "service-records-policy": "keep"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2800,7 +2804,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 29092
+                "remote-port": 9092
               }
             }
           }

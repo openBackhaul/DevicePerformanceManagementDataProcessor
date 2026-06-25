@@ -41,8 +41,8 @@ http.createServer(app).listen(serverPort, function () {
 });*/
 
 //setting the path to the database 
-global.databasePath = './server/database/config.json';
-global.runtimeConfigPath = './server/database/runtime.json';
+global.databasePath = './database/config.json';
+global.runtimeConfigPath = './database/runtime.json';
 //appCommons.performApplicationRegistration();
 
 
