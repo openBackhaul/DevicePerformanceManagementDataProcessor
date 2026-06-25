@@ -11,34 +11,49 @@ const EPOCH_TIME = "1970-01-01T00:00:00+00:00";
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
 
   if (!mostRecentPeriodEndTime) {
-    return 'mostRecentPeriodEndTime not provided';
+    return ERRORS.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED;
   }
 
   if (!mostRecentPeriodEndTime24) {
-    return 'mostRecentPeriodEndTime24 not provided';
+    return ERRORS.MOST_RECENT_PERIOD_END_TIME24_NOT_PROVIDED;
   }
 
   if (!granularityPeriod) {
-    return 'granularityPeriod not provided';
+    return ERRORS.GRANULARITY_PERIOD_NOT_PROVIDED;
   }
 
   if (!periodEndTime) {
-    return 'periodEndTime not provided';
+    return ERRORS.PERIOD_END_TIME_NOT_PROVIDED;
   }
 
   let updated15 = mostRecentPeriodEndTime;
   let updated24 = mostRecentPeriodEndTime24;
 
   if (granularityPeriod === GRANU_PERIOD_15M) {
-    updated15 = periodEndTime;
+    updated15 = mostRecentPeriodEndTime > periodEndTime ? mostRecentPeriodEndTime : periodEndTime;
   } else if (granularityPeriod === GRANU_PERIOD_24H) {
-    updated24 = periodEndTime;
+    updated24 = mostRecentPeriodEndTime24 > periodEndTime ? mostRecentPeriodEndTime24 : periodEndTime;
   }
 
   return {
     'most-recent-period-end-time': updated15,
     'most-recent-period-end-time-24': updated24
   };
+}
+
+function extractSubFunctionParameters(parameters, functionName) {
+  const subFunctions = parameters["sub-function"];
+  if (!Array.isArray(subFunctions)) {
+    return {};
+  }
+
+  const subFunction = subFunctions.find(
+    fn => fn?.["function-name"] === functionName
+  );
+
+  return Array.isArray(subFunction?.parameter)
+    ? { "parameter": subFunction.parameter }
+    : {};
 }
 
 // ----------------- Helpers -----------------
@@ -62,19 +77,6 @@ function validateInput(input) {
   return "OK";
 }
 
-function maxTime(t1, t2) {
-  if (!t1) {
-    return t2;
-  }
-
-  let res = validateInput(input);
-
-  if (res !== "OK") {
-    return res;
-  }
-
-  return t1 >= t2 ? t1 : t2;
-}
 
 const p1IterateEcPmSlices = (input) => {
   try {
@@ -94,61 +96,67 @@ const p1IterateEcPmSlices = (input) => {
     const resultCC = JSON.parse(JSON.stringify(input['result-cc']));
 
     // Init Variables
-    let mostRecentPeriodEndTime = new Date(0);
-    let mostRecentPeriodEndTime24 = new Date(0);
+    let mostRecentPeriodEndTime = EPOCH_TIME;
+    let mostRecentPeriodEndTime24 = EPOCH_TIME;
 
-    let processedList = [];
+    let processedDataList = [];
 
-    let hist
+    for (let slice of historPerfDataList) {// histPerfData
+      // 1. Add Ethernet KPIs
+      let resultKpis;
+      try {
+        resultKpis = p1CalculateEthernetKpis({ 'historical-performance-data': slice['performance-data'] });
 
-    result = 'OK';
-    for (const histPerfData of historPerfDataList) {
-      let resultKpis = p1CalculateEthernetKpis({ 'historical-performance-data': histPerfData['performance-data'] });
-      if (typeof resultKpis === "string") {
-        result = ERRORS.KPI_CALCULATION_FAILED;
-        break;
+        if (typeof resultKpis === "string") {
+          return ERRORS.KPI_CALCULATION_FAILED;
+        }
+      } catch (error) {
+        return ERRORS.KPI_CALCULATION_FAILED;
       }
 
-      let resultPerfData = p1RemoveDefaultValues({
-        'input-object': resultKpis['historical-performance-data'],
-        'parameters': parameters['sub-function'][1] // To be update
-      });
-      if (typeof resultPerfData === "string") {
-        result = ERRORS.DEFAULT_VALUES_REMOVAL_FAILED;
-        break;
+      // 2. Delete default values
+      let resultPerfData;
+      try {
+        const defaultValuesParams = extractSubFunctionParameters(parameters, "p1RemoveDefaultValues");
+        resultPerfData = p1RemoveDefaultValues({
+          "parameters": defaultValuesParams,
+          'input-object': resultKpis['historical-performance-data'],
+        });
+
+        if (typeof resultPerfData === "string") {
+          return ERRORS.DEFAULT_VALUES_REMOVAL_FAILED;
+        }
+      } catch (error) {
+        return ERRORS.DEFAULT_VALUES_REMOVAL_FAILED;
       }
 
-      resultKpis['historical-performance-data'] = resultPerfData['cleaned-object'];
+      // Update slice
+      slice['performance-data'] = resultPerfData['cleaned-object'];
 
-      histPerfData['performance-data'] = resultKpis['historical-performance-data'];
+      // 3. Add Utilization
+      try {
+        let resCalculation = p1CalculateUtilization({
+          'historical-performance-data': slice,
+          'aggregation-group': aggrGroup,
+          'result-cc': resultCC
+        })
 
-      let resCalculation = p1CalculateUtilization({
-        'historical-performance-data': histPerfData,
-        'aggregation-group': aggrGroup,
-        'result-cc': resultCC
-      })
-      if (typeof resCalculation === "string") {
-        result = ERRORS.UTILIZATION_CALCULATION_FAILED;
-        break;
+        if (typeof resCalculation === "string") {
+          return ERRORS.UTILIZATION_CALCULATION_FAILED;
+        }
+
+        slice = resCalculation['historical-performance-data'];  // Update slice
+      } catch (error) {
+        return ERRORS.UTILIZATION_CALCULATION_FAILED;
       }
-
-      // if (resCalculation['historical-performance-data']['granularity-period'] == GRANU_PERIOD_15M) {
-      //   if (mostRecentPeriodEndTime < (new Date(resCalculation['historical-performance-data']['period-end-time']))) {
-      //     mostRecentPeriodEndTime = new Date(resCalculation['historical-performance-data']['period-end-time']);
-      //   }
-      // } else if (resCalculation['historical-performance-data']['granularity-period'] == GRANU_PERIOD_24H) {
-      //   if (mostRecentPeriodEndTime24 < (new Date(resCalculation['historical-performance-data']['period-end-time']))) {
-      //     mostRecentPeriodEndTime24 = new Date(resCalculation['historical-performance-data']['period-end-time']);
-      //   }
-      // }
 
       // 4. Update Timestamps
       try {
         const updateTimeResult = updateMostRecentPeriodEndTime(
           mostRecentPeriodEndTime,
           mostRecentPeriodEndTime24,
-          histPerfData['granularity-period'],
-          histPerfData['period-end-time']
+          slice['granularity-period'],
+          slice['period-end-time']
         );
 
         if (typeof updateTimeResult === 'string') {
@@ -160,15 +168,25 @@ const p1IterateEcPmSlices = (input) => {
       } catch (error) {
         return ERRORS.GENERAL_ERROR;
       }
-      processedList.push(resCalculation['historical-performance-data']);
+
+      // Push calculated data slice into array
+      processedDataList.push(slice);
     }
 
-    return {
-      'historical-performance-data-list': processedList,
-      'most-recent-period-end-time': mostRecentPeriodEndTime,
-      'most-recent-period-end-time-24': mostRecentPeriodEndTime24
-    };
-  } catch (err) {
+    let retValue = {
+      'historical-performance-data-list': processedDataList,
+    }
+    
+    if (mostRecentPeriodEndTime != EPOCH_TIME) {
+      retValue['most-recent-period-end-time'] = mostRecentPeriodEndTime;
+    }
+
+    if (mostRecentPeriodEndTime24 != EPOCH_TIME) {
+      retValue['most-recent-period-end-time-24'] = mostRecentPeriodEndTime24;
+    }
+
+    return retValue;
+  } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }
 };

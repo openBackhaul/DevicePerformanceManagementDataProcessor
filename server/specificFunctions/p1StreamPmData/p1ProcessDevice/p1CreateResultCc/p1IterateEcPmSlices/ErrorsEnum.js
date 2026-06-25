@@ -1,7 +1,4 @@
 const ERRORS = {
-  // General
-  GENERAL_ERROR: 'General processing error',
-
   // Parameters
   PARAMETERS_NOT_PROVIDED: 'parameters not provided',
   PARAMETERS_INVALID: 'parameters invalid',
@@ -21,15 +18,6 @@ const ERRORS = {
   MOST_RECENT_PERIOD_END_TIME_FAILED: 'mostRecentPeriodEndTime could not be provided',
   MOST_RECENT_PERIOD_END_TIME_24_FAILED: 'mostRecentPeriodEndTime24 could not be provided',
 
-  // p1CalculateEthernetKpis
-  // ETH_KPIS_COULDNT_ADDED: 'Ethernet KPIs could not be added',
-
-  // p1RemoveDefaultValues
-  // INPUT_OBJ_COULDNT_CLEAN: 'Input object could not be cleaned from attributes with default values',
-
-  // p1CalculateUtilization
-  // UTIL_COULDNT_ADD: 'Utilization could not be added',
-
   // updateMostRecentPeriodEndTime
   MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED: 'mostRecentPeriodEndTime not provided',
   MOST_RECENT_PERIOD_END_TIME_INVALID: 'mostRecentPeriodEndTime invalid',
@@ -40,7 +28,10 @@ const ERRORS = {
   GRAN_PERIOD_INVALID: 'granularityPeriod invalid',
 
   PERIOD_ENDTIME_NOT_PROVIDED: 'periodEndTime not provided',
-  PERIOD_ENDTIME_INVALID: 'periodEndTime invalid'
+  PERIOD_ENDTIME_INVALID: 'periodEndTime invalid',
+
+  // General
+  GENERAL_ERROR: 'General processing error',
 };
 
 module.exports = ERRORS;
