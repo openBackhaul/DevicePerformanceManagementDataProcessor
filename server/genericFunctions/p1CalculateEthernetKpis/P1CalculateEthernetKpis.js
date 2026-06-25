@@ -100,7 +100,7 @@ function p1CalculateEthernetKpis(input) {
       return ERRORS.HISTORICAL_DATA_NOT_PROVIDED;
     }
 
-    const performanceData = input['historical-performance-data'];
+    const performanceData = JSON.parse(JSON.stringify(input['historical-performance-data'])); // Initializate return value
 
     if (!performanceData || performanceData == undefined) {
       return ERRORS.HISTORICAL_DATA_INVALID;
@@ -117,6 +117,7 @@ function p1CalculateEthernetKpis(input) {
     let transmitTraffic, receiveTraffic, frameLossInput, frameLossOutput;
 
     try {
+      
       transmitTraffic = calculateTransmitTraffic(
         performanceData['total-bytes-output'],
         performanceData['time-period']
