@@ -1,9 +1,15 @@
 const { createClient } = require("redis");
+const { loadRuntimeConfig } = require("../../utils/config");
 
 let client;
 
 function buildRedisUrl() {
-  if (process.env.REDIS_URL) {
+  const runtimeConfig = loadRuntimeConfig() || {};
+  const redisConfig = runtimeConfig.redis || {};
+  if(redisConfig.url){
+    return redisConfig.url;
+  }
+  /* if (process.env.REDIS_URL) {
     return process.env.REDIS_URL;
   }
 
@@ -16,9 +22,9 @@ function buildRedisUrl() {
     if (first) {
       return first;
     }
-  }
+  } */
 
-  return "redis://127.0.0.1:6379";
+  return "";
 }
 
 async function getRedisClient(logger) {
@@ -30,7 +36,7 @@ async function getRedisClient(logger) {
     url: buildRedisUrl(),
     socket: {
       reconnectStrategy(retries) {
-        const base = Number(process.env.REDIS_RECONNECT_BASE_MS || 250);
+        const base = Number(process.env.REDIS_RECONNECT_BASE_MS || 30000);
         const max = Number(process.env.REDIS_RECONNECT_MAX_MS || 5000);
         return Math.min(base * Math.max(1, retries), max);
       }

@@ -5,7 +5,8 @@ const p1FieldsFilter = require("./../../../../genericFunctions/p1FieldsFilter/P1
 const p1DiscardIrrelevantPmRecords = require("./../../../../genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords");
 const logger = require('../../../../service/LoggingService.js').getLogger();
 const ERRORS = require('./ErrorsEnum.js');
- 
+ const ERRORS = require('./ErrorsEnum.js');
+
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
 const ETHERNET_CONTAINER_PAC_KEY = "ethernet-container-2-0:ethernet-container-pac";
  
@@ -181,14 +182,22 @@ async function filterHistoricalList(
     "relevant-granularities": relevantGranularities,
     "most-recent-period-end-time": mostRecentPeriodEndTime,//(mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
     "most-recent-period-end-time-24": mostRecentPeriodEndTime24,//(mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
+    "relevant-granularities": relevantGranularities,
+    "most-recent-period-end-time": mostRecentPeriodEndTime,//(mostRecentPeriodEndTime != undefined) ? new Date(mostRecentPeriodEndTime) : mostRecentPeriodEndTime,
+    "most-recent-period-end-time-24": mostRecentPeriodEndTime24,//(mostRecentPeriodEndTime24 != undefined) ? new Date(mostRecentPeriodEndTime24) : mostRecentPeriodEndTime24
   };
   const response = await p1DiscardIrrelevantPmRecords(discardInput);
  
   if (isValidDiscardResponse(response)) {
     return response["filtered-historical-performance-data-list"];
   }
- 
+
   const inputSummary = {
+    inputRecordCount:
+      Array.isArray(list["historical-performance-data-list"])
+        ? list["historical-performance-data-list"].length
+        : 0,
+    //list.length,
     inputRecordCount:
       Array.isArray(list["historical-performance-data-list"])
         ? list["historical-performance-data-list"].length
@@ -325,7 +334,7 @@ function addBatchTimestamp(rawCc) {
   }
  
   if (timestamps.length === 0) {
-    rawCc.batchTimestamp = DEFAULT_BATCH_TIMESTAMP;
+    rawCc["batch-timestamp"] = DEFAULT_BATCH_TIMESTAMP;
     return DEFAULT_BATCH_TIMESTAMP;
   }
  
@@ -334,8 +343,8 @@ function addBatchTimestamp(rawCc) {
   });
  
   const latestTimestamp = timestamps[timestamps.length - 1];
- 
-  rawCc.batchTimestamp = latestTimestamp;
+
+  rawCc["batch-timestamp"] = latestTimestamp;
   return latestTimestamp;
 }
  
@@ -434,7 +443,7 @@ async function run(request) {
     let rawCc = (rawResponse || {}).body?._source["core-model-1-4:control-construct"] || {
       mountName
     };
- 
+
     // --- Apply fields filter ---
     const fieldsFilterString = getParamFromFunction(
       parameters,
@@ -442,7 +451,7 @@ async function run(request) {
       "fieldsFilter",
       ""
     );
- 
+
     let fieldsFilterResponse;
     try {
       fieldsFilterResponse = await p1FieldsFilter.run({
@@ -456,7 +465,7 @@ async function run(request) {
       );
       throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
     }
- 
+
     if (typeof fieldsFilterResponse !== "object" || !fieldsFilterResponse ||
       !fieldsFilterResponse["filtered-data-structure"]
     ) {
@@ -468,19 +477,19 @@ async function run(request) {
         },
         "Invalid p1FieldsFilter response"
       );
- 
+
       throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
     }
- 
+
     //if (typeof fieldsFilterResponse === "string") {
     //  const error = new Error(
     //       `p1FieldsFilter returned error response: ${fieldsFilterResponse}`
     //   );
- 
+
     //   error.stage = "p1FieldsFilter";
     //   error.vendorResponse = fieldsFilterResponse;
     //   error.retryable = false;
- 
+
     //   throw error;
     //   logger.error(
     //     { label: "p1LoadRawCc:p1FieldsFilter", mountName, vendorResponse: fieldsFilterResponse },
@@ -488,7 +497,7 @@ async function run(request) {
     //   );
     //   throw new Error(ERRORS.RAW_CC_COULD_NOT_BE_PROVIDED);
     // }
- 
+
     rawCc = fieldsFilterResponse["filtered-data-structure"];
     rawCc = normalizeRawCcAfterFieldsFilter(rawCc);
  
@@ -501,7 +510,7 @@ async function run(request) {
  
         throw error;
     } */
- 
+
     // --- Get data store client ---
     let dataStoreClient;
     try {
@@ -518,7 +527,7 @@ async function run(request) {
       );
       throw new Error(ERRORS.DATA_STORE_ES_CLIENT_INVALID);
     }
- 
+
     // --- Retrieve most recent period end times from data store ---
     const interfaceMetadataList = await loadInterfaceMetadataList(
       dataStoreClient,
@@ -533,17 +542,19 @@ async function run(request) {
       "relevantGranularities",
       ".*"
     );
+
+    // --- Discard irrelevant PM records ---
  
     // --- Discard irrelevant PM records ---
     for (const ltp of rawCc["logical-termination-point"] || []) {
-      const meta = interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {};
- 
+      const meta = (interfaceMetadataList)?interfaceMetadataList.find((item) => item.uuid === ltp.uuid) || {}:{};
+
       for (const layerProtocol of ltp["layer-protocol"] || []) {
         const layerProtocolName = String(layerProtocol["layer-protocol-name"] || "");
  
         if (layerProtocolName.includes("air-interface")) {
           const pac = layerProtocol["air-interface-2-0:air-interface-pac"] || {};
- 
+
           if (
             pac["air-interface-historical-performances"] &&
             pac["air-interface-historical-performances"]["historical-performance-data-list"] &&
@@ -562,7 +573,7 @@ async function run(request) {
  
         if (layerProtocolName.includes("ethernet-container")) {
           const pac = layerProtocol["ethernet-container-2-0:ethernet-container-pac"] || {};
- 
+
           if (
             pac["ethernet-container-historical-performances"] &&
             pac["ethernet-container-historical-performances"]["historical-performance-data-list"] &&
@@ -580,7 +591,7 @@ async function run(request) {
         }
       }
     }
- 
+
     // --- Add batch timestamp ---
     addBatchTimestamp(rawCc);
  

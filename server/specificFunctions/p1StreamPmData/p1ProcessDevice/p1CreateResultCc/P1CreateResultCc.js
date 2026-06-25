@@ -1,16 +1,15 @@
 const p1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature");
-const { getParamFromFunction } = require("../../../../utils/functionTree");
+const { getParamFromFunction, findFunctionNode } = require("../../../../utils/functionTree");
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
 const ERRORS_P1PrepareTxModes = require("./p1PrepareTxModes/ErrorsEnum");
-const p1PrepareTxModes = require("./p1PrepareTxModes/P1PrepareTxModes.js");
+const ERRORS_P1IterateAiPmSlices = require("./p1IterateAiPmSlices/ErrorsEnum");
 const logger = require("../../../../service/LoggingService.js").getLogger();
 
 /*
  * Vendor owned sub-functions.
- * These are optional here because Lot 3/4 vendor modules may be added later.
- * This file only integrates with them when they are available.
  */
-const p1IterateAiPmSlices = optionalRequire("./p1IterateAiPmSlices/P1IterateAiPmSlices.js");
+const p1PrepareTxModes = require("./p1PrepareTxModes/P1PrepareTxModes.js");
+const {p1IterateAiPmSlices} = require("./p1IterateAiPmSlices/P1IterateAiPmSlices.js");
 const p1IterateEcPmSlices = optionalRequire("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
@@ -173,12 +172,9 @@ function getRemoveOutOfRangeTemperatureParameters(parameters) {
 }
 
 function getSubFunctionParameters(parameters, functionName) {
-  const functionNode = getParamFromFunction(
+  const functionNode = findFunctionNode(
     parameters,
-    functionName,
-    "",
-    undefined,
-    true
+    functionName
   );
 
   return functionNode || {};
@@ -190,9 +186,9 @@ function isValidPrepareTxModesResponse(response) {
     typeof response === "object" &&
     (
       Array.isArray(response[HIST_PERF_DATA_LIST_KEY]) ||
-      Array.isArray(response.historicalPerformanceDataList) ||
-      Array.isArray(response[TRANSMISSION_MODE_LIST_KEY]) ||
-      Array.isArray(response.transmissionModeList)
+      //Array.isArray(response.historicalPerformanceDataList) ||
+      Array.isArray(response[TRANSMISSION_MODE_LIST_KEY])
+      //Array.isArray(response.transmissionModeList)
     )
   );
 }
@@ -448,6 +444,7 @@ function substringLinkId(input) {
       throw buildProcessingError("substringLinkId", "linkEndpointId not provided", false);
     }
 
+    //linkEndpointId = `${linkEndpointId}A`; // Append dummy character to pass validation for 9 digits followed by A or B
     const normalized = String(linkEndpointId).trim();
 
     if (!/^[0-9]{9}[AB]$/.test(normalized)) {
@@ -561,7 +558,7 @@ function getEthernetContainerPac(layerProtocol) {
 
 function getHistoricalPerformanceDataList(pac, historicalPerformanceKey) {
   if (!isPlainObject(pac)) {
-    return [];
+    return undefined;
   }
 
   const historicalPerformances = pac[historicalPerformanceKey];
@@ -577,7 +574,7 @@ function getHistoricalPerformanceDataList(pac, historicalPerformanceKey) {
     return historicalPerformances[HIST_PERF_DATA_LIST_KEY];
   }
 
-  return [];
+  return undefined;
 }
 
 function setHistoricalPerformanceDataList(pac, historicalPerformanceKey, historicalPerformanceDataList) {
@@ -594,18 +591,18 @@ function setHistoricalPerformanceDataList(pac, historicalPerformanceKey, histori
 
 function getTransmissionModeList(pac) {
   if (!isPlainObject(pac)) {
-    return [];
+    return undefined;
   }
 
   const capability = pac[AIR_INTERFACE_CAPABILITY_KEY];
 
   if (!isPlainObject(capability)) {
-    return [];
+    return undefined;
   }
 
   return Array.isArray(capability[TRANSMISSION_MODE_LIST_KEY])
     ? capability[TRANSMISSION_MODE_LIST_KEY]
-    : [];
+    : undefined;
 }
 
 function setTransmissionModeList(pac, transmissionModeList) {
@@ -716,6 +713,46 @@ function getResponseTransmissionModeList(response, fallbackList) {
   );
 }
 
+function isValidIterateAiPmSlicesResponse(response) {
+  return (
+    response &&
+    typeof response === "object" &&
+    Array.isArray(response[HIST_PERF_DATA_LIST_KEY])
+  );
+}
+
+function buildIterateAiPmSlicesError(response, mountName) {
+  const error = new Error(
+    `p1IterateAiPmSlices returned error response: ${JSON.stringify(response)}`
+  );
+
+  error.stage = "p1IterateAiPmSlices";
+  error.vendorResponse = response;
+  error.mountName = mountName;
+
+  if (
+    response === ERRORS_P1IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
+    response === ERRORS_P1IterateAiPmSlices.PARAMETERS_INVALID ||
+    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+    response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
+    response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
+    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR ||
+    response === ERRORS_P1IterateAiPmSlices.MOST_RECENT_END_TIME_PROVIDE_ERROR ||
+    response === ERRORS_P1IterateAiPmSlices.MOST_RECENT_END_TIME_24_PROVIDE_ERROR ||
+    response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_NOT_PROVIDED ||
+    response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_INVALID ||
+    response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_INVALID
+  ) {
+    error.retryable = false;
+  } else {
+    error.retryable = true;
+  }
+
+  return error;
+}
+
 function getResponseMostRecentTimes(response, fallbackList) {
   const derived = getMostRecentPeriodEndTimes(fallbackList);
 
@@ -745,20 +782,22 @@ async function integrateP1PrepareTxModes(pac, mountName) {
 
   const response = await callVendorFunction(p1PrepareTxModes, {
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
-    historicalPerformanceDataList,
-    [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList,
-    transmissionModeList
+    //historicalPerformanceDataList,
+    [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList
+    //transmissionModeList
   });
 
-  if (response === undefined) {
+  /* if (response === undefined) {
     return {
       historicalPerformanceDataList,
       transmissionModeList
     };
-  }
+  } */
 
   if (!isValidPrepareTxModesResponse(response)) {
-    throw buildPrepareTxModesError(response, mountName);
+    logger.error(buildPrepareTxModesError(response, mountName).message);
+    return null;
+    //throw buildPrepareTxModesError(response, mountName);
   }
 
   return {
@@ -773,7 +812,7 @@ async function integrateP1PrepareTxModes(pac, mountName) {
   };
 }
 
-async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeList) {
+async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeList, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -787,10 +826,15 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   const response = await callVendorFunction(p1IterateAiPmSlices, {
     parameters: iterateAiParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
-    historicalPerformanceDataList,
+    //historicalPerformanceDataList,
     [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList,
-    transmissionModeList
+    //transmissionModeList
   });
+
+  if (!isValidIterateAiPmSlicesResponse(response)) {
+    logger.error(buildIterateAiPmSlicesError(response, mountName).message);
+    return null;
+  }
 
   const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
     response,
@@ -865,15 +909,15 @@ function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregati
   return {
     uuid: ltp.uuid,
     "ltp-uuid": ltp.uuid,
-    linkId,
+    //linkId,
     "link-id": linkId,
-    linkEndpointId,
+    //linkEndpointId,
     "link-endpoint-id": linkEndpointId,
-    parallelPhysicalLtpList,
+    //parallelPhysicalLtpList,
     "parallel-physical-ltp-list": parallelPhysicalLtpList,
-    mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
+    //mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
+    //mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
     "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
   };
 }
@@ -902,6 +946,10 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
 
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
 
+      if(prepareTxModesResult === null) {
+        continue;
+      }
+
       setHistoricalPerformanceDataList(
         pac,
         AIR_INTERFACE_HIST_PERF_KEY,
@@ -916,8 +964,13 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       const iterateAiResult = await integrateP1IterateAiPmSlices(
         parameters,
         pac,
-        prepareTxModesResult.transmissionModeList
+        prepareTxModesResult.transmissionModeList,
+        mountName
       );
+
+      if (iterateAiResult === null) {
+        continue;
+      }
 
       setHistoricalPerformanceDataList(
         pac,
@@ -931,12 +984,12 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         aggregationGroupList
       );
 
-      metadata.mostRecentPeriodEndTime =
-        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime;
+      /* metadata.mostRecentPeriodEndTime =
+        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime; */
       metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
 
-      metadata.mostRecentPeriodEndTime24 =
-        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
+      /* metadata.mostRecentPeriodEndTime24 =
+        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24; */
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
       interfaceMetadataList.push(metadata);
@@ -1059,12 +1112,12 @@ async function run(request) {
       mountName
     );
 
-    await processEthernetContainers(
+    /* await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
       interfaceMetadataList
-    );
+    ); */
 
     await applyP1RemoveOutOfRangeTemperature(
       parameters,
@@ -1081,7 +1134,7 @@ async function run(request) {
       /*
        * Specification style aliases.
        */
-      "result-cc": resultCc,
+      //"result-cc": resultCc,
       "interface-metadata-list": interfaceMetadataList,
       "aggregation-group-list": aggregationGroupList
     };

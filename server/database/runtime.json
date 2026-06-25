@@ -36,7 +36,7 @@
     "url": "redis://127.0.0.1:6379",
     "replicaLockTtlMs": 60000,
     "cleanupLockTtlMs": 300000,
-    "staleMessageIdleMs": 3600000,
+    "staleMessageIdleMs": 300000,
     "reconnectBaseDelayMs": 250,
     "reconnectMaxDelayMs": 5000,
     "queueMaxLength": 20000,

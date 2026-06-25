@@ -10,7 +10,7 @@ const ERRORS = {
   RAW_CC_COULD_NOT_BE_PROVIDED: 'rawCc could not be provided',
   GENERAL_PROCESSING_ERROR: 'General processing error'
 };
- 
+
 ERRORS.knownErrors = new Set(Object.values(ERRORS));
- 
+
 module.exports = ERRORS;
