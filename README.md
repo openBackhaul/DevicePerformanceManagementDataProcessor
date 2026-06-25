@@ -74,4 +74,4 @@ In case of failure, data will be missing in the long term monitoring of the micr
 
 ## Comments
 
-This application is part of the ComarchOSS replacement project.  
+This application is part of the ComarchOSS replacement project, respectively its [_PerformanceManagement](https://github.com/openBackhaul/_PerformanceManagement) module.  
