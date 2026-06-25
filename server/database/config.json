@@ -2991,8 +2991,8 @@
             "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
             "http-client-interface-1-0:http-client-interface-pac": {
               "http-client-interface-configuration": {
-                "application-name": "RegistrationApplication",
-                "release-number": "43.2.5"
+                "application-name": "RegistryOffice",
+                "release-number": "2.1.2"
               }
             }
           }

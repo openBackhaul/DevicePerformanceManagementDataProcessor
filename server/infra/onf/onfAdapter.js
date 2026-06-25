@@ -26,9 +26,6 @@ const LayerProtocol = require(
 const OnfAttributes = require(
   "onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes"
 );
-const KafkaProducerService = require(
-  "onf-core-model-ap/applicationPattern/services/kafkaProducerService"
-);
 const TcpClientInterface = require(
   "onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface"
 );

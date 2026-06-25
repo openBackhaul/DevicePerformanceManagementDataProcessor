@@ -853,7 +853,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   };
 }
 
-async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc) {
+async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     ETHERNET_CONTAINER_HIST_PERF_KEY
@@ -864,7 +864,11 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     "p1IterateEcPmSlices"
   );
 
-  const response = await callVendorFunction(p1IterateEcPmSlices, {
+  //console.log("parameters: ",JSON.stringify(iterateEcParameters));
+  console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
+  console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
+  
+  /* const response = await callVendorFunction(p1IterateEcPmSlices, {
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     historicalPerformanceDataList,
@@ -872,9 +876,9 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     aggregationGroup: aggregationGroup || {},
     "result-cc": resultCc,
     resultCc
-  });
+  }); */
 
-  const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
+  /* const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
     response,
     historicalPerformanceDataList
   );
@@ -888,7 +892,8 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     historicalPerformanceDataList: finalHistoricalPerformanceDataList,
     mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24
-  };
+  }; */
+  return null;
 }
 
 function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregationGroupList) {
@@ -977,7 +982,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         AIR_INTERFACE_HIST_PERF_KEY,
         iterateAiResult.historicalPerformanceDataList
       );
-
+      
       const metadata = buildAirInterfaceMetadata(
         ltp,
         iterateAiResult.historicalPerformanceDataList,
@@ -997,7 +1002,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
   }
 }
 
-async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList) {
+async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getEthernetContainerPac(layerProtocol);
@@ -1015,10 +1020,11 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         parameters,
         pac,
         aggregationGroup,
-        resultCc
+        resultCc,
+        mountName
       );
 
-      setHistoricalPerformanceDataList(
+      /* setHistoricalPerformanceDataList(
         pac,
         ETHERNET_CONTAINER_HIST_PERF_KEY,
         iterateEcResult.historicalPerformanceDataList
@@ -1040,7 +1046,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         iterateEcResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
-      interfaceMetadataList.push(metadata);
+      interfaceMetadataList.push(metadata); */
     }
   }
 }
@@ -1103,6 +1109,7 @@ async function run(request) {
     const resultCc = createResultCcFromRawCc(rawCc);
     const aggregationGroupList = createAggregationGroupList(rawCc);
     const interfaceMetadataList = [];
+    
 
     await processAirInterfaces(
       parameters,
@@ -1112,12 +1119,30 @@ async function run(request) {
       mountName
     );
 
+    //console.log("aggregation-group-list: ",JSON.stringify(aggregationGroupList));
+
+    /* console.log("#-----------------------------------------------------------------------");
+    console.log(`#                          Started - ${mountName}                       `);
+    console.log("#-----------------------------------------------------------------------");
+    const iterateEcParameters = getSubFunctionParameters(
+      parameters,
+      "p1IterateEcPmSlices"
+    );
+    console.log("parameters: ",JSON.stringify(iterateEcParameters)); */
+
     /* await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
-      interfaceMetadataList
+      interfaceMetadataList,
+      mountName
     ); */
+
+    /* console.log("result-cc: ",JSON.stringify(resultCc));
+
+    console.log("#-----------------------------------------------------------------------");
+    console.log(`#                          Ended - ${mountName}                         `);
+    console.log("#-----------------------------------------------------------------------"); */
 
     await applyP1RemoveOutOfRangeTemperature(
       parameters,

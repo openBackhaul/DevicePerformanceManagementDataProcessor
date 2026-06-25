@@ -41,24 +41,24 @@ http.createServer(app).listen(serverPort, function () {
 });*/
 
 //setting the path to the database 
-global.databasePath = './server/database/config.json';
-global.runtimeConfigPath = './server/database/runtime.json';
+global.databasePath = './database/config.json';
+global.runtimeConfigPath = './database/runtime.json';
 //appCommons.performApplicationRegistration();
 
 
   http.createServer(app).listen(serverPort, function () {
         console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
         console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+        appCommons.performApplicationRegistration();
     });
-    appCommons.performApplicationRegistration();
 
 //  start streaming AFTER success
-   async function initial(){
+   /* async function initial(){
     await P1StreamPmData.run().catch(err => {
         console.error(`Error running P1StreamPmData: ${err}`);
     });
    }
-   initial();
+   initial(); */
 /* prepareElasticsearch(false).catch(err => {
     console.error(`Error preparing Elasticsearch : ${err}`);
 }).finally(() => {
