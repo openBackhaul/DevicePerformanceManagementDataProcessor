@@ -1,4 +1,4 @@
-const { p1CalculateEthernetKpis } = require('./P1CalculateEthernetKpis');
+const p1CalculateEthernetKpis  = require('./P1CalculateEthernetKpis');
 const ERRORS = require('./ErrorsEnum');
 const fs = require('fs');
 
