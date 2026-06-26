@@ -99,7 +99,7 @@ x-javascript-interface:
                           'List of UUIDs of transporting PhysicalServerLTPs
                           IF {$preparePhysicalServerLtpList.input#/aggregation-group}!=null
                             THEN from {$preparePhysicalServerLtpList.input#/aggregation-group/physical-server-ltp-list]
-                            ELSE from [ aggregation of {$preparePhysicalServerLtpList.input#/result-cc/logical-termination-point={serving-structure-ltp-list[*]}/server-ltp[0]} with serving-structure-ltp-list={$preparePhysicalServerLtpList.input#/result-cc/logical-termination-point={$preparePhysicalServerLtpList.input#/uuid-of-ethernet-container}/server-ltp} ]'
+                            ELSE from [ aggregation of {$preparePhysicalServerLtpList.input#/result-cc/logical-termination-point={serving-structure-ltp-list[*]}/server-ltp} with serving-structure-ltp-list={$preparePhysicalServerLtpList.input#/result-cc/logical-termination-point={$preparePhysicalServerLtpList.input#/uuid-of-ethernet-container}/server-ltp} ]'
         error:
           description: 'physicalServerList could not be provided'
           content:
