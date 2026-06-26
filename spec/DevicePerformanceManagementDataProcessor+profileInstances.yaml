@@ -234,8 +234,6 @@ profile-instances:
           owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-093'
           owner: 'platform'
-        - parameter: 'dpmdp-1-1-0-string-p-094'
-          owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-095'
           owner: 'platform'
       sub-function-list:
@@ -268,15 +266,6 @@ profile-instances:
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-002'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-094'
-    capability:
-      string-name: 'iveritasProvider'
-      purpose: 'kafkaClient'
-      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
-    configuration:
-      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-003'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-1-0-string-p-095'
@@ -1202,8 +1191,6 @@ profile-instances:
           owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-552'
           owner: 'platform'
-        - parameter: 'dpmdp-1-1-0-string-p-553'
-          owner: 'platform'
       sub-function-list:
         - 'dpmdp-1-1-0-function-p-560'
     configuration:
@@ -1215,7 +1202,7 @@ profile-instances:
       string-name: 'mycom-output-format'
       purpose: 'fieldsFilter'
     configuration:
-      string-value: 'to_be_defined'
+      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name)'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-1-0-string-p-552'
@@ -1224,14 +1211,6 @@ profile-instances:
       purpose: 'fieldsFilter'
     configuration:
       string-value: 'equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-553'
-    capability:
-      string-name: 'iveritas-output-format'
-      purpose: 'fieldsFilter'
-    configuration:
-      string-value: 'to_be_defined'
 
 
   # p1FieldsFilter
@@ -1258,8 +1237,6 @@ profile-instances:
         - parameter: 'dpmdp-1-1-0-string-p-602'
           owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-603'
-          owner: 'platform'
-        - parameter: 'dpmdp-1-1-0-string-p-604'
           owner: 'platform'
       sub-function-list:
     configuration:
@@ -1291,15 +1268,6 @@ profile-instances:
       pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
     configuration:
       string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-002'
-
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-604'
-    capability:
-      string-name: 'iveritas-output-format'
-      purpose: 'kafkaClient'
-      pattern: '^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$'
-    configuration:
-      string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-003'
 
 
   # p2Storing
