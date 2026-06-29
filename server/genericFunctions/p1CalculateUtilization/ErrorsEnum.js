@@ -6,7 +6,7 @@ const ERRORS = {
   AGG_GROUP_INVALID: 'aggregationGroup invalid',
   RESULT_CC_NOT_PROVIDED: 'result-cc not provided',
   RESULT_CC_INVALID: 'result-cc invalid',
-  TRANSMODE_INVALID: "Utilization could not be added",
+  UTILIZATION_COULDNT_ADD: "Utilization could not be added",
 
   // calculateTotalAirInterfaceIntervalCapacity
   LTP_LIST_NOT_PROVIDED: 'logicalTerminationPoint list not provided',

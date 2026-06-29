@@ -114,9 +114,9 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     const cleanLTPlist = ltpList.filter((ltp) => psyServerLTP.includes(ltp['uuid']));
 
     // Reduce function to calculate all AirInterfaceCapacity for the aggration
-    const totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
+    let totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
       let lp = currentLTP['layer-protocol'];
-      lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER" );
+      lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER");
       const resLP = lp.reduce((accLP, currentLP) => {
         const airPerfHist = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
         // In case of no pm history set Accumulator equal to 0
@@ -193,7 +193,7 @@ function calculateUtilization(input) {
     let result;
     // Check if Denominator is 0, then set by default to 0
     if (calcDen == 0) {
-      result = 0;
+      return ERRORS.UTILIZATION_COULDNT_PROVIDED;
     } else {
       result = (calcNum / calcDen) * 100;
     }
@@ -238,11 +238,11 @@ const p1CalculateUtilization = (input) => {
     }
 
     // Validate Aggreghation Group
-    if (aggGroup == null) {
-      return ERRORS.AGG_GROUP_NOT_PROVIDED;
-    } else if (aggGroup[PSYSERVERLTP] == null ||
-      aggGroup[PSYSERVERLTP].length == 0) {
-      return ERRORS.AGG_GROUP_INVALID;
+    if (aggGroup && aggGroup != undefined) {
+      if (aggGroup[PSYSERVERLTP] == null ||
+        aggGroup[PSYSERVERLTP].length == 0) {
+        return ERRORS.AGG_GROUP_INVALID;
+      }
     }
 
     // Valuidate Result CC
@@ -265,6 +265,9 @@ const p1CalculateUtilization = (input) => {
         'period-end-time': retHistoricalPerfData[ENDTIME],
       }
       let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
+      if (typeof totAirCapacity == "string") {
+        return ERRORS.UTILIZATION_COULDNT_ADD;
+      }
       retHistoricalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
 
       const inputStruct = {
@@ -273,6 +276,10 @@ const p1CalculateUtilization = (input) => {
         'time-period': retHistoricalPerfData[PERFDATA][TIMEPERIOD] // integer
       }
       let utilization = calculateUtilization(inputStruct);
+      if (typeof utilization == "string") {
+        return ERRORS.UTILIZATION_COULDNT_ADD;
+      }
+
       retHistoricalPerfData[PERFDATA]['utilization'] = utilization['utilization'];
       returnData = {
         'historical-performance-data': retHistoricalPerfData
