@@ -6,6 +6,9 @@ const p1CalculateUtilization = require('../../../../../genericFunctions/p1Calcul
 const GRANU_PERIOD_15M = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN";
 const GRANU_PERIOD_24H = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS";
 
+const MOST_RECENT_15 = "most-recent-period-end-time";
+const MOST_RECENT_24 = "most-recent-period-end-time-24";
+
 const EPOCH_TIME = "1970-01-01T00:00:00+00:00";
 
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
@@ -58,34 +61,51 @@ function extractSubFunctionParameters(parameters, functionName) {
 
 // ----------------- Helpers -----------------
 function validateInput(input) {
-  if (!input) {
+  // Check if Parameters exists
+  if (!input || input['parameters'] === undefined) {
     return ERRORS.PARAMETERS_NOT_PROVIDED;
   }
-
-  if (!input.parameters) {
+  if (typeof input['parameters'] !== 'object' || Array.isArray(input['parameters']) || input['parameters'] === null) {
+    return ERRORS.PARAMETERS_INVALID;
+  }
+  if (Object.keys(input['parameters']).length == 0) {
     return ERRORS.PARAMETERS_INVALID;
   }
 
-  if (!input['historical-performance-data-list']) {
+  // Check Historical performance Data list
+  if (!input['historical-performance-data-list'] || input['historical-performance-data-list'] === undefined) {
     return ERRORS.HISTORICAL_DATA_LIST_NOT_PROVIDED;
   }
-
   if (!Array.isArray(input['historical-performance-data-list'])) {
+    return ERRORS.HISTORICAL_DATA_LIST_INVALID;
+  }
+  if (input['historical-performance-data-list'].length == 0) {
     return ERRORS.HISTORICAL_DATA_LIST_INVALID;
   }
 
   return "OK";
 }
 
-
+// Function p1IterateEcPmSlices
+// 
+// Errors enumeration
+// - 'parameters not provided'
+// - 'parameters invalid'
+// - 'historicalPerformanceDataList not provided'
+// - 'historicalPerformanceDataList invalid'
+// - 'Ethernet KPIs could not be calculated'
+// - 'Default values could not be removed'
+// - 'Utilization could not be calculated'
+// - 'historicalPerformanceDataList could not be provided'
+// - 'General processing error'
 const p1IterateEcPmSlices = (input) => {
   try {
-    if (Object.keys(input).length == 0) {
+    if (!input || Object.keys(input).length == 0) {
       return ERRORS.GENERAL_ERROR;
     }
 
+    // Validate input
     let result = validateInput(input);
-
     if (result !== "OK") {
       return result;
     }
@@ -163,8 +183,8 @@ const p1IterateEcPmSlices = (input) => {
           return ERRORS.GENERAL_ERROR;
         }
 
-        mostRecentPeriodEndTime = updateTimeResult['most-recent-period-end-time'];
-        mostRecentPeriodEndTime24 = updateTimeResult['most-recent-period-end-time-24'];
+        mostRecentPeriodEndTime = updateTimeResult[MOST_RECENT_15];
+        mostRecentPeriodEndTime24 = updateTimeResult[MOST_RECENT_24];
       } catch (error) {
         return ERRORS.GENERAL_ERROR;
       }
@@ -176,13 +196,13 @@ const p1IterateEcPmSlices = (input) => {
     let retValue = {
       'historical-performance-data-list': processedDataList,
     }
-    
+
     if (mostRecentPeriodEndTime != EPOCH_TIME) {
-      retValue['most-recent-period-end-time'] = mostRecentPeriodEndTime;
+      retValue[MOST_RECENT_15] = mostRecentPeriodEndTime;
     }
 
     if (mostRecentPeriodEndTime24 != EPOCH_TIME) {
-      retValue['most-recent-period-end-time-24'] = mostRecentPeriodEndTime24;
+      retValue[MOST_RECENT_24] = mostRecentPeriodEndTime24;
     }
 
     return retValue;
