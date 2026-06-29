@@ -69,8 +69,6 @@ x-javascript-interface:
                 - 'out of range levels could not be removed'
                 - 'default values could not be removed'
                 - 'historicalPerformanceDataList could not be provided'
-                - 'mostRecentPeriodEndTime could not be provided'
-                - 'mostRecentPeriodEndTime24 could not be provided'
                 - 'general processing error'
     processing:
       p1CalculateIntervalCapacity:
