@@ -1,181 +1,246 @@
 const p1IterateEcPmSlices = require('./P1IterateEcPmSlices');
-const Errors = require('./ErrorsEnum');
+const ERRORS = require('./ErrorsEnum');
 const fs = require('fs');
 
+const GRANU_PERIOD_15M = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN";
+const GRANU_PERIOD_24H = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS";
+
 describe('p1IterateEcPmSlices', () => {
-  // let service;
-  // let mocks;
+  // TODO
+});
 
-  // beforeEach(() => {
-  //   mocks = {
-  //     kpiService: { calculate: jest.fn() },
-  //     removeDefaultService: { clean: jest.fn() },
-  //     utilizationService: { calculate: jest.fn() }
-  //   };
-
-  //   service = createService(mocks);
-  // });
+describe('p1IterateEcPmSlices - Validate Errors messages', () => {
 
   let historicalData;
   let parameters;
   let resCC;
   beforeEach(() => {
-    let fileParsed = fs.readFileSync(__dirname + '/datasets/historicalPerfEth1.json', 'utf8');
-    historicalData = JSON.parse(fileParsed);
-    fileParsed = fs.readFileSync(__dirname + '/datasets/parametersEc.json', 'utf8');
-    parameters =  JSON.parse(fileParsed);
-
-    fileParsed = fs.readFileSync(__dirname + '/datasets/resultCC513250006.json', 'utf8');
-    resCC =  JSON.parse(fileParsed);
+    let fileParsed = fs.readFileSync(__dirname + '/datasets/parametersEc.json', 'utf8');
+    parameters = JSON.parse(fileParsed);
   });
 
+  test('Null input, shoud return General Error', () => {
+    const result = p1IterateEcPmSlices(null);
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.GENERAL_ERROR);
+  });
 
-  test('Internal Test', () => {
+  test('Undefined input, shoud return General Error', () => {
+    const result = p1IterateEcPmSlices(undefined);
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.GENERAL_ERROR);
+  });
 
+  test('Empty object as input, shoud return General Error', () => {
+    const result = p1IterateEcPmSlices({});
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.GENERAL_ERROR);
+  });
 
+  test('Empty object as input, shoud return General Error', () => {
     const input = {
-      'parameters': parameters,
-      'aggregation-group': {
-        'physical-server-ltp-list': [
-          'LTP-MWPS-TTP-ODU-B',
-          'LTP-MWPS-TTP-ODU-A',
-        ]
-      },
-      'result-cc': resCC,
-      'historical-performance-data-list': historicalData['ethernet-container-historical-performances']['historical-performance-data-list']
+      'parameters': {},
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': []
     };
 
-    let res = p1IterateEcPmSlices(input);
-    
+    const result = p1IterateEcPmSlices({});
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.GENERAL_ERROR);
   });
 
-  // test('should process slices successfully', () => {
-  //   const input = {
-  //     parameters: {},
-  //     'aggregation-group': {},
-  //     'result-cc': {},
-  //     'historical-performance-data-list': [
-  //       {
-  //         'granularity-period':
-  //           'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-  //         'period-end-time': '2026-01-01T10:00:00Z',
-  //         'performance-data': {}
-  //       }
-  //     ]
-  //   };
+  test('Should return Parameters invalid', () => {
+    const input = {
+      'parameters': {},
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': []
+    };
 
-  //   mocks.kpiService.calculate.mockReturnValue({});
-  //   mocks.removeDefaultService.clean.mockReturnValue({});
-  //   mocks.utilizationService.calculate.mockReturnValue({});
+    const result = p1IterateEcPmSlices(input);
 
-  //   const result = p1IterateEcPmSlices.execute(input);
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.PARAMETERS_INVALID);
+  });
 
-  //   expect(result).toBeDefined();
-  //   expect(result['historical-performance-data-list']).toHaveLength(1);
-  //   expect(result['most-recent-period-end-time']).toBe(
-  //     '2026-01-01T10:00:00Z'
-  //   );
-  // });
+  test('Undefined as Parameters, Should return Parameters not provided', () => {
+    const input = {
+      'parameters': undefined,
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': []
+    };
 
-  // test('should process 15min slice before 24h slice', () => {
-  //   const input = {
-  //     parameters: {},
-  //     'aggregation-group': {},
-  //     'result-cc': {},
-  //     'historical-performance-data-list': [
-  //       {
-  //         'granularity-period':
-  //           'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS',
-  //         'period-end-time': '2026-01-02T00:00:00Z',
-  //         'performance-data': {}
-  //       },
-  //       {
-  //         'granularity-period':
-  //           'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-  //         'period-end-time': '2026-01-01T10:00:00Z',
-  //         'performance-data': {}
-  //       }
-  //     ]
-  //   };
+    const result = p1IterateEcPmSlices(input);
 
-  //   mocks.kpiService.calculate.mockImplementation((d) => d);
-  //   mocks.removeDefaultService.clean.mockImplementation((p, d) => d);
-  //   mocks.utilizationService.calculate.mockImplementation((d) => d);
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.PARAMETERS_NOT_PROVIDED);
+  });
 
-  //   const result = p1IterateEcPmSlices.execute(input);
+  test('Array as parameter, Should return Parameters invalid', () => {
+    const input = {
+      'parameters': [],
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': []
+    };
 
-  //   const list = result['historical-performance-data-list'];
+    const result = p1IterateEcPmSlices(input);
 
-  //   expect(list[0]['granularity-period']).toContain('15-MIN');
-  // });
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.PARAMETERS_INVALID);
+  });
 
-  // test('should throw error when input is null', () => {
-  //   expect(() => p1IterateEcPmSlices.execute(null)).toThrow(
-  //     Errors.PARAMETERS_NOT_PROVIDED
-  //   );
-  // });
 
-  // test('should throw error when parameters missing', () => {
-  //   expect(() =>
-  //     service.execute({
-  //       'historical-performance-data-list': []
-  //     })
-  //   ).toThrow(Errors.PARAMETERS_INVALID);
-  // });
+  test('Historical Performance list empty, Should return Historical invalid', () => {
+    const input = {
+      'parameters': parameters,
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': []
+      // 'historical-performance-data-list': [
+      //   {
+      //     'granularity-period':
+      //       'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+      //     'period-end-time': '2026-01-01T10:00:00Z',
+      //     'performance-data': {}
+      //   }
+      // ]
+    };
 
-  // test('should throw error when historical data list missing', () => {
-  //   expect(() =>
-  //     service.execute({
-  //       parameters: {}
-  //     })
-  //   ).toThrow(Errors.HISTORICAL_DATA_LIST_NOT_PROVIDED);
-  // });
+    const result = p1IterateEcPmSlices(input);
 
-  // test('should throw KPI error', () => {
-  //   const input = {
-  //     parameters: {},
-  //     'aggregation-group': {},
-  //     'result-cc': {},
-  //     'historical-performance-data-list': [
-  //       {
-  //         'granularity-period': GRANULARITY_15,
-  //         'period-end-time': '2026-01-01T10:00:00Z',
-  //         'performance-data': {}
-  //       }
-  //     ]
-  //   };
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_LIST_INVALID);
+  });
 
-  //   mocks.kpiService.calculate.mockImplementation(() => {
-  //     throw new Error();
-  //   });
+  test('Historical Performance list = undefined, Should return historical not provided', () => {
+    const input = {
+      'parameters': parameters,
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': undefined
+    };
 
-  //   expect(() => p1IterateEcPmSlices.execute(input)).toThrow(
-  //     Errors.KPI_CALCULATION_FAILED
-  //   );
-  // });
+    const result = p1IterateEcPmSlices(input);
 
-  // test('should throw utilization error', () => {
-  //   const input = {
-  //     parameters: {},
-  //     'aggregation-group': {},
-  //     'result-cc': {},
-  //     'historical-performance-data-list': [
-  //       {
-  //         'granularity-period': GRANULARITY_15,
-  //         'period-end-time': '2026-01-01T10:00:00Z',
-  //         'performance-data': {}
-  //       }
-  //     ]
-  //   };
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_LIST_NOT_PROVIDED);
+  });
 
-  //   mocks.kpiService.calculate.mockReturnValue({});
-  //   mocks.removeDefaultService.clean.mockReturnValue({});
-  //   mocks.utilizationService.calculate.mockImplementation(() => {
-  //     throw new Error();
-  //   });
+  test('Historical Performance list not provided, Should return historical PM not provided', () => {
+    const input = {
+      'parameters': parameters,
+      'aggregation-group': {},
+      'result-cc': {}
+    };
 
-  //   expect(() => p1IterateEcPmSlices.execute(input)).toThrow(
-  //     Errors.UTILIZATION_CALCULATION_FAILED
-  //   );
-  // });
+    const result = p1IterateEcPmSlices(input);
+
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.HISTORICAL_DATA_LIST_NOT_PROVIDED);
+  });
+
+  test('Parameters does not contain default value for function, Should return Default values could not be removed', () => {
+    const input = {
+      'parameters': {
+        "function-name": "p1IterateEcPmSlices",
+        "description": "Iterates through all EthernetContainer historical performance data slices and calls the processing Functions",
+        "is-active": true,
+        "parameter": [],
+        "sub-function": [
+          {
+            "function-name": "p1CalculateEthernetKpis",
+            "description": "Adds Ethernet KPIs to the historicalPerformanceData set",
+            "is-active": true,
+            "parameter": [],
+            "sub-function": []
+          },
+        ]
+      },
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': [
+        {
+          'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+          'period-end-time': '2026-01-01T10:00:00Z',
+          'performance-data': {
+            "total-frames-input": "-1",
+            "jabber-frames-ingress": -1,
+            "multicast-frames-output": 1213,
+            "oversized-frames-ingress": -1,
+            "broadcast-frames-output": 2459,
+            "total-bytes-input": "166574378219",
+            "total-bytes-output": "167000040898",
+            "total-frames-output": "-1",
+            "unicast-frames-input": "109163734",
+            "errored-frames-input": 0,
+            "multicast-frames-input": 227,
+            "fragmented-frames-input": -1,
+            "unknown-protocol-frames-input": -1,
+            "dropped-frames-output": 0,
+            "dropped-frames-input": 0,
+            "forwarded-frames-output": "-1",
+            "max-bytes-per-second-output": 190912000,
+            "unicast-frames-output": "109444263",
+            "broadcast-frames-input": 0,
+            "errored-frames-output": 0,
+            "time-period": 900,
+            "undersized-frames-ingress": -1,
+            "forwarded-frames-input": "-1"
+          }
+        }
+      ]
+    };
+
+    const result = p1IterateEcPmSlices(input);
+
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.DEFAULT_VALUES_REMOVAL_FAILED);
+  });
+
+  test('Result CC not provided, Should return Utilization could not be calculated', () => {
+    const input = {
+      'parameters': parameters,
+      'aggregation-group': {},
+      'result-cc': {},
+      'historical-performance-data-list': [
+        {
+          'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+          'period-end-time': '2026-01-01T10:00:00Z',
+          'performance-data': {
+            "total-frames-input": "-1",
+            "jabber-frames-ingress": -1,
+            "multicast-frames-output": 1213,
+            "oversized-frames-ingress": -1,
+            "broadcast-frames-output": 2459,
+            "total-bytes-input": "166574378219",
+            "total-bytes-output": "167000040898",
+            "total-frames-output": "-1",
+            "unicast-frames-input": "109163734",
+            "errored-frames-input": 0,
+            "multicast-frames-input": 227,
+            "fragmented-frames-input": -1,
+            "unknown-protocol-frames-input": -1,
+            "dropped-frames-output": 0,
+            "dropped-frames-input": 0,
+            "forwarded-frames-output": "-1",
+            "max-bytes-per-second-output": 190912000,
+            "unicast-frames-output": "109444263",
+            "broadcast-frames-input": 0,
+            "errored-frames-output": 0,
+            "time-period": 900,
+            "undersized-frames-ingress": -1,
+            "forwarded-frames-input": "-1"
+          }
+        }
+      ]
+    };
+
+    const result = p1IterateEcPmSlices(input);
+
+    expect(result).toBeDefined();
+    expect(result).toBe(ERRORS.UTILIZATION_CALCULATION_FAILED);
+  });
 });
