@@ -3,15 +3,14 @@ jest.mock("../../../../infra/kafka/confluentKafkaProducer", () => ({
 }));
 
 const { run } = require("./P1TransmittingKafka");
+const ERRORS = require("./ErrorsEnum");
 const { sendBatch } = require("../../../../infra/kafka/confluentKafkaProducer");
 
 const logger = { info: jest.fn(), error: jest.fn() };
 
 function validRequest(overrides = {}) {
   return {
-    parameters: {},
-    "config-file": {},
-    "output-format": ["json"],
+    p1TransmittingKafkaParameters: {},
     outputMessages: [
       {
         targetConsumer: "apt",
@@ -38,41 +37,35 @@ describe("P1TransmittingKafka", () => {
     jest.clearAllMocks();
   });
 
-  describe("input validation", () => {
-    test("throws parameters not provided when interface parameters are missing", async () => {
+  describe("request validation", () => {
+    test("throws general processing error when request is undefined", async () => {
       await expect(
-        run(validRequest({ parameters: undefined }))
-      ).rejects.toThrow("parameters not provided");
+        run(undefined)
+      ).rejects.toThrow(ERRORS.GENERAL_PROCESSING_ERROR);
     });
 
-    test("throws parameters invalid when interface parameters are not an object", async () => {
+    test("throws general processing error when request is null", async () => {
       await expect(
-        run(validRequest({ parameters: "invalid" }))
-      ).rejects.toThrow("parameters invalid");
+        run(null)
+      ).rejects.toThrow(ERRORS.GENERAL_PROCESSING_ERROR);
     });
 
-    test("throws configFile not provided when config-file is missing", async () => {
+    test("throws kafkaConnectionList not provided when kafkaConnectionList is missing", async () => {
       await expect(
-        run(validRequest({ "config-file": undefined }))
-      ).rejects.toThrow("configFile not provided");
+        run(validRequest({ kafkaConnectionList: undefined }))
+      ).rejects.toThrow(ERRORS.KAFKA_CONNECTION_LIST_NOT_PROVIDED);
     });
 
-    test("throws configFile invalid when config-file is not an object", async () => {
+    test("throws kafkaConnectionList invalid when kafkaConnectionList is not an array", async () => {
       await expect(
-        run(validRequest({ "config-file": [] }))
-      ).rejects.toThrow("configFile invalid");
+        run(validRequest({ kafkaConnectionList: "invalid" }))
+      ).rejects.toThrow(ERRORS.KAFKA_CONNECTION_LIST_INVALID);
     });
 
-    test("throws outputFormat not provided when output-format is missing", async () => {
+    test("throws kafkaConnectionList not provided when kafkaConnectionList is empty", async () => {
       await expect(
-        run(validRequest({ "output-format": undefined }))
-      ).rejects.toThrow("outputFormat not provided");
-    });
-
-    test("throws outputFormat invalid when output-format is empty", async () => {
-      await expect(
-        run(validRequest({ "output-format": [] }))
-      ).rejects.toThrow("outputFormat invalid");
+        run(validRequest({ kafkaConnectionList: [] }))
+      ).rejects.toThrow(ERRORS.KAFKA_CONNECTION_LIST_NOT_PROVIDED);
     });
   });
 
@@ -81,7 +74,18 @@ describe("P1TransmittingKafka", () => {
       const request = validRequest();
       delete request.outputMessages;
 
-      await expect(run(request)).rejects.toThrow("General processing error");
+      await expect(run(request)).rejects.toThrow(ERRORS.GENERAL_PROCESSING_ERROR);
+      await expect(run(request)).rejects.toMatchObject({
+        originalMessage: "outputMessages or outputMessage is mandatory"
+      });
+      expect(sendBatch).not.toHaveBeenCalled();
+    });
+
+    test("wraps empty outputMessages as General processing error", async () => {
+      await expect(
+        run(validRequest({ outputMessages: [] }))
+      ).rejects.toThrow(ERRORS.GENERAL_PROCESSING_ERROR);
+
       expect(sendBatch).not.toHaveBeenCalled();
     });
 
@@ -97,15 +101,25 @@ describe("P1TransmittingKafka", () => {
             ]
           })
         )
-      ).rejects.toThrow("General processing error");
+      ).rejects.toThrow(ERRORS.GENERAL_PROCESSING_ERROR);
 
       expect(sendBatch).not.toHaveBeenCalled();
     });
 
     test("wraps missing provider connection as General processing error", async () => {
       await expect(
-        run(validRequest({ kafkaConnectionList: [] }))
-      ).rejects.toThrow("General processing error");
+        run(
+          validRequest({
+            outputMessages: [
+              {
+                targetConsumer: "other",
+                mountName: "device-1",
+                payload: { temperature: 32 }
+              }
+            ]
+          })
+        )
+      ).rejects.toThrow(ERRORS.GENERAL_PROCESSING_ERROR);
 
       expect(sendBatch).not.toHaveBeenCalled();
     });
@@ -182,13 +196,13 @@ describe("P1TransmittingKafka", () => {
     test("wraps producer connection failures as Producer connection error", async () => {
       sendBatch.mockRejectedValueOnce(new Error("Kafka connect failed"));
 
-      await expect(run(validRequest())).rejects.toThrow("Producer connection error");
+      await expect(run(validRequest())).rejects.toThrow(ERRORS.PRODUCER_CONNECTION_ERROR);
     });
 
     test("wraps non-connection send failures as Other transmission error", async () => {
       sendBatch.mockRejectedValueOnce(new Error("Kafka send failed"));
 
-      await expect(run(validRequest())).rejects.toThrow("Other transmission error");
+      await expect(run(validRequest())).rejects.toThrow(ERRORS.OTHER_TRANSMISSION_ERROR);
     });
   });
 });

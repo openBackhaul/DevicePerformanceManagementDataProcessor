@@ -16,70 +16,17 @@ function buildProcessingError(message) {
   return error;
 }
 
-function getRequestValue(request, ...keys) {
-  if (!request || typeof request !== "object" || Array.isArray(request)) {
-    return undefined;
+function buildWrappedProcessingError(error) {
+  const wrappedError = buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR);
+
+  if (error) {
+    wrappedError.cause = error;
+    wrappedError.originalMessage = error.message || String(error);
   }
 
-  for (const key of keys) {
-    if (Object.prototype.hasOwnProperty.call(request, key)) {
-      return request[key];
-    }
-  }
-
-  return undefined;
+  return wrappedError;
 }
 
-function normalizeInterfaceRequest(request) {
-  if (!request || typeof request !== "object" || Array.isArray(request)) {
-    throw buildProcessingError(ERRORS.PARAMETERS_NOT_PROVIDED);
-  }
-
-  const parameters = getRequestValue(request, "parameters", "p1TransmittingKafkaParameters");
-
-  if (parameters === undefined || parameters === null) {
-    throw buildProcessingError(ERRORS.PARAMETERS_NOT_PROVIDED);
-  }
-
-  if (!isPlainObject(parameters)) {
-    throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
-  }
-
-  const configFile = getRequestValue(request, "configFile", "kafkaConnectionList");
-
-  if (configFile === undefined || configFile === null) {
-    throw buildProcessingError(ERRORS.CONFIG_FILE_NOT_PROVIDED);
-  }
-
-  if (!isPlainObject(configFile) || !Array.isArray(configFile)) {
-    throw buildProcessingError(ERRORS.CONFIG_FILE_INVALID);
-  }
-
-  const outputFormat = getRequestValue(request, "outputFormat", "outputMessages");
-
-  if (
-    outputFormat === undefined ||
-    outputFormat === null
-  ) {
-    throw buildProcessingError(ERRORS.OUTPUT_FORMAT_NOT_PROVIDED);
-  }
-
-  if (
-    !Array.isArray(outputFormat) ||
-    outputFormat.length === 0 ||
-    !outputFormat.every((item) => {
-      return item !== undefined && item !== null && String(item).trim() !== "";
-    })
-  ) {
-    throw buildProcessingError(ERRORS.OUTPUT_FORMAT_INVALID);
-  }
-
-  return {
-    parameters,
-    configFile,
-    outputFormat
-  };
-}
 
 function isProducerConnectionError(error) {
   const description = [
@@ -365,9 +312,26 @@ async function run(request) {
   let isTransmitting = false;
 
   try {
-    const { logger, kafkaConnectionList } = request || {};
 
-    //normalizeInterfaceRequest(request);
+    if(!request || typeof request !== "object") {
+      throw buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR);
+    }
+
+    const { logger, kafkaConnectionList } = request;
+
+     if(kafkaConnectionList=== undefined) {
+        throw buildProcessingError(ERRORS.KAFKA_CONNECTION_LIST_NOT_PROVIDED);
+    }
+
+    if(!Array.isArray(kafkaConnectionList)) {
+        throw buildProcessingError(ERRORS.KAFKA_CONNECTION_LIST_INVALID);
+    }
+
+    if(kafkaConnectionList.length === 0) {
+        throw buildProcessingError(ERRORS.KAFKA_CONNECTION_LIST_NOT_PROVIDED);
+    }
+
+    
 
     const outputMessages = normalizeInput(request);
     const topicMessageMap = new Map();
@@ -468,11 +432,17 @@ async function run(request) {
       throw error;
     }
 
+    if (
+      error &&
+      error.stage === "p1TransmittingKafka" &&
+      typeof error.retryable === "boolean"
+    ) {
+      throw error;
+    }
+
     if (!isTransmitting) {
       // logger && logger.error && logger.error({ err: error }, "Unexpected pre-transmission error");
-      const normalizedError = buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR);
-      normalizedError.cause = error;
-      throw normalizedError;
+      throw buildWrappedProcessingError(error);
     }
 
     throw normalizeTransmissionError(error);
