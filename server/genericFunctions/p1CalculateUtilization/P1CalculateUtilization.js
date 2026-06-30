@@ -114,7 +114,7 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     const cleanLTPlist = ltpList.filter((ltp) => psyServerLTP.includes(ltp['uuid']));
 
     // Reduce function to calculate all AirInterfaceCapacity for the aggration
-    let totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
+    const totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
       let lp = currentLTP['layer-protocol'];
       lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER");
       const resLP = lp.reduce((accLP, currentLP) => {
@@ -173,7 +173,6 @@ function calculateUtilization(input) {
     if (totalByteOutput == null) {
       return ERRORS.TOTAL_BYTE_OUTPUT_NOT_PROVIDED;
     }
-    // TODO: manage 'totalBytesOutput invalid'
 
     if (totalAirIfIntCap == null) {
       return ERRORS.TOTAL_AIR_IF_INT_CAP_NOT_PROVIDED;
@@ -183,20 +182,18 @@ function calculateUtilization(input) {
     if (timePeriod == null) {
       return ERRORS.TIME_PERIOD_NOT_PROVIDED;
     }
-    // TODO: manage 'timePeriod invalid'
 
     // From Spec file: interface.yaml
     //    'Interval utilization in %
     //    from [ {total-bytes-output}*8 / ( {total-air-interface-interval-capacity}*1000 * {time-period} ) ]'
     const calcNum = Number(totalByteOutput) * 8;
     const calcDen = totalAirIfIntCap * 1000 * timePeriod;
-    let result;
+
     // Check if Denominator is 0, then set by default to 0
     if (calcDen == 0) {
       return ERRORS.UTILIZATION_COULDNT_PROVIDED;
-    } else {
-      result = (calcNum / calcDen) * 100;
     }
+    const result = (calcNum / calcDen) * 100;
 
     // Return result
     return {
@@ -237,12 +234,12 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
 
-    // Validate Aggreghation Group
-    if (aggGroup && aggGroup != undefined) {
-      if (aggGroup[PSYSERVERLTP] == null ||
-        aggGroup[PSYSERVERLTP].length == 0) {
-        return ERRORS.AGG_GROUP_INVALID;
-      }
+    // Validate Aggregation Group
+    if (aggGroup == null || aggGroup == undefined) {
+      return ERRORS.AGG_GROUP_NOT_PROVIDED;
+    } else if (aggGroup[PSYSERVERLTP] == null ||
+      aggGroup[PSYSERVERLTP].length == 0) {
+      return ERRORS.AGG_GROUP_INVALID;
     }
 
     // Valuidate Result CC
@@ -251,8 +248,6 @@ const p1CalculateUtilization = (input) => {
     } else if (!validateResultCC(resultCC)) {
       return ERRORS.RESULT_CC_INVALID;
     }
-
-    // TODO: manage 'Utilization could not be added'
 
     // Functions must process only 15 minutes of PM
     let returnData;
