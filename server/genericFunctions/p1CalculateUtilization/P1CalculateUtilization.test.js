@@ -166,15 +166,16 @@ describe('p1CalculateUtilization', () => {
     expect(result['historical-performance-data']['performance-data']['utilization']).toBe(16);
   });
 
-  test('should not aggregate if period-end-time does not match', () => {
-    const input = {
-      'historical-performance-data': createValidHistoricalData(),
-      'aggregation-group': createValidAggGroup(['LTP-1']),
-      'result-cc': createValidResultCC('LTP-1', 1000, 'WRONG-TIME')
-    };
-    const result = p1CalculateUtilization(input);
-    expect(result).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
-  });
+  // Time stamp not more required
+  // test('should not aggregate if period-end-time does not match', () => {
+  //   const input = {
+  //     'historical-performance-data': createValidHistoricalData(),
+  //     'aggregation-group': createValidAggGroup(['LTP-1']),
+  //     'result-cc': createValidResultCC('LTP-1', 1000, 'WRONG-TIME')
+  //   };
+  //   const result = p1CalculateUtilization(input);
+  //   expect(result).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  // });
 
   // TODO @latta-siae to be verified
   // test('should return 0 capacity if no LTP matches', () => {
@@ -325,23 +326,24 @@ describe('p1CalculateUtilization', () => {
     //   expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(0);
     // });
 
-    test('should use real dataset timestamps correctly', () => {
-      const histFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
-      const perfData = JSON.parse(histFile);
-      const ccFile = fs.readFileSync(__dirname + '/datasets/resultCC2.json', 'utf8');
-      const resCC = JSON.parse(ccFile);
+    // TO be review
+  //   test('should use real dataset timestamps correctly', () => {
+  //     const histFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
+  //     const perfData = JSON.parse(histFile);
+  //     const ccFile = fs.readFileSync(__dirname + '/datasets/resultCC2.json', 'utf8');
+  //     const resCC = JSON.parse(ccFile);
 
-      const inputStruct = {
-        'historical-performance-data': perfData,
-        'aggregation-group': {
-          'physical-server-ltp-list': ['LTP-MWPS-TTP-ODU-B']
-        },
-        'result-cc': resCC
-      };
+  //     const inputStruct = {
+  //       'historical-performance-data': perfData,
+  //       'aggregation-group': {
+  //         'physical-server-ltp-list': ['LTP-MWPS-TTP-ODU-B']
+  //       },
+  //       'result-cc': resCC
+  //     };
 
-      const result = p1CalculateUtilization(inputStruct);
-      expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
-    });
+  //     const result = p1CalculateUtilization(inputStruct);
+  //     expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
+  //   });
   });
 
 

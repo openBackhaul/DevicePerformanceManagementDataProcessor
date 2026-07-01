@@ -124,11 +124,23 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
           return accLP + 0;
         }
         // Pick-up historical performance data array
-        const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+        // const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+        let histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+        if (histPerfList == undefined) { // TODO @latta-siae workaround  // Historical-performance-data-list shoud be present
+          histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
+        }
+
         // Filter out data that is not related to air-interface 15 minutes and should match period end time
-        const histDataClean = histPerfList.filter((perfData) => perfData[ENDTIME] == periodEndTime && perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`);
-        // Sum all interval-capacity
-        const resHistory = histDataClean.reduce((accHis, currHistory) => accHis += currHistory[PERFDATA]['interval-capacity'], 0);
+        const histDataClean = histPerfList.filter((perfData) => {
+          return perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`;
+          // return time1 < time2 && perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`;  // Timestamp is not more required
+        });
+
+        let resHistory = 0;  // Check if array lenght is equal to 0
+        if (histDataClean.length != 0) {
+          // Sum all interval-capacity
+          resHistory = histDataClean.reduce((accHis, currHistory) => accHis += currHistory[PERFDATA]['interval-capacity'], 0);
+        }
 
         return accLP + resHistory;
       }, 0); // 0 is initial accumulator
@@ -139,7 +151,6 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     // from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
     //             with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
 
-    // TODO: manage totalAirInterfaceIntervalCapacity could not be provided'
     return {
       'total-air-interface-interval-capacity': totalAirIfCap
     };
