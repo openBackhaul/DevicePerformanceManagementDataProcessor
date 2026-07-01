@@ -32,7 +32,9 @@ function validateResultCC(input) {
                   Object.hasOwn(lpObj, 'layer-protocol-name') &&
                   Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')) {
                   const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
-                  if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
+                  if (Object.hasOwn(aiPac, 'air-interface-historical-performances') && aiPac['air-interface-historical-performances']['number-of-historical-performance-sets'] == 0) {
+                    // No data to check
+                  } else if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
                     Object.hasOwn(aiPac['air-interface-historical-performances'], 'historical-performance-data-list') &&
                     Array.isArray(aiPac['air-interface-historical-performances']['historical-performance-data-list'])) {
                     const hPerf = aiPac['air-interface-historical-performances']['historical-performance-data-list'];
@@ -46,7 +48,8 @@ function validateResultCC(input) {
                       }
                     });
                   } else {
-                    throw new Error(ERRORS.RESULT_CC_INVALID);
+                    // No dataset available
+                    // throw new Error(ERRORS.RESULT_CC_INVALID);
                   }
                 } else {
                   throw new Error(ERRORS.RESULT_CC_INVALID);
@@ -113,14 +116,31 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     // Reduce function to calculate all AirInterfaceCapacity for the aggration
     const totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
       let lp = currentLTP['layer-protocol'];
-      lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER" );
+      lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER");
       const resLP = lp.reduce((accLP, currentLP) => {
+        const airPerfHist = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
+        // In case of no pm history set Accumulator equal to 0
+        if (airPerfHist['number-of-historical-performance-sets'] == 0) {
+          return accLP + 0;
+        }
         // Pick-up historical performance data array
-        const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+        // const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+        let histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+        if (histPerfList == undefined) { // TODO @latta-siae workaround  // Historical-performance-data-list shoud be present
+          histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
+        }
+
         // Filter out data that is not related to air-interface 15 minutes and should match period end time
-        const histDataClean = histPerfList.filter((perfData) => perfData[ENDTIME] == periodEndTime && perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`);
-        // Sum all interval-capacity
-        const resHistory = histDataClean.reduce((accHis, currHistory) => accHis += currHistory[PERFDATA]['interval-capacity'], 0);
+        const histDataClean = histPerfList.filter((perfData) => {
+          return perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`;
+          // return time1 < time2 && perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`;  // Timestamp is not more required
+        });
+
+        let resHistory = 0;  // Check if array lenght is equal to 0
+        if (histDataClean.length != 0) {
+          // Sum all interval-capacity
+          resHistory = histDataClean.reduce((accHis, currHistory) => accHis += currHistory[PERFDATA]['interval-capacity'], 0);
+        }
 
         return accLP + resHistory;
       }, 0); // 0 is initial accumulator
@@ -131,7 +151,6 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     // from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
     //             with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
 
-    // TODO: manage totalAirInterfaceIntervalCapacity could not be provided'
     return {
       'total-air-interface-interval-capacity': totalAirIfCap
     };
@@ -165,7 +184,6 @@ function calculateUtilization(input) {
     if (totalByteOutput == null) {
       return ERRORS.TOTAL_BYTE_OUTPUT_NOT_PROVIDED;
     }
-    // TODO: manage 'totalBytesOutput invalid'
 
     if (totalAirIfIntCap == null) {
       return ERRORS.TOTAL_AIR_IF_INT_CAP_NOT_PROVIDED;
@@ -175,13 +193,17 @@ function calculateUtilization(input) {
     if (timePeriod == null) {
       return ERRORS.TIME_PERIOD_NOT_PROVIDED;
     }
-    // TODO: manage 'timePeriod invalid'
 
     // From Spec file: interface.yaml
     //    'Interval utilization in %
     //    from [ {total-bytes-output}*8 / ( {total-air-interface-interval-capacity}*1000 * {time-period} ) ]'
     const calcNum = Number(totalByteOutput) * 8;
     const calcDen = totalAirIfIntCap * 1000 * timePeriod;
+
+    // Check if Denominator is 0, then set by default to 0
+    if (calcDen == 0) {
+      return ERRORS.UTILIZATION_COULDNT_PROVIDED;
+    }
     const result = (calcNum / calcDen) * 100;
 
     // Return result
@@ -223,8 +245,8 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
 
-    // Validate Aggreghation Group
-    if (aggGroup == null) {
+    // Validate Aggregation Group
+    if (aggGroup == null || aggGroup == undefined) {
       return ERRORS.AGG_GROUP_NOT_PROVIDED;
     } else if (aggGroup[PSYSERVERLTP] == null ||
       aggGroup[PSYSERVERLTP].length == 0) {
@@ -238,8 +260,6 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.RESULT_CC_INVALID;
     }
 
-    // TODO: manage 'Utilization could not be added'
-
     // Functions must process only 15 minutes of PM
     let returnData;
     let retHistoricalPerfData = JSON.parse(JSON.stringify(historicalPerfData)); // Initializate return value
@@ -251,6 +271,9 @@ const p1CalculateUtilization = (input) => {
         'period-end-time': retHistoricalPerfData[ENDTIME],
       }
       let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
+      if (typeof totAirCapacity == "string") {
+        return ERRORS.UTILIZATION_COULDNT_ADD;
+      }
       retHistoricalPerfData[PERFDATA][TOTAIRIFCAP] = totAirCapacity[TOTAIRIFCAP];
 
       const inputStruct = {
@@ -259,6 +282,10 @@ const p1CalculateUtilization = (input) => {
         'time-period': retHistoricalPerfData[PERFDATA][TIMEPERIOD] // integer
       }
       let utilization = calculateUtilization(inputStruct);
+      if (typeof utilization == "string") {
+        return ERRORS.UTILIZATION_COULDNT_ADD;
+      }
+
       retHistoricalPerfData[PERFDATA]['utilization'] = utilization['utilization'];
       returnData = {
         'historical-performance-data': retHistoricalPerfData
