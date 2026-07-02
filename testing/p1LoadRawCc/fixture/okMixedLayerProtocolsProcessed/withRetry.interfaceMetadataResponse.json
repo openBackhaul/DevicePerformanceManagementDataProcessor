@@ -1,7 +1,50 @@
 {
   "body": {
     "_source": {
-      "interface-metadata-list":[]
+        "interface-metadata-list": [
+              {
+                "uuid": "LTP-MWPS-TTP-RADIO-2A",
+                "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              },
+              {
+                "uuid": "LTP-ETC-TTP-LAN-3",
+                "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              },
+              {
+                "uuid": "LTP-ETC-TTP-LAN-4",
+                "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              },
+              {
+                "uuid": "LTP-ETC-TTP-LAN-1",
+                "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              },
+              {
+                "uuid": "LTP-ETC-TTP-LAN-2",
+                "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              },
+              {
+                "uuid": "LTP-MWPS-TTP-RADIO-1A",
+                "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              },
+              {
+                "uuid": "LTP-ETC-TTP-PORT-A",
+                "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+                "mostRecentPeriodEndTime": "2026-06-25T00:45:00.0+00:00",
+                "mostRecentPeriodEndTime24": "2026-06-25T00:00:00.0+00:00"
+              }
+            ]
     }
   }
 }

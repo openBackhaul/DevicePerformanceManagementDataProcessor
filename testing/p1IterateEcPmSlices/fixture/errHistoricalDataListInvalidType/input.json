@@ -1,0 +1,173 @@
+{
+  "parameters": {
+                "function-name": "p1IterateEcPmSlices",
+                "description": "Iterates through all EthernetContainer historical performance data slices and calls the processing Functions",
+                "is-active": true,
+                "parameter": [],
+                "sub-function": [
+                  {
+                    "function-name": "p1CalculateEthernetKpis",
+                    "description": "Adds Ethernet KPIs to the historicalPerformanceData set",
+                    "is-active": true,
+                    "parameter": [],
+                    "sub-function": []
+                  },
+                  {
+                    "function-name": "p1RemoveDefaultValues",
+                    "description": "Deletes attributes with default values from the transferred object",
+                    "is-active": true,
+                    "parameter": [
+                      {
+                        "parameter-name": "maxBytesPerSecondOutput",
+                        "purpose": "Counts the number of Bytes of Ethernet traffic (before header compression) transmitted within a second and keeps the highest value within the measurement period",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "totalBytesInput",
+                        "purpose": "Total number of Bytes of Ethernet traffic (before header compression) received during the measurement period",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "totalBytesOutput",
+                        "purpose": "Total number of Bytes of Ethernet traffic (before header compression) transmitted during the measurement period",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "timePeriod",
+                        "purpose": "Total length of the measurement period in seconds",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "totalFramesInput",
+                        "purpose": "The total number of Ethernet frames received at this interface (including those received in error)",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "totalFramesOutput",
+                        "purpose": "The total number of Ethernet frames sent at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "forwardedFramesInput",
+                        "purpose": "Number of input frames at this interface, for which the device was not their final destination and for which the device attempted to find a route to forward them to that final destination",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "forwardedFramesOutput",
+                        "purpose": "Number of frames at this interface, for which the device was not their final destination and for which it was successful in finding a path to their final destination",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "unicastFramesInput",
+                        "purpose": "Total number of unicast frames received at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "unicastFramesOutput",
+                        "purpose": "Total number of unicast frames sent at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "multicastFramesInput",
+                        "purpose": "Total number of multicast frames received at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "multicastFramesOutput",
+                        "purpose": "Total number of multicast frames sent at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "broadcastFramesInput",
+                        "purpose": "Total number of broadcast frames received at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "broadcastFramesOutput",
+                        "purpose": "Total number of broadcast frames sent at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "fragmentedFramesInput",
+                        "purpose": "The total number of frames received that were less than 64 octets in length (excluding framing bits but including FCS octets) and had either a bad Frame Check Sequence (FCS) with an integral number of octets (FCS Error) or a bad FCS with a non-integral number of octets (Alignment Error)",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "erroredFramesInput",
+                        "purpose": "Total number of errored frames received at this interface",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "erroredFramesOutput",
+                        "purpose": "Number of Ethernet frames, which were locally generated and discarded due to errors, including no route found to the destination",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "droppedFramesInput",
+                        "purpose": "Total number of Ethernet frames dropped at the receiver. The number of input Ethernet frames, for which no problems were encountered to prevent their continued processing, but were discarded (e.g., for lack of buffer space)",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "droppedFramesOutput",
+                        "purpose": "The number of output Ethernet frames, for which no problem was encountered to prevent their transmission to their destination, but were discarded (e.g., for lack of buffer space)",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "oversizedFramesIngress",
+                        "purpose": "The total number of frames received that were longer than 1518 octets (excluding framing bits, but including FCS octets) and were otherwise well formed",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "undersizedFramesIngress",
+                        "purpose": "The total number of frames received that were less than 64 octets long (excluding framing bits, but including FCS octets) and were otherwise well formed",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "jabberFramesIngress",
+                        "purpose": "Number of jabber frames received on the interface. Jabber frames are typically defined as oversize frames which also have a bad CRC. Implementations may use slightly different definitions of what constitutes a jabber frame. Often indicative of a NIC hardware problem",
+                        "owner": "platform",
+                        "value": "-1"
+                      },
+                      {
+                        "parameter-name": "unknownProtocolFramesInput",
+                        "purpose": "Total number of received frames that were transporting an unknown protocol",
+                        "owner": "platform",
+                        "value": "-1"
+                      }
+                    ],
+                    "sub-function": []
+                  },
+                  {
+                    "function-name": "p1CalculateUtilization",
+                    "description": "Calculates utilization of the aggregated physical resources in a performance data slice",
+                    "is-active": true,
+                    "parameter": [],
+                    "sub-function": []
+                  }
+                ]
+              },
+  "historical-performance-data-list": {},
+  "aggregation-group": {},
+  "result-cc": {}
+}

@@ -21,7 +21,7 @@ function readYaml(filePath) {
   return yaml.load(fs.readFileSync(filePath, "utf8"));
 }
 
-function generate({ repoRoot, functionName, version }) {
+function generate({ repoRoot, functionName }) {
   const baseDir = path.join(repoRoot, "testing", functionName);
   const scenariosPath = path.join(baseDir, "scenarios.yaml");
 
@@ -51,11 +51,10 @@ const { runFunctionVersionFromScenarios } = require("../../tools/functionTestRun
 
 const repoRoot = path.resolve(__dirname, "../../..");
 
-describe("${functionName} ${version} (generated)", () => {
+describe("${functionName}  ", () => {
   runFunctionVersionFromScenarios({
     repoRoot,
-    functionName: "${functionName}",
-    version: "${version}",
+    functionName: "${functionName}"
   });
 });
 `;
@@ -67,10 +66,10 @@ describe("${functionName} ${version} (generated)", () => {
 // CLI:
 if (require.main === module) {
   const repoRoot = path.resolve(__dirname, "../..");
-  const [functionName, version] = process.argv.slice(2);
+  const [functionName] = process.argv.slice(2);
 
-  if (!functionName || !version) {
-    console.error("Usage: node testing/tools/generateFunctionTests.js <FunctionName> <version>");
+  if (!functionName ) {
+    console.error("Usage: node testing/tools/generateFunctionTests.js <FunctionName> ");
     process.exit(1);
   }
 

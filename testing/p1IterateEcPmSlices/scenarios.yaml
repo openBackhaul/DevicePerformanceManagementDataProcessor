@@ -1,0 +1,263 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/P1IterateEcPmSlices.js"
+    exportName: ""
+
+processingSteps:
+  - stepId: "p1CalculateEthernetKpis"
+    modulePath: "../../server/genericFunctions/p1CalculateEthernetKpis/P1CalculateEthernetKpis.js"
+    exportName: ""
+    isAsync: false
+
+  - stepId: "p1RemoveDefaultValues"
+    modulePath: "../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
+    exportName: ""
+    isAsync: false
+
+  - stepId: "p1CalculateUtilization"
+    modulePath: "../../server/genericFunctions/p1CalculateUtilization/P1CalculateUtilization.js"
+    exportName: ""
+    isAsync: false
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errEmptyInput"
+    description: "Should return 'General processing error' when input is missing or empty"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when input.parameters is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+    mocks: []
+
+  - id: "errParametersInvalidString"
+    description: "Should return 'parameters invalid' when input.parameters is not a plain object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errParametersInvalidArray"
+    description: "Should return 'parameters invalid' when input.parameters is an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errParametersInvalidEmptyObject"
+    description: "Should return 'parameters invalid' when input.parameters is an empty object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errHistoricalDataListNotProvided"
+    description: "Should return 'historicalPerformanceDataList not provided' when historical-performance-data-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+    mocks: []
+
+  - id: "errHistoricalDataListInvalidType"
+    description: "Should return 'historicalPerformanceDataList invalid' when historical-performance-data-list is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+    mocks: []
+
+  - id: "errHistoricalDataListInvalidEmpty"
+    description: "Should return 'historicalPerformanceDataList invalid' when historical-performance-data-list is empty"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+    mocks: []
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okSingle15MinSliceProcessed"
+    description: "Should process a single 15-minute slice successfully and return most-recent-period-end-time"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.success.json"
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        fixture: "p1CalculateUtilization.success.json"
+
+  - id: "okSingle24HourSliceProcessed"
+    description: "Should process a single 24-hour slice successfully and return most-recent-period-end-time-24"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.success.json"
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        fixture: "p1CalculateUtilization.success.json"
+
+  - id: "okMixedGranularitySlicesProcessed"
+    description: "Should process multiple slices and return both most recent timestamps"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        fixture: "p1CalculateUtilization.success.json"
+
+
+  - id: "okUnknownGranularityReturnsOnlyHistoricalPerformanceDataList"
+    description: "Should process slices with unsupported granularity and return only historical-performance-data-list"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.success.json"
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        fixture: "p1CalculateUtilization.success.json"
+
+  # -------------------------
+  # p1CalculateEthernetKpis failures
+  # -------------------------
+
+  - id: "errCalculateEthernetKpisReturnsErrorString"
+    description: "Should return 'Ethernet KPIs could not be calculated' when p1CalculateEthernetKpis returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Ethernet KPIs could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value: "Ethernet KPIs could not be calculated"
+
+  - id: "errCalculateEthernetKpisThrows"
+    description: "Should return 'Ethernet KPIs could not be calculated' when p1CalculateEthernetKpis throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Ethernet KPIs could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "throw"
+        error: "Ethernet KPIs could not be calculated"
+
+  # -------------------------
+  # p1RemoveDefaultValues failures
+  # -------------------------
+
+  - id: "errRemoveDefaultValuesReturnsErrorString"
+    description: "Should return 'Default values could not be removed' when p1RemoveDefaultValues returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value: "Default values could not be removed"
+
+  - id: "errRemoveDefaultValuesThrows"
+    description: "Should return 'Default values could not be removed' when p1RemoveDefaultValues throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "throw"
+        error: "Default values could not be removed"
+
+  # -------------------------
+  # p1CalculateUtilization failures
+  # -------------------------
+
+  - id: "errCalculateUtilizationReturnsErrorString"
+    description: "Should return 'Utilization could not be calculated' when p1CalculateUtilization returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.success.json"
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value: "Utilization could not be calculated"
+
+  - id: "errCalculateUtilizationThrows"
+    description: "Should return 'Utilization could not be calculated' when p1CalculateUtilization throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        fixture: "p1CalculateEthernetKpis.success.json"
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        fixture: "p1RemoveDefaultValues.success.json"
+      - stepId: "p1CalculateUtilization"
+        type: "throw"
+        error: "Utilization could not be calculated"
+

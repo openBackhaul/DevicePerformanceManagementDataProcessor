@@ -1,78 +1,44 @@
 [
   {
-    "uuid": "RF-2146435217",
+    "uuid": "LTP-MWPS-TTP-RADIO-2A",
     "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   },
   {
-    "uuid": "ETH-2134639366",
+    "uuid": "LTP-ETC-TTP-LAN-3",
     "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   },
   {
-    "uuid": "ETH-2134639365",
+    "uuid": "LTP-ETC-TTP-LAN-4",
     "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   },
   {
-    "uuid": "ETH-2134639364",
+    "uuid": "LTP-ETC-TTP-LAN-1",
     "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   },
   {
-    "uuid": "ETH-2134639368",
+    "uuid": "LTP-ETC-TTP-LAN-2",
     "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   },
   {
-    "uuid": "ETH-2134639367",
-    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
-  },
-  {
-    "uuid": "ETH-2134647425",
-    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
-  },
-  {
-    "uuid": "RF-2146435729",
+    "uuid": "LTP-MWPS-TTP-RADIO-1A",
     "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   },
   {
-    "uuid": "RF-2146435233",
-    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
-    "most-recent-period-end-time-24": "2026-04-16T00:00:00+02:00"
-  },
-  {
-    "uuid": "ETH-2134639106",
+    "uuid": "LTP-ETC-TTP-PORT-A",
     "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
-  },
-  {
-    "uuid": "ETH-2134639105",
-    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
-  },
-  {
-    "uuid": "ETH-2134639108",
-    "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
-  },
-  {
-    "uuid": "RF-2146435745",
-    "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
-    "most-recent-period-end-time": "2026-04-17T12:30:00+02:00",
-    "most-recent-period-end-time-24": "2026-04-17T00:00:00+02:00"
+    "most-recent-period-end-time": "2026-06-24T12:45:00.0+00:00",
+    "most-recent-period-end-time-24": "2026-06-24T00:00:00.0+00:00"
   }
 ]

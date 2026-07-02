@@ -214,10 +214,10 @@ scenarios:
 
   - id: "okRelevantGranularitiesMissingDefaultsToWildcard"
     description: "Should default relevantGranularities to wildcard when parameter is missing"
-    inputFixture: "input.noRelevantGranularities.json"
+    inputFixture: "input.json"
     expected:
       type: "success"
-      outputFixture: "output.airInterface.defaultGranularity.json"
+      outputFixture: "output.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -231,19 +231,14 @@ scenarios:
           - "withRetry.rawResponse.json"
           - "withRetry.interfaceMetadataResponse.json"
         repeatLast: false
-      - stepId: "p1FieldsFilter.run"
-        type: "return"
-        fixture: "p1FieldsFilter.output.withAirInterface.json"
-      - stepId: "p1DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p1DiscardIrrelevantPmRecords.output.airInterface.json"
+   
 
   - id: "okDataStoreReadFailsButProcessingContinues"
     description: "Should continue with empty interface metadata list when data store read fails"
     inputFixture: "input.json"
     expected:
       type: "success"
-      outputFixture: "output.dataStoreReadFails.json"
+      outputFixture: "output.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -257,12 +252,7 @@ scenarios:
           - "withRetry.rawResponse.json"
           - "withRetry.failure.json"
         repeatLast: false
-      - stepId: "p1FieldsFilter.run"
-        type: "return"
-        fixture: "p1FieldsFilter.output.withAirInterface.json"
-      - stepId: "p1DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p1DiscardIrrelevantPmRecords.output.airInterface.json"
+
 
 
 

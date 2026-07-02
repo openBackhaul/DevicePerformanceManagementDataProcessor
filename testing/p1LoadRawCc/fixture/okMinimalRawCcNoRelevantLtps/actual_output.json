@@ -318,7 +318,7 @@
       ]
     },
     "logical-termination-point": [],
-    "batchTimestamp": "2010-11-20T14:00:00+01:00"
+    "batch-timestamp": "2010-11-20T14:00:00+01:00"
   },
   "mountName": "CO12995"
 }
