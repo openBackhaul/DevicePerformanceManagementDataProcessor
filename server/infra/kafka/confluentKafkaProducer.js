@@ -10,6 +10,65 @@ function asNumber(value, defaultValue) {
   return Number.isFinite(numberValue) ? numberValue : defaultValue;
 }
 
+function getStringValue(value) {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  const normalized = String(value).trim();
+  return normalized === "" ? undefined : normalized;
+}
+
+function getTlsConfig(options) {
+  const params = (options && options.p1TransmittingKafkaParameters) || {};
+  const auth = (options && options.auth) || params.auth || {};
+
+  const caLocation =
+    getStringValue(options && options.sslCaLocation) ||
+    getStringValue(params && params.sslCaLocation) ||
+    getStringValue(auth["ssl.ca.location"]) ||
+    getStringValue(auth.sslCaLocation) ||
+    getStringValue(global.KAFKA_SSL_CA_LOCATION) ||
+    getStringValue(process.env.KAFKA_SSL_CA_LOCATION);
+  const certLocation =
+    getStringValue(options && options.sslCertificateLocation) ||
+    getStringValue(params && params.sslCertificateLocation) ||
+    getStringValue(auth["ssl.certificate.location"]) ||
+    getStringValue(auth.sslCertificateLocation) ||
+    getStringValue(global.KAFKA_SSL_CERTIFICATE_LOCATION) ||
+    getStringValue(process.env.KAFKA_SSL_CERTIFICATE_LOCATION);
+  const keyLocation =
+    getStringValue(options && options.sslKeyLocation) ||
+    getStringValue(params && params.sslKeyLocation) ||
+    getStringValue(auth["ssl.key.location"]) ||
+    getStringValue(auth.sslKeyLocation) ||
+    getStringValue(global.KAFKA_SSL_KEY_LOCATION) ||
+    getStringValue(process.env.KAFKA_SSL_KEY_LOCATION);
+  const keyPassword =
+    getStringValue(options && options.sslKeyPassword) ||
+    getStringValue(params && params.sslKeyPassword) ||
+    getStringValue(auth["ssl.key.password"]) ||
+    getStringValue(auth.sslKeyPassword) ||
+    getStringValue(global.KAFKA_SSL_KEY_PASSWORD) ||
+    getStringValue(process.env.KAFKA_SSL_KEY_PASSWORD);
+
+  const tlsConfig = {};
+
+  if (caLocation) {
+    tlsConfig["ssl.ca.location"] = caLocation;
+  }
+  if (certLocation) {
+    tlsConfig["ssl.certificate.location"] = certLocation;
+  }
+  if (keyLocation) {
+    tlsConfig["ssl.key.location"] = keyLocation;
+  }
+  if (keyPassword) {
+    tlsConfig["ssl.key.password"] = keyPassword;
+  }
+
+  return tlsConfig;
+}
+
 function normalizeBrokerList(value) {
   if (!value) {
     return [];
@@ -29,25 +88,6 @@ function normalizeBrokerList(value) {
 
 function getConfiguredBrokers(options) {
   const params = (options && options.p1TransmittingKafkaParameters) || {};
-
-  /*
-   * Local/runtime override.
-   * Useful only for local Docker testing, for example 127.0.0.1:29092.
-   * In production, do not set global.KAFKA_BOOTSTRAP_SERVERS if the broker
-   * must come strictly from the KafkaClient LTP in configFile.
-   */
-  /* const runtimeOverride =
-    options.kafkaBootstrapServers ||
-    global.KAFKA_BOOTSTRAP_SERVERS ||
-    process.env.KAFKA_BOOTSTRAP_SERVERS;
-
-  if (runtimeOverride) {
-    const brokers = normalizeBrokerList(runtimeOverride);
-
-    if (brokers.length > 0) {
-      return brokers;
-    }
-  } */
 
   /*
    * This is the p1InitKafka/onfAdapter path:
@@ -97,8 +137,18 @@ function getConfiguredBrokers(options) {
     return [`${host}:${port}`];
   }
 
+  const runtimeBrokers = normalizeBrokerList(
+    (options && options.kafkaBootstrapServers) ||
+    global.KAFKA_BOOTSTRAP_SERVERS ||
+    process.env.KAFKA_BOOTSTRAP_SERVERS
+  );
+
+  if (runtimeBrokers.length > 0) {
+    return runtimeBrokers;
+  }
+
   throw new Error(
-    "Kafka broker configuration missing. Expected options.brokers, options.brokerList, or p1TransmittingKafkaParameters with brokerList/brokers or ipv-4-address + remote-port."
+    "Kafka broker configuration missing. Expected options.brokers, options.brokerList, p1TransmittingKafkaParameters with brokerList/brokers or ipv-4-address + remote-port, or KAFKA_BOOTSTRAP_SERVERS/runtime kafkaBootstrapServers."
   );
 }
 
@@ -106,15 +156,32 @@ function getConfiguredClientId(options) {
   const params = (options && options.p1TransmittingKafkaParameters) || {};
 
   return (
-    (options && options.clientId) ||
-    params.clientId ||
+    getStringValue(options && options.clientId) ||
+    getStringValue(params.clientId) ||
+    getStringValue(global.KAFKA_CLIENT_ID) ||
+    getStringValue(process.env.KAFKA_CLIENT_ID) ||
     "dpmdp-producer"
   );
 }
 
 function buildProducerConfig(options) {
+  const params = (options && options.p1TransmittingKafkaParameters) || {};
   const brokers = getConfiguredBrokers(options || {});
   const clientId = getConfiguredClientId(options || {});
+
+  const securityProtocol =
+    getStringValue(options && options.securityProtocol) ||
+    getStringValue(params.securityProtocol) ||
+    getStringValue(global.KAFKA_SECURITY_PROTOCOL) ||
+    getStringValue(process.env.KAFKA_SECURITY_PROTOCOL);
+
+  const auth = (options && options.auth) || params.auth || {};
+  const debug =
+    getStringValue(options && options.debug) ||
+    getStringValue(params.debug) ||
+    getStringValue(auth.debug) ||
+    getStringValue(global.KAFKA_DEBUG) ||
+    getStringValue(process.env.KAFKA_DEBUG);
 
   const config = {
     "bootstrap.servers": brokers.join(","),
@@ -138,23 +205,19 @@ function buildProducerConfig(options) {
     "compression.type": global.KAFKA_COMPRESSION_TYPE || "lz4"
   };
 
-  if (global.KAFKA_SECURITY_PROTOCOL) {
-    config["security.protocol"] = global.KAFKA_SECURITY_PROTOCOL;
+  if (securityProtocol) {
+    config["security.protocol"] = securityProtocol;
   }
 
-  if (global.KAFKA_SASL_MECHANISMS) {
-    config["sasl.mechanisms"] = global.KAFKA_SASL_MECHANISMS;
+  if (debug) {
+    config.debug = debug;
   }
 
-  if (global.KAFKA_USERNAME) {
-    config["sasl.username"] = global.KAFKA_USERNAME;
-  }
-
-  if (global.KAFKA_PASSWORD) {
-    config["sasl.password"] = global.KAFKA_PASSWORD;
-  }
-
-  return config;
+  const tlsConfig = getTlsConfig(options);
+  return {
+    ...config,
+    ...tlsConfig
+  };
 }
 
 function getConfigKey(config) {
@@ -162,7 +225,11 @@ function getConfigKey(config) {
     bootstrapServers: config["bootstrap.servers"],
     clientId: config["client.id"],
     securityProtocol: config["security.protocol"],
-    saslMechanisms: config["sasl.mechanisms"]
+    debug: config.debug,
+    sslCaLocation: config["ssl.ca.location"],
+    sslCertificateLocation: config["ssl.certificate.location"],
+    sslKeyLocation: config["ssl.key.location"],
+    sslKeyPassword: config["ssl.key.password"]
   });
 }
 

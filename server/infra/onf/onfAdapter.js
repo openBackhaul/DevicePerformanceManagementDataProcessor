@@ -276,11 +276,13 @@ async function connectKafkaProducer(clientIdOrOptions, brokers, logger) {
 }
 
 async function sendKafkaMessage(topic, message, clientId, brokers, logger) {
-  await confluentKafkaProducer.initProducer({
+  const kafkaOptions = {
     clientId,
     brokers,
     logger
-  });
+  };
+
+  await confluentKafkaProducer.initProducer(kafkaOptions);
 
   return await confluentKafkaProducer.sendBatch(
     topic,
@@ -291,8 +293,7 @@ async function sendKafkaMessage(topic, message, clientId, brokers, logger) {
       }
     ],
     logger,
-    clientId,
-    brokers
+    kafkaOptions
   );
 }
 

@@ -3,6 +3,7 @@ const { getParamFromFunction, findFunctionNode } = require("../../../../utils/fu
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
 const ERRORS_P1PrepareTxModes = require("./p1PrepareTxModes/ErrorsEnum");
 const ERRORS_P1IterateAiPmSlices = require("./p1IterateAiPmSlices/ErrorsEnum");
+const ERRORS_P1IterateEcPmSlices = require("./p1IterateEcPmSlices/ErrorsEnum");
 const logger = require("../../../../service/LoggingService.js").getLogger();
 
 /*
@@ -10,7 +11,7 @@ const logger = require("../../../../service/LoggingService.js").getLogger();
  */
 const p1PrepareTxModes = require("./p1PrepareTxModes/P1PrepareTxModes.js");
 const {p1IterateAiPmSlices} = require("./p1IterateAiPmSlices/P1IterateAiPmSlices.js");
-const p1IterateEcPmSlices = optionalRequire("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
+const p1IterateEcPmSlices = require("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
 const AIR_INTERFACE_HIST_PERF_KEY = "air-interface-historical-performances";
@@ -414,7 +415,6 @@ function createAggregationGroupList(rawCc) {
       aggregationGroupList.push({
         uuid: profile.uuid,
         "client-ltp": clientLtp,
-        "server-ltp-list": serverLtpList,
         "physical-server-ltp-list": getPhysicalServerLtpList(rawCc, serverLtpList)
       });
     }
@@ -447,7 +447,7 @@ function substringLinkId(input) {
     //linkEndpointId = `${linkEndpointId}A`; // Append dummy character to pass validation for 9 digits followed by A or B
     const normalized = String(linkEndpointId).trim();
 
-    if (!/^[0-9]{9}[AB]$/.test(normalized)) {
+    if (!/^[0-9]{9}[AB]$/.test(normalized) || normalized.length < 9 || normalized.length > 10) {
       throw buildProcessingError(
         "substringLinkId",
         "linkEndpointId invalid",
@@ -721,6 +721,14 @@ function isValidIterateAiPmSlicesResponse(response) {
   );
 }
 
+function isValidIterateEcPmSlicesResponse(response) {
+  return (
+    response &&
+    typeof response === "object" &&
+    Array.isArray(response[HIST_PERF_DATA_LIST_KEY])
+  );
+}
+
 function buildIterateAiPmSlicesError(response, mountName) {
   const error = new Error(
     `p1IterateAiPmSlices returned error response: ${JSON.stringify(response)}`
@@ -744,6 +752,43 @@ function buildIterateAiPmSlicesError(response, mountName) {
     response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_INVALID ||
     response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_NOT_PROVIDED ||
     response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_INVALID
+  ) {
+    error.retryable = false;
+  } else {
+    error.retryable = true;
+  }
+
+  return error;
+}
+
+function buildIterateEcPmSlicesError(response, mountName) {
+  const error = new Error(
+    `p1IterateEcPmSlices returned error response: ${JSON.stringify(response)}`
+  );
+
+  error.stage = "p1IterateEcPmSlices";
+  error.vendorResponse = response;
+  error.mountName = mountName;
+
+  if (
+    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_OUTPUT_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_NOT_PROV ||
+    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_INVALID
   ) {
     error.retryable = false;
   } else {
@@ -865,10 +910,10 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   );
 
   //console.log("parameters: ",JSON.stringify(iterateEcParameters));
-  console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
-  console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
+  //console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
+  //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
   
-  /* const response = await callVendorFunction(p1IterateEcPmSlices, {
+  const response = await callVendorFunction(p1IterateEcPmSlices, {
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     historicalPerformanceDataList,
@@ -876,9 +921,14 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     aggregationGroup: aggregationGroup || {},
     "result-cc": resultCc,
     resultCc
-  }); */
+  });
 
-  /* const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
+  if (!isValidIterateEcPmSlicesResponse(response)) {
+    logger.error(buildIterateEcPmSlicesError(response, mountName).message);
+    return null;
+  }
+
+  const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
     response,
     historicalPerformanceDataList
   );
@@ -892,8 +942,7 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     historicalPerformanceDataList: finalHistoricalPerformanceDataList,
     mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24
-  }; */
-  return null;
+  };
 }
 
 function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregationGroupList) {
@@ -1024,7 +1073,11 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         mountName
       );
 
-      /* setHistoricalPerformanceDataList(
+      if (iterateEcResult === null) {
+        continue;
+      }
+
+      setHistoricalPerformanceDataList(
         pac,
         ETHERNET_CONTAINER_HIST_PERF_KEY,
         iterateEcResult.historicalPerformanceDataList
@@ -1046,7 +1099,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         iterateEcResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
-      interfaceMetadataList.push(metadata); */
+      interfaceMetadataList.push(metadata);
     }
   }
 }
@@ -1130,13 +1183,13 @@ async function run(request) {
     );
     console.log("parameters: ",JSON.stringify(iterateEcParameters)); */
 
-    /* await processEthernetContainers(
+    await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
       interfaceMetadataList,
       mountName
-    ); */
+    );
 
     /* console.log("result-cc: ",JSON.stringify(resultCc));
 

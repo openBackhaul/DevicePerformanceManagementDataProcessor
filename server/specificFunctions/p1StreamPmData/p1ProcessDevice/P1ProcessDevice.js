@@ -9,7 +9,7 @@ const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutpu
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
 const {p1FormattingOutputOnf} = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
 const fs = require("fs");
-const sampleResultCcApt = require("./outputAPTSample.json");
+//const sampleResultCcApt = require("./outputAPTSample.json");
 
 function getTargetConsumers(kafkaConsumerTypes) {
   return String(
