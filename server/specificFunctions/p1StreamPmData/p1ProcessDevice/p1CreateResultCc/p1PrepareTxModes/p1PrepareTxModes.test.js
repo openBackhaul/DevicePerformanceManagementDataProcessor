@@ -281,6 +281,15 @@ describe('p1PrepareTxModes - Real dataset', () => {
         );
       }
     }
+
+    // expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'].length).toBe(1);
+    // expect(result["historical-performance-data-list"][0]['performance-data']['time-xstates-list'][0]).toEqual(
+    //   {
+    //     'time': 900,
+    //     'time-xstate-sequence-number': 1,
+    //     'transmission-mode': '0056-QPSK-52680/61762-1'
+    //   }
+    // );
   });
 
   test('Use CC-513250005 Dataset 1', () => {
