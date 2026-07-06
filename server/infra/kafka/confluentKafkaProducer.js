@@ -193,7 +193,7 @@ function buildProducerConfig(options) {
       String(global.KAFKA_ENABLE_IDEMPOTENCE || "true") === "true",
 
     // Message/request size
-    "message.max.bytes": asNumber(global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES, 5242880),
+    //"message.max.bytes": asNumber(global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES, 5242880),
     //"socket.request.max.bytes": asNumber(global.KAFKA_SOCKET_REQUEST_MAX_BYTES, 10485760),
 
     // Throughput optimization
@@ -210,7 +210,7 @@ function buildProducerConfig(options) {
   }
 
   if (debug) {
-    config.debug = debug;
+    //config.debug = debug;
   }
 
   const tlsConfig = getTlsConfig(options);

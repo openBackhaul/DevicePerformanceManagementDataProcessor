@@ -353,6 +353,15 @@ function isAirInterfaceLtp(ltp) {
   });
 }
 
+function isEthernetContainerLtp(ltp) {
+  return (ltp["layer-protocol"] || []).some((layerProtocol) => {
+    return (
+      String(layerProtocol["layer-protocol-name"] || "").includes("ethernet-container") ||
+      isPlainObject(layerProtocol[ETHERNET_CONTAINER_PAC_KEY])
+    );
+  });
+}
+
 function isWireInterfaceLtp(ltp) {
   return (ltp["layer-protocol"] || []).some((layerProtocol) => {
     return String(layerProtocol["layer-protocol-name"] || "").includes("wire-interface");
@@ -945,7 +954,126 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   };
 }
 
-function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregationGroupList) {
+function getLayerProtocolName(layerProtocol, fallback) {
+  return String((layerProtocol && layerProtocol["layer-protocol-name"]) || fallback || "");
+}
+
+function setAirInterfaceDerivedFields(ltp, metadata) {
+  if (metadata["link-id"]) {
+    if (!isPlainObject(ltp[LTP_AUGMENT_PAC_KEY])) {
+      ltp[LTP_AUGMENT_PAC_KEY] = {};
+    }
+
+    ltp[LTP_AUGMENT_PAC_KEY]["link-id"] = metadata["link-id"];
+  }
+
+  if (Array.isArray(metadata["parallel-physical-ltp-list"])) {
+    ltp["parallel-ltp"] = metadata["parallel-physical-ltp-list"];
+  }
+}
+
+function createInterfaceProcessingStatus() {
+  return {
+    attempted: 0,
+    succeeded: 0,
+    failed: 0,
+    successfulLtpUuids: [],
+    failedLtpUuids: []
+  };
+}
+
+function recordInterfaceFailure(status, ltpUuid) {
+  status.failed += 1;
+  status.failedLtpUuids = unique([
+    ...status.failedLtpUuids,
+    ltpUuid
+  ]);
+}
+
+function recordInterfaceSuccess(status, ltpUuid) {
+  status.succeeded += 1;
+  status.successfulLtpUuids = unique([
+    ...status.successfulLtpUuids,
+    ltpUuid
+  ]);
+}
+
+function buildNoSuccessfulInterfaceProcessingError(airInterfaceStatus, ethernetContainerStatus) {
+  return buildProcessingError(
+    "p1CreateResultCc",
+    "No AirInterface or EthernetContainer processing succeeded",
+    false,
+    {
+      airInterface: airInterfaceStatus,
+      ethernetContainer: ethernetContainerStatus
+    }
+  );
+}
+
+function assertAnyInterfaceProcessingSucceeded(airInterfaceStatus, ethernetContainerStatus) {
+  const attempted =
+    airInterfaceStatus.attempted + ethernetContainerStatus.attempted;
+  const succeeded =
+    airInterfaceStatus.succeeded + ethernetContainerStatus.succeeded;
+
+  if (attempted > 0 && succeeded === 0) {
+    throw buildNoSuccessfulInterfaceProcessingError(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    );
+  }
+}
+
+function pruneFailedProcessedInterfaceLtps(resultCc, airInterfaceStatus, ethernetContainerStatus, mountName) {
+  const root = getControlConstructRoot(resultCc);
+  const logicalTerminationPointList = getLogicalTerminationPointList(resultCc);
+
+  if (!isPlainObject(root) || !Array.isArray(logicalTerminationPointList)) {
+    return [];
+  }
+
+  const successfulLtpUuids = unique([
+    ...airInterfaceStatus.successfulLtpUuids,
+    ...ethernetContainerStatus.successfulLtpUuids
+  ]);
+  const failedLtpUuids = unique([
+    ...airInterfaceStatus.failedLtpUuids,
+    ...ethernetContainerStatus.failedLtpUuids
+  ]);
+  const prunedLtpUuids = [];
+
+  root["logical-termination-point"] = logicalTerminationPointList.filter((ltp) => {
+    if (!isPlainObject(ltp) || !hasReference(failedLtpUuids, ltp.uuid)) {
+      return true;
+    }
+
+    if (hasReference(successfulLtpUuids, ltp.uuid)) {
+      return true;
+    }
+
+    if (!isAirInterfaceLtp(ltp) && !isEthernetContainerLtp(ltp)) {
+      return true;
+    }
+
+    prunedLtpUuids.push(ltp.uuid);
+    return false;
+  });
+
+  if (prunedLtpUuids.length > 0) {
+    logger.warn(
+      {
+        label: "p1-create-result-cc-pruned-failed-interfaces",
+        mountName,
+        prunedLtpUuids
+      },
+      "Pruned failed AirInterface/EthernetContainer LTPs from resultCc"
+    );
+  }
+
+  return prunedLtpUuids;
+}
+
+function buildAirInterfaceMetadata(ltp, layerProtocol, historicalPerformanceDataList, aggregationGroupList) {
   const linkEndpointId = getLinkEndpointId(ltp);
   let linkId = "";
 
@@ -963,6 +1091,10 @@ function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregati
   return {
     uuid: ltp.uuid,
     "ltp-uuid": ltp.uuid,
+    "layer-protocol-name": getLayerProtocolName(
+      layerProtocol,
+      "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"
+    ),
     //linkId,
     "link-id": linkId,
     //linkEndpointId,
@@ -970,18 +1102,24 @@ function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregati
     //parallelPhysicalLtpList,
     "parallel-physical-ltp-list": parallelPhysicalLtpList,
     //mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
+    mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
     //mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
+    mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
     "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
   };
 }
 
-function buildEthernetContainerMetadata(ltp, historicalPerformanceDataList) {
+function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
   const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
 
   return {
     uuid: ltp.uuid,
     "ltp-uuid": ltp.uuid,
+    "layer-protocol-name": getLayerProtocolName(
+      layerProtocol,
+      "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
+    ),
     mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
     mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
@@ -990,6 +1128,8 @@ function buildEthernetContainerMetadata(ltp, historicalPerformanceDataList) {
 }
 
 async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
+  const status = createInterfaceProcessingStatus();
+
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getAirInterfacePac(layerProtocol);
@@ -998,9 +1138,11 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         continue;
       }
 
+      status.attempted += 1;
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
 
       if(prepareTxModesResult === null) {
+        recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -1023,6 +1165,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       if (iterateAiResult === null) {
+        recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -1034,24 +1177,31 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       
       const metadata = buildAirInterfaceMetadata(
         ltp,
+        layerProtocol,
         iterateAiResult.historicalPerformanceDataList,
         aggregationGroupList
       );
 
-      /* metadata.mostRecentPeriodEndTime =
-        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime; */
+      metadata.mostRecentPeriodEndTime =
+        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime;
       metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
 
-      /* metadata.mostRecentPeriodEndTime24 =
-        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24; */
+      metadata.mostRecentPeriodEndTime24 =
+        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
+      setAirInterfaceDerivedFields(ltp, metadata);
       interfaceMetadataList.push(metadata);
+      recordInterfaceSuccess(status, ltp.uuid);
     }
   }
+
+  return status;
 }
 
 async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
+  const status = createInterfaceProcessingStatus();
+
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getEthernetContainerPac(layerProtocol);
@@ -1060,6 +1210,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         continue;
       }
 
+      status.attempted += 1;
       const aggregationGroup = getAggregationGroupForEthernetContainer(
         ltp.uuid,
         aggregationGroupList
@@ -1074,6 +1225,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       );
 
       if (iterateEcResult === null) {
+        recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -1085,6 +1237,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
 
       const metadata = buildEthernetContainerMetadata(
         ltp,
+        layerProtocol,
         iterateEcResult.historicalPerformanceDataList
       );
 
@@ -1100,8 +1253,11 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
       interfaceMetadataList.push(metadata);
+      recordInterfaceSuccess(status, ltp.uuid);
     }
   }
+
+  return status;
 }
 
 async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountName) {
@@ -1164,7 +1320,7 @@ async function run(request) {
     const interfaceMetadataList = [];
     
 
-    await processAirInterfaces(
+    const airInterfaceStatus = await processAirInterfaces(
       parameters,
       resultCc,
       aggregationGroupList,
@@ -1183,11 +1339,23 @@ async function run(request) {
     );
     console.log("parameters: ",JSON.stringify(iterateEcParameters)); */
 
-    await processEthernetContainers(
+    const ethernetContainerStatus = await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
       interfaceMetadataList,
+      mountName
+    );
+
+    assertAnyInterfaceProcessingSucceeded(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    );
+
+    pruneFailedProcessedInterfaceLtps(
+      resultCc,
+      airInterfaceStatus,
+      ethernetContainerStatus,
       mountName
     );
 

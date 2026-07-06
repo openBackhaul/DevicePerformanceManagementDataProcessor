@@ -11,7 +11,7 @@
     "workerIdleSleepMs": 1000,
     "shutdownGraceMs": 30000,
     "httpPort": 8080,
-    "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER",
+    "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER,IVERITAS",
     "kafkaOutboundConcurrency": 1,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 100,

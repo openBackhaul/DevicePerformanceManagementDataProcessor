@@ -9,7 +9,8 @@ const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutpu
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
 const {p1FormattingOutputOnf} = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
 const fs = require("fs");
-//const sampleResultCcApt = require("./outputAPTSample.json");
+const sampleResultCcApt = require("./outputAPTSample.json");
+const sampleResultCcOnf = require("./outputOnfSample.json");
 
 function getTargetConsumers(kafkaConsumerTypes) {
   return String(
@@ -207,7 +208,7 @@ async function run(request) {
         throw buildFormattingOutputAptError(responseApt, mountName);
     }
 
-    const resultCcApt = responseApt["output-format"];
+    const resultCcApt = responseApt["output-format"];//sampleResultCcApt;//
 
     /*   P1FormattingOutputOnf is an ONF function that formats the output result CC according to the ONF output format. 
         It also performs some basic validations on the result CC. If the formatting fails or the result CC is invalid, 
@@ -262,7 +263,7 @@ async function run(request) {
 
     
     const responseOnf = await p1FormattingOutputOnf({
-        resultCc: createResultCcResponse.resultCc,
+        'result-cc': createResultCcResponse.resultCc,
         parameters: p1FormattingOutputOnfParameters
     });
 
@@ -281,7 +282,7 @@ async function run(request) {
         throw buildFormattingOutputOnfError(responseOnf, mountName);
     } 
 
-    const resultCcOnf = responseOnf["output-format"];
+    const resultCcOnf = responseOnf["output-format"];//sampleResultCcOnf;//
 
    const resultMountName =
       createResultCcResponse.mountName ||
@@ -334,6 +335,9 @@ async function run(request) {
       mountName,
       stage: error.stage || "p1ProcessDevice",
       message: error.message || String(error),
+      retryable: error.retryable,
+      details: error.details,
+      vendorResponse: error.vendorResponse,
       originalError: error
     };
   }

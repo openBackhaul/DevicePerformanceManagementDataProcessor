@@ -1827,7 +1827,7 @@
               "string-purpose": "Fields filter to be applied to reduce the onfOutputFormat"
             },
             "string-profile-configuration": {
-              "string-value": ""
+              "string-value": "equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp"
             }
           }
         },
@@ -2800,7 +2800,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 29092
+                "remote-port": 9093
               }
             }
           }
