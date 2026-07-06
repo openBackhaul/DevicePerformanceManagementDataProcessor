@@ -1,5 +1,4 @@
 const ERRORS = {
-
   UUID_NOT_PROVIDED: "uuid not provided",
   UUID_INVALID: "uuid invalid",
 
