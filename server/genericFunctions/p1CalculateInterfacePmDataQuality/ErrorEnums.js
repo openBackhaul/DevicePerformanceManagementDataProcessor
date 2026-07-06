@@ -1,19 +1,28 @@
 const ERRORS = {
-  HISTORICAL_PERF_NOT_PROVIDED: "historicalPerformanceDataList not provided",
-  HISTORICAL_PERF_INVALID: "historicalPerformanceDataList invalid",
+
+  UUID_NOT_PROVIDED: "uuid not provided",
+  UUID_INVALID: "uuid invalid",
 
   FORMER_MRPET_NOT_PROVIDED: "formerMostRecentPeriodEndTime not provided",
   FORMER_MRPET_INVALID: "formerMostRecentPeriodEndTime invalid",
 
-  FORMER_MRPET24_NOT_PROVIDED: "formerMostRecentPeriodEndTime24 not provided",
-  FORMER_MRPET24_INVALID: "formerMostRecentPeriodEndTime24 invalid",
+  NEW_MRPET_NOT_PROVIDED: "newMostRecentPeriodEndTime not provided",
+  NEW_MRPET_INVALID: "newMostRecentPeriodEndTime invalid",
 
-  HISTORICAL_PERF_FILTER_ERROR: "historicalPerformanceDataList filtering error",
-  UPDATE_NMRPET_UPDATE_ERROR: "updateNewMostRecentPeriodEndTime update error",
-  NUMBER_RECV_15M_COULDNT_UPDATED: "number of received 15min PM records could not be updated",
+  AMOUNT_RECV_NOT_PROVIDED: "amountReceived not provided",
+  AMOUNT_RECV_INVALID: "amountReceived invalid",
+
+  EXP_AMOUNT_COULDNT_CALC: "expected amount could not be calculated",
+  INTF_PM_DATA_QUALITY_COULDNT_CALC: "interfacePmDataQuality could not be calculated",
+
+  // Internal Functions:
+  MONITORING_PERIOD_COULNT_CALC: "monitoring period length could not be calculated",
+
+  AMOUNT_EXP_COULDNT_CALC: "amount expected could not be calculated",
+  AMOUNT_EXP_NOT_PROVIDED: "amountExpected not provided",
+  AMOUNT_EXP_INVALID: "amountExpected invalid",
 
   GENERAL_ERROR: "General processing error"
 }
 
 module.exports = ERRORS;
-
