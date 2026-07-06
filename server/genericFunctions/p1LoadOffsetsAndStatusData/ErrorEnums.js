@@ -7,6 +7,9 @@ const ERRORS = {
 
   ELK_READ_ERROR: "ElasticSearch read error",
 
+  // Internal function
+  PROCESS_DATA_COULDNT_PROVIDED: 'processingData could not be provided',
+
   GENERAL_ERROR: "General processing error"
 }
 
