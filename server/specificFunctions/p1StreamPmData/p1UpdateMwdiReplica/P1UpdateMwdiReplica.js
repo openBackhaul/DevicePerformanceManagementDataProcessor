@@ -2,62 +2,110 @@ const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
 const { withRetry } = require("../../../utils/retry");
 const redisQueue = require("../../../infra/redis/redisStreamQueue");
+const ERRORS = require("./ErrorsEnum");
 
-/**
- * Request:
- * {
- *   parameters,
- *   mwdiEsClient,
- *   mwdiReplicaEsClient,
- *   loggingEsClient,
- *   lastReplicaTime,
- *   runtimeConfig,
- *   logger
- * }
- *
- * Response:
- * {
- *   updatedMountNames: [],
- *   timestamp: "..."
- * }
- */
+function assertRequest(request) {
+  if (!request || typeof request !== "object") {
+    throw new Error(ERRORS.MISSING_REQUIRED_INPUT);
+  }
+
+  const {
+    parameters,
+    mwdiEsClient,
+    mwdiReplicaEsClient,
+    loggingEsClient
+  } = request;
+
+  if (!parameters || typeof parameters !== "object" || Array.isArray(parameters)) {
+    throw new Error(ERRORS.MISSING_REQUIRED_INPUT);
+  }
+
+  if (!mwdiEsClient || typeof mwdiEsClient !== "object" || Array.isArray(mwdiEsClient)) {
+    throw new Error(ERRORS.MISSING_REQUIRED_INPUT);
+  }
+
+  if (!mwdiReplicaEsClient || typeof mwdiReplicaEsClient !== "object" || Array.isArray(mwdiReplicaEsClient)) {
+    throw new Error(ERRORS.MISSING_REQUIRED_INPUT);
+  }
+
+  if (!loggingEsClient || typeof loggingEsClient !== "object" || Array.isArray(loggingEsClient)) {
+    throw new Error(ERRORS.MISSING_REQUIRED_INPUT);
+  }
+}
+
+function parseTimestamp(value) {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function getSafeLogger(logger) {
+  return logger || console;
+}
+
 async function run(request) {
+  assertRequest(request);
+
+  const logger = getSafeLogger(request.logger);
   const {
     parameters,
     mwdiEsClient,
     mwdiReplicaEsClient,
     loggingEsClient,
     lastReplicaTime,
-    runtimeConfig,
-    logger
+    runtimeConfig
   } = request;
 
-  if (!parameters || !mwdiEsClient || !mwdiReplicaEsClient || !loggingEsClient) {
-    throw new Error(
-      "parameters, mwdiEsClient, mwdiReplicaEsClient and loggingEsClient are mandatory"
+  let sourceClient;
+  try {
+    sourceClient = await onfAdapter.getEsClient(
+      false,
+      mwdiEsClient.uuid,
+      mwdiEsClient,
+      logger
     );
+  } catch (error) {
+    logger.error(
+      { error: error.message || error, label: "getEsClient-source" },
+      "Failed to create MWDI ES client"
+    );
+    throw new Error(ERRORS.CONNECTION_MWDI_ES_FAILED);
   }
 
-  const sourceClient = await onfAdapter.getEsClient(
-    false,
-    mwdiEsClient.uuid,
-    mwdiEsClient,
-    logger
-  );
+  let replicaClient;
+  try {
+    replicaClient = await onfAdapter.getEsClient(
+      false,
+      mwdiReplicaEsClient.uuid,
+      mwdiReplicaEsClient,
+      logger
+    );
+  } catch (error) {
+    logger.error(
+      { error: error.message || error, label: "getEsClient-replica" },
+      "Failed to create MWDI Replica ES client"
+    );
+    throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
+  }
 
-  const replicaClient = await onfAdapter.getEsClient(
-    false,
-    mwdiReplicaEsClient.uuid,
-    mwdiReplicaEsClient,
-    logger
-  );
-
-  const loggingClient = await onfAdapter.getEsClient(
-    false,
-    loggingEsClient.uuid,
-    loggingEsClient,
-    logger
-  );
+  let loggingClient;
+  try {
+    loggingClient = await onfAdapter.getEsClient(
+      false,
+      loggingEsClient.uuid,
+      loggingEsClient,
+      logger
+    );
+  } catch (error) {
+    logger.error(
+      { error: error.message || error, label: "getEsClient-logging" },
+      "Failed to create Logging ES client"
+    );
+    throw new Error(ERRORS.CONNECTION_LOGGING_ES_FAILED);
+  }
 
   const jobName = getParamFromFunction(
     parameters,
@@ -92,18 +140,37 @@ async function run(request) {
 
   const now = Date.now();
   const lastTimestamp = lastReplicaTime
-    ? new Date(lastReplicaTime).getTime()
+    ? parseTimestamp(lastReplicaTime)
     : now - overlapMs;
 
-  const periodStartTime = new Date(lastTimestamp - overlapMs).toJSON();
-  const periodEndTime = new Date(now).toJSON();
+  if (lastReplicaTime && lastTimestamp === null) {
+    throw new Error(ERRORS.INVALID_LAST_REPLICA_TIME);
+  }
+
+  const periodStartTime = new Date(lastTimestamp - overlapMs).toISOString();
+  const periodEndTime = new Date(now).toISOString();
+
+  logger.debug(
+    {
+      jobName,
+      periodStartTime,
+      periodEndTime,
+      lastReplicaTime,
+      overlapMs,
+      reqPerSec,
+      scrollSize,
+      scrollTtl
+    },
+    "p1UpdateMwdiReplica request details"
+  );
 
   let statusMessage = "SUCCESS";
   let reindexResp;
+
   try {
     reindexResp = await withRetry(
-        async () =>
-         sourceClient.reindex({
+      async () =>
+        sourceClient.reindex({
           refresh: true,
           wait_for_completion: true,
           requests_per_second: reqPerSec,
@@ -112,18 +179,10 @@ async function run(request) {
             source: {
               index: mwdiEsClient["index-alias"],
               size: scrollSize,
-              /* query: {
-                range: {
-                  [lastUpdatedField]: {
-                    gt: periodStartTime,
-                    lte: periodEndTime
-                  }
-                }
-              } */
               query: {
                 bool: {
                   must: [
-                    { exists: { field: "core-model-1-4:control-construct" }},
+                    { exists: { field: "core-model-1-4:control-construct" } },
                     {
                       range: {
                         [lastUpdatedField]: {
@@ -143,27 +202,51 @@ async function run(request) {
             conflicts: "proceed"
           }
         }),
-        {
-            label: "p1UpdateMwdiReplica.reindex",
-            retryIntervalMs: 10000,
-            logger
-        }
+      {
+        label: "p1UpdateMwdiReplica.reindex",
+        retryIntervalMs: 10000,
+        logger
+      }
     );
   } catch (error) {
-    statusMessage = String(error.message || error);
+    logger.error(
+      {
+        label: "p1UpdateMwdiReplica.reindex",
+        error: error.message || error
+      },
+      "Reindex failed"
+    );
+
     await loggingClient.index({
       index: loggingEsClient["index-alias"],
-      document: { jobName, periodStartTime, periodEndTime, status: "FAILED", error: String(err), lastReplicaTime: new Date().toJSON(), "timestamp": new Date().toJSON() },
-    }).catch(() => {});
+      body: {
+        jobName,
+        periodStartTime,
+        periodEndTime,
+        status: "FAILED",
+        error: String(error.message || error),
+        lastReplicaTime: new Date().toISOString(),
+        timestamp: new Date().toISOString()
+      },
+      refresh: false
+    }).catch((loggingError) => {
+      logger.error(
+        {
+          label: "p1UpdateMwdiReplica.reindex.logging",
+          error: loggingError.message || loggingError
+        },
+        "Failed to write failure logging document"
+      );
+    });
+
+    throw new Error(ERRORS.DATA_REPLICATION_FAILED);
   }
 
-  /* await sourceClient.indices.refresh({
-    index: mwdiReplicaEsClient["index-alias"]
-  }); */
-
-  const replicaResponse = await withRetry(
+  let replicaResponse;
+  try {
+    replicaResponse = await withRetry(
       async () =>
-       replicaClient.search({
+        replicaClient.search({
           index: mwdiReplicaEsClient["index-alias"],
           scroll: scrollTtl,
           size: scrollSize,
@@ -171,7 +254,7 @@ async function run(request) {
             query: {
               bool: {
                 must: [
-                  { exists: { field: "core-model-1-4:control-construct" }},
+                  { exists: { field: "core-model-1-4:control-construct" } },
                   {
                     range: {
                       [lastUpdatedField]: {
@@ -186,77 +269,106 @@ async function run(request) {
           }
         }),
       {
-          label: "p1UpdateMwdiReplica.search",
-          retryIntervalMs: 10000,
-          logger
+        label: "p1UpdateMwdiReplica.search",
+        retryIntervalMs: 10000,
+        logger
       }
-  ).catch((error) => {
-      logger.error(
-        {
-          label: "search-replica-after-reindex",
-          error: error.message || error
-        },
-        "Failed to search replica after reindex"
-      );
-    });//({ hits: { hits: [] } }));
+    );
+  } catch (error) {
+    logger.error(
+      {
+        label: "p1UpdateMwdiReplica.search",
+        error: error.message || error
+      },
+      "Failed to search replica after reindex"
+    );
+  }
 
-  const updatedMountNames = ((((replicaResponse || {}).body.hits || {}).hits || []))
-    .map((hit) => {
-      const src = hit._source || {};
-      return src.mountName || src["mount-name"] || src.uuid || hit._id;
-    })
-    .filter(Boolean);
+  const updatedMountNames = Array.from(
+    new Set(
+      ((((replicaResponse || {}).body || {}).hits || {}).hits || []).map(
+        (hit) => {
+          const src = hit._source || {};
+          return src.mountName || src["mount-name"] || src.uuid || hit._id;
+        }
+      )
+    )
+  ).filter(Boolean);
 
-  await redisQueue.ensureGroup(logger);
-  await redisQueue.enqueueMountNames(
-  updatedMountNames,
-  {
-    batchSize: (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
-    pauseMs: (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
+  try {
+    await redisQueue.ensureGroup(logger);
+  } catch (error) {
+    logger.error(
+      {
+        label: "p1UpdateMwdiReplica.ensureGroup",
+        error: error.message || error
+      },
+      "Failed to ensure Redis consumer group"
+    );
 
-    /*
-     * p1UpdateMwdiReplica provides only mountNames that have updated CCs.
-     * Therefore, old retry/dead-letter state must not block processing.
-     */
-    clearRetryAndDeadLetterBeforeEnqueue: true
-  },
-  logger
-);
+    throw error;
+  }
+
+  try {
+    await redisQueue.enqueueMountNames(
+      updatedMountNames,
+      {
+        batchSize:
+          (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
+        pauseMs:
+          (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
+        clearRetryAndDeadLetterBeforeEnqueue: true
+      },
+      logger
+    );
+  } catch (error) {
+    logger.error(
+      {
+        label: "p1UpdateMwdiReplica.enqueueMountNames",
+        error: error.message || error
+      },
+      "Failed to enqueue updated mount names"
+    );
+
+    throw error;
+  }
 
   const timestamp = periodEndTime;
 
+  try {
     await withRetry(
-        async () =>
-          loggingClient.index({
-              index: loggingEsClient["index-alias"],
-              body: {
-                jobName,
-                periodStartTime,
-                periodEndTime,
-                replicated: reindexResp?.body?.created ?? 0,
-                updated: reindexResp?.body?.updated ?? 0,
-                total: reindexResp?.body?.total ?? 0,
-                status: statusMessage,
-                updatedMountNames,
-                lastReplicaTime: new Date().toJSON(),
-                "timestamp": new Date().toJSON()
-              },
-              refresh: false
-          }),
-        {
-            label: "p1UpdateMwdiReplica.logging",
-            retryIntervalMs: 10000,
-            logger
-        }
-    ).catch((error) => {
-      logger.error(
-        {
-          label: "logging-client-index",
-          error: error.message || error
-        },
-        "Failed to index logging document"
-      );
-    });
+      async () =>
+        loggingClient.index({
+          index: loggingEsClient["index-alias"],
+          body: {
+            jobName,
+            periodStartTime,
+            periodEndTime,
+            replicated: reindexResp?.body?.created ?? 0,
+            updated: reindexResp?.body?.updated ?? 0,
+            total: reindexResp?.body?.total ?? 0,
+            status: statusMessage,
+            updatedMountNames,
+            lastReplicaTime: new Date().toISOString(),
+            timestamp: new Date().toISOString()
+          },
+          refresh: false
+        }),
+      {
+        label: "p1UpdateMwdiReplica.logging",
+        retryIntervalMs: 10000,
+        logger
+      }
+    );
+  } catch (error) {
+    logger.error(
+      {
+        label: "p1UpdateMwdiReplica.logging",
+        error: error.message || error
+      },
+      "Failed to index logging document"
+    );
+  }
 
   return {
     updatedMountNames,
