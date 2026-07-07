@@ -3,6 +3,10 @@ const ERRORS = require('./ErrorsEnum');
 // Function p1CalculateInterfacePmDataQuality
 // Calculates the number of expected 15min PM records.
 // Forms an array categorizing expected and received amounts by date.
+// - uuid
+// - former-most-recent-period-end-time
+// - new-most-recent-period-end-time
+// - amount-received
 function p1CalculateInterfacePmDataQuality(input) {
   try {
     const validationError = validateMainInput(input);
@@ -15,7 +19,7 @@ function p1CalculateInterfacePmDataQuality(input) {
       'new-most-recent-period-end-time': input['new-most-recent-period-end-time']
     });
 
-    if (expectedResult.error) {
+    if (typeof expectedResult === "string") {
       return ERRORS.EXP_AMOUNT_COULDNT_CALC;
     }
 
@@ -25,8 +29,8 @@ function p1CalculateInterfacePmDataQuality(input) {
       'amount-expected': expectedResult['amount-expected']
     });
 
-    if (qualityResult.error) {
-      return { error: qualityResult.error };
+    if (typeof qualityResult === "string") {
+      return qualityResult;
     }
 
     return {
@@ -179,6 +183,14 @@ function validateMainInput(input) {
   if (!input || typeof input !== "object") {
     return ERRORS.GENERAL_ERROR;
   }
+
+  if (input['uuid'] == undefined &
+    input['former-most-recent-period-end-time'] == undefined &&
+    input['new-most-recent-period-end-time'] == undefined &&
+    input['amount-received']) {
+    return ERRORS.GENERAL_ERROR;
+  }
+    
 
   if (!input['uuid']) {
     return ERRORS.UUID_NOT_PROVIDED;
