@@ -1,6 +1,6 @@
 const ERRORS = require('./ErrorsEnum');
 
-const GRANULARITY_24H = "GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS";
+const GRANULARITY_15M = "GRANULARITY_PERIOD_TYPE_PERIOD-15-MINUTES";
 
 const MINUTES_BY_DAY = "15-minute-values-by-day";
 const MINUTES_BY_HOUR = "15-minute-values-by-hour";
@@ -28,7 +28,7 @@ function p1CalculateBusyHourPerformanceIndicators(input) {
       return ERRORS.INT_STATUS_NOT_PROVIDED;
     }
 
-    if (!checkGranularity(historicalPerformanceData[GRANULARITY_PERIOD])) {
+    if (checkGranularity(historicalPerformanceData[GRANULARITY_PERIOD])) {
       return ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV;
     }
 
@@ -75,7 +75,7 @@ function p1CalculateBusyHourPerformanceIndicators(input) {
 }
 
 function checkGranularity(granularity) {
-  return granularity.endsWith(GRANULARITY_24H);
+  return granularity.endsWith(GRANULARITY_15M);
 }
 
 function aggregateTotalBytesOutput(valuesByHour) {
