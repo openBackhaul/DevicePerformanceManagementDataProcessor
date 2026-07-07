@@ -1,6 +1,6 @@
 const ERRORS = require('./ErrorsEnum');
 
-const GRANULARITY_15_MIN = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN";
+const GRANULARITY_15_MIN = "GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN";
 
 /**
  * Function p1CategorizeDataVolume
@@ -75,7 +75,7 @@ function p1CategorizeDataVolume(input) {
     let dayBucket = valuesByDay.find(entry => entry['day'] === day);
 
     if (!dayBucket) {
-      'dayBucket' = {
+      dayBucket = {
         day,
         '15-minute-values-by-hour': initializeHourlyBuckets()
       };
@@ -121,7 +121,7 @@ function p1CategorizeDataVolume(input) {
  * @returns {boolean}
  */
 function checkGranularity(granularity) {
-  return granularity === GRANULARITY_15_MIN;
+  return granularity.endsWith(GRANULARITY_15_MIN);
 }
 
 /**
