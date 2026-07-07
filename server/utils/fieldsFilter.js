@@ -147,7 +147,7 @@ function filterCurrentPerformanceDataList(value) {
     .filter(Boolean);
 }
 
-function applySpecialProjectionRules(actualKey, value) {
+function applySpecialProjectionRules(actualKey, value, subTree) {
   if (actualKey === CURRENT_PERFORMANCE_DATA_LIST_KEY) {
     return filterCurrentPerformanceDataList(value);
   }
@@ -156,7 +156,12 @@ function applySpecialProjectionRules(actualKey, value) {
     return filterLayerProtocolList(value);
   }
 
-  if (actualKey === "logical-termination-point") {
+  if (
+    actualKey === "logical-termination-point" &&
+    subTree !== true &&
+    isPlainObject(subTree) &&
+    hasOwn(subTree, "layer-protocol")
+  ) {
     return filterLogicalTerminationPointList(value);
   }
 
@@ -390,7 +395,7 @@ function project(data, tree) {
       let value =
       subTree === true ? data[actualKey] : project(data[actualKey], subTree);
 
-      value = applySpecialProjectionRules(actualKey, value);
+      value = applySpecialProjectionRules(actualKey, value, subTree);
 
       if (value === undefined || value === null) {
         continue;

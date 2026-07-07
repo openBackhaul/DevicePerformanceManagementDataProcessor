@@ -171,7 +171,7 @@ describe("P1InitKafka Unit Tests", () => {
                         kafkaClientUuid: "kafka-uuid-1",
                         clientId: "client-1",
                         groupId: "group-1",
-//                      auth: false,
+                        auth: false,
                         brokerList: [
                             "localhost:9092"
                         ],
@@ -325,8 +325,51 @@ describe("P1InitKafka Unit Tests", () => {
             });
 
             expect(onfAdapter.connectKafkaProducer).toHaveBeenCalledWith(
-                "client-1",
-                ["localhost:9092"],
+                {
+                    clientId: "client-1",
+                    brokers: ["localhost:9092"],
+                    logger,
+                    auth: undefined
+                },
+                null,
+                logger
+            );
+        });
+
+        test("should pass auth from kafka address to connectKafkaProducer", async () => {
+            getParamsByPurpose.mockReturnValue([
+                { "parameter-name": "pmCollectionKafka", value: "kafka-uuid-1" }
+            ]);
+
+            const kafkaAuth = {
+                "user-name": "emp-user",
+                password: "emp-password"
+            };
+
+            readKafkaAddress.mockResolvedValue({
+                clientId: "client-1",
+                brokerList: ["localhost:9092"],
+                auth: kafkaAuth,
+                topicName: "pm-data",
+                type: "producer"
+            });
+
+            onfAdapter.connectKafkaProducer.mockResolvedValue();
+
+            await moduleUnderTest.run({
+                parameters: {},
+                configFile: validConfig,
+                logger
+            });
+
+            expect(onfAdapter.connectKafkaProducer).toHaveBeenCalledWith(
+                {
+                    clientId: "client-1",
+                    brokers: ["localhost:9092"],
+                    logger,
+                    auth: kafkaAuth
+                },
+                null,
                 logger
             );
         });

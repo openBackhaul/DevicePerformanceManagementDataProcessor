@@ -26,9 +26,6 @@ const LayerProtocol = require(
 const OnfAttributes = require(
   "onf-core-model-ap/applicationPattern/onfModel/constants/OnfAttributes"
 );
-const KafkaProducerService = require(
-  "onf-core-model-ap/applicationPattern/services/kafkaProducerService"
-);
 const TcpClientInterface = require(
   "onf-core-model-ap/applicationPattern/onfModel/models/layerProtocols/TcpClientInterface"
 );
@@ -279,11 +276,13 @@ async function connectKafkaProducer(clientIdOrOptions, brokers, logger) {
 }
 
 async function sendKafkaMessage(topic, message, clientId, brokers, logger) {
-  await confluentKafkaProducer.initProducer({
+  const kafkaOptions = {
     clientId,
     brokers,
     logger
-  });
+  };
+
+  await confluentKafkaProducer.initProducer(kafkaOptions);
 
   return await confluentKafkaProducer.sendBatch(
     topic,
@@ -294,8 +293,7 @@ async function sendKafkaMessage(topic, message, clientId, brokers, logger) {
       }
     ],
     logger,
-    clientId,
-    brokers
+    kafkaOptions
   );
 }
 

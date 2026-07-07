@@ -560,7 +560,7 @@ async function run(request) {
             pac["air-interface-historical-performances"]["historical-performance-data-list"] &&
             pac["air-interface-historical-performances"]["historical-performance-data-list"].length > 0
           ) {
-            pac["air-interface-historical-performances"] = await filterHistoricalList(
+            pac["air-interface-historical-performances"]["historical-performance-data-list"] = await filterHistoricalList(
               pac["air-interface-historical-performances"],
               relevantGranularities,
               meta.mostRecentPeriodEndTime,
@@ -579,7 +579,7 @@ async function run(request) {
             pac["ethernet-container-historical-performances"]["historical-performance-data-list"] &&
             pac["ethernet-container-historical-performances"]["historical-performance-data-list"].length > 0
           ) {
-            pac["ethernet-container-historical-performances"] = await filterHistoricalList(
+            pac["ethernet-container-historical-performances"]["historical-performance-data-list"] = await filterHistoricalList(
               pac["ethernet-container-historical-performances"],
               relevantGranularities,
               meta.mostRecentPeriodEndTime,

@@ -163,6 +163,18 @@ describe("P1FieldsFilter Unit Tests", () => {
             expect(applyFieldsFilter).toHaveBeenCalledWith(validDataStructure, validFilterString);
         });
 
+        test("should accept fieldsFilters alias", async () => {
+            applyFieldsFilter.mockReturnValue({ key: "value" });
+
+            const result = await moduleUnderTest.run({
+                dataStructure: validDataStructure,
+                fieldsFilters: validFilterString
+            });
+
+            expect(result).toEqual({ "filtered-data-structure": { key: "value" } });
+            expect(applyFieldsFilter).toHaveBeenCalledWith(validDataStructure, validFilterString);
+        });
+
         test("should prefer camelCase dataStructure key over kebab-case", async () => {
             const camelData = { uuid: "camel" };
             const kebabData = { uuid: "kebab" };

@@ -137,7 +137,7 @@ describe("P1TransmittingKafka", () => {
       await expect(run(validRequest())).resolves.toEqual({
         transmissionResultList: [
           {
-            topic: "raw.mw-sdnc-dpmdp.apt",
+            topic: "raw.mw-sdnc-dpmdp.Apt",
             clientId: "apt-client",
             brokers: ["localhost:9092"],
             messageCount: 1,
@@ -148,7 +148,7 @@ describe("P1TransmittingKafka", () => {
 
       expect(sendBatch).toHaveBeenCalledTimes(1);
       expect(sendBatch).toHaveBeenCalledWith(
-        "raw.mw-sdnc-dpmdp.apt",
+        "raw.mw-sdnc-dpmdp.Apt",
         [
           expect.objectContaining({
             key: "device-1",
@@ -173,6 +173,52 @@ describe("P1TransmittingKafka", () => {
           sourceSystem: "DPMDP",
           mountName: "device-1",
           payload: { temperature: 32 }
+        })
+      );
+    });
+
+    test("sends kafka auth through kafka options when auth is provided", async () => {
+      const authRequest = validRequest({
+        kafkaConnectionList: [
+          {
+            type: "provider",
+            parameterName: "aptProvider",
+            topicName: "raw.mw-sdnc-dpmdp.Apt",
+            clientId: "apt-client",
+            brokerList: ["localhost:9092"],
+            auth: {
+              "user-name": "emp-user",
+              password: "emp-password"
+            }
+          }
+        ]
+      });
+
+      sendBatch.mockResolvedValueOnce({ response: { status: 200 } });
+
+      await expect(run(authRequest)).resolves.toEqual({
+        transmissionResultList: [
+          {
+            topic: "raw.mw-sdnc-dpmdp.Apt",
+            clientId: "apt-client",
+            brokers: ["localhost:9092"],
+            messageCount: 1,
+            status: "SENT"
+          }
+        ]
+      });
+
+      expect(sendBatch).toHaveBeenCalledWith(
+        "raw.mw-sdnc-dpmdp.Apt",
+        expect.any(Array),
+        logger,
+        expect.objectContaining({
+          clientId: "apt-client",
+          brokers: ["localhost:9092"],
+          auth: {
+            "user-name": "emp-user",
+            password: "emp-password"
+          }
         })
       );
     });

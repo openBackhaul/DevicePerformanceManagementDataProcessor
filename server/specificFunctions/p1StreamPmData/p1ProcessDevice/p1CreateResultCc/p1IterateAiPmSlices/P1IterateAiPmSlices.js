@@ -11,28 +11,28 @@ const EPOCH_TIME = "1970-01-01T00:00:00+00:00";
 function updateMostRecentPeriodEndTime(mostRecentPeriodEndTime, mostRecentPeriodEndTime24, granularityPeriod, periodEndTime) {
 
   if (!mostRecentPeriodEndTime) {
-    return 'mostRecentPeriodEndTime not provided';
+    return ERRORS.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED;
   }
 
   if (!mostRecentPeriodEndTime24) {
-    return 'mostRecentPeriodEndTime24 not provided';
+    return ERRORS.MOST_RECENT_PERIOD_END_TIME24_NOT_PROVIDED;
   }
 
   if (!granularityPeriod) {
-    return 'granularityPeriod not provided';
+    return ERRORS.GRANULARITY_PERIOD_NOT_PROVIDED;
   }
 
   if (!periodEndTime) {
-    return 'periodEndTime not provided';
+    return ERRORS.PERIOD_END_TIME_NOT_PROVIDED;
   }
 
   let updated15 = mostRecentPeriodEndTime;
   let updated24 = mostRecentPeriodEndTime24;
 
   if (granularityPeriod === GRANU_PERIOD_15M) {
-    updated15 = periodEndTime;
+    updated15 = mostRecentPeriodEndTime > periodEndTime ? mostRecentPeriodEndTime : periodEndTime;
   } else if (granularityPeriod === GRANU_PERIOD_24H) {
-    updated24 = periodEndTime;
+    updated24 = mostRecentPeriodEndTime24 > periodEndTime ? mostRecentPeriodEndTime24 : periodEndTime;
   }
 
   return {
@@ -181,12 +181,19 @@ function p1IterateAiPmSlices(input) {
       });
     }
 
-    return {
+    let retValue = {
       'historical-performance-data-list': processedDataList,
-      'most-recent-period-end-time': mostRecentPeriodEndTime,
-      'most-recent-period-end-time-24': mostRecentPeriodEndTime24
-    };
+    }
 
+    if (mostRecentPeriodEndTime != EPOCH_TIME) {
+      retValue['most-recent-period-end-time'] = mostRecentPeriodEndTime;
+    }
+
+    if (mostRecentPeriodEndTime24 != EPOCH_TIME) {
+      retValue['most-recent-period-end-time-24'] = mostRecentPeriodEndTime24;
+    }
+
+    return retValue;
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }

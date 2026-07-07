@@ -3,6 +3,7 @@ const { getParamFromFunction, findFunctionNode } = require("../../../../utils/fu
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
 const ERRORS_P1PrepareTxModes = require("./p1PrepareTxModes/ErrorsEnum");
 const ERRORS_P1IterateAiPmSlices = require("./p1IterateAiPmSlices/ErrorsEnum");
+const ERRORS_P1IterateEcPmSlices = require("./p1IterateEcPmSlices/ErrorsEnum");
 const logger = require("../../../../service/LoggingService.js").getLogger();
 
 /*
@@ -10,7 +11,7 @@ const logger = require("../../../../service/LoggingService.js").getLogger();
  */
 const p1PrepareTxModes = require("./p1PrepareTxModes/P1PrepareTxModes.js");
 const {p1IterateAiPmSlices} = require("./p1IterateAiPmSlices/P1IterateAiPmSlices.js");
-const p1IterateEcPmSlices = optionalRequire("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
+const p1IterateEcPmSlices = require("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
 const AIR_INTERFACE_HIST_PERF_KEY = "air-interface-historical-performances";
@@ -352,6 +353,15 @@ function isAirInterfaceLtp(ltp) {
   });
 }
 
+function isEthernetContainerLtp(ltp) {
+  return (ltp["layer-protocol"] || []).some((layerProtocol) => {
+    return (
+      String(layerProtocol["layer-protocol-name"] || "").includes("ethernet-container") ||
+      isPlainObject(layerProtocol[ETHERNET_CONTAINER_PAC_KEY])
+    );
+  });
+}
+
 function isWireInterfaceLtp(ltp) {
   return (ltp["layer-protocol"] || []).some((layerProtocol) => {
     return String(layerProtocol["layer-protocol-name"] || "").includes("wire-interface");
@@ -414,7 +424,6 @@ function createAggregationGroupList(rawCc) {
       aggregationGroupList.push({
         uuid: profile.uuid,
         "client-ltp": clientLtp,
-        "server-ltp-list": serverLtpList,
         "physical-server-ltp-list": getPhysicalServerLtpList(rawCc, serverLtpList)
       });
     }
@@ -447,7 +456,7 @@ function substringLinkId(input) {
     //linkEndpointId = `${linkEndpointId}A`; // Append dummy character to pass validation for 9 digits followed by A or B
     const normalized = String(linkEndpointId).trim();
 
-    if (!/^[0-9]{9}[AB]$/.test(normalized)) {
+    if (!/^[0-9]{9}[AB]$/.test(normalized) || normalized.length < 9 || normalized.length > 10) {
       throw buildProcessingError(
         "substringLinkId",
         "linkEndpointId invalid",
@@ -721,6 +730,14 @@ function isValidIterateAiPmSlicesResponse(response) {
   );
 }
 
+function isValidIterateEcPmSlicesResponse(response) {
+  return (
+    response &&
+    typeof response === "object" &&
+    Array.isArray(response[HIST_PERF_DATA_LIST_KEY])
+  );
+}
+
 function buildIterateAiPmSlicesError(response, mountName) {
   const error = new Error(
     `p1IterateAiPmSlices returned error response: ${JSON.stringify(response)}`
@@ -744,6 +761,43 @@ function buildIterateAiPmSlicesError(response, mountName) {
     response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_INVALID ||
     response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_NOT_PROVIDED ||
     response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_INVALID
+  ) {
+    error.retryable = false;
+  } else {
+    error.retryable = true;
+  }
+
+  return error;
+}
+
+function buildIterateEcPmSlicesError(response, mountName) {
+  const error = new Error(
+    `p1IterateEcPmSlices returned error response: ${JSON.stringify(response)}`
+  );
+
+  error.stage = "p1IterateEcPmSlices";
+  error.vendorResponse = response;
+  error.mountName = mountName;
+
+  if (
+    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_OUTPUT_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_NOT_PROV ||
+    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_INVALID
   ) {
     error.retryable = false;
   } else {
@@ -853,7 +907,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   };
 }
 
-async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc) {
+async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     ETHERNET_CONTAINER_HIST_PERF_KEY
@@ -864,6 +918,10 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     "p1IterateEcPmSlices"
   );
 
+  //console.log("parameters: ",JSON.stringify(iterateEcParameters));
+  //console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
+  //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
+  
   const response = await callVendorFunction(p1IterateEcPmSlices, {
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
@@ -873,6 +931,11 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     "result-cc": resultCc,
     resultCc
   });
+
+  if (!isValidIterateEcPmSlicesResponse(response)) {
+    logger.error(buildIterateEcPmSlicesError(response, mountName).message);
+    return null;
+  }
 
   const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
     response,
@@ -891,7 +954,126 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   };
 }
 
-function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregationGroupList) {
+function getLayerProtocolName(layerProtocol, fallback) {
+  return String((layerProtocol && layerProtocol["layer-protocol-name"]) || fallback || "");
+}
+
+function setAirInterfaceDerivedFields(ltp, metadata) {
+  if (metadata["link-id"]) {
+    if (!isPlainObject(ltp[LTP_AUGMENT_PAC_KEY])) {
+      ltp[LTP_AUGMENT_PAC_KEY] = {};
+    }
+
+    ltp[LTP_AUGMENT_PAC_KEY]["link-id"] = metadata["link-id"];
+  }
+
+  if (Array.isArray(metadata["parallel-physical-ltp-list"])) {
+    ltp["parallel-ltp"] = metadata["parallel-physical-ltp-list"];
+  }
+}
+
+function createInterfaceProcessingStatus() {
+  return {
+    attempted: 0,
+    succeeded: 0,
+    failed: 0,
+    successfulLtpUuids: [],
+    failedLtpUuids: []
+  };
+}
+
+function recordInterfaceFailure(status, ltpUuid) {
+  status.failed += 1;
+  status.failedLtpUuids = unique([
+    ...status.failedLtpUuids,
+    ltpUuid
+  ]);
+}
+
+function recordInterfaceSuccess(status, ltpUuid) {
+  status.succeeded += 1;
+  status.successfulLtpUuids = unique([
+    ...status.successfulLtpUuids,
+    ltpUuid
+  ]);
+}
+
+function buildNoSuccessfulInterfaceProcessingError(airInterfaceStatus, ethernetContainerStatus) {
+  return buildProcessingError(
+    "p1CreateResultCc",
+    "No AirInterface or EthernetContainer processing succeeded",
+    false,
+    {
+      airInterface: airInterfaceStatus,
+      ethernetContainer: ethernetContainerStatus
+    }
+  );
+}
+
+function assertAnyInterfaceProcessingSucceeded(airInterfaceStatus, ethernetContainerStatus) {
+  const attempted =
+    airInterfaceStatus.attempted + ethernetContainerStatus.attempted;
+  const succeeded =
+    airInterfaceStatus.succeeded + ethernetContainerStatus.succeeded;
+
+  if (attempted > 0 && succeeded === 0) {
+    throw buildNoSuccessfulInterfaceProcessingError(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    );
+  }
+}
+
+function pruneFailedProcessedInterfaceLtps(resultCc, airInterfaceStatus, ethernetContainerStatus, mountName) {
+  const root = getControlConstructRoot(resultCc);
+  const logicalTerminationPointList = getLogicalTerminationPointList(resultCc);
+
+  if (!isPlainObject(root) || !Array.isArray(logicalTerminationPointList)) {
+    return [];
+  }
+
+  const successfulLtpUuids = unique([
+    ...airInterfaceStatus.successfulLtpUuids,
+    ...ethernetContainerStatus.successfulLtpUuids
+  ]);
+  const failedLtpUuids = unique([
+    ...airInterfaceStatus.failedLtpUuids,
+    ...ethernetContainerStatus.failedLtpUuids
+  ]);
+  const prunedLtpUuids = [];
+
+  root["logical-termination-point"] = logicalTerminationPointList.filter((ltp) => {
+    if (!isPlainObject(ltp) || !hasReference(failedLtpUuids, ltp.uuid)) {
+      return true;
+    }
+
+    if (hasReference(successfulLtpUuids, ltp.uuid)) {
+      return true;
+    }
+
+    if (!isAirInterfaceLtp(ltp) && !isEthernetContainerLtp(ltp)) {
+      return true;
+    }
+
+    prunedLtpUuids.push(ltp.uuid);
+    return false;
+  });
+
+  if (prunedLtpUuids.length > 0) {
+    logger.warn(
+      {
+        label: "p1-create-result-cc-pruned-failed-interfaces",
+        mountName,
+        prunedLtpUuids
+      },
+      "Pruned failed AirInterface/EthernetContainer LTPs from resultCc"
+    );
+  }
+
+  return prunedLtpUuids;
+}
+
+function buildAirInterfaceMetadata(ltp, layerProtocol, historicalPerformanceDataList, aggregationGroupList) {
   const linkEndpointId = getLinkEndpointId(ltp);
   let linkId = "";
 
@@ -909,6 +1091,10 @@ function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregati
   return {
     uuid: ltp.uuid,
     "ltp-uuid": ltp.uuid,
+    "layer-protocol-name": getLayerProtocolName(
+      layerProtocol,
+      "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"
+    ),
     //linkId,
     "link-id": linkId,
     //linkEndpointId,
@@ -916,18 +1102,24 @@ function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregati
     //parallelPhysicalLtpList,
     "parallel-physical-ltp-list": parallelPhysicalLtpList,
     //mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
+    mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
     //mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
+    mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
     "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
   };
 }
 
-function buildEthernetContainerMetadata(ltp, historicalPerformanceDataList) {
+function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
   const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
 
   return {
     uuid: ltp.uuid,
     "ltp-uuid": ltp.uuid,
+    "layer-protocol-name": getLayerProtocolName(
+      layerProtocol,
+      "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
+    ),
     mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
     "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
     mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
@@ -936,6 +1128,8 @@ function buildEthernetContainerMetadata(ltp, historicalPerformanceDataList) {
 }
 
 async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
+  const status = createInterfaceProcessingStatus();
+
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getAirInterfacePac(layerProtocol);
@@ -944,9 +1138,11 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         continue;
       }
 
+      status.attempted += 1;
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
 
       if(prepareTxModesResult === null) {
+        recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -969,6 +1165,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       if (iterateAiResult === null) {
+        recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -977,27 +1174,34 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         AIR_INTERFACE_HIST_PERF_KEY,
         iterateAiResult.historicalPerformanceDataList
       );
-
+      
       const metadata = buildAirInterfaceMetadata(
         ltp,
+        layerProtocol,
         iterateAiResult.historicalPerformanceDataList,
         aggregationGroupList
       );
 
-      /* metadata.mostRecentPeriodEndTime =
-        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime; */
+      metadata.mostRecentPeriodEndTime =
+        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime;
       metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
 
-      /* metadata.mostRecentPeriodEndTime24 =
-        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24; */
+      metadata.mostRecentPeriodEndTime24 =
+        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
+      setAirInterfaceDerivedFields(ltp, metadata);
       interfaceMetadataList.push(metadata);
+      recordInterfaceSuccess(status, ltp.uuid);
     }
   }
+
+  return status;
 }
 
-async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList) {
+async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
+  const status = createInterfaceProcessingStatus();
+
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getEthernetContainerPac(layerProtocol);
@@ -1006,6 +1210,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         continue;
       }
 
+      status.attempted += 1;
       const aggregationGroup = getAggregationGroupForEthernetContainer(
         ltp.uuid,
         aggregationGroupList
@@ -1015,8 +1220,14 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         parameters,
         pac,
         aggregationGroup,
-        resultCc
+        resultCc,
+        mountName
       );
+
+      if (iterateEcResult === null) {
+        recordInterfaceFailure(status, ltp.uuid);
+        continue;
+      }
 
       setHistoricalPerformanceDataList(
         pac,
@@ -1026,6 +1237,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
 
       const metadata = buildEthernetContainerMetadata(
         ltp,
+        layerProtocol,
         iterateEcResult.historicalPerformanceDataList
       );
 
@@ -1041,8 +1253,11 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
 
       interfaceMetadataList.push(metadata);
+      recordInterfaceSuccess(status, ltp.uuid);
     }
   }
+
+  return status;
 }
 
 async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountName) {
@@ -1103,8 +1318,9 @@ async function run(request) {
     const resultCc = createResultCcFromRawCc(rawCc);
     const aggregationGroupList = createAggregationGroupList(rawCc);
     const interfaceMetadataList = [];
+    
 
-    await processAirInterfaces(
+    const airInterfaceStatus = await processAirInterfaces(
       parameters,
       resultCc,
       aggregationGroupList,
@@ -1112,12 +1328,42 @@ async function run(request) {
       mountName
     );
 
-    /* await processEthernetContainers(
+    //console.log("aggregation-group-list: ",JSON.stringify(aggregationGroupList));
+
+    /* console.log("#-----------------------------------------------------------------------");
+    console.log(`#                          Started - ${mountName}                       `);
+    console.log("#-----------------------------------------------------------------------");
+    const iterateEcParameters = getSubFunctionParameters(
+      parameters,
+      "p1IterateEcPmSlices"
+    );
+    console.log("parameters: ",JSON.stringify(iterateEcParameters)); */
+
+    const ethernetContainerStatus = await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
-      interfaceMetadataList
-    ); */
+      interfaceMetadataList,
+      mountName
+    );
+
+    assertAnyInterfaceProcessingSucceeded(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    );
+
+    pruneFailedProcessedInterfaceLtps(
+      resultCc,
+      airInterfaceStatus,
+      ethernetContainerStatus,
+      mountName
+    );
+
+    /* console.log("result-cc: ",JSON.stringify(resultCc));
+
+    console.log("#-----------------------------------------------------------------------");
+    console.log(`#                          Ended - ${mountName}                         `);
+    console.log("#-----------------------------------------------------------------------"); */
 
     await applyP1RemoveOutOfRangeTemperature(
       parameters,
