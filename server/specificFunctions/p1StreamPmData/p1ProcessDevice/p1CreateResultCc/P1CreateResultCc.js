@@ -450,19 +450,21 @@ function substringLinkId(input) {
       : input;
 
     if (linkEndpointId === undefined || linkEndpointId === null || linkEndpointId === "") {
-      throw buildProcessingError("substringLinkId", "linkEndpointId not provided", false);
+      const errLinkIdInvalid = buildProcessingError("substringLinkId", "linkEndpointId not provided", false);
+      logger.error(errLinkIdInvalid.message);
     }
 
     //linkEndpointId = `${linkEndpointId}A`; // Append dummy character to pass validation for 9 digits followed by A or B
     const normalized = String(linkEndpointId).trim();
 
     if (!/^[0-9]{9}[AB]$/.test(normalized) || normalized.length < 9 || normalized.length > 10) {
-      throw buildProcessingError(
+      const errLinkIdRegex = buildProcessingError(
         "substringLinkId",
         "linkEndpointId invalid",
         false,
         { linkEndpointId: normalized }
       );
+      logger.error(errLinkIdRegex.message);
     }
 
     return {
@@ -958,17 +960,51 @@ function getLayerProtocolName(layerProtocol, fallback) {
   return String((layerProtocol && layerProtocol["layer-protocol-name"]) || fallback || "");
 }
 
-function setAirInterfaceDerivedFields(ltp, metadata) {
-  if (metadata["link-id"]) {
+function hasOutputValue(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function setInterfaceMetadataPeriodEndTimes(metadata, mostRecentPeriodEndTime, mostRecentPeriodEndTime24) {
+  if (hasOutputValue(mostRecentPeriodEndTime)) {
+    metadata["most-recent-period-end-time"] = mostRecentPeriodEndTime;
+  } else {
+    delete metadata["most-recent-period-end-time"];
+  }
+
+  if (hasOutputValue(mostRecentPeriodEndTime24)) {
+    metadata["most-recent-period-end-time-24"] = mostRecentPeriodEndTime24;
+  } else {
+    delete metadata["most-recent-period-end-time-24"];
+  }
+}
+
+function buildAirInterfaceDerivedFields(ltp, aggregationGroupList) {
+  const linkEndpointId = getLinkEndpointId(ltp);
+  const linkId = linkEndpointId
+    ? substringLinkId({ "link-endpoint-id": linkEndpointId })["link-id"]
+    : "";
+  const parallelPhysicalLtpList = findParallelPhysic({
+    "ltp-uuid": ltp.uuid,
+    "aggregation-group-list": aggregationGroupList
+  })["physical-server-ltp-list"];
+
+  return {
+    linkId,
+    parallelPhysicalLtpList
+  };
+}
+
+function setAirInterfaceDerivedFields(ltp, derivedFields) {
+  if (derivedFields.linkId) {
     if (!isPlainObject(ltp[LTP_AUGMENT_PAC_KEY])) {
       ltp[LTP_AUGMENT_PAC_KEY] = {};
     }
 
-    ltp[LTP_AUGMENT_PAC_KEY]["link-id"] = metadata["link-id"];
+    ltp[LTP_AUGMENT_PAC_KEY]["link-id"] = derivedFields.linkId;
   }
 
-  if (Array.isArray(metadata["parallel-physical-ltp-list"])) {
-    ltp["parallel-ltp"] = metadata["parallel-physical-ltp-list"];
+  if (Array.isArray(derivedFields.parallelPhysicalLtpList)) {
+    ltp["parallel-ltp"] = derivedFields.parallelPhysicalLtpList;
   }
 }
 
@@ -1017,10 +1053,14 @@ function assertAnyInterfaceProcessingSucceeded(airInterfaceStatus, ethernetConta
     airInterfaceStatus.succeeded + ethernetContainerStatus.succeeded;
 
   if (attempted > 0 && succeeded === 0) {
-    throw buildNoSuccessfulInterfaceProcessingError(
+    /* throw buildNoSuccessfulInterfaceProcessingError(
       airInterfaceStatus,
       ethernetContainerStatus
-    );
+    ); */
+    logger.error(buildNoSuccessfulInterfaceProcessingError(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    ).details);
   }
 }
 
@@ -1073,58 +1113,42 @@ function pruneFailedProcessedInterfaceLtps(resultCc, airInterfaceStatus, etherne
   return prunedLtpUuids;
 }
 
-function buildAirInterfaceMetadata(ltp, layerProtocol, historicalPerformanceDataList, aggregationGroupList) {
-  const linkEndpointId = getLinkEndpointId(ltp);
-  let linkId = "";
-
-  if (linkEndpointId) {
-    linkId = substringLinkId({ "link-endpoint-id": linkEndpointId })["link-id"];
-  }
-
-  const parallelPhysicalLtpList = findParallelPhysic({
-    "ltp-uuid": ltp.uuid,
-    "aggregation-group-list": aggregationGroupList
-  })["physical-server-ltp-list"];
-
+function buildAirInterfaceMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
   const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
-
-  return {
+  const metadata = {
     uuid: ltp.uuid,
-    "ltp-uuid": ltp.uuid,
     "layer-protocol-name": getLayerProtocolName(
       layerProtocol,
       "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"
-    ),
-    //linkId,
-    "link-id": linkId,
-    //linkEndpointId,
-    "link-endpoint-id": linkEndpointId,
-    //parallelPhysicalLtpList,
-    "parallel-physical-ltp-list": parallelPhysicalLtpList,
-    //mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
-    "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
-    //mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
-    mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
-    "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
+    )
   };
+
+  setInterfaceMetadataPeriodEndTimes(
+    metadata,
+    mostRecentTimes.mostRecentPeriodEndTime,
+    mostRecentTimes.mostRecentPeriodEndTime24
+  );
+
+  return metadata;
 }
 
 function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
   const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
-
-  return {
+  const metadata = {
     uuid: ltp.uuid,
-    "ltp-uuid": ltp.uuid,
     "layer-protocol-name": getLayerProtocolName(
       layerProtocol,
       "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
-    ),
-    mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
-    "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
-    "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
+    )
   };
+
+  setInterfaceMetadataPeriodEndTimes(
+    metadata,
+    mostRecentTimes.mostRecentPeriodEndTime,
+    mostRecentTimes.mostRecentPeriodEndTime24
+  );
+
+  return metadata;
 }
 
 async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
@@ -1175,22 +1199,23 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         iterateAiResult.historicalPerformanceDataList
       );
       
+      const derivedFields = buildAirInterfaceDerivedFields(
+        ltp,
+        aggregationGroupList
+      );
+      setAirInterfaceDerivedFields(ltp, derivedFields);
+
       const metadata = buildAirInterfaceMetadata(
         ltp,
         layerProtocol,
-        iterateAiResult.historicalPerformanceDataList,
-        aggregationGroupList
+        iterateAiResult.historicalPerformanceDataList
       );
 
-      metadata.mostRecentPeriodEndTime =
-        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime;
-      metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
-
-      metadata.mostRecentPeriodEndTime24 =
-        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
-      metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
-
-      setAirInterfaceDerivedFields(ltp, metadata);
+      setInterfaceMetadataPeriodEndTimes(
+        metadata,
+        iterateAiResult.mostRecentPeriodEndTime || metadata["most-recent-period-end-time"],
+        iterateAiResult.mostRecentPeriodEndTime24 || metadata["most-recent-period-end-time-24"]
+      );
       interfaceMetadataList.push(metadata);
       recordInterfaceSuccess(status, ltp.uuid);
     }
@@ -1241,16 +1266,11 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         iterateEcResult.historicalPerformanceDataList
       );
 
-      metadata.aggregationGroup = aggregationGroup || null;
-      metadata["aggregation-group"] = aggregationGroup || null;
-
-      metadata.mostRecentPeriodEndTime =
-        iterateEcResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime;
-      metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
-
-      metadata.mostRecentPeriodEndTime24 =
-        iterateEcResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
-      metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
+      setInterfaceMetadataPeriodEndTimes(
+        metadata,
+        iterateEcResult.mostRecentPeriodEndTime || metadata["most-recent-period-end-time"],
+        iterateEcResult.mostRecentPeriodEndTime24 || metadata["most-recent-period-end-time-24"]
+      );
 
       interfaceMetadataList.push(metadata);
       recordInterfaceSuccess(status, ltp.uuid);
@@ -1371,19 +1391,35 @@ async function run(request) {
       mountName
     );
 
-    return {
-      resultCc,
-      interfaceMetadataList,
-      aggregationGroupList,
-      mountName,
-
-      /*
-       * Specification style aliases.
-       */
-      //"result-cc": resultCc,
+    const response = {
+      "result-cc": resultCc,
       "interface-metadata-list": interfaceMetadataList,
-      "aggregation-group-list": aggregationGroupList
+      "aggregation-group-list": aggregationGroupList,
+      mountName
     };
+
+    Object.defineProperties(response, {
+      resultCc: {
+        value: resultCc,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      },
+      interfaceMetadataList: {
+        value: interfaceMetadataList,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      },
+      aggregationGroupList: {
+        value: aggregationGroupList,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      }
+    });
+
+    return response;
   } catch (error) {
     if (!error.stage) {
       error.stage = "p1CreateResultCc";
