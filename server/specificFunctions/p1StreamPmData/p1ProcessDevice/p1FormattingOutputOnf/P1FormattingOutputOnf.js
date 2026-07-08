@@ -49,6 +49,8 @@ async function p1FormattingOutputOnf(input) {
         dataStructure: outputObj,
         fieldsFilterString: fieldsFilter
       });
+
+      finalOutput = finalOutput['filtered-data-structure'];
     }
 
     return {
