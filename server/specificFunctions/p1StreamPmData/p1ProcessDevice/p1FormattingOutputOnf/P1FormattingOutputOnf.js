@@ -1,4 +1,5 @@
 const ERRORS = require("./ErrorsEnum");
+const { run } = require("../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter");
 
 const ONF_FORMAT = "onf-output-format";
 
@@ -9,7 +10,8 @@ function p1FormattingOutputOnf(input) {
       return ERRORS.PARAMETERS_NOT_PROVIDED;
     }
 
-    const { parameters, resultCc } = input;
+    const parameters = input['parameters'];
+    const resultCc = input['result-cc'];
 
     if (parameters === null || parameters === undefined) {
       return ERRORS.PARAMETERS_NOT_PROVIDED;
@@ -17,9 +19,6 @@ function p1FormattingOutputOnf(input) {
     if (typeof parameters !== "object" || Array.isArray(parameters)) {
       return ERRORS.PARAMETERS_INVALID;
     }
-    // else if (parameters['parameter'] == null) { // || !Array.isArray(parameters['parameter'])) {
-    //   return ERRORS.PARAMETERS_INVALID;
-    // }
 
     if (resultCc === null || resultCc === undefined) {
       return ERRORS.RESULT_CC_NOT_PROVIDED;
@@ -32,7 +31,7 @@ function p1FormattingOutputOnf(input) {
     if (outputObj == ERRORS.RESULT_CC_NOT_PROVIDED ||
       outputObj == ERRORS.RESULT_CC_INVALID) { // Handle errors
       return outputObj;
-    } else if(outputObj == ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED) {
+    } else if (outputObj == ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED) {
       return ERRORS.ONF_OUTPUT_FORMAT;
     } else if (outputObj == ERRORS.GENERAL_ERROR) {
       return ERRORS.GENERAL_ERROR;
@@ -46,7 +45,15 @@ function p1FormattingOutputOnf(input) {
     let finalOutput = outputObj;
 
     if (fieldsFilter) {
-      finalOutput = applyFilter(outputObj, fieldsFilter.split("."));
+      finalOutput = run({
+        dataStructure: outputObj,
+        fieldsFilterString: fieldsFilter
+      });
+
+      if (typeof finalOutput == "string") {
+        return ERRORS.FILTER_INVALID;
+      }
+      finalOutput = finalOutput["filtered-data-structure"];
     }
 
     return {
