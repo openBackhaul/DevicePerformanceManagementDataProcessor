@@ -1,9 +1,9 @@
 const ERRORS = require("./ErrorsEnum");
-const { run } = require("../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter");
+const p1FieldsFilter = require("../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter");
 
 const ONF_FORMAT = "onf-output-format";
 
-function p1FormattingOutputOnf(input) {
+async function p1FormattingOutputOnf(input) {
   try {
 
     if (input === null || input === undefined) {
@@ -45,22 +45,16 @@ function p1FormattingOutputOnf(input) {
     let finalOutput = outputObj;
 
     if (fieldsFilter) {
-      finalOutput = run({
+      finalOutput = await p1FieldsFilter.run({
         dataStructure: outputObj,
         fieldsFilterString: fieldsFilter
       });
-
-      if (typeof finalOutput == "string") {
-        return ERRORS.FILTER_INVALID;
-      }
-      finalOutput = finalOutput["filtered-data-structure"];
     }
 
     return {
       "format-name": ONF_FORMAT,
       "output-format": finalOutput
     };
-
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }
@@ -148,11 +142,4 @@ function applyFilter(data, keys) {
 }
 
 
-module.exports = {
-  p1FormattingOutputOnf
-  /* _internal: {
-    createOutputFromResultCc,
-    extractFieldsFilter,
-    applyFilter
-  } */
-};
+module.exports = { p1FormattingOutputOnf };
