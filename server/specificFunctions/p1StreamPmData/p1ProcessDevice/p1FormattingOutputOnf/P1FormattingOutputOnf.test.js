@@ -1,52 +1,62 @@
-const { p1FormattingOutputOnf } = require("./P1FormattingOutputOnf");
+const p1FormattingOutputOnf = require("./P1FormattingOutputOnf");
 const ERRORS = require("./ErrorsEnum");
 const fs = require('fs');
 
+const ONF_FORMAT = "onf-output-format";
+const FORMAT_NAME = "format-name";
+const OUT_FORMAT = "output-format";
+
 describe("Validation Tests", () => {
 
-  test("parameters missing", () => {
-    p1FormattingOutputOnf().then((res) => {
-      expect(res).toBeDefined();
-      expect(res).toBe(ERRORS.PARAMETERS_NOT_PROVIDED);
-    });
+  test("parameters missing", async () => {
+    const res = await p1FormattingOutputOnf();
+
+    expect(res).toBeDefined();
+    expect(res).toBe(ERRORS.PARAMETERS_NOT_PROVIDED);
   });
 
-  test("resultCc missing", () => {
-    p1FormattingOutputOnf({ "parameters": {} }).then((res) =>{
-      expect(res).toBeDefined();
-      expect(res).toBe(ERRORS.RESULT_CC_NOT_PROVIDED)
-    });
+  test("resultCc missing", async () => {
+    const res = await p1FormattingOutputOnf({ "parameters": {} });
+
+    expect(res).toBeDefined();
+    expect(res).toBe(ERRORS.RESULT_CC_NOT_PROVIDED)
   });
 
-  test("invalid parameters", () => {
-    p1FormattingOutputOnf({
+  test("invalid parameters", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": "bad",
       "result-cc": {}
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res).toBe(ERRORS.PARAMETERS_INVALID);
     });
+
+    expect(res).toBeDefined();
+    expect(res).toBe(ERRORS.PARAMETERS_INVALID);
   });
 
-  test("invalid resultCc", () => {
-    p1FormattingOutputOnf({
+  test("invalid resultCc", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {},
       "result-cc": "bad"
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res).toBe(ERRORS.RESULT_CC_INVALID);
-    })
+    });
+
+    expect(res).toBeDefined();
+    expect(res).toBe(ERRORS.RESULT_CC_INVALID);
   });
 
-
-  test("ONF OutputFormat couldn't be provided", () => {
-    p1FormattingOutputOnf({
-      "parameters": {},
-      "result-cc": "bad"
-    }).then((res) => {
-      expect(res).toBeDefined();
-      // expect(res).toBe(ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED); //TODO
+  test("ONF OutputFormat couldn't be provided", async () => {
+    const res = await p1FormattingOutputOnf({
+      "parameters": {
+        "sub-function": [{
+          "function-name": "p1FieldsFilter",
+          "parameter": [{
+            "parameter-name": "fieldsFilter",
+            "value": "d"
+          }]
+        }]
+      },
+      "result-cc": { "a": 1, "b": 2, "c": 3 }
     });
+    expect(res).toBeDefined();
+    expect(res).toBe(ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED);
   })
 
 });
@@ -55,34 +65,37 @@ describe("Validation Tests", () => {
 describe("Basic Functionality", () => {
 
   test("no filter returns full object", async () => {
-    p1FormattingOutputOnf({
+    const res = await p1FormattingOutputOnf({
       "parameters": {},
       "result-cc": { a: 1 }
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res).toEqual({
-        "format-name": "onf-output-format",
-        "output-format": { a: 1 }
-      });
+    }); //.then((res) => {
+
+    expect(res).toBeDefined();
+    expect(res).toEqual({
+      "format-name": ONF_FORMAT,
+      "output-format": { a: 1 }
     });
+
   });
 
-  test("deep clone check", () => {
-    p1FormattingOutputOnf({
+  test("deep clone check", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {},
       "result-cc": { a: 1 }
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res["output-format"]).toBe(input);
     });
+
+    expect(res).toBeDefined();
+    expect(res["format-name"]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toBeDefined();
+    expect(res[OUT_FORMAT]).toEqual({ a: 1 });
   });
 
 });
 
 describe("Filter Tests", () => {
 
-  test("object filtering", () => {
-    p1FormattingOutputOnf({
+  test("object filtering - Test 1", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
@@ -93,16 +106,43 @@ describe("Filter Tests", () => {
         }]
       },
       "result-cc": {
-        "a": { "b": { "c": 10 } }
+        "a": 1,
+        "b": 2,
+        "c": 3
       }
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res["output-format"]).toEqual({ "a": { "b": { "c": 10 } } });
     });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual({ "a": 1 });
   });
 
-  test("array filtering (NETCONF compliant)", () => {
-    p1FormattingOutputOnf({
+  test("object filtering - Test 2", async () => {
+    const res = await p1FormattingOutputOnf({
+      "parameters": {
+        "sub-function": [{
+          "function-name": "p1FieldsFilter",
+          "parameter": [{
+            "parameter-name": "fieldsFilter",
+            "value": "a;b"
+          }]
+        }]
+      },
+      "result-cc": {
+        "a": 1,
+        "b": 2,
+        "c": 3
+      }
+    });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toBeDefined();
+    expect(res[OUT_FORMAT]).toEqual({ "a": 1, "b": 2 });
+  });
+
+  test("array filtering (NETCONF compliant)", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
@@ -118,21 +158,19 @@ describe("Filter Tests", () => {
           { "uuid": "2", "name": "B" }
         ]
       }
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res["output-format"]).toBeDefined();
-    })
+    });
 
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toBeDefined();
+  })
+  // expect(res["output-format"]).toEqual([
+  //   "1",
+  //   "2"
+  // ]);
 
-    // expect(res["output-format"]).toEqual([
-    //   "1",
-    //   "2"
-    // ]);
-  });
-
-
-  test("invalid filter returns empty object", () => {
-    p1FormattingOutputOnf({
+  test("invalid filter returns empty object", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
@@ -143,13 +181,11 @@ describe("Filter Tests", () => {
         }]
       },
       "result-cc": { "a": 1 }
-    }).then((res) => {
-      expect(res).toBeDefined();
     });
 
-    // expect(res["output-format"]).toEqual({}); // to be verify
+    expect(res).toBeDefined();
+    expect(res).toBe(ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED);
   });
-
 });
 
 
@@ -168,8 +204,8 @@ describe("Real Dataset Tests", () => {
       "result-cc": REAL_CC
     }).then((res) => {
       expect(res).toBeDefined();
-      expect(res["format-name"]).toBe("onf-output-format");
-      expect(res["output-format"]).toEqual(REAL_CC);
+      expect(res["format-name"]).toBe(ONF_FORMAT);
+      expect(res[OUT_FORMAT]).toEqual(REAL_CC);
     });
   });
 
@@ -187,7 +223,7 @@ describe("Real Dataset Tests", () => {
       "result-cc": REAL_CC
     }).then((res) => {
       expect(res).toBeDefined();
-      expect(res["format-name"]).toBe("onf-output-format");
+      expect(res["format-name"]).toBe(ONF_FORMAT);
       // expect(res["result-cc"]).toEqual(REAL_CC);
     });
 
