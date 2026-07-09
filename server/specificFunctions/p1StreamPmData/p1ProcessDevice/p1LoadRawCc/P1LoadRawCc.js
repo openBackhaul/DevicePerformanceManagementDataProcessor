@@ -1,3 +1,4 @@
+console.log("LOADED P1LoadRawCc.js FROM:, __filename");
 const onfAdapter = require("../../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../../utils/functionTree");
 const { withRetry } = require("../../../../utils/retry");
@@ -5,7 +6,6 @@ const p1FieldsFilter = require("./../../../../genericFunctions/p1FieldsFilter/P1
 const p1DiscardIrrelevantPmRecords = require("./../../../../genericFunctions/p1DiscardIrrelevantPmRecords/P1DiscardIrrelevantPmRecords");
 const logger = require('../../../../service/LoggingService.js').getLogger();
 const ERRORS = require('./ErrorsEnum.js');
- const ERRORS = require('./ErrorsEnum.js');
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
 const ETHERNET_CONTAINER_PAC_KEY = "ethernet-container-2-0:ethernet-container-pac";
@@ -370,6 +370,7 @@ async function run(request) {
     dataStoreEsClient,
     mountName,
   } = request || {};
+  console.log("Running p1LoadRawCc for mountName:", mountName);
  
   try {
     // --- Input validation ---

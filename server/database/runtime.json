@@ -7,11 +7,11 @@
     "processRetryCount": 3,
     "retryIntervalMs": 5000,
     "infrastructureRetryCount": 10,
-    "lastReplicaTime": "1970-06-01T00:00:00.000Z",
+    "lastReplicaTime": "1970-01-01T00:00:00.000Z",
     "workerIdleSleepMs": 1000,
     "shutdownGraceMs": 30000,
     "httpPort": 8080,
-    "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER,IVERITAS",
+    "kafkaConsumerTypes": "APT,MYCOM,NETEXPLORER,IVERITAS",
     "kafkaOutboundConcurrency": 1,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 100,
@@ -21,7 +21,6 @@
     "kafkaSocketRequestMaxBytes": 10485760,
     "kafkaMaxSingleMessageBytes": 4500000,
     "kafkaOversizedMessageMode": "ERROR",
-
     "kafkaOutboundWorkerIdleSleepMs": 1000,
     "kafkaOutboundStaleMessageIdleMs": 60000,
     "kafkaAcks": "all",
@@ -30,7 +29,6 @@
     "kafkaBatchSize": 1048576,
     "kafkaBatchNumMessages": 500,
     "kafkaCompressionType": "lz4",
-
     "kafkaBootstrapServers": "localhost:9093",
     "kafkaClientId": "dpmdp-client",
     "kafkaDebug": "broker,admin",
@@ -39,7 +37,6 @@
     "kafkaSslCertificateLocation": "C:/cmd/acls/secrets/prod/cert.pem",
     "kafkaSslKeyLocation": "C:/cmd/acls/secrets/prod/key.pem"
   },
-
   "redis": {
     "url": "redis://127.0.0.1:6379",
     "replicaLockTtlMs": 60000,

@@ -206,7 +206,7 @@ function buildProducerConfig(options) {
   };
 
   if (securityProtocol) {
-    config["security.protocol"] = securityProtocol;
+    //config["security.protocol"] = securityProtocol;
   }
 
   if (debug) {
@@ -216,7 +216,7 @@ function buildProducerConfig(options) {
   const tlsConfig = getTlsConfig(options);
   return {
     ...config,
-    ...tlsConfig
+    //...tlsConfig
   };
 }
 

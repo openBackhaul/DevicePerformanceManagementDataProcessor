@@ -67,9 +67,10 @@ async function startCleanupLeaderLoop(context) {
  *   appState
  * }
  */
+
 async function run() {
   const sequence = [];
-
+console.log("Starting p1StreamPmData service...");
   const runtimeConfig = loadRuntimeConfig() || {};
   const redisConfig = runtimeConfig.redis || {};
   const serviceConfig = runtimeConfig.service || {};

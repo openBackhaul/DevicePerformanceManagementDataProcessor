@@ -49,6 +49,8 @@ function getSafeLogger(logger) {
 async function run(request) {
   assertRequest(request);
 
+  console.log("Running p1UpdateMwdiReplica ____________");
+
   const logger = getSafeLogger(request.logger);
   const {
     parameters,
@@ -149,6 +151,13 @@ async function run(request) {
 
   const periodStartTime = new Date(lastTimestamp - overlapMs).toISOString();
   const periodEndTime = new Date(now).toISOString();
+  console.log("===== REPLICA TIME DEBUG =====");
+  console.log("lastReplicaTime:", lastReplicaTime);
+  console.log("lastTimestamp:", lastTimestamp);
+  console.log("overlapMs:", overlapMs);
+  console.log("periodStartTime:", periodStartTime);
+  console.log("periodEndTime:", periodEndTime);
+  console.log("==============================");
 
   logger.debug(
     {
@@ -182,7 +191,7 @@ async function run(request) {
               query: {
                 bool: {
                   must: [
-                    { exists: { field: "core-model-1-4:control-construct" } },
+                    { exists: { field: "core-model-1-4:control-construct.administrative-control" } },
                     {
                       range: {
                         [lastUpdatedField]: {
@@ -208,6 +217,9 @@ async function run(request) {
         logger
       }
     );
+    console.log("===== REINDEX RESPONSE =====");
+    console.dir(reindexResp,{ depth: null });
+    console.log("=============================");
   } catch (error) {
     logger.error(
       {

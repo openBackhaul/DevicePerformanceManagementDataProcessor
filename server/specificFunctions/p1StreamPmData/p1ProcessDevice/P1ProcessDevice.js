@@ -10,7 +10,7 @@ const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
 const {p1FormattingOutputOnf} = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
 const fs = require("fs");
 const sampleResultCcApt = require("./outputAPTSample.json");
-const sampleResultCcOnf = require("./outputOnfSample.json");
+//const sampleResultCcOnf = require("./outputOnfSample.json");
 
 function getTargetConsumers(kafkaConsumerTypes) {
   return String(
@@ -102,6 +102,8 @@ async function run(request) {
     dataStoreEsClient,
     kafkaConsumerTypes
   } = request;
+
+  console.log("Running p1ProcessDevice for mountName:", mountName);
 
   //const logger = request.logger || console;
   let createResultCcResponse = null;
