@@ -122,12 +122,16 @@ describe('p1FormattingOutputApt', () => {
         'result-cc': {
           'equipment': [
             {
-              'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
-              'actual-equipment': { 'physical-properties': { 'temperature': 45 } }
+              'actual-equipment': {
+                'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
+                'physical-properties': { 'temperature': 45 }
+              }
             },
             {
-              'structure': { 'category': 'EQUIPMENT_CATEGORY_SUBRACK' },
-              'actual-equipment': { 'physical-properties': { 'temperature': 35 } }
+              'actual-equipment': {
+                'structure': { 'category': 'EQUIPMENT_CATEGORY_SUBRACK' },
+                'physical-properties': { 'temperature': 35 }
+              }
             }
           ],
           'logical-termination-point': {
@@ -229,8 +233,10 @@ describe('p1FormattingOutputApt', () => {
         'result-cc': {
           'equipment': [
             {
-              'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
-              'actual-equipment': { 'physical-properties': { 'temperature': 0 } }
+              'actual-equipment': {
+                'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
+                'physical-properties': { 'temperature': 0 }
+              }
             }
           ],
           'logical-termination-point': {
