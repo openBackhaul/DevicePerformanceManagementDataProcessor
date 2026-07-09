@@ -50,6 +50,10 @@ async function p1FormattingOutputOnf(input) {
         fieldsFilterString: fieldsFilter
       });
 
+      if (typeof finalOutput == "string") {
+        return ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED;
+      }
+
       finalOutput = finalOutput['filtered-data-structure'];
     }
 
