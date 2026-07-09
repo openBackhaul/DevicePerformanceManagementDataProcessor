@@ -144,4 +144,4 @@ function applyFilter(data, keys) {
 }
 
 
-module.exports = { p1FormattingOutputOnf };
+module.exports = p1FormattingOutputOnf;
