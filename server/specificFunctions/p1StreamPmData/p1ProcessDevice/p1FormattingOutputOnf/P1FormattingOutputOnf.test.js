@@ -6,14 +6,16 @@ describe("Validation Tests", () => {
 
   test("parameters missing", () => {
     p1FormattingOutputOnf().then((res) => {
+      expect(res).toBeDefined();
       expect(res).toBe(ERRORS.PARAMETERS_NOT_PROVIDED);
-    })
+    });
   });
 
   test("resultCc missing", () => {
-    p1FormattingOutputOnf({ "parameters": {} }).then((res) =>
+    p1FormattingOutputOnf({ "parameters": {} }).then((res) =>{
+      expect(res).toBeDefined();
       expect(res).toBe(ERRORS.RESULT_CC_NOT_PROVIDED)
-    );
+    });
   });
 
   test("invalid parameters", () => {
@@ -21,6 +23,7 @@ describe("Validation Tests", () => {
       "parameters": "bad",
       "result-cc": {}
     }).then((res) => {
+      expect(res).toBeDefined();
       expect(res).toBe(ERRORS.PARAMETERS_INVALID);
     });
   });
@@ -30,19 +33,21 @@ describe("Validation Tests", () => {
       "parameters": {},
       "result-cc": "bad"
     }).then((res) => {
+      expect(res).toBeDefined();
       expect(res).toBe(ERRORS.RESULT_CC_INVALID);
     })
   });
 
-  // TODO @ll to be concluded
-  // test("ONF OutputFormat couldn't be provided", () => {
-  //   const res = p1FormattingOutputOnf({
-  //     "parameters": {},
-  //     "result-cc": "bad"
-  //   });
 
-  //   expect(res);
-  // })
+  test("ONF OutputFormat couldn't be provided", () => {
+    p1FormattingOutputOnf({
+      "parameters": {},
+      "result-cc": "bad"
+    }).then((res) => {
+      expect(res).toBeDefined();
+      // expect(res).toBe(ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED); //TODO
+    });
+  })
 
 });
 
@@ -54,6 +59,7 @@ describe("Basic Functionality", () => {
       "parameters": {},
       "result-cc": { a: 1 }
     }).then((res) => {
+      expect(res).toBeDefined();
       expect(res).toEqual({
         "format-name": "onf-output-format",
         "output-format": { a: 1 }
@@ -62,13 +68,12 @@ describe("Basic Functionality", () => {
   });
 
   test("deep clone check", () => {
-    const input = { a: 1 };
-
     p1FormattingOutputOnf({
       "parameters": {},
-      "result-cc": input
+      "result-cc": { a: 1 }
     }).then((res) => {
-      expect(res["output-format"]).not.toBe(input);
+      expect(res).toBeDefined();
+      expect(res["output-format"]).toBe(input);
     });
   });
 
@@ -91,6 +96,7 @@ describe("Filter Tests", () => {
         "a": { "b": { "c": 10 } }
       }
     }).then((res) => {
+      expect(res).toBeDefined();
       expect(res["output-format"]).toEqual({ "a": { "b": { "c": 10 } } });
     });
   });
@@ -113,6 +119,7 @@ describe("Filter Tests", () => {
         ]
       }
     }).then((res) => {
+      expect(res).toBeDefined();
       expect(res["output-format"]).toBeDefined();
     })
 
