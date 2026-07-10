@@ -163,7 +163,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     const result = p2DiscardIrrelevantPmRecords(input);
     expect(result).toBeDefined();
     expect(result['amount-received']).toBeDefined();
-    expect(result['amount-received']).toStrictEqual([{ "count": 1, "date": "2025/12/15" }])
+    expect(result['amount-received']).toStrictEqual([{ "count": 1, "date": "2025/12/15" }]);
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
   });
 
@@ -204,7 +204,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     const result = p2DiscardIrrelevantPmRecords(input);
     expect(result).toBeDefined();
     expect(result['amount-received']).toBeDefined();
-    expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }])
+    expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }]);
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
   });
 
@@ -262,13 +262,12 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     const result = p2DiscardIrrelevantPmRecords(input);
     expect(result).toBeDefined();
     expect(result['amount-received']).toBeDefined();
-    console.log(result['amount-received']);
-    // expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }])
+    expect(result['amount-received']).toStrictEqual([{ "count": 2, "date": "2025/12/15" }]);
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
   });
 
 
-    test('should return Couting 3 entries of 15 minutes', () => {
+  test('should return Couting 3 entries of 15 minutes', () => {
     const input = {
       "historical-performance-data-list": [
         {
@@ -313,20 +312,132 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
           "performance-data": {}
         }
       ],
-      "former-most-recent-period-end-time": "2025-12-15T09:15:00+01:00",
+      "former-most-recent-period-end-time": "2025-12-14T09:15:00+01:00",
       "former-most-recent-period-end-time-24": "2025-11-15T09:15:00+01:00"
     };
 
     const result = p2DiscardIrrelevantPmRecords(input);
     expect(result).toBeDefined();
     expect(result['amount-received']).toBeDefined();
-    console.log(result['amount-received']);
-    // expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }])
+    expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }]);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+  });
+
+
+  test('should return Couting 3 entries of 15 minutes', () => {
+    const input = {
+      "historical-performance-data-list": [
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-13T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:13:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:15:00+01:00",
+          "performance-data": {}
+        },
+        /// 15 December
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T10:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T11:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-WRONG",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        }
+      ],
+      "former-most-recent-period-end-time": "2025-12-14T02:15:00+01:00",
+      "former-most-recent-period-end-time-24": "2025-11-15T09:15:00+01:00"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result).toBeDefined();
+    expect(result['amount-received']).toBeDefined();
+    expect(result['amount-received']).toStrictEqual([{ "count": 2, "date": "2025/12/14" }, { "count": 3, "date": "2025/12/15" }]);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+  });
+
+  test('should return Counting 1,2 and 3 entries of 15 minutes in differents days', () => {
+    const input = {
+      "historical-performance-data-list": [
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-13T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:13:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:15:00+01:00",
+          "performance-data": {}
+        },
+        /// 15 December
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T10:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T11:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-WRONG",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        }
+      ],
+      "former-most-recent-period-end-time": "2025-12-12T02:15:00+01:00",
+      "former-most-recent-period-end-time-24": "2025-11-15T09:15:00+01:00"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result).toBeDefined();
+    expect(result['amount-received']).toBeDefined();
+    expect(result['amount-received']).toStrictEqual([{ "count": 1, "date": "2025/12/13" }, { "count": 2, "date": "2025/12/14" }, { "count": 3, "date": "2025/12/15" }]);
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
   });
 
   // from old function
-    test('should filter records correctly (full scenario)', () => {
+  test('should filter records correctly (full scenario)', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
@@ -336,7 +447,8 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     };
 
     const result = p2DiscardIrrelevantPmRecords(input);
-
+    expect(result['amount-received']).toStrictEqual([{ "count": 63, "date": "2025/12/15" }, { "count": 33, "date": "2025/12/16" }]);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(97);
   });
 
@@ -350,6 +462,8 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     };
 
     const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result['amount-received']).toStrictEqual([{ "count": 55, "date": "2025/12/15" }, { "count": 33, "date": "2025/12/16" }]);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(89);
   });
 
@@ -364,6 +478,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     };
 
     const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result['amount-received']).toStrictEqual([]);
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
   });
@@ -373,14 +488,15 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
-      "former-most-recent-period-end-time": "2026-01-01T10:00:00Z",
+      "former-most-recent-period-end-time": "2025-12-16T02:00:00Z",
       // "period-end-time": "2025-12-16T00:00:00+01:00",
       "former-most-recent-period-end-time-24": "2026-01-01T00:00:00Z"
     };
 
     const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result['amount-received']).toStrictEqual([ { "count": 24, "date": "2025/12/16" }]);
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
-    expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(24);
   });
 
 });
