@@ -437,7 +437,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
   });
 
   // from old function
-  test('should filter records correctly (full scenario)', () => {
+  test('should filter records correctly - 2 Days 97 entries', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
@@ -452,7 +452,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(97);
   });
 
-  test('should filter records correctly (full scenario) - only 15 minutes', () => {
+  test('should filter records correctly - 2 Days 89 entries', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
@@ -467,14 +467,14 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(89);
   });
 
-  test('should filter records correctly (full scenario) - only 15 minutes, entries already processed', () => {
+  test('should filter records correctly - All data process, result entries must be empty, only 1 entry 24 hours', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
       "historical-performance-data-list": historicalData,
       "former-most-recent-period-end-time": "2026-01-01T10:00:00Z",
       // "period-end-time": "2025-12-16T00:00:00+01:00",
-      "former-most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+      "former-most-recent-period-end-time-24": "2025-01-01T00:00:00Z"
     };
 
     const result = p2DiscardIrrelevantPmRecords(input);
@@ -483,7 +483,23 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
   });
 
-  test('should filter records correctly (full scenario) - only 15 minutes, entries already processed', () => {
+  test('should filter records correctly - All data process, result entries must be empty, 0 entry of 24 hours', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "former-most-recent-period-end-time": "2026-01-01T10:00:00Z",
+      // "period-end-time": "2025-12-16T00:00:00+01:00",
+      "former-most-recent-period-end-time-24": "2025-12-31T00:00:00Z"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result['amount-received']).toStrictEqual([]);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
+  });
+
+  test('should filter records correctly - 1 Day 24 entries', () => {
     let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
     let historicalData = JSON.parse(dataFile);
     const input = {
