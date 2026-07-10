@@ -44,22 +44,27 @@ function normalizeOutputMessage(output) {
 async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
   const serializedPayload = JSON.stringify(normalized.payload);
   const payloadBytes = Buffer.byteLength(serializedPayload, "utf8");
-  const maxKafkaMessageBytes = getMaxKafkaMessageBytes();
 
-  if (payloadBytes <= maxKafkaMessageBytes) {
-    return {
-      targetConsumer: normalized.targetConsumer,
-      messageType: normalized.messageType,
-      mountName: normalized.mountName,
-      correlationId: normalized.correlationId,
-      payloadVersion: normalized.payloadVersion,
-      eventTime: normalized.eventTime,
-      payloadStorage: "REDIS",
-      payload: serializedPayload,
-      payloadRefId: "",
-      payloadBytes
-    };
-  }
+  /*
+   * Previous local 1MB guard, retained for future use if DPMDP must skip
+   * oversized messages before sending to EMP Kafka again:
+   *
+   * const maxKafkaMessageBytes = getMaxKafkaMessageBytes();
+   *
+   * if (payloadBytes > maxKafkaMessageBytes) {
+   *   return {
+   *     targetConsumer: normalized.targetConsumer,
+   *     messageType: normalized.messageType,
+   *     mountName: normalized.mountName,
+   *     correlationId: normalized.correlationId,
+   *     payloadVersion: normalized.payloadVersion,
+   *     eventTime: normalized.eventTime,
+   *     status: "SKIPPED",
+   *     reason: "KAFKA_MESSAGE_SIZE_EXCEEDED_1MB",
+   *     payloadBytes
+   *   };
+   * }
+   */
 
   /*
    * Future fallback if payloads larger than 1MB are allowed again:
@@ -94,8 +99,9 @@ async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
     correlationId: normalized.correlationId,
     payloadVersion: normalized.payloadVersion,
     eventTime: normalized.eventTime,
-    status: "SKIPPED",
-    reason: "KAFKA_MESSAGE_SIZE_EXCEEDED_1MB",
+    payloadStorage: "REDIS",
+    payload: serializedPayload,
+    payloadRefId: "",
     payloadBytes
   };
 }
@@ -109,7 +115,7 @@ async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
  * }
  */
 async function run(request) {
-  const activeLogger = defaultLogger;
+  const activeLogger = request.logger || defaultLogger;
   const { dataStoreEsClient } = request;
   const outputs = normalizeOutputs(request);
   const queuedResultList = [];
@@ -134,23 +140,28 @@ async function run(request) {
       activeLogger
     );
 
-    if (queueMessage.status === "SKIPPED") {
-      activeLogger.error(
-        {
-          label: "kafka-outbound-message-size-exceeded",
-          mountName: queueMessage.mountName,
-          targetConsumer: queueMessage.targetConsumer,
-          messageType: queueMessage.messageType,
-          payloadBytes: queueMessage.payloadBytes,
-          maxBytes: getMaxKafkaMessageBytes(),
-          payloadMb: Number((queueMessage.payloadBytes / (1024 * 1024)).toFixed(3))
-        },
-        "Kafka outbound message skipped because payload exceeds 1MB"
-      );
-
-      queuedResultList.push(queueMessage);
-      continue;
-    }
+    /*
+     * Previous local 1MB skip handling, retained for future use with the
+     * commented guard in buildRedisQueueMessage:
+     *
+     * if (queueMessage.status === "SKIPPED") {
+     *   activeLogger.error(
+     *     {
+     *       label: "kafka-outbound-message-size-exceeded",
+     *       mountName: queueMessage.mountName,
+     *       targetConsumer: queueMessage.targetConsumer,
+     *       messageType: queueMessage.messageType,
+     *       payloadBytes: queueMessage.payloadBytes,
+     *       maxBytes: getMaxKafkaMessageBytes(),
+     *       payloadMb: Number((queueMessage.payloadBytes / (1024 * 1024)).toFixed(3))
+     *     },
+     *     "Kafka outbound message skipped because payload exceeds 1MB"
+     *   );
+     *
+     *   queuedResultList.push(queueMessage);
+     *   continue;
+     * }
+     */
 
     await redisQueue.enqueueKafkaOutbound(queueMessage, activeLogger);
 

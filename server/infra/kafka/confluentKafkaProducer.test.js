@@ -24,7 +24,7 @@ jest.mock("@confluentinc/kafka-javascript", () => {
   };
 });
 
-const { initProducer, resetProducer } = require("./confluentKafkaProducer");
+const { initProducer, resetProducer, sendBatch } = require("./confluentKafkaProducer");
 
 describe("confluentKafkaProducer TLS config", () => {
   beforeEach(async () => {
@@ -89,10 +89,33 @@ describe("confluentKafkaProducer TLS config", () => {
       "bootstrap.servers": "localhost:9093",
       "client.id": "dpmdp-local",
       "security.protocol": "ssl",
-      debug: "broker,admin",
       "ssl.ca.location": "C:/cmd/acls/secrets/prod/trust.pem",
       "ssl.certificate.location": "C:/cmd/acls/secrets/prod/cert.pem",
       "ssl.key.location": "C:/cmd/acls/secrets/prod/key.pem"
+    });
+    expect(global.mockKafkaInstance.config).not.toHaveProperty("debug");
+  });
+
+  it("marks Kafka message-size failures as non-retryable", async () => {
+    const logger = { info: jest.fn(), error: jest.fn(), warn: jest.fn() };
+    const sendError = new Error("Broker: Message size too large");
+
+    global.mockProducer.send.mockRejectedValueOnce(sendError);
+
+    await expect(
+      sendBatch(
+        "raw.mw-sdnc-dpmdp.apt",
+        [{ key: "device-1", value: "{\"payload\":\"large\"}" }],
+        logger,
+        {
+          clientId: "test-client",
+          brokers: ["broker1:9092"]
+        }
+      )
+    ).rejects.toMatchObject({
+      reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
+      retryable: false,
+      stage: "confluentKafkaProducer.sendBatch"
     });
   });
 });
