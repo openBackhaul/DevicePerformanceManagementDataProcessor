@@ -47,7 +47,9 @@ function p2DiscardIrrelevantPmRecords(input) {
       errorCode = validateRecord(record);
 
       if (errorCode != VALIDATION_OK) {
-        break;
+        // console.log("Skip PM data");
+        errorCode = VALIDATION_OK; // Skipping entries with wrong granularity period.
+        continue;
       }
 
       const updateResult = updateNewMostRecentPeriodEndTime({
@@ -110,6 +112,12 @@ function p2DiscardIrrelevantPmRecords(input) {
 const VALIDATION_OK = "VALIDATION_PASSED";
 function validateInput(input) {
   if (!input || typeof input !== 'object') {
+    return ERRORS.GENERAL_ERROR;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(input, 'historical-performance-data-list') &&
+    !Object.prototype.hasOwnProperty.call(input, 'former-most-recent-period-end-time') &&
+    !Object.prototype.hasOwnProperty.call(input, 'former-most-recent-period-end-time-24')) {
     return ERRORS.GENERAL_ERROR;
   }
 
