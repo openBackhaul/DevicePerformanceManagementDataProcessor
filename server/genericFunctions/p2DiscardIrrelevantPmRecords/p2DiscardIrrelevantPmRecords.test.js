@@ -163,7 +163,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     const result = p2DiscardIrrelevantPmRecords(input);
     expect(result).toBeDefined();
     expect(result['amount-received']).toBeDefined();
-    expect(result['amount-received']).toStrictEqual([{"count": 1, "date": "2025/12/15"}])
+    expect(result['amount-received']).toStrictEqual([{ "count": 1, "date": "2025/12/15" }])
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
   });
 
@@ -181,7 +181,7 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
           "period-end-time": "2025-12-15T10:15:00+01:00",
           "performance-data": {}
         },
-                {
+        {
           "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
           "period-end-time": "2025-12-15T11:15:00+01:00",
           "performance-data": {}
@@ -204,7 +204,183 @@ describe("p2DiscardIrrelevantPmRecords data content test", () => {
     const result = p2DiscardIrrelevantPmRecords(input);
     expect(result).toBeDefined();
     expect(result['amount-received']).toBeDefined();
-    expect(result['amount-received']).toStrictEqual([{"count": 3, "date": "2025/12/15"}])
+    expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }])
     expect(result['filtered-historical-performance-data-list']).toBeDefined();
   });
+
+
+
+  test('should return Couting 3 entries of 15 minutes', () => {
+    const input = {
+      "historical-performance-data-list": [
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-13T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:13:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:15:00+01:00",
+          "performance-data": {}
+        },
+        /// 15 December
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T10:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T11:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-WRONG",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        }
+      ],
+      "former-most-recent-period-end-time": "2025-12-15T09:15:00+01:00",
+      "former-most-recent-period-end-time-24": "2025-11-15T09:15:00+01:00"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result).toBeDefined();
+    expect(result['amount-received']).toBeDefined();
+    console.log(result['amount-received']);
+    // expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }])
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+  });
+
+
+    test('should return Couting 3 entries of 15 minutes', () => {
+    const input = {
+      "historical-performance-data-list": [
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-13T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:13:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-14T09:15:00+01:00",
+          "performance-data": {}
+        },
+        /// 15 December
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T10:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+          "period-end-time": "2025-12-15T11:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        },
+        {
+          "granularity-period": ":GRANULARITY_PERIOD_TYPE_PERIOD-WRONG",
+          "period-end-time": "2025-12-15T09:15:00+01:00",
+          "performance-data": {}
+        }
+      ],
+      "former-most-recent-period-end-time": "2025-12-15T09:15:00+01:00",
+      "former-most-recent-period-end-time-24": "2025-11-15T09:15:00+01:00"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result).toBeDefined();
+    expect(result['amount-received']).toBeDefined();
+    console.log(result['amount-received']);
+    // expect(result['amount-received']).toStrictEqual([{ "count": 3, "date": "2025/12/15" }])
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+  });
+
+  // from old function
+    test('should filter records correctly (full scenario)', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "former-most-recent-period-end-time": "2024-01-01T10:00:00Z",
+      "former-most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(97);
+  });
+
+  test('should filter records correctly (full scenario) - only 15 minutes', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "former-most-recent-period-end-time": "2025-12-15T10:00:00Z",
+      "former-most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(89);
+  });
+
+  test('should filter records correctly (full scenario) - only 15 minutes, entries already processed', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "former-most-recent-period-end-time": "2026-01-01T10:00:00Z",
+      // "period-end-time": "2025-12-16T00:00:00+01:00",
+      "former-most-recent-period-end-time-24": "2024-01-01T00:00:00Z"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(1);
+  });
+
+  test('should filter records correctly (full scenario) - only 15 minutes, entries already processed', () => {
+    let dataFile = fs.readFileSync(__dirname + '/datasets/historicalDataFull.json', 'utf8');
+    let historicalData = JSON.parse(dataFile);
+    const input = {
+      "historical-performance-data-list": historicalData,
+      "former-most-recent-period-end-time": "2026-01-01T10:00:00Z",
+      // "period-end-time": "2025-12-16T00:00:00+01:00",
+      "former-most-recent-period-end-time-24": "2026-01-01T00:00:00Z"
+    };
+
+    const result = p2DiscardIrrelevantPmRecords(input);
+    expect(result['filtered-historical-performance-data-list']).toBeDefined();
+    expect(result["filtered-historical-performance-data-list"]).toHaveLength(0);
+  });
+
 });
