@@ -67,13 +67,13 @@ describe("Basic Functionality", () => {
   test("no filter returns full object", async () => {
     const res = await p1FormattingOutputOnf({
       "parameters": {},
-      "result-cc": { a: 1 }
-    }); //.then((res) => {
+      "result-cc": { "a": 1 }
+    });
 
     expect(res).toBeDefined();
     expect(res).toEqual({
       "format-name": ONF_FORMAT,
-      "output-format": { a: 1 }
+      "output-format": { "a": 1 }
     });
 
   });
@@ -81,13 +81,13 @@ describe("Basic Functionality", () => {
   test("deep clone check", async () => {
     const res = await p1FormattingOutputOnf({
       "parameters": {},
-      "result-cc": { a: 1 }
+      "result-cc": { "a": 1 }
     });
 
     expect(res).toBeDefined();
     expect(res["format-name"]).toBe(ONF_FORMAT);
     expect(res[OUT_FORMAT]).toBeDefined();
-    expect(res[OUT_FORMAT]).toEqual({ a: 1 });
+    expect(res[OUT_FORMAT]).toEqual({ "a": 1 });
   });
 
 });
@@ -156,20 +156,25 @@ describe("Filter Tests", () => {
         "logical-termination-point": [
           { "uuid": "1", "name": "A" },
           { "uuid": "2", "name": "B" }
-        ]
+        ],
+        "equipment": "SIAE",
+        "status": "Active"
       }
     });
 
     expect(res).toBeDefined();
     expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
     expect(res[OUT_FORMAT]).toBeDefined();
-  })
-  // expect(res["output-format"]).toEqual([
-  //   "1",
-  //   "2"
-  // ]);
 
-  test("invalid filter returns empty object", async () => {
+    expect(res[OUT_FORMAT]["equipment"]).not.toBeDefined();
+    expect(res[OUT_FORMAT]["status"]).not.toBeDefined();
+    expect(res[OUT_FORMAT]["logical-termination-point"]).toStrictEqual([
+      { "uuid": "1", "name": "A" },
+      { "uuid": "2", "name": "B" }
+    ]);
+  })
+
+  test("invalid filter returns empty object - Output could not be provided", async () => {
     const res = await p1FormattingOutputOnf({
       "parameters": {
         "sub-function": [{
@@ -191,6 +196,7 @@ describe("Filter Tests", () => {
 
 describe("Real Dataset Tests", () => {
 
+  // Import file
   let dataFile;
   let REAL_CC;
   beforeAll(() => {
@@ -198,37 +204,60 @@ describe("Real Dataset Tests", () => {
     REAL_CC = JSON.parse(dataFile);
   })
 
-  test("basic execution", () => {
-    p1FormattingOutputOnf({
+  test("basic execution", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {},
       "result-cc": REAL_CC
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res["format-name"]).toBe(ONF_FORMAT);
-      expect(res[OUT_FORMAT]).toEqual(REAL_CC);
     });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual(REAL_CC);
   });
 
-  test("filter top-level array", () => {
-    p1FormattingOutputOnf({
+  test("filter array is full", async () => {
+    const res = await p1FormattingOutputOnf({
       "parameters": {
         "sub-function": [{
           "function-name": "p1FieldsFilter",
           "parameter": [{
             "parameter-name": "fieldsFilter",
-            "value": "equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp"
+            "value": "equipment-augment-1-0:control-construct-pac;equipment;logical-termination-point;batch-timestamp"
           }]
         }]
       },
       "result-cc": REAL_CC
-    }).then((res) => {
-      expect(res).toBeDefined();
-      expect(res["format-name"]).toBe(ONF_FORMAT);
-      // expect(res["result-cc"]).toEqual(REAL_CC);
     });
 
-    //TODO
-    // expect(Array.isArray(res["output-format"])).toBe(true);
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual(REAL_CC);
+  });
+
+  test("filter out some fields", async () => {
+    const res = await p1FormattingOutputOnf({
+      "parameters": {
+        "sub-function": [{
+          "function-name": "p1FieldsFilter",
+          "parameter": [{
+            "parameter-name": "fieldsFilter",
+            "value": "equipment-augment-1-0:control-construct-pac;batch-timestamp"
+          }]
+        }]
+      },
+      "result-cc": REAL_CC
+    });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual({
+      "equipment-augment-1-0:control-construct-pac": {
+        "device-model-name": "MINI-LINK Traffic Node",
+        "last-config-change-timestamp": "2010-11-20T14:00:00+01:00",
+        "external-label": "AMM6pC-IDU2"
+      },
+      "batch-timestamp": "2025-12-16T09:11:05.307+01:00"
+    });
   });
 
 });
