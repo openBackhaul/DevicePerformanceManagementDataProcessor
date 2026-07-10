@@ -406,11 +406,17 @@ async function run(request) {
         value: JSON.stringify(envelope)
       };
 
-      validateKafkaMessageSize(kafkaMessage, {
-        topic: kafkaConnection.topicName,
-        targetConsumer: envelope.targetConsumer,
-        mountName: envelope.mountName
-      });
+      /*
+       * Local size validation is intentionally disabled. EMP Kafka should reject
+       * oversized messages, and kafkaOutboundWorker will log non-retryable
+       * KAFKA_MESSAGE_SIZE_TOO_LARGE failures and remove them from Redis.
+       *
+       * validateKafkaMessageSize(kafkaMessage, {
+       *   topic: kafkaConnection.topicName,
+       *   targetConsumer: envelope.targetConsumer,
+       *   mountName: envelope.mountName
+       * });
+       */
 
       /*
        * Group by topic + clientId + brokerList.

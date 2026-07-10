@@ -66,7 +66,7 @@ describe("queueKafkaOutbound", () => {
     });
   });
 
-  it("logs and skips messages with payload size greater than 1MB", async () => {
+  it("queues messages with payload size greater than 1MB so EMP Kafka can reject them", async () => {
     const logger = { error: jest.fn() };
 
     const result = await queueKafkaOutbound.run({
@@ -80,23 +80,24 @@ describe("queueKafkaOutbound", () => {
       }
     });
 
-    expect(redisQueue.enqueueKafkaOutbound).not.toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledWith(
+    expect(redisQueue.enqueueKafkaOutbound).toHaveBeenCalledTimes(1);
+    expect(redisQueue.enqueueKafkaOutbound).toHaveBeenCalledWith(
       expect.objectContaining({
-        label: "kafka-outbound-message-size-exceeded",
-        mountName: "device-oversized",
         targetConsumer: "APT",
-        payloadBytes: expect.any(Number),
-        maxBytes: 1024 * 1024
+        mountName: "device-oversized",
+        payloadStorage: "REDIS",
+        payload: expect.any(String),
+        payloadBytes: expect.any(Number)
       }),
-      "Kafka outbound message skipped because payload exceeds 1MB"
+      logger
     );
+    expect(logger.error).not.toHaveBeenCalled();
     expect(result.queuedResultList).toEqual([
       expect.objectContaining({
         targetConsumer: "APT",
         mountName: "device-oversized",
-        status: "SKIPPED",
-        reason: "KAFKA_MESSAGE_SIZE_EXCEEDED_1MB",
+        payloadStorage: "REDIS",
+        status: "QUEUED",
         payloadBytes: expect.any(Number)
       })
     ]);

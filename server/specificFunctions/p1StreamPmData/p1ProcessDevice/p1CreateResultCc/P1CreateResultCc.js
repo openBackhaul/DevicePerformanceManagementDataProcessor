@@ -472,15 +472,26 @@ function substringLinkId(input) {
     };
   } catch (error) {
     if (error.stage) {
-      throw error;
+      //throw error;
+      logger.error(error.message || error.stage);
     }
 
-    throw buildProcessingError(
+   /* throw buildProcessingError(
+      "substringLinkId",
+      "linkId could not be provided",
+      false,
+      error.message || error
+    );*/
+
+    const errLinkIdCatchBlock =  buildProcessingError(
       "substringLinkId",
       "linkId could not be provided",
       false,
       error.message || error
     );
+
+    logger.error(errLinkIdCatchBlock.details);
+
   }
 }
 
