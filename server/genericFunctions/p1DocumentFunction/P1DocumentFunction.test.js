@@ -49,7 +49,6 @@ describe("Test documentation function", () => {
     const result = p1DocumentFunction({
       "parameters-of-to-be-documented-function": functionDataset
     });
-    console.log(result);
 
     expect(result).toBeDefined();
     expect(result).toEqual(expect.stringContaining("- p1IterateEcPmSlices"));
@@ -58,8 +57,6 @@ describe("Test documentation function", () => {
   });
 
 });
-
-
 
 // Expected output
 // - p1CalculateBusyHour
