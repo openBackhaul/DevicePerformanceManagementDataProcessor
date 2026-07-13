@@ -12,7 +12,7 @@ function p1CalculateInterfacePmDataQuality(input) {
     const validationError = validateMainInput(input);
     if (validationError) {
       return validationError;
-    } 
+    }
 
     const expectedResult = calculateAmountExpected({
       'former-most-recent-period-end-time': input['former-most-recent-period-end-time'],
@@ -180,6 +180,7 @@ function composeInterfacePmDataQuality(input) {
 }
 
 function validateMainInput(input) {
+  // Validate input 
   if (!input || typeof input !== "object") {
     return ERRORS.GENERAL_ERROR;
   }
@@ -187,11 +188,11 @@ function validateMainInput(input) {
   if (input['uuid'] == undefined &
     input['former-most-recent-period-end-time'] == undefined &&
     input['new-most-recent-period-end-time'] == undefined &&
-    input['amount-received']) {
+    input['amount-received'] == undefined) {
     return ERRORS.GENERAL_ERROR;
   }
-    
 
+  // Validate UUID property
   if (!input['uuid']) {
     return ERRORS.UUID_NOT_PROVIDED;
   }
@@ -200,6 +201,7 @@ function validateMainInput(input) {
     return ERRORS.UUID_INVALID;
   }
 
+  // Validate former-most-recent-period-end-time
   if (!input['former-most-recent-period-end-time']) {
     return ERRORS.FORMER_MRPET_NOT_PROVIDED;
   }
@@ -208,6 +210,7 @@ function validateMainInput(input) {
     return ERRORS.FORMER_MRPET_INVALID;
   }
 
+  // Validate new-most-recent-period-end-time
   if (!input['new-most-recent-period-end-time']) {
     return ERRORS.NEW_MRPET_NOT_PROVIDED;
   }
@@ -216,9 +219,11 @@ function validateMainInput(input) {
     return ERRORS.NEW_MRPET_INVALID;
   }
 
+  // Validate amount-received
   if (!input['amount-received']) {
     return ERRORS.AMOUNT_RECV_NOT_PROVIDED;
   }
+
   if (!Array.isArray(input['amount-received'])) {
     return ERRORS.AMOUNT_RECV_INVALID;
   }
