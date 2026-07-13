@@ -1,0 +1,12 @@
+{
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN",
+    "period-end-time": "2026-04-01T06:00:00.0+00:00",
+    "suspect-interval-flag": true,
+    "performance-data": {
+        "total-bytes-output": "500000",
+        "time-period": 900,
+        "total-air-interface-interval-capacity": 500,
+        "utilization": 50
+    },
+    "history-data-id": "PM_ETH_UNKNOWN"
+}
