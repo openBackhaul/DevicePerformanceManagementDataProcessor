@@ -1,5 +1,7 @@
 const ERRORS = require('./ErrorsEnum');
 
+const properties = [  "function-name", "description", "is-active", "parameter" ];
+
 /**
  * p1DocumentFunction
  *
@@ -12,15 +14,19 @@ function p1DocumentFunction(input) {
       return ERRORS.GENERAL_ERROR;
     }
 
-    if (!input || input["parameters-of-to-be-documented-function"] === null) {
+    if (!input || input["parameters-of-to-be-documented-function"] === null ||
+      input["parameters-of-to-be-documented-function"] === undefined) {
       return ERRORS.PARAMETERS_NOT_PROVIDED;
     }
 
-    if (input["parameters-of-to-be-documented-function"] === undefined) {
+    if (typeof input["parameters-of-to-be-documented-function"] != "object") {
       return ERRORS.PARAMETERS_INVALID;
     }
 
     const rawParameters = input["parameters-of-to-be-documented-function"];
+    if (Object.keys(rawParameters).length == 0) {
+      return ERRORS.PARAMETERS_INVALID;
+    }
 
     const parameters =
       typeof rawParameters === "string"
