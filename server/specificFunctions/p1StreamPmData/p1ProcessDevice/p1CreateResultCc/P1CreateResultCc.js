@@ -335,7 +335,17 @@ function sameLtpReference(left, right) {
 }
 
 function hasReference(list, reference) {
-  return (list || []).some((item) => sameLtpReference(item, reference));
+  const references = list instanceof Set || Array.isArray(list)
+    ? list
+    : toArray(list);
+
+  for (const item of references) {
+    if (sameLtpReference(item, reference)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function findLtpByReference(rawCc, reference) {
@@ -1023,26 +1033,36 @@ function createInterfaceProcessingStatus() {
   return {
     attempted: 0,
     succeeded: 0,
-    failed: 0,
-    successfulLtpUuids: [],
-    failedLtpUuids: []
+    failed: 0
   };
 }
 
 function recordInterfaceFailure(status, ltpUuid) {
   status.failed += 1;
-  status.failedLtpUuids = unique([
-    ...status.failedLtpUuids,
-    ltpUuid
-  ]);
+
+  if (!status.failedLtpUuidSet) {
+    status.failedLtpUuidSet = new Set();
+  }
+
+  status.failedLtpUuidSet.add(String(ltpUuid || "").trim());
 }
 
 function recordInterfaceSuccess(status, ltpUuid) {
   status.succeeded += 1;
-  status.successfulLtpUuids = unique([
-    ...status.successfulLtpUuids,
-    ltpUuid
-  ]);
+
+  if (!status.successfulLtpUuidSet) {
+    status.successfulLtpUuidSet = new Set();
+  }
+
+  status.successfulLtpUuidSet.add(String(ltpUuid || "").trim());
+}
+
+function getInterfaceProcessingStatusSummary(status) {
+  return {
+    attempted: status.attempted,
+    succeeded: status.succeeded,
+    failed: status.failed
+  };
 }
 
 function buildNoSuccessfulInterfaceProcessingError(airInterfaceStatus, ethernetContainerStatus) {
@@ -1051,8 +1071,8 @@ function buildNoSuccessfulInterfaceProcessingError(airInterfaceStatus, ethernetC
     "No AirInterface or EthernetContainer processing succeeded",
     false,
     {
-      airInterface: airInterfaceStatus,
-      ethernetContainer: ethernetContainerStatus
+      airInterface: getInterfaceProcessingStatusSummary(airInterfaceStatus),
+      ethernetContainer: getInterfaceProcessingStatusSummary(ethernetContainerStatus)
     }
   );
 }
@@ -1064,41 +1084,66 @@ function assertAnyInterfaceProcessingSucceeded(airInterfaceStatus, ethernetConta
     airInterfaceStatus.succeeded + ethernetContainerStatus.succeeded;
 
   if (attempted > 0 && succeeded === 0) {
-    /* throw buildNoSuccessfulInterfaceProcessingError(
+    /*throw buildNoSuccessfulInterfaceProcessingError(
       airInterfaceStatus,
       ethernetContainerStatus
-    ); */
+    );*/
     logger.error(buildNoSuccessfulInterfaceProcessingError(
-      airInterfaceStatus,
-      ethernetContainerStatus
-    ).details);
+          airInterfaceStatus,
+          ethernetContainerStatus
+      ).details);
   }
 }
 
+function mergeLtpUuidSets(firstSet, secondSet) {
+  const mergedSet = new Set();
+
+  if (firstSet) {
+    for (const ltpUuid of firstSet) {
+      mergedSet.add(ltpUuid);
+    }
+  }
+
+  if (secondSet) {
+    for (const ltpUuid of secondSet) {
+      mergedSet.add(ltpUuid);
+    }
+  }
+
+  return mergedSet;
+}
+
 function pruneFailedProcessedInterfaceLtps(resultCc, airInterfaceStatus, ethernetContainerStatus, mountName) {
+  const failed =
+    airInterfaceStatus.failed + ethernetContainerStatus.failed;
+
+  if (failed === 0) {
+    return 0;
+  }
+
   const root = getControlConstructRoot(resultCc);
   const logicalTerminationPointList = getLogicalTerminationPointList(resultCc);
 
   if (!isPlainObject(root) || !Array.isArray(logicalTerminationPointList)) {
-    return [];
+    return 0;
   }
 
-  const successfulLtpUuids = unique([
-    ...airInterfaceStatus.successfulLtpUuids,
-    ...ethernetContainerStatus.successfulLtpUuids
-  ]);
-  const failedLtpUuids = unique([
-    ...airInterfaceStatus.failedLtpUuids,
-    ...ethernetContainerStatus.failedLtpUuids
-  ]);
-  const prunedLtpUuids = [];
+  const successfulLtpUuidSet = mergeLtpUuidSets(
+    airInterfaceStatus.successfulLtpUuidSet,
+    ethernetContainerStatus.successfulLtpUuidSet
+  );
+  const failedLtpUuidSet = mergeLtpUuidSets(
+    airInterfaceStatus.failedLtpUuidSet,
+    ethernetContainerStatus.failedLtpUuidSet
+  );
+  let prunedLtpCount = 0;
 
   root["logical-termination-point"] = logicalTerminationPointList.filter((ltp) => {
-    if (!isPlainObject(ltp) || !hasReference(failedLtpUuids, ltp.uuid)) {
+    if (!isPlainObject(ltp) || !hasReference(failedLtpUuidSet, ltp.uuid)) {
       return true;
     }
 
-    if (hasReference(successfulLtpUuids, ltp.uuid)) {
+    if (hasReference(successfulLtpUuidSet, ltp.uuid)) {
       return true;
     }
 
@@ -1106,22 +1151,23 @@ function pruneFailedProcessedInterfaceLtps(resultCc, airInterfaceStatus, etherne
       return true;
     }
 
-    prunedLtpUuids.push(ltp.uuid);
+    prunedLtpCount += 1;
     return false;
   });
 
-  if (prunedLtpUuids.length > 0) {
+  if (prunedLtpCount > 0) {
+    /* Enable locally when debugging pruned interface UUIDs.
     logger.warn(
       {
         label: "p1-create-result-cc-pruned-failed-interfaces",
         mountName,
-        prunedLtpUuids
+        prunedLtpCount
       },
       "Pruned failed AirInterface/EthernetContainer LTPs from resultCc"
-    );
+    ); */
   }
 
-  return prunedLtpUuids;
+  return prunedLtpCount;
 }
 
 function buildAirInterfaceMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
@@ -1177,7 +1223,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
 
       if(prepareTxModesResult === null) {
-        recordInterfaceFailure(status, ltp.uuid);
+        //recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -1200,7 +1246,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       if (iterateAiResult === null) {
-        recordInterfaceFailure(status, ltp.uuid);
+        //recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -1228,7 +1274,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         iterateAiResult.mostRecentPeriodEndTime24 || metadata["most-recent-period-end-time-24"]
       );
       interfaceMetadataList.push(metadata);
-      recordInterfaceSuccess(status, ltp.uuid);
+      //recordInterfaceSuccess(status, ltp.uuid);
     }
   }
 
@@ -1261,7 +1307,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       );
 
       if (iterateEcResult === null) {
-        recordInterfaceFailure(status, ltp.uuid);
+        //recordInterfaceFailure(status, ltp.uuid);
         continue;
       }
 
@@ -1284,7 +1330,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       );
 
       interfaceMetadataList.push(metadata);
-      recordInterfaceSuccess(status, ltp.uuid);
+      //recordInterfaceSuccess(status, ltp.uuid);
     }
   }
 
@@ -1378,7 +1424,7 @@ async function run(request) {
       mountName
     );
 
-    assertAnyInterfaceProcessingSucceeded(
+    /* assertAnyInterfaceProcessingSucceeded(
       airInterfaceStatus,
       ethernetContainerStatus
     );
@@ -1388,7 +1434,7 @@ async function run(request) {
       airInterfaceStatus,
       ethernetContainerStatus,
       mountName
-    );
+    ); */
 
     /* console.log("result-cc: ",JSON.stringify(resultCc));
 
@@ -1442,7 +1488,7 @@ async function run(request) {
         mountName,
         stage: error.stage,
         retryable: error.retryable,
-        details: error.details,
+        // details: error.details, // Enable locally when debugging verbose error details.
         error: error.message || error
       },
       "Failed to process device in p1CreateResultCc"
