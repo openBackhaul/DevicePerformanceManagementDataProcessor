@@ -1,0 +1,1030 @@
+{
+  "air-interface-historical-performances": [
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T08:45:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T09:45:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -22,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-12T02:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 51,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 86400,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 86400
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 86400,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-17T02:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 86400,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 86400
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 86400,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T09:15:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T09:00:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-15T02:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 86400,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 86400
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 86400,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T10:00:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -22,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T10:45:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-16T02:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 86400,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 86400
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 86400,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T11:45:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T11:00:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T09:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -22,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-14T02:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 86400,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 86400
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 86400,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T12:00:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T10:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-13T02:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 86400,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 86400
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 86400,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T11:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T08:30:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T11:15:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T08:15:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    },
+    {
+      "history-data-id": "History Data ID not defined.",
+      "period-end-time": "2026-05-18T10:15:00+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "xpd-max": 0,
+        "tx-level-max": 13,
+        "rf-temp-max": 50,
+        "snir-max": 42,
+        "rx-level-min": -22,
+        "rx-level-avg": -22,
+        "es": 0,
+        "unavailability": 900,
+        "xpd-min": 0,
+        "xpd-avg": -99,
+        "cses": 0,
+        "tx-level-min": 13,
+        "tx-level-avg": 13,
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 1,
+            "transmission-mode": "0056-QPSK-52680/61762-1",
+            "time": 900
+          }
+        ],
+        "rf-temp-min": 50,
+        "rf-temp-avg": -99,
+        "snir-avg": 42,
+        "time-period": 900,
+        "snir-min": 42,
+        "rx-level-max": -21,
+        "defect-blocks-sum": 0
+      },
+      "batchTimestamp": "2026-05-20T16:29:26.703Z"
+    }
+  ],
+  "air-interface-capability": {
+    "transmission-mode-list": [
+      {
+        "modulation-scheme-name-at-lct": "QPSK",
+        "transmission-mode-name": "0056-QPSK-52680/61762-1",
+        "am-downshift-level": -76,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 4,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 2,
+        "rx-threshold": -84,
+        "am-upshift-level": -72,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "1024QAM",
+        "transmission-mode-name": "0056-1024QAM-275520/321670-1",
+        "am-downshift-level": -53,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 1024,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 10,
+        "rx-threshold": -59,
+        "am-upshift-level": 99,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "2048QAM",
+        "transmission-mode-name": "0056-2048QAM-288720/353837-1",
+        "am-downshift-level": 99,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 81,
+        "modulation-scheme": 2048,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 11,
+        "rx-threshold": -56,
+        "am-upshift-level": 99,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "2048QAMLIGHT",
+        "transmission-mode-name": "0056-2048QAMLIGHT-313440/349668-1",
+        "am-downshift-level": 99,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": 99,
+        "code-rate": 89,
+        "modulation-scheme": 2048,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 99,
+        "transmission-mode-rank": 12,
+        "rx-threshold": 99,
+        "am-upshift-level": 99,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "QPSKSTRONG",
+        "transmission-mode-name": "0056-QPSKSTRONG-45120/61762-1",
+        "am-downshift-level": 99,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 73,
+        "modulation-scheme": 4,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 1,
+        "rx-threshold": -86,
+        "am-upshift-level": -74,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "64QAM",
+        "transmission-mode-name": "0056-64QAM-166080/185286-1",
+        "am-downshift-level": -66,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 89,
+        "modulation-scheme": 64,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 6,
+        "rx-threshold": -71,
+        "am-upshift-level": -61,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "256QAM",
+        "transmission-mode-name": "0056-256QAM-226560/249768-1",
+        "am-downshift-level": -60,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 90,
+        "modulation-scheme": 256,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 8,
+        "rx-threshold": -65,
+        "am-upshift-level": -55,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "16QAM",
+        "transmission-mode-name": "0056-16QAM-105600/123524-1",
+        "am-downshift-level": -72,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 16,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 4,
+        "rx-threshold": -77,
+        "am-upshift-level": -68,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "Modulation scheme name not yet defined.",
+        "transmission-mode-name": "0000-0-0/0-0",
+        "am-downshift-level": 99,
+        "supported-as-fixed-configuration": false,
+        "tx-power-min": 99,
+        "code-rate": -1,
+        "modulation-scheme": -1,
+        "xpic-is-avail": false,
+        "channel-bandwidth": -1,
+        "tx-power-max": 99,
+        "transmission-mode-rank": -1,
+        "rx-threshold": 99,
+        "am-upshift-level": 99,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "16QAMSTRONG",
+        "transmission-mode-name": "0056-16QAMSTRONG-90480/123524-1",
+        "am-downshift-level": -74,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 73,
+        "modulation-scheme": 16,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 3,
+        "rx-threshold": -79,
+        "am-upshift-level": -70,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "512QAM",
+        "transmission-mode-name": "0056-512QAM-252960/289503-1",
+        "am-downshift-level": -58,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 87,
+        "modulation-scheme": 512,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 9,
+        "rx-threshold": -62,
+        "am-upshift-level": -53,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "128QAM",
+        "transmission-mode-name": "0056-128QAM-196320/216167-1",
+        "am-downshift-level": -63,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 90,
+        "modulation-scheme": 128,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 7,
+        "rx-threshold": -68,
+        "am-upshift-level": -58,
+        "symbol-rate-reduction-factor": 1
+      },
+      {
+        "modulation-scheme-name-at-lct": "32QAM",
+        "transmission-mode-name": "0056-32QAM-133684/156380-1",
+        "am-downshift-level": -69,
+        "supported-as-fixed-configuration": true,
+        "tx-power-min": -10,
+        "code-rate": 85,
+        "modulation-scheme": 32,
+        "xpic-is-avail": true,
+        "channel-bandwidth": 56000,
+        "tx-power-max": 13,
+        "transmission-mode-rank": 5,
+        "rx-threshold": -74,
+        "am-upshift-level": -64,
+        "symbol-rate-reduction-factor": 1
+      }
+    ]
+  }
+}
