@@ -38,8 +38,7 @@ describe('p1CategorizeDataVolume', () => {
   test('Content test 1', () => {
     const input = {
       "historical-performance-data": {
-        "granularity-period":
-          "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
         "period-end-time": "2026-07-06T12:15:00.000Z",
         "performance-data": {
           "total-bytes-output": 1000,
@@ -54,8 +53,126 @@ describe('p1CategorizeDataVolume', () => {
     };
     const result = p1CategorizeDataVolume(input);
     expect(result).toBeDefined();
-    console.log(result);
-    // expect(result).toBe(ERRORS.GENERAL_ERROR)
+
+    const constr = {
+      "interface-status": {
+        "uuid": "interface-001",
+        "15-minute-values-by-day": [
+          {
+            "day": 6,
+            "15-minute-values-by-hour": [
+              {
+                "hour": 0,
+                "15-minute-values": []
+              },
+              {
+                "hour": 1,
+                "15-minute-values": []
+              },
+              {
+                "hour": 2,
+                "15-minute-values": []
+              },
+              {
+                "hour": 3,
+                "15-minute-values": []
+              },
+              {
+                "hour": 4,
+                "15-minute-values": []
+              },
+              {
+                "hour": 5,
+                "15-minute-values": []
+              },
+              {
+                "hour": 6,
+                "15-minute-values": []
+              },
+              {
+                "hour": 7,
+                "15-minute-values": []
+              },
+              {
+                "hour": 8,
+                "15-minute-values": []
+              },
+              {
+                "hour": 9,
+                "15-minute-values": []
+              },
+              {
+                "hour": 10,
+                "15-minute-values": []
+              },
+              {
+                "hour": 11,
+                "15-minute-values": []
+              },
+              {
+                "hour": 12,
+                "15-minute-values": [
+                  {
+                    "period-end-time": "2026-07-06T12:15:00.000Z",
+                    "total-bytes-output": 1000,
+                    "total-air-interface-interval-capacity": 5000,
+                    "errored-frames-input": 2,
+                    "dropped-frames-input": 1
+                  }
+                ]
+              },
+              {
+                "hour": 13,
+                "15-minute-values": []
+              },
+              {
+                "hour": 14,
+                "15-minute-values": []
+              },
+              {
+                "hour": 15,
+                "15-minute-values": []
+              },
+              {
+                "hour": 16,
+                "15-minute-values": []
+              },
+              {
+                "hour": 17,
+                "15-minute-values": []
+              },
+              {
+                "hour": 18,
+                "15-minute-values": []
+              },
+              {
+                "hour": 19,
+                "15-minute-values": []
+              },
+              {
+                "hour": 20,
+                "15-minute-values": []
+              },
+              {
+                "hour": 21,
+                "15-minute-values": []
+              },
+              {
+                "hour": 22,
+                "15-minute-values": []
+              },
+              {
+                "hour": 23,
+                "15-minute-values": []
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    // console.log(JSON.stringify(result));
+    expect(result).toEqual(constr);
   });
 
   test("should initialize 15-minute-values-by-day and categorize one PM record", () => {
@@ -84,7 +201,7 @@ describe('p1CategorizeDataVolume', () => {
   });
 
   test("should append multiple 15-minute records into the same hour bucket", () => {
-    let interfaceStatus = { "uuid": "interface-001" };
+    let interfaceStatus = { "uuid": "interface-001-Lorenzo" };
 
     interfaceStatus = p1CategorizeDataVolume(
       buildInput("2026-07-06T12:00:00.000Z", interfaceStatus)

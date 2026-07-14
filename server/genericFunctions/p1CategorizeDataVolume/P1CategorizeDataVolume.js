@@ -32,6 +32,7 @@ function p1CategorizeDataVolume(input) {
       return ERRORS.GENERAL_ERROR;
     }
 
+    // Validating historical-performance-data
     if (!historicalPerformanceData) {
       return ERRORS.HISTORICAL_PERF_NOT_PROVIDED;
     }
@@ -40,6 +41,7 @@ function p1CategorizeDataVolume(input) {
       return ERRORS.HISTORICAL_PERF_INVALID;
     }
 
+    // Validating interface-status
     if (!interfaceStatus) {
       return ERRORS.INTERFACE_STATUS_NOT_PROVVIDED;
     }
@@ -48,9 +50,8 @@ function p1CategorizeDataVolume(input) {
       return ERRORS.INTERFACE_STATUS_INVALID;
     }
 
-    const is15Min = checkGranularity(
-      historicalPerformanceData['granularity-period']
-    );
+    // Check Granularity type, only 15 Minutes is allowed
+    const is15Min = checkGranularity(historicalPerformanceData['granularity-period']);
 
     if (!is15Min) {
       return ERRORS.PM_DATA_WRONG_GRAN_PROV;
@@ -66,6 +67,7 @@ function p1CategorizeDataVolume(input) {
     const day = date.getUTCDate();
     const hour = date.getUTCHours();
 
+    // Set empty array if doesnt exists
     if (!Array.isArray(interfaceStatus['15-minute-values-by-day'])) {
       interfaceStatus['15-minute-values-by-day'] = [];
     }
@@ -76,7 +78,7 @@ function p1CategorizeDataVolume(input) {
 
     if (!dayBucket) {
       dayBucket = {
-        day,
+        'day': day,
         '15-minute-values-by-hour': initializeHourlyBuckets()
       };
 
@@ -93,7 +95,7 @@ function p1CategorizeDataVolume(input) {
     }
 
     const hourBucket = dayBucket['15-minute-values-by-hour'].find(
-      entry => entry.hour === hour
+      entry => entry['hour'] === hour
     );
 
     if (!hourBucket) {
@@ -131,7 +133,7 @@ function checkGranularity(granularity) {
  */
 function initializeHourlyBuckets() {
   return Array.from({ length: 24 }, (_, hour) => ({
-    hour,
+    'hour': hour,
     '15-minute-values': []
   }));
 }
@@ -144,6 +146,7 @@ function initializeHourlyBuckets() {
  * @returns {Array<object>}
  */
 function categorizePmData(historicalPerformanceData, fifteenMinuteValues) {
+  // if is not array set by default to empty array []
   if (!Array.isArray(fifteenMinuteValues)) {
     fifteenMinuteValues = [];
   }
