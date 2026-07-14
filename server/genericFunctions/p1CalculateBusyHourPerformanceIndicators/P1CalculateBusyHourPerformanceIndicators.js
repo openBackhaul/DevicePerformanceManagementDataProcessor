@@ -50,20 +50,24 @@ function p1CalculateBusyHourPerformanceIndicators(input) {
 
     const periodEndTime = historicalPerformanceData[PERIOD_END_TIME];
 
-    if (!periodEndTime) {
+    if (!periodEndTime || typeof periodEndTime == "number" || typeof periodEndTime == "object") {
       return ERRORS.HISTORICAL_PERF_INVALID;
     }
 
     const day = parseDayOfMonth(periodEndTime);
 
-    const dayEntry = interfaceStatus[MINUTES_BY_DAY]
-      ?.find(entry => entry.day === day);
+    // Validating interface-status content
+    if (interfaceStatus[MINUTES_BY_DAY] == undefined) {
+      return ERRORS.INT_STATUS_INVALID;
+    }
+
+    const dayEntry = interfaceStatus[MINUTES_BY_DAY].find(entry => entry.day === day);
 
     if (!dayEntry || !Array.isArray(dayEntry[MINUTES_BY_HOUR])) {
       return ERRORS.INT_STATUS_INVALID;
     }
 
-    // Aggragate Total Bytes Ouput per Day
+    // Aggregate Total Bytes Ouput per Day
     const aggregatedTotalBytesOutputByHour =
       aggregateTotalBytesOutput(dayEntry[MINUTES_BY_HOUR]);
 
@@ -147,10 +151,14 @@ function calculateBusyHourKpis(valuesByHour, busyHourIdentifier, periodEndTime24
     return sum + toNumber(value["total-air-interface-interval-capacity"]);
   }, 0);
 
+  //  'errored frames during the busy hour
+  // from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/errored-frames-input} ) }'
   const erroredFrames = values.reduce((sum, value) => {
     return sum + toNumber(value["errored-frames-input"]);
   }, 0);
 
+  // 'dropped frames during the busy hour
+  // from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/dropped-frames-input} ) }'
   const droppedFrames = values.reduce((sum, value) => {
     return sum + toNumber(value["dropped-frames-input"]);
   }, 0);
@@ -158,28 +166,49 @@ function calculateBusyHourKpis(valuesByHour, busyHourIdentifier, periodEndTime24
   const aggregatedTotalBytesOutput =
     busyHourIdentifier["aggregated-total-bytes-output"];
 
+  // 'throughput during the busy hour
+  // aggregated-total-bytes-output transformed from byte to kbit, and divided by assumed 3600 seconds of the measurement period
+  // from { {$input#/busy-hour-identifier/aggregated-total-bytes-output} * 8 / ( 1000 * 3600 ) }'
   const throughput = Math.floor(
     aggregatedTotalBytesOutput * 8 / (1000 * 3600)
   );
 
+  // 'capacity during the busy hour
+  // sum of total-air-interface-interval-capacity values divided by assumed four 15-min periods
+  // from { sum( {$input#/15-minute-values-by-hour={$input#/busy-hour-identifier/hour}/15-minute-values[*]/total-air-interface-interval-capacity} ) / 4 }'
   const capacity = Math.floor(totalCapacity / 4);
 
+  // 'utilization during the busy hour
+  // throughput / capacity, transformed to percentage
+  // from { {$output#/busy-hour-values/throughput} / {$output#/busy-hour-values/capacity} * 100 }'
   const utilization = capacity > 0
     ? Math.floor((throughput / capacity) * 100)
     : 0;
 
+  // 'label of the busy hour with the format YYYY/MM/DD/hh/mm
+  // from { parsed and composed from earliest date in {$output#/busy-hour-values/period-end-time-list} }'
+  const bhLabel = buildBusyHourLabel(periodEndTime24h, busyHourIdentifier.hour);
+
+  // 'flag indicating suspicious busy hour KPIs
+  // from { {true} if in any of the period-end-time-list, capacity, errored-frames, or dropped-frames calculations less than 4 valid 15-minute values were available, otherwise {false} }'
+  const suspResultFlag = values.length < 4;
+
+  // Return Dataset
   return {
     "period-end-time-list": periodEndTimeList,
-    "label": buildBusyHourLabel(periodEndTime24h, busyHourIdentifier.hour),
+    "label": bhLabel,
     "throughput": throughput,
     "capacity": capacity,
     "utilization": utilization,
     "errored-frames": erroredFrames,
     "dropped-frames": droppedFrames,
-    "suspicious-result-flag": values.length < 4
+    "suspicious-result-flag": suspResultFlag
   };
 }
 
+// Return label as per spec 
+// 'label of the busy hour with the format YYYY/MM/DD/hh/mm
+// from { parsed and composed from earliest date in {$output#/busy-hour-values/period-end-time-list} }'
 function buildBusyHourLabel(periodEndTime24h, hour) {
   const date = new Date(periodEndTime24h);
 

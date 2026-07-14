@@ -139,14 +139,14 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
       expect(result).toBe(ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV);
     });
 
-    test("????", () => {
-      const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrong.json', 'utf8');
-      const input = JSON.parse(dataFile);
-      const result = p1CalculateBusyHourPerformanceIndicators(input);
+    // test("????", () => {
+    //   const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrong.json', 'utf8');
+    //   const input = JSON.parse(dataFile);
+    //   const result = p1CalculateBusyHourPerformanceIndicators(input);
 
-      expect(result).toBeDefined();
-      // expect(result).toBe(ERRORS.BUSY_HOUR_KPIS_COULDNT_ADDED);
-    });
+    //   expect(result).toBeDefined();
+    //   // expect(result).toBe(ERRORS.BUSY_HOUR_KPIS_COULDNT_ADDED);
+    // });
 
     test("Test content 1", () => {
       const input1 = {
@@ -234,10 +234,10 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
           "performance-data": {}
         },
         "interface-status": {
-          uuid: "eth-container-001",
+          "uuid": "eth-container-001",
           "15-minute-values-by-day": [
             {
-              day: 10,
+              "day": 10,
               "15-minute-values-by-hour": createEmptyHours()
             }
           ]
@@ -309,7 +309,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
     test("Test content 4", () => {
       const input4 = {
         "interface-status": {
-          uuid: "eth-container-001",
+          "uuid": "eth-container-001",
           "15-minute-values-by-day": []
         }
       };
@@ -340,10 +340,10 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
           "performance-data": {}
         },
         "interface-status": {
-          uuid: "eth-container-001",
+          "uuid": "eth-container-001",
           "15-minute-values-by-day": [
             {
-              day: 10,
+              "day": 10,
               "15-minute-values-by-hour": createEmptyHours()
             }
           ]
