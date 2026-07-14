@@ -1,6 +1,7 @@
 const ERRORS = require('./ErrorsEnum');
 
 const GRANULARITY_15M = "GRANULARITY_PERIOD_TYPE_PERIOD-15-MINUTES";
+const GRANULARITY_24h = "GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"
 
 const MINUTES_BY_DAY = "15-minute-values-by-day";
 const MINUTES_BY_HOUR = "15-minute-values-by-hour";
@@ -13,22 +14,37 @@ const PERIOD_END_TIME = "period-end-time";
 // - interface-status
 function p1CalculateBusyHourPerformanceIndicators(input) {
   try {
-    const historicalPerformanceData = input?.["historical-performance-data"];
-    const interfaceStatus = input?.["interface-status"];
 
-    if (input == null || (historicalPerformanceData == undefined && interfaceStatus == undefined)) {
+    // Validation of input data
+    if (input == null || input == undefined) {
       return ERRORS.GENERAL_ERROR;
     }
 
-    if (!historicalPerformanceData) {
+    if (input["historical-performance-data"] == undefined && input["interface-status"] == undefined) {
+      return ERRORS.GENERAL_ERROR;
+    }
+
+    // Validation of historical-performance-data property
+    if (input["historical-performance-data"] == undefined) {
       return ERRORS.HISTORICAL_PERF_NOT_PROVIDED;
     }
 
-    if (!interfaceStatus) {
+    if (typeof input["historical-performance-data"] !== "object" || Array.isArray(input["historical-performance-data"])) {
+      return ERRORS.HISTORICAL_PERF_INVALID;
+    }
+
+    // Validation of interface-status property
+    if (input["interface-status"] == undefined) {
       return ERRORS.INT_STATUS_NOT_PROVIDED;
     }
 
-    if (checkGranularity(historicalPerformanceData[GRANULARITY_PERIOD])) {
+    if (typeof input["interface-status"] !== "object" || Array.isArray(input["interface-status"])) {
+      return ERRORS.INT_STATUS_INVALID;
+    }
+
+    const historicalPerformanceData = input["historical-performance-data"];
+    const interfaceStatus = input["interface-status"];
+    if (!checkGranularity24H(historicalPerformanceData[GRANULARITY_PERIOD])) {
       return ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV;
     }
 
@@ -47,12 +63,15 @@ function p1CalculateBusyHourPerformanceIndicators(input) {
       return ERRORS.INT_STATUS_INVALID;
     }
 
+    // Aggragate Total Bytes Ouput per Day
     const aggregatedTotalBytesOutputByHour =
       aggregateTotalBytesOutput(dayEntry[MINUTES_BY_HOUR]);
 
+    // Identifying BusyHour
     const busyHourIdentifier =
       identifyBusyHour(aggregatedTotalBytesOutputByHour);
 
+    // Calculate Busy Hours KPIs
     const busyHourValues = calculateBusyHourKpis(
       dayEntry[MINUTES_BY_HOUR],
       busyHourIdentifier,
@@ -74,8 +93,8 @@ function p1CalculateBusyHourPerformanceIndicators(input) {
 
 }
 
-function checkGranularity(granularity) {
-  return granularity.endsWith(GRANULARITY_15M);
+function checkGranularity24H(granularity) {
+  return granularity.endsWith(GRANULARITY_24h);
 }
 
 function aggregateTotalBytesOutput(valuesByHour) {

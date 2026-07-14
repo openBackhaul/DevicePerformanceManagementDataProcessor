@@ -5,19 +5,21 @@ const fs = require('fs');
 describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
 
   describe("Errors checks", () => {
-    test("input null", () => {
+    const GRANULARITY_15M = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MINUTES";
+
+    test("Return General Error if input null", () => {
       const result = p1CalculateBusyHourPerformanceIndicators(null);
       expect(result).toBeDefined();
       expect(result).toBe(ERRORS.GENERAL_ERROR);
     });
 
-    test("input undefined", () => {
+    test("Return General Error if input is empty object", () => {
       const result = p1CalculateBusyHourPerformanceIndicators({});
       expect(result).toBeDefined();
       expect(result).toBe(ERRORS.GENERAL_ERROR);
     });
 
-    test("input undefined 2", () => {
+    test("Return General Error if input object has both properties as undefined", () => {
       const result = p1CalculateBusyHourPerformanceIndicators({
         "historical-performance-data": undefined,
         "interface-status": undefined
@@ -26,7 +28,16 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
       expect(result).toBe(ERRORS.GENERAL_ERROR);
     });
 
-    test("input historical undefined", () => {
+    test("Return General Error if input object has both properties as null", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": null,
+        "interface-status": null
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.GENERAL_ERROR);
+    });
+
+    test("Return Hist perf not provided if is undefined", () => {
       const result = p1CalculateBusyHourPerformanceIndicators({
         "historical-performance-data": undefined,
         "interface-status": {}
@@ -35,13 +46,76 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
       expect(result).toBe(ERRORS.HISTORICAL_PERF_NOT_PROVIDED);
     });
 
-    test("input historical undefined", () => {
+    test("Return Hist perf invalid if is different from a object - String", () => {
       const result = p1CalculateBusyHourPerformanceIndicators({
-        "historical-performance-data": {},
+        "historical-performance-data": "",
         "interface-status": {}
       });
       expect(result).toBeDefined();
-      // expect(result).toBe(ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV);
+      expect(result).toBe(ERRORS.HISTORICAL_PERF_INVALID);
+    });
+
+    test("Return Hist perf invalid if is different from a object - Array", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": [],
+        "interface-status": {}
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.HISTORICAL_PERF_INVALID);
+    });
+
+    test("Return Hist perf invalid if is different from a object - Number", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": 999,
+        "interface-status": {}
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.HISTORICAL_PERF_INVALID);
+    });
+
+    test("Return Interface status not provided if is undefined", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": {},
+        "interface-status": undefined
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.INT_STATUS_NOT_PROVIDED);
+    });
+
+    test("Return Interface status not provided if is null", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": {},
+        "interface-status": null
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.INT_STATUS_NOT_PROVIDED);
+    });
+
+    test("Return Interface status not provided if is different from a object - String", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": {},
+        "interface-status": ""
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.INT_STATUS_INVALID);
+    });
+
+    test("Return Interface status not provided if is different from a object - Array", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": {},
+        "interface-status": []
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.INT_STATUS_INVALID);
+    });
+
+    test("Return Interface status not provided if is different from a object - Number", () => {
+      const result = p1CalculateBusyHourPerformanceIndicators({
+        "historical-performance-data": {},
+        "interface-status": 999
+      });
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.INT_STATUS_INVALID);
     });
 
   });
@@ -55,6 +129,24 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
         "15-minute-values": []
       }));
     }
+
+    test("Test Data content invalid Granularity", () => {
+      const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrong.json', 'utf8');
+      const input = JSON.parse(dataFile);
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
+
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV);
+    });
+
+    test("????", () => {
+      const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrong.json', 'utf8');
+      const input = JSON.parse(dataFile);
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
+
+      expect(result).toBeDefined();
+      // expect(result).toBe(ERRORS.BUSY_HOUR_KPIS_COULDNT_ADDED);
+    });
 
     test("Test content 1", () => {
       const input1 = {
@@ -104,6 +196,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
           "dropped-frames-input": 1
         }
       ];
+
       const result = p1CalculateBusyHourPerformanceIndicators(input1);
       expect(result).toBeDefined();
       const struct = {
