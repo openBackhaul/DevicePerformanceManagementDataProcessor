@@ -213,10 +213,10 @@ function buildProducerConfig(options) {
     //config.debug = debug;
   }
 
-  const tlsConfig = getTlsConfig(options);
+  //const tlsConfig = getTlsConfig(options);
   return {
-    ...config,
-    ...tlsConfig
+    ...config
+    //...tlsConfig
   };
 }
 

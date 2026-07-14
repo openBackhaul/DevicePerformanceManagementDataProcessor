@@ -31,17 +31,17 @@
     "kafkaBatchNumMessages": 500,
     "kafkaCompressionType": "lz4",
 
-    "kafkaBootstrapServers": "localhost:9093",
+    "kafkaBootstrapServers": "kafka.ict.emp.gcp.de.pri.o2.com:9092",
     "kafkaClientId": "dpmdp-client",
     "kafkaDebug": "broker,admin",
     "kafkaSecurityProtocol": "ssl",
-    "kafkaSslCaLocation": "C:/cmd/acls/secrets/prod/trust.pem",
-    "kafkaSslCertificateLocation": "C:/cmd/acls/secrets/prod/cert.pem",
-    "kafkaSslKeyLocation": "C:/cmd/acls/secrets/prod/key.pem"
+    "kafkaSslCaLocation": "cmd/acls/secrets/ict/trust.pem",
+    "kafkaSslCertificateLocation": "cmd/acls/secrets/ict/cert.pem",
+    "kafkaSslKeyLocation": "cmd/acls/secrets/ict/key.pem"
   },
 
   "redis": {
-    "url": "redis://127.0.0.1:6379",
+    "url": "redis://:sdndpmdpredis@172.28.127.10:6379",
     "replicaLockTtlMs": 60000,
     "cleanupLockTtlMs": 300000,
     "staleMessageIdleMs": 300000,
