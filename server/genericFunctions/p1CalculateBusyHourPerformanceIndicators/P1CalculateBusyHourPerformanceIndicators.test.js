@@ -2,6 +2,8 @@ const p1CalculateBusyHourPerformanceIndicators = require('./P1CalculateBusyHourP
 const ERRORS = require('./ErrorsEnum');
 const fs = require('fs');
 
+const GRANULARITY_24H = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS";
+
 describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
 
   describe("Errors checks", () => {
@@ -118,10 +120,54 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
       expect(result).toBe(ERRORS.INT_STATUS_INVALID);
     });
 
+    // Extra tests
+    test("Test content - Wrong Granularity provided", () => {
+      const input = {
+        "historical-performance-data": {
+          "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MINUTES",
+          "period-end-time": "2025-06-10T10:15:00Z",
+          "performance-data": {}
+        },
+        "interface-status": {
+          "uuid": "eth-container-001",
+          "15-minute-values-by-day": []
+        }
+      };
+
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV);
+    });
+
+    test("Test content - Historical performance not provided", () => {
+      const input = {
+        "interface-status": {
+          "uuid": "eth-container-001",
+          "15-minute-values-by-day": []
+        }
+      };
+
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.HISTORICAL_PERF_NOT_PROVIDED);
+    });
+
+    test("Test content - Interface status not provided", () => {
+      const input = {
+        "historical-performance-data": {
+          "granularity-period": GRANULARITY_24H,
+          "period-end-time": "2025-06-10T23:59:59Z",
+          "performance-data": {}
+        }
+      };
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
+      expect(result).toBeDefined();
+      expect(result).toBe(ERRORS.INT_STATUS_NOT_PROVIDED);
+    });
+
   });
 
   describe("Data content tests", () => {
-    const GRANULARITY_24H = "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS";
 
     function createEmptyHours() {
       return Array.from({ length: 24 }, (_, hour) => ({
@@ -131,7 +177,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
     }
 
     test("Test Data content invalid Granularity", () => {
-      const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrong.json', 'utf8');
+      const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrongGranularity.json', 'utf8');
       const input = JSON.parse(dataFile);
       const result = p1CalculateBusyHourPerformanceIndicators(input);
 
@@ -139,34 +185,21 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
       expect(result).toBe(ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV);
     });
 
-    // test("????", () => {
-    //   const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrong.json', 'utf8');
+    // test("Test Data content invalid dataset", () => {
+    //   const dataFile = fs.readFileSync(__dirname + '/datasets/historicalWrongDataSet.json', 'utf8');
     //   const input = JSON.parse(dataFile);
     //   const result = p1CalculateBusyHourPerformanceIndicators(input);
 
     //   expect(result).toBeDefined();
-    //   // expect(result).toBe(ERRORS.BUSY_HOUR_KPIS_COULDNT_ADDED);
+    //   expect(result).toBe(ERRORS.BUSY_HOUR_KPIS_COULDNT_ADDED);
     // });
 
     test("Test content 1", () => {
-      const input1 = {
-        "historical-performance-data": {
-          "granularity-period": GRANULARITY_24H,
-          "period-end-time": "2025-06-10T23:59:59Z",
-          "performance-data": {}
-        },
-        "interface-status": {
-          "uuid": "eth-container-001",
-          "15-minute-values-by-day": [
-            {
-              "day": 10,
-              "15-minute-values-by-hour": createEmptyHours()
-            }
-          ]
-        }
-      };
+      const dataset = fs.readFileSync(__dirname + '/datasets/basicInput.json', 'utf8');
+      const input = JSON.parse(dataset);
 
-      input1["interface-status"]["15-minute-values-by-day"][0]["15-minute-values-by-hour"][10]["15-minute-values"] = [
+      // Tweak the dataset
+      input["interface-status"]["15-minute-values-by-day"][0]["15-minute-values-by-hour"][10]["15-minute-values"] = [
         {
           "period-end-time": "2025-06-10T10:15:00Z",
           "total-bytes-output": 900000000,
@@ -197,7 +230,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
         }
       ];
 
-      const result = p1CalculateBusyHourPerformanceIndicators(input1);
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
       expect(result).toBeDefined();
       const struct = {
         "historical-performance-data": {
@@ -227,24 +260,11 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
     });
 
     test("Test content 2", () => {
-      const input2 = {
-        "historical-performance-data": {
-          "granularity-period": GRANULARITY_24H,
-          "period-end-time": "2025-06-10T23:59:59Z",
-          "performance-data": {}
-        },
-        "interface-status": {
-          "uuid": "eth-container-001",
-          "15-minute-values-by-day": [
-            {
-              "day": 10,
-              "15-minute-values-by-hour": createEmptyHours()
-            }
-          ]
-        }
-      };
+      const dataset = fs.readFileSync(__dirname + '/datasets/basicInput.json', 'utf8');
+      const input = JSON.parse(dataset);
 
-      input2["interface-status"]["15-minute-values-by-day"][0]
+      // Tweak the dataset
+      input["interface-status"]["15-minute-values-by-day"][0]
       ["15-minute-values-by-hour"][15]["15-minute-values"] = [
           {
             "period-end-time": "2025-06-10T15:15:00Z",
@@ -261,7 +281,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
             "dropped-frames-input": 1
           }
         ];
-      const result = p1CalculateBusyHourPerformanceIndicators(input2);
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
       expect(result).toBeDefined();
       const struct = {
         "historical-performance-data": {
@@ -289,68 +309,10 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
     });
 
     test("Test content 3", () => {
-      const input3 = {
-        "historical-performance-data": {
-          "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MINUTES",
-          "period-end-time": "2025-06-10T10:15:00Z",
-          "performance-data": {}
-        },
-        "interface-status": {
-          "uuid": "eth-container-001",
-          "15-minute-values-by-day": []
-        }
-      };
+      const dataset = fs.readFileSync(__dirname + '/datasets/basicInput.json', 'utf8');
+      const input = JSON.parse(dataset);
 
-      const result = p1CalculateBusyHourPerformanceIndicators(input3);
-      expect(result).toBeDefined();
-      expect(result).toBe(ERRORS.HISTORICAL_PERF_WRONG_GRAN_PROV);
-    });
-
-    test("Test content 4", () => {
-      const input4 = {
-        "interface-status": {
-          "uuid": "eth-container-001",
-          "15-minute-values-by-day": []
-        }
-      };
-
-      const result = p1CalculateBusyHourPerformanceIndicators(input4);
-      expect(result).toBeDefined();
-      expect(result).toBe(ERRORS.HISTORICAL_PERF_NOT_PROVIDED);
-    });
-
-    test("Test content 5", () => {
-      const input5 = {
-        "historical-performance-data": {
-          "granularity-period": GRANULARITY_24H,
-          "period-end-time": "2025-06-10T23:59:59Z",
-          "performance-data": {}
-        }
-      };
-      const result = p1CalculateBusyHourPerformanceIndicators(input5);
-      expect(result).toBeDefined();
-      expect(result).toBe(ERRORS.INT_STATUS_NOT_PROVIDED);
-    });
-
-    test("Test content 6", () => {
-      const input6 = {
-        "historical-performance-data": {
-          "granularity-period": GRANULARITY_24H,
-          "period-end-time": "2025-06-10T23:59:59Z",
-          "performance-data": {}
-        },
-        "interface-status": {
-          "uuid": "eth-container-001",
-          "15-minute-values-by-day": [
-            {
-              "day": 10,
-              "15-minute-values-by-hour": createEmptyHours()
-            }
-          ]
-        }
-      };
-
-      input6["interface-status"]["15-minute-values-by-day"][0]
+      input["interface-status"]["15-minute-values-by-day"][0]
       ["15-minute-values-by-hour"][8]["15-minute-values"] = [
           {
             "period-end-time": "2025-06-10T08:15:00Z",
@@ -361,7 +323,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
           }
         ];
 
-      input6["interface-status"]["15-minute-values-by-day"][0]
+      input["interface-status"]["15-minute-values-by-day"][0]
       ["15-minute-values-by-hour"][18]["15-minute-values"] = [
           {
             "period-end-time": "2025-06-10T18:15:00Z",
@@ -372,7 +334,7 @@ describe("p1CalculateBusyHourPerformanceIndicators - Errors", () => {
           }
         ];
 
-      const result = p1CalculateBusyHourPerformanceIndicators(input6);
+      const result = p1CalculateBusyHourPerformanceIndicators(input);
       expect(result).toBeDefined();
       const struct = {
         "historical-performance-data": {
