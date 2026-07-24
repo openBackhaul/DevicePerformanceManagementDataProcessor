@@ -4,6 +4,7 @@ const redisQueueKafkaOutbound = require("../../../infra/kafka/queueKafkaOutbound
 const p1Storing = require("./p1Storing/P1Storing");
 const { findFunctionNode } = require("../../../utils/functionTree.js");
 const logger = require('../../../service/LoggingService.js').getLogger();
+const ERRORS = require('./ErrorsEnum');
 const formatAptOutputErrors = require('./p1FormattingOutputApt/ErrorsEnum');
 const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutputApt");
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
@@ -11,6 +12,164 @@ const p1FormattingOutputOnf = require("./p1FormattingOutputOnf/P1FormattingOutpu
 const fs = require("fs");
 const sampleResultCcApt = require("./outputAPTSample.json");
 const sampleResultCcOnf = require("./outputOnfSample.json");
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function getRequestValue(request, ...keys) {
+  if (!request || typeof request !== "object" || Array.isArray(request)) {
+    return undefined;
+  }
+
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(request, key)) {
+      return request[key];
+    }
+  }
+
+  return undefined;
+}
+
+function buildProcessingError(message, stage = "p1ProcessDevice", details) {
+  const error = new Error(message);
+  error.stage = stage;
+
+  if (details) {
+    error.details = details;
+  }
+
+  return error;
+}
+
+function validateRequest(request) {
+  const mountName = getRequestValue(request, "mountName", "mount-name");
+  const parameters = getRequestValue(request, "parameters");
+  const configFile = getRequestValue(request, "configFile", "config-file");
+  const mwdiReplicaEsClient = getRequestValue(
+    request,
+    "mwdiReplicaEsClient",
+    "mwdi-replica-es-client"
+  );
+  const dataStoreEsClient = getRequestValue(
+    request,
+    "dataStoreEsClient",
+    "data-store-es-client"
+  );
+
+  if (
+    !request ||
+    typeof request !== "object" ||
+    Array.isArray(request)
+  ) {
+    throw buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID);
+  }
+
+  if (!mountName || typeof mountName !== "string" || mountName.trim() === "") {
+    throw buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID);
+  }
+
+  if (!parameters || !isPlainObject(parameters)) {
+    throw buildProcessingError(ERRORS.PARAMETERS_MISSING_OR_INVALID);
+  }
+
+  if (!configFile || !isPlainObject(configFile)) {
+    throw buildProcessingError(ERRORS.CONFIG_FILE_MISSING_OR_INVALID);
+  }
+
+  if (!mwdiReplicaEsClient || !isPlainObject(mwdiReplicaEsClient)) {
+    throw buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID);
+  }
+
+  if (!dataStoreEsClient || !isPlainObject(dataStoreEsClient)) {
+    throw buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID);
+  }
+
+  return {
+    mountName,
+    parameters,
+    configFile,
+    mwdiReplicaEsClient,
+    dataStoreEsClient
+  };
+}
+
+function buildTopLevelError(error, mountName) {
+  if (error && typeof error === "object" && error.message) {
+    const message = String(error.message);
+
+    if (
+      message === ERRORS.INPUT_DATA_MISSING_OR_INVALID ||
+      message === "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
+    ) {
+      return buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message === "mountName not provided" || message === "mountName invalid") {
+      return buildProcessingError(ERRORS.MOUNT_NAME_NOT_FOUND, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("parameters") || message.includes("Parameters")) {
+      return buildProcessingError(ERRORS.PARAMETERS_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("configFile") || message.includes("config file")) {
+      return buildProcessingError(ERRORS.CONFIG_FILE_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("rawCc") || message.includes("rawCc could not")) {
+      return buildProcessingError(ERRORS.RAW_CC_DATA_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("resultCc") || message.includes("resultCc could not") || message.includes("result-cc")) {
+      return buildProcessingError(ERRORS.RESULT_CC_DATA_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("output") || message.includes("format")) {
+      return buildProcessingError(ERRORS.OUTPUT_FORMAT_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("Kafka") || message.includes("Producer") || message.includes("transmission")) {
+      return buildProcessingError(ERRORS.KAFKA_TRANSMISSION_FAILED, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+
+    if (message.includes("store") || message.includes("stored")) {
+      return buildProcessingError(ERRORS.STORING_RESULT_CC_FAILED, error.stage || "p1ProcessDevice", {
+        vendorResponse: error.vendorResponse,
+        originalError: error
+      });
+    }
+  }
+
+  return buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR, "p1ProcessDevice", {
+    mountName,
+    originalError: error
+  });
+}
 
 function getTargetConsumers(kafkaConsumerTypes) {
   return String(
@@ -94,29 +253,25 @@ async function queueKafkaOutputsOneByOne(request) {
  * }
  */
 async function run(request) {
+  let validation;
+
+  try {
+    validation = validateRequest(request);
+  } catch (error) {
+    throw buildTopLevelError(error, getRequestValue(request, "mountName", "mount-name"));
+  }
+
   const {
     mountName,
     parameters,
     configFile,
     mwdiReplicaEsClient,
-    dataStoreEsClient,
-    kafkaConsumerTypes
-  } = request;
+    dataStoreEsClient
+  } = validation;
+  const kafkaConsumerTypes = getRequestValue(request, "kafkaConsumerTypes", "kafka-consumer-types");
 
   //const logger = request.logger || console;
   let createResultCcResponse = null;
-
-  if (
-    !mountName ||
-    !parameters ||
-    !configFile ||
-    !mwdiReplicaEsClient ||
-    !dataStoreEsClient
-  ) {
-    throw new Error(
-      "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
-    );
-  }
 
   try {
     const p1LoadRawCcParameters = findFunctionNode(parameters, "p1LoadRawCc");
@@ -332,12 +487,14 @@ async function run(request) {
       "Failed to process device"
     );
 
+    const normalizedError = buildTopLevelError(error, mountName);
+
     throw {
       mountName,
-      stage: error.stage || "p1ProcessDevice",
-      message: error.message || String(error),
+      stage: normalizedError.stage || "p1ProcessDevice",
+      message: normalizedError.message || String(error),
       retryable: error.retryable,
-      details: error.details,
+      details: normalizedError.details,
       vendorResponse: error.vendorResponse,
       originalError: error
     };
