@@ -44,9 +44,9 @@ module.exports.embedYourself = async function embedYourself(req, res, next, body
       responseBodyToDocument = responseBody;
 
     //  start streaming AFTER success
-     /* await P1StreamPmData.run().catch(err => {
+     await P1StreamPmData.run().catch(err => {
         logger.error(`Error running P1StreamPmData: ${err}`);
-    }); */
+    });
 
       let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
       RestResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
@@ -333,8 +333,9 @@ module.exports.registerYourself = async function registerYourself(req, res, next
   let startTime = process.hrtime();
   let responseCode = responseCodeEnum.code.NO_CONTENT;
   let responseBodyToDocument = {};
-  if (Object.keys(req.body).length === 0) {
-    body = req.body;
+  const requestBody = req.body || body || {};
+  if (Object.keys(requestBody).length === 0) {
+    body = requestBody;
     user = req.headers["user"];
     originator = req.headers["originator"];
     xCorrelator = req.headers["x-correlator"];
@@ -356,7 +357,7 @@ module.exports.registerYourself = async function registerYourself(req, res, next
   let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
   if (!execTime) execTime = 0;
   else execTime = Math.round(execTime);
-  ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
+  ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, requestBody, responseBodyToDocument, execTime);
 };
 
 module.exports.updateClient = async function updateClient(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {

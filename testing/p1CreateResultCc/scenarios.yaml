@@ -1,0 +1,241 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/P1CreateResultCc.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "p1PrepareTxModes"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/P1PrepareTxModes.js"
+    exportName: ""
+    isAsync: true
+
+  - stepId: "p1IterateAiPmSlices"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/P1IterateAiPmSlices.js"
+    exportName: "p1IterateAiPmSlices"
+    isAsync: true
+
+  - stepId: "p1IterateEcPmSlices"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/P1IterateEcPmSlices.js"
+    exportName: ""
+    isAsync: true
+
+  - stepId: "p1RemoveOutOfRangeTemperature"
+    modulePath: "../../server/genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature.js"
+    exportName: ""
+    isAsync: true
+ 
+
+dependencies:
+  - name: "pino"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errParametersNotProvided"
+    description: "Should throw 'parameters not provided' when input.parameters is missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errParametersInvalid"
+    description: "Should throw 'parameters invalid' when input.parameters is not an object or array"
+    inputFixture: "input_invalid_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errRawCcNotProvided"
+    description: "Should throw 'rawCc not provided' when input.raw-cc is missing"
+    inputFixture: "input_missing_raw_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errRawCcInvalid"
+    description: "Should throw 'rawCc invalid' when input.raw-cc is not a plain object"
+    inputFixture: "input_invalid_raw_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenRequestInvalid"
+    description: "Should throw 'General processing error' when request is not an object"
+    inputFixture: "input_invalid_request.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okCreateResultCcFullFlow"
+    description: "Should create result-cc, interface-metadata-list and aggregation-group-list when parameters and raw-cc are valid"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAirInterfaceProcessed"
+    description: "Should create resultCc, process one air-interface historical performance data set, and return interface metadata and cleaned equipment"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateResultCcWithoutAggregationProfiles"
+    description: "Should create result-cc with empty aggregation-group-list when no layer-1 aggregation profiles exist"
+    inputFixture: "input_no_aggregation_profiles.json"
+    expected:
+      type: "success"
+      outputFixture: "output_no_aggregation_profiles.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateResultCcWithAirInterfacesOnly"
+    description: "Should process only AirInterface LTPs and populate interface-metadata-list accordingly"
+    inputFixture: "input_air_interfaces_only.json"
+    expected:
+      type: "success"
+      outputFixture: "output_air_interfaces_only.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateResultCcWithEthernetContainersOnly"
+    description: "Should process only EthernetContainer LTPs and populate interface-metadata-list accordingly"
+    inputFixture: "input_ethernet_only.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ethernet_only.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateResultCcWithMixedLtps"
+    description: "Should process both AirInterface and EthernetContainer LTPs in the same raw-cc"
+    inputFixture: "input_mixed_ltps.json"
+    expected:
+      type: "success"
+      outputFixture: "output_mixed_ltps.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateResultCcWithParallelPhysicalLtps"
+    description: "Should derive link-id and parallel-ltp values for air interfaces when aggregation groups are present"
+    inputFixture: "input_parallel_physical_ltps.json"
+    expected:
+      type: "success"
+      outputFixture: "output_parallel_physical_ltps.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateResultCcWithTemperatureCleaned"
+    description: "Should replace result-cc equipment with cleaned equipment returned by p1RemoveOutOfRangeTemperature"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output_temperature_cleaned.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+
+  - id: "okCreateResultCcSkipsFailedAirInterfaceProcessing"
+    description: "Should still return success when p1PrepareTxModes returns an invalid response and EthernetContainer processing succeeds"
+    inputFixture: "input_mixed_ltps.json"
+    expected:
+      type: "success"
+      outputFixture: "output_skip_failed_air_processing.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1PrepareTxModes"
+        type: "return"
+        value: "transmissionModeList could not be provided"
+
+  - id: "okCreateResultCcSkipsFailedAiIteration"
+    description: "Should still return success when p1IterateAiPmSlices returns an invalid response and EthernetContainer processing succeeds"
+    inputFixture: "input_mixed_ltps.json"
+    expected:
+      type: "success"
+      outputFixture: "output_skip_failed_ai_iteration.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1IterateAiPmSlices"
+        type: "return"
+        value: "historicalPerformanceDataList could not be processed"
+
+  - id: "okCreateResultCcSkipsFailedEthernetProcessing"
+    description: "Should still return success when p1IterateEcPmSlices returns an invalid response and AirInterface processing succeeds"
+    inputFixture: "input_mixed_ltps.json"
+    expected:
+      type: "success"
+      outputFixture: "output_skip_failed_ethernet_processing.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1IterateEcPmSlices"
+        type: "return"
+        value: "historicalPerformanceDataList could not be processed"
+
+
+  # -------------------------
+  # Vendor sub-function thrown failures
+  # -------------------------
+
+  - id: "errPrepareTxModesThrows"
+    description: "Should throw 'General processing error' when p1PrepareTxModes throws unexpectedly"
+    inputFixture: "input_air_interfaces_only.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1PrepareTxModes"
+        type: "throw"
+        error: "General processing error"
+
+  - id: "errIterateAiPmSlicesThrows"
+    description: "Should throw 'General processing error' when p1IterateAiPmSlices throws unexpectedly"
+    inputFixture: "input_air_interfaces_only.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1IterateAiPmSlices"
+        type: "throw"
+        error: "General processing error"
+
+  - id: "errIterateEcPmSlicesThrows"
+    description: "Should throw 'General processing error' when p1IterateEcPmSlices throws unexpectedly"
+    inputFixture: "input_ethernet_only.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1IterateEcPmSlices"
+        type: "throw"
+        error: "General processing error"

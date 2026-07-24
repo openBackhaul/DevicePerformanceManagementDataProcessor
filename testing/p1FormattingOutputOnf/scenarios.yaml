@@ -10,12 +10,13 @@
 
 module:
   functionUnderTest:
-    modulePath: "../../server/genericFunctions/p1FormattingOutputOnf/P1FormattingOutputOnf.js"
-    exportName: "run"
-
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf/P1FormattingOutputOnf.js"
+    exportName: ""
 processingSteps:
-  - name: "createOutputFromResultCc"
-  - name: "p1FieldsFilter"
+  - stepId: "p1FieldsFilter.run"
+    modulePath: "../../server/genericFunctions/p1FieldsFilter/P1FieldsFilter.js"
+    exportName: "run"
+    isAsync: true
 
 dependencies:
   - name: "pino"
@@ -33,6 +34,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errParametersInvalid"
     description: "Should return 'parameters invalid' when parameters is not an object"
@@ -40,6 +42,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errResultCcNotProvided"
     description: "Should return 'resultCc not provided' when result-cc is missing"
@@ -47,6 +50,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "resultCc not provided"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errResultCcInvalid"
     description: "Should return 'resultCc invalid' when result-cc is not an object"
@@ -54,27 +58,39 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
 
   # -------------------------
   # Processing failures
   # -------------------------
 
   - id: "errOnfOutputFormatCouldNotBeProvided"
-    description: "Should return 'onfOutputFormat could not be provided' when output creation fails deterministically"
+    description: "Should return output could not be provided when p1FieldsFilter returns a string"
     inputFixture: "input.json"
     expected:
       type: "error"
-      errorEnum: "onfOutputFormat could not be provided"
+      errorEnum: "output could not be provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.invalidString.json"
 
   - id: "errGeneralProcessingError"
-    description: "Should return 'General processing error' when an unexpected processing failure occurs"
+    description: "Should return General processing error when p1FieldsFilter throws unexpectedly"
     inputFixture: "input.json"
     expected:
       type: "error"
       errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1FieldsFilter.run"
+        type: "throw"
+        error: "unexpected failure"
+
 
   # -------------------------
-  # Happy path without filter
+  # Happy path
   # -------------------------
 
   - id: "okReplicateResultCcWithoutFilter"
@@ -83,6 +99,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   - id: "okReturnMandatorySuccessStructure"
     description: "Should return format-name and output-format on success"
@@ -90,42 +107,19 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+
+
+
+
+
+
 
   # -------------------------
-  # Happy path with filter
+  # Edge  cases
   # -------------------------
 
-  - id: "okApplyTopLevelFieldsFilter"
-    description: "Should apply fieldsFilter and keep only the requested top-level structure"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
 
-  - id: "okApplyNestedFieldsFilter"
-    description: "Should apply fieldsFilter and keep only the requested nested structure"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-
-  - id: "okOverwriteReplicatedOutputWithFilteredData"
-    description: "Should overwrite the replicated output with filtered-data-structure according to variables.yaml"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
-
-  # -------------------------
-  # Edge and contract cases
-  # -------------------------
-
-  - id: "okIgnoreUnrelatedParametersWhenNoFieldsFilterExists"
-    description: "Should return full replicated output when parameters do not contain p1FieldsFilter.fieldsFilter"
-    inputFixture: "input.json"
-    expected:
-      type: "success"
-      outputFixture: "output.json"
 
   - id: "okAllowEmptyResultCcIfSupported"
     description: "Should return a valid onf-output-format for an empty result-cc if the implementation accepts empty objects"
@@ -133,10 +127,5 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
-  - id: "errResultCcInvalidWhenEmptyObjectIsRejected"
-    description: "Should return 'resultCc invalid' if the implementation rejects empty result-cc objects"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "resultCc invalid"

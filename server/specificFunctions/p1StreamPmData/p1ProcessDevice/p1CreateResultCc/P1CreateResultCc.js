@@ -3,6 +3,7 @@ const { getParamFromFunction, findFunctionNode } = require("../../../../utils/fu
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
 const ERRORS_P1PrepareTxModes = require("./p1PrepareTxModes/ErrorsEnum");
 const ERRORS_P1IterateAiPmSlices = require("./p1IterateAiPmSlices/ErrorsEnum");
+const ERRORS_P1IterateEcPmSlices = require("./p1IterateEcPmSlices/ErrorsEnum");
 const logger = require("../../../../service/LoggingService.js").getLogger();
 
 /*
@@ -10,7 +11,7 @@ const logger = require("../../../../service/LoggingService.js").getLogger();
  */
 const p1PrepareTxModes = require("./p1PrepareTxModes/P1PrepareTxModes.js");
 const {p1IterateAiPmSlices} = require("./p1IterateAiPmSlices/P1IterateAiPmSlices.js");
-const p1IterateEcPmSlices = optionalRequire("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
+const p1IterateEcPmSlices = require("./p1IterateEcPmSlices/P1IterateEcPmSlices.js");
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
 const AIR_INTERFACE_HIST_PERF_KEY = "air-interface-historical-performances";
@@ -334,7 +335,17 @@ function sameLtpReference(left, right) {
 }
 
 function hasReference(list, reference) {
-  return (list || []).some((item) => sameLtpReference(item, reference));
+  const references = list instanceof Set || Array.isArray(list)
+    ? list
+    : toArray(list);
+
+  for (const item of references) {
+    if (sameLtpReference(item, reference)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function findLtpByReference(rawCc, reference) {
@@ -348,6 +359,15 @@ function isAirInterfaceLtp(ltp) {
     return (
       String(layerProtocol["layer-protocol-name"] || "").includes("air-interface") ||
       isPlainObject(layerProtocol[AIR_INTERFACE_PAC_KEY])
+    );
+  });
+}
+
+function isEthernetContainerLtp(ltp) {
+  return (ltp["layer-protocol"] || []).some((layerProtocol) => {
+    return (
+      String(layerProtocol["layer-protocol-name"] || "").includes("ethernet-container") ||
+      isPlainObject(layerProtocol[ETHERNET_CONTAINER_PAC_KEY])
     );
   });
 }
@@ -414,7 +434,6 @@ function createAggregationGroupList(rawCc) {
       aggregationGroupList.push({
         uuid: profile.uuid,
         "client-ltp": clientLtp,
-        "server-ltp-list": serverLtpList,
         "physical-server-ltp-list": getPhysicalServerLtpList(rawCc, serverLtpList)
       });
     }
@@ -441,19 +460,21 @@ function substringLinkId(input) {
       : input;
 
     if (linkEndpointId === undefined || linkEndpointId === null || linkEndpointId === "") {
-      throw buildProcessingError("substringLinkId", "linkEndpointId not provided", false);
+      const errLinkIdInvalid = buildProcessingError("substringLinkId", "linkEndpointId not provided", false);
+      logger.error(errLinkIdInvalid.message);
     }
 
     //linkEndpointId = `${linkEndpointId}A`; // Append dummy character to pass validation for 9 digits followed by A or B
     const normalized = String(linkEndpointId).trim();
 
-    if (!/^[0-9]{9}[AB]$/.test(normalized)) {
-      throw buildProcessingError(
+    if (!/^[0-9]{9}[AB]$/.test(normalized) || normalized.length < 9 || normalized.length > 10) {
+      const errLinkIdRegex = buildProcessingError(
         "substringLinkId",
         "linkEndpointId invalid",
         false,
         { linkEndpointId: normalized }
       );
+      logger.error(errLinkIdRegex.message);
     }
 
     return {
@@ -461,15 +482,26 @@ function substringLinkId(input) {
     };
   } catch (error) {
     if (error.stage) {
-      throw error;
+      //throw error;
+      logger.error(error.message || error.stage);
     }
 
-    throw buildProcessingError(
+   /* throw buildProcessingError(
+      "substringLinkId",
+      "linkId could not be provided",
+      false,
+      error.message || error
+    );*/
+
+    const errLinkIdCatchBlock =  buildProcessingError(
       "substringLinkId",
       "linkId could not be provided",
       false,
       error.message || error
     );
+
+    logger.error(errLinkIdCatchBlock.details);
+
   }
 }
 
@@ -721,6 +753,14 @@ function isValidIterateAiPmSlicesResponse(response) {
   );
 }
 
+function isValidIterateEcPmSlicesResponse(response) {
+  return (
+    response &&
+    typeof response === "object" &&
+    Array.isArray(response[HIST_PERF_DATA_LIST_KEY])
+  );
+}
+
 function buildIterateAiPmSlicesError(response, mountName) {
   const error = new Error(
     `p1IterateAiPmSlices returned error response: ${JSON.stringify(response)}`
@@ -744,6 +784,43 @@ function buildIterateAiPmSlicesError(response, mountName) {
     response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_INVALID ||
     response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_NOT_PROVIDED ||
     response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_INVALID
+  ) {
+    error.retryable = false;
+  } else {
+    error.retryable = true;
+  }
+
+  return error;
+}
+
+function buildIterateEcPmSlicesError(response, mountName) {
+  const error = new Error(
+    `p1IterateEcPmSlices returned error response: ${JSON.stringify(response)}`
+  );
+
+  error.stage = "p1IterateEcPmSlices";
+  error.vendorResponse = response;
+  error.mountName = mountName;
+
+  if (
+    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_OUTPUT_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_FAILED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_NOT_PROV ||
+    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_INVALID ||
+    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_NOT_PROVIDED ||
+    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_INVALID
   ) {
     error.retryable = false;
   } else {
@@ -853,7 +930,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   };
 }
 
-async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc) {
+async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     ETHERNET_CONTAINER_HIST_PERF_KEY
@@ -864,6 +941,10 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     "p1IterateEcPmSlices"
   );
 
+  //console.log("parameters: ",JSON.stringify(iterateEcParameters));
+  //console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
+  //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
+  
   const response = await callVendorFunction(p1IterateEcPmSlices, {
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
@@ -873,6 +954,11 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     "result-cc": resultCc,
     resultCc
   });
+
+  if (!isValidIterateEcPmSlicesResponse(response)) {
+    logger.error(buildIterateEcPmSlicesError(response, mountName).message);
+    return null;
+  }
 
   const finalHistoricalPerformanceDataList = getResponseHistoricalPerformanceDataList(
     response,
@@ -891,51 +977,240 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   };
 }
 
-function buildAirInterfaceMetadata(ltp, historicalPerformanceDataList, aggregationGroupList) {
-  const linkEndpointId = getLinkEndpointId(ltp);
-  let linkId = "";
+function getLayerProtocolName(layerProtocol, fallback) {
+  return String((layerProtocol && layerProtocol["layer-protocol-name"]) || fallback || "");
+}
 
-  if (linkEndpointId) {
-    linkId = substringLinkId({ "link-endpoint-id": linkEndpointId })["link-id"];
+function hasOutputValue(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function setInterfaceMetadataPeriodEndTimes(metadata, mostRecentPeriodEndTime, mostRecentPeriodEndTime24) {
+  if (hasOutputValue(mostRecentPeriodEndTime)) {
+    metadata["most-recent-period-end-time"] = mostRecentPeriodEndTime;
+  } else {
+    delete metadata["most-recent-period-end-time"];
   }
 
+  if (hasOutputValue(mostRecentPeriodEndTime24)) {
+    metadata["most-recent-period-end-time-24"] = mostRecentPeriodEndTime24;
+  } else {
+    delete metadata["most-recent-period-end-time-24"];
+  }
+}
+
+function buildAirInterfaceDerivedFields(ltp, aggregationGroupList) {
+  const linkEndpointId = getLinkEndpointId(ltp);
+  const linkId = linkEndpointId
+    ? substringLinkId({ "link-endpoint-id": linkEndpointId })["link-id"]
+    : "";
   const parallelPhysicalLtpList = findParallelPhysic({
     "ltp-uuid": ltp.uuid,
     "aggregation-group-list": aggregationGroupList
   })["physical-server-ltp-list"];
 
-  const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
-
   return {
-    uuid: ltp.uuid,
-    "ltp-uuid": ltp.uuid,
-    //linkId,
-    "link-id": linkId,
-    //linkEndpointId,
-    "link-endpoint-id": linkEndpointId,
-    //parallelPhysicalLtpList,
-    "parallel-physical-ltp-list": parallelPhysicalLtpList,
-    //mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
-    "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
-    //mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
-    "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
+    linkId,
+    parallelPhysicalLtpList
   };
 }
 
-function buildEthernetContainerMetadata(ltp, historicalPerformanceDataList) {
-  const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
+function setAirInterfaceDerivedFields(ltp, derivedFields) {
+  if (derivedFields.linkId) {
+    if (!isPlainObject(ltp[LTP_AUGMENT_PAC_KEY])) {
+      ltp[LTP_AUGMENT_PAC_KEY] = {};
+    }
 
+    ltp[LTP_AUGMENT_PAC_KEY]["link-id"] = derivedFields.linkId;
+  }
+
+  if (Array.isArray(derivedFields.parallelPhysicalLtpList)) {
+    ltp["parallel-ltp"] = derivedFields.parallelPhysicalLtpList;
+  }
+}
+
+function createInterfaceProcessingStatus() {
   return {
-    uuid: ltp.uuid,
-    "ltp-uuid": ltp.uuid,
-    mostRecentPeriodEndTime: mostRecentTimes.mostRecentPeriodEndTime,
-    "most-recent-period-end-time": mostRecentTimes.mostRecentPeriodEndTime,
-    mostRecentPeriodEndTime24: mostRecentTimes.mostRecentPeriodEndTime24,
-    "most-recent-period-end-time-24": mostRecentTimes.mostRecentPeriodEndTime24
+    attempted: 0,
+    succeeded: 0,
+    failed: 0
   };
+}
+
+function recordInterfaceFailure(status, ltpUuid) {
+  status.failed += 1;
+
+  if (!status.failedLtpUuidSet) {
+    status.failedLtpUuidSet = new Set();
+  }
+
+  status.failedLtpUuidSet.add(String(ltpUuid || "").trim());
+}
+
+function recordInterfaceSuccess(status, ltpUuid) {
+  status.succeeded += 1;
+
+  if (!status.successfulLtpUuidSet) {
+    status.successfulLtpUuidSet = new Set();
+  }
+
+  status.successfulLtpUuidSet.add(String(ltpUuid || "").trim());
+}
+
+function getInterfaceProcessingStatusSummary(status) {
+  return {
+    attempted: status.attempted,
+    succeeded: status.succeeded,
+    failed: status.failed
+  };
+}
+
+function buildNoSuccessfulInterfaceProcessingError(airInterfaceStatus, ethernetContainerStatus) {
+  return buildProcessingError(
+    "p1CreateResultCc",
+    "No AirInterface or EthernetContainer processing succeeded",
+    false,
+    {
+      airInterface: getInterfaceProcessingStatusSummary(airInterfaceStatus),
+      ethernetContainer: getInterfaceProcessingStatusSummary(ethernetContainerStatus)
+    }
+  );
+}
+
+function assertAnyInterfaceProcessingSucceeded(airInterfaceStatus, ethernetContainerStatus) {
+  const attempted =
+    airInterfaceStatus.attempted + ethernetContainerStatus.attempted;
+  const succeeded =
+    airInterfaceStatus.succeeded + ethernetContainerStatus.succeeded;
+
+  if (attempted > 0 && succeeded === 0) {
+    /*throw buildNoSuccessfulInterfaceProcessingError(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    );*/
+    logger.error(buildNoSuccessfulInterfaceProcessingError(
+          airInterfaceStatus,
+          ethernetContainerStatus
+      ).details);
+  }
+}
+
+function mergeLtpUuidSets(firstSet, secondSet) {
+  const mergedSet = new Set();
+
+  if (firstSet) {
+    for (const ltpUuid of firstSet) {
+      mergedSet.add(ltpUuid);
+    }
+  }
+
+  if (secondSet) {
+    for (const ltpUuid of secondSet) {
+      mergedSet.add(ltpUuid);
+    }
+  }
+
+  return mergedSet;
+}
+
+function pruneFailedProcessedInterfaceLtps(resultCc, airInterfaceStatus, ethernetContainerStatus, mountName) {
+  const failed =
+    airInterfaceStatus.failed + ethernetContainerStatus.failed;
+
+  if (failed === 0) {
+    return 0;
+  }
+
+  const root = getControlConstructRoot(resultCc);
+  const logicalTerminationPointList = getLogicalTerminationPointList(resultCc);
+
+  if (!isPlainObject(root) || !Array.isArray(logicalTerminationPointList)) {
+    return 0;
+  }
+
+  const successfulLtpUuidSet = mergeLtpUuidSets(
+    airInterfaceStatus.successfulLtpUuidSet,
+    ethernetContainerStatus.successfulLtpUuidSet
+  );
+  const failedLtpUuidSet = mergeLtpUuidSets(
+    airInterfaceStatus.failedLtpUuidSet,
+    ethernetContainerStatus.failedLtpUuidSet
+  );
+  let prunedLtpCount = 0;
+
+  root["logical-termination-point"] = logicalTerminationPointList.filter((ltp) => {
+    if (!isPlainObject(ltp) || !hasReference(failedLtpUuidSet, ltp.uuid)) {
+      return true;
+    }
+
+    if (hasReference(successfulLtpUuidSet, ltp.uuid)) {
+      return true;
+    }
+
+    if (!isAirInterfaceLtp(ltp) && !isEthernetContainerLtp(ltp)) {
+      return true;
+    }
+
+    prunedLtpCount += 1;
+    return false;
+  });
+
+  if (prunedLtpCount > 0) {
+    /* Enable locally when debugging pruned interface UUIDs.
+    logger.warn(
+      {
+        label: "p1-create-result-cc-pruned-failed-interfaces",
+        mountName,
+        prunedLtpCount
+      },
+      "Pruned failed AirInterface/EthernetContainer LTPs from resultCc"
+    ); */
+  }
+
+  return prunedLtpCount;
+}
+
+function buildAirInterfaceMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
+  const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
+  const metadata = {
+    uuid: ltp.uuid,
+    "layer-protocol-name": getLayerProtocolName(
+      layerProtocol,
+      "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"
+    )
+  };
+
+  setInterfaceMetadataPeriodEndTimes(
+    metadata,
+    mostRecentTimes.mostRecentPeriodEndTime,
+    mostRecentTimes.mostRecentPeriodEndTime24
+  );
+
+  return metadata;
+}
+
+function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanceDataList) {
+  const mostRecentTimes = getMostRecentPeriodEndTimes(historicalPerformanceDataList);
+  const metadata = {
+    uuid: ltp.uuid,
+    "layer-protocol-name": getLayerProtocolName(
+      layerProtocol,
+      "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
+    )
+  };
+
+  setInterfaceMetadataPeriodEndTimes(
+    metadata,
+    mostRecentTimes.mostRecentPeriodEndTime,
+    mostRecentTimes.mostRecentPeriodEndTime24
+  );
+
+  return metadata;
 }
 
 async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
+  // const status = createInterfaceProcessingStatus();
+
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getAirInterfacePac(layerProtocol);
@@ -944,9 +1219,17 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         continue;
       }
 
+      // status.attempted += 1;
+      const metadata = buildAirInterfaceMetadata(
+        ltp,
+        layerProtocol,
+        getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY)
+      );
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
 
       if(prepareTxModesResult === null) {
+        // recordInterfaceFailure(status, ltp.uuid);
+        interfaceMetadataList.push(metadata);
         continue;
       }
 
@@ -969,6 +1252,8 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       if (iterateAiResult === null) {
+        // recordInterfaceFailure(status, ltp.uuid);
+        interfaceMetadataList.push(metadata);
         continue;
       }
 
@@ -977,27 +1262,29 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         AIR_INTERFACE_HIST_PERF_KEY,
         iterateAiResult.historicalPerformanceDataList
       );
-
-      const metadata = buildAirInterfaceMetadata(
+      
+      const derivedFields = buildAirInterfaceDerivedFields(
         ltp,
-        iterateAiResult.historicalPerformanceDataList,
         aggregationGroupList
       );
+      setAirInterfaceDerivedFields(ltp, derivedFields);
 
-      /* metadata.mostRecentPeriodEndTime =
-        iterateAiResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime; */
-      metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
-
-      /* metadata.mostRecentPeriodEndTime24 =
-        iterateAiResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24; */
-      metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
-
+      setInterfaceMetadataPeriodEndTimes(
+        metadata,
+        iterateAiResult.mostRecentPeriodEndTime,
+        iterateAiResult.mostRecentPeriodEndTime24
+      );
       interfaceMetadataList.push(metadata);
+      // recordInterfaceSuccess(status, ltp.uuid);
     }
   }
+
+  // return status;
 }
 
-async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList) {
+async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
+  // const status = createInterfaceProcessingStatus();
+
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
       const pac = getEthernetContainerPac(layerProtocol);
@@ -1006,6 +1293,12 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         continue;
       }
 
+      // status.attempted += 1;
+      const metadata = buildEthernetContainerMetadata(
+        ltp,
+        layerProtocol,
+        getHistoricalPerformanceDataList(pac, ETHERNET_CONTAINER_HIST_PERF_KEY)
+      );
       const aggregationGroup = getAggregationGroupForEthernetContainer(
         ltp.uuid,
         aggregationGroupList
@@ -1015,8 +1308,15 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         parameters,
         pac,
         aggregationGroup,
-        resultCc
+        resultCc,
+        mountName
       );
+
+      if (iterateEcResult === null) {
+        // recordInterfaceFailure(status, ltp.uuid);
+        interfaceMetadataList.push(metadata);
+        continue;
+      }
 
       setHistoricalPerformanceDataList(
         pac,
@@ -1024,25 +1324,18 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         iterateEcResult.historicalPerformanceDataList
       );
 
-      const metadata = buildEthernetContainerMetadata(
-        ltp,
-        iterateEcResult.historicalPerformanceDataList
+      setInterfaceMetadataPeriodEndTimes(
+        metadata,
+        iterateEcResult.mostRecentPeriodEndTime,
+        iterateEcResult.mostRecentPeriodEndTime24
       );
 
-      metadata.aggregationGroup = aggregationGroup || null;
-      metadata["aggregation-group"] = aggregationGroup || null;
-
-      metadata.mostRecentPeriodEndTime =
-        iterateEcResult.mostRecentPeriodEndTime || metadata.mostRecentPeriodEndTime;
-      metadata["most-recent-period-end-time"] = metadata.mostRecentPeriodEndTime;
-
-      metadata.mostRecentPeriodEndTime24 =
-        iterateEcResult.mostRecentPeriodEndTime24 || metadata.mostRecentPeriodEndTime24;
-      metadata["most-recent-period-end-time-24"] = metadata.mostRecentPeriodEndTime24;
-
       interfaceMetadataList.push(metadata);
+      // recordInterfaceSuccess(status, ltp.uuid);
     }
   }
+
+  // return status;
 }
 
 async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountName) {
@@ -1103,8 +1396,9 @@ async function run(request) {
     const resultCc = createResultCcFromRawCc(rawCc);
     const aggregationGroupList = createAggregationGroupList(rawCc);
     const interfaceMetadataList = [];
+    
 
-    await processAirInterfaces(
+    const airInterfaceStatus = await processAirInterfaces(
       parameters,
       resultCc,
       aggregationGroupList,
@@ -1112,12 +1406,42 @@ async function run(request) {
       mountName
     );
 
-    /* await processEthernetContainers(
+    //console.log("aggregation-group-list: ",JSON.stringify(aggregationGroupList));
+
+    /* console.log("#-----------------------------------------------------------------------");
+    console.log(`#                          Started - ${mountName}                       `);
+    console.log("#-----------------------------------------------------------------------");
+    const iterateEcParameters = getSubFunctionParameters(
+      parameters,
+      "p1IterateEcPmSlices"
+    );
+    console.log("parameters: ",JSON.stringify(iterateEcParameters)); */
+
+    const ethernetContainerStatus = await processEthernetContainers(
       parameters,
       resultCc,
       aggregationGroupList,
-      interfaceMetadataList
+      interfaceMetadataList,
+      mountName
+    );
+
+    /* assertAnyInterfaceProcessingSucceeded(
+      airInterfaceStatus,
+      ethernetContainerStatus
+    );
+
+    pruneFailedProcessedInterfaceLtps(
+      resultCc,
+      airInterfaceStatus,
+      ethernetContainerStatus,
+      mountName
     ); */
+
+    /* console.log("result-cc: ",JSON.stringify(resultCc));
+
+    console.log("#-----------------------------------------------------------------------");
+    console.log(`#                          Ended - ${mountName}                         `);
+    console.log("#-----------------------------------------------------------------------"); */
 
     await applyP1RemoveOutOfRangeTemperature(
       parameters,
@@ -1125,19 +1449,35 @@ async function run(request) {
       mountName
     );
 
-    return {
-      resultCc,
-      interfaceMetadataList,
-      aggregationGroupList,
-      mountName,
-
-      /*
-       * Specification style aliases.
-       */
-      //"result-cc": resultCc,
+    const response = {
+      "result-cc": resultCc,
       "interface-metadata-list": interfaceMetadataList,
-      "aggregation-group-list": aggregationGroupList
+      "aggregation-group-list": aggregationGroupList,
+      mountName
     };
+
+    Object.defineProperties(response, {
+      resultCc: {
+        value: resultCc,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      },
+      interfaceMetadataList: {
+        value: interfaceMetadataList,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      },
+      aggregationGroupList: {
+        value: aggregationGroupList,
+        enumerable: false,
+        configurable: true,
+        writable: true
+      }
+    });
+
+    return response;
   } catch (error) {
     if (!error.stage) {
       error.stage = "p1CreateResultCc";
@@ -1149,7 +1489,7 @@ async function run(request) {
         mountName,
         stage: error.stage,
         retryable: error.retryable,
-        details: error.details,
+        // details: error.details, // Enable locally when debugging verbose error details.
         error: error.message || error
       },
       "Failed to process device in p1CreateResultCc"

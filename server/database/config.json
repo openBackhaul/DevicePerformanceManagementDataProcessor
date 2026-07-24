@@ -1827,7 +1827,7 @@
               "string-purpose": "Fields filter to be applied to reduce the onfOutputFormat"
             },
             "string-profile-configuration": {
-              "string-value": ""
+              "string-value": "equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp"
             }
           }
         },
@@ -2800,7 +2800,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 29092
+                "remote-port": 9093
               }
             }
           }
@@ -2991,8 +2991,8 @@
             "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
             "http-client-interface-1-0:http-client-interface-pac": {
               "http-client-interface-configuration": {
-                "application-name": "RegistrationApplication",
-                "release-number": "43.2.5"
+                "application-name": "RegistryOffice",
+                "release-number": "2.1.2"
               }
             }
           }

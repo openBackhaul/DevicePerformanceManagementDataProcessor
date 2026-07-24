@@ -1,0 +1,472 @@
+{
+  "type": "object",
+  "required": [
+    "rawCc"
+  ],
+  "properties": {
+    "raw-cc": {
+      "type": "object",
+      "properties": {
+        "equipment-augment-1-0:control-construct-pac": {
+          "type": "object",
+          "properties": {
+            "external-label": {
+              "type": "string"
+            },
+            "device-model-name": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string"
+              },
+              "actual-equipment": {
+                "type": "object",
+                "properties": {
+                  "local-id": {
+                    "type": "string"
+                  },
+                  "physical-properties": {
+                    "type": "object",
+                    "properties": {
+                      "temperature": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": true
+                  },
+                  "structure": {
+                    "type": "object",
+                    "properties": {
+                      "category": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "profile-collection": {
+          "type": "object",
+          "properties": {
+            "profile": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string"
+                  },
+                  "profile-name": {
+                    "type": "string"
+                  },
+                  "layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac": {
+                    "type": "object",
+                    "properties": {
+                      "layer-1-aggregation-profile-configuration": {
+                        "type": "object",
+                        "properties": {
+                          "client-ltp": {
+                            "type": "string"
+                          },
+                          "server-ltp-list": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "logical-termination-point": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string"
+              },
+              "client-ltp": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "server-ltp": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ltp-augment-1-0:ltp-augment-pac": {
+                "type": "object",
+                "properties": {
+                  "external-label": {
+                    "type": "string"
+                  },
+                  "original-ltp-name": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "layer-protocol": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "local-id": {
+                          "type": "string"
+                        },
+                        "layer-protocol-name": {
+                          "type": "string",
+                          "enum": [
+                            "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"
+                          ]
+                        },
+                        "air-interface-2-0:air-interface-pac": {
+                          "type": "object",
+                          "properties": {
+                            "air-interface-configuration": {
+                              "type": "object",
+                              "properties": {
+                                "transmission-mode-min": {
+                                  "type": "string"
+                                },
+                                "transmission-mode-max": {
+                                  "type": "string"
+                                },
+                                "tx-power": {
+                                  "type": "integer"
+                                },
+                                "atpc-is-on": {
+                                  "type": "boolean"
+                                },
+                                "atpc-thresh-upper": {
+                                  "type": "integer"
+                                },
+                                "atpc-thresh-lower": {
+                                  "type": "integer"
+                                }
+                              },
+                              "additionalProperties": true
+                            },
+                            "air-interface-capability": {
+                              "type": "object",
+                              "properties": {
+                                "transmission-mode-list": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "transmission-mode-name": {
+                                        "type": "string"
+                                      },
+                                      "channel-bandwidth": {
+                                        "type": "integer"
+                                      },
+                                      "modulation-scheme": {
+                                        "type": "integer"
+                                      },
+                                      "modulation-scheme-name-at-lct": {
+                                        "type": "string"
+                                      },
+                                      "code-rate": {
+                                        "type": "integer"
+                                      },
+                                      "symbol-rate-reduction-factor": {
+                                        "type": "integer"
+                                      }
+                                    },
+                                    "additionalProperties": true
+                                  }
+                                }
+                              },
+                              "additionalProperties": true
+                            },
+                            "air-interface-current-performance": {
+                              "type": "object",
+                              "properties": {
+                                "current-performance-data-list": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "granularity-period": {
+                                        "type": "string",
+                                        "enum": [
+                                          "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN",
+                                          "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                                          "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+                                          "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED"
+                                        ]
+                                      },
+                                      "timestamp": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "additionalProperties": true
+                                  }
+                                }
+                              },
+                              "additionalProperties": true
+                            },
+                            "air-interface-historical-performances": {
+                              "type": "object",
+                              "properties": {
+                                "historical-performance-data-list": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "granularity-period": {
+                                        "type": "string"
+                                      },
+                                      "period-end-time": {
+                                        "type": "string"
+                                      },
+                                      "performance-data": {
+                                        "type": "object",
+                                        "properties": {
+                                          "es": {
+                                            "type": "integer"
+                                          },
+                                          "ses": {
+                                            "type": "integer"
+                                          },
+                                          "cses": {
+                                            "type": "integer"
+                                          },
+                                          "unavailability": {
+                                            "type": "integer"
+                                          },
+                                          "tx-level-min": {
+                                            "type": "integer"
+                                          },
+                                          "tx-level-max": {
+                                            "type": "integer"
+                                          },
+                                          "tx-level-avg": {
+                                            "type": "integer"
+                                          },
+                                          "rx-level-min": {
+                                            "type": "integer"
+                                          },
+                                          "rx-level-max": {
+                                            "type": "integer"
+                                          },
+                                          "rx-level-avg": {
+                                            "type": "integer"
+                                          },
+                                          "time-xstates-list": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "transmission-mode": {
+                                                  "type": "string"
+                                                },
+                                                "time": {
+                                                  "type": "integer"
+                                                }
+                                              },
+                                              "additionalProperties": true
+                                            }
+                                          },
+                                          "snir-min": {
+                                            "type": "integer"
+                                          },
+                                          "snir-max": {
+                                            "type": "integer"
+                                          },
+                                          "snir-avg": {
+                                            "type": "integer"
+                                          },
+                                          "xpd-min": {
+                                            "type": "integer"
+                                          },
+                                          "xpd-max": {
+                                            "type": "integer"
+                                          },
+                                          "xpd-avg": {
+                                            "type": "integer"
+                                          },
+                                          "defect-blocks-sum": {
+                                            "type": "integer"
+                                          },
+                                          "time-period": {
+                                            "type": "integer"
+                                          }
+                                        },
+                                        "additionalProperties": true
+                                      }
+                                    },
+                                    "additionalProperties": true
+                                  }
+                                }
+                              },
+                              "additionalProperties": true
+                            }
+                          },
+                          "additionalProperties": true
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "local-id": {
+                          "type": "string"
+                        },
+                        "layer-protocol-name": {
+                          "type": "string",
+                          "enum": [
+                            "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
+                          ]
+                        },
+                        "ethernet-container-2-0:ethernet-container-pac": {
+                          "type": "object",
+                          "properties": {
+                            "ethernet-container-historical-performances": {
+                              "type": "object",
+                              "properties": {
+                                "historical-performance-data-list": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "granularity-period": {
+                                        "type": "string"
+                                      },
+                                      "period-end-time": {
+                                        "type": "string"
+                                      },
+                                      "performance-data": {
+                                        "type": "object",
+                                        "properties": {
+                                          "max-bytes-per-second-output": {
+                                            "type": "integer"
+                                          },
+                                          "total-bytes-input": {
+                                            "type": "string"
+                                          },
+                                          "total-bytes-output": {
+                                            "type": "string"
+                                          },
+                                          "time-period": {
+                                            "type": "integer"
+                                          },
+                                          "total-frames-input": {
+                                            "type": "string"
+                                          },
+                                          "total-frames-output": {
+                                            "type": "string"
+                                          },
+                                          "forwarded-frames-input": {
+                                            "type": "string"
+                                          },
+                                          "forwarded-frames-output": {
+                                            "type": "string"
+                                          },
+                                          "unicast-frames-input": {
+                                            "type": "string"
+                                          },
+                                          "unicast-frames-output": {
+                                            "type": "string"
+                                          },
+                                          "multicast-frames-input": {
+                                            "type": "integer"
+                                          },
+                                          "multicast-frames-output": {
+                                            "type": "integer"
+                                          },
+                                          "broadcast-frames-input": {
+                                            "type": "integer"
+                                          },
+                                          "broadcast-frames-output": {
+                                            "type": "integer"
+                                          },
+                                          "fragmented-frames-input": {
+                                            "type": "integer"
+                                          },
+                                          "errored-frames-input": {
+                                            "type": "integer"
+                                          },
+                                          "errored-frames-output": {
+                                            "type": "integer"
+                                          },
+                                          "dropped-frames-input": {
+                                            "type": "integer"
+                                          },
+                                          "dropped-frames-output": {
+                                            "type": "integer"
+                                          },
+                                          "oversized-frames-ingress": {
+                                            "type": "string"
+                                          },
+                                          "undersized-frames-ingress": {
+                                            "type": "string"
+                                          },
+                                          "jabber-frames-ingress": {
+                                            "type": "string"
+                                          },
+                                          "unknown-protocol-frames-input": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "additionalProperties": true
+                                      }
+                                    },
+                                    "additionalProperties": true
+                                  }
+                                }
+                              },
+                              "additionalProperties": true
+                            }
+                          },
+                          "additionalProperties": true
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  ]
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "batch-timestamp": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

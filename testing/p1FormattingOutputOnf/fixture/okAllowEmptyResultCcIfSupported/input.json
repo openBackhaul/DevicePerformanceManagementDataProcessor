@@ -1,4 +1,25 @@
 {
-  "scenario": "okAllowEmptyResultCcIfSupported",
-  "input": {}
+  "parameters" :  {
+            "function-name": "p1FormattingOutputOnf",
+            "description": "Creates the onfOutputFormat from resultCc",
+            "is-active": true,
+            "parameter": [],
+            "sub-function": [
+              {
+                "function-name": "p1FieldsFilter",
+                "description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
+                "is-active": true,
+                "parameter": [
+                  {
+                    "parameter-name": "fieldsFilter",
+                    "purpose": "Fields filter to be applied to reduce the onfOutputFormat",
+                    "owner": "platform",
+                    "value": ""
+                  }
+                ],
+                "sub-function": []
+              }
+            ]
+          },
+  "result-cc": {}
 }

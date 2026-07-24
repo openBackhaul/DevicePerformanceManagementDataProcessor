@@ -1,0 +1,180 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.0.0/variables.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/1.0.0/Output_AptpLegacy.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies:
+  - name: "pino"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Happy path
+  # -------------------------
+
+  - id: "okAptOutputFormatted"
+    description: "Should transform resultCc into apt-output-format and return format-name and output-format"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputFormattedAirInterfacesOnly"
+    description: "Should transform valid result-cc containing only AIR_LAYER entries"
+    inputFixture: "input_air_only.json"
+    expected:
+      type: "success"
+      outputFixture: "output_air_only.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputFormattedEthernetContainersOnly"
+    description: "Should transform valid result-cc containing only ETHERNET_CONTAINER entries"
+    inputFixture: "input_ethernet_only.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ethernet_only.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputFormattedEmptyLists"
+    description: "Should return apt-output-format with empty interface lists when no matching layer protocols are found"
+    inputFixture: "input_no_matching_protocols.json"
+    expected:
+      type: "success"
+      outputFixture: "output_empty_lists.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputUsesCpuTemperature"
+    description: "Should prefer CPU temperature over subrack temperature when both are present"
+    inputFixture: "input_cpu_and_subrack_temperature.json"
+    expected:
+      type: "success"
+      outputFixture: "output_cpu_temperature.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputUsesSubrackTemperatureFallback"
+    description: "Should use subrack temperature when CPU temperature is not present"
+    inputFixture: "input_subrack_temperature_only.json"
+    expected:
+      type: "success"
+      outputFixture: "output_subrack_temperature.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputUsesEmptyTemperatureFallback"
+    description: "Should set idu-cpu-temperature to empty string when no temperature is available"
+    inputFixture: "input_no_temperature.json"
+    expected:
+      type: "success"
+      outputFixture: "output_no_temperature.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputWithParallelAirAndWireLinks"
+    description: "Should populate link-aggregation-identifiers for parallel AIR and WIRE LTPs"
+    inputFixture: "input_parallel_links.json"
+    expected:
+      type: "success"
+      outputFixture: "output_parallel_links.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+
+  - id: "okAptOutputFiltersZeroTimeTransmissionModes"
+    description: "Should include only operated transmission modes with time greater than zero"
+    inputFixture: "input_operated_modes_filter.json"
+    expected:
+      type: "success"
+      outputFixture: "output_operated_modes_filter.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAptOutputWithMissingCapabilityModeMatch"
+    description: "Should set configured modulation objects to null when transmission mode names are not found in capability list"
+    inputFixture: "input_missing_mode_match.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_mode_match.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+
+
+  - id: "errResultCcNotProvidedWhenResultCcMissing"
+    description: "Should return resultCc not provided when result-cc is missing from input"
+    inputFixture: "input_missing_result_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errResultCcInvalidWhenEquipmentMissing"
+    description: "Should return resultCc invalid when equipment is missing"
+    inputFixture: "input_missing_equipment.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errResultCcInvalidWhenLogicalTerminationPointMissing"
+    description: "Should return resultCc invalid when logical-termination-point is missing"
+    inputFixture: "input_missing_ltp.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errResultCcInvalidWhenControlConstructPacMissing"
+    description: "Should return resultCc invalid when equipment-augment-1-0:control-construct-pac is missing"
+    inputFixture: "input_missing_control_construct_pac.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errResultCcInvalidWhenBatchTimestampMissing"
+    description: "Should return resultCc invalid when batch-timestamp is missing"
+    inputFixture: "input_missing_batch_timestamp.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenEquipmentNotIterable"
+    description: "Should return General processing error when equipment is not iterable and temperature resolution throws"
+    inputFixture: "input_equipment_not_iterable.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+
+  - id: "errGeneralProcessingErrorWhenLayerProtocolNameIsNotString"
+    description: "Should return General processing error when layer-protocol-name is not a string and endsWith fails"
+    inputFixture: "input_invalid_layer_protocol_name.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []

@@ -1,0 +1,206 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1Storing/1.0.0/variables.yaml
+#
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1Storing/P1Storing.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "onfAdapter.getEsClient"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
+    exportName: "getEsClient"
+    isAsync: true
+
+  - stepId: "retry.withRetry"
+    modulePath: "../../server/utils/retry.js"
+    exportName: "withRetry"
+    isAsync: true
+
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okStoreUsingResultCcUuidAsMountName"
+    description: "Should store successfully when all mandatory inputs are provided and mountName is derived from resultCc.uuid"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okStoreUsingRequestMountName"
+    description: "Should store successfully when mount-name is provided explicitly on the request"
+    inputFixture: "input_with_request_mount_name.json"
+    expected:
+      type: "success"
+      outputFixture: "output_with_request_mount_name.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okStoreUsingResultCcMountName"
+    description: "Should store successfully when mountName is derived from resultCc.mountName"
+    inputFixture: "input_with_resultcc_mount_name.json"
+    expected:
+      type: "success"
+      outputFixture: "output_with_resultcc_mount_name.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okStoreUsingResultCcDashedMountName"
+    description: "Should store successfully when mountName is derived from resultCc.mount-name"
+    inputFixture: "input_with_resultcc_dashed_mount_name.json"
+    expected:
+      type: "success"
+      outputFixture: "output_with_resultcc_dashed_mount_name.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: 
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.json"
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.get.existingDocument.json"
+          - "withRetry.index.lock.json"
+          - "withRetry.index.store.json"
+        repeatLast: false
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errMissingDataStoreEsClient"
+    description: "Should fail when dataStoreEsClient is missing"
+    inputFixture: "input_missing_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errNullDataStoreEsClient"
+    description: "Should fail when dataStoreEsClient is null"
+    inputFixture: "input_null_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidDataStoreEsClientType"
+    description: "Should fail when dataStoreEsClient is not an object"
+    inputFixture: "input_invalid_data_store_es_client_type.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidDataStoreEsClientMissingUuid"
+    description: "Should fail when dataStoreEsClient.uuid is missing"
+    inputFixture: "input_invalid_data_store_es_client_missing_uuid.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidDataStoreEsClientMissingIndexAlias"
+    description: "Should fail when dataStoreEsClient.index-alias is missing"
+    inputFixture: "input_invalid_data_store_es_client_missing_index_alias.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingResultCc"
+    description: "Should fail when resultCc is missing"
+    inputFixture: "input_missing_result_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errNullResultCc"
+    description: "Should fail when resultCc is null"
+    inputFixture: "input_null_result_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidResultCc"
+    description: "Should fail when resultCc is not an object"
+    inputFixture: "input_invalid_result_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingInterfaceMetadataList"
+    description: "Should fail when interfaceMetadataList is missing"
+    inputFixture: "input_missing_interface_metadata_list.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceMetadataList not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errNullInterfaceMetadataList"
+    description: "Should fail when interfaceMetadataList is null"
+    inputFixture: "input_null_interface_metadata_list.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceMetadataList not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidInterfaceMetadataList"
+    description: "Should fail when interfaceMetadataList is not an array"
+    inputFixture: "input_invalid_interface_metadata_list.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceMetadataList invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMountNameNotDerivable"
+    description: "Should fail when mountName cannot be derived from request or resultCc"
+    inputFixture: "input_mount_name_not_derivable.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Dependency / downstream failures
+  # -------------------------
+
+  - id: "errGetEsClientThrows"
+    description: "Should fail when ES client initialization throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+

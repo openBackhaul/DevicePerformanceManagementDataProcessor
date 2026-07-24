@@ -1,0 +1,65 @@
+{
+  "historical-performance-data-list": [
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-06-25T12:45:00+00:00",
+      "performance-data": {
+        "total-bytes-input": "1000000",
+        "total-bytes-output": "1500000",
+        "total-frames-input": "10000",
+        "total-frames-output": "12000",
+        "forwarded-frames-input": "9000",
+        "forwarded-frames-output": "11000",
+        "unicast-frames-input": "8000",
+        "unicast-frames-output": "9500",
+        "multicast-frames-input": 100,
+        "multicast-frames-output": 120,
+        "broadcast-frames-input": 20,
+        "broadcast-frames-output": 25,
+        "fragmented-frames-input": 1,
+        "errored-frames-input": 2,
+        "errored-frames-output": 1,
+        "dropped-frames-input": 3,
+        "dropped-frames-output": 4,
+        "frame-loss-input": 5,
+        "frame-loss-output": 5,
+        "time-period": 900,
+        "transmit-traffic": 0,
+        "receive-traffic": 0,
+        "total-air-interface-interval-capacity": 75000,
+        "utilization": 0.017777777777777778
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-06-25T00:00:00+00:00",
+      "performance-data": {
+        "total-bytes-input": "86400000",
+        "total-bytes-output": "172800000",
+        "total-frames-input": "400000",
+        "total-frames-output": "410000",
+        "forwarded-frames-input": "390000",
+        "forwarded-frames-output": "405000",
+        "unicast-frames-input": "350000",
+        "unicast-frames-output": "360000",
+        "multicast-frames-input": 4000,
+        "multicast-frames-output": 4200,
+        "broadcast-frames-input": 500,
+        "broadcast-frames-output": 550,
+        "fragmented-frames-input": 10,
+        "errored-frames-input": 10,
+        "errored-frames-output": 5,
+        "dropped-frames-input": 8,
+        "dropped-frames-output": 6,
+        "frame-loss-input": 18,
+        "frame-loss-output": 11,
+        "time-period": 86400,
+        "transmit-traffic": 0,
+        "receive-traffic": 0,
+        "total-air-interface-interval-capacity": 75000,
+        "utilization": 0.021333333333333333
+      }
+    }
+  ],
+  "most-recent-period-end-time": "2026-06-25T12:45:00+00:00"
+}

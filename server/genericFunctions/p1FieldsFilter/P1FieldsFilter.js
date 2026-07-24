@@ -2,24 +2,29 @@ const { applyFieldsFilter } = require("../../utils/fieldsFilter");
 const ERRORS = require("./ErrorsEnum");
 
 function getDataStructure(request) {
-  if (Object.prototype.hasOwnProperty.call(request, "dataStructure")) {
-    return request.dataStructure;
-  }
-
-  if (Object.prototype.hasOwnProperty.call(request, "data-structure")) {
-    return request["data-structure"];
+  for (const key of ["dataStructure", "data-structure"]) {
+    if (Object.prototype.hasOwnProperty.call(request, key)) {
+      return request[key];
+    }
   }
 
   return undefined;
 }
 
 function getFieldsFilterString(request) {
-  if (Object.prototype.hasOwnProperty.call(request, "fieldsFilterString")) {
-    return request.fieldsFilterString;
-  }
+  const keys = [
+    "fieldsFilterString",
+    "fields-filter-string",
+    "fieldsFilter",
+    "fields-filter",
+    "fieldsFilters",
+    "fields-filters"
+  ];
 
-  if (Object.prototype.hasOwnProperty.call(request, "fields-filter-string")) {
-    return request["fields-filter-string"];
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(request, key)) {
+      return request[key];
+    }
   }
 
   return undefined;

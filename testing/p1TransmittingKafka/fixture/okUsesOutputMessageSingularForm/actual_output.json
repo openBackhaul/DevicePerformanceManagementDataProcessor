@@ -1,0 +1,13 @@
+{
+  "transmissionResultList": [
+    {
+      "topic": "raw.mw-sdnc-dpmdp.apt",
+      "clientId": "dpmdp-apt-producer",
+      "brokers": [
+        "localhost:9092"
+      ],
+      "messageCount": 1,
+      "status": "SENT"
+    }
+  ]
+}

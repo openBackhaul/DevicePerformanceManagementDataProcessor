@@ -116,6 +116,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -136,6 +137,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -156,6 +158,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -176,6 +179,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -196,6 +200,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -218,6 +223,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"
@@ -239,6 +245,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "returnSequence"

@@ -51,6 +51,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   - id: "okFunctionNameKebabCase"
     description: "Should accept function-name from request"
@@ -65,6 +66,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   - id: "okConfigFileKebabCase"
     description: "Should accept config-file from request"
@@ -79,6 +81,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   - id: "okFallbackToOnfReadControlConstruct"
     description: "Should read configFile from onfAdapter when configFile not provided in request"
@@ -93,6 +96,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   - id: "okFallbackToLoadConfigFile"
     description: "Should fallback to loadConfigFile when configFile not provided and ONF returns null"
@@ -107,6 +111,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   - id: "okFunctionWithoutSubFunctionList"
     description: "Should return expected parameters + configFile when function profile has no subFunctionList"
@@ -121,6 +126,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
 
   # -------------------------
   # input validation
@@ -139,6 +145,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "unknown error occurred"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errInvalidRequestPrimitive"
     description: "Should throw unknown error when request is not an object"
@@ -153,6 +160,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "unknown error occurred"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errFunctionNameNotProvided"
     description: "Should throw error when functionName/function-name is missing"
@@ -167,6 +175,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "functionName is mandatory"
+      errorSchemaFixture: "error.schema.json"
 
   # -------------------------
   # ONF config access errors
@@ -186,6 +195,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile not found or not accessible"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errOnfConfigInvalidJson"
     description: "Should fail with configFile is not valid JSON when onfAdapter.readControlConstruct throws SyntaxError"
@@ -202,6 +212,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile is not valid JSON"
+      errorSchemaFixture: "error.schema.json"
 
   # -------------------------
   # local config loading errors
@@ -221,6 +232,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile not found or not accessible"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errConfigFileIsNotValidJson"
     description: "Should fail with configFile is not valid JSON when loadConfigFile throws SyntaxError"
@@ -237,6 +249,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile is not valid JSON"
+      errorSchemaFixture: "error.schema.json"
 
   # -------------------------
   # schema validation
@@ -255,6 +268,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile does not conform to the expected schema"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errProfileArrayMissing"
     description: "Should fail when profile-collection.profile is missing"
@@ -269,6 +283,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile does not conform to the expected schema"
+      errorSchemaFixture: "error.schema.json"
 
   - id: "errProfileNotArray"
     description: "Should fail when profile-collection.profile is not an array"
@@ -283,6 +298,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "configFile does not conform to the expected schema"
+      errorSchemaFixture: "error.schema.json"
 
   # -------------------------
   # real loadFunctionParameters behavior
@@ -301,6 +317,7 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "functionName not found in configFile"
+      errorSchemaFixture: "error.schema.json"
 
   # -------------------------
   # forced unknown error from functionTree
@@ -323,3 +340,4 @@ scenarios:
     expected:
       type: "error"
       errorEnum: "unknown error occurred"
+      errorSchemaFixture: "error.schema.json"

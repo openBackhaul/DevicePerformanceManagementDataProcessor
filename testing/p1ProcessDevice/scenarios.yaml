@@ -1,0 +1,315 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/1.0.0/variables.yaml
+#
+# Notes:
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "p1LoadRawCc"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/P1LoadRawCc.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1CreateResultCc"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/P1CreateResultCc.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1FormattingOutputApt"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt.js"
+    exportName: ""
+    isAsync: false
+
+  - stepId: "queueKafkaOutbound.run"
+    modulePath: "../../server/infra/kafka/queueKafkaOutbound.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1FormattingOutputOnf"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf/P1FormattingOutputOnf.js"
+    exportName: ""
+    isAsync: false
+
+  - stepId: "p1TransmittingKafka"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/P1TransmittingKafka.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1Storing"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1Storing/P1Storing.js"
+    exportName: "run"
+    isAsync: true
+
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+
+
+  # -------------------------
+  # Input validation / top-level mandatory fields
+  # -------------------------
+
+  - id: "errMissingMountName"
+    description: "Should fail when mountName is missing"
+    inputFixture: "input_missing_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingParameters"
+    description: "Should fail when parameters are missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingConfigFile"
+    description: "Should fail when configFile is missing"
+    inputFixture: "input_missing_config_file.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingMwdiReplicaEsClient"
+    description: "Should fail when mwdiReplicaEsClient is missing"
+    inputFixture: "input_missing_mwdi_replica_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingDataStoreEsClient"
+    description: "Should fail when dataStoreEsClient is missing"
+    inputFixture: "input_missing_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+
+
+  - id: "okProcessedCC"
+    description: "Should orchestrate successfully when downstream functions return valid mocked outputs"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc"
+        type: "return"
+        fixture: "p1LoadRawCc.output.json"
+      - stepId: "p1TransmittingKafka"
+        type: "return"
+        fixture: "p1TransmittingKafka.output.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "return"
+        fixture: "queueKafkaOutbound.output.json"
+      - stepId: "p1Storing"
+        type: "return"
+        fixture: "p1Storing.output.json"
+
+  - id: "errMockedFlowStoringFails"
+    description: "Should propagate storing failure in a fully mocked orchestration flow"
+    inputFixture: "input_mocked_flow.json"
+    expected:
+      type: "error"
+      errorEnum: "Storing resultCc failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "return"
+        fixture: "mock_p1LoadRawCc_success.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "return"
+        fixture: "mock_queueKafkaOutbound_success.json"
+      - stepId: "p1Storing.run"
+        type: "throw"
+        error: "Storing resultCc failed"
+
+
+  - id: "errStoringThrows"
+    description: "Should fail when p1Storing throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Storing resultCc failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1Storing.run"
+        type: "throw"
+        error: "Storing resultCc failed"
+
+  - id: "errQueueKafkaOutboundThrowsForSingleConsumer"
+    description: "Should fail when queueKafkaOutbound throws for a single configured consumer"
+    inputFixture: "input_single_consumer.json"
+    expected:
+      type: "error"
+      errorEnum: "Kafka transmission failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "return"
+        fixture: "mock_p1LoadRawCc_success.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "throw"
+        error: "Kafka transmission failed"
+
+  - id: "errQueueKafkaOutboundThrowsForMultipleConsumers"
+    description: "Should fail when queueKafkaOutbound throws while iterating over multiple configured consumers"
+    inputFixture: "input_multiple_consumers.json"
+    expected:
+      type: "error"
+      errorEnum: "Kafka transmission failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "return"
+        fixture: "mock_p1LoadRawCc_success.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "throw"
+        error: "Kafka transmission failed"
+
+
+  - id: "errMockedFlowKafkaFails"
+    description: "Should propagate Kafka queue failure in a fully mocked orchestration flow"
+    inputFixture: "input_mocked_flow.json"
+    expected:
+      type: "error"
+      errorEnum: "Kafka transmission failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "return"
+        fixture: "mock_p1LoadRawCc_success.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "throw"
+        error: "Kafka transmission failed"
+
+
+
+
+
+
+  # -------------------------
+  # p1LoadRawCc failures
+  # -------------------------
+
+  - id: "errLoadRawCcThrows"
+    description: "Should fail when p1LoadRawCc throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be loaded"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "throw"
+        error: "rawCc could not be loaded"
+
+  - id: "errLoadRawCcReturnsInvalidShape"
+    description: "Should fail when p1LoadRawCc returns no rawCc and downstream createResultCc cannot proceed"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "return"
+        fixture: "mock_p1LoadRawCc_invalid.json"
+
+
+
+
+
+
+
+
+  # -------------------------
+  # p1CreateResultCc failures
+  # -------------------------
+
+  - id: "errCreateResultCcThrows"
+    description: "Should fail when p1CreateResultCc throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Result CC data could not be created"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1CreateResultCc.run"
+        type: "throw"
+        error: "Result CC data could not be created"
+
+  - id: "errCreateResultCcReturnsInvalidShape"
+    description: "Should fail when p1CreateResultCc returns no resultCc and formatting cannot proceed"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters and resultCc are mandatory for p1FormattingOutputApt"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1CreateResultCc.run"
+        type: "return"
+        fixture: "mock_p1CreateResultCc_invalid.json"
+
+
+
+
+
+  # -------------------------
+  # Mixed mocked error propagation scenarios
+  # -------------------------
+
+
+
+  - id: "errMockedFlowCreateResultCcFails"
+    description: "Should propagate p1CreateResultCc failure in a fully mocked orchestration flow"
+    inputFixture: "input_mocked_flow.json"
+    expected:
+      type: "error"
+      errorEnum: "Result CC data could not be created"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "return"
+        fixture: "mock_p1LoadRawCc_success.json"
+      - stepId: "p1CreateResultCc.run"
+        type: "throw"
+        error: "Result CC data could not be created"
+
+  - id: "errMockedFlowLoadRawCcFails"
+    description: "Should propagate p1LoadRawCc failure in a fully mocked orchestration flow"
+    inputFixture: "input_mocked_flow.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be loaded"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadRawCc.run"
+        type: "throw"
+        error: "rawCc could not be loaded"
+

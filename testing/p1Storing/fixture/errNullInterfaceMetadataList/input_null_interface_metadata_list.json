@@ -1,0 +1,14 @@
+{  
+    "dataStoreEsClient": {
+    "url": "https://127.0.0.1:3015",
+    "api-key": "API key not yet defined",
+    "index-alias": "21",
+    "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-021",
+    "service-records-policy": "default-policy",
+    "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_ENABLED",
+    "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_INSTALLED"
+  },
+    "mountName": "513250008",
+    "resultCc": {},
+  "interfaceMetadataList": null
+}

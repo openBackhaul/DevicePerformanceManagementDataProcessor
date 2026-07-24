@@ -2,12 +2,32 @@
 
 var path = require('path');
 var http = require('http');
+//setting the path to the database 
+global.databasePath = './database/config.json';
+global.runtimeConfigPath = './database/runtime.json';
 var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommons');
 
 var oas3Tools = require('oas3-tools');
 const logger = require('./service/LoggingService.js').getLogger();
 //const P1StreamPmData = require('./specificFunctions/p1StreamPmData/P1StreamPmData-temp.js');
 const P1StreamPmData = require('./specificFunctions/p1StreamPmData/P1StreamPmData.js');
+const { loadRuntimeConfig } = require("./utils/config");
+const runtimeConfig = loadRuntimeConfig() || {};
+const serviceConfig = runtimeConfig.service || {};
+global.KAFKA_BOOTSTRAP_SERVERS =
+  serviceConfig.kafkaBootstrapServers;
+global.KAFKA_SSL_CA_LOCATION =
+  serviceConfig.kafkaSslCaLocation;
+global.KAFKA_SSL_CERTIFICATE_LOCATION =
+  serviceConfig.kafkaSslCertificateLocation;
+global.KAFKA_SSL_KEY_LOCATION =
+  serviceConfig.kafkaSslKeyLocation;
+global.KAFKA_SECURITY_PROTOCOL =
+  serviceConfig.kafkaSecurityProtocol;
+global.KAFKA_CLIENT_ID =
+  serviceConfig.kafkaClientId;
+global.KAFKA_DEBUG =
+  serviceConfig.kafkaDebug;
 var serverPort = 4031;
 appCommons.openApiValidatorOptions.validateSecurity = false;
 if (process.env.DEBUG && process.env.DEBUG.toLowerCase() === "true") {
@@ -40,17 +60,15 @@ http.createServer(app).listen(serverPort, function () {
     console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
 });*/
 
-//setting the path to the database 
-global.databasePath = './server/database/config.json';
-global.runtimeConfigPath = './server/database/runtime.json';
+
 //appCommons.performApplicationRegistration();
 
 
   http.createServer(app).listen(serverPort, function () {
         console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
         console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+        appCommons.performApplicationRegistration();
     });
-    appCommons.performApplicationRegistration();
 
 //  start streaming AFTER success
    async function initial(){

@@ -1,6 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
+const Ajv = require("ajv");
+const addFormats = require("ajv-formats");
+
+const ajv = new Ajv({
+  allErrors: true,
+  strict: false,
+});
+addFormats(ajv);
 
 function readYaml(filePath) {
   return yaml.load(fs.readFileSync(filePath, "utf8"));
@@ -19,6 +27,41 @@ function cloneValue(value) {
 
 function readJsonCloned(filePath) {
   return cloneValue(readJson(filePath));
+}
+
+function formatSchemaErrors(errors = []) {
+  return errors
+    .map((err) => {
+      const instancePath = err.instancePath || "/";
+      return `${instancePath} ${err.message}`;
+    })
+    .join("\n");
+}
+
+function validateAgainstSchemaIfPresent({ scenarioDir, schemaFixtureName, data, label }) {
+  if (!schemaFixtureName) {
+    return false;
+  }
+
+  const schemaPath = path.join(scenarioDir, schemaFixtureName);
+
+  if (!fs.existsSync(schemaPath)) {
+    throw new Error(
+      `${label} schema fixture '${schemaFixtureName}' was declared but not found at '${schemaPath}'`
+    );
+  }
+
+  const schema = readJson(schemaPath);
+  const validate = ajv.compile(schema);
+  const valid = validate(data);
+
+  if (!valid) {
+    throw new Error(
+      `${label} schema validation failed:\n${formatSchemaErrors(validate.errors)}`
+    );
+  }
+
+  return true;
 }
 
 function loadFunctionUnderTest(absModulePath, exportName) {
@@ -303,50 +346,110 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
   }
 
   for (const s of scenarios) {
-    test(`${s.id}${s.description ? ` - ${s.description}` : ""}`, async () => {
-      jest.restoreAllMocks();
-      jest.resetAllMocks();
-      jest.resetModules();
-
+    describe(`${s.id}${s.description ? ` - ${s.description}` : ""}`, () => {
       const scenarioDir = path.join(baseDir, "fixture", s.id);
-      const input = readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json"));
 
-      installDependencyMocks(dependencies);
+      let actual;
+      let thrown;
+      let expectedOutput;
 
-      installMocks({
-        scenarioDir,
-        processingSteps,
-        scenarioMocks: s.mocks || [],
+      beforeAll(async () => {
+        jest.restoreAllMocks();
+        jest.resetAllMocks();
+        jest.resetModules();
+
+        const input = readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json"));
+
+        installDependencyMocks(dependencies);
+
+        installMocks({
+          scenarioDir,
+          processingSteps,
+          scenarioMocks: s.mocks || [],
+        });
+
+        const futAbsPath = path.resolve(baseDir, fut.modulePath);
+        const fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
+
+        if (s.expected?.type === "success") {
+          expectedOutput = readJsonCloned(
+            path.join(scenarioDir, s.expected.outputFixture || "output.json")
+          );
+
+          actual = await fn(input);
+
+          const actualOutputPath = path.join(scenarioDir, "actual_output.json");
+          fs.writeFileSync(actualOutputPath, JSON.stringify(actual, null, 2), "utf8");
+          return;
+        }
+
+        if (s.expected?.type === "error") {
+          try {
+            actual = await fn(input);
+          } catch (err) {
+            thrown = typeof err === "string" ? err : err?.message;
+          }
+          return;
+        }
+
+        throw new Error(`Scenario '${s.id}' has invalid expected.type`);
       });
 
-      const futAbsPath = path.resolve(baseDir, fut.modulePath);
-      const fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
-
       if (s.expected?.type === "success") {
-        const expectedOutput = readJsonCloned(
-          path.join(scenarioDir, s.expected.outputFixture || "output.json")
+        test(
+          s.expected.outputSchemaFixture
+            ? `schema validates against ${s.expected.outputSchemaFixture}`
+            : "schema validation skipped",
+          () => {
+            if (!s.expected.outputSchemaFixture) {
+              return;
+            }
+
+            const validated = validateAgainstSchemaIfPresent({
+              scenarioDir,
+              schemaFixtureName: s.expected.outputSchemaFixture,
+              data: actual,
+              label: `Scenario '${s.id}' success output`,
+            });
+
+            expect(validated).toBe(true);
+          }
         );
-        const actual = await fn(input);
 
-        const actualOutputPath = path.join(scenarioDir, "actual_output.json");
-        fs.writeFileSync(actualOutputPath, JSON.stringify(actual, null, 2), "utf8");
+        test(`output matches ${s.expected.outputFixture || "output.json"}`, () => {
+          expect(actual).toEqual(expectedOutput);
+        });
+      } else if (s.expected?.type === "error") {
+        test(
+          s.expected.errorSchemaFixture
+            ? `schema validates against ${s.expected.errorSchemaFixture}`
+            : "schema validation skipped",
+          () => {
+            if (!s.expected.errorSchemaFixture) {
+              return;
+            }
 
-        expect(actual).toEqual(expectedOutput);
-        return;
+            const errorValue = thrown !== undefined ? thrown : actual;
+
+            const validated = validateAgainstSchemaIfPresent({
+              scenarioDir,
+              schemaFixtureName: s.expected.errorSchemaFixture,
+              data: errorValue,
+              label: `Scenario '${s.id}' error output`,
+            });
+
+            expect(validated).toBe(true);
+          }
+        );
+
+        test(`error matches '${s.expected.errorEnum}'`, () => {
+          if (thrown !== undefined) {
+            expect(thrown).toBe(s.expected.errorEnum);
+          } else {
+            expect(actual).toBe(s.expected.errorEnum);
+          }
+        });
       }
-
-      if (s.expected?.type === "error") {
-        try {
-          const actual = await fn(input);
-          expect(actual).toBe(s.expected.errorEnum);
-        } catch (err) {
-          const thrown = typeof err === "string" ? err : err?.message;
-          expect(thrown).toBe(s.expected.errorEnum);
-        }
-        return;
-      }
-
-      throw new Error(`Scenario '${s.id}' has invalid expected.type`);
     });
   }
 }

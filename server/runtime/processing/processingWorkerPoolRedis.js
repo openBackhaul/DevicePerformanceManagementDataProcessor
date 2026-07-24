@@ -4,6 +4,20 @@ const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
 
+function shouldEnqueueRetry(error) {
+  return !error || error.retryable !== false;
+}
+
+function buildNonRetryableRetryResult(mountName, error) {
+  return {
+    status: "SKIPPED",
+    reason: "NON_RETRYABLE_ERROR",
+    mountName,
+    stage: error.stage || "p1ProcessDevice",
+    lastError: error.message || String(error)
+  };
+}
+
 async function handleMessage(message, context) {
   const { id, message: fields } = message;
   const mountName = fields.mountName;
@@ -36,18 +50,35 @@ async function handleMessage(message, context) {
         await redisQueue.removeFromDedupSet(mountName, context.logger);
         await redisQueue.deleteMessage(id, context.logger);
     } catch (error) {
-        const retryResult = await redisQueue.enqueueRetry(
-        mountName,
-        error.stage || "p1ProcessDevice",
-        error.message || String(error),
-        context.maxRetryCount || 1,
-        context.logger
-        );
+        let retryResult;
+
+        if (shouldEnqueueRetry(error)) {
+          retryResult = await redisQueue.enqueueRetry(
+          mountName,
+          error.stage || "p1ProcessDevice",
+          error.message || String(error),
+          context.maxRetryCount || 1,
+          context.logger
+          );
+        } else {
+          retryResult = buildNonRetryableRetryResult(mountName, error);
+
+          logger.warn(
+            {
+              mountName,
+              stage: error.stage || "unknown",
+              retryable: error.retryable,
+              error: error.message || error
+            },
+            "Processing failed with non-retryable error; retry enqueue skipped"
+          );
+        }
 
         logger.error(
         {
             mountName,
             stage: error.stage || "unknown",
+            retryable: error.retryable,
             error: error.message || error,
             retryResult
         },
@@ -110,4 +141,10 @@ async function startProcessingWorkerPoolRedis(context) {
   await Promise.all(workers);
 }
 
-module.exports = { startProcessingWorkerPoolRedis };
+module.exports = {
+  startProcessingWorkerPoolRedis,
+  /* _internal: {
+    handleMessage,
+    shouldEnqueueRetry
+  } */
+};

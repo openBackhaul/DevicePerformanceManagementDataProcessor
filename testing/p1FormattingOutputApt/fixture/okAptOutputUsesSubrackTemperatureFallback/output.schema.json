@@ -1,0 +1,394 @@
+{
+  "type": "object",
+  "properties": {
+    "request-id": {
+      "type": "string"
+    },
+    "air-interface-list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "air-interface-identifiers": {
+            "type": "object",
+            "properties": {
+              "mount-name": {
+                "type": "string"
+              },
+              "link-endpoint-id": {
+                "type": "string"
+              },
+              "link-id": {
+                "type": "string"
+              },
+              "logical-termination-point-id": {
+                "type": "string"
+              },
+              "link-aggregation-identifiers": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "required": ["link-id"],
+                      "properties": {
+                        "link-id": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    {
+                      "type": "object",
+                      "required": ["interface-name"],
+                      "properties": {
+                        "interface-name": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  ]
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "air-interface-configuration": {
+            "type": "object",
+            "properties": {
+              "configured-atpc-is-on": {
+                "type": "boolean"
+              },
+              "configured-atpc-threshold-upper": {
+                "type": "integer"
+              },
+              "configured-atpc-threshold-lower": {
+                "type": "integer"
+              },
+              "configured-tx-power": {
+                "type": "integer"
+              },
+              "configured-modulation-minimum": {
+                "type": "object",
+                "properties": {
+                  "number-of-states": {
+                    "type": "integer"
+                  },
+                  "name-at-lct": {
+                    "type": "string"
+                  },
+                  "configured-capacity-minimum": {
+                    "type": "integer"
+                  }
+                },
+                "additionalProperties": true
+              },
+              "configured-modulation-maximum": {
+                "type": "object",
+                "properties": {
+                  "number-of-states": {
+                    "type": "integer"
+                  },
+                  "name-at-lct": {
+                    "type": "string"
+                  },
+                  "configured-capacity-maximum": {
+                    "type": "integer"
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          },
+          "air-interface-performance-measurements-list": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "granularity-period": {
+                  "type": "string",
+                  "enum": [
+                    "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+                    "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN",
+                    "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED"
+                  ]
+                },
+                "period-end-time": {
+                  "type": "string"
+                },
+                "transmit-level-minimum": {
+                  "type": "integer"
+                },
+                "transmit-level-maximum": {
+                  "type": "integer"
+                },
+                "transmit-level-average": {
+                  "type": "integer"
+                },
+                "receive-level-minimum": {
+                  "type": "integer"
+                },
+                "receive-level-maximum": {
+                  "type": "integer"
+                },
+                "receive-level-average": {
+                  "type": "integer"
+                },
+                "signal-to-noise-ratio-minimum": {
+                  "type": "integer"
+                },
+                "signal-to-noise-ratio-maximum": {
+                  "type": "integer"
+                },
+                "signal-to-noise-ratio-average": {
+                  "type": "integer"
+                },
+                "cross-polarization-discrimination-minimum": {
+                  "type": "integer"
+                },
+                "cross-polarization-discrimination-maximum": {
+                  "type": "integer"
+                },
+                "cross-polarization-discrimination-average": {
+                  "type": "integer"
+                },
+                "operated-transmission-modes-list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "transmission-mode-name": {
+                        "type": "string"
+                      },
+                      "modulation-scheme-name-at-lct": {
+                        "type": "string"
+                      },
+                      "time": {
+                        "type": "integer"
+                      },
+                      "capacity": {
+                        "type": "integer"
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                },
+                "interval-capacity": {
+                  "type": "integer"
+                },
+                "errorred-seconds": {
+                  "type": "integer"
+                },
+                "severely-errorred-seconds": {
+                  "type": "integer"
+                },
+                "consecutive-severely-errorred-seconds": {
+                  "type": "integer"
+                },
+                "total-unavailability": {
+                  "type": "integer"
+                },
+                "defect-blocks": {
+                  "type": "integer"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "transmission-mode-list": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "transmission-mode-name": {
+                  "type": "string"
+                },
+                "number-of-states": {
+                  "type": "integer"
+                },
+                "modulation-scheme-name-at-lct": {
+                  "type": "string"
+                },
+                "channel-bandwidth": {
+                  "type": "integer"
+                },
+                "code-rate": {
+                  "type": "integer"
+                },
+                "symbol-rate-reduction-factor": {
+                  "type": "integer"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "ethernet-container-list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ethernet-container-identifiers": {
+            "type": "object",
+            "properties": {
+              "mount-name": {
+                "type": "string"
+              },
+              "interface-name": {
+                "type": "string"
+              },
+              "logical-termination-point-id": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          },
+          "ethernet-container-performance-measurements-list": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "granularity-period": {
+                  "type": "string",
+                  "enum": [
+                    "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+                    "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN",
+                    "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED"
+                  ]
+                },
+                "period-end-time": {
+                  "type": "string"
+                },
+                "max-bytes-per-second-output": {
+                  "type": "string"
+                },
+                "total-bytes-input": {
+                  "type": "string"
+                },
+                "total-bytes-output": {
+                  "type": "string"
+                },
+                "total-frames-input": {
+                  "type": "string"
+                },
+                "total-frames-output": {
+                  "type": "string"
+                },
+                "forwarded-frames-input": {
+                  "type": "string"
+                },
+                "forwarded-frames-output": {
+                  "type": "string"
+                },
+                "unicast-frames-input": {
+                  "type": "string"
+                },
+                "unicast-frames-output": {
+                  "type": "string"
+                },
+                "multicast-frames-input": {
+                  "type": "integer"
+                },
+                "multicast-frames-output": {
+                  "type": "integer"
+                },
+                "broadcast-frames-input": {
+                  "type": "integer"
+                },
+                "broadcast-frames-output": {
+                  "type": "integer"
+                },
+                "fragmented-frames-input": {
+                  "type": "integer"
+                },
+                "errored-frames-input": {
+                  "type": "integer"
+                },
+                "errored-frames-output": {
+                  "type": "integer"
+                },
+                "dropped-frames-input": {
+                  "type": "integer"
+                },
+                "dropped-frames-output": {
+                  "type": "integer"
+                },
+                "oversized-frames-ingress": {
+                  "type": "string"
+                },
+                "undersized-frames-ingress": {
+                  "type": "string"
+                },
+                "jabber-frames-ingress": {
+                  "type": "string"
+                },
+                "unknown-protocol-frames-input": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "mount-name-list-with-errors": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["mount-name", "code", "message"],
+            "properties": {
+              "mount-name": {
+                "type": "string"
+              },
+              "code": {
+                "type": "integer",
+                "minimum": 460,
+                "maximum": 460
+              },
+              "message": {
+                "type": "string",
+                "enum": [
+                  "Not connected. Requested device is currently not in connected state at the controller"
+                ]
+              }
+            },
+            "additionalProperties": true
+          },
+          {
+            "type": "object",
+            "required": ["mount-name", "code", "message"],
+            "properties": {
+              "mount-name": {
+                "type": "string"
+              },
+              "code": {
+                "type": "integer",
+                "minimum": 500,
+                "maximum": 500
+              },
+              "message": {
+                "type": "string",
+                "enum": [
+                  "Internal server error"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

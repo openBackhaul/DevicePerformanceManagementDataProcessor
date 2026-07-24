@@ -108,16 +108,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        fixture: "p1RemoveDefaultValues.success.json"
-      - stepId: "p1CalculateUtilization"
-        type: "return"
-        fixture: "p1CalculateUtilization.success.json"
+
 
   - id: "okSingle24HourSliceProcessed"
     description: "Should process a single 24-hour slice successfully and return most-recent-period-end-time-24"
@@ -125,16 +116,7 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        fixture: "p1RemoveDefaultValues.success.json"
-      - stepId: "p1CalculateUtilization"
-        type: "return"
-        fixture: "p1CalculateUtilization.success.json"
+
 
   - id: "okMixedGranularitySlicesProcessed"
     description: "Should process multiple slices and return both most recent timestamps"
@@ -142,28 +124,62 @@ scenarios:
     expected:
       type: "success"
       outputFixture: "output.json"
-    mocks:
-      - stepId: "p1CalculateUtilization"
-        type: "return"
-        fixture: "p1CalculateUtilization.success.json"
 
 
-  - id: "okUnknownGranularityReturnsOnlyHistoricalPerformanceDataList"
-    description: "Should process slices with unsupported granularity and return only historical-performance-data-list"
+
+
+  # -------------------------
+  # p1CalculateUtilization failures
+  # -------------------------
+
+  - id: "errCalculateUtilizationReturnsErrorString"
+    description: "Should return 'Utilization could not be calculated' when p1CalculateUtilization returns a string"
     inputFixture: "input.json"
     expected:
-      type: "success"
-      outputFixture: "output.json"
+      type: "error"
+      errorEnum: "Utilization could not be calculated"
     mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        fixture: "p1RemoveDefaultValues.success.json"
       - stepId: "p1CalculateUtilization"
         type: "return"
-        fixture: "p1CalculateUtilization.success.json"
+        value: "Utilization could not be calculated"
+
+  - id: "errCalculateUtilizationThrows"
+    description: "Should return 'Utilization could not be calculated' when p1CalculateUtilization throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be calculated"
+    mocks:
+      - stepId: "p1CalculateUtilization"
+        type: "throw"
+        error: "Utilization could not be calculated"
+
+
+  # -------------------------
+  # p1RemoveDefaultValues failures
+  # -------------------------
+
+  - id: "errRemoveDefaultValuesReturnsErrorString"
+    description: "Should return 'Default values could not be removed' when p1RemoveDefaultValues returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Default values could not be removed"
+    mocks:
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value: "Default values could not be removed"
+
+  - id: "errRemoveDefaultValuesThrows"
+    description: "Should return 'Default values could not be removed' when p1RemoveDefaultValues throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Default values could not be removed"
+    mocks:
+      - stepId: "p1RemoveDefaultValues"
+        type: "throw"
+        error: "Default values could not be removed"
 
   # -------------------------
   # p1CalculateEthernetKpis failures
@@ -190,74 +206,4 @@ scenarios:
       - stepId: "p1CalculateEthernetKpis"
         type: "throw"
         error: "Ethernet KPIs could not be calculated"
-
-  # -------------------------
-  # p1RemoveDefaultValues failures
-  # -------------------------
-
-  - id: "errRemoveDefaultValuesReturnsErrorString"
-    description: "Should return 'Default values could not be removed' when p1RemoveDefaultValues returns a string"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "Default values could not be removed"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        value: "Default values could not be removed"
-
-  - id: "errRemoveDefaultValuesThrows"
-    description: "Should return 'Default values could not be removed' when p1RemoveDefaultValues throws"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "Default values could not be removed"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "throw"
-        error: "Default values could not be removed"
-
-  # -------------------------
-  # p1CalculateUtilization failures
-  # -------------------------
-
-  - id: "errCalculateUtilizationReturnsErrorString"
-    description: "Should return 'Utilization could not be calculated' when p1CalculateUtilization returns a string"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "Utilization could not be calculated"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        fixture: "p1RemoveDefaultValues.success.json"
-      - stepId: "p1CalculateUtilization"
-        type: "return"
-        value: "Utilization could not be calculated"
-
-  - id: "errCalculateUtilizationThrows"
-    description: "Should return 'Utilization could not be calculated' when p1CalculateUtilization throws"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "Utilization could not be calculated"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        fixture: "p1CalculateEthernetKpis.success.json"
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        fixture: "p1RemoveDefaultValues.success.json"
-      - stepId: "p1CalculateUtilization"
-        type: "throw"
-        error: "Utilization could not be calculated"
 

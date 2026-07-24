@@ -1,0 +1,218 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/1.0.0/variables.yaml
+#
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/P1TransmittingKafka.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "confluentKafkaProducer.sendBatch"
+    modulePath: "../../server/infra/kafka/confluentKafkaProducer.js"
+    exportName: "sendBatch"
+    isAsync: true
+
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when input.parameters is missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errParametersInvalid"
+    description: "Should return 'parameters invalid' when input.parameters is not a plain object"
+    inputFixture: "input_invalid_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errConfigFileNotProvided"
+    description: "Should return 'configFile not provided' when configFile, config-file and kafkaConnectionList are all missing"
+    inputFixture: "input_missing_config_file.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errConfigFileInvalid"
+    description: "Should return 'configFile invalid' when configFile is neither an object nor a supported structure"
+    inputFixture: "input_invalid_config_file.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okSingleOutputMessageSent"
+    description: "Should transmit one output message successfully"
+    inputFixture: "input_single_message.json"
+    expected:
+      type: "success"
+      outputFixture: "output_single_message.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "confluentKafkaProducer.sendBatch"
+        type: "return"
+        fixture: "sendBatch.success.json"
+
+  - id: "okMultipleMessagesGroupedByTopicAndClient"
+    description: "Should group multiple output messages for the same Kafka target and send them in a single batch"
+    inputFixture: "input_multiple_messages_same_target.json"
+    expected:
+      type: "success"
+      outputFixture: "output_multiple_messages_same_target.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "confluentKafkaProducer.sendBatch"
+        type: "return"
+        fixture: "sendBatch.success.json"
+
+  - id: "okMessagesForDifferentTargetsSentSeparately"
+    description: "Should send separate batches when output messages resolve to different Kafka topics or clients"
+    inputFixture: "input_multiple_messages_different_targets.json"
+    expected:
+      type: "success"
+      outputFixture: "output_multiple_messages_different_targets.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "confluentKafkaProducer.sendBatch"
+        type: "returnSequence"
+        fixtureSequence:
+          - "sendBatch.success.json"
+          - "sendBatch.success.json"
+        repeatLast: false
+
+  - id: "okUsesOutputMessageSingularForm"
+    description: "Should accept outputMessage singular form and transmit successfully"
+    inputFixture: "input_output_message_singular.json"
+    expected:
+      type: "success"
+      outputFixture: "output_output_message_singular.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "confluentKafkaProducer.sendBatch"
+        type: "return"
+        fixture: "sendBatch.success.json"
+
+
+  # -------------------------
+  # Pre-transmission normalization / routing failures
+  # -------------------------
+
+  - id: "errOutputMessagesEmpty"
+    description: "Should return 'General processing error' when outputMessages is an empty array"
+    inputFixture: "input_empty_output_messages.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errTargetConsumerMissingKafkaConnection"
+    description: "Should return 'General processing error' when no Kafka provider connection matches targetConsumer"
+    inputFixture: "input_missing_matching_kafka_connection.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errKafkaTopicNameMissing"
+    description: "Should return 'General processing error' when resolved Kafka connection has no topicName"
+    inputFixture: "input_missing_topic_name.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errKafkaClientIdMissing"
+    description: "Should return 'General processing error' when resolved Kafka connection has no clientId"
+    inputFixture: "input_missing_client_id.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errKafkaBrokerListMissing"
+    description: "Should return 'General processing error' when resolved Kafka connection has no brokerList"
+    inputFixture: "input_missing_broker_list.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errEnvelopeMissingMountNameForDeviceSpecificMessage"
+    description: "Should return 'General processing error' when a device-specific Kafka message has no mountName"
+    inputFixture: "input_missing_mount_name_in_output_message.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Transmission failures
+  # -------------------------
+
+  - id: "errProducerConnectionError"
+    description: "Should return 'Producer connection error' when sendBatch fails with a broker connection related error"
+    inputFixture: "input_single_message.json"
+    expected:
+      type: "error"
+      errorEnum: "Producer connection error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "confluentKafkaProducer.sendBatch"
+        type: "throw"
+        error: "connect ECONNREFUSED 127.0.0.1:9092"
+
+  - id: "errOtherTransmissionError"
+    description: "Should return 'Other transmission error' when sendBatch fails after transmission starts with a non-connection error"
+    inputFixture: "input_single_message.json"
+    expected:
+      type: "error"
+      errorEnum: "Other transmission error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "confluentKafkaProducer.sendBatch"
+        type: "throw"
+        error: "Kafka send failure"
+
+
+
+  - id: "errGeneralProcessingErrorFromUnexpectedPreTransmissionFailure"
+    description: "Should return 'General processing error' when an unexpected error happens before transmission begins"
+    inputFixture: "input_unexpected_pretransmission_failure.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []

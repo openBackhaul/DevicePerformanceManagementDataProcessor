@@ -45,17 +45,36 @@ function normalizeInterfaceRequest(request) {
     throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
   }
 
-  const configFile = getRequestValue(request, "configFile", "kafkaConnectionList");
+  let configFile;
+  const hasConfigFile = Object.prototype.hasOwnProperty.call(request, "configFile");
+  const hasConfigFileHyphen = Object.prototype.hasOwnProperty.call(request, "config-file");
+
+  if (hasConfigFile) {
+    configFile = request.configFile;
+  } else if (hasConfigFileHyphen) {
+    configFile = request["config-file"];
+  } else {
+    configFile = request.kafkaConnectionList;
+  }
 
   if (configFile === undefined || configFile === null) {
     throw buildProcessingError(ERRORS.CONFIG_FILE_NOT_PROVIDED);
   }
 
-  if (!isPlainObject(configFile) || !Array.isArray(configFile)) {
+  if (hasConfigFile || hasConfigFileHyphen) {
+    if (!isPlainObject(configFile)) {
+      throw buildProcessingError(ERRORS.CONFIG_FILE_INVALID);
+    }
+  } else if (!Array.isArray(configFile) && !isPlainObject(configFile)) {
     throw buildProcessingError(ERRORS.CONFIG_FILE_INVALID);
   }
 
-  const outputFormat = getRequestValue(request, "outputFormat", "outputMessages");
+  const outputFormat = getRequestValue(
+    request,
+    "outputFormat",
+    "output-format",
+    "outputMessages"
+  );
 
   if (
     outputFormat === undefined ||
@@ -246,6 +265,7 @@ function getKafkaConnection(targetConsumer, kafkaConnectionList) {
     topicName: connection.topicName,
     clientId: connection.clientId,
     brokers: connection.brokerList,
+    auth: connection.auth,
     kafkaClientUuid: connection.kafkaClientUuid,
     parameterName: connection.parameterName,
     type: connection.type
@@ -367,7 +387,7 @@ async function run(request) {
   try {
     const { logger, kafkaConnectionList } = request || {};
 
-    //normalizeInterfaceRequest(request);
+    normalizeInterfaceRequest(request);
 
     const outputMessages = normalizeInput(request);
     const topicMessageMap = new Map();
@@ -386,11 +406,17 @@ async function run(request) {
         value: JSON.stringify(envelope)
       };
 
-      validateKafkaMessageSize(kafkaMessage, {
-        topic: kafkaConnection.topicName,
-        targetConsumer: envelope.targetConsumer,
-        mountName: envelope.mountName
-      });
+      /*
+       * Local size validation is intentionally disabled. EMP Kafka should reject
+       * oversized messages, and kafkaOutboundWorker will log non-retryable
+       * KAFKA_MESSAGE_SIZE_TOO_LARGE failures and remove them from Redis.
+       *
+       * validateKafkaMessageSize(kafkaMessage, {
+       *   topic: kafkaConnection.topicName,
+       *   targetConsumer: envelope.targetConsumer,
+       *   mountName: envelope.mountName
+       * });
+       */
 
       /*
        * Group by topic + clientId + brokerList.
@@ -400,7 +426,8 @@ async function run(request) {
       const mapKey = JSON.stringify({
         topicName: kafkaConnection.topicName,
         clientId: kafkaConnection.clientId,
-        brokers: kafkaConnection.brokers
+        brokers: kafkaConnection.brokers,
+        auth: kafkaConnection.auth || null
       });
 
       if (!topicMessageMap.has(mapKey)) {
@@ -409,6 +436,7 @@ async function run(request) {
           kafkaOptions: {
             clientId: kafkaConnection.clientId,
             brokers: kafkaConnection.brokers,
+            auth: kafkaConnection.auth,
             kafkaClientUuid: kafkaConnection.kafkaClientUuid,
             parameterName: kafkaConnection.parameterName
           },

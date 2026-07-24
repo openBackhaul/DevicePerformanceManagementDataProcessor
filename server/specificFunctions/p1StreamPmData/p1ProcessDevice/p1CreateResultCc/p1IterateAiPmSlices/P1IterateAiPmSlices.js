@@ -184,7 +184,7 @@ function p1IterateAiPmSlices(input) {
     let retValue = {
       'historical-performance-data-list': processedDataList,
     }
-    
+
     if (mostRecentPeriodEndTime != EPOCH_TIME) {
       retValue['most-recent-period-end-time'] = mostRecentPeriodEndTime;
     }

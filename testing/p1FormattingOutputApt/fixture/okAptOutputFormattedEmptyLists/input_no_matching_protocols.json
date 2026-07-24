@@ -1,0 +1,66 @@
+{
+    "parameters":  {
+            "function-name": "p1FormattingOutputApt",
+            "description": "Transforms the resultCc into aptOutputFormat",
+            "is-active": true,
+            "parameter": [],
+            "sub-function": []
+          },
+    "result-cc": {
+    "equipment-augment-1-0:control-construct-pac": {
+      "external-label": "External label not yet defined.",
+      "device-model-name": "ALCplus2e"
+    },
+    "equipment": [
+      {
+        "uuid": "Radio-1A",
+        "actual-equipment": {
+          "local-id": "513250008+",
+          "physical-properties": {},
+          "structure": {
+            "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_OUTDOOR_UNIT"
+          }
+        }
+      },
+      {
+        "uuid": "LAN-3-SFP"
+      },
+      {
+        "uuid": "Radio-2A",
+        "actual-equipment": {
+          "local-id": "513250008+",
+          "physical-properties": {},
+          "structure": {
+            "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_OUTDOOR_UNIT"
+          }
+        }
+      },
+      {
+        "uuid": "LAN-4-SFP"
+      },
+      {
+        "uuid": "CTRL IduBoard Xpic 32E1",
+        "actual-equipment": {
+          "local-id": "513250008+",
+          "physical-properties": {
+            "temperature": "37"
+          },
+          "structure": {
+            "category": "core-model-1-4:EQUIPMENT_CATEGORY_SUBRACK"
+          }
+        }
+      }
+    ],
+    "profile-collection": {
+      "profile": [
+        {
+          "uuid": "CO-CHANNEL-PROFILE-XPIC-1",
+          "profile-name": "co-channel-profile-1-0:PROFILE_NAME_TYPE_CO_CHANNEL_PROFILE"
+        }
+      ]
+    },
+    "logical-termination-point": [
+    ],
+    "batch-timestamp": "2026-06-25T12:55:12.0+00:00"
+  }
+}

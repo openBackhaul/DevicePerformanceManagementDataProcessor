@@ -1,6 +1,92 @@
 const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
 const { withRetry } = require("../../../utils/retry");
+const ERRORS = require("./ErrorsEnum");
+const logger = require('../../../service/LoggingService.js').getLogger();
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+/* function getSafeLogger(logger) {
+  return logger || console;
+} */
+
+function getRequestValue(request, ...keys) {
+  if (!request || typeof request !== "object" || Array.isArray(request)) {
+    return undefined;
+  }
+
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(request, key)) {
+      return request[key];
+    }
+  }
+
+  return undefined;
+}
+
+function buildProcessingError(message, cause) {
+  const error = new Error(message);
+
+  error.stage = "p1MaintainDs";
+
+  if (cause) {
+    error.cause = cause;
+  }
+
+  return error;
+}
+
+function getValidatedRequest(request) {
+  const parameters = getRequestValue(request, "parameters");
+
+  if (parameters === undefined || parameters === null) {
+    throw buildProcessingError(ERRORS.PARAMETERS_NOT_PROVIDED);
+  }
+
+  if (!isPlainObject(parameters)) {
+    throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
+  }
+
+  const dataStoreEsClient = getRequestValue(
+    request,
+    "dataStoreEsClient",
+    "data-store-es-client"
+  );
+
+  if (dataStoreEsClient === undefined || dataStoreEsClient === null) {
+    throw buildProcessingError(ERRORS.DATA_STORE_ES_CLIENT_NOT_PROVIDED);
+  }
+
+  if (
+    !isPlainObject(dataStoreEsClient) ||
+    !dataStoreEsClient.uuid ||
+    !dataStoreEsClient["index-alias"]
+  ) {
+    throw buildProcessingError(ERRORS.DATA_STORE_ES_CLIENT_INVALID);
+  }
+
+  return {
+    parameters,
+    dataStoreEsClient,
+    loggingEsClient: getRequestValue(
+      request,
+      "loggingEsClient",
+      "logging-es-client"
+    )
+  };
+}
+
+function validatePeriodHours(value, errorMessage) {
+  const hours = Number(value);
+
+  if (!Number.isFinite(hours) || hours < 0) {
+    throw buildProcessingError(errorMessage);
+  }
+
+  return hours;
+}
 
 async function getLoggingClient(loggingEsClient, logger) {
   return await onfAdapter.getEsClient(
@@ -9,6 +95,39 @@ async function getLoggingClient(loggingEsClient, logger) {
     loggingEsClient,
     logger
   );
+}
+
+async function tryGetLoggingClient(loggingEsClient, logger) {
+  if (!loggingEsClient) {
+    return null;
+  }
+
+  if (
+    !isPlainObject(loggingEsClient) ||
+    !loggingEsClient.uuid ||
+    !loggingEsClient["index-alias"]
+  ) {
+    logger.error?.(
+      {
+        label: "p1MaintainDs.loggingClientInvalid"
+      },
+      "Skipping logging data cleanup because loggingEsClient is invalid"
+    );
+    return null;
+  }
+
+  try {
+    return await getLoggingClient(loggingEsClient, logger);
+  } catch (error) {
+    logger.error?.(
+      {
+        label: "p1MaintainDs.getLoggingClient",
+        error: error.message || error
+      },
+      "Skipping logging data cleanup because logging ES client could not be initialized"
+    );
+    return null;
+  }
 }
 
 async function deleteOldLoggingDocuments(loggingClient, loggingEsClient, cutoffIso, logger) {
@@ -47,9 +166,9 @@ async function deleteOldLoggingDocuments(loggingClient, loggingEsClient, cutoffI
       logger
     }
   ).catch((error) => {
-    logger.error(
+    logger.error?.(
       {
-        label: "delete-old-logging-documents",
+        label: "p1MaintainDs: delete-old-logging-documents",
         error: error.message || error
       },
       "Failed to delete old logging documents"
@@ -95,9 +214,9 @@ async function deleteOldLoggingDocumentsFallback(loggingClient, loggingEsClient,
       logger
     }
   ).catch((error) => {
-    logger.error(
+    logger.error?.(
       {
-        label: "search-old-logging-documents",
+        label: "p1MaintainDs: search-old-logging-documents",
         error: error.message || error
       },
       "Failed to search old logging documents"
@@ -123,9 +242,9 @@ async function deleteOldLoggingDocumentsFallback(loggingClient, loggingEsClient,
     ).then(() => {
       deletedCount += 1;
     }).catch((error) => {
-      logger.error(
+      logger.error?.(
         {
-          label: "delete-single-logging-document",
+          label: "p1MaintainDs: delete-single-logging-document",
           id: hit._id,
           error: error.message || error
         },
@@ -172,15 +291,15 @@ async function deleteDataStoreDocument(client, dataStoreEsClient, hit, mountName
       logger
     }
   ).then(() => true).catch((error) => {
-    logger.error(
+    logger.error?.(
       {
-        label: "delete-empty-data-store-document",
+        label: "p1MaintainDs: delete-empty-data-store-document",
         mountName,
         error: error.message || error
       },
       "Failed to delete empty data store document"
     );
-    return false;
+    throw buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error);
   });
 
   return deleted;
@@ -198,172 +317,217 @@ async function deleteDataStoreDocument(client, dataStoreEsClient, hit, mountName
  * }
  */
 async function run(request) {
-  const { parameters, dataStoreEsClient, loggingEsClient, logger } = request;
+  //const logger = getSafeLogger(logger);
 
-  if (!parameters || !dataStoreEsClient || !loggingEsClient) {
-    logger.error(
-      {
-        label: "invalid-input",
-      },
-      "Invalid input: parameters, dataStoreEsClient, and loggingEsClient are mandatory"
+  try {
+    const {
+      parameters,
+      dataStoreEsClient,
+      loggingEsClient
+    } = getValidatedRequest(request);
+
+    const cleanupPeriodHours = validatePeriodHours(
+      getParamFromFunction(parameters, "p1MaintainDs", "dataStoreCleanupPeriod", 12),
+      ERRORS.PARAMETERS_INVALID
     );
-    throw new Error("parameters, dataStoreEsClient, and loggingEsClient are mandatory");
-  }
 
-  const cleanupPeriodHours = Number(
-    getParamFromFunction(parameters, "p1MaintainDs", "dataStoreCleanupPeriod", 12)
-  );
+    const retentionPeriodHours = validatePeriodHours(
+      getParamFromFunction(parameters, "p1MaintainDs", "dataStoreRetentionPeriod", 48),
+      ERRORS.RETENTION_PERIOD_INVALID
+    );
 
-  const retentionPeriodHours = Number(
-    getParamFromFunction(parameters, "p1MaintainDs", "dataStoreRetentionPeriod", 48)
-  );
-
-  const client = await onfAdapter.getEsClient(
-    false,
-    dataStoreEsClient.uuid,
-    dataStoreEsClient,
-    logger
-  );
-
-  const response = await withRetry(
-    async () =>
-      client.search({
-        index: dataStoreEsClient["index-alias"],
-        size: 1000,
-        body: {
-          query: { match_all: {} }
-        }
-      }),
-    {
-      label: "p1MaintainDs.search",
-      retryIntervalMs: 10000,
-      logger
+    let client;
+    try {
+      client = await onfAdapter.getEsClient(
+        false,
+        dataStoreEsClient.uuid,
+        dataStoreEsClient,
+        logger
+      );
+    } catch (error) {
+      logger.error?.(
+        {
+          label: "p1MaintainDs.getDataStoreClient",
+          error: error.message || error
+        },
+        "Failed to initialize data store ES client"
+      );
+      throw buildProcessingError(ERRORS.DATA_STORE_ES_CLIENT_INVALID, error);
     }
-  ).catch((error) => {
+
+    let response;
+    try {
+      response = await withRetry(
+        async () =>
+          client.search({
+            index: dataStoreEsClient["index-alias"],
+            size: 1000,
+            body: {
+              query: { match_all: {} }
+            }
+          }),
+        {
+          label: "p1MaintainDs.search",
+          retryIntervalMs: 10000,
+          logger
+        }
+      );
+    } catch (error) {
       logger.error(
         {
-          label: "search-data-store-for-maintenance",
+          label: "p1MaintainDs: search-data-store-for-maintenance",
           error: error.message || error
         },
         "Failed to search data store for maintenance"
       );
-    });
+      //throw buildProcessingError(ERRORS.ELASTICSEARCH_READ_ERROR, error);
+      logger.error(buildProcessingError(ERRORS.ELASTICSEARCH_READ_ERROR, error).message);
+    }
 
-  const cutoff = Date.now() - retentionPeriodHours * 3600 * 1000;
+    const cutoff = Date.now() - retentionPeriodHours * 3600 * 1000;
 
-  const cutoffIso = new Date(cutoff).toJSON();
+    const cutoffIso = new Date(cutoff).toJSON();
 
-  const loggingClient = await getLoggingClient(loggingEsClient, logger);
+    const loggingClient = await tryGetLoggingClient(loggingEsClient, logger);
 
-  const cleanupSummary = {
-    cleanupPeriodHours,
-    retentionPeriodHours,
-    devicesVisited: 0,
-    devicesDeleted: 0,
-    batchesDeleted: 0,
-    mountNames: [],
-    loggingDocumentsDeleted: 0
-  };
+    const cleanupSummary = {
+      cleanupPeriodHours,
+      retentionPeriodHours,
+      devicesVisited: 0,
+      devicesDeleted: 0,
+      batchesDeleted: 0,
+      mountNames: [],
+      loggingDocumentsDeleted: 0
+    };
 
-  cleanupSummary.loggingDocumentsDeleted = await deleteOldLoggingDocuments(
-    loggingClient,
-    loggingEsClient,
-    cutoffIso,
-    logger
-  );
+    if (loggingClient) {
+      cleanupSummary.loggingDocumentsDeleted = await deleteOldLoggingDocuments(
+        loggingClient,
+        loggingEsClient,
+        cutoffIso,
+        logger
+      );
+    }
 
   
 
-  for (const hit of (((response || {}).body?.hits || {}).hits || [])) {
-    const source = hit._source || {};
-    const mountName = source.mountName || source["mount-name"] || hit._id;
+    for (const hit of (((response || {}).body?.hits || {}).hits || [])) {
+      const source = hit._source || {};
+      const mountName = source.mountName || source["mount-name"] || hit._id;
 
-    cleanupSummary.devicesVisited += 1;
-    cleanupSummary.mountNames.push(mountName);
-
-    const batch = Array.isArray(source.batch) ? source.batch : [];
-    const filtered = batch.filter((entry) => {
-      const timestamp = entry.batchTimestamp || entry.timestamp;
-      if (!timestamp) {
-        return true;
+      if (!mountName) {
+        throw buildProcessingError(ERRORS.MOUNT_NAME_NOT_PROVIDED);
       }
-      return new Date(timestamp).getTime() >= cutoff;
-    });
-    const deletedBatches = batch.length - filtered.length;
 
-    if (shouldDeleteDataStoreDocument(source, filtered, cutoff)) {
-      const deleted = await deleteDataStoreDocument(
-        client,
-        dataStoreEsClient,
-        hit,
-        mountName,
-        logger
-      );
+      cleanupSummary.devicesVisited += 1;
+      cleanupSummary.mountNames.push(mountName);
 
-      if (deleted) {
+      const batch = Array.isArray(source.batch) ? source.batch : [];
+      const filtered = batch.filter((entry) => {
+        const timestamp = entry.batchTimestamp || entry.timestamp;
+        if (!timestamp) {
+          return true;
+        }
+        return new Date(timestamp).getTime() >= cutoff;
+      });
+      const deletedBatches = batch.length - filtered.length;
+
+      if (shouldDeleteDataStoreDocument(source, filtered, cutoff)) {
+        await deleteDataStoreDocument(
+          client,
+          dataStoreEsClient,
+          hit,
+          mountName,
+          logger
+        );
+
         cleanupSummary.devicesDeleted += 1;
         cleanupSummary.batchesDeleted += deletedBatches;
+
+        continue;
       }
 
-      continue;
+      source.locked = true;
+      source.timestamp = source.timestamp || new Date().toJSON();
+
+      try {
+        await withRetry(
+          async () =>
+            client.index({
+              index: dataStoreEsClient["index-alias"],
+              id: hit._id,
+              body: source,
+              refresh: false
+            }),
+          {
+            label: `p1MaintainDs.lock:${mountName}`,
+            retryIntervalMs: 10000,
+            logger
+          }
+        );
+      } catch (error) {
+        logger.error?.(
+          {
+            label: "p1MaintainDs: lock-device-for-maintenance",
+            mountName,
+            error: error.message || error
+          },
+          "Failed to lock device for maintenance"
+        );
+        //throw buildProcessingError(ERRORS.ELASTICSEARCH_LOCK_ERROR, error);
+        logger.error(buildProcessingError(ERRORS.ELASTICSEARCH_LOCK_ERROR, error).message);
+      }
+
+      cleanupSummary.batchesDeleted += deletedBatches;
+      source.batch = filtered;
+      source.timestamp = new Date().toJSON();
+      source.locked = false;
+
+      try {
+        await withRetry(
+          async () =>
+            client.index({
+              index: dataStoreEsClient["index-alias"],
+              id: hit._id,
+              body: source,
+              refresh: false
+            }),
+          {
+            label: `p1MaintainDs.save:${mountName}`,
+            retryIntervalMs: 10000,
+            logger
+          }
+        );
+      } catch (error) {
+        logger.error?.(
+          {
+            label: "p1MaintainDs: save-device-after-maintenance",
+            mountName,
+            error: error.message || error
+          },
+          "Failed to save device after maintenance"
+        );
+       // throw buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error);
+        logger.error(buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error).message);
+      }
     }
 
-    source.locked = true;
-    source.timestamp = source.timestamp || new Date().toJSON();
+    return { cleanupSummary };
+  } catch (error) {
+    if (error && ERRORS.knownErrors.has(error.message)) {
+      throw error;
+    }
 
-    await withRetry(
-      async () =>
-        client.index({
-          index: dataStoreEsClient["index-alias"],
-          id: hit._id,
-          body: source,
-          refresh: false
-        }),
+    logger.error?.(
       {
-        label: `p1MaintainDs.lock:${mountName}`,
-        retryIntervalMs: 10000,
-        logger
-      }
-    ).catch((error) => {
-      logger.error(
-        {
-          label: "lock-device-for-maintenance",
-          error: error.message || error
-        },
-        "Failed to lock device for maintenance"
-      );
-    });
+        label: "p1MaintainDs",
+        error: error.message || error
+      },
+      "Unexpected error in p1MaintainDs"
+    );
 
-    cleanupSummary.batchesDeleted += deletedBatches;
-    source.batch = filtered;
-    source.timestamp = new Date().toJSON();
-    source.locked = false;
-
-    await withRetry(
-      async () =>
-        client.index({
-          index: dataStoreEsClient["index-alias"],
-          id: hit._id,
-          body: source,
-          refresh: false
-        }),
-      {
-        label: `p1MaintainDs.save:${mountName}`,
-        retryIntervalMs: 10000,
-        logger
-      }
-    ).catch((error) => {
-      logger.error(
-        {
-          label: "save-device-after-maintenance",
-          error: error.message || error
-        },
-        "Failed to save device after maintenance"
-      );
-    });
+    throw buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR, error);
   }
-
-  return { cleanupSummary };
 }
 
 module.exports = { run };

@@ -64,8 +64,13 @@ async function run(request) {
       let producerConnected;
       try {
         producerConnected = await onfAdapter.connectKafkaProducer(
-          kafkaClient.clientId,
-          kafkaClient.brokerList,
+          {
+            clientId: kafkaClient.clientId,
+            brokers: kafkaClient.brokerList,
+            logger,
+            auth: kafkaClient.auth
+          },
+          null,
           logger
         );
       } catch (e) {
@@ -81,7 +86,7 @@ async function run(request) {
         kafkaClientUuid: param.value,
         clientId: kafkaClient.clientId,
         groupId: kafkaClient.groupId,
-        //auth: kafkaClient.auth,
+        auth: kafkaClient.auth,
         brokerList: kafkaClient.brokerList,
         topicName: kafkaClient.topicName,
         type: kafkaClient.type

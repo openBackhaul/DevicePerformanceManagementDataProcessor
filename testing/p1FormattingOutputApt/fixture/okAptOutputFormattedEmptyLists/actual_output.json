@@ -1,0 +1,7 @@
+{
+  "format-name": "apt-output-format",
+  "output-format": {
+    "air-interface-list": [],
+    "ethernet-container-list": []
+  }
+}

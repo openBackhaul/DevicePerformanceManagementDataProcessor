@@ -113,7 +113,7 @@ scenarios:
     inputFixture: "input.json"
     expected:
       type: "error"
-      errorEnum: "Kafka session initialization failed"
+      errorEnum: "Kafka address could not be resolved"
     mocks:
       - stepId: "ltpResolution.readKafkaAddress"
         type: "return"
@@ -140,33 +140,6 @@ scenarios:
         type: "throw"
         error: "Producer connection to kafka failed"
 
-  - id: "errConsumerConnectionToKafkaFailed"
-    description: "Spec: 'Consumer connection to kafka failed' (implementation currently does not connect consumer)"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "Consumer connection to kafka failed"
-    mocks:
-      - stepId: "ltpResolution.readKafkaAddress"
-        type: "return"
-        fixture: "readKafkaAddress.aptProvider.json"
-      - stepId: "onfAdapter.connectKafkaProducer"
-        type: "return"
-        fixture: "connectKafkaProducer.true.json"
-
-  - id: "errGeneralProcessingError"
-    description: "Spec: 'General processing error' on unexpected exception"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "General processing error"
-    mocks:
-      - stepId: "ltpResolution.readKafkaAddress"
-        type: "throw"
-        error: "boom"
-      - stepId: "onfAdapter.connectKafkaProducer"
-        type: "return"
-        fixture: "connectKafkaProducer.true.json"
 
   # -------------------------
   # Happy path

@@ -1,0 +1,2561 @@
+{
+  "format-name": "apt-output-format",
+  "output-format": {
+    "air-interface-list": [],
+    "ethernet-container-list": [
+      {
+        "ethernet-container-identifiers": {
+          "mount-name": "External label not yet defined.",
+          "interface-name": "LAN-3-RJ45",
+          "logical-termination-point-id": "LTP-ETC-TTP-LAN-3"
+        },
+        "ethernet-container-performance-measurements-list": [
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T01:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T09:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T05:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T01:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T07:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T08:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T02:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T11:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T11:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T08:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T05:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T10:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T02:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T05:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T02:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T01:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T06:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T06:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T07:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T03:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T12:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T08:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T10:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T12:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T11:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T10:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T03:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T07:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T03:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T12:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T04:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T04:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T04:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T07:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T01:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T04:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T11:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T06:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T06:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T03:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T09:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T12:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T05:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T09:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T10:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T08:30:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T09:00:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          },
+          {
+            "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
+            "period-end-time": "2026-06-25T02:45:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "suspect-interval-flag": false,
+            "performance-data": {
+              "oversized-frames-ingress": 0,
+              "total-bytes-input": "0",
+              "total-bytes-output": "0",
+              "dropped-frames-input": 0,
+              "jabber-frames-ingress": 0,
+              "multicast-frames-output": 0,
+              "fragmented-frames-input": 0,
+              "queue-utilization-list": [
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE3"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE2"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_ASSURED_FORWARDING_QUEUE1"
+                },
+                {
+                  "max-queue-length": -1,
+                  "avg-queue-length": -1,
+                  "queue-name": "ethernet-container-2-0:QUEUE_NAME_TYPE_BEST_EFFORT_QUEUE"
+                }
+              ],
+              "unknown-protocol-frames-input": -1,
+              "forwarded-frames-input": "-1",
+              "errored-frames-input": 0,
+              "multicast-frames-input": 0,
+              "unicast-frames-input": "-1",
+              "unicast-frames-output": "-1",
+              "total-frames-output": "0",
+              "undersized-frames-ingress": 0,
+              "time-period": 900,
+              "errored-frames-output": -1,
+              "total-frames-input": "0",
+              "dropped-frames-output": -1,
+              "forwarded-frames-output": "-1",
+              "broadcast-frames-input": 0,
+              "broadcast-frames-output": 0,
+              "max-bytes-per-second-output": -1
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

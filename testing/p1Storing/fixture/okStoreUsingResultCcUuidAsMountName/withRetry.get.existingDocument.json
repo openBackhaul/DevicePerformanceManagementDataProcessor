@@ -1,0 +1,21 @@
+{
+  "body": {
+    "_source": {
+      "mountName": "mount-123",
+      "interface-metadata-list": [
+        {
+          "uuid": "if-old",
+          "interface-name": "eth-old"
+        }
+      ],
+      "batch": [
+        {
+          "batchTimestamp": "2026-07-19T10:00:00Z",
+          "resultCc": {
+            "uuid": "mount-123"
+          }
+        }
+      ]
+    }
+  }
+}

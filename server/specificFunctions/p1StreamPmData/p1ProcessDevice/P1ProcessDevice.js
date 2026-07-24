@@ -7,9 +7,10 @@ const logger = require('../../../service/LoggingService.js').getLogger();
 const formatAptOutputErrors = require('./p1FormattingOutputApt/ErrorsEnum');
 const p1FormattingOutputApt = require("./p1FormattingOutputApt/P1FormattingOutputApt");
 const formatOnfOutputErrors = require('./p1FormattingOutputOnf/ErrorsEnum');
-const {p1FormattingOutputOnf} = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
+const p1FormattingOutputOnf = require("./p1FormattingOutputOnf/P1FormattingOutputOnf");
 const fs = require("fs");
 const sampleResultCcApt = require("./outputAPTSample.json");
+const sampleResultCcOnf = require("./outputOnfSample.json");
 
 function getTargetConsumers(kafkaConsumerTypes) {
   return String(
@@ -143,37 +144,6 @@ async function run(request) {
        It also performs some basic validations on the result CC. If the formatting fails or the result CC is invalid, 
        it returns an error response with details about the error.
     */
-    function isValidFormattedOutputAptResponse(response) {
-        return (
-            response &&
-            typeof response === "object" &&
-            response["output-format"]
-        );
-    }
-
-    function buildFormattingOutputAptError(response, mountName) {
-        const error = new Error(
-            `p1FormattingOutputApt returned error response: ${JSON.stringify(response)}`
-        );
-
-        error.stage = "p1FormattingOutputApt";
-        error.vendorResponse = response;
-        error.mountName = mountName;
-
-        if (
-            response === formatAptOutputErrors.RESULTCC_NOT_PROVIDED ||
-            response === formatAptOutputErrors.RESULTCC_INCOMPLETE ||
-            response === formatAptOutputErrors.RESULTCC_INVALID ||
-            response === formatAptOutputErrors.OUTPUT_COULD_NOT_BE_PROVIDED ||
-            response === formatAptOutputErrors.GENERAL_ERROR
-        ) {
-            error.retryable = false;
-        } else {
-            error.retryable = true;
-        }
-
-        return error;
-    }
 
     if (!p1FormattingOutputAptParameters || !createResultCcResponse || !createResultCcResponse.resultCc) {
       logger.error(
@@ -207,12 +177,76 @@ async function run(request) {
         throw buildFormattingOutputAptError(responseApt, mountName);
     }
 
-    const resultCcApt = responseApt["output-format"];
+    function isValidFormattedOutputAptResponse(response) {
+        return (
+            response &&
+            typeof response === "object" &&
+            response["output-format"]
+        );
+    }
+
+    function buildFormattingOutputAptError(response, mountName) {
+        const error = new Error(
+            `p1FormattingOutputApt returned error response: ${JSON.stringify(response)}`
+        );
+
+        error.stage = "p1FormattingOutputApt";
+        error.vendorResponse = response;
+        error.mountName = mountName;
+
+        if (
+            response === formatAptOutputErrors.RESULTCC_NOT_PROVIDED ||
+            response === formatAptOutputErrors.RESULTCC_INCOMPLETE ||
+            response === formatAptOutputErrors.RESULTCC_INVALID ||
+            response === formatAptOutputErrors.OUTPUT_COULD_NOT_BE_PROVIDED ||
+            response === formatAptOutputErrors.GENERAL_ERROR
+        ) {
+            error.retryable = false;
+        } else {
+            error.retryable = true;
+        }
+
+        return error;
+    }
+
+    const resultCcApt = responseApt["output-format"];//sampleResultCcApt;//
 
     /*   P1FormattingOutputOnf is an ONF function that formats the output result CC according to the ONF output format. 
         It also performs some basic validations on the result CC. If the formatting fails or the result CC is invalid, 
         it returns an error response with details about the error.
     */
+
+    if (!p1FormattingOutputOnfParameters || !createResultCcResponse || !createResultCcResponse.resultCc) {
+      logger.error(
+          {
+            label: "invalid-input for-formatting-output-onf", 
+            mountName
+          },
+          "Invalid input: parameters and resultCc are mandatory for p1FormattingOutputOnf"
+        );
+      throw new Error("parameters and resultCc are mandatory for p1FormattingOutputOnf");
+    }
+
+    
+    const responseOnf = await p1FormattingOutputOnf({
+        'result-cc': createResultCcResponse.resultCc,
+        parameters: p1FormattingOutputOnfParameters
+    });
+
+    if (!isValidFormattedOutputOnfResponse(responseOnf)) {
+        if (logger && logger.error) {
+            logger.error(
+            {
+                label: "p1-formatting-output-onf-error",
+                mountName,
+                vendorResponse: responseOnf
+            },
+            "p1FormattingOutputOnf returned an error response"
+            );
+        }
+
+        throw buildFormattingOutputOnfError(responseOnf, mountName);
+    } 
 
     function isValidFormattedOutputOnfResponse(response) {
         return (
@@ -249,39 +283,7 @@ async function run(request) {
         return error;
     }
 
-    if (!p1FormattingOutputOnfParameters || !createResultCcResponse || !createResultCcResponse.resultCc) {
-      logger.error(
-          {
-            label: "invalid-input for-formatting-output-onf", 
-            mountName
-          },
-          "Invalid input: parameters and resultCc are mandatory for p1FormattingOutputOnf"
-        );
-      throw new Error("parameters and resultCc are mandatory for p1FormattingOutputOnf");
-    }
-
-    
-    const responseOnf = await p1FormattingOutputOnf({
-        resultCc: createResultCcResponse.resultCc,
-        parameters: p1FormattingOutputOnfParameters
-    });
-
-    if (!isValidFormattedOutputOnfResponse(responseOnf)) {
-        if (logger && logger.error) {
-            logger.error(
-            {
-                label: "p1-formatting-output-onf-error",
-                mountName,
-                vendorResponse: responseOnf
-            },
-            "p1FormattingOutputOnf returned an error response"
-            );
-        }
-
-        throw buildFormattingOutputOnfError(responseOnf, mountName);
-    } 
-
-    const resultCcOnf = responseOnf["output-format"];
+    const resultCcOnf = responseOnf["output-format"];//sampleResultCcOnf;//
 
    const resultMountName =
       createResultCcResponse.mountName ||
@@ -334,6 +336,9 @@ async function run(request) {
       mountName,
       stage: error.stage || "p1ProcessDevice",
       message: error.message || String(error),
+      retryable: error.retryable,
+      details: error.details,
+      vendorResponse: error.vendorResponse,
       originalError: error
     };
   }
