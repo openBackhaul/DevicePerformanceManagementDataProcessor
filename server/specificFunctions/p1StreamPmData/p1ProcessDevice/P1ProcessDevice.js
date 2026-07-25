@@ -66,7 +66,7 @@ function validateRequest(request) {
   }
 
   if (!mountName || typeof mountName !== "string" || mountName.trim() === "") {
-    throw buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID);
+    throw buildProcessingError(ERRORS.MOUNT_NAME_NOT_FOUND);
   }
 
   if (!parameters || !isPlainObject(parameters)) {
@@ -95,69 +95,70 @@ function validateRequest(request) {
 }
 
 function buildTopLevelError(error, mountName) {
+  const message = String(error?.message || error || "");
   if (error && typeof error === "object" && error.message) {
     const message = String(error.message);
 
-    if (
-      message === ERRORS.INPUT_DATA_MISSING_OR_INVALID ||
-      message === "mountName, parameters, configFile, mwdiReplicaEsClient and dataStoreEsClient are mandatory"
-    ) {
-      return buildProcessingError(ERRORS.INPUT_DATA_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
+    if (ERRORS.knownErrors.has(message)) {
+      return buildProcessingError(message, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message === "mountName not provided" || message === "mountName invalid") {
-      return buildProcessingError(ERRORS.MOUNT_NAME_NOT_FOUND, error.stage || "p1ProcessDevice", {
-        vendorResponse: error.vendorResponse,
-        originalError: error
-      });
-    }
+    const normalized = message.toLowerCase();
 
-    if (message.includes("parameters") || message.includes("Parameters")) {
+    if (normalized.includes("parameter")) {
       return buildProcessingError(ERRORS.PARAMETERS_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message.includes("configFile") || message.includes("config file")) {
+    if (normalized.includes("config")) {
       return buildProcessingError(ERRORS.CONFIG_FILE_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message.includes("rawCc") || message.includes("rawCc could not")) {
+    if (normalized.includes("rawcc") || normalized.includes("raw cc")) {
       return buildProcessingError(ERRORS.RAW_CC_DATA_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message.includes("resultCc") || message.includes("resultCc could not") || message.includes("result-cc")) {
+    if (
+      normalized.includes("resultcc") ||
+      normalized.includes("result cc") ||
+      normalized.includes("result-cc")
+    ) {
       return buildProcessingError(ERRORS.RESULT_CC_DATA_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message.includes("output") || message.includes("format")) {
+    if (normalized.includes("output") || normalized.includes("format")) {
       return buildProcessingError(ERRORS.OUTPUT_FORMAT_MISSING_OR_INVALID, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message.includes("Kafka") || message.includes("Producer") || message.includes("transmission")) {
+    if (
+      normalized.includes("kafka") ||
+      normalized.includes("producer") ||
+      normalized.includes("transmission")
+    ) {
       return buildProcessingError(ERRORS.KAFKA_TRANSMISSION_FAILED, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
       });
     }
 
-    if (message.includes("store") || message.includes("stored")) {
+    if (normalized.includes("storing") || normalized.includes("store")) {
       return buildProcessingError(ERRORS.STORING_RESULT_CC_FAILED, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
