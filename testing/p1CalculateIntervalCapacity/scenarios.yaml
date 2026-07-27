@@ -1,0 +1,75 @@
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1CalculateIntervalCapacity/P1CalculateIntervalCapacity"
+    exportName: ""
+
+# No dependencies/processing steps for this function (no consumed sub-functions)
+processingSteps: []
+
+# Not used here (no dependency failures to map), but included to match the HLD concept
+errorMapping: {}
+
+scenarios:
+  - id: "missingInput"
+    description: "Should return error when input is null (General processing error)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "ignoreUnknownTransmissionMode"
+    description: "Should return success: ignore unknown transmission-mode entries"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "errTimeXstatesListNotProvided"
+    description: "Should return error when time-xstates-list is missing (timeXstatesList not provided)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "timeXstatesList not provided"
+    mocks: []
+
+  - id: "errTimeXstatesListInvalid"
+    description: "Should return error when time-xstates-list is not an array (timeXstatesList invalid)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "timeXstatesList invalid"
+    mocks: []
+
+  - id: "errTransmissionModeListInvalid"
+    description: "Should return error when transmission-mode-list is not an array (transmissionModeList invalid)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList invalid"
+    mocks: []
+
+  - id: "errTransmissionModeListNotProvided"
+    description: "Should return error when transmission-mode-list is missing (transmissionModeList not provided)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList not provided"
+    mocks: []
+
+  - id: "calculateIntervalCapacity"
+    description: "Should return success: compute interval-capacity as time-weighted average (example: 100@10s + 200@10s => 150)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "totalTimeZero"
+    description: "Should return success: empty time-xstates-list => interval-capacity 0"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []

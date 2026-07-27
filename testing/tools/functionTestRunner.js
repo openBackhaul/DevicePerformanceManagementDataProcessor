@@ -104,10 +104,11 @@ function getSequenceItem(sequence, index, stepId, kind, repeatLast = true) {
 
 function resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex) {
   const repeatLast = mockDef.repeatLast !== false;
+  const fixtureSequence = mockDef.fixtureSequence ?? mockDef.fixtures;
 
-  if (mockDef.fixtureSequence !== undefined) {
+  if (fixtureSequence !== undefined) {
     const fixtureName = getSequenceItem(
-      mockDef.fixtureSequence,
+      fixtureSequence,
       currentCallIndex,
       stepId,
       "fixture",
@@ -125,16 +126,17 @@ function resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex) {
   }
 
   throw new Error(
-    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'fixture', 'fixtureSequence', or 'value'`
+    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'fixture', 'fixtureSequence'/'fixtures', or 'value'`
   );
 }
 
 function resolveMockError(mockDef, stepId, currentCallIndex) {
   const repeatLast = mockDef.repeatLast !== false;
+  const errorSequence = mockDef.errorSequence ?? mockDef.errors;
 
-  if (mockDef.errorSequence !== undefined) {
+  if (errorSequence !== undefined) {
     return getSequenceItem(
-      mockDef.errorSequence,
+      errorSequence,
       currentCallIndex,
       stepId,
       "error",
@@ -147,7 +149,7 @@ function resolveMockError(mockDef, stepId, currentCallIndex) {
   }
 
   throw new Error(
-    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'error' or 'errorSequence'`
+    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'error' or 'errorSequence'/'errors'`
   );
 }
 
@@ -265,6 +267,28 @@ function installDependencyMocks(dependencies = []) {
       continue;
     }
 
+    if (
+      dep.name === "../../server/service/LoggingService.js" ||
+      dep.name.endsWith("/service/LoggingService.js")
+    ) {
+      jest.doMock(dep.name, () => {
+        const logger = {
+          info: jest.fn(),
+          error: jest.fn(),
+          warn: jest.fn(),
+          debug: jest.fn(),
+          fatal: jest.fn(),
+          trace: jest.fn(),
+          child: jest.fn(() => logger),
+        };
+
+        return {
+          getLogger: jest.fn(() => logger),
+        };
+      });
+      continue;
+    }
+
     jest.doMock(dep.name, () => ({}), { virtual: true });
   }
 }
@@ -327,6 +351,14 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   }
 }
 
+function readScenarioInput(s, scenarioDir) {
+  if (Object.prototype.hasOwnProperty.call(s, "input")) {
+    return cloneValue(s.input);
+  }
+
+  return readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json"));
+}
+
 /**
  * Called by generated Jest tests.
  */
@@ -358,7 +390,7 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
         jest.resetAllMocks();
         jest.resetModules();
 
-        const input = readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json"));
+        const input = readScenarioInput(s, scenarioDir);
 
         installDependencyMocks(dependencies);
 

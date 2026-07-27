@@ -1,0 +1,5 @@
+{
+  "channel-bandwidth": 56000,
+  "number-of-states-in-modulation": 32,
+  "code-rate": 85
+}

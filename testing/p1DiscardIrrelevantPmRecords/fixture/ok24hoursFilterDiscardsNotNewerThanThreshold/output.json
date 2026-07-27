@@ -1,0 +1,23 @@
+{
+  "filtered-historical-performance-data-list": [
+    {
+      "history-data-id": "PM_RADIO_15M_01",
+      "period-end-time": "2026-02-09T17:30:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "ses": 0,
+        "time-xstates-list": [
+          { "time-xstate-sequence-number": 2, "time": 84, "transmission-mode": "56002" }
+        ],
+        "time-period": 900
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_24H_NEW",
+      "period-end-time": "2026-02-10T00:00:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "performance-data": { "some-kpi": 222 }
+    }
+  ]
+}

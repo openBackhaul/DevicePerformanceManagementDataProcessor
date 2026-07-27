@@ -1,0 +1,6 @@
+{
+  "channel-bandwidth": 112000,
+  "symbol-rate-reduction-factor": 1,
+  "number-of-states-in-modulation": 32,
+  "code-rate": 85
+}

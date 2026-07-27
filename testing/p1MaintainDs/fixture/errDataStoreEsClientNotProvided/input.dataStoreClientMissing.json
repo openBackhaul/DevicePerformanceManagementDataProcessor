@@ -1,0 +1,22 @@
+{
+  "parameters":  {
+        "function-name": "p1MaintainDs",
+        "description": "Cyclically cleans up old entries in the DataStore",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "dataStoreCleanupPeriod",
+            "purpose": "Time period between two cleanup runs in hours",
+            "owner": "platform",
+            "value": "12"
+          },
+          {
+            "parameter-name": "dataStoreRetentionPeriod",
+            "purpose": "Time period for which data is retained before deletion in hours",
+            "owner": "platform",
+            "value": "48"
+          }
+        ],
+        "sub-function": []
+      }
+}

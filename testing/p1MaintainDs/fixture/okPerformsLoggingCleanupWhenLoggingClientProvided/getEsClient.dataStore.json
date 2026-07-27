@@ -1,0 +1,6 @@
+{
+  "search": "mocked-in-test",
+  "index": "mocked-in-test",
+  "delete": "mocked-in-test",
+  "deleteByQuery": "mocked-in-test"
+}

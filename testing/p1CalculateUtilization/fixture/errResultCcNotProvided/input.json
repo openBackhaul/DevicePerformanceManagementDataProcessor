@@ -1,0 +1,17 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+    "period-end-time": "2026-06-25T12:45:00+00:00",
+    "performance-data": {
+      "total-bytes-output": "1500000",
+      "time-period": 900
+    }
+  },
+  "aggregation-group": {
+    "physical-server-ltp-list": [
+      "LTP-AIR-1",
+      "LTP-AIR-2"
+    ]
+  }
+
+}

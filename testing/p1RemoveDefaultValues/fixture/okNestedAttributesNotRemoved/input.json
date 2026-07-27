@@ -1,0 +1,21 @@
+{
+  "parameters": {
+    "function-name": "p1RemoveDefaultValues",
+    "description": "Deletes attributes with default values from the transferred object",
+    "is-active": true,
+    "parameter": [
+      {
+        "parameter-name": "unknown-protocol-frames-input",
+        "purpose": "default",
+        "owner": "engineering",
+        "value": "-1"
+      }
+    ],
+    "sub-function": []
+  },
+  "input-object": {
+    "nested": {
+      "unknown-protocol-frames-input": -1
+    }
+  }
+}

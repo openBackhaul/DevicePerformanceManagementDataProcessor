@@ -1,0 +1,143 @@
+# testing/p1RemoveDefaultValues/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveDefaultValues/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices/p1RemoveDefaultValues/1.0.0/variables.yaml
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
+    exportName: ""
+
+processingSteps: []
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Parameters validation
+  # -------------------------
+
+  - id: "errParametersNotProvided"
+    description: "Should return error when parameters is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+    mocks: []
+
+  - id: "errParametersInvalid"
+    description: "Should return error when parameters is not an object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  # -------------------------
+  # Input object validation
+  # -------------------------
+
+  - id: "errInputObjectNotProvided"
+    description: "Should return error when input-object is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "inputObject not provided"
+    mocks: []
+
+  - id: "errInputObjectInvalid"
+    description: "Should return error when input-object is not an object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "inputObject invalid"
+    mocks: []
+
+  - id: "errMissingInput"
+    description: "Should return error when input is null (catch-all)"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  # ---------------------------------------
+  # Default-value-list derivation edge cases
+  # ---------------------------------------
+
+  - id: "errNoParametersList"
+    description: "Should return error parameters invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errEmptyParametersList"
+    description: "Should return error parameters invalid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+    mocks: []
+
+  - id: "errParameterEntryMissingNameOrValue"
+    description: "Should return  General processing error"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  # -------------------------
+  # Actual removal behavior
+  # -------------------------
+
+  - id: "okRemoveSingleDefaultValue"
+    description: "Should return success: remove one attribute whose value matches a configured default value"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okDoNotRemoveWhenValueDiffers"
+    description: "Should return success: do not remove attribute when value does not match the default value"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRemoveMultipleDefaultValues"
+    description: "Should return success: remove multiple attributes whose values match configured defaults"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okRemoveOnlyExactMatches"
+    description: "Should return success: remove only exact matches (string compare), keep attributes with close/non-equal values"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okNestedAttributesNotRemoved"
+    description: "Should return success: not remove nested attributes when only top-level matching is implemented"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okInputObjectAlreadyClean"
+    description: "Should return success when input-object contains no default-valued attributes"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []

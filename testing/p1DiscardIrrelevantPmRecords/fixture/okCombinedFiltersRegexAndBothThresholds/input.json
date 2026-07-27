@@ -1,0 +1,47 @@
+{
+  "historical-performance-data-list": [
+    {
+      "history-data-id": "PM_RADIO_15M_OLD",
+      "period-end-time": "2026-02-09T17:30:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "performance-data": {
+        "time-period": 900,
+        "time-xstates-list": [
+          { "time-xstate-sequence-number": 2, "time": 84, "transmission-mode": "56002" }
+        ]
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_NEW",
+      "period-end-time": "2026-02-09T17:45:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "performance-data": {
+        "time-period": 900,
+        "time-xstates-list": [
+          { "time-xstate-sequence-number": 2, "time": 84, "transmission-mode": "56002" }
+        ]
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_24H_OLD",
+      "period-end-time": "2026-02-09T00:00:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "performance-data": { "some-kpi": 111 }
+    },
+    {
+      "history-data-id": "PM_RADIO_24H_NEW",
+      "period-end-time": "2026-02-10T00:00:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "performance-data": { "some-kpi": 222 }
+    },
+    {
+      "history-data-id": "PM_RADIO_5M_01",
+      "period-end-time": "2026-02-09T17:40:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-5-MIN",
+      "performance-data": { "some-kpi": 999 }
+    }
+  ],
+  "relevant-granularities": ":GRANULARITY_PERIOD_TYPE_PERIOD-(?:15-MIN|24-HOURS)$",
+  "most-recent-period-end-time": "2026-02-09T17:30:00.0+00:00",
+  "most-recent-period-end-time-24": "2026-02-09T00:00:00.0+00:00"
+}

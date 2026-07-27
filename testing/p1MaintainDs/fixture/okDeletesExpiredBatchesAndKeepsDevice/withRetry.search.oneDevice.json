@@ -1,0 +1,20 @@
+{
+  "body": {
+    "hits": {
+      "hits": [
+        {
+          "_id": "DEBUG-MOUNT",
+          "_source": {
+            "mountName": "DEBUG-MOUNT",
+            "locked": false,
+            "timestamp": "2026-05-25T10:00:00.000Z",
+            "batch": [
+              { "batchTimestamp": "2026-06-22T11:00:00.000Z" },
+              { "batchTimestamp": "2026-07-24T12:00:00.000Z" }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

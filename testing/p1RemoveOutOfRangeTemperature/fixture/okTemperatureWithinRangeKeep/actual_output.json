@@ -1,0 +1,139 @@
+{
+  "equipment": [
+    {
+      "actual-equipment": {
+        "physical-properties": {
+          "temperature": "45"
+        },
+        "local-id": "EQUIPMENT-1",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SUBRACK"
+        }
+      },
+      "uuid": "HUAWEI-EQUIPMENT-1"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "4-2",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-4-2"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "4-1",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-4-1"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "4-4",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-4-4"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "6-2",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-6-2"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "4-3",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-4-3"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "6-1",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-6-1"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "5",
+        "structure": {
+          "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_MODEM"
+        }
+      },
+      "uuid": "AIR-EQUIPMENT-5"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "6-4",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-6-4"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "6-3",
+        "structure": {
+          "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-6-3"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "5-1",
+        "structure": {
+          "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_OUTDOOR_UNIT"
+        }
+      },
+      "uuid": "AIR-EQUIPMENT-5-1"
+    },
+    {
+      "uuid": "AIR-EQUIPMENT-5-2"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "6",
+        "structure": {
+          "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_PORT_EXPANSION_BOARD"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-6"
+    },
+    {
+      "actual-equipment": {
+        "physical-properties": {},
+        "local-id": "4",
+        "structure": {
+          "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_PORT_EXPANSION_BOARD"
+        }
+      },
+      "uuid": "WIRE-EQUIPMENT-4"
+    }
+  ]
+}

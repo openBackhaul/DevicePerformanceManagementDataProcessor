@@ -1,0 +1,159 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p1CalculateUtilization/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices/p1CalculateUtilization/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1CalculateUtilization/P1CalculateUtilization.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+  - id: "ok15MinAddsUtilization"
+    description: "Should add total-air-interface-interval-capacity and utilization for a 15-minute historical performance slice"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "ok24HoursReturnsSliceUnchanged"
+    description: "Should return historical-performance-data unchanged for a 24-hours slice"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+
+  - id: "okNotYetDefinedReturnsSliceUnchanged"
+    description: "Should return historical-performance-data unchanged for a NOT_YET_DEFINED granularity slice"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  - id: "errHistoricalPerformanceDataNotProvided"
+    description: "Should return 'historicalPerformanceData not provided' when historical-performance-data is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData not provided"
+
+  - id: "errHistoricalPerformanceDataInvalidWhenGranularityMissing"
+    description: "Should return 'historicalPerformanceData invalid' when granularity-period is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+
+  - id: "errHistoricalPerformanceDataInvalidWhenPeriodEndTimeMissing"
+    description: "Should return 'historicalPerformanceData invalid' when period-end-time is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+
+  - id: "errHistoricalPerformanceDataInvalidWhenPerformanceDataMissing"
+    description: "Should return 'historicalPerformanceData invalid' when performance-data is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+
+  - id: "errAggregationGroupNotProvided"
+    description: "Should return 'aggregationGroup not provided' when aggregation-group is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup not provided"
+
+  - id: "errAggregationGroupInvalidWhenPhysicalServerLtpListMissing"
+    description: "Should return 'aggregationGroup invalid' when physical-server-ltp-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup invalid"
+
+  - id: "errAggregationGroupInvalidWhenPhysicalServerLtpListEmpty"
+    description: "Should return 'aggregationGroup invalid' when physical-server-ltp-list is empty"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup invalid"
+
+  - id: "errResultCcNotProvided"
+    description: "Should return 'result-cc not provided' when result-cc is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc not provided"
+
+  - id: "errResultCcInvalidWhenLogicalTerminationPointMissing"
+    description: "Should return 'result-cc invalid' when logical-termination-point is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errResultCcInvalidWhenLogicalTerminationPointNotArray"
+    description: "Should return 'result-cc invalid' when logical-termination-point is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errResultCcInvalidWhenLtpMissingUuid"
+    description: "Should return 'result-cc invalid' when a logical-termination-point item is missing uuid"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errResultCcInvalidWhenLtpMissingLayerProtocol"
+    description: "Should return 'result-cc invalid' when a logical-termination-point item is missing layer-protocol"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errResultCcInvalidWhenAirLayerProtocolMissingPac"
+    description: "Should return 'result-cc invalid' when AIR_LAYER protocol is missing air-interface-2-0:air-interface-pac"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errResultCcInvalidWhenAirHistoryMissingIntervalCapacity"
+    description: "Should return 'result-cc invalid' when AIR_LAYER historical performance entry is missing interval-capacity"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result-cc invalid"
+
+  - id: "errUtilizationCouldNotBeAddedWhenTotalAirCapacityIsZero"
+    description: "Should return 'Utilization could not be added' when total-air-interface-interval-capacity resolves to zero"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be added"
+
+  - id: "errUtilizationCouldNotBeAddedWhenTotalBytesOutputMissing"
+    description: "Should return 'Utilization could not be added' when total-bytes-output is missing for a 15-minute slice"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be added"
+
+  - id: "errUtilizationCouldNotBeAddedWhenTimePeriodMissing"
+    description: "Should return 'Utilization could not be added' when time-period is missing for a 15-minute slice"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "Utilization could not be added"
+

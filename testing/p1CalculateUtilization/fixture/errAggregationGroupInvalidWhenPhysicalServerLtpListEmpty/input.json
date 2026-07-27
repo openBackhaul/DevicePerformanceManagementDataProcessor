@@ -1,0 +1,64 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+    "period-end-time": "2026-06-25T12:45:00+00:00",
+    "performance-data": {
+      "total-bytes-output": "1500000",
+      "time-period": 900
+    }
+  },
+  "aggregation-group": {
+    "physical-server-ltp-list": [
+    ]
+  },
+  "result-cc": {
+    "logical-termination-point": [
+      {
+        "uuid": "LTP-AIR-1",
+        "layer-protocol": [
+          {
+            "local-id": "LP-AIR-1",
+            "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+            "air-interface-2-0:air-interface-pac": {
+              "air-interface-historical-performances": {
+                "number-of-historical-performance-sets": 1,
+                "historical-performance-data-list": [
+                  {
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "period-end-time": "2026-06-25T12:45:00+00:00",
+                    "performance-data": {
+                      "interval-capacity": 50000
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-AIR-2",
+        "layer-protocol": [
+          {
+            "local-id": "LP-AIR-2",
+            "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+            "air-interface-2-0:air-interface-pac": {
+              "air-interface-historical-performances": {
+                "number-of-historical-performance-sets": 1,
+                "historical-performance-data-list": [
+                  {
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "period-end-time": "2026-06-25T12:45:00+00:00",
+                    "performance-data": {
+                      "interval-capacity": 25000
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

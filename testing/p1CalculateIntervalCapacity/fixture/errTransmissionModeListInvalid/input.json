@@ -1,0 +1,6 @@
+{
+  "time-xstates-list": [
+    { "transmission-mode": "A", "time": 10 }
+  ],
+  "transmission-mode-list": "not-an-array"
+}

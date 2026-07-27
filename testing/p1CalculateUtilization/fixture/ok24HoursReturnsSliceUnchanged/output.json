@@ -1,0 +1,10 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-06-25T00:00:00+00:00",
+    "performance-data": {
+      "total-bytes-output": "172800000",
+      "time-period": 86400
+    }
+  }
+}

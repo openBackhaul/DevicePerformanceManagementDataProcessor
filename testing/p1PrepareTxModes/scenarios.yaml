@@ -1,0 +1,152 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/P1PrepareTxModes.js"
+    exportName: ""
+
+processingSteps:
+  - stepId: "p1CalculateAiCapacity"
+    modulePath: "../../server/genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity.js"
+    exportName: ""
+    isAsync: false
+
+errorMapping: {}
+
+scenarios:
+
+  # --------------------------------
+  # capacity enrichment
+  # --------------------------------
+
+  - id: "okRemoveUnusedTransmissionModes"
+    description: "Should remove transmission-mode-list entries not referenced by any positive-time time-xstates-list entry"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        fixture: "p1CalculateAiCapacity.output.json"
+
+  - id: "okKeepOnlyUsedTransmissionModes"
+    description: "Should keep only transmission modes referenced by positive-time time-xstates-list entries"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        fixture: "p1CalculateAiCapacity.output.json"
+
+
+  - id: "okDuplicateUsageAcrossHistoricalEntries"
+    description: "Should keep a transmission mode used in multiple historical entries only once in transmission-mode-list and complement it with capacity"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+
+  - id: "okMixedUsedAndUnusedTransmissionModes"
+    description: "Should remove unused transmission modes, keep used ones, and add capacity only to the kept entries"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+
+  - id: "okAddCapacityToUsedTransmissionModes"
+    description: "Should complement each used transmission mode with capacity from p1CalculateAiCapacity"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+
+  # --------------------------------
+  # input validation
+  # --------------------------------
+
+
+ 
+
+  - id: "errHistoricalPerformanceDataListNotProvided"
+    description: "Should return error when historical-performance-data-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalid"
+    description: "Should return error when historical-performance-data-list is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListIncomplete"
+    description: "Should return error when a historical-performance-data-list entry is missing performance-data"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList incomplete"
+    mocks: []
+
+  - id: "errTransmissionModeListNotProvided"
+    description: "Should return error when transmission-mode-list is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList not provided"
+    mocks: []
+
+  - id: "errTransmissionModeListInvalid"
+    description: "Should return error when transmission-mode-list is not an array"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList invalid"
+    mocks: []
+
+
+  # --------------------------------
+  # historical-performance-data-list behavior
+  # --------------------------------
+
+
+
+  - id: "okRemoveZeroTimeEntries"
+    description: "Should delete time-xstates-list entries where time equals 0"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        fixture: "p1CalculateAiCapacity.output.json"
+
+  - id: "okKeepPositiveTimeEntries"
+    description: "Should keep time-xstates-list entries where time is greater than 0"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        fixture: "p1CalculateAiCapacity.output.json"
+
+
+
+
+
+

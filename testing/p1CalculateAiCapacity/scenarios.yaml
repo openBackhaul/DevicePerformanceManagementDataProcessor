@@ -1,0 +1,235 @@
+# testing/p1CalculateAiCapacity/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/p1CalculateAiCapacity/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1ProcessDevice/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes/p1CalculateAiCapacity/1.0.0/variables.yaml
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity.js"
+    exportName: ""
+
+processingSteps: []
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # channel-bandwidth validation
+  # -------------------------
+
+  - id: "errChannelBandwidthNotProvided"
+    description: "Should return error when channel-bandwidth is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "channelBandwidth not provided"
+    mocks: []
+
+  - id: "errChannelBandwidthInvalid"
+    description: "Should return error when channel-bandwidth is not an integer"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "channelBandwidth invalid"
+    mocks: []
+
+
+
+  - id: "errChannelBandwidthNegative"
+    description: "Should return error when channel-bandwidth is negative"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "channelBandwidth invalid"
+    mocks: []
+
+  # -------------------------
+  # symbol-rate-reduction-factor validation
+  # -------------------------
+
+  - id: "errSymbolRateReductionFactorNotProvided"
+    description: "Should return error when symbol-rate-reduction-factor is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "symbolRateReductionFactor not provided"
+    mocks: []
+
+  - id: "errSymbolRateReductionFactorInvalid"
+    description: "Should return error when symbol-rate-reduction-factor is not an integer"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "symbolRateReductionFactor invalid"
+    mocks: []
+
+  - id: "errSymbolRateReductionFactorNegative"
+    description: "Should return error when symbol-rate-reduction-factor is negative"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "symbolRateReductionFactor invalid"
+    mocks: []
+
+  # -------------------------
+  # number-of-states-in-modulation validation
+  # -------------------------
+
+  - id: "errNumberOfStatesInModulationNotProvided"
+    description: "Should return error when number-of-states-in-modulation is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "numberOfStatesInModulation not provided"
+    mocks: []
+
+  - id: "errNumberOfStatesInModulationInvalid"
+    description: "Should return error when number-of-states-in-modulation is not an integer"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "numberOfStatesInModulation invalid"
+    mocks: []
+
+  - id: "errNumberOfStatesInModulationZero"
+    description: "Should return error when number-of-states-in-modulation is 0"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "numberOfStatesInModulation invalid"
+    mocks: []
+
+  - id: "errNumberOfStatesInModulationNegative"
+    description: "Should return error when number-of-states-in-modulation is negative"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "numberOfStatesInModulation invalid"
+    mocks: []
+
+  # -------------------------
+  # code-rate validation
+  # -------------------------
+
+  - id: "errCodeRateNotProvided"
+    description: "Should return error when code-rate is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "codeRate not provided"
+    mocks: []
+
+  - id: "errCodeRateInvalid"
+    description: "Should return error when code-rate is not an integer"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "codeRate invalid"
+    mocks: []
+
+  - id: "errCodeRateNegative"
+    description: "Should return error when code-rate is negative"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "codeRate invalid"
+    mocks: []
+
+  - id: "errCodeRateTooHigh"
+    description: "Should return error when code-rate is > 100 percent"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "codeRate invalid"
+    mocks: []
+
+
+
+  # -------------------------
+  # catch-all / robustness
+  # -------------------------
+
+  - id: "errMissingInput"
+    description: "Should return General processing error when input is null"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errUnexpectedTypeForInput"
+    description: "Should return General processing error when input is not an object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  # -------------------------
+  # success / calculation behavior
+  # -------------------------
+
+  - id: "okTypicalValues"
+    description: "Should calculate air-interface-capacity for typical valid values"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okChannelBandwidthZero"
+    description: "Should return 0 when channel-bandwidth is 0 "
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okCodeRateZero"
+    description: "Should return 0 when code-rate is 0 percent "
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okDifferentModulation"
+    description: "Should calculate air-interface-capacity for higher modulation order (more states)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okDifferentCodeRate"
+    description: "Should calculate air-interface-capacity for different code-rate (percent)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okSymbolRateReductionFactorOne"
+    description: "Should calculate air-interface-capacity when symbol-rate-reduction-factor is 1 (no reduction)"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okBoundaryCodeRate100"
+    description: "Should calculate air-interface-capacity when code-rate is 100%"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []
+
+  - id: "okLargeBandwidth"
+    description: "Should calculate air-interface-capacity for large channel bandwidth without overflow"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+    mocks: []

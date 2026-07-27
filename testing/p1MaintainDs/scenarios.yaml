@@ -1,0 +1,186 @@
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1MaintainDs/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1MaintainDs/1.0.0/variables.yaml
+#
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1MaintainDs/P1MaintainDs.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "onfAdapter.getEsClient"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
+    exportName: "getEsClient"
+    isAsync: true
+
+  - stepId: "withRetry"
+    modulePath: "../../server/utils/retry.js"
+    exportName: "withRetry"
+    isAsync: true
+
+dependencies:
+  - name: "../../server/service/LoggingService.js"
+
+errorMapping: {}
+
+scenarios:
+
+  - id: "okDeletesExpiredBatchesAndKeepsDevice"
+    description: "Should remove expired batches, keep device, and return cleanupSummary"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.keepDevice.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "getEsClient.dataStore.json"
+      - stepId: "withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.search.oneDevice.json"
+          - "withRetry.lock.success.json"
+          - "withRetry.save.success.json"
+  
+  - id: "okCleanupSummaryWithNoDocuments"
+    description: "Should return cleanupSummary when data store search returns no documents"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.noDocuments.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "getEsClient.dataStore.json"
+      - stepId: "withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.search.noHits.json"
+
+
+
+  - id: "okDeletesDeviceWhenAllBatchesExpiredAndUnlocked"
+    description: "Should delete data store document when all batches are expired and device is unlocked"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.deleteDevice.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "getEsClient.dataStore.json"
+      - stepId: "withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.search.oneExpiredDevice.json"
+          - "withRetry.delete.success.json"
+
+  - id: "okSkipsLoggingCleanupWhenLoggingClientMissing"
+    description: "Should skip logging cleanup when loggingEsClient is not provided"
+    inputFixture: "input.noLoggingClient.json"
+    expected:
+      type: "success"
+      outputFixture: "output.noDocuments.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "getEsClient.dataStore.json"
+      - stepId: "withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.search.noHits.json"
+
+  - id: "okPerformsLoggingCleanupWhenLoggingClientProvided"
+    description: "Should include loggingDocumentsDeleted when logging ES client is provided"
+    inputFixture: "input.withLoggingClient.json"
+    expected:
+      type: "success"
+      outputFixture: "output.withLoggingCleanup.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "returnSequence"
+        fixtureSequence:
+          - "getEsClient.dataStore.json"
+          - "getEsClient.logging.json"
+      - stepId: "withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.search.noHits.json"
+          - "withRetry.loggingDeleteByQuery.success.json"
+
+  - id: "errParametersNotProvided"
+    description: "Should throw 'parameters not provided' when parameters are missing"
+    inputFixture: "input.parametersMissing.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+
+  - id: "errParametersInvalidWhenArray"
+    description: "Should throw 'parameters invalid' when parameters is not a plain object"
+    inputFixture: "input.parametersArray.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+
+  - id: "errDataStoreEsClientNotProvided"
+    description: "Should throw 'dataStoreEsClient not provided' when data-store-es-client is missing"
+    inputFixture: "input.dataStoreClientMissing.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient not provided"
+
+  - id: "errDataStoreEsClientInvalidWhenUuidMissing"
+    description: "Should throw 'dataStoreEsClient invalid' when ES client uuid is missing"
+    inputFixture: "input.dataStoreClientUuidMissing.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+
+  - id: "errDataStoreEsClientInvalidWhenIndexAliasMissing"
+    description: "Should throw 'dataStoreEsClient invalid' when ES client index-alias is missing"
+    inputFixture: "input.dataStoreClientIndexAliasMissing.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+
+  - id: "errParametersInvalidWhenCleanupPeriodInvalid"
+    description: "Should throw 'parameters invalid' when dataStoreCleanupPeriod is not numeric"
+    inputFixture: "input.cleanupPeriodInvalid.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+
+  - id: "errGeneralProcessingErrorWhenRetentionPeriodInvalid"
+    description: "Should throw 'General processing error' when dataStoreRetentionPeriod is invalid"
+    inputFixture: "input.retentionPeriodInvalid.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+
+  - id: "errDataStoreEsClientInvalidWhenGetEsClientFails"
+    description: "Should throw 'dataStoreEsClient invalid' when data store ES client initialization fails"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "throw"
+        error: "boom"
+
+
+
+  - id: "okContinuesWhenSearchFails"
+    description: "Should continue and return cleanupSummary when data store search fails"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.noDocuments.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "getEsClient.dataStore.json"
+      - stepId: "withRetry"
+        type: "throw"
+        error: "ElasticSearch read error"
