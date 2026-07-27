@@ -85,9 +85,25 @@ describe("P1ProcessDevice", () => {
     expect(typeof run).toBe("function");
   });
 
-  test("throws Input data missing or invalid when request is incomplete", async () => {
-    await expect(run({})).rejects.toMatchObject({
-      message: ERRORS.INPUT_DATA_MISSING_OR_INVALID
+  test("throws Mount name not found when request has no mount name", async () => {
+    const result = run({});
+    await expect(result).rejects.toBeInstanceOf(Error);
+    await expect(result).rejects.toMatchObject({
+      message: ERRORS.MOUNT_NAME_NOT_FOUND
+    });
+  });
+
+  test("preserves stage and retryability from a processing failure", async () => {
+    const failure = new Error("upstream failure");
+    failure.stage = "p1LoadRawCc";
+    failure.retryable = false;
+    p1LoadRawCc.run.mockRejectedValue(failure);
+
+    await expect(run(validRequest())).rejects.toMatchObject({
+      message: ERRORS.GENERAL_PROCESSING_ERROR,
+      stage: "p1LoadRawCc",
+      retryable: false,
+      cause: failure
     });
   });
 

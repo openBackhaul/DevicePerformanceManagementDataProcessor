@@ -31,12 +31,16 @@ function getRequestValue(request, ...keys) {
   return undefined;
 }
 
-function buildProcessingError(message, stage = "p1ProcessDevice", details) {
+function buildProcessingError(message, stage = "p1ProcessDevice", details, cause) {
   const error = new Error(message);
   error.stage = stage;
 
   if (details) {
     error.details = details;
+  }
+
+  if (cause) {
+    error.cause = cause;
   }
 
   return error;
@@ -95,15 +99,17 @@ function validateRequest(request) {
 }
 
 function buildTopLevelError(error, mountName) {
-  const message = String(error?.message || error || "");
   if (error && typeof error === "object" && error.message) {
     const message = String(error.message);
 
     if (ERRORS.knownErrors.has(message)) {
-      return buildProcessingError(message, error.stage || "p1ProcessDevice", {
+      const normalizedError = buildProcessingError(message, error.stage || "p1ProcessDevice", {
         vendorResponse: error.vendorResponse,
         originalError: error
-      });
+      }, error);
+      normalizedError.retryable = error.retryable;
+      normalizedError.vendorResponse = error.vendorResponse;
+      return normalizedError;
     }
 
     const normalized = message.toLowerCase();
@@ -166,10 +172,13 @@ function buildTopLevelError(error, mountName) {
     }
   }
 
-  return buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR, "p1ProcessDevice", {
+  const normalizedError = buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR, error?.stage || "p1ProcessDevice", {
     mountName,
     originalError: error
-  });
+  }, error instanceof Error ? error : undefined);
+  normalizedError.retryable = error?.retryable;
+  normalizedError.vendorResponse = error?.vendorResponse;
+  return normalizedError;
 }
 
 function getTargetConsumers(kafkaConsumerTypes) {
@@ -490,15 +499,10 @@ async function run(request) {
 
     const normalizedError = buildTopLevelError(error, mountName);
 
-    throw {
-      mountName,
-      stage: normalizedError.stage || "p1ProcessDevice",
-      message: normalizedError.message || String(error),
-      retryable: error.retryable,
-      details: normalizedError.details,
-      vendorResponse: error.vendorResponse,
-      originalError: error
-    };
+    normalizedError.mountName = mountName;
+    normalizedError.retryable = normalizedError.retryable ?? error.retryable;
+    normalizedError.vendorResponse = normalizedError.vendorResponse ?? error.vendorResponse;
+    throw normalizedError;
   }
 }
 

@@ -81,6 +81,7 @@ jest.mock("../../service/LoggingService.js", () => ({
 
 const { loadRuntimeConfig } = require("../../utils/config");
 const { findFunctionNode } = require("../../utils/functionTree");
+const { acquireLock } = require("../../infra/redis/redisLock");
 const p1LoadParameters = require("../../genericFunctions/p1LoadParameters/P1LoadParameters");
 const p1ResolveESAddress = require("../../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress");
 const p1InitKafka = require("../../genericFunctions/p1InitKafka/P1InitKafka");
@@ -115,6 +116,7 @@ function mockLoadedParameters() {
 describe("P1StreamPmData", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    acquireLock.mockRejectedValue(new Error("stop cleanup loop in unit test"));
     loadRuntimeConfig.mockReturnValue({
       redis: {},
       service: {
@@ -146,7 +148,9 @@ describe("P1StreamPmData", () => {
   test("normalizes parameter loading failures as the interface error contract", async () => {
     p1LoadParameters.run.mockRejectedValue(new Error("functionName not found in configFile"));
 
-    await expect(run()).rejects.toMatchObject({
+    const result = run();
+    await expect(result).rejects.toBeInstanceOf(Error);
+    await expect(result).rejects.toMatchObject({
       message: ERRORS.PARAMETERS_INVALID
     });
   });

@@ -25,7 +25,7 @@ const ERRORS = require("./ErrorsEnum");
 const logger = require('../../service/LoggingService.js').getLogger();
 const appState = new AppState();
 
-function buildProcessingError(message, stage = "p1StreamPmData", details) {
+function buildProcessingError(message, stage = "p1StreamPmData", details, cause) {
   const error = new Error(message);
   error.stage = stage;
 
@@ -33,40 +33,48 @@ function buildProcessingError(message, stage = "p1StreamPmData", details) {
     error.details = details;
   }
 
+  if (cause) {
+    error.cause = cause;
+  }
+
   return error;
 }
 
 function normalizeProcessingError(error) {
+  if (error instanceof Error && ERRORS.knownErrors.has(error.message)) {
+    return error;
+  }
+
   const message = String(error?.message || error || "");
   const normalized = message.toLowerCase();
 
   if (normalized.includes("parameter") || normalized.includes("functionname")) {
     return buildProcessingError(ERRORS.PARAMETERS_INVALID, error?.stage || "p1StreamPmData", {
       originalError: error
-    });
+    }, error instanceof Error ? error : undefined);
   }
 
   if (normalized.includes("config")) {
     return buildProcessingError(ERRORS.CONFIG_FILE_NOT_PROVIDED, error?.stage || "p1StreamPmData", {
       originalError: error
-    });
+    }, error instanceof Error ? error : undefined);
   }
 
   if (normalized.includes("es address") || normalized.includes("elastic")) {
     return buildProcessingError(ERRORS.ES_ADDRESS_NOT_RESOLVED, error?.stage || "p1StreamPmData", {
       originalError: error
-    });
+    }, error instanceof Error ? error : undefined);
   }
 
   if (normalized.includes("kafka")) {
     return buildProcessingError(ERRORS.KAFKA_SESSION_NOT_ESTABLISHED, error?.stage || "p1StreamPmData", {
       originalError: error
-    });
+    }, error instanceof Error ? error : undefined);
   }
 
   return buildProcessingError(ERRORS.GENERAL_PROCESSING_ERROR, error?.stage || "p1StreamPmData", {
     originalError: error
-  });
+  }, error instanceof Error ? error : undefined);
 }
 
 
@@ -287,12 +295,7 @@ async function run() {
       "Failed to initialize stream pm data"
     );
 
-    throw {
-      stage: normalizedError.stage,
-      message: normalizedError.message,
-      details: normalizedError.details,
-      originalError: error
-    };
+    throw normalizedError;
   }
 }
 module.exports = { run };
