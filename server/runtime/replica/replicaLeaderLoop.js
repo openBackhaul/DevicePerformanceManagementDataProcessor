@@ -1,6 +1,5 @@
 const { getParamFromFunction } = require("../../utils/functionTree");
 const redisQueue = require("../../infra/redis/redisStreamQueue");
-const { saveLastReplicaTime } = require("../../core/replicaStateStore");
 const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const { sleep } = require("../../utils/retry");
 const p1UpdateMwdiReplica = require("../../specificFunctions/p1StreamPmData/p1UpdateMwdiReplica/P1UpdateMwdiReplica");
@@ -48,7 +47,6 @@ async function startReplicaLeaderLoop(context) {
                 });
 
                 context.appState.lastReplicaTime = response.timestamp;
-                await saveLastReplicaTime(context.loggingEsClient, response.timestamp, context.logger);
                 context.appState.lastReplicaLeaderRunAt = new Date().toJSON();
                 context.appState.metrics.replicaCycles += 1;
             } finally {
