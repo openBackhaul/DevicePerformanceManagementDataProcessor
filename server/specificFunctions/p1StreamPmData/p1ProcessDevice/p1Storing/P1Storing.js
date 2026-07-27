@@ -151,7 +151,7 @@ async function searchExisting(client, index, mountName, logger) {
     );
 
     //throw buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error);
-      logger.error(buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error).message);
+    logger.error(buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error).message);
   }
 }
 
@@ -265,7 +265,10 @@ async function run(request) {
 
     existing["interface-metadata-list"] = interfaceMetadataList;
     existing.batch = Array.isArray(existing.batch) ? existing.batch : [];
-    const batchTimestamp = new Date().toJSON();
+    const batchTimestamp = getRequestValue(resultCc, "batch-timestamp", "batchTimestamp");
+    if (!batchTimestamp) {
+      throw buildProcessingError(ERRORS.BATCH_TIMESTAMP_NOT_PROVIDED);
+    }
     existing.batch.push({
       batchTimestamp,
       ...(saveResultCc ? { resultCc } : {})
