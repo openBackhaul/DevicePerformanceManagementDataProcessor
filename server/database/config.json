@@ -2797,7 +2797,7 @@
                 "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
                 "remote-address": {
                   "ip-address": {
-                    "ipv-4-address": "127.0.0.1"
+                    "ipv-4-address": "kafka.e2e1.emp.gcp.de.pri.o2.com"
                   }
                 },
                 "remote-port": 9093
