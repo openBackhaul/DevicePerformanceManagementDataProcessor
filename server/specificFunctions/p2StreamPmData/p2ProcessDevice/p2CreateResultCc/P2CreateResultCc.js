@@ -1,15 +1,19 @@
 const p1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature");
 const { getParamFromFunction, findFunctionNode } = require("../../../../utils/functionTree");
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
-const adapter = require("../vendorFunctionAdapter");
 const ERRORS_P1PrepareTxModes = {};
 const ERRORS_P1IterateAiPmSlices = {};
 const ERRORS_P1IterateEcPmSlices = {};
 let logger = console;
 try { logger = require("../../../../service/LoggingService.js").getLogger(); } catch (_) {}
 
+// Enable these imports after the corresponding source files are delivered.
+// const p2PrepareTxModes = require("./p2PrepareTxModes/P2PrepareTxModes");
+// const p2IterateAiPmSlices = require("./p2IterateAiPmSlices/P2IterateAiPmSlices");
+// const p2IterateEcPmSlices = require("./p2IterateEcPmSlices/P2IterateEcPmSlices");
+
 /*
- * Vendor owned sub-functions.
+ * Processing sub-functions delivered as separate source modules.
  */
 
 const AIR_INTERFACE_PAC_KEY = "air-interface-2-0:air-interface-pac";
@@ -169,7 +173,7 @@ function getRemoveOutOfRangeTemperatureParameters(parameters) {
       "p1RemoveOutOfRangeTemperature",
       "p1RemoveOutOfRangeTemperature parameters not found",
       false,
-      { vendorResponse: "parameters not provided" }
+      { functionResponse: "parameters not provided" }
     );
   }
 
@@ -204,7 +208,7 @@ function buildPrepareTxModesError(response, mountName) {
   );
 
   error.stage = "p2PrepareTxModes";
-  error.vendorResponse = response;
+  error.functionResponse = response;
   error.mountName = mountName;
 
   if (
@@ -239,7 +243,7 @@ function buildRemoveTemperatureError(response, mountName) {
   );
 
   error.stage = "p1RemoveOutOfRangeTemperature";
-  error.vendorResponse = response;
+  error.functionResponse = response;
   error.mountName = mountName;
 
   if (
@@ -709,20 +713,28 @@ function getMostRecentPeriodEndTimes(historicalPerformanceDataList) {
   };
 }
 
-async function callVendorFunction(vendorFunction, request) {
-  if (!vendorFunction) {
+async function callFunction(functionImplementation, request) {
+  if (!functionImplementation) {
     return undefined;
   }
 
-  if (typeof vendorFunction === "function") {
-    return await vendorFunction(request);
+  if (typeof functionImplementation === "function") {
+    return await functionImplementation(request);
   }
 
-  if (vendorFunction && typeof vendorFunction.run === "function") {
-    return await vendorFunction.run(request);
+  if (typeof functionImplementation.run === "function") {
+    return await functionImplementation.run(request);
   }
 
   return undefined;
+}
+
+function requireImplementation(implementation, functionName) {
+  if (implementation) return implementation;
+  const error = new Error(`${functionName} implementation not available`);
+  error.stage = functionName;
+  error.retryable = false;
+  throw error;
 }
 
 function getResponseHistoricalPerformanceDataList(response, fallbackList) {
@@ -771,7 +783,7 @@ function buildIterateAiPmSlicesError(response, mountName) {
   );
 
   error.stage = "p2IterateAiPmSlices";
-  error.vendorResponse = response;
+  error.functionResponse = response;
   error.mountName = mountName;
 
   if (
@@ -803,7 +815,7 @@ function buildIterateEcPmSlicesError(response, mountName) {
   );
 
   error.stage = "p2IterateEcPmSlices";
-  error.vendorResponse = response;
+  error.functionResponse = response;
   error.mountName = mountName;
 
   if (
@@ -861,12 +873,16 @@ async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
 
   const transmissionModeList = getTransmissionModeList(pac);
 
-  const response = await adapter.invoke("p2PrepareTxModes", {
+  const prepareTxModes = requireImplementation(
+    dependencies.p2PrepareTxModes,
+    "p2PrepareTxModes"
+  );
+  const response = await callFunction(prepareTxModes, {
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     //historicalPerformanceDataList,
     [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList
     //transmissionModeList
-  }, dependencies);
+  });
 
   /* if (response === undefined) {
     return {
@@ -904,13 +920,17 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
     "p2IterateAiPmSlices"
   );
 
-  const response = await adapter.invoke("p2IterateAiPmSlices", {
+  const iterateAiPmSlices = requireImplementation(
+    dependencies.p2IterateAiPmSlices,
+    "p2IterateAiPmSlices"
+  );
+  const response = await callFunction(iterateAiPmSlices, {
     parameters: iterateAiParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     //historicalPerformanceDataList,
     [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList,
     //transmissionModeList
-  }, dependencies);
+  });
 
   if (!isValidIterateAiPmSlicesResponse(response)) {
     logger.error(buildIterateAiPmSlicesError(response, mountName).message);
@@ -949,7 +969,11 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   //console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
   //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
   
-  const response = await adapter.invoke("p2IterateEcPmSlices", {
+  const iterateEcPmSlices = requireImplementation(
+    dependencies.p2IterateEcPmSlices,
+    "p2IterateEcPmSlices"
+  );
+  const response = await callFunction(iterateEcPmSlices, {
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     historicalPerformanceDataList,
@@ -959,7 +983,7 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
     resultCc,
     "interface-status": interfaceStatus,
     "uuid-of-ethernet-container": uuid
-  }, dependencies);
+  });
 
   if (!isValidIterateEcPmSlicesResponse(response)) {
     logger.error(buildIterateEcPmSlicesError(response, mountName).message);
@@ -1363,7 +1387,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
 async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountName) {
   const equipment = getEquipmentList(resultCc);
 
-  const response = await callVendorFunction(p1RemoveOutOfRangeTemperature, {
+  const response = await callFunction(p1RemoveOutOfRangeTemperature, {
     equipment,
     parameters: {
       parameter: getRemoveOutOfRangeTemperatureParameters(parameters)
@@ -1376,7 +1400,7 @@ async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountNam
         {
           label: "p1-remove-out-of-range-temperature-error",
           mountName,
-          vendorResponse: response
+          functionResponse: response
         },
         "p1RemoveOutOfRangeTemperature returned an error response"
       );

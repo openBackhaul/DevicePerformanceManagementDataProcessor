@@ -1,10 +1,17 @@
 "use strict";
 
 const { findFunctionNode } = require("../../../utils/functionTree");
-const vendorFunctions = require("./vendorFunctionAdapter");
 const p2LoadRawCc = require("./p2LoadRawCc/P2LoadRawCc");
 const p2CreateResultCc = require("./p2CreateResultCc/P2CreateResultCc");
 const p2Storing = require("./p2Storing/P2Storing");
+
+// Enable these imports after the corresponding source files are delivered.
+// const p1LoadOffsetsAndStatusData = require(
+//   "./p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData"
+// );
+// const p2FormattingOutputOnf = require(
+//   "./p2FormattingOutputOnf/P2FormattingOutputOnf"
+// );
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -35,6 +42,15 @@ async function invoke(module, request) {
   if (typeof module === "function") return module(request);
   if (module && typeof module.run === "function") return module.run(request);
   throw createProcessingError("function implementation invalid");
+}
+
+function requireImplementation(implementation, functionName) {
+  if (implementation) return implementation;
+  throw createProcessingError(
+    `${functionName} implementation not available`,
+    functionName,
+    false
+  );
 }
 
 function validateRequest(request) {
@@ -129,14 +145,14 @@ async function createOutputFormats(input, resultCc, dependencies) {
     });
   }
 
-  const onfResponse = await vendorFunctions.invoke(
-    "p2FormattingOutputOnf",
-    {
+  const onfFormatter = requireImplementation(
+    dependencies.p2FormattingOutputOnf,
+    "p2FormattingOutputOnf"
+  );
+  const onfResponse = await invoke(onfFormatter, {
       parameters: getFunctionParameters(input.parameters, "p2FormattingOutputOnf"),
       "result-cc": resultCc
-    },
-    dependencies
-  );
+  });
   const onfFormats = onfResponse && (
     onfResponse["onf-output-format"] || onfResponse.onfOutputFormat
   );
@@ -165,16 +181,16 @@ async function run(request = {}) {
   const dependencies = request.dependencies || {};
 
   try {
-    const processingDataResponse = await vendorFunctions.invoke(
-      "p1LoadOffsetsAndStatusData",
-      {
+    const loadOffsetsAndStatusData = requireImplementation(
+      dependencies.p1LoadOffsetsAndStatusData,
+      "p1LoadOffsetsAndStatusData"
+    );
+    const processingDataResponse = await invoke(loadOffsetsAndStatusData, {
         mountName: input.mountName,
         dataStoreEsClient: input.dataStoreEsClient,
         "mount-name": input.mountName,
         "data-store-es-client": input.dataStoreEsClient
-      },
-      dependencies
-    );
+    });
     const processingData = validateLoadedProcessingData(processingDataResponse);
 
     const rawCcResponse = await invoke(dependencies.p2LoadRawCc || p2LoadRawCc, {

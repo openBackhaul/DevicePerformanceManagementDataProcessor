@@ -2,7 +2,14 @@
 
 const { getParamFromFunction } = require("../../../../utils/functionTree");
 const p1FieldsFilter = require("../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter");
-const vendorFunctions = require("../vendorFunctionAdapter");
+const p2DiscardIrrelevantPmRecords = require(
+  "../../../../genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords"
+);
+
+// Enable this import after the source file is delivered.
+// const p1CalculateInterfacePmDataQuality = require(
+//   "./p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality"
+// );
 
 const INITIAL_PERIOD_END_TIME = "2010-11-20T14:00:00+01:00";
 const LOAD_RAW_CC_FUNCTION_NAME = "p2LoadRawCc";
@@ -32,6 +39,15 @@ async function invoke(module, request) {
   if (typeof module === "function") return module(request);
   if (module && typeof module.run === "function") return module.run(request);
   throw createProcessingError("function implementation invalid");
+}
+
+function requireImplementation(implementation, functionName) {
+  if (implementation) return implementation;
+  throw createProcessingError(
+    `${functionName} implementation not available`,
+    functionName,
+    false
+  );
 }
 
 function validateRequest(request) {
@@ -233,15 +249,13 @@ async function processInterface(
     "most-recent-period-end-time-24"
   ] || INITIAL_PERIOD_END_TIME;
 
-  const discardResponse = await vendorFunctions.invoke(
-    "p2DiscardIrrelevantPmRecords",
-    {
+  const discardFunction = dependencies.p2DiscardIrrelevantPmRecords ||
+    p2DiscardIrrelevantPmRecords;
+  const discardResponse = await invoke(discardFunction, {
       "historical-performance-data-list": historyList,
       "former-most-recent-period-end-time": formerPeriodEndTime,
       "former-most-recent-period-end-time-24": formerPeriodEndTime24
-    },
-    dependencies
-  );
+  });
 
   historyContainer["historical-performance-data-list"] = discardResponse[
     "filtered-historical-performance-data-list"
@@ -253,18 +267,18 @@ async function processInterface(
     "new-most-recent-period-end-time-24"
   ];
 
-  const qualityResponse = await vendorFunctions.invoke(
-    "p1CalculateInterfacePmDataQuality",
-    {
+  const calculatePmDataQuality = requireImplementation(
+    dependencies.p1CalculateInterfacePmDataQuality,
+    "p1CalculateInterfacePmDataQuality"
+  );
+  const qualityResponse = await invoke(calculatePmDataQuality, {
       uuid: ltp.uuid,
       "former-most-recent-period-end-time": formerPeriodEndTime,
       "new-most-recent-period-end-time": interfaceOffset[
         "most-recent-period-end-time"
       ],
       "amount-received": discardResponse["amount-received"]
-    },
-    dependencies
-  );
+  });
   const interfacePmDataQuality = qualityResponse && qualityResponse[
     "interface-pm-data-quality"
   ];
