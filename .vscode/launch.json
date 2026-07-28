@@ -15,7 +15,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\server\\index.js",//"${workspaceFolder}\\server\\service\\individualServices\\CyclicProcessService\\DeviceMetaDataProcess\\slidingWindowTest.js", //
+            "cwd": "${workspaceFolder}/server",
+            "program": "${workspaceFolder}/server/index.js",
             "env": {
                 "DEBUG": "true",
             }
