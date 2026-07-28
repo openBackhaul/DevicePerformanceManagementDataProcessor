@@ -1771,7 +1771,6 @@ paths:
                       schema:
                         $ref: "#/components/schemas/errorDescription"
         PromptForEmbeddingCausesStartOfPmDataStreaming:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1ProcessDevice:
               summary: Streams PM data
@@ -2058,7 +2057,6 @@ paths:
                 $ref: "#/components/schemas/errorDescription"
       callbacks:
         PromptForDataDumpCausesLoadingParameters:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1LoadParameters:
               input:
@@ -2093,7 +2091,6 @@ paths:
                       schema:
                         type: string
         PromptForDataDumpCausesResolvingEsAddress:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1ResolveEsAddress:
               summary: Resolves ES address
@@ -2137,7 +2134,6 @@ paths:
                       schema:
                         type: string
         PromptForDataDumpCausesReadingDataStoreDeviceData:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1ReadDataStoreDeviceData:
               summary: Loads PM data of a device from the DataStore
@@ -2460,7 +2456,6 @@ paths:
                 $ref: "#/components/schemas/errorDescription"
       callbacks:
         PromptForPmDataProcessingDocumentationCausesLoadingParameters:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1LoadParameters:
               input:
@@ -2495,7 +2490,6 @@ paths:
                       schema:
                         type: string
         PromptForPmDataProcessingDocumentationCausesLoadingParametersOfProcessingFunction:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1LoadParameters:
               input:
@@ -2530,7 +2524,6 @@ paths:
                       schema:
                         type: string
         PromptForPmDataProcessingDocumentationCausesCreatingDocumentation:
-          x-javascript-interface: {}
           x-javascript-interface:
             p1DocumentFunction:
               input:
