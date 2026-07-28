@@ -9,6 +9,7 @@ var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/ser
 //var generic= require('../service/Genericfunction/streamdata')
 const logger = require('../service/LoggingService.js').getLogger();
 var P2StreamPmData = require('../specificFunctions/p2StreamPmData/P2StreamPmData')
+//var P1StreamPmData = require('../specificFunctions/p1StreamPmData/P1StreamPmData')
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 const OLD_RELEASE_FORWARDING_NAME = 'PromptForEmbeddingCausesRequestForBequeathingData';
 
