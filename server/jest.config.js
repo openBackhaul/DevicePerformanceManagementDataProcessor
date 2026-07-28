@@ -8,6 +8,7 @@ module.exports = {
     '<rootDir>/genericFunctions/p1CalculateAiCapacity',
     '<rootDir>/genericFunctions/p1CalculateUtilization',
     '<rootDir>/genericFunctions/p1CalculateEthernetKpis',
+    '<rootDir>/genericFunctions/p1CalculateInterfacePmDataQuality',
     '<rootDir>/genericFunctions/p2DiscardIrrelevantPmRecords',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf',
