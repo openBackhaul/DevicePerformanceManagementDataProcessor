@@ -8,7 +8,7 @@ var RestResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/ser
 var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
 //var generic= require('../service/Genericfunction/streamdata')
 const logger = require('../service/LoggingService.js').getLogger();
-var P1StreamPmData = require('../specificFunctions/p1StreamPmData/P1StreamPmData')
+var P2StreamPmData = require('../specificFunctions/p2StreamPmData/P2StreamPmData')
 const NEW_RELEASE_FORWARDING_NAME = 'PromptForBequeathingDataCausesTransferOfListOfApplications';
 const OLD_RELEASE_FORWARDING_NAME = 'PromptForEmbeddingCausesRequestForBequeathingData';
 
@@ -44,9 +44,9 @@ module.exports.embedYourself = async function embedYourself(req, res, next, body
       responseBodyToDocument = responseBody;
 
     //  start streaming AFTER success
-     await P1StreamPmData.run().catch(err => {
-        logger.error(`Error running P1StreamPmData: ${err}`);
-    });
+     /* await P2StreamPmData.run().catch(err => {
+        logger.error(`Error running P2StreamPmData: ${err}`);
+    }); */
 
       let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
       RestResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
