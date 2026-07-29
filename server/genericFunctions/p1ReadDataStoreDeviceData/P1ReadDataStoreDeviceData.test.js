@@ -5,14 +5,14 @@ const p1ReadDataStoreDeviceData = require('./P1ReadDataStoreDeviceData');
 
 const input = {
   "data-store-es-client": {
-    url: "http://localhost:9200",
+    "url": "http://localhost:9200",
     get: async url => [
       {
         "batch-timestamp": "2026-07-07T10:00:00.000Z",
         "result-cc": {
           "control-construct": [
             {
-              uuid: "air-interface-1",
+              "uuid": "air-interface-1",
               "historical-performance-data-list": []
             }
           ]
@@ -27,7 +27,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return device PM data", async () => {
     const input = {
       "data-store-es-client": {
-        url: "http://localhost:9200",
+        "url": "http://localhost:9200",
         get: async () => [
           {
             "batch-timestamp": "2026-07-07T10:00:00.000Z",
@@ -63,7 +63,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return dataStoreUrl invalid", async () => {
     const input = {
       "data-store-es-client": {
-        url: "invalid-url"
+        "url": "invalid-url"
       },
       "mount-name": "100250001"
     };
@@ -75,7 +75,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return mountName not provided", async () => {
     const input = {
       "data-store-es-client": {
-        url: "http://localhost:9200"
+        "url": "http://localhost:9200"
       }
     };
 
@@ -86,7 +86,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return mountName invalid", async () => {
     const input = {
       "data-store-es-client": {
-        url: "http://localhost:9200"
+        "url": "http://localhost:9200"
       },
       "mount-name": 100250001
     };
@@ -98,7 +98,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return mountName not found in DataStore", async () => {
     const input = {
       "data-store-es-client": {
-        url: "http://localhost:9200",
+        "url": "http://localhost:9200",
         get: async () => []
       },
       "mount-name": "unknown-device"
@@ -111,7 +111,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return ElasticSearch read error", async () => {
     const input = {
       "data-store-es-client": {
-        url: "http://localhost:9200",
+        "url": "http://localhost:9200",
         get: async () => {
           throw new Error("connection failed");
         }
