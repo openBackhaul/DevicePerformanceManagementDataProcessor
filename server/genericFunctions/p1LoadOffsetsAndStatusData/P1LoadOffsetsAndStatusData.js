@@ -22,7 +22,11 @@ const DEFAULT_DATA_STORE_INDEX = 'data-store';
  * @throws {Error}
  */
 async function p1LoadOffsetsAndStatusData(input) {
-  validateInput(input);
+  let checkInput = validateInput(input);
+
+  if (checkInput != '') {
+    return checkInput;
+  }
 
   const dataStoreConfig = input['data-store-es-client'];
   const mountName = input['mount-name'];
@@ -53,10 +57,10 @@ async function p1LoadOffsetsAndStatusData(input) {
     }
 
     if (isElasticsearchError(error)) {
-      throw new Error(ERRORS.ELASTICSEARCH_READ_ERROR);
+      return ERRORS.ELK_READ_ERROR;
     }
 
-    throw new Error(ERRORS.GENERAL_PROCESSING_ERROR);
+    return ERRORS.GENERAL_ERROR;
   }
 }
 
@@ -132,7 +136,7 @@ async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
  */
 function validateInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    throw new Error(ERRORS.DATA_STORE_URL_NOT_PROVIDED);
+    return ERRORS.DATA_STORE_URL_NOT_PROV;
   }
 
   const dataStoreConfig = input['data-store-es-client'];
@@ -142,7 +146,7 @@ function validateInput(input) {
     typeof dataStoreConfig !== 'object' ||
     Array.isArray(dataStoreConfig)
   ) {
-    throw new Error(ERRORS.DATA_STORE_URL_NOT_PROVIDED);
+    return ERRORS.DATA_STORE_URL_NOT_PROV;
   }
 
   const dataStoreUrl = dataStoreConfig.url;
@@ -152,11 +156,11 @@ function validateInput(input) {
     dataStoreUrl === null ||
     dataStoreUrl === ''
   ) {
-    throw new Error(ERRORS.DATA_STORE_URL_NOT_PROVIDED);
+    return ERRORS.DATA_STORE_URL_NOT_PROV;
   }
 
   if (!isValidHttpUrl(dataStoreUrl)) {
-    throw new Error(ERRORS.DATA_STORE_URL_INVALID);
+    return ERRORS.DATA_STORE_URL_INVALID;
   }
 
   const mountName = input['mount-name'];
@@ -166,15 +170,17 @@ function validateInput(input) {
     mountName === null ||
     mountName === ''
   ) {
-    throw new Error(ERRORS.MOUNT_NAME_NOT_PROVIDED);
+    return ERRORS.MOUNT_NAME_NOT_PROVIDED;
   }
 
   if (
     typeof mountName !== 'string' ||
     mountName.trim().length === 0
   ) {
-    throw new Error(ERRORS.MOUNT_NAME_INVALID);
+    return ERRORS.MOUNT_NAME_INVALID;
   }
+
+  return ""; // Everything is ok.
 }
 
 /**
