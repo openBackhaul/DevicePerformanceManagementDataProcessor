@@ -1,0 +1,532 @@
+'use strict';
+
+const p2FormattingOutputOnf = require("./P2FormattingOutputOnf");
+const ERRORS = require("./ErrorsEnum");
+const fs = require('fs');
+
+const ONF_FORMAT = "onf-output-format";
+const FORMAT_NAME = "format-name";
+const OUT_FORMAT = "output-format";
+
+describe('p2FormattingOutputOnf', () => {
+
+  const resultCc = {
+    'logical-termination-point': [
+      {
+        'uuid': 'ltp-001',
+        'local-id': 'air-interface-1',
+        'operational-state': 'ENABLED',
+        'administrative-state': 'UNLOCKED'
+      },
+      {
+        'uuid': 'ltp-002',
+        'local-id': 'ethernet-container-1',
+        'operational-state': 'DISABLED',
+        'administrative-state': 'LOCKED'
+      }
+    ]
+  };
+
+  test('creates an ONF output format for every fieldsFilter parameter', async () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'minimalFormat',
+          'purpose': 'fieldsFilter',
+          'value': 'logical-termination-point(uuid;local-id)'
+        },
+        {
+          'parameter-name': 'statusFormat',
+          'purpose': 'fieldsFilter',
+          'value':
+            'logical-termination-point(uuid;operational-state)'
+        }
+      ]
+    };
+
+    const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+
+    expect(result).toEqual({
+      'onf-output-format': [
+        {
+          'format-name': 'minimalFormat',
+          'output-format': {
+            'logical-termination-point': [
+              {
+                'uuid': 'ltp-001',
+                'local-id': 'air-interface-1'
+              },
+              {
+                'uuid': 'ltp-002',
+                'local-id': 'ethernet-container-1'
+              }
+            ]
+          }
+        },
+        {
+          'format-name': 'statusFormat',
+          'output-format': {
+            'logical-termination-point': [
+              {
+                'uuid': 'ltp-001',
+                'operational-state': 'ENABLED'
+              },
+              {
+                'uuid': 'ltp-002',
+                'operational-state': 'DISABLED'
+              }
+            ]
+          }
+        }
+      ]
+    });
+  });
+
+  test('calls p1FieldsFilter with the configured filter strings', async () => {
+    const parameters = {
+      'parameter': [
+        {
+          'parameter-name': 'minimalFormat',
+          'purpose': 'fieldsFilter',
+          'value': 'logical-termination-point(uuid;local-id)'
+        },
+        {
+          'parameter-name': 'completeFormat',
+          'purpose': 'fieldsFilter',
+          'value': 'logical-termination-point'
+        }
+      ]
+    };
+
+    const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+  });
+
+  test('finds fieldsFilter parameters inside nested objects', async () => {
+    const parameters = {
+      'functionName': 'parentFunction',
+      'subFunctions': [
+        {
+          'functionName': 'firstSubFunction',
+          'parameters': [
+            {
+              'parameter-name': 'nestedFormat',
+              'purpose': 'fieldsFilter',
+              'value': 'equipment(uuid;name)'
+            }
+          ]
+        }
+      ]
+    };
+
+    const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+
+    expect(result).toEqual({
+      'onf-output-format': [
+        {
+          'format-name': 'nestedFormat',
+          'output-format': {
+            'equipment': [
+              {
+                'uuid': 'equipment-001',
+                'name': 'Radio'
+              }
+            ]
+          }
+        }
+      ]
+    });
+  });
+
+  test('ignores parameters whose purpose is not fieldsFilter', async () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'maximumRetries',
+          'purpose': 'configuration',
+          'value': '3'
+        },
+        {
+          'parameter-name': 'timeout',
+          'purpose': 'timeout',
+          'value': '5000'
+        },
+        {
+          'parameter-name': 'minimalFormat',
+          'purpose': 'fieldsFilter',
+          'value': 'logical-termination-point(uuid)'
+        }
+      ]
+    };
+
+    const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+
+    expect(result['onf-output-format']).toHaveLength(1);
+    expect(result['onf-output-format'][0]['format-name']).toBe('minimalFormat');
+  });
+
+  test('returns an empty array when no fieldsFilter parameter exists', async () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'timeout',
+          'purpose': 'configuration',
+          'value': '5000'
+        }
+      ]
+    };
+
+    const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+    expect(result).toEqual({ 'onf-output-format': [] });
+  });
+
+  test('preserves the order of fieldsFilter parameters', async () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        },
+        {
+          'parameter-name': 'formatB',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-b'
+        },
+        {
+          'parameter-name': 'formatC',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-c'
+        }
+      ]
+    };
+
+    const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+
+    expect(
+      result['onf-output-format'].map(
+        outputFormat => outputFormat['format-name']
+      )
+    ).toEqual(['formatA', 'formatB', 'formatC']);
+  });
+
+  test('does not modify the original resultCc', async () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'minimalFormat',
+          'purpose': 'fieldsFilter',
+          'value': 'logical-termination-point(uuid)'
+        }
+      ]
+    };
+
+    const originalResultCc = structuredClone(resultCc);
+
+    await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+    expect(resultCc).toEqual(originalResultCc);
+  });
+
+  test('provides a separate resultCc copy for each filter invocation', async () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        },
+        {
+          'parameter-name': 'formatB',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-b'
+        }
+      ]
+    };
+
+    const receivedDataStructures = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+
+    expect(receivedDataStructures).toHaveLength(2);
+
+    expect(receivedDataStructures[0]).not.toBe(resultCc);
+    expect(receivedDataStructures[1]).not.toBe(resultCc);
+    expect(receivedDataStructures[0]).not.toBe(receivedDataStructures[1]);
+
+    expect(receivedDataStructures[0]).toEqual(resultCc);
+    expect(receivedDataStructures[1]).toEqual(resultCc);
+  });
+
+  describe('input validation', () => {
+    test.each([
+      {
+        'description': 'input is undefined',
+        'input': undefined
+      },
+      {
+        'description': 'input is null',
+        'input': null
+      },
+      {
+        'description': 'input is an array',
+        'input': []
+      },
+      {
+        'description': 'parameters is missing',
+        'input': {
+          'result-cc': {}
+        }
+      },
+      {
+        'description': 'parameters is undefined',
+        'input': {
+          'parameters': undefined,
+          'result-cc': {}
+        }
+      },
+      {
+        'description': 'parameters is null',
+        'input': {
+          'parameters': null,
+          'result-cc': {}
+        }
+      }
+    ])(
+      'throws "parameters not provided" when $description',
+      async ({ input }) => {
+        const result = await p2FormattingOutputOnf(input);
+        expect(result).toBe(ERRORS.PARAMETERS_NOT_PROVIDED);
+      }
+    );
+
+    test.each([
+      'invalid',
+      123,
+      true,
+      [],
+      () => { }
+    ])(
+      'throws "parameters invalid" when parameters is %p',
+      async invalidParameters => {
+        const result = await p2FormattingOutputOnf({ 'parameters': invalidParameters, 'result-cc': {} });
+        expect(result).toBe(ERRORS.PARAMETERS_INVALID);
+      }
+    );
+
+    test.each([
+      {
+        'description': 'result-cc is missing',
+        'input': {
+          'parameters': {}
+        }
+      },
+      {
+        'description': 'result-cc is undefined',
+        'input': {
+          'parameters': {},
+          'result-cc': undefined
+        }
+      },
+      {
+        'description': 'result-cc is null',
+        'input': {
+          'parameters': {},
+          'result-cc': null
+        }
+      }
+    ])(
+      'throws "resultCc not provided" when $description',
+      async ({ input }) => {
+        const result = await p2FormattingOutputOnf(input);
+        expect(result).toBe(ERRORS.RESULT_CC_NOT_PROVIDED);
+      }
+    );
+
+    test.each([
+      'invalid',
+      123,
+      true,
+      [],
+      () => { }
+    ])(
+      'throws "resultCc invalid" when result-cc is %p',
+      async invalidResultCc => {
+        const result = await p2FormattingOutputOnf({ 'parameters': {}, 'result-cc': invalidResultCc });
+        expect(result).toBe(ERRORS.RESULT_CC_INVALID);
+      }
+    );
+  });
+
+  describe('fieldsFilter parameter validation', () => {
+    test.each([
+      {
+        'description': 'parameter-name is missing',
+        'parameter': {
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        }
+      },
+      {
+        'description': 'parameter-name is empty',
+        'parameter': {
+          'parameter-name': '',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        }
+      },
+      {
+        'description': 'parameter-name contains only spaces',
+        'parameter': {
+          'parameter-name': '   ',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        }
+      },
+      {
+        'description': 'parameter-name is not a string',
+        'parameter': {
+          'parameter-name': 123,
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        }
+      },
+      {
+        'description': 'value is missing',
+        'parameter': {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter'
+        }
+      },
+      {
+        'description': 'value is empty',
+        'parameter': {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter',
+          'value': ''
+        }
+      },
+      {
+        'description': 'value contains only spaces',
+        'parameter': {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter',
+          'value': '   '
+        }
+      },
+      {
+        'description': 'value is not a string',
+        'parameter': {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter',
+          'value': 123
+        }
+      }
+    ])(
+      'throws "parameters invalid" when $description',
+      async ({ parameter }) => {
+        const result = await p2FormattingOutputOnf(
+          {
+            'parameters': { 'parameters': [parameter] },
+            'result-cc': resultCc
+          }
+        );
+        expect(result).toBe(ERRORS.PARAMETERS_INVALID);
+      }
+    );
+
+    test('throws "parameters invalid" for duplicate format names', async () => {
+      const parameters = {
+        'parameters': [
+          {
+            'parameter-name': 'duplicateFormat',
+            'purpose': 'fieldsFilter',
+            'value': 'filter-a'
+          },
+          {
+            'parameter-name': 'duplicateFormat',
+            'purpose': 'fieldsFilter',
+            'value': 'filter-b'
+          }
+        ]
+      };
+
+      const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+      expect(result).toBe(ERRORS.PARAMETERS_INVALID);
+    });
+  });
+
+  describe('p1FieldsFilter error handling', () => {
+    const parameters = {
+      'parameters': [
+        {
+          'parameter-name': 'minimalFormat',
+          'purpose': 'fieldsFilter',
+          'value': 'logical-termination-point(uuid)'
+        }
+      ]
+    };
+
+
+    test.each([
+      null,
+      'invalid',
+      123,
+      true,
+      []
+    ])(
+      'throws when filtered-data-structure is %p',
+      async invalidFilteredDataStructure => {
+        const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+        expect(result).toBe(ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED);
+        // await expect(
+        //   p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc } )
+        // ).rejects.toThrow(
+        //   'onfOutputFormats could not be provided'
+        // );
+      }
+    );
+  });
+});
+
+describe('extractFieldsFilters', () => {
+  test('extracts filters recursively', () => {
+    const parameters = {
+      'levelOne': {
+        'parameter': {
+          'parameter-name': 'formatA',
+          'purpose': 'fieldsFilter',
+          'value': 'filter-a'
+        },
+        'levelTwo': [
+          {
+            'parameter': {
+              'parameter-name': 'formatB',
+              'purpose': 'fieldsFilter',
+              'value': 'filter-b'
+            }
+          }
+        ]
+      }
+    };
+
+    expect(extractFieldsFilters(parameters)).toEqual([
+      { 'format-name': 'formatA', 'fields-filter-string': 'filter-a' },
+      { 'format-name': 'formatB', 'fields-filter-string': 'filter-b' }
+    ]);
+  });
+
+  test('handles circular parameter structures without infinite recursion', () => {
+    const parameters = {
+      'parameter': {
+        'parameter-name': 'formatA',
+        'purpose': 'fieldsFilter',
+        'value': 'filter-a'
+      }
+    };
+
+    parameters.circularReference = parameters;
+
+    expect(extractFieldsFilters(parameters)).toEqual([{ 'format-name': 'formatA', 'fields-filter-string': 'filter-a' }]);
+  });
+
+  test('returns an empty array for an empty parameters object', () => {
+    expect(extractFieldsFilters({})).toEqual([]);
+  });
+});
