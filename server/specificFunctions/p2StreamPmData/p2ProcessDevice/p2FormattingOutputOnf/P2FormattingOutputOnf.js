@@ -41,30 +41,36 @@ async function p2FormattingOutputOnf(input) {
 
     const onfOutputFormats = [];
 
+    let filteredDataStructure = "";
     for (const fieldsFilter of fieldsFilters) {
-      const filterInput = {
-        // Clone resultCc because p1FieldsFilter must not be allowed
-        // to modify the original data structure.
-        'dataStructure': deepClone(resultCc),
-        'fieldsFilterString': fieldsFilter['fields-filter-string']
-      };
+      if (fieldsFilter['fields-filter-string'] == "" ) {
+        filteredDataStructure = deepClone(resultCc);
+      } else {
+        const filterInput = {
+          // Clone resultCc because p1FieldsFilter must not be allowed
+          // to modify the original data structure.
+          'dataStructure': deepClone(resultCc),
+          'fieldsFilterString': fieldsFilter['fields-filter-string']
+        };
 
-      let filterResult;
-      try {
-        filterResult = await p1FieldsFilter.run(filterInput);
-      } catch (error) {
-        return ERRORS.ONF_OUTPUT_FORMAT;
+        let filterResult;
+        try {
+          filterResult = await p1FieldsFilter.run(filterInput);
+        } catch (error) {
+          return ERRORS.ONF_OUTPUT_FORMAT;
+        }
+
+        if (typeof filterResult == "string") {
+          return ERRORS.ONF_OUTPUT_FORMAT;
+        }
+
+        filteredDataStructure = extractFilteredDataStructure(filterResult);
+
+        if (typeof filteredDataStructure == "string") {
+          return filteredDataStructure; // is a error string
+        }
       }
 
-      if (typeof filterResult == "string") {
-        return ERRORS.ONF_OUTPUT_FORMAT;
-      }
-
-      const filteredDataStructure = extractFilteredDataStructure(filterResult);
-
-      if (typeof filteredDataStructure == "string") {
-        return filteredDataStructure; // is a error string
-      }
 
       onfOutputFormats.push({
         'format-name': fieldsFilter['format-name'],
@@ -196,8 +202,9 @@ function validateExtractedFieldsFilters(fieldsFilters) {
     if (
       typeof formatName !== 'string' ||
       formatName.trim().length === 0 ||
-      typeof fieldsFilterString !== 'string' ||
-      fieldsFilterString.trim().length === 0
+      typeof fieldsFilterString !== 'string' 
+      // ||
+      // fieldsFilterString.trim().length === 0
     ) {
       return ERRORS.PARAMETERS_INVALID;
     }

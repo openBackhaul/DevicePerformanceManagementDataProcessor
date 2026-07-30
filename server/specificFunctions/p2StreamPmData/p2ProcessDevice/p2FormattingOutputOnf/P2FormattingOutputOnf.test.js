@@ -145,36 +145,6 @@ describe('p2FormattingOutputOnf', () => {
     expect(result).toEqual({ 'onf-output-format': [] });
   });
 
-  // test('preserves the order of fieldsFilter parameters', async () => {
-  //   const parameters = {
-  //     'parameters': [
-  //       {
-  //         'parameter-name': 'formatA',
-  //         'purpose': 'fieldsFilter',
-  //         "value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name)"
-  //       },
-  //       {
-  //         'parameter-name': 'formatB',
-  //         'purpose': 'fieldsFilter',
-  //         "value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name)"
-  //       },
-  //       {
-  //         'parameter-name': 'formatC',
-  //         'purpose': 'fieldsFilter',
-  //         "value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name)"
-  //       }
-  //     ]
-  //   };
-
-  //   const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
-
-  //   expect(
-  //     result['onf-output-format'].map(
-  //       outputFormat => outputFormat['format-name']
-  //     )
-  //   ).toEqual(['formatA', 'formatB', 'formatC']);
-  // });
-
   test('does not modify the original resultCc', async () => {
     const parameters = {
       'parameters': [
@@ -191,35 +161,6 @@ describe('p2FormattingOutputOnf', () => {
     await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
     expect(resultCc).toEqual(originalResultCc);
   });
-
-  // test('provides a separate resultCc copy for each filter invocation', async () => {
-  //   const parameters = {
-  //     'parameters': [
-  //       {
-  //         'parameter-name': 'formatA',
-  //         'purpose': 'fieldsFilter',
-  //         'value': 'logical-termination-point(uuid)'
-          
-  //       },
-  //       {
-  //         'parameter-name': 'formatB',
-  //         'purpose': 'fieldsFilter',
-  //         'value': 'equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp'
-  //       }
-  //     ]
-  //   };
-
-  //   const receivedDataStructures = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
-
-  //   expect(receivedDataStructures).toHaveLength(2);
-
-  //   expect(receivedDataStructures[0]).not.toBe(resultCc);
-  //   expect(receivedDataStructures[1]).not.toBe(resultCc);
-  //   expect(receivedDataStructures[0]).not.toBe(receivedDataStructures[1]);
-
-  //   expect(receivedDataStructures[0]).toEqual(resultCc);
-  //   expect(receivedDataStructures[1]).toEqual(resultCc);
-  // });
 
   describe('input validation', () => {
     test.each([
@@ -362,22 +303,6 @@ describe('p2FormattingOutputOnf', () => {
         }
       },
       {
-        'description': 'value is empty',
-        'parameter': {
-          'parameter-name': 'formatA',
-          'purpose': 'fieldsFilter',
-          'value': ''
-        }
-      },
-      {
-        'description': 'value contains only spaces',
-        'parameter': {
-          'parameter-name': 'formatA',
-          'purpose': 'fieldsFilter',
-          'value': '   '
-        }
-      },
-      {
         'description': 'value is not a string',
         'parameter': {
           'parameter-name': 'formatA',
@@ -400,7 +325,7 @@ describe('p2FormattingOutputOnf', () => {
 
     test('throws "parameters invalid" for duplicate format names', async () => {
       const parameters = {
-        'parameters': [
+        'parameter': [
           {
             'parameter-name': 'duplicateFormat',
             'purpose': 'fieldsFilter',
@@ -419,58 +344,78 @@ describe('p2FormattingOutputOnf', () => {
     });
   });
 
-  // describe('p1FieldsFilter error handling', () => {
-  //   const parameters = {
-  //     'parameters': [
-  //       {
-  //         'parameter-name': 'minimalFormat',
-  //         'purpose': 'fieldsFilter',
-  //         'value': 'logical-termination-point(uuid)'
-  //       }
-  //     ]
-  //   };
-
-  //   test.each([
-  //     null,
-  //     'invalid',
-  //     123,
-  //     true,
-  //     []
-  //   ])(
-  //     'throws when filtered-data-structure is %p',
-  //     async invalidFilteredDataStructure => {
-  //       const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
-  //       expect(result).toBe(ERRORS.OUTPUT_COULD_NOT_BE_PROVIDED);
-  //     }
-  //   );
-  // });
 });
 
 describe("Basic Functionality", () => {
 
   test("no filter returns full object", async () => {
     const res = await p2FormattingOutputOnf({
-      "parameters": {},
+      "parameters": {
+        "function-name": "p2FormattingOutputOnf",
+        "description": "Creates onfOutputFormats from resultCc",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "mycom-output-format",
+            "purpose": "fieldsFilter",
+            "owner": "platform",
+            "value": ""
+          },
+          {
+            "parameter-name": "netexplorer-output-format",
+            "purpose": "fieldsFilter",
+            "owner": "platform",
+            "value": ""
+          }
+        ]
+      },
       "result-cc": { "a": 1 }
     });
 
     expect(res).toBeDefined();
-    // expect(res).toEqual({
-    //   "format-name": ONF_FORMAT,
-    //   "output-format": { "a": 1 }
-    // });
+    expect(res[ONF_FORMAT]).toBeDefined();
+    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBeDefined();
+    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBe(MYCOM_FORMAT);
+    expect(res[ONF_FORMAT][0][OUT_FORMAT]).toEqual({ "a": 1 });
+
+    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBeDefined();
+    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBe(NETEXP_FORMAT);
+    expect(res[ONF_FORMAT][1][OUT_FORMAT]).toEqual({ "a": 1 });
   });
 
   test("deep clone check", async () => {
     const res = await p2FormattingOutputOnf({
-      "parameters": {},
+      "parameters": {
+        "function-name": "p2FormattingOutputOnf",
+        "description": "Creates onfOutputFormats from resultCc",
+        "is-active": true,
+        "parameter": [
+          {
+            "parameter-name": "mycom-output-format",
+            "purpose": "fieldsFilter",
+            "owner": "platform",
+            "value": ""
+          },
+          {
+            "parameter-name": "netexplorer-output-format",
+            "purpose": "fieldsFilter",
+            "owner": "platform",
+            "value": ""
+          }
+        ]
+      },
       "result-cc": { "a": 1 }
     });
 
     expect(res).toBeDefined();
-    // expect(res["format-name"]).toBe(ONF_FORMAT);
-    // expect(res[OUT_FORMAT]).toBeDefined();
-    // expect(res[OUT_FORMAT]).toEqual({ "a": 1 });
+    expect(res[ONF_FORMAT]).toBeDefined();
+    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBeDefined();
+    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBe(MYCOM_FORMAT);
+    expect(res[ONF_FORMAT][0][OUT_FORMAT]).toEqual({ "a": 1 });
+
+    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBeDefined();
+    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBe(NETEXP_FORMAT);
+    expect(res[ONF_FORMAT][1][OUT_FORMAT]).toEqual({ "a": 1 });
   });
 
 
