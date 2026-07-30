@@ -21,8 +21,6 @@ const p1FieldsFilter = require("../../../../genericFunctions/p1FieldsFilter/P1Fi
  *     }
  *   ]
  * }
- *
- * @throws {Error} With one of the specified interface error messages.
  */
 async function p2FormattingOutputOnf(input) {
   try {
@@ -32,7 +30,7 @@ async function p2FormattingOutputOnf(input) {
       return validateRes;
     }
 
-    const parameters = input.parameters;
+    const parameters = input['parameters'];
     const resultCc = input['result-cc'];
 
     const fieldsFilters = extractFieldsFilters(parameters);
@@ -47,22 +45,26 @@ async function p2FormattingOutputOnf(input) {
       const filterInput = {
         // Clone resultCc because p1FieldsFilter must not be allowed
         // to modify the original data structure.
-        // 'data-structure': deepClone(resultCc),
-        // 'fields-filter-string': fieldsFilter['fields-filter-string']
-        dataStructure: deepClone(resultCc),
-        fieldsFilterString: fieldsFilter['fields-filter-string']
+        'dataStructure': deepClone(resultCc),
+        'fieldsFilterString': fieldsFilter['fields-filter-string']
       };
 
       let filterResult;
-
       try {
         filterResult = await p1FieldsFilter.run(filterInput);
       } catch (error) {
         return ERRORS.ONF_OUTPUT_FORMAT;
       }
 
-      const filteredDataStructure =
-        extractFilteredDataStructure(filterResult);
+      if (typeof filterResult == "string") {
+        return ERRORS.ONF_OUTPUT_FORMAT;
+      }
+
+      const filteredDataStructure = extractFilteredDataStructure(filterResult);
+
+      if (typeof filteredDataStructure == "string") {
+        return filteredDataStructure; // is a error string
+      }
 
       onfOutputFormats.push({
         'format-name': fieldsFilter['format-name'],
@@ -70,14 +72,8 @@ async function p2FormattingOutputOnf(input) {
       });
     }
 
-    return {
-      'onf-output-format': onfOutputFormats
-    };
+    return { 'onf-output-format': onfOutputFormats };
   } catch (error) {
-    // if (isKnownError(error)) {
-    //   throw error;
-    // }
-
     return ERRORS.GENERAL_ERROR;
   }
 }
@@ -231,23 +227,17 @@ function validateExtractedFieldsFilters(fieldsFilters) {
  */
 function extractFilteredDataStructure(filterResult) {
   if (!isPlainObject(filterResult)) {
-    throw new Error(ERRORS.ONF_OUTPUT_FORMAT);
+    return ERRORS.ONF_OUTPUT_FORMAT
   }
 
-  if (
-    !Object.prototype.hasOwnProperty.call(
-      filterResult,
-      'filtered-data-structure'
-    )
-  ) {
-    throw new Error(ERRORS.ONF_OUTPUT_FORMAT);
+  if (!Object.prototype.hasOwnProperty.call(filterResult, 'filtered-data-structure')) {
+    return ERRORS.ONF_OUTPUT_FORMAT
   }
 
-  const filteredDataStructure =
-    filterResult['filtered-data-structure'];
+  const filteredDataStructure = filterResult['filtered-data-structure'];
 
   if (!isPlainObject(filteredDataStructure)) {
-    throw new Error(ERRORS.ONF_OUTPUT_FORMAT);
+    return ERRORS.ONF_OUTPUT_FORMAT
   }
 
   return filteredDataStructure;
@@ -277,23 +267,6 @@ function isPlainObject(value) {
     typeof value === 'object' &&
     !Array.isArray(value)
   );
-}
-
-/**
- * Creates an interface-compatible error while retaining the original cause.
- *
- * @param {string} message
- * @param {*} cause
- * @returns {Error}
- */
-function createProcessingError(message, cause) {
-  const error = new Error(message);
-
-  if (cause !== undefined) {
-    error.cause = cause;
-  }
-
-  return error;
 }
 
 module.exports = p2FormattingOutputOnf;
