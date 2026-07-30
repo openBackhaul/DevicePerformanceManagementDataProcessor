@@ -197,7 +197,7 @@ describe('p2FormattingOutputOnf', () => {
         }
       }
     ])(
-      'throws "parameters not provided" when $description',
+      'Return error "parameters not provided" when $description',
       async ({ input }) => {
         const result = await p2FormattingOutputOnf(input);
         expect(result).toBe(ERRORS.PARAMETERS_NOT_PROVIDED);
@@ -211,7 +211,7 @@ describe('p2FormattingOutputOnf', () => {
       [],
       () => { }
     ])(
-      'throws "parameters invalid" when parameters is %p',
+      'Return error "parameters invalid" when parameters is %p',
       async invalidParameters => {
         const result = await p2FormattingOutputOnf({ 'parameters': invalidParameters, 'result-cc': {} });
         expect(result).toBe(ERRORS.PARAMETERS_INVALID);
@@ -240,7 +240,7 @@ describe('p2FormattingOutputOnf', () => {
         }
       }
     ])(
-      'throws "resultCc not provided" when $description',
+      'Return error "resultCc not provided" when $description',
       async ({ input }) => {
         const result = await p2FormattingOutputOnf(input);
         expect(result).toBe(ERRORS.RESULT_CC_NOT_PROVIDED);
@@ -254,7 +254,7 @@ describe('p2FormattingOutputOnf', () => {
       [],
       () => { }
     ])(
-      'throws "resultCc invalid" when result-cc is %p',
+      'Return error "resultCc invalid" when result-cc is %p',
       async invalidResultCc => {
         const result = await p2FormattingOutputOnf({ 'parameters': {}, 'result-cc': invalidResultCc });
         expect(result).toBe(ERRORS.RESULT_CC_INVALID);
@@ -311,7 +311,7 @@ describe('p2FormattingOutputOnf', () => {
         }
       }
     ])(
-      'throws "parameters invalid" when $description',
+      'Return error "parameters invalid" when $description',
       async ({ parameter }) => {
         const result = await p2FormattingOutputOnf(
           {
@@ -323,7 +323,7 @@ describe('p2FormattingOutputOnf', () => {
       }
     );
 
-    test('throws "parameters invalid" for duplicate format names', async () => {
+    test('Return error "parameters invalid" for duplicate format names', async () => {
       const parameters = {
         'parameter': [
           {
