@@ -18,6 +18,7 @@ module.exports = {
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices',
+    '<rootDir>/specificFunctions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf',
     '<rootDir>/infra/kafka'
   ],
 };
