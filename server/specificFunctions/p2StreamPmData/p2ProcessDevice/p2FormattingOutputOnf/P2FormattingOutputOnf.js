@@ -120,17 +120,6 @@ function validateInput(input) {
 }
 
 /**
- * Validates the p1FieldsFilter dependency.
- *
- * @param {*} p1FieldsFilter
- */
-function validateDependency(p1FieldsFilter) {
-  if (typeof p1FieldsFilter !== 'function') {
-    throw new Error('onfOutputFormats could not be provided');
-  }
-}
-
-/**
  * Recursively extracts all parameters whose purpose is "fieldsFilter".
  *
  * Supported parameter example:
@@ -215,14 +204,12 @@ function validateExtractedFieldsFilters(fieldsFilters) {
       fieldsFilterString.trim().length === 0
     ) {
       return ERRORS.PARAMETERS_INVALID;
-      // throw new Error('parameters invalid');
     }
 
     // onf-output-format declares format-name as x-key,
     // therefore duplicate names are considered invalid.
     if (formatNames.has(formatName)) {
       return ERRORS.PARAMETERS_INVALID;
-      // throw new Error('parameters invalid');
     }
 
     formatNames.add(formatName);
@@ -244,7 +231,7 @@ function validateExtractedFieldsFilters(fieldsFilters) {
  */
 function extractFilteredDataStructure(filterResult) {
   if (!isPlainObject(filterResult)) {
-    throw new Error('onfOutputFormats could not be provided');
+    throw new Error(ERRORS.ONF_OUTPUT_FORMAT);
   }
 
   if (
@@ -253,14 +240,14 @@ function extractFilteredDataStructure(filterResult) {
       'filtered-data-structure'
     )
   ) {
-    throw new Error('onfOutputFormats could not be provided');
+    throw new Error(ERRORS.ONF_OUTPUT_FORMAT);
   }
 
   const filteredDataStructure =
     filterResult['filtered-data-structure'];
 
   if (!isPlainObject(filteredDataStructure)) {
-    throw new Error('onfOutputFormats could not be provided');
+    throw new Error(ERRORS.ONF_OUTPUT_FORMAT);
   }
 
   return filteredDataStructure;

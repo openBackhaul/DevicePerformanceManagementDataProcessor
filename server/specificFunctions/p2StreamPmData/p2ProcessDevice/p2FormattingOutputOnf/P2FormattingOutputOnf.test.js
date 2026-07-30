@@ -530,3 +530,91 @@ describe('extractFieldsFilters', () => {
     expect(extractFieldsFilters({})).toEqual([]);
   });
 });
+
+
+describe("Basic Functionality", () => {
+
+  test("no filter returns full object", async () => {
+    const res = await p2FormattingOutputOnf({
+      "parameters": {},
+      "result-cc": { "a": 1 }
+    });
+
+    expect(res).toBeDefined();
+    // expect(res).toEqual({
+    //   "format-name": ONF_FORMAT,
+    //   "output-format": { "a": 1 }
+    // });
+  });
+
+  test("deep clone check", async () => {
+    const res = await p2FormattingOutputOnf({
+      "parameters": {},
+      "result-cc": { "a": 1 }
+    });
+
+    expect(res).toBeDefined();
+    // expect(res["format-name"]).toBe(ONF_FORMAT);
+    // expect(res[OUT_FORMAT]).toBeDefined();
+    // expect(res[OUT_FORMAT]).toEqual({ "a": 1 });
+  });
+
+
+      // const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+});
+
+
+describe("Real Dataset Tests", () => {
+
+  // Import file
+  let dataFile;
+  let REAL_CC;
+  let REAL_PARAMS;
+  beforeAll(() => {
+    dataFile = fs.readFileSync(__dirname + '/datasets/cc_clean_CO01715.json', 'utf8');
+    REAL_CC = JSON.parse(dataFile);
+    dataFile = fs.readFileSync(__dirname + '/datasets/parameters.json')
+    REAL_PARAMS = JSON.parse(dataFile);
+  })
+
+  test("basic execution", async () => {
+    const res = await p2FormattingOutputOnf({
+      "parameters": REAL_PARAMS['parameters'],
+      "result-cc": REAL_CC
+    });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual(REAL_CC);
+  });
+
+  test("filter array is full", async () => {
+    const res = await p2FormattingOutputOnf({
+      "parameters": REAL_PARAMS['parameters'],
+      "result-cc": REAL_CC
+    });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual(REAL_CC);
+  });
+
+  test("filter out some fields", async () => {
+    const res = await p2FormattingOutputOnf({
+      "parameters": REAL_PARAMS['parameters'],
+      "result-cc": REAL_CC
+    });
+
+    expect(res).toBeDefined();
+    expect(res[FORMAT_NAME]).toBe(ONF_FORMAT);
+    expect(res[OUT_FORMAT]).toEqual({
+      "equipment-augment-1-0:control-construct-pac": {
+        "device-model-name": "MINI-LINK Traffic Node",
+        "last-config-change-timestamp": "2010-11-20T14:00:00+01:00",
+        "external-label": "AMM6pC-IDU2"
+      },
+      "batch-timestamp": "2025-12-16T09:11:05.307+01:00"
+    });
+  });
+
+});
