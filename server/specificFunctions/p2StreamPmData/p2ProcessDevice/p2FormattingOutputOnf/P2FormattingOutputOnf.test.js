@@ -419,7 +419,7 @@ describe("Basic Functionality", () => {
   });
 
 
-      // const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
+  // const result = await p2FormattingOutputOnf({ 'parameters': parameters, 'result-cc': resultCc });
 });
 
 describe("Real Dataset Tests", () => {
@@ -443,11 +443,6 @@ describe("Real Dataset Tests", () => {
 
     expect(res).toBeDefined();
     expect(res[ONF_FORMAT]).toBeDefined();
-    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBeDefined();
-    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBe(MYCOM_FORMAT);
-    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBeDefined();
-    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBe(NETEXP_FORMAT);
-    // expect(res[OUT_FORMAT]).toEqual(REAL_CC);
   });
 
   test("filter array is full", async () => {
@@ -457,35 +452,26 @@ describe("Real Dataset Tests", () => {
     });
 
     expect(res).toBeDefined();
-    expect(res[ONF_FORMAT]).toBeDefined();
     expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBeDefined();
     expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBe(MYCOM_FORMAT);
     expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBeDefined();
     expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBe(NETEXP_FORMAT);
 
-    // expect(res[OUT_FORMAT]).toEqual(REAL_CC);
-  });
-
-  test("filter out some fields", async () => {
-    const res = await p2FormattingOutputOnf({
-      "parameters": REAL_PARAMS['parameters'],
-      "result-cc": REAL_CC
+    // Check mycom
+    expect(res[ONF_FORMAT][0][OUT_FORMAT]).toHaveProperty("equipment-augment-1-0:control-construct-pac");
+    expect(res[ONF_FORMAT][0][OUT_FORMAT]).not.toHaveProperty("logical-termination-point");
+    expect(res[ONF_FORMAT][0][OUT_FORMAT]).not.toHaveProperty("batch-timestamp");
+    expect(res[ONF_FORMAT][0][OUT_FORMAT]).toEqual({
+      "equipment-augment-1-0:control-construct-pac": {
+        "external-label": "AMM6pC-IDU2",
+        "device-model-name": "MINI-LINK Traffic Node"
+      }
     });
 
-    expect(res).toBeDefined();
-    expect(res[ONF_FORMAT]).toBeDefined();
-    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBeDefined();
-    expect(res[ONF_FORMAT][0][FORMAT_NAME]).toBe(MYCOM_FORMAT);
-    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBeDefined();
-    expect(res[ONF_FORMAT][1][FORMAT_NAME]).toBe(NETEXP_FORMAT);
-    // expect(res[OUT_FORMAT]).toEqual({
-    //   "equipment-augment-1-0:control-construct-pac": {
-    //     "device-model-name": "MINI-LINK Traffic Node",
-    //     "last-config-change-timestamp": "2010-11-20T14:00:00+01:00",
-    //     "external-label": "AMM6pC-IDU2"
-    //   },
-    //   "batch-timestamp": "2025-12-16T09:11:05.307+01:00"
-    // });
+    // Check netexplorer
+    expect(res[ONF_FORMAT][1][OUT_FORMAT]).toHaveProperty("equipment-augment-1-0:control-construct-pac");
+    expect(res[ONF_FORMAT][1][OUT_FORMAT]).toHaveProperty("logical-termination-point");
+    expect(res[ONF_FORMAT][1][OUT_FORMAT]).toHaveProperty("batch-timestamp");
   });
 
 });
