@@ -41,7 +41,8 @@ async function handleMessage(message, context) {
           configFile: context.configFile,
           mwdiReplicaEsClient: context.mwdiReplicaEsClient,
           dataStoreEsClient: context.dataStoreEsClient,
-          kafkaConsumerTypes: context.kafkaConsumerTypes
+          kafkaConsumerTypes: context.kafkaConsumerTypes,
+          storingOptions: context.storingOptions
         });
 
         await redisQueue.clearRetryState(mountName, context.logger);
@@ -112,7 +113,7 @@ async function workerLoop(context, consumerName) {
     const streams = await redisQueue.readNext(
       consumerName,
       5000,
-      10,
+      context.readCount || 10,
       context.logger
     );
 
@@ -131,7 +132,23 @@ async function workerLoop(context, consumerName) {
 
 async function startProcessingWorkerPoolRedis(context) {
   const workers = [];
-  const workerCount = context.workerCount || 2;
+  const requestedWorkerCount = Number(context.workerCount ?? 2);
+  const maxWorkerCount = Number(context.maxWorkerCount ?? 16);
+
+  if (!Number.isInteger(requestedWorkerCount) || requestedWorkerCount < 1) {
+    throw new Error("Processing workerCount must be a positive integer");
+  }
+  if (!Number.isInteger(maxWorkerCount) || maxWorkerCount < 1) {
+    throw new Error("Processing maxWorkerCount must be a positive integer");
+  }
+
+  const workerCount = Math.min(requestedWorkerCount, maxWorkerCount);
+  if (workerCount !== requestedWorkerCount) {
+    context.logger?.warn?.(
+      { requestedWorkerCount, maxWorkerCount },
+      "Processing worker count capped by maxProcessingConcurrency"
+    );
+  }
 
   for (let i = 0; i < workerCount; i += 1) {
     const consumerName = `${context.instanceId}-consumer-${i + 1}`;
@@ -143,8 +160,8 @@ async function startProcessingWorkerPoolRedis(context) {
 
 module.exports = {
   startProcessingWorkerPoolRedis,
-  /* _internal: {
+  _internal: {
     handleMessage,
     shouldEnqueueRetry
-  } */
+  }
 };

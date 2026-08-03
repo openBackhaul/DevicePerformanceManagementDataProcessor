@@ -480,7 +480,8 @@ async function run(request) {
       resultCc: createResultCcResponse.resultCc,
       interfaceMetadataList: createResultCcResponse.interfaceMetadataList,
       mountName: resultMountName,
-      logger
+      logger,
+      ...(getRequestValue(request, "storingOptions", "storing-options") || {})
     });
 
     return {

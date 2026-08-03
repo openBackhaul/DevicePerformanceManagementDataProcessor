@@ -125,6 +125,13 @@ async function run() {
     const runtimeConfig = loadRuntimeConfig() || {};
     const redisConfig = runtimeConfig.redis || {};
     const serviceConfig = runtimeConfig.service || {};
+    const mwdiAccessMode = String(serviceConfig.mwdiAccessMode || "REPLICA").toUpperCase();
+    if (!["DIRECT", "REPLICA"].includes(mwdiAccessMode)) {
+      throw buildProcessingError(
+        `Invalid service.mwdiAccessMode '${serviceConfig.mwdiAccessMode}'. Use DIRECT or REPLICA.`,
+        "p1StreamPmData"
+      );
+    }
 
     const instanceId = `${os.hostname()}-${process.pid}-${crypto.randomUUID()}`;
 
@@ -186,7 +193,8 @@ async function run() {
         loggingEsClient,
         dataStoreEsClient
       },
-      logger
+      logger,
+      { ensureReplicaIndex: mwdiAccessMode === "REPLICA" }
     );
 
     const restoredLastReplicaTime = await loadLastReplicaTime(loggingEsClient, logger);
@@ -209,19 +217,27 @@ async function run() {
       loggingEsClient,
       maxQueueLengthBeforeReplicaPause: Number(redisConfig.maxQueueLengthBeforeReplicaPause) || 20000,
       replicaPauseMsWhenBacklogged: Number(redisConfig.replicaPauseMsWhenBacklogged) || 30000,
-      replicaLockTtlMs: redisConfig.replicaLockTtlMs || 60000
+      replicaLockTtlMs: redisConfig.replicaLockTtlMs || 60000,
+      runtimeConfig
     }).catch((error) => logger.error({ error }, `Replica leader loop crashed: ${error.message || error}`));
 
     startProcessingWorkerPoolRedis({
       logger,
       instanceId,
       appState,
-      workerCount: Number(serviceConfig.concurrency || 4),
+      workerCount: Number(serviceConfig.concurrency ?? 4),
+      maxWorkerCount: Number(serviceConfig.maxProcessingConcurrency ?? 16),
+      readCount: Number(serviceConfig.processingReadCount ?? 10),
       processDeviceParameters: p1ProcessDeviceParameters,
       kafkaConsumerTypes: serviceConfig.kafkaConsumerTypes,
       configFile: loaded.configFile,
-      mwdiReplicaEsClient,
+      mwdiReplicaEsClient: mwdiAccessMode === "DIRECT" ? mwdiEsClient : mwdiReplicaEsClient,
       dataStoreEsClient,
+      storingOptions: {
+        saveResultCc: serviceConfig.saveResultCc !== false,
+        resultHistoryLimit: Number(serviceConfig.resultHistoryLimit ?? 1),
+        dataStoreWriteLockEnabled: serviceConfig.dataStoreWriteLockEnabled === true
+      },
       staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
       workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000),
       // retry control

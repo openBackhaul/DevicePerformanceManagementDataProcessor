@@ -186,6 +186,38 @@ describe("P1UpdateMwdiReplica", () => {
       expect(result.timestamp).toEqual(expect.any(String));
     });
 
+    test("DIRECT mode scans the source and does not create a physical replica", async () => {
+      mockSourceClient.search = jest.fn().mockResolvedValue({
+        body: {
+          hits: { hits: [{ _id: "id-1", _source: { mountName: "device-1" } }] }
+        }
+      });
+      mockSourceClient.scroll = jest.fn();
+      mockSourceClient.clearScroll = jest.fn().mockResolvedValue({});
+
+      const result = await moduleUnderTest.run(validRequest({
+        runtimeConfig: {
+          service: { mwdiAccessMode: "DIRECT" },
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 }
+        }
+      }));
+
+      expect(result.updatedMountNames).toEqual(["device-1"]);
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(mockSourceClient.search).toHaveBeenCalledWith(
+        expect.objectContaining({ index: "mwdi-index" })
+      );
+      expect(onfAdapter.getEsClient).toHaveBeenCalledTimes(2);
+      expect(redisQueue.enqueueMountNames).toHaveBeenCalledWith(
+        ["device-1"],
+        expect.objectContaining({
+          batchSize: 10,
+          extraFields: { sourceUpdatedAt: expect.any(String) }
+        }),
+        logger
+      );
+    });
+
     test("collects mount names from every replica search page", async () => {
       mockReplicaClient.search.mockResolvedValue({
         body: {

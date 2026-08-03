@@ -140,6 +140,29 @@ describe("P1Storing", () => {
     expect(mockDataStoreClient.index).toHaveBeenCalledTimes(2);
   });
 
+  test("supports one-write mode and limits stored result history", async () => {
+    mockDataStoreClient.get.mockResolvedValue({
+      body: {
+        found: true,
+        _source: {
+          mountName: "100250001",
+          batch: [
+            { batchTimestamp: "2023-12-31T00:00:00.000Z", resultCc: { old: true } }
+          ]
+        }
+      }
+    });
+
+    const result = await moduleUnderTest.run(validRequest({
+      dataStoreWriteLockEnabled: false,
+      resultHistoryLimit: 1
+    }));
+
+    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(1);
+    expect(result.batch).toHaveLength(1);
+    expect(result.batch[0].resultCc.mountName).toBe("100250001");
+  });
+
   test("supports hyphenated interface input names", async () => {
     const result = await moduleUnderTest.run({
       "data-store-es-client": validDataStoreEsClient,

@@ -43,6 +43,7 @@ async function startReplicaLeaderLoop(context) {
                     mwdiReplicaEsClient: context.mwdiReplicaEsClient,
                     loggingEsClient: context.loggingEsClient,
                     lastReplicaTime: context.appState.lastReplicaTime,
+                    runtimeConfig: context.runtimeConfig,
                     logger: context.logger
                 });
 

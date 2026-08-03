@@ -122,7 +122,14 @@ function getValidatedRequest(request) {
     resultCc,
     interfaceMetadataList,
     mountName,
-    batchTimestamp
+    batchTimestamp,
+    saveResultCc: getRequestValue(request, "saveResultCc", "save-result-cc") !== false,
+    resultHistoryLimit: Number(getRequestValue(request, "resultHistoryLimit", "result-history-limit") ?? 0),
+    dataStoreWriteLockEnabled: getRequestValue(
+      request,
+      "dataStoreWriteLockEnabled",
+      "data-store-write-lock-enabled"
+    ) !== false
   };
 }
 
@@ -227,7 +234,10 @@ async function run(request) {
       resultCc,
       interfaceMetadataList,
       mountName,
-      batchTimestamp
+      batchTimestamp,
+      saveResultCc,
+      resultHistoryLimit,
+      dataStoreWriteLockEnabled
     } = getValidatedRequest(request);
 
     let client;
@@ -250,26 +260,24 @@ async function run(request) {
     }
 
     const index = dataStoreEsClient["index-alias"];
-    const saveResultCc = true; // Set to true if you want to save the entire resultCc in the batch; can cause large documents in ES
-
     const existing = await searchExisting(client, index, mountName, logger);
 
-    const lockTimestamp = new Date().toJSON();
     existing.mountName = mountName;
-    existing.timestamp = lockTimestamp;
-    existing.locked = true;
-
-    await writeDataStoreDocument(
-      client,
-      index,
-      mountName,
-      existing,
-      logger,
-      `p1Storing.lock:${mountName}`,
-      "lock-device-for-storing",
-      "Failed to lock device for storing",
-      ERRORS.ELASTICSEARCH_LOCK_ERROR
-    );
+    if (dataStoreWriteLockEnabled) {
+      existing.timestamp = new Date().toJSON();
+      existing.locked = true;
+      await writeDataStoreDocument(
+        client,
+        index,
+        mountName,
+        existing,
+        logger,
+        `p1Storing.lock:${mountName}`,
+        "lock-device-for-storing",
+        "Failed to lock device for storing",
+        ERRORS.ELASTICSEARCH_LOCK_ERROR
+      );
+    }
 
     existing["interface-metadata-list"] = interfaceMetadataList;
     existing.batch = Array.isArray(existing.batch) ? existing.batch : [];
@@ -277,6 +285,9 @@ async function run(request) {
       batchTimestamp,
       ...(saveResultCc ? { resultCc } : {})
     });
+    if (Number.isInteger(resultHistoryLimit) && resultHistoryLimit > 0) {
+      existing.batch = existing.batch.slice(-resultHistoryLimit);
+    }
 
     existing.timestamp = batchTimestamp;
     existing.locked = false;

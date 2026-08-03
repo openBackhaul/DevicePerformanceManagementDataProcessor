@@ -310,6 +310,9 @@ async function run(request) {
     lastReplicaTime,
     runtimeConfig
   } = request;
+  const accessMode = String(
+    ((runtimeConfig || {}).service || {}).mwdiAccessMode || "REPLICA"
+  ).toUpperCase();
 
   let sourceClient;
   try {
@@ -327,20 +330,22 @@ async function run(request) {
     throw new Error(ERRORS.CONNECTION_MWDI_ES_FAILED);
   }
 
-  let replicaClient;
-  try {
-    replicaClient = await onfAdapter.getEsClient(
-      false,
-      mwdiReplicaEsClient.uuid,
-      mwdiReplicaEsClient,
-      logger
-    );
-  } catch (error) {
-    logger.error(
-      { error: error.message || error, label: "getEsClient-replica" },
-      "Failed to create MWDI Replica ES client"
-    );
-    throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
+  let replicaClient = sourceClient;
+  if (accessMode !== "DIRECT") {
+    try {
+      replicaClient = await onfAdapter.getEsClient(
+        false,
+        mwdiReplicaEsClient.uuid,
+        mwdiReplicaEsClient,
+        logger
+      );
+    } catch (error) {
+      logger.error(
+        { error: error.message || error, label: "getEsClient-replica" },
+        "Failed to create MWDI Replica ES client"
+      );
+      throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
+    }
   }
 
   let loggingClient;
@@ -421,7 +426,8 @@ async function run(request) {
       reqPerSec,
       scrollSize,
       scrollTtl,
-      reindexPollIntervalMs
+      reindexPollIntervalMs,
+      accessMode
     },
     "p1UpdateMwdiReplica request details"
   );
@@ -429,6 +435,64 @@ async function run(request) {
   let statusMessage = "SUCCESS";
   let reindexResp;
   let activeTask;
+
+  if (accessMode === "DIRECT") {
+    let updatedMountNames;
+    try {
+      updatedMountNames = await loadUpdatedMountNames(
+        sourceClient,
+        mwdiEsClient["index-alias"],
+        lastUpdatedField,
+        periodStartTime,
+        periodEndTime,
+        scrollSize,
+        scrollTtl,
+        logger
+      );
+
+      await redisQueue.ensureGroup(logger);
+      await redisQueue.enqueueMountNames(
+        updatedMountNames,
+        {
+          batchSize: (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
+          pauseMs: (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
+          clearRetryAndDeadLetterBeforeEnqueue: true,
+          extraFields: { sourceUpdatedAt: periodEndTime }
+        },
+        logger
+      );
+    } catch (error) {
+      logger.error(
+        { label: "p1UpdateMwdiReplica.direct", error: error.message || error },
+        "Failed to discover or enqueue changed MWDI devices in DIRECT mode"
+      );
+      throw error;
+    }
+
+    await loggingClient.index({
+      index: loggingEsClient["index-alias"],
+      body: {
+        jobName,
+        accessMode,
+        periodStartTime,
+        periodEndTime,
+        replicated: 0,
+        updated: updatedMountNames.length,
+        total: updatedMountNames.length,
+        status: statusMessage,
+        updatedMountNameCount: updatedMountNames.length,
+        lastReplicaTime: periodEndTime,
+        timestamp: new Date().toISOString()
+      },
+      refresh: false
+    }).catch((error) => logger.warn?.(
+      { label: "p1UpdateMwdiReplica.direct.logging", error: error.message || error },
+      "Failed to write DIRECT-mode cycle log"
+    ));
+
+    await saveLastReplicaTime(loggingEsClient, periodEndTime, logger);
+    return { updatedMountNames, timestamp: periodEndTime };
+  }
 
   try {
     activeTask = await loadActiveReindexTask(logger);
