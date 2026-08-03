@@ -56,7 +56,8 @@ describe("P1Storing", () => {
           }
         }
       }),
-      index: jest.fn().mockResolvedValue({})
+      index: jest.fn().mockResolvedValue({}),
+      update: jest.fn().mockResolvedValue({})
     };
 
     onfAdapter.getEsClient.mockResolvedValue(mockDataStoreClient);
@@ -161,6 +162,27 @@ describe("P1Storing", () => {
     expect(mockDataStoreClient.index).toHaveBeenCalledTimes(1);
     expect(result.batch).toHaveLength(1);
     expect(result.batch[0].resultCc.mountName).toBe("100250001");
+  });
+
+  test("uses one atomic Elasticsearch request when atomic upsert is enabled", async () => {
+    const result = await moduleUnderTest.run(validRequest({
+      atomicDataStoreUpsertEnabled: true,
+      dataStoreWriteLockEnabled: false,
+      resultHistoryLimit: 1
+    }));
+
+    expect(mockDataStoreClient.get).not.toHaveBeenCalled();
+    expect(mockDataStoreClient.index).not.toHaveBeenCalled();
+    expect(mockDataStoreClient.update).toHaveBeenCalledTimes(1);
+    expect(mockDataStoreClient.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        index: "datastore-index",
+        id: "100250001",
+        retry_on_conflict: 3,
+        body: expect.objectContaining({ scripted_upsert: true })
+      })
+    );
+    expect(result.batch).toHaveLength(1);
   });
 
   test("supports hyphenated interface input names", async () => {

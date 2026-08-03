@@ -1,7 +1,7 @@
 const os = require("os");
 const crypto = require("crypto");
 const { findFunctionNode, getParamFromFunction } = require("../../utils/functionTree");
-const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
+const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const { sleep } = require("../../utils/retry");
 const { loadRuntimeConfig } = require("../../utils/config");
 const { AppState } = require("../../core/appState");
@@ -94,12 +94,20 @@ async function startCleanupLeaderLoop(context) {
     }
 
     try {
-      await p1MaintainDs.run({
-        parameters: context.cleanupParameters,
-        dataStoreEsClient: context.dataStoreEsClient,
-        loggingEsClient: context.loggingEsClient,
-        logger: context.logger
-      });
+      const renewer = setInterval(async () => {
+        await renewLock(lockKey, token, ttlMs, context.logger).catch(() => {});
+      }, Math.max(5000, Math.floor(ttlMs / 3)));
+
+      try {
+        await p1MaintainDs.run({
+          parameters: context.cleanupParameters,
+          dataStoreEsClient: context.dataStoreEsClient,
+          loggingEsClient: context.loggingEsClient,
+          logger: context.logger
+        });
+      } finally {
+        clearInterval(renewer);
+      }
     } finally {
       await releaseLock(lockKey, token, context.logger).catch(() => { });
     }
@@ -125,13 +133,21 @@ async function run() {
     const runtimeConfig = loadRuntimeConfig() || {};
     const redisConfig = runtimeConfig.redis || {};
     const serviceConfig = runtimeConfig.service || {};
-    const mwdiAccessMode = String(serviceConfig.mwdiAccessMode || "REPLICA").toUpperCase();
-    if (!["DIRECT", "REPLICA"].includes(mwdiAccessMode)) {
-      throw buildProcessingError(
-        `Invalid service.mwdiAccessMode '${serviceConfig.mwdiAccessMode}'. Use DIRECT or REPLICA.`,
-        "p1StreamPmData"
-      );
-    }
+
+    // The Confluent producer is process-wide. Publish the validated runtime
+    // limits before any outbound worker creates a producer.
+    global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES = Number(
+      serviceConfig.kafkaProducerMessageMaxBytes || 5242880
+    );
+    global.KAFKA_DELIVERY_TIMEOUT_MS = Number(
+      serviceConfig.kafkaDeliveryTimeoutMs || 60000
+    );
+    global.KAFKA_REQUEST_TIMEOUT_MS = Number(
+      serviceConfig.kafkaRequestTimeoutMs || 30000
+    );
+    global.KAFKA_SOCKET_TIMEOUT_MS = Number(
+      serviceConfig.kafkaSocketTimeoutMs || 30000
+    );
 
     const instanceId = `${os.hostname()}-${process.pid}-${crypto.randomUUID()}`;
 
@@ -139,10 +155,10 @@ async function run() {
       shutdownGraceMs: (((runtimeConfig || {}).service || {}).shutdownGraceMs) || 30000
     });
 
-    /* startMonitoringServer(appState, logger, {
+    startMonitoringServer(appState, logger, {
       enabled: ((((runtimeConfig || {}).monitoring || {}).enabled) !== false),
       port: ((((runtimeConfig || {}).service || {}).httpPort) || 8040)
-    }); */
+    });
 
     const loaded = await p1LoadParameters.run({
       functionName: "p1StreamPmData",
@@ -193,8 +209,7 @@ async function run() {
         loggingEsClient,
         dataStoreEsClient
       },
-      logger,
-      { ensureReplicaIndex: mwdiAccessMode === "REPLICA" }
+      logger
     );
 
     const restoredLastReplicaTime = await loadLastReplicaTime(loggingEsClient, logger);
@@ -231,12 +246,13 @@ async function run() {
       processDeviceParameters: p1ProcessDeviceParameters,
       kafkaConsumerTypes: serviceConfig.kafkaConsumerTypes,
       configFile: loaded.configFile,
-      mwdiReplicaEsClient: mwdiAccessMode === "DIRECT" ? mwdiEsClient : mwdiReplicaEsClient,
+      mwdiReplicaEsClient,
       dataStoreEsClient,
       storingOptions: {
         saveResultCc: serviceConfig.saveResultCc !== false,
         resultHistoryLimit: Number(serviceConfig.resultHistoryLimit ?? 1),
-        dataStoreWriteLockEnabled: serviceConfig.dataStoreWriteLockEnabled === true
+        dataStoreWriteLockEnabled: serviceConfig.dataStoreWriteLockEnabled === true,
+        atomicDataStoreUpsertEnabled: serviceConfig.atomicDataStoreUpsertEnabled === true
       },
       staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
       workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000),

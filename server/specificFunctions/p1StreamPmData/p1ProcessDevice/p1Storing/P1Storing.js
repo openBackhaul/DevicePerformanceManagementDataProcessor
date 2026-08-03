@@ -129,7 +129,12 @@ function getValidatedRequest(request) {
       request,
       "dataStoreWriteLockEnabled",
       "data-store-write-lock-enabled"
-    ) !== false
+    ) !== false,
+    atomicDataStoreUpsertEnabled: getRequestValue(
+      request,
+      "atomicDataStoreUpsertEnabled",
+      "atomic-data-store-upsert-enabled"
+    ) === true
   };
 }
 
@@ -211,6 +216,69 @@ async function writeDataStoreDocument(
   }
 }
 
+async function atomicUpsertDataStoreDocument(
+  client,
+  index,
+  mountName,
+  interfaceMetadataList,
+  batchEntry,
+  resultHistoryLimit,
+  logger
+) {
+  const upsert = {
+    mountName,
+    timestamp: batchEntry.batchTimestamp,
+    locked: false,
+    "interface-metadata-list": interfaceMetadataList,
+    batch: []
+  };
+
+  try {
+    await withRetry(
+      async () => client.update({
+        index,
+        id: mountName,
+        retry_on_conflict: 3,
+        body: {
+          scripted_upsert: true,
+          script: {
+            lang: "painless",
+            source: [
+              "if (ctx._source.batch == null) { ctx._source.batch = new ArrayList(); }",
+              "ctx._source.mountName = params.mountName;",
+              "ctx._source['interface-metadata-list'] = params.interfaceMetadataList;",
+              "ctx._source.batch.add(params.batchEntry);",
+              "while (params.historyLimit > 0 && ctx._source.batch.size() > params.historyLimit) { ctx._source.batch.remove(0); }",
+              "ctx._source.timestamp = params.batchEntry.batchTimestamp;",
+              "ctx._source.locked = false;"
+            ].join(" "),
+            params: {
+              mountName,
+              interfaceMetadataList,
+              batchEntry,
+              historyLimit: Number.isInteger(resultHistoryLimit) && resultHistoryLimit > 0
+                ? resultHistoryLimit
+                : 0
+            }
+          },
+          upsert
+        }
+      }),
+      {
+        label: `p1Storing.atomicUpsert:${mountName}`,
+        retryIntervalMs: 10000,
+        logger
+      }
+    );
+  } catch (error) {
+    logger.error?.(
+      { label: "atomic-upsert-device", mountName, error: error.message || error },
+      "Failed to atomically store device result"
+    );
+    throw buildProcessingError(ERRORS.WRITING_TO_DATA_STORE_FAILED, error);
+  }
+}
+
 /**
  * Request:
  * {
@@ -237,7 +305,8 @@ async function run(request) {
       batchTimestamp,
       saveResultCc,
       resultHistoryLimit,
-      dataStoreWriteLockEnabled
+      dataStoreWriteLockEnabled,
+      atomicDataStoreUpsertEnabled
     } = getValidatedRequest(request);
 
     let client;
@@ -260,6 +329,25 @@ async function run(request) {
     }
 
     const index = dataStoreEsClient["index-alias"];
+    const batchEntry = {
+      batchTimestamp,
+      ...(saveResultCc ? { resultCc } : {})
+    };
+
+    if (atomicDataStoreUpsertEnabled) {
+      await atomicUpsertDataStoreDocument(
+        client,
+        index,
+        mountName,
+        interfaceMetadataList,
+        batchEntry,
+        resultHistoryLimit,
+        logger
+      );
+
+      return { mountName, batch: [batchEntry] };
+    }
+
     const existing = await searchExisting(client, index, mountName, logger);
 
     existing.mountName = mountName;
@@ -281,10 +369,7 @@ async function run(request) {
 
     existing["interface-metadata-list"] = interfaceMetadataList;
     existing.batch = Array.isArray(existing.batch) ? existing.batch : [];
-    existing.batch.push({
-      batchTimestamp,
-      ...(saveResultCc ? { resultCc } : {})
-    });
+    existing.batch.push(batchEntry);
     if (Number.isInteger(resultHistoryLimit) && resultHistoryLimit > 0) {
       existing.batch = existing.batch.slice(-resultHistoryLimit);
     }

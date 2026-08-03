@@ -4,6 +4,7 @@ jest.mock("../../../infra/onf/onfAdapter", () => ({
 
 jest.mock("../../../infra/redis/redisStreamQueue", () => ({
   ensureGroup: jest.fn(),
+  clearRetryAndDeadLetterForReplicaUpdates: jest.fn(),
   enqueueMountNames: jest.fn()
 }));
 
@@ -81,6 +82,11 @@ describe("P1UpdateMwdiReplica", () => {
     });
 
     redisQueue.ensureGroup.mockResolvedValue();
+    redisQueue.clearRetryAndDeadLetterForReplicaUpdates.mockResolvedValue({
+      mountNameCount: 0,
+      retryStreamDeleted: 0,
+      deadLetterStreamDeleted: 0
+    });
     redisQueue.enqueueMountNames.mockResolvedValue({ enqueued: 1, skipped: 0, failed: 0 });
   });
 
@@ -157,12 +163,16 @@ describe("P1UpdateMwdiReplica", () => {
       );
       expect(mockReplicaClient.search).toHaveBeenCalledTimes(1);
       expect(redisQueue.ensureGroup).toHaveBeenCalledTimes(1);
+      expect(redisQueue.clearRetryAndDeadLetterForReplicaUpdates).toHaveBeenCalledWith(
+        ["device-1"],
+        logger
+      );
       expect(redisQueue.enqueueMountNames).toHaveBeenCalledWith(
         ["device-1"],
         expect.objectContaining({
           batchSize: 10,
           pauseMs: 1,
-          clearRetryAndDeadLetterBeforeEnqueue: true
+          clearRetryAndDeadLetterBeforeEnqueue: false
         }),
         logger
       );
@@ -184,38 +194,6 @@ describe("P1UpdateMwdiReplica", () => {
 
       expect(result.updatedMountNames).toEqual([]);
       expect(result.timestamp).toEqual(expect.any(String));
-    });
-
-    test("DIRECT mode scans the source and does not create a physical replica", async () => {
-      mockSourceClient.search = jest.fn().mockResolvedValue({
-        body: {
-          hits: { hits: [{ _id: "id-1", _source: { mountName: "device-1" } }] }
-        }
-      });
-      mockSourceClient.scroll = jest.fn();
-      mockSourceClient.clearScroll = jest.fn().mockResolvedValue({});
-
-      const result = await moduleUnderTest.run(validRequest({
-        runtimeConfig: {
-          service: { mwdiAccessMode: "DIRECT" },
-          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 }
-        }
-      }));
-
-      expect(result.updatedMountNames).toEqual(["device-1"]);
-      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
-      expect(mockSourceClient.search).toHaveBeenCalledWith(
-        expect.objectContaining({ index: "mwdi-index" })
-      );
-      expect(onfAdapter.getEsClient).toHaveBeenCalledTimes(2);
-      expect(redisQueue.enqueueMountNames).toHaveBeenCalledWith(
-        ["device-1"],
-        expect.objectContaining({
-          batchSize: 10,
-          extraFields: { sourceUpdatedAt: expect.any(String) }
-        }),
-        logger
-      );
     });
 
     test("collects mount names from every replica search page", async () => {
@@ -260,6 +238,41 @@ describe("P1UpdateMwdiReplica", () => {
       expect(mockSourceClient.tasks.get).toHaveBeenCalledWith({
         task_id: "node-1:existing"
       });
+    });
+
+    test("finishes recovery when a saved Redis task completed before restart", async () => {
+      mockRedisClient.get.mockResolvedValue(JSON.stringify({
+        taskId: "node-1:completed-before-restart",
+        sourceIndex: "mwdi-index",
+        destinationIndex: "replica-index",
+        periodStartTime: "2026-01-01T00:00:00.000Z",
+        periodEndTime: "2026-01-02T00:00:00.000Z"
+      }));
+      mockSourceClient.tasks.get.mockRejectedValue({
+        meta: { statusCode: 404 },
+        message: "resource_not_found_exception"
+      });
+
+      const result = await moduleUnderTest.run(validRequest());
+
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(result.updatedMountNames).toEqual(["device-1"]);
+      expect(saveLastReplicaTime).toHaveBeenCalledWith(
+        validRequest().loggingEsClient,
+        "2026-01-02T00:00:00.000Z",
+        logger
+      );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "dpmdp:replica:active-reindex-task"
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
+          taskId: "node-1:completed-before-restart",
+          discovered: false
+        }),
+        expect.any(String)
+      );
     });
 
     test("discovers and resumes an existing Elasticsearch task", async () => {

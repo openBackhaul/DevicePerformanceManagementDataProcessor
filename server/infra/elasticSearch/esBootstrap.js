@@ -39,16 +39,13 @@ async function ensureIndex(client, indexName, mappingBody, logger) {
   return { created: true };
 }
 
-async function ensureIndicesAndMappings(esClients, logger, options = {}) {
-  const ensureReplicaIndex = options.ensureReplicaIndex !== false;
-  const replicaClient = ensureReplicaIndex
-    ? await onfAdapter.getEsClient(
-      false,
-      esClients.mwdiReplicaEsClient.uuid,
-      esClients.mwdiReplicaEsClient,
-      logger
-    )
-    : null;
+async function ensureIndicesAndMappings(esClients, logger) {
+  const replicaClient = await onfAdapter.getEsClient(
+    false,
+    esClients.mwdiReplicaEsClient.uuid,
+    esClients.mwdiReplicaEsClient,
+    logger
+  );
 
   const loggingClient = await onfAdapter.getEsClient(
     false,
@@ -64,11 +61,10 @@ async function ensureIndicesAndMappings(esClients, logger, options = {}) {
     logger
   );
 
-  if (ensureReplicaIndex) {
-    await ensureIndex(
-      replicaClient,
-      esClients.mwdiReplicaEsClient["index-alias"],
-      {
+  await ensureIndex(
+    replicaClient,
+    esClients.mwdiReplicaEsClient["index-alias"],
+    {
       mappings: {
         properties: {
           "core-model-1-4:control-construct": { type: "flattened" },
@@ -86,9 +82,8 @@ async function ensureIndicesAndMappings(esClients, logger, options = {}) {
         }
       }
     },
-      logger
-    );
-  }
+    logger
+  );
 
   await ensureIndex(
     loggingClient,

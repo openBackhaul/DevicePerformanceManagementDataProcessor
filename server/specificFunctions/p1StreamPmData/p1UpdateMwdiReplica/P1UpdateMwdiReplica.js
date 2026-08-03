@@ -66,7 +66,16 @@ async function waitForReindexTask(sourceClient, activeTask, pollIntervalMs, logg
         taskResult = await sourceClient.tasks.get({ task_id: taskId });
       } else {
         taskResult = await withRetry(
-          async () => sourceClient.tasks.get({ task_id: taskId }),
+          async () => {
+            try {
+              return await sourceClient.tasks.get({ task_id: taskId });
+            } catch (error) {
+              if (isTaskNotFoundError(error)) {
+                return { body: { recoveredCompletion: true } };
+              }
+              throw error;
+            }
+          },
           {
             label: "p1UpdateMwdiReplica.reindexTask",
             retryIntervalMs: 10000,
@@ -76,13 +85,14 @@ async function waitForReindexTask(sourceClient, activeTask, pollIntervalMs, logg
         );
       }
     } catch (error) {
-      if (activeTask.discovered && isTaskNotFoundError(error)) {
+      if (isTaskNotFoundError(error)) {
         logger.warn?.(
           {
             label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
-            taskId
+            taskId,
+            discovered: activeTask.discovered === true
           },
-          "Discovered legacy reindex task is no longer running; continuing post-reindex recovery"
+          "Saved reindex task is no longer present; continuing idempotent post-reindex recovery"
         );
         return { body: { recoveredCompletion: true } };
       }
@@ -91,6 +101,17 @@ async function waitForReindexTask(sourceClient, activeTask, pollIntervalMs, logg
     }
 
     const taskBody = taskResult?.body || taskResult;
+    if (taskBody.recoveredCompletion === true) {
+      logger.warn?.(
+        {
+          label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
+          taskId,
+          discovered: false
+        },
+        "Saved reindex task is no longer present; continuing idempotent post-reindex recovery"
+      );
+      return { body: taskBody };
+    }
     const status = taskBody.task?.status || taskBody.status || {};
 
     logger.debug?.(
@@ -234,7 +255,10 @@ async function loadUpdatedMountNames(
           scroll: scrollTtl,
           size: scrollSize,
           body: {
-            _source: ["mountName", "mount-name", "uuid"],
+            // MWDI stores the mountName as the document _id. Avoid loading and
+            // decompressing the multi-megabyte ControlConstruct source merely
+            // to discover the changed device identifier.
+            _source: false,
             query: {
               bool: {
                 must: [
@@ -310,9 +334,6 @@ async function run(request) {
     lastReplicaTime,
     runtimeConfig
   } = request;
-  const accessMode = String(
-    ((runtimeConfig || {}).service || {}).mwdiAccessMode || "REPLICA"
-  ).toUpperCase();
 
   let sourceClient;
   try {
@@ -330,22 +351,20 @@ async function run(request) {
     throw new Error(ERRORS.CONNECTION_MWDI_ES_FAILED);
   }
 
-  let replicaClient = sourceClient;
-  if (accessMode !== "DIRECT") {
-    try {
-      replicaClient = await onfAdapter.getEsClient(
-        false,
-        mwdiReplicaEsClient.uuid,
-        mwdiReplicaEsClient,
-        logger
-      );
-    } catch (error) {
-      logger.error(
-        { error: error.message || error, label: "getEsClient-replica" },
-        "Failed to create MWDI Replica ES client"
-      );
-      throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
-    }
+  let replicaClient;
+  try {
+    replicaClient = await onfAdapter.getEsClient(
+      false,
+      mwdiReplicaEsClient.uuid,
+      mwdiReplicaEsClient,
+      logger
+    );
+  } catch (error) {
+    logger.error(
+      { error: error.message || error, label: "getEsClient-replica" },
+      "Failed to create MWDI Replica ES client"
+    );
+    throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
   }
 
   let loggingClient;
@@ -426,8 +445,7 @@ async function run(request) {
       reqPerSec,
       scrollSize,
       scrollTtl,
-      reindexPollIntervalMs,
-      accessMode
+      reindexPollIntervalMs
     },
     "p1UpdateMwdiReplica request details"
   );
@@ -435,64 +453,6 @@ async function run(request) {
   let statusMessage = "SUCCESS";
   let reindexResp;
   let activeTask;
-
-  if (accessMode === "DIRECT") {
-    let updatedMountNames;
-    try {
-      updatedMountNames = await loadUpdatedMountNames(
-        sourceClient,
-        mwdiEsClient["index-alias"],
-        lastUpdatedField,
-        periodStartTime,
-        periodEndTime,
-        scrollSize,
-        scrollTtl,
-        logger
-      );
-
-      await redisQueue.ensureGroup(logger);
-      await redisQueue.enqueueMountNames(
-        updatedMountNames,
-        {
-          batchSize: (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
-          pauseMs: (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
-          clearRetryAndDeadLetterBeforeEnqueue: true,
-          extraFields: { sourceUpdatedAt: periodEndTime }
-        },
-        logger
-      );
-    } catch (error) {
-      logger.error(
-        { label: "p1UpdateMwdiReplica.direct", error: error.message || error },
-        "Failed to discover or enqueue changed MWDI devices in DIRECT mode"
-      );
-      throw error;
-    }
-
-    await loggingClient.index({
-      index: loggingEsClient["index-alias"],
-      body: {
-        jobName,
-        accessMode,
-        periodStartTime,
-        periodEndTime,
-        replicated: 0,
-        updated: updatedMountNames.length,
-        total: updatedMountNames.length,
-        status: statusMessage,
-        updatedMountNameCount: updatedMountNames.length,
-        lastReplicaTime: periodEndTime,
-        timestamp: new Date().toISOString()
-      },
-      refresh: false
-    }).catch((error) => logger.warn?.(
-      { label: "p1UpdateMwdiReplica.direct.logging", error: error.message || error },
-      "Failed to write DIRECT-mode cycle log"
-    ));
-
-    await saveLastReplicaTime(loggingEsClient, periodEndTime, logger);
-    return { updatedMountNames, timestamp: periodEndTime };
-  }
 
   try {
     activeTask = await loadActiveReindexTask(logger);
@@ -633,6 +593,7 @@ async function run(request) {
   }
 
   let updatedMountNames;
+  const changedDeviceSearchStartedAt = Date.now();
   try {
     updatedMountNames = await loadUpdatedMountNames(
       replicaClient,
@@ -643,6 +604,14 @@ async function run(request) {
       scrollSize,
       scrollTtl,
       logger
+    );
+    logger.info?.(
+      {
+        label: "p1UpdateMwdiReplica.changedDevices.loaded",
+        mountNameCount: updatedMountNames.length,
+        durationMs: Date.now() - changedDeviceSearchStartedAt
+      },
+      "Loaded changed device identifiers from replica"
     );
   } catch (error) {
     logger.error(
@@ -657,30 +626,46 @@ async function run(request) {
 
   try {
     await redisQueue.ensureGroup(logger);
+    await redisQueue.clearRetryAndDeadLetterForReplicaUpdates(
+      updatedMountNames,
+      logger
+    );
   } catch (error) {
     logger.error(
       {
         label: "p1UpdateMwdiReplica.ensureGroup",
         error: error.message || error
       },
-      "Failed to ensure Redis consumer group"
+      "Failed to prepare Redis state for replica update"
     );
 
     throw error;
   }
 
   try {
-    await redisQueue.enqueueMountNames(
+    const enqueueStartedAt = Date.now();
+    const enqueueResult = await redisQueue.enqueueMountNames(
       updatedMountNames,
       {
         batchSize:
           (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
         pauseMs:
           (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
-        clearRetryAndDeadLetterBeforeEnqueue: true
+        clearRetryAndDeadLetterBeforeEnqueue: false
       },
       logger
     );
+    logger.info?.(
+      {
+        label: "p1UpdateMwdiReplica.enqueueMountNames.completed",
+        ...enqueueResult,
+        durationMs: Date.now() - enqueueStartedAt
+      },
+      "Completed batched enqueue of replica updates"
+    );
+    if (enqueueResult.failed > 0) {
+      throw new Error(`Failed to enqueue ${enqueueResult.failed} changed devices`);
+    }
   } catch (error) {
     logger.error(
       {
@@ -732,6 +717,10 @@ async function run(request) {
 
   await saveLastReplicaTime(loggingEsClient, timestamp, logger);
   await clearActiveReindexTask(logger);
+  logger.info?.(
+    { label: "p1UpdateMwdiReplica.completed", timestamp, updatedMountNameCount: updatedMountNames.length },
+    "Replica cycle checkpoint saved and active task cleared"
+  );
 
   return {
     updatedMountNames,
