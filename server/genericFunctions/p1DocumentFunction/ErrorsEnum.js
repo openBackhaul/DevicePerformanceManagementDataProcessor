@@ -4,7 +4,7 @@ const ERRORS = {
 
   DOC_COULDNT_CREATED: "documentation could not be created",
 
-  GENERAL_ERROR: "General processing error"
+  GENERAL_ERROR: "general processing error"
 }
 
 module.exports = ERRORS;
