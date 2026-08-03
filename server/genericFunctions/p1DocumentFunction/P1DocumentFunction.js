@@ -1,7 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
 
-const properties = [  "function-name", "description", "is-active", "parameter" ];
-
 /**
  * p1DocumentFunction
  *
