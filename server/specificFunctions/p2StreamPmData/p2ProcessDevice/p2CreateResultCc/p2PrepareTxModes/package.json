@@ -1,0 +1,11 @@
+{
+  "name": "p2-prepare-tx-modes",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "json5": "^2.2.3"
+  }
+}
