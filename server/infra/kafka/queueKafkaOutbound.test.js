@@ -9,14 +9,22 @@ jest.mock("../../service/LoggingService.js", () => ({
   }))
 }));
 
+jest.mock("../elasticSearch/kafkaPayloadStore", () => ({
+  storeKafkaPayload: jest.fn().mockResolvedValue("payload-ref-1"),
+  deleteKafkaPayload: jest.fn().mockResolvedValue(undefined)
+}));
+
 const redisQueue = require("../redis/redisStreamQueue");
 const queueKafkaOutbound = require("./queueKafkaOutbound");
+const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
 
 describe("queueKafkaOutbound", () => {
   beforeEach(() => {
     delete process.env.MAX_REDIS_KAFKA_PAYLOAD_BYTES;
     redisQueue.ensureKafkaOutboundGroup.mockClear();
     redisQueue.enqueueKafkaOutbound.mockClear();
+    kafkaPayloadStore.storeKafkaPayload.mockClear();
+    kafkaPayloadStore.deleteKafkaPayload.mockClear();
   });
 
   it("queues messages with payload size less than or equal to 1MB", async () => {
@@ -45,7 +53,7 @@ describe("queueKafkaOutbound", () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it("allows a serialized payload that is exactly 1MB", async () => {
+  it("offloads a serialized 1MB payload to Elasticsearch", async () => {
     const oneMbStringPayload = "x".repeat((1024 * 1024) - 2);
 
     const queueMessage = await queueKafkaOutbound.buildRedisQueueMessage({
@@ -56,21 +64,23 @@ describe("queueKafkaOutbound", () => {
       payloadVersion: "1.0",
       eventTime: "2026-07-08T00:00:00.000Z",
       payload: oneMbStringPayload
-    });
+    }, { "index-alias": "datastore" }, {});
 
     expect(queueMessage).toMatchObject({
       targetConsumer: "APT",
       mountName: "device-exact",
-      payloadStorage: "REDIS",
+      payloadStorage: "ES",
+      payloadRefId: "payload-ref-1",
       payloadBytes: 1024 * 1024
     });
   });
 
-  it("queues messages with payload size greater than 1MB so EMP Kafka can reject them", async () => {
+  it("queues large messages by Elasticsearch reference instead of storing them in Redis", async () => {
     const logger = { error: jest.fn() };
 
     const result = await queueKafkaOutbound.run({
       logger,
+      dataStoreEsClient: { "index-alias": "datastore" },
       output: {
         targetConsumer: "APT",
         mountName: "device-oversized",
@@ -85,8 +95,9 @@ describe("queueKafkaOutbound", () => {
       expect.objectContaining({
         targetConsumer: "APT",
         mountName: "device-oversized",
-        payloadStorage: "REDIS",
-        payload: expect.any(String),
+        payloadStorage: "ES",
+        payload: "",
+        payloadRefId: "payload-ref-1",
         payloadBytes: expect.any(Number)
       }),
       logger
@@ -96,7 +107,7 @@ describe("queueKafkaOutbound", () => {
       expect.objectContaining({
         targetConsumer: "APT",
         mountName: "device-oversized",
-        payloadStorage: "REDIS",
+        payloadStorage: "ES",
         status: "QUEUED",
         payloadBytes: expect.any(Number)
       })

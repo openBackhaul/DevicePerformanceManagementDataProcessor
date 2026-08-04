@@ -354,7 +354,7 @@ function getKafkaMessageBytes(message) {
 }
 
 function getMaxSingleKafkaMessageBytes() {
-  return Number(global.KAFKA_MAX_SINGLE_MESSAGE_BYTES || 4500000);
+  return Number(global.KAFKA_MAX_SINGLE_MESSAGE_BYTES || 900000);
 }
 
 function validateKafkaMessageSize(message, context) {
@@ -406,17 +406,11 @@ async function run(request) {
         value: JSON.stringify(envelope)
       };
 
-      /*
-       * Local size validation is intentionally disabled. EMP Kafka should reject
-       * oversized messages, and kafkaOutboundWorker will log non-retryable
-       * KAFKA_MESSAGE_SIZE_TOO_LARGE failures and remove them from Redis.
-       *
-       * validateKafkaMessageSize(kafkaMessage, {
-       *   topic: kafkaConnection.topicName,
-       *   targetConsumer: envelope.targetConsumer,
-       *   mountName: envelope.mountName
-       * });
-       */
+      validateKafkaMessageSize(kafkaMessage, {
+        topic: kafkaConnection.topicName,
+        targetConsumer: envelope.targetConsumer,
+        mountName: envelope.mountName
+      });
 
       /*
        * Group by topic + clientId + brokerList.
