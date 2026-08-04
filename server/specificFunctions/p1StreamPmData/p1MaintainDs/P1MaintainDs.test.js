@@ -54,6 +54,7 @@ describe("P1MaintainDs", () => {
     jest.clearAllMocks();
 
     mockDataStoreClient = {
+      deleteByQuery: jest.fn().mockResolvedValue({ body: { deleted: 0 } }),
       updateByQuery: jest.fn().mockResolvedValue({
         body: {
           total: 0,
@@ -205,6 +206,30 @@ describe("P1MaintainDs", () => {
       versionConflicts: 2,
       batchesDeleted: null
     }));
+  });
+
+  test("deletes all permanently failed Kafka payload documents without age retention", async () => {
+    mockDataStoreClient.deleteByQuery.mockResolvedValueOnce({ body: { deleted: 7 } });
+
+    const result = await moduleUnderTest.run(validRequest());
+
+    expect(mockDataStoreClient.deleteByQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        index: "datastore-index",
+        wait_for_completion: false,
+        body: {
+          query: {
+            bool: {
+              filter: [
+                { term: { docType: "kafka-outbound-payload" } },
+                { term: { deliveryState: "permanent-failure" } }
+              ]
+            }
+          }
+        }
+      })
+    );
+    expect(result.cleanupSummary.kafkaPayloadDocumentsDeleted).toBe(7);
   });
 
   test("waits for an asynchronous Elasticsearch cleanup task", async () => {

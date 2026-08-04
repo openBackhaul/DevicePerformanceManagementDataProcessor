@@ -148,6 +148,9 @@ async function run() {
     global.KAFKA_SOCKET_TIMEOUT_MS = Number(
       serviceConfig.kafkaSocketTimeoutMs || 30000
     );
+    global.KAFKA_MAX_SINGLE_MESSAGE_BYTES = Number(
+      serviceConfig.kafkaMaxSingleMessageBytes || 900000
+    );
 
     const instanceId = `${os.hostname()}-${process.pid}-${crypto.randomUUID()}`;
 
@@ -278,7 +281,7 @@ async function run() {
       // kafka producer config for sendBatch
       kafkaProducerMessageMaxBytes: serviceConfig.kafkaProducerMessageMaxBytes || 5242880,
       kafkaSocketRequestMaxBytes: serviceConfig.kafkaSocketRequestMaxBytes || 10485760,
-      kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 4500000,
+      kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 900000,
       kafkaOversizedMessageMode: serviceConfig.kafkaOversizedMessageMode || "ERROR"
     }).catch((error) =>
       logger.error({ error }, "Kafka outbound worker pool crashed")

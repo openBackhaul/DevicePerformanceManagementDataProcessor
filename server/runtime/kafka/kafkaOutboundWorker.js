@@ -234,6 +234,14 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
     );
 
     await redisQueue.moveKafkaOutboundToDeadLetter(msg, error, logger);
+    if (fields.payloadStorage === "ES" && fields.payloadRefId) {
+      await kafkaPayloadStore.markKafkaPayloadForCleanup({
+        dataStoreEsClient: context.dataStoreEsClient,
+        payloadRefId: fields.payloadRefId,
+        failureReason: error.reason || error.message,
+        logger
+      });
+    }
   }
 }
 

@@ -46,6 +46,7 @@ async function storeKafkaPayload(request) {
           mountName,
           payload,
           payloadBytes,
+          deliveryState: "pending",
           createdAt: new Date().toJSON()
         },
         refresh: false
@@ -58,6 +59,35 @@ async function storeKafkaPayload(request) {
   );
 
   return id;
+}
+
+async function markKafkaPayloadForCleanup(request) {
+  const { dataStoreEsClient, payloadRefId, failureReason, logger } = request;
+
+  if (!dataStoreEsClient || !payloadRefId) {
+    return;
+  }
+
+  const client = await getDataStoreClient(dataStoreEsClient, logger);
+  await withRetry(
+    async () => client.update({
+      index: dataStoreEsClient["index-alias"],
+      id: payloadRefId,
+      body: {
+        doc: {
+          deliveryState: "permanent-failure",
+          failureReason: String(failureReason || "NON_RETRYABLE_KAFKA_FAILURE"),
+          failedAt: new Date().toJSON()
+        }
+      },
+      refresh: false
+    }),
+    {
+      label: `kafkaPayloadStore.markForCleanup:${payloadRefId}`,
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
 }
 
 async function loadKafkaPayload(request) {
@@ -115,5 +145,6 @@ async function deleteKafkaPayload(request) {
 module.exports = {
   storeKafkaPayload,
   loadKafkaPayload,
+  markKafkaPayloadForCleanup,
   deleteKafkaPayload
 };

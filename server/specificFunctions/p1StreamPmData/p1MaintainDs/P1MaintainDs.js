@@ -403,6 +403,46 @@ async function cleanDataStoreOnServer(
 
   return startBody;
 }
+
+async function deleteFailedKafkaPayloads(client, dataStoreEsClient, options, logger) {
+  const response = await withRetry(
+    async () => client.deleteByQuery({
+      index: dataStoreEsClient["index-alias"],
+      conflicts: "proceed",
+      refresh: false,
+      wait_for_completion: false,
+      requests_per_second: options.requestsPerSecond,
+      scroll_size: options.scrollSize,
+      body: {
+        query: {
+          bool: {
+            filter: [
+              { term: { docType: "kafka-outbound-payload" } },
+              { term: { deliveryState: "permanent-failure" } }
+            ]
+          }
+        }
+      }
+    }),
+    {
+      label: "p1MaintainDs.deleteFailedKafkaPayloads",
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+
+  const body = getTaskBody(response);
+  if (body.task) {
+    const completed = await waitForCleanupTask(
+      client,
+      body.task,
+      options.taskPollIntervalMs,
+      logger
+    );
+    return Number(completed.deleted || 0);
+  }
+  return Number(body.deleted || 0);
+}
 /**
  * Request:
  * {
@@ -492,6 +532,7 @@ async function run(request) {
       failures: 0,
       mountNames: [],
       loggingDocumentsDeleted: 0,
+      kafkaPayloadDocumentsDeleted: 0,
       cleanupTaskId: null
     };
 
@@ -503,6 +544,17 @@ async function run(request) {
         logger
       );
     }
+
+    cleanupSummary.kafkaPayloadDocumentsDeleted = await deleteFailedKafkaPayloads(
+      client,
+      dataStoreEsClient,
+      {
+        requestsPerSecond: cleanupRequestsPerSecond,
+        scrollSize: cleanupScrollSize,
+        taskPollIntervalMs: cleanupTaskPollIntervalMs
+      },
+      logger
+    );
 
     let cleanupResponse;
     try {

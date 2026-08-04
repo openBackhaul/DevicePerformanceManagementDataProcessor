@@ -27,7 +27,7 @@
     "kafkaDeliveryTimeoutMs": 60000,
     "kafkaRequestTimeoutMs": 30000,
     "kafkaSocketTimeoutMs": 30000,
-    "kafkaMaxSingleMessageBytes": 4500000,
+    "kafkaMaxSingleMessageBytes": 900000,
     "kafkaOversizedMessageMode": "ERROR",
 
     "kafkaOutboundWorkerIdleSleepMs": 1000,

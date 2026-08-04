@@ -581,7 +581,7 @@
               "string-purpose": "Number of documents returned per page when Elasticsearch performs a scroll search"
             },
             "string-profile-configuration": {
-              "string-value": "200"
+              "string-value": "500"
             }
           }
         },
