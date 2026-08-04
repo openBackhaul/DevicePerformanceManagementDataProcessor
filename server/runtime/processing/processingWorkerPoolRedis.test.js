@@ -12,6 +12,7 @@ jest.mock("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevic
 
 jest.mock("../../infra/redis/redisLock", () => ({
   acquireLock: jest.fn(),
+  renewLock: jest.fn(),
   releaseLock: jest.fn()
 }));
 
@@ -24,7 +25,7 @@ jest.mock("../../service/LoggingService.js", () => ({
 
 const redisQueue = require("../../infra/redis/redisStreamQueue");
 const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
-const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
+const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const { _internal } = require("./processingWorkerPoolRedis");
 
 describe("processingWorkerPoolRedis retry handling", () => {
@@ -51,6 +52,7 @@ describe("processingWorkerPoolRedis retry handling", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     acquireLock.mockResolvedValue("lock-token");
+    renewLock.mockResolvedValue(true);
     releaseLock.mockResolvedValue();
     redisQueue.enqueueRetry.mockResolvedValue({ status: "ENQUEUED" });
     redisQueue.clearRetryState.mockResolvedValue();

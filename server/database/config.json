@@ -605,7 +605,7 @@
               "string-purpose": "Throttles re-indexing to number of copy operations per second, preventing high load on the server"
             },
             "string-profile-configuration": {
-              "string-value": "2"
+              "string-value": "-1"
             }
           }
         },
@@ -618,7 +618,7 @@
               "string-purpose": "Number of documents returned per page when Elasticsearch performs a scroll search"
             },
             "string-profile-configuration": {
-              "string-value": "200"
+              "string-value": "500"
             }
           }
         },

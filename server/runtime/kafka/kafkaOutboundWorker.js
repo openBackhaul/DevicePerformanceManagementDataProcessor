@@ -206,11 +206,9 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
    *
    * For now:
    * - log clearly
-   * - ACK and delete from Kafka outbound stream
-   * - do not delete ES payload reference here, so the payload can still be inspected
-   *
-   * Later this can be changed to move the message to a dedicated
-   * dpmdp:stream:kafka-outbound-dead-letter stream.
+   * - preserve the complete message in the Kafka outbound dead-letter stream
+   * - ACK and delete it from the active stream only after the copy succeeds
+   * - do not delete any ES payload reference, so the payload remains inspectable
    */
 
   for (const msg of messages) {
@@ -235,8 +233,15 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
       "Kafka outbound message moved out of retry flow because error is non-retryable"
     );
 
-    await redisQueue.ackKafkaOutbound(msg.id, logger);
-    await redisQueue.deleteKafkaOutboundMessage(msg.id, logger);
+    await redisQueue.moveKafkaOutboundToDeadLetter(msg, error, logger);
+    if (fields.payloadStorage === "ES" && fields.payloadRefId) {
+      await kafkaPayloadStore.markKafkaPayloadForCleanup({
+        dataStoreEsClient: context.dataStoreEsClient,
+        payloadRefId: fields.payloadRefId,
+        failureReason: error.reason || error.message,
+        logger
+      });
+    }
   }
 }
 
