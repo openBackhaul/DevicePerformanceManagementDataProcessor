@@ -57,7 +57,6 @@ x-javascript-interface:
               enum:
                 - 'historicalPerformanceData not provided'
                 - 'historicalPerformanceData invalid'
-                - 'aggregationGroup not provided'
                 - 'aggregationGroup invalid'
                 - 'result-cc not provided'
                 - 'result-cc invalid'
