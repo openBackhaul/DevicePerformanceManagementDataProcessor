@@ -16,7 +16,7 @@ x-javascript-interface:
               - parameters-of-to-be-documented-function
             properties:
               parameters-of-to-be-documented-function:
-                type: string
+                type: object
                 description: >
                   'Parameters of the function for which the documentation shall be generated'
     output:
