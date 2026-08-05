@@ -133,10 +133,7 @@ function documentFunctionRecursive(functionObject, indentLevel) {
  */
 function getStringParameters(functionObject) {
   const candidates = [
-    // functionObject.stringParameters,
-    // functionObject["string-parameters"],
-    functionObject['parameter'],  // This must be the official one
-    // functionObject.parameters,
+    functionObject['parameter'],
   ];
 
   for (const candidate of candidates) {
@@ -160,9 +157,7 @@ function getStringParameters(functionObject) {
  */
 function getSubFunctions(functionObject) {
   const candidates = [
-    // functionObject.subFunctions,
-    functionObject["sub-function"],    // This must be the official one
-    // functionObject.functions,
+    functionObject["sub-function"],
   ];
 
   for (const candidate of candidates) {
