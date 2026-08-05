@@ -192,10 +192,10 @@ exports.initiatePmDataUpdate = async function (
         (p) => p["parameter-name"] === "waitTimeForSending",
       )?.value,
     );
-
-    console.log(waitTimeForSending); // 200
-    waitTimeForSending = 0
-  */
+*/let waitTimeForSending = 0
+    console.log(waitTimeForSending); 
+  
+  
     waitTimeForSending = Number(
       getParamFromFunction(
         loaded.parameters,
