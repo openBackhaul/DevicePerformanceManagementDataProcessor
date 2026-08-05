@@ -6,6 +6,7 @@ class AppState {
     this.lastReplicaTime = null;
     this.lastReplicaLeaderRunAt = null;
     this.lastCleanupRunAt = null;
+    this.lastSuccessfulCompleteControlConstructUpdateTime = null;
     this.metrics = {
       replicaCycles: 0,
       processedSuccess: 0,
@@ -15,4 +16,6 @@ class AppState {
   }
 }
 
-module.exports = { AppState };
+// Create and export a singleton instance
+const appStateInstance = new AppState();
+module.exports = { AppState, appState: appStateInstance };
