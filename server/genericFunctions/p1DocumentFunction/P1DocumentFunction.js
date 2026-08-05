@@ -21,15 +21,10 @@ function p1DocumentFunction(input) {
       return ERRORS.PARAMETERS_INVALID;
     }
 
-    const rawParameters = input["parameters-of-to-be-documented-function"];
-    if (Object.keys(rawParameters).length == 0) {
+    const parameters = input["parameters-of-to-be-documented-function"];
+    if (Object.keys(parameters).length == 0) {
       return ERRORS.PARAMETERS_INVALID;
     }
-
-    const parameters =
-      typeof rawParameters === "string"
-        ? JSON.parse(rawParameters)
-        : rawParameters;
 
     const documentation = formatDocumentation({ parameters });
 
