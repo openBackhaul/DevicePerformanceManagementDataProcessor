@@ -1,4 +1,4 @@
-# p1CalculateUtilization
+# p2CalculateUtilization
 
 Calculates the utilization of the aggregated physical TX resources in a performance data slice.  
 
@@ -8,7 +8,7 @@ Divides the totalBytesOutput by the aggregated interval capacity to get the util
 ## Diagram
 
 <p align="center">
-  <img src="./p1CalculateUtilization.png" alt="p1CalculateUtilization" width="400"/>
+  <img src="./p2CalculateUtilization.png" alt="p2CalculateUtilization" width="400"/>
 </p>
 
 ## Interface
@@ -21,4 +21,4 @@ Please find a detailed description of the [variables](./variables.yaml).
 
 ## NPM Module
 
-[mw-sdn-p1-calculate-utilization](https://www.npmjs.com/package/mw-sdn-p1-calculate-utilization)
+[mw-sdn-p2-calculate-utilization](https://www.npmjs.com/package/mw-sdn-p2-calculate-utilization)

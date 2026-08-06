@@ -166,7 +166,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1CalculateUtilization:
+      p2CalculateUtilization:
         summary: 'Calculates utilization of the aggregated physical resources in a performance data slice'
         input:
           required: true

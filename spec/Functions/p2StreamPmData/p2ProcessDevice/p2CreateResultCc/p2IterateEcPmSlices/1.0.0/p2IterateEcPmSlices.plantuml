@@ -10,7 +10,7 @@ participant "p2CreateResultCc\n" as cur
 participant "p2IterateEcPmSlices\n" as iterateSlices
 participant "p1Calculate\nEthernetKpis" as intCC
 participant "p1Remove\nDefaultValues" as p1RemDefault
-participant "p1Calculate\nUtilization" as p1CalcUtil
+participant "p2Calculate\nUtilization" as p2CalcUtil
 participant "p1CategorizeDataVolume\n" as p1CatDataVo
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 
@@ -45,13 +45,13 @@ activate iterateSlices
     end note
 
 
-    iterateSlices -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
-    activate p1CalcUtil
-      note over p1CalcUtil
+    iterateSlices -> p2CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
+    activate p2CalcUtil
+      note over p2CalcUtil
         Adds utilization
       end note
-    iterateSlices <-- p1CalcUtil: { {historical-performance-data} }
-    deactivate p1CalcUtil
+    iterateSlices <-- p2CalcUtil: { {historical-performance-data} }
+    deactivate p2CalcUtil
 
     note over iterateSlices
       IF granularityPeriod == 15-MIN

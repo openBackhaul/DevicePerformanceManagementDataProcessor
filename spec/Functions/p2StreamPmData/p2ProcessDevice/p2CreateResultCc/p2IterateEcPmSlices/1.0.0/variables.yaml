@@ -23,7 +23,7 @@ iterate-ec-pm-slices:
         type: object
         description: >
           'historicalPerformanceData
-          overwritten by {$p1CalculateUtilization.output#/historical-performance-data}
+          overwritten by {$p2CalculateUtilization.output#/historical-performance-data}
         properties:
           granularity-period:
             type: string
