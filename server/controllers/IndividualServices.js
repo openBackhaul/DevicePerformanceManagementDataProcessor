@@ -50,6 +50,11 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate (req, res, n
         responseBody = response;
       }
       
+      // Add outdated mount names to response if present
+      if (response['outdated-mount-names'] && response['outdated-mount-names'].length > 0) {
+        responseBody = response;
+      }
+      
       // Always log request summary
       console.log(`POST /initiate-pm-data-update ${statusCode} SUCCESS ${execTime}ms`);
       

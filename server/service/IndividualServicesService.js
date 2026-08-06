@@ -164,26 +164,55 @@ exports.initiatePmDataUpdate = async function (
     trace("All validations passed");
 
     // 9. Check if update is needed (15-minute throttle) - AFTER all validations
+    // Per-mount throttle based on last-successful-complete-control-construct-update-time from MWDI
     const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
     const currentTime = Date.now();
-    const lastUpdateTime =
-      appState?.lastSuccessfulCompleteControlConstructUpdateTime;
-
-    // If there was a previous successful update and < 15 minutes have passed, return early
-    if (lastUpdateTime !== null && lastUpdateTime !== undefined) {
-      const timeSinceLastUpdate = currentTime - lastUpdateTime;
-
+    
+    // Separate mount names into already-up-to-date and outdated based on MWDI timestamps
+    const alreadyUpToDateMountNames = [];
+    const outdatedMountNames = [];
+    
+    for (const metadata of metadataArrayMWDI) {
+      const mountName = metadata['mount-name'];
+      const lastSuccessfulUpdateTime = metadata['last-successful-complete-control-construct-update-time'];
+      
+      // If no previous update or timestamp is null/undefined, consider it outdated
+      if (!lastSuccessfulUpdateTime) {
+        outdatedMountNames.push(mountName);
+        continue;
+      }
+      
+      // Parse the timestamp and compare
+      const lastUpdateDate = new Date(lastSuccessfulUpdateTime);
+      const timeSinceLastUpdate = currentTime - lastUpdateDate.getTime();
+      
       if (timeSinceLastUpdate < FIFTEEN_MINUTES_MS) {
-    trace(
-      `Update skipped: only ${Math.floor(timeSinceLastUpdate / 1000)} seconds since last successful update (minimum 15 minutes required)`,
-    );
-
-        // Return 200 with already up-to-date mount names
-        return {
-          "already-up-to-date-mount-names": body["mount-names"] || [],
-        };
+        alreadyUpToDateMountNames.push(mountName);
+      } else {
+        outdatedMountNames.push(mountName);
       }
     }
+    
+    // If all mounts are already up-to-date, return early
+    if (outdatedMountNames.length === 0 && alreadyUpToDateMountNames.length > 0) {
+      trace(
+        `Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`,
+      );
+      
+      return {
+        "already-up-to-date-mount-names": alreadyUpToDateMountNames,
+      };
+    }
+    
+    // If some mounts are outdated, update the body to only process those
+    if (outdatedMountNames.length > 0 && alreadyUpToDateMountNames.length > 0) {
+      trace(
+        `Processing ${outdatedMountNames.length} outdated mount(s), skipping ${alreadyUpToDateMountNames.length} up-to-date mount(s)`,
+      );
+    }
+    
+    // Update body to only contain outdated mount names for processing
+    body['mount-names'] = outdatedMountNames;
 
     var loaded = await p1LoadParameters.run({
       functionName: "initiatePmDataUpdate",
@@ -217,7 +246,7 @@ exports.initiatePmDataUpdate = async function (
     const liveControlConstructResults = [];
 
     // Ciclo attraverso tutti i mount names per recuperare i live control-construct
-    for (const mountName of inputMountNames) {
+    for (const mountName of outdatedMountNames) {
       trace(`Processing mount: ${mountName}`);
       
       // Attendi waitTimeForSending ms prima di ogni richiesta
@@ -273,14 +302,21 @@ exports.initiatePmDataUpdate = async function (
       );
     }
 
-    // Esito positivos
-    return {
+    // Esito positivo
+    const successResponse = {
       status: "success",
       message: "PM data update initiated successfully",
       timestamp: new Date().toISOString(),
       mwdiUrl,
       mwdiResponse: responseData,
     };
+    
+    // If there were already up-to-date mounts, include them in response
+    if (alreadyUpToDateMountNames.length > 0) {
+      successResponse['already-up-to-date-mount-names'] = alreadyUpToDateMountNames;
+    }
+    
+    return successResponse;
   } catch (error) {
     // CATCH GLOBALE: Gestisce QUALSIASI errore verificatosi nel blocco 'try'
     logger.error(`Error in initiatePmDataUpdate: ${error.message || error}`);
