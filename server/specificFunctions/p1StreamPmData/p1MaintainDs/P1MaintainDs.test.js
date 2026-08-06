@@ -193,7 +193,13 @@ describe("P1MaintainDs", () => {
         requests_per_second: 10,
         scroll_size: 100,
         body: expect.objectContaining({
-          query: { match_all: {} },
+          query: {
+            bool: {
+              must_not: [
+                { term: { "docType.keyword": "kafka-outbound-payload" } }
+              ]
+            }
+          },
           script: expect.objectContaining({ lang: "painless" })
         })
       })
@@ -208,7 +214,7 @@ describe("P1MaintainDs", () => {
     }));
   });
 
-  test("deletes all permanently failed Kafka payload documents without age retention", async () => {
+  test("deletes failed and oversized evidence payloads during maintenance", async () => {
     mockDataStoreClient.deleteByQuery.mockResolvedValueOnce({ body: { deleted: 7 } });
 
     const result = await moduleUnderTest.run(validRequest());
@@ -220,10 +226,14 @@ describe("P1MaintainDs", () => {
         body: {
           query: {
             bool: {
-              filter: [
-                { term: { docType: "kafka-outbound-payload" } },
-                { term: { deliveryState: "permanent-failure" } }
-              ]
+            filter: [
+              { term: { "docType.keyword": "kafka-outbound-payload" } }
+            ],
+            should: [
+              { term: { "deliveryState.keyword": "permanent-failure" } },
+              { term: { "deliveryState.keyword": "oversized-evidence" } }
+            ],
+            minimum_should_match: 1
             }
           }
         }

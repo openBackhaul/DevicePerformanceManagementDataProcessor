@@ -51,3 +51,33 @@ describe("redisStreamQueue batched device enqueue", () => {
     expect(result).toEqual({ enqueued: 0, skipped: 0, failed: 2 });
   });
 });
+
+describe("Redis Kafka daily metrics", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockRedis.eval.mockResolvedValue([]);
+  });
+
+  test("increments total and consumer metric atomically", async () => {
+    await queue.updateKafkaDailyMetrics("successful", "NetExplorer", 3, {});
+
+    expect(mockRedis.eval).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        keys: ["dpmdp:hash:kafka-daily-metrics"],
+        arguments: expect.arrayContaining([
+          "Europe/Berlin",
+          "successful",
+          "NETEXPLORER",
+          "3"
+        ])
+      })
+    );
+  });
+
+  test("rejects unsupported metric names", async () => {
+    await expect(
+      queue.updateKafkaDailyMetrics("retried", "APT", 1, {})
+    ).rejects.toThrow("Unsupported Kafka daily metric");
+  });
+});

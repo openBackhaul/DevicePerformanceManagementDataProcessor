@@ -376,7 +376,13 @@ async function cleanDataStoreOnServer(
       requests_per_second: options.requestsPerSecond,
       scroll_size: options.scrollSize,
       body: {
-        query: { match_all: {} },
+        query: {
+          bool: {
+            must_not: [
+              { term: { "docType.keyword": "kafka-outbound-payload" } }
+            ]
+          }
+        },
         script: {
           lang: "painless",
           source: scriptSource,
@@ -417,9 +423,13 @@ async function deleteFailedKafkaPayloads(client, dataStoreEsClient, options, log
         query: {
           bool: {
             filter: [
-              { term: { docType: "kafka-outbound-payload" } },
-              { term: { deliveryState: "permanent-failure" } }
-            ]
+              { term: { "docType.keyword": "kafka-outbound-payload" } }
+            ],
+            should: [
+              { term: { "deliveryState.keyword": "permanent-failure" } },
+              { term: { "deliveryState.keyword": "oversized-evidence" } }
+            ],
+            minimum_should_match: 1
           }
         }
       }
