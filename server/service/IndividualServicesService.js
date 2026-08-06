@@ -204,9 +204,63 @@ exports.initiatePmDataUpdate = async function (
         0,
       ),
     );
-    console.log(waitTimeForSending);
 
-    logger.info("Validation passed, PM data update initiated successfully");
+    logger.info(`Wait time for sending requests: ${waitTimeForSending}ms`);
+
+    // Estrai il base URL da mwdiUrl (rimuovi il path esistente)
+    const baseMwdiUrl = mwdiUrl.replace('/v1/provide-device-status-metadata', '');
+
+    // Array per raccogliere i risultati del ciclo live control-construct
+    const liveControlConstructResults = [];
+
+    // Ciclo attraverso tutti i mount names per recuperare i live control-construct
+    for (const mountName of inputMountNames) {
+      logger.info(`Processing mount: ${mountName}`);
+      
+      // Attendi waitTimeForSending ms prima di ogni richiesta
+      if (waitTimeForSending > 0) {
+        await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
+      }
+      
+      // Costruisci l'URL per control-construct
+      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      
+      try {
+        // Esegui GET request
+        const response = await fetch(controlConstructUrl, {
+          method: "GET",
+          headers: requestHeaders
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          logger.info(`✓ Successfully retrieved control-construct for ${mountName}`);
+          liveControlConstructResults.push({
+            mountName: mountName,
+            status: "success",
+            data: data
+          });
+        } else {
+          logger.warn(`✗ Failed to retrieve control-construct for ${mountName}: ${response.status}`);
+          liveControlConstructResults.push({
+            mountName: mountName,
+            status: "failed",
+            error: `HTTP ${response.status}`
+          });
+        }
+        
+      } catch (error) {
+        logger.error(`✗ Error retrieving control-construct for ${mountName}: ${error.message}`);
+        liveControlConstructResults.push({
+          mountName: mountName,
+          status: "error",
+          error: error.message
+        });
+      }
+    }
+
+    logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
+    logger.info("PM data update initiated successfully");
 
     // Update the last successful update time
     if (appState) {
