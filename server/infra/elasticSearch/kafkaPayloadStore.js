@@ -25,6 +25,7 @@ async function storeKafkaPayload(request) {
     mountName,
     payload,
     payloadBytes,
+    deliveryState = "pending",
     logger
   } = request;
 
@@ -46,7 +47,7 @@ async function storeKafkaPayload(request) {
           mountName,
           payload,
           payloadBytes,
-          deliveryState: "pending",
+          deliveryState,
           createdAt: new Date().toJSON()
         },
         refresh: false
