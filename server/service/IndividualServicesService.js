@@ -16,6 +16,13 @@ const {
   findFunctionNode,
 } = require("../utils/functionTree");
 
+// Trace function - enabled via ENABLE_TRACES environment variable
+function trace(message) {
+  if (process.env.ENABLE_TRACES === 'true') {
+    console.log(message);
+  }
+}
+
 /**
  * Initiates process of embedding a new release
  *
@@ -54,7 +61,7 @@ exports.initiatePmDataUpdate = async function (
   appState,
 ) {
   try {
-    logger.info(
+    trace(
       `Received mountsList from initiatePmDataUpdate: ${JSON.stringify(body, null, 2)}`,
     );
 
@@ -86,7 +93,7 @@ exports.initiatePmDataUpdate = async function (
 
     const responseData = await mwdiResponse.json();
 
-    logger.info(
+    trace(
       `MWDI Received response for provideDeviceStatusMetadata : ${JSON.stringify(responseData, null, 2)}`,
     );
 
@@ -110,7 +117,7 @@ exports.initiatePmDataUpdate = async function (
       JSON.stringify(inputMountNames) !==
       JSON.stringify(returnedMountNamesMWDI);
 
-    logger.info("Validation mountNameDiscrepancy: " + mountNameDiscrepancy);
+    trace("Validation mountNameDiscrepancy: " + mountNameDiscrepancy);
 
     // Handle error 533: Mount name discrepancy
     if (mountNameDiscrepancy) {
@@ -154,7 +161,7 @@ exports.initiatePmDataUpdate = async function (
       throw error532;
     }
 
-    logger.info("All validations passed");
+    trace("All validations passed");
 
     // 9. Check if update is needed (15-minute throttle) - AFTER all validations
     const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
@@ -167,16 +174,13 @@ exports.initiatePmDataUpdate = async function (
       const timeSinceLastUpdate = currentTime - lastUpdateTime;
 
       if (timeSinceLastUpdate < FIFTEEN_MINUTES_MS) {
-        logger.info(
-          `Update skipped: only ${Math.floor(timeSinceLastUpdate / 1000)} seconds since last successful update (minimum 15 minutes required)`,
-        );
+    trace(
+      `Update skipped: only ${Math.floor(timeSinceLastUpdate / 1000)} seconds since last successful update (minimum 15 minutes required)`,
+    );
 
         // Return 200 with already up-to-date mount names
         return {
-          status: "success",
-          message: "PM data is already up to date",
           "already-up-to-date-mount-names": body["mount-names"] || [],
-          timestamp: new Date().toISOString(),
         };
       }
     }
@@ -185,7 +189,7 @@ exports.initiatePmDataUpdate = async function (
       functionName: "initiatePmDataUpdate",
     });
 
-    logger.info("Validation passed: " + loaded.parameters.parameter);
+    trace("Validation passed: " + loaded.parameters.parameter);
 /*
     let waitTimeForSending = Number(
       loaded.parameters.parameter.find(
@@ -193,7 +197,6 @@ exports.initiatePmDataUpdate = async function (
       )?.value,
     );
 */let waitTimeForSending = 0
-    console.log(waitTimeForSending); 
   
   
     waitTimeForSending = Number(
@@ -205,7 +208,7 @@ exports.initiatePmDataUpdate = async function (
       ),
     );
 
-    logger.info(`Wait time for sending requests: ${waitTimeForSending}ms`);
+    trace(`Wait time for sending requests: ${waitTimeForSending}ms`);
 
     // Estrai il base URL da mwdiUrl (rimuovi il path esistente)
     const baseMwdiUrl = mwdiUrl.replace('/v1/provide-device-status-metadata', '');
@@ -215,7 +218,7 @@ exports.initiatePmDataUpdate = async function (
 
     // Ciclo attraverso tutti i mount names per recuperare i live control-construct
     for (const mountName of inputMountNames) {
-      logger.info(`Processing mount: ${mountName}`);
+      trace(`Processing mount: ${mountName}`);
       
       // Attendi waitTimeForSending ms prima di ogni richiesta
       if (waitTimeForSending > 0) {
@@ -234,14 +237,14 @@ exports.initiatePmDataUpdate = async function (
         
         if (response.ok) {
           const data = await response.json();
-          logger.info(`✓ Successfully retrieved control-construct for ${mountName}`);
+          trace(`✓ Successfully retrieved control-construct for ${mountName}`);
           liveControlConstructResults.push({
             mountName: mountName,
             status: "success",
             data: data
           });
         } else {
-          logger.warn(`✗ Failed to retrieve control-construct for ${mountName}: ${response.status}`);
+          trace(`✗ Failed to retrieve control-construct for ${mountName}: ${response.status}`);
           liveControlConstructResults.push({
             mountName: mountName,
             status: "failed",
@@ -250,7 +253,7 @@ exports.initiatePmDataUpdate = async function (
         }
         
       } catch (error) {
-        logger.error(`✗ Error retrieving control-construct for ${mountName}: ${error.message}`);
+        trace(`✗ Error retrieving control-construct for ${mountName}: ${error.message}`);
         liveControlConstructResults.push({
           mountName: mountName,
           status: "error",
@@ -259,13 +262,13 @@ exports.initiatePmDataUpdate = async function (
       }
     }
 
-    logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
-    logger.info("PM data update initiated successfully");
+    trace(`Completed processing ${inputMountNames.length} mount(s)`);
+    trace("PM data update initiated successfully");
 
     // Update the last successful update time
     if (appState) {
       appState.lastSuccessfulCompleteControlConstructUpdateTime = Date.now();
-      logger.info(
+      trace(
         `Updated lastSuccessfulCompleteControlConstructUpdateTime to ${new Date().toISOString()}`,
       );
     }
