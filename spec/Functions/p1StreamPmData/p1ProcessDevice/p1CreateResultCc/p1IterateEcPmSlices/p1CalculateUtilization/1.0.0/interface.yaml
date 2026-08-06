@@ -1,0 +1,179 @@
+openapi: 3.0.0
+info:
+  title: p1CalculateUtilization
+  version: 1.0.0
+
+x-javascript-interface:
+  p1CalculateUtilization:
+    summary: 'Calculates utilization of the aggregated physical resources in a performance data slice'
+    input:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - historical-performance-data
+              - aggregation-group
+              - result-cc
+            properties:
+              historical-performance-data:
+                type: object
+                description: >
+                  'historicalPerformanceData set'
+              aggregation-group:
+                type: object
+                description: >
+                  'aggregationGroup'
+              result-cc:
+                type: object
+                description: >
+                  'resultCc'
+    output:
+      success:
+        description: 'Utilization added'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - historical-performance-data
+              properties:
+                historical-performance-data:
+                  type: object
+                  description: >
+                    'historicalPerformanceData
+                    from [/calculate-utilization/historical-performance-data]'
+      error:
+        description: 'Utilization could not be added'
+        content:
+          application/json:
+            schema:
+              type: string
+              enum:
+                - 'historicalPerformanceData not provided'
+                - 'historicalPerformanceData invalid'
+                - 'aggregationGroup not provided'
+                - 'aggregationGroup invalid'
+                - 'result-cc not provided'
+                - 'result-cc invalid'
+                - 'Utilization could not be added'
+                - 'General processing error'
+    processing:
+      calculateTotalAirInterfaceIntervalCapacity:
+        summary: 'Aggregates the interval capacity of all transporting AirInterfaces'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - logical-termination-point
+                  - physical-server-ltp-list
+                  - period-end-time
+                properties:
+                  logical-termination-point:
+                    type: array
+                    description: >
+                      'logicalTerminationPoint list
+                      from [/calculate-utilization/result-cc/logical-termination-point]'
+                  physical-server-ltp-list:
+                    type: array
+                    description: >
+                      'List of UUIDs of transporting PhysicalServerLTPs
+                      from [/calculate-utilization/aggregation-group/physical-server-ltp-list]'
+                  period-end-time:
+                    type: string
+                    description: >
+                      'Period end time of the performance data slice
+                      from [/calculate-utilization/historical-performance-data/period-end-time]'
+        output:
+          success:
+            description: 'totalAirInterfaceIntervalCapacity provided'
+            content:
+              application/json:
+                schema:
+                  properties:
+                    type: object
+                    properties:
+                      total-air-interface-interval-capacity:
+                        type: integer
+                        description: >
+                          'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
+                          from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
+                                  with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+        error:
+          description: 'totalAirInterfaceIntervalCapacity could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'logicalTerminationPoint list not provided'
+                  - 'logicalTerminationPoint list invalid'
+                  - 'physicalServerLtpList not provided'
+                  - 'physicalServerLtpList invalid'
+                  - 'periodEndTime not provided'
+                  - 'periodEndTime invalid'
+                  - 'totalAirInterfaceIntervalCapacity could not be provided'
+                  - 'General processing error'
+      calculateUtilization:
+        summary: 'Calculates the utilization'
+        input:
+          required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - total-bytes-output
+                  - total-air-interface-interval-capacity
+                  - time-period
+                properties:
+                  total-bytes-output:
+                    type: string
+                    description: >
+                      'totalBytesOutput
+                      from [/calculate-utilization/historical-performance-data/performance-data/total-bytes-output]'
+                  total-air-interface-interval-capacity:
+                    type: integer
+                    description: >
+                      'totalAirInterfaceIntervalCapacity
+                      from [/calculate-utilization/historical-performance-data/performance-data/total-air-interface-interval-capacity]'
+                  time-period:
+                    type: integer
+                    description: >
+                      'Length of the measurement interval in seconds
+                      from [/calculate-utilization/historical-performance-data/performance-data/time-period]'
+        output:
+          success:
+            description: 'utilization provided'
+            content:
+              application/json:
+                schema:
+                  properties:
+                    type: object
+                    properties:
+                      utilization:
+                        type: integer
+                        description: >
+                          'Interval utilization in %
+                          from [ {total-bytes-output}*8 / ( {total-air-interface-interval-capacity}*1000 * {time-period} ) ]'
+        error:
+          description: 'utilization could not be provided'
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - 'totalBytesOutput not provided'
+                  - 'totalBytesOutput invalid'
+                  - 'totalAirInterfaceIntervalCapacity not provided'
+                  - 'totalAirInterfaceIntervalCapacity invalid'
+                  - 'timePeriod not provided'
+                  - 'timePeriod invalid'
+                  - 'utilization could not be provided'
+                  - 'General processing error'
+
+paths:
+  /:
+    description: 'no rest path provided by this module'
