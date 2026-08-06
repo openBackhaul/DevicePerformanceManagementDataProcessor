@@ -334,6 +334,8 @@ async function run(request) {
     lastReplicaTime,
     runtimeConfig
   } = request;
+  const directMwdiReadEnabled =
+    (((runtimeConfig || {}).service || {}).directMwdiReadEnabled) === true;
 
   let sourceClient;
   try {
@@ -352,19 +354,21 @@ async function run(request) {
   }
 
   let replicaClient;
-  try {
-    replicaClient = await onfAdapter.getEsClient(
-      false,
-      mwdiReplicaEsClient.uuid,
-      mwdiReplicaEsClient,
-      logger
-    );
-  } catch (error) {
-    logger.error(
-      { error: error.message || error, label: "getEsClient-replica" },
-      "Failed to create MWDI Replica ES client"
-    );
-    throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
+  if (!directMwdiReadEnabled) {
+    try {
+      replicaClient = await onfAdapter.getEsClient(
+        false,
+        mwdiReplicaEsClient.uuid,
+        mwdiReplicaEsClient,
+        logger
+      );
+    } catch (error) {
+      logger.error(
+        { error: error.message || error, label: "getEsClient-replica" },
+        "Failed to create MWDI Replica ES client"
+      );
+      throw new Error(ERRORS.CONNECTION_MWDI_REPLICA_ES_FAILED);
+    }
   }
 
   let loggingClient;
@@ -445,7 +449,8 @@ async function run(request) {
       reqPerSec,
       scrollSize,
       scrollTtl,
-      reindexPollIntervalMs
+      reindexPollIntervalMs,
+      directMwdiReadEnabled
     },
     "p1UpdateMwdiReplica request details"
   );
@@ -455,7 +460,22 @@ async function run(request) {
   let activeTask;
 
   try {
-    activeTask = await loadActiveReindexTask(logger);
+    if (directMwdiReadEnabled) {
+      // A deployment may be switched from legacy reindex mode while a stale
+      // task marker is still present. It is not relevant to direct reads.
+      await clearActiveReindexTask(logger).catch(() => {});
+      reindexResp = { body: { created: 0, updated: 0, total: 0 } };
+      logger.info?.(
+        {
+          label: "p1UpdateMwdiReplica.directMwdiRead",
+          sourceIndex: mwdiEsClient["index-alias"],
+          periodStartTime,
+          periodEndTime
+        },
+        "Direct MWDI incremental read enabled; reindex is bypassed"
+      );
+    } else {
+      activeTask = await loadActiveReindexTask(logger);
 
     if (!activeTask) {
       activeTask = await discoverRunningReindexTask(
@@ -548,12 +568,13 @@ async function run(request) {
       );
     }
 
-    reindexResp = await waitForReindexTask(
-      sourceClient,
-      activeTask,
-      reindexPollIntervalMs,
-      logger
-    );
+      reindexResp = await waitForReindexTask(
+        sourceClient,
+        activeTask,
+        reindexPollIntervalMs,
+        logger
+      );
+    }
   } catch (error) {
     if (error.reindexTaskTerminal) {
       await clearActiveReindexTask(logger).catch(() => {});
@@ -564,7 +585,9 @@ async function run(request) {
         label: "p1UpdateMwdiReplica.reindex",
         error: error.message || error
       },
-      "Reindex failed"
+      directMwdiReadEnabled
+        ? "Direct MWDI change detection failed"
+        : "Reindex failed"
     );
 
     await loggingClient.index({
@@ -595,9 +618,13 @@ async function run(request) {
   let updatedMountNames;
   const changedDeviceSearchStartedAt = Date.now();
   try {
+    const changedDeviceClient = directMwdiReadEnabled ? sourceClient : replicaClient;
+    const changedDeviceIndex = directMwdiReadEnabled
+      ? mwdiEsClient["index-alias"]
+      : mwdiReplicaEsClient["index-alias"];
     updatedMountNames = await loadUpdatedMountNames(
-      replicaClient,
-      mwdiReplicaEsClient["index-alias"],
+      changedDeviceClient,
+      changedDeviceIndex,
       lastUpdatedField,
       periodStartTime,
       periodEndTime,
@@ -611,7 +638,9 @@ async function run(request) {
         mountNameCount: updatedMountNames.length,
         durationMs: Date.now() - changedDeviceSearchStartedAt
       },
-      "Loaded changed device identifiers from replica"
+      directMwdiReadEnabled
+        ? "Loaded changed device identifiers directly from MWDI"
+        : "Loaded changed device identifiers from replica"
     );
   } catch (error) {
     logger.error(
@@ -619,7 +648,9 @@ async function run(request) {
         label: "p1UpdateMwdiReplica.search",
         error: error.message || error
       },
-      "Failed to search replica after reindex"
+      directMwdiReadEnabled
+        ? "Failed to search changed devices directly in MWDI"
+        : "Failed to search replica after reindex"
     );
     throw error;
   }
@@ -689,9 +720,14 @@ async function run(request) {
             jobName,
             periodStartTime,
             periodEndTime,
+            replicationMode: directMwdiReadEnabled ? "DIRECT_MWDI" : "REINDEX",
             replicated: reindexResp?.body?.created ?? 0,
-            updated: reindexResp?.body?.updated ?? 0,
-            total: reindexResp?.body?.total ?? 0,
+            updated: directMwdiReadEnabled
+              ? updatedMountNames.length
+              : reindexResp?.body?.updated ?? 0,
+            total: directMwdiReadEnabled
+              ? updatedMountNames.length
+              : reindexResp?.body?.total ?? 0,
             status: statusMessage,
             updatedMountNameCount: updatedMountNames.length,
             lastReplicaTime: new Date().toISOString(),

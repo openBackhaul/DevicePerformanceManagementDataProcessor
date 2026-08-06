@@ -49,6 +49,7 @@ async function handleMessage(message, context) {
           mwdiReplicaEsClient: context.mwdiReplicaEsClient,
           dataStoreEsClient: context.dataStoreEsClient,
           kafkaConsumerTypes: context.kafkaConsumerTypes,
+          kafkaEnabled: context.kafkaEnabled,
           storingOptions: context.storingOptions
         });
 

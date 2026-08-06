@@ -41,6 +41,9 @@ const validRequest = (overrides = {}) => ({
 
 const mockSourceClient = {
   reindex: jest.fn(),
+  search: jest.fn(),
+  scroll: jest.fn(),
+  clearScroll: jest.fn(),
   tasks: {
     get: jest.fn(),
     list: jest.fn()
@@ -144,6 +147,37 @@ describe("P1UpdateMwdiReplica", () => {
         updatedMountNames: ["device-1"],
         timestamp: expect.any(String)
       });
+    });
+
+    test("reads changed identifiers directly from MWDI without reindex", async () => {
+      mockSourceClient.search.mockResolvedValue({
+        body: { hits: { hits: [{ _id: "direct-device-1" }] } }
+      });
+      mockSourceClient.clearScroll.mockResolvedValue({});
+
+      const result = await moduleUnderTest.run(validRequest({
+        runtimeConfig: {
+          service: { directMwdiReadEnabled: true },
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 }
+        }
+      }));
+
+      expect(result.updatedMountNames).toEqual(["direct-device-1"]);
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(mockSourceClient.tasks.list).not.toHaveBeenCalled();
+      expect(mockSourceClient.search).toHaveBeenCalledWith(
+        expect.objectContaining({ index: "mwdi-index", body: expect.objectContaining({ _source: false }) })
+      );
+      expect(mockReplicaClient.search).not.toHaveBeenCalled();
+      expect(mockLoggingClient.index).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            replicationMode: "DIRECT_MWDI",
+            updated: 1,
+            total: 1
+          })
+        })
+      );
     });
 
     test("calls Elasticsearch and Redis clients with expected parameters", async () => {

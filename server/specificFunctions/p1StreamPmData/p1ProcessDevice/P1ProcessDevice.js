@@ -279,6 +279,7 @@ async function run(request) {
     dataStoreEsClient
   } = validation;
   const kafkaConsumerTypes = getRequestValue(request, "kafkaConsumerTypes", "kafka-consumer-types");
+  const kafkaEnabled = getRequestValue(request, "kafkaEnabled", "kafka-enabled") !== false;
 
   //const logger = request.logger || console;
   let createResultCcResponse = null;
@@ -465,7 +466,8 @@ async function run(request) {
 
     const sampleOutputResultCcApt = loadJsonToField("./outputAPTSample.json"); */
 
-    await queueKafkaOutputsOneByOne({
+    if (kafkaEnabled) {
+      await queueKafkaOutputsOneByOne({
         mountName: resultMountName,
         aptPayload: resultCcApt,
         onfPayload: resultCcOnf,
@@ -473,7 +475,13 @@ async function run(request) {
         dataStoreEsClient,
         logger: request.logger,
         kafkaConsumerTypes
-    }); 
+      });
+    } else {
+      logger.info(
+        { label: "p1ProcessDevice.kafka.disabled", mountName: resultMountName },
+        "Kafka output skipped because Kafka is disabled"
+      );
+    }
 
     await p1Storing.run({
       dataStoreEsClient,

@@ -10,6 +10,8 @@
     "dataStoreWriteLockEnabled": false,
     "atomicDataStoreUpsertEnabled": true,
     "maxUpdatedPerCycle": 5000,
+    "directMwdiReadEnabled": true,
+    "kafkaEnabled": false,
     "processRetryCount": 3,
     "retryIntervalMs": 5000,
     "infrastructureRetryCount": 10,
@@ -69,6 +71,6 @@
     "deviceProcessingLockTtlMs": 1800000
   },
   "monitoring": {
-    "enabled": true
+    "enabled": false
   }
 }

@@ -137,4 +137,12 @@ describe("P1ProcessDevice", () => {
     expect(redisQueueKafkaOutbound.run).toHaveBeenCalledTimes(2);
     expect(p1Storing.run).toHaveBeenCalled();
   });
+
+  test("stores results without creating Kafka Redis messages when Kafka is disabled", async () => {
+    const result = await run(validRequest({ kafkaEnabled: false }));
+
+    expect(result.resultCc).toEqual({ "batch-timestamp": "2024-01-01T00:00:00Z" });
+    expect(redisQueueKafkaOutbound.run).not.toHaveBeenCalled();
+    expect(p1Storing.run).toHaveBeenCalledTimes(1);
+  });
 });

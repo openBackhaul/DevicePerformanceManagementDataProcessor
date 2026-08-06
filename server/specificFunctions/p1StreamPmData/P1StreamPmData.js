@@ -206,6 +206,12 @@ async function run() {
       })
     ).esAddress;
 
+    const directMwdiReadEnabled = serviceConfig.directMwdiReadEnabled === true;
+    const kafkaEnabled = serviceConfig.kafkaEnabled !== false;
+    const processingMwdiEsClient = directMwdiReadEnabled
+      ? mwdiEsClient
+      : mwdiReplicaEsClient;
+
     await ensureIndicesAndMappings(
       {
         mwdiReplicaEsClient,
@@ -219,11 +225,19 @@ async function run() {
 
     appState.lastReplicaTime = restoredLastReplicaTime;
 
-    const kafkaInit = await p1InitKafka.run({
-      parameters: p1InitKafkaParameters,
-      configFile: loaded.configFile,
-      logger
-    });
+    let kafkaInit = { kafkaConnectionList: [] };
+    if (kafkaEnabled) {
+      kafkaInit = await p1InitKafka.run({
+        parameters: p1InitKafkaParameters,
+        configFile: loaded.configFile,
+        logger
+      });
+    } else {
+      logger.info(
+        { label: "p1StreamPmData.kafka.disabled" },
+        "Kafka initialization and outbound delivery are disabled"
+      );
+    }
 
 
     startReplicaLeaderLoop({
@@ -248,8 +262,11 @@ async function run() {
       readCount: Number(serviceConfig.processingReadCount ?? 10),
       processDeviceParameters: p1ProcessDeviceParameters,
       kafkaConsumerTypes: serviceConfig.kafkaConsumerTypes,
+      kafkaEnabled,
       configFile: loaded.configFile,
-      mwdiReplicaEsClient,
+      // Existing processing APIs retain this property name, but in direct
+      // mode it deliberately points at the MWDI source client configuration.
+      mwdiReplicaEsClient: processingMwdiEsClient,
       dataStoreEsClient,
       storingOptions: {
         saveResultCc: serviceConfig.saveResultCc !== false,
@@ -264,7 +281,8 @@ async function run() {
       deviceProcessingLockTtlMs: Number(redisConfig.deviceProcessingLockTtlMs || 30 * 60 * 1000)
     }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
-    startKafkaOutboundWorkerPool({
+    if (kafkaEnabled) {
+      startKafkaOutboundWorkerPool({
       logger,
       instanceId,
       appState,
@@ -283,9 +301,10 @@ async function run() {
       kafkaSocketRequestMaxBytes: serviceConfig.kafkaSocketRequestMaxBytes || 10485760,
       kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 900000,
       kafkaOversizedMessageMode: serviceConfig.kafkaOversizedMessageMode || "ERROR"
-    }).catch((error) =>
-      logger.error({ error }, "Kafka outbound worker pool crashed")
-    );
+      }).catch((error) =>
+        logger.error({ error }, "Kafka outbound worker pool crashed")
+      );
+    }
 
     startRetryWorkerPool({
       logger,
