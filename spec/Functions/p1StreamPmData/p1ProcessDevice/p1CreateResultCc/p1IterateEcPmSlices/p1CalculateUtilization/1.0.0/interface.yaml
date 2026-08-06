@@ -14,7 +14,6 @@ x-javascript-interface:
             type: object
             required:
               - historical-performance-data
-              - aggregation-group
               - result-cc
             properties:
               historical-performance-data:
@@ -53,7 +52,6 @@ x-javascript-interface:
               enum:
                 - 'historicalPerformanceData not provided'
                 - 'historicalPerformanceData invalid'
-                - 'aggregationGroup not provided'
                 - 'aggregationGroup invalid'
                 - 'result-cc not provided'
                 - 'result-cc invalid'

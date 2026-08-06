@@ -2,7 +2,6 @@ calculate-utilization:
   type: object
   required:
     - historical-performance-data
-    - aggregation-group
     - result-cc
   properties:
     historical-performance-data:
