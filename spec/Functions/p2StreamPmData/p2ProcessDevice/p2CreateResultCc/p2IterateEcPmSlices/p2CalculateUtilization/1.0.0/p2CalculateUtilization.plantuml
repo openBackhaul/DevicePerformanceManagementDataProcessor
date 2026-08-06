@@ -1,48 +1,48 @@
-@startuml p1CalculateUtilization
+@startuml p2CalculateUtilization
 skinparam responseMessageBelowArrow true
 
 title
-  p1CalculateUtilization
+  p2CalculateUtilization
 end title
 
 participant "p2IterateEcPmSlices\n" as requestor
-participant "p1CalculateUtilization\n" as p1CalcUtil
+participant "p2CalculateUtilization\n" as p2CalcUtil
 
 
-requestor -> p1CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
-activate p1CalcUtil
+requestor -> p2CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
+activate p2CalcUtil
 
-  note over p1CalcUtil
+  note over p2CalcUtil
     IF /historical-performance-data/granularity-period == '15min'
   end note
 
-  note left p1CalcUtil
+  note left p2CalcUtil
     ELSE
   end note
-  requestor <-- p1CalcUtil : { {historical-performance-data} }
+  requestor <-- p2CalcUtil : { {historical-performance-data} }
 
-  note over p1CalcUtil
+  note over p2CalcUtil
     THEN
   end note
 
-  note over p1CalcUtil
+  note over p2CalcUtil
     derive [physicalServerLtpList] from 
       either {aggregationGroup} (if link aggregation)
       or {EthernetContainerLtp} (if 1+0 configuration)
   end note
 
   loop FOR physicalServerLtpList[*]
-    note over p1CalcUtil
+    note over p2CalcUtil
       totalAirInterfaceIntervalCapacity += AirInterfaceIntervalCapacity
     end note
   end loop
 
-  note over p1CalcUtil
+  note over p2CalcUtil
     utilization = totalBytesOutput / totalAirInterfaceIntervalCapacity
   end note
 
-requestor <-- p1CalcUtil : { {historical-performance-data} }
-deactivate p1CalcUtil
+requestor <-- p2CalcUtil : { {historical-performance-data} }
+deactivate p2CalcUtil
 
 deactivate requestor
 

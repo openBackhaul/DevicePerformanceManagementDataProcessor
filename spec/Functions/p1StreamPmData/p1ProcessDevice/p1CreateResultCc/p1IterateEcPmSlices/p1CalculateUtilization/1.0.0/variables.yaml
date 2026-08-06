@@ -1,0 +1,110 @@
+calculate-utilization:
+  type: object
+  required:
+    - historical-performance-data
+    - result-cc
+  properties:
+    historical-performance-data:
+      type: object
+      description: >
+        'historicalPerformanceData set
+        from {$input#/historical-performance-data}
+        ! simplified representation !'
+      properties:
+        granularity-period:
+          type: string
+          description: >
+            'Granularity period of the historical performance data slice
+            IF NOT ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN THEN terminate without change or error message'
+          enum:
+            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'
+            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN'
+            - 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED'
+        period-end-time:
+          type: string
+        performance-data:
+          type: object
+          properties:
+            total-bytes-output:
+              type: string
+              description: 'String representation of int64 value'
+            time-period:
+              type: integer
+              description: 'Length of the measurement interval in seconds'
+            total-air-interface-interval-capacity:
+              type: integer
+              description: >
+                'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
+                from {$calculateTotalAirInterfaceIntervalCapacity.output#/total-air-interface-interval-capacity}'
+            utilization:
+              type: integer
+              description: >
+                'Interval utilization in %
+                from {$calculateUtilization.output#/utilization}'
+    aggregation-group:
+      type: object
+      description: >
+        'aggregationGroup
+        from {$input#/aggregation-group}
+        ! simplified representation !'
+      properties:
+        physical-server-ltp-list:
+          type: array
+          description: >
+            'List of UUIDs of transporting AirInterface and WireInterface LTPs'
+          items:
+            type: string
+    result-cc:
+      type: object
+      description: >
+        'resultCc
+        from {$input#/result-cc}
+        ! simplified representation !'
+      properties:
+        logical-termination-point:
+          type: array
+          x-key: uuid
+          items:
+            type: object
+            properties:
+              uuid:
+                type: string
+              layer-protocol:
+                type: array
+                x-key: local-id
+                items:
+                  type: object
+                  properties:
+                    local-id:
+                      type: string
+                    layer-protocol-name:
+                      type: string
+                      enum:
+                        - 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER'
+                    air-interface-2-0:air-interface-pac:
+                      type: object
+                      properties:
+                        air-interface-historical-performances:
+                          type: object
+                          properties:
+                            historical-performance-data-list:
+                              type: array
+                              x-key: period-end-time
+                              items:
+                                type: object
+                                properties:
+                                  granularity-period:
+                                    type: string
+                                    enum:
+                                      - 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+                                  period-end-time:
+                                    type: string
+                                  performance-data:
+                                    type: object
+                                    properties:
+                                      interval-capacity:
+                                        type: integer
+                                        description: >
+                                          'AirInterface capacity weighted by duration of operation of the respective transmission mode in kbps
+                                          requires {$p1PrepareTxModes}'

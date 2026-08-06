@@ -379,12 +379,12 @@ create-result-cc:
                                             type: integer
                                             description: >
                                               'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
-                                              requires {$p2IterateEcPmSlices} and {p1CalculateUtilization}'
+                                              requires {$p2IterateEcPmSlices} and {p2CalculateUtilization}'
                                           utilization:
                                             type: integer
                                             description: >
                                               'Interval utilization (=totalBytesOutput/totalAirInterfaceIntervalCapacity) in %
-                                              requires {$p2IterateEcPmSlices} and {p1CalculateUtilization}'
+                                              requires {$p2IterateEcPmSlices} and {p2CalculateUtilization}'
                                           time-period:
                                             type: integer
                                           transmit-traffic:

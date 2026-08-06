@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: p1CalculateUtilization
+  title: p2CalculateUtilization
   version: 1.0.0
 
 x-javascript-interface:
-  p1CalculateUtilization:
+  p2CalculateUtilization:
     summary: 'Calculates utilization of the aggregated physical resources in a performance data slice'
     input:
       required: true
