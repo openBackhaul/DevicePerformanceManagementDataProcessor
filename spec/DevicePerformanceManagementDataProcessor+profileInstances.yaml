@@ -1100,11 +1100,11 @@ profile-instances:
       string-value: '-1'
 
 
-  # p1CalculateUtilization
+  # p2CalculateUtilization
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-1-0-function-p-500'
     capability:
-      function-name: 'p1CalculateUtilization'
+      function-name: 'p2CalculateUtilization'
       function-description: 'Calculates utilization of the aggregated physical resources in a performance data slice'
       parameter-list:
       sub-function-list:

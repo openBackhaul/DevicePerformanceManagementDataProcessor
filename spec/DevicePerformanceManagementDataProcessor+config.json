@@ -1754,7 +1754,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1CalculateUtilization",
+              "function-name": "p2CalculateUtilization",
               "function-description": "Calculates utilization of the aggregated physical resources in a performance data slice",
               "parameter-list": [],
               "sub-function-list": []

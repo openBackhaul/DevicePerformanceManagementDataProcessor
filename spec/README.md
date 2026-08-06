@@ -116,7 +116,7 @@ Lot 8: Red
       - [p2IterateEcPmSlices](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/1.0.0)  
         - [p1CalculateEthernetKpis](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CalculateEthernetKpis/1.0.0)  
         - [p1RemoveDefaultValues](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateAiPmSlices/p1RemoveDefaultValues/1.0.0)  
-        - [p1CalculateUtilization](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CalculateUtilization/1.0.0)  
+        - [p2CalculateUtilization](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p2CalculateUtilization/1.0.0)  
         - [p1CategorizeDataVolume](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CategorizeDataVolume/1.0.0)  
         - [p1CalculateBusyHourPerformanceIndicators](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CalculateBusyHourPerformanceIndicators/1.0.0)  
       - [p1RemoveOutOfRangeTemperatures](./Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p1RemoveOutOfRangeTemperature/1.0.0)

@@ -22,6 +22,12 @@ Internal data structure of prepared performance data follows ONF information mod
 
 ## Latest Update
 
+### v1.1.1
+
+This release adds changes for bugs, findings and still outstanding items observed during implementation of v1.0.0 and v1.1.0.  
+
+Details on changes are found in [DPMDP v1.1.1_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/8).  
+
 ### v1.1.0
 
 This release adds new functionality and changes inner workings of DPMDP.  
