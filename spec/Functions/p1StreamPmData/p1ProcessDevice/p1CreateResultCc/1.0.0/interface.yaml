@@ -373,7 +373,6 @@ x-javascript-interface:
                 required:
                   - parameters
                   - historical-performance-data-list
-                  - aggregation-group
                   - result-cc
                 properties:
                   parameters:
