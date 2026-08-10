@@ -2,22 +2,6 @@
   "body": {
     "hits": {
       "hits": [
-        {
-          "_id": "mount-expired-1",
-          "_source": {
-            "mountName": "mount-expired-1",
-            "locked": false,
-            "timestamp": "2026-07-20T00:00:00.000Z",
-            "batch": [
-              {
-                "batchTimestamp": "2026-07-20T01:00:00.000Z"
-              },
-              {
-                "batchTimestamp": "2026-07-20T02:00:00.000Z"
-              }
-            ]
-          }
-        }
       ]
     }
   }

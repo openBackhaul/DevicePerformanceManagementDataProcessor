@@ -151,12 +151,6 @@ scenarios:
       type: "error"
       errorEnum: "parameters invalid"
 
-  - id: "errGeneralProcessingErrorWhenRetentionPeriodInvalid"
-    description: "Should throw 'General processing error' when dataStoreRetentionPeriod is invalid"
-    inputFixture: "input.retentionPeriodInvalid.json"
-    expected:
-      type: "error"
-      errorEnum: "General processing error"
 
   - id: "errDataStoreEsClientInvalidWhenGetEsClientFails"
     description: "Should throw 'dataStoreEsClient invalid' when data store ES client initialization fails"

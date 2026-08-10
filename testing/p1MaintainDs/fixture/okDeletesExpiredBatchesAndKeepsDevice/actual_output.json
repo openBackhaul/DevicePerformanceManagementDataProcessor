@@ -4,7 +4,7 @@
     "retentionPeriodHours": 48,
     "devicesVisited": 1,
     "devicesDeleted": 1,
-    "batchesDeleted": 2,
+    "batchesDeleted": 3,
     "mountNames": [
       "DEBUG-MOUNT"
     ],

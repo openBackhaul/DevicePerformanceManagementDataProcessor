@@ -14,7 +14,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "4-2",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -24,7 +23,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "4-1",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -34,7 +32,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "4-4",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -44,7 +41,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "6-2",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -54,7 +50,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "4-3",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -64,7 +59,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "6-1",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -74,7 +68,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "5",
         "structure": {
           "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_MODEM"
@@ -84,7 +77,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "6-4",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -94,7 +86,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "6-3",
         "structure": {
           "category": "core-model-1-4:EQUIPMENT_CATEGORY_SMALL_FORMFACTOR_PLUGGABLE"
@@ -104,7 +95,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "5-1",
         "structure": {
           "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_OUTDOOR_UNIT"
@@ -117,7 +107,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "6",
         "structure": {
           "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_PORT_EXPANSION_BOARD"
@@ -127,7 +116,6 @@
     },
     {
       "actual-equipment": {
-        "physical-properties": {},
         "local-id": "4",
         "structure": {
           "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_PORT_EXPANSION_BOARD"

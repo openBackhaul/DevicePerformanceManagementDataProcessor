@@ -1,1 +1,12 @@
-{}
+{
+  "cleanupSummary": {
+    "cleanupPeriodHours": 12,
+    "retentionPeriodHours": 48,
+    "devicesVisited": 0,
+    "devicesDeleted": 0,
+    "batchesDeleted": 0,
+    "mountNames": [
+    ],
+    "loggingDocumentsDeleted": 0
+  }
+}

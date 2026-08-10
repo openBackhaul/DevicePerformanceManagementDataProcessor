@@ -1,5 +1,5 @@
 {  
-    "data-store-es-client": {
+  "data-store-es-client": {
     "url": "https://127.0.0.1:3015",
     "api-key": "API key not yet defined",
     "index-alias": "21",
@@ -8,7 +8,6 @@
     "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_ENABLED",
     "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_INSTALLED"
   },
-    "mountName": "513250008",
     "resultCc": {
     "equipment-augment-1-0:control-construct-pac": {
       "external-label": "External label not yet defined.",
@@ -17016,7 +17015,8 @@
         ]
       }
     ],
-    "batch-timestamp": "2026-06-25T12:55:12.0+00:00"
+    "batch-timestamp": "2026-06-25T12:55:12.0+00:00",
+    "mount-name": "513250008"
   },
   "interfaceMetadataList": []
 }

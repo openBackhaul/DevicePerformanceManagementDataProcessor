@@ -9,7 +9,6 @@
         "uuid": "Radio-1A",
         "actual-equipment": {
           "local-id": "513250008+",
-          "physical-properties": {},
           "structure": {
             "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_OUTDOOR_UNIT"
           }
@@ -22,7 +21,6 @@
         "uuid": "Radio-2A",
         "actual-equipment": {
           "local-id": "513250008+",
-          "physical-properties": {},
           "structure": {
             "category": "equipment-augment-1-0:EQUIPMENT_CATEGORY_OUTDOOR_UNIT"
           }
@@ -17008,7 +17006,43 @@
     ],
     "batch-timestamp": "2026-06-25T12:55:12.0+00:00"
   },
-  "interface-metadata-list": [],
+  "interface-metadata-list": [
+    {
+      "uuid": "LTP-MWPS-TTP-RADIO-2A",
+      "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    },
+    {
+      "uuid": "LTP-MWPS-TTP-RADIO-1A",
+      "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    },
+    {
+      "uuid": "LTP-ETC-TTP-LAN-3",
+      "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    },
+    {
+      "uuid": "LTP-ETC-TTP-LAN-4",
+      "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    },
+    {
+      "uuid": "LTP-ETC-TTP-LAN-1",
+      "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    },
+    {
+      "uuid": "LTP-ETC-TTP-LAN-2",
+      "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    },
+    {
+      "uuid": "LTP-ETC-TTP-PORT-A",
+      "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+      "most-recent-period-end-time": "2026-06-25T12:45:00.0+00:00"
+    }
+  ],
   "aggregation-group-list": [],
   "mountName": "513250008"
 }

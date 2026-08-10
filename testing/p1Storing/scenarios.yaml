@@ -40,7 +40,17 @@ scenarios:
       type: "success"
       outputFixture: "output.json"
       outputSchemaFixture: "output.schema.json"
-    mocks: []
+    mocks: 
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.json"
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.get.existingDocument.json"
+          - "withRetry.index.lock.json"
+          - "withRetry.index.store.json"
+        repeatLast: false
 
   - id: "okStoreUsingRequestMountName"
     description: "Should store successfully when mount-name is provided explicitly on the request"
@@ -49,7 +59,17 @@ scenarios:
       type: "success"
       outputFixture: "output_with_request_mount_name.json"
       outputSchemaFixture: "output.schema.json"
-    mocks: []
+    mocks: 
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.json"
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.get.existingDocument.json"
+          - "withRetry.index.lock.json"
+          - "withRetry.index.store.json"
+        repeatLast: false
 
   - id: "okStoreUsingResultCcMountName"
     description: "Should store successfully when mountName is derived from resultCc.mountName"
@@ -58,7 +78,17 @@ scenarios:
       type: "success"
       outputFixture: "output_with_resultcc_mount_name.json"
       outputSchemaFixture: "output.schema.json"
-    mocks: []
+    mocks: 
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.json"
+      - stepId: "retry.withRetry"
+        type: "returnSequence"
+        fixtureSequence:
+          - "withRetry.get.existingDocument.json"
+          - "withRetry.index.lock.json"
+          - "withRetry.index.store.json"
+        repeatLast: false
 
   - id: "okStoreUsingResultCcDashedMountName"
     description: "Should store successfully when mountName is derived from resultCc.mount-name"
