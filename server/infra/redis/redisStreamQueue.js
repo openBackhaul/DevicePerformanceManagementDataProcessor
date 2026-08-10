@@ -15,6 +15,63 @@ const RETRY_STATE_HASH = "dpmdp:hash:retry-state";
 const KAFKA_OUTBOUND_STREAM = "dpmdp:stream:kafka-outbound";
 const KAFKA_OUTBOUND_GROUP = "dpmdp:group:kafka-outbound";
 const KAFKA_OUTBOUND_DEAD_LETTER_STREAM = "dpmdp:stream:kafka-outbound-dead-letter";
+const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
+
+const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
+local storedDate = redis.call('HGET', KEYS[1], 'date')
+if storedDate ~= ARGV[1] then
+  redis.call('DEL', KEYS[1])
+  redis.call('HSET', KEYS[1],
+    'date', ARGV[1],
+    'timezone', ARGV[2],
+    'successful', '0',
+    'failed', '0',
+    'oversized', '0')
+end
+
+local count = tonumber(ARGV[5]) or 0
+if count > 0 and ARGV[3] ~= '' then
+  redis.call('HINCRBY', KEYS[1], ARGV[3], count)
+  if ARGV[4] ~= '' then
+    redis.call('HINCRBY', KEYS[1], ARGV[3] .. ':' .. ARGV[4], count)
+  end
+end
+redis.call('HSET', KEYS[1], 'updatedAt', ARGV[6])
+return redis.call('HGETALL', KEYS[1])
+`;
+
+function getBerlinDate(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(now);
+}
+
+async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
+  const allowedMetrics = new Set(["successful", "failed", "oversized"]);
+  if (metric && !allowedMetrics.has(metric)) {
+    throw new Error(`Unsupported Kafka daily metric: ${metric}`);
+  }
+
+  const redis = await getRedisClient(logger);
+  return redis.eval(UPDATE_KAFKA_DAILY_METRICS_SCRIPT, {
+    keys: [KAFKA_DAILY_METRICS_HASH],
+    arguments: [
+      getBerlinDate(),
+      "Europe/Berlin",
+      metric || "",
+      String(targetConsumer || "").toUpperCase(),
+      String(Number(count) || 0),
+      new Date().toISOString()
+    ]
+  });
+}
+
+async function resetKafkaDailyMetricsIfNeeded(loggers) {
+  return updateKafkaDailyMetrics("", "", 0, loggers);
+}
 
 const ENQUEUE_MOUNT_NAMES_SCRIPT = `
 local enqueued = 0
@@ -788,6 +845,7 @@ module.exports = {
     KAFKA_OUTBOUND_STREAM,
     KAFKA_OUTBOUND_GROUP,
     KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
+    KAFKA_DAILY_METRICS_HASH,
     RETRY_PENDING_SET,
     RETRY_COUNT_HASH,
     RETRY_STATE_HASH,
@@ -811,6 +869,8 @@ module.exports = {
     deleteMessage,
     deleteKafkaOutboundMessage,
     moveKafkaOutboundToDeadLetter,
+    updateKafkaDailyMetrics,
+    resetKafkaDailyMetricsIfNeeded,
     ensureRetryGroup,
     readNextRetry,
     ackRetryMessage,
