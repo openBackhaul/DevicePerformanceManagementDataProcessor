@@ -6,12 +6,11 @@
 const path = require("path");
 const { runFunctionVersionFromScenarios } = require("../../tools/functionTestRunner");
 
-const repoRoot = path.resolve(__dirname, "../../../..");
+const repoRoot = path.resolve(__dirname, "../../..");
 
-describe("p1CalculateEthernetKpis 1.0.0 (generated)", () => {
+describe("p1CalculateEthernetKpis ", () => {
   runFunctionVersionFromScenarios({
     repoRoot,
-    functionName: "p1CalculateEthernetKpis",
-    version: "1.0.0",
+    functionName: "p1CalculateEthernetKpis"
   });
 });

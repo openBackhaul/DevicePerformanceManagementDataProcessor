@@ -1,6 +1,6 @@
 {
 
-      "historical-performance-data": [
+  "historical-performance-data": [
         {
         "oversized-frames-ingress": 0,
         "total-bytes-input": "0",
