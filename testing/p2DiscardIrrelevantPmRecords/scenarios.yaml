@@ -1,0 +1,134 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2LoadRawCc/p2DiscardIrrelevantPmRecords/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2LoadRawCc/p2DiscardIrrelevantPmRecords/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords.js"
+    exportName: "p2DiscardIrrelevantPmRecords"
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okFilterRelevant15MinAnd24HourPmRecords"
+    description: "Should keep only PM records newer than the former most recent timestamps and update both newest timestamps"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCountRelevant15MinPmRecordsPerDate"
+    description: "Should count only relevant 15min PM records grouped by date"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output_count_15min.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnEmptyFilteredListWhenAllRecordsAreOld"
+    description: "Should return an empty filtered list when all PM records are not newer than the former timestamps"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output_all_old.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okSkipInvalidRecordsAndContinueProcessing"
+    description: "Should skip invalid PM records and continue processing the valid ones"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output_skip_invalid_records.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnUnchangedTimestampsWhenHistoricalPerformanceDataListIsEmpty"
+    description: "Should return unchanged timestamps and empty amount-received when historical-performance-data-list is empty"
+    inputFixture: "input_empty_list.json"
+    expected:
+      type: "success"
+      outputFixture: "output_empty_list.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errGeneralProcessingErrorWhenInputMissing"
+    description: "Should return error when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListNotProvided"
+    description: "Should return error when historical-performance-data-list is not provided"
+    inputFixture: "input_missing_historical_performance_data_list.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalid"
+    description: "Should return error when historical-performance-data-list is invalid"
+    inputFixture: "input_invalid_historical_performance_data_list.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errFormerMostRecentPeriodEndTimeNotProvided"
+    description: "Should return error when former-most-recent-period-end-time is not provided"
+    inputFixture: "input_missing_former_mrpet.json"
+    expected:
+      type: "error"
+      errorEnum: "formerMostRecentPeriodEndTime not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errFormerMostRecentPeriodEndTimeInvalid"
+    description: "Should return error when former-most-recent-period-end-time is invalid"
+    inputFixture: "input_invalid_former_mrpet.json"
+    expected:
+      type: "error"
+      errorEnum: "formerMostRecentPeriodEndTime invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errFormerMostRecentPeriodEndTime24NotProvided"
+    description: "Should return error when former-most-recent-period-end-time-24 is not provided"
+    inputFixture: "input_missing_former_mrpet24.json"
+    expected:
+      type: "error"
+      errorEnum: "formerMostRecentPeriodEndTime24 not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errFormerMostRecentPeriodEndTime24Invalid"
+    description: "Should return error when former-most-recent-period-end-time-24 is invalid"
+    inputFixture: "input_invalid_former_mrpet24.json"
+    expected:
+      type: "error"
+      errorEnum: "formerMostRecentPeriodEndTime24 invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
