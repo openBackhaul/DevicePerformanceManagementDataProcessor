@@ -56,16 +56,12 @@ describe('Integration - documentPmDataProcessing with real config', () => {
             baseArgs.customerJourney
         );
 
-        // 1. p1LoadParameters.run viene chiamata esattamente 2 volte
         expect(p1LoadParametersSpy).toHaveBeenCalledTimes(2);
 
-        // 2. Prima chiamata: carica i parametri di documentPmDataProcessing
         expect(p1LoadParametersSpy).toHaveBeenNthCalledWith(1, {
             functionName: 'documentPmDataProcessing'
         });
 
-        // 3. Seconda chiamata: carica i parametri della funzione da documentare
-        //    passando il configFile già caricato dalla prima chiamata
         expect(p1LoadParametersSpy).toHaveBeenNthCalledWith(2, {
             functionName: functionNameToDocument,
             configFile: expect.any(Object)
@@ -80,7 +76,6 @@ describe('Integration - documentPmDataProcessing with real config', () => {
             })
         });
 
-        // 5. Il risultato è esattamente la documentazione mockata
         expect(result).toBe(`- ${functionNameToDocument}`);
     });
 });

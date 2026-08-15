@@ -141,6 +141,52 @@ describe('documentPmDataProcessing', () => {
             message: 'boom'
         });
     });
+    it('rejects when loading the function to be documented fails', async () => {
+        const ownFunctionParameters = {
+            'function-name': 'documentPmDataProcessing',
+            'is-active': true,
+            parameter: [
+                {
+                    'parameter-name': 'nameOfToBeDocumentedFunction',
+                    value: 'someFunctionName'
+                }
+            ],
+            'sub-function': []
+        };
+
+        p1LoadParameters.run
+            .mockResolvedValueOnce({
+                parameters: ownFunctionParameters,
+                configFile: { 'config-file': true }
+            })
+            .mockRejectedValueOnce(new Error('failed to load documented function'));
+
+        getParamFromFunction.mockReturnValue('someFunctionName');
+
+        await expect(
+            documentPmDataProcessing(
+                baseArgs.body,
+                baseArgs.user,
+                baseArgs.originator,
+                baseArgs.xCorrelator,
+                baseArgs.traceIndicator,
+                baseArgs.customerJourney
+            )
+        ).rejects.toEqual({
+            code: 500,
+            message: 'failed to load documented function'
+        });
+
+        expect(p1LoadParameters.run).toHaveBeenCalledTimes(2);
+        expect(p1LoadParameters.run).toHaveBeenNthCalledWith(1, {
+            functionName: 'documentPmDataProcessing'
+        });
+        expect(p1LoadParameters.run).toHaveBeenNthCalledWith(2, {
+            functionName: 'someFunctionName',
+            configFile: { 'config-file': true }
+        });
+        expect(p1DocumentFunction).not.toHaveBeenCalled();
+    });
 
     it('rejects with a generic message when the error has no message', async () => {
         p1LoadParameters.run.mockRejectedValueOnce(new Error());
