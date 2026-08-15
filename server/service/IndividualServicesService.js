@@ -23,40 +23,38 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 }
 
 exports.documentPmDataProcessing = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      var ownFunctionResult = await p1LoadParameters.run({
-        functionName: 'documentPmDataProcessing'
-      });
+  try {
+    const ownFunctionResult = await p1LoadParameters.run({
+      functionName: 'documentPmDataProcessing'
+    });
 
-      var functionNameToDocument = getParamFromFunction(
-        ownFunctionResult.parameters,
-        'documentPmDataProcessing',
-        'nameOfToBeDocumentedFunction'
-      );
+    const functionNameToDocument = getParamFromFunction(
+      ownFunctionResult.parameters,
+      'documentPmDataProcessing',
+      'nameOfToBeDocumentedFunction'
+    );
 
-      if (!functionNameToDocument) {
-        return reject({
-          code: 500,
-          message: 'Missing nameOfToBeDocumentedFunction in documentPmDataProcessing configuration'
-        });
-      }
-
-      var documentedFunctionResult = await p1LoadParameters.run({
-        functionName: functionNameToDocument,
-        configFile: ownFunctionResult.configFile
-      });
-
-      var documentation = await p1DocumentFunction({
-        "parameters-of-to-be-documented-function": documentedFunctionResult.parameters
-      });
-
-      resolve(documentation);
-    } catch (error) {
-      reject({
+    if (!functionNameToDocument) {
+      throw {
         code: 500,
-        message: error.message || 'Failed to create PM data processing documentation'
-      });
+        message: 'Missing nameOfToBeDocumentedFunction in documentPmDataProcessing configuration'
+      };
     }
-  });
-}
+
+    const documentedFunctionResult = await p1LoadParameters.run({
+      functionName: functionNameToDocument,
+      configFile: ownFunctionResult.configFile
+    });
+
+    const documentation = await p1DocumentFunction({
+      "parameters-of-to-be-documented-function": documentedFunctionResult.parameters
+    });
+
+    return documentation;
+  } catch (error) {
+    throw {
+      code: 500,
+      message: error.message || 'Failed to create PM data processing documentation'
+    };
+  }
+};
