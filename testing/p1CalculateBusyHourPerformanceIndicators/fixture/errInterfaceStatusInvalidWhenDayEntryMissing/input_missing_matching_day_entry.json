@@ -1,0 +1,15 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-08-12T23:59:59Z"
+  },
+  "interface-status": {
+    "uuid": "ethernet-container-1",
+    "15-minute-values-by-day": [
+      {
+        "day": 11,
+        "15-minute-values-by-hour": []
+      }
+    ]
+  }
+}

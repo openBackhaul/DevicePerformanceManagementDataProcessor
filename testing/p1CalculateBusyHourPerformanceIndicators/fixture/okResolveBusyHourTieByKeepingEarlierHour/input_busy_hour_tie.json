@@ -1,0 +1,129 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-08-17T23:59:59Z",
+    "performance-data": {}
+  },
+  "interface-status": {
+    "uuid": "ethernet-container-6",
+    "15-minute-values-by-day": [
+      {
+        "day": 17,
+        "15-minute-values-by-hour": [
+          {
+            "hour": 0,
+            "15-minute-values": []
+          },
+          {
+            "hour": 1,
+            "15-minute-values": []
+          },
+          {
+            "hour": 2,
+            "15-minute-values": [
+              {
+                "period-end-time": "2026-08-17T02:00:00Z",
+                "total-bytes-output": 5000000,
+                "total-air-interface-interval-capacity": 1000,
+                "errored-frames-input": 1,
+                "dropped-frames-input": 1
+              }
+            ]
+          },
+          {
+            "hour": 3,
+            "15-minute-values": [
+              {
+                "period-end-time": "2026-08-17T03:00:00Z",
+                "total-bytes-output": 5000000,
+                "total-air-interface-interval-capacity": 2000,
+                "errored-frames-input": 2,
+                "dropped-frames-input": 2
+              }
+            ]
+          },
+          {
+            "hour": 4,
+            "15-minute-values": []
+          },
+          {
+            "hour": 5,
+            "15-minute-values": []
+          },
+          {
+            "hour": 6,
+            "15-minute-values": []
+          },
+          {
+            "hour": 7,
+            "15-minute-values": []
+          },
+          {
+            "hour": 8,
+            "15-minute-values": []
+          },
+          {
+            "hour": 9,
+            "15-minute-values": []
+          },
+          {
+            "hour": 10,
+            "15-minute-values": []
+          },
+          {
+            "hour": 11,
+            "15-minute-values": []
+          },
+          {
+            "hour": 12,
+            "15-minute-values": []
+          },
+          {
+            "hour": 13,
+            "15-minute-values": []
+          },
+          {
+            "hour": 14,
+            "15-minute-values": []
+          },
+          {
+            "hour": 15,
+            "15-minute-values": []
+          },
+          {
+            "hour": 16,
+            "15-minute-values": []
+          },
+          {
+            "hour": 17,
+            "15-minute-values": []
+          },
+          {
+            "hour": 18,
+            "15-minute-values": []
+          },
+          {
+            "hour": 19,
+            "15-minute-values": []
+          },
+          {
+            "hour": 20,
+            "15-minute-values": []
+          },
+          {
+            "hour": 21,
+            "15-minute-values": []
+          },
+          {
+            "hour": 22,
+            "15-minute-values": []
+          },
+          {
+            "hour": 23,
+            "15-minute-values": []
+          }
+        ]
+      }
+    ]
+  }
+}

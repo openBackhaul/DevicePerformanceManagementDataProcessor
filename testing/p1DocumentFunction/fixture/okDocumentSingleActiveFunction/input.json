@@ -1,0 +1,9 @@
+{
+  "parameters-of-to-be-documented-function":     {
+      "function-name": "p1CalculateEthernetKpis",
+      "description": "Adds Ethernet KPIs to the historicalPerformanceData set",
+      "is-active": true,
+      "parameter": [],
+      "sub-function": []
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "interface-pm-data-quality": {
+    "uuid": "air-interface-2",
+    "quality": [
+      {
+        "date": "2026/08/12",
+        "received": 4,
+        "expected": 4
+      }
+    ]
+  }
+}

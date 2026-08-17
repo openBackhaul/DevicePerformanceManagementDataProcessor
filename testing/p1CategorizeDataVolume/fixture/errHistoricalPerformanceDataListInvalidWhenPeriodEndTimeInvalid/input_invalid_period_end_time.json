@@ -1,0 +1,15 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+    "period-end-time": "abd",
+    "performance-data": {
+      "total-bytes-output": 1500,
+      "total-air-interface-interval-capacity": 2500,
+      "errored-frames-input": 0,
+      "dropped-frames-input": 0
+    }
+  },
+  "interface-status": {
+    "uuid": "ethernet-container-2"
+  }
+}

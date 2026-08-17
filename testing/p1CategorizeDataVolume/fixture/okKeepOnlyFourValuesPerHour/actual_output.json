@@ -1,0 +1,137 @@
+{
+  "interface-status": {
+    "uuid": "ethernet-container-1",
+    "15-minute-values-by-day": [
+      {
+        "day": 12,
+        "15-minute-values-by-hour": [
+          {
+            "hour": 0,
+            "15-minute-values": []
+          },
+          {
+            "hour": 1,
+            "15-minute-values": []
+          },
+          {
+            "hour": 2,
+            "15-minute-values": []
+          },
+          {
+            "hour": 3,
+            "15-minute-values": []
+          },
+          {
+            "hour": 4,
+            "15-minute-values": []
+          },
+          {
+            "hour": 5,
+            "15-minute-values": []
+          },
+          {
+            "hour": 6,
+            "15-minute-values": []
+          },
+          {
+            "hour": 7,
+            "15-minute-values": []
+          },
+          {
+            "hour": 8,
+            "15-minute-values": []
+          },
+          {
+            "hour": 9,
+            "15-minute-values": []
+          },
+          {
+            "hour": 10,
+            "15-minute-values": [
+              {
+                "period-end-time": "2026-08-12T10:15:00Z",
+                "total-bytes-output": 1100,
+                "total-air-interface-interval-capacity": 2100,
+                "errored-frames-input": 1,
+                "dropped-frames-input": 0
+              },
+              {
+                "period-end-time": "2026-08-12T10:30:00Z",
+                "total-bytes-output": 1200,
+                "total-air-interface-interval-capacity": 2200,
+                "errored-frames-input": 2,
+                "dropped-frames-input": 0
+              },
+              {
+                "period-end-time": "2026-08-12T10:35:00Z",
+                "total-bytes-output": 1300,
+                "total-air-interface-interval-capacity": 2300,
+                "errored-frames-input": 3,
+                "dropped-frames-input": 1
+              },
+              {
+                "period-end-time": "2026-08-12T10:45:00Z",
+                "total-bytes-output": 1400,
+                "total-air-interface-interval-capacity": 2400,
+                "errored-frames-input": 4,
+                "dropped-frames-input": 1
+              }
+            ]
+          },
+          {
+            "hour": 11,
+            "15-minute-values": []
+          },
+          {
+            "hour": 12,
+            "15-minute-values": []
+          },
+          {
+            "hour": 13,
+            "15-minute-values": []
+          },
+          {
+            "hour": 14,
+            "15-minute-values": []
+          },
+          {
+            "hour": 15,
+            "15-minute-values": []
+          },
+          {
+            "hour": 16,
+            "15-minute-values": []
+          },
+          {
+            "hour": 17,
+            "15-minute-values": []
+          },
+          {
+            "hour": 18,
+            "15-minute-values": []
+          },
+          {
+            "hour": 19,
+            "15-minute-values": []
+          },
+          {
+            "hour": 20,
+            "15-minute-values": []
+          },
+          {
+            "hour": 21,
+            "15-minute-values": []
+          },
+          {
+            "hour": 22,
+            "15-minute-values": []
+          },
+          {
+            "hour": 23,
+            "15-minute-values": []
+          }
+        ]
+      }
+    ]
+  }
+}

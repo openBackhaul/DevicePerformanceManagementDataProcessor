@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "required": ["historical-performance-data"],
+  "properties": {
+    "historical-performance-data": {
+      "type": "object",
+      "properties": {
+        "granularity-period": {
+          "type": "string"
+        },
+        "period-end-time": {
+          "type": "string"
+        },
+        "performance-data": {
+          "type": "object",
+          "properties": {
+            "busy-hour": {
+              "type": "object",
+              "properties": {
+                "period-end-time-list": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "label": {
+                  "type": "string"
+                },
+                "throughput": {
+                  "type": "integer"
+                },
+                "capacity": {
+                  "type": "integer"
+                },
+                "utilization": {
+                  "type": "integer"
+                },
+                "errored-frames": {
+                  "type": "integer"
+                },
+                "dropped-frames": {
+                  "type": "integer"
+                },
+                "suspicious-result-flag": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "period-end-time-list",
+                "label",
+                "throughput",
+                "capacity",
+                "utilization",
+                "errored-frames",
+                "dropped-frames",
+                "suspicious-result-flag"
+              ],
+              "additionalProperties": true
+            }
+          },
+          "required": ["busy-hour"],
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

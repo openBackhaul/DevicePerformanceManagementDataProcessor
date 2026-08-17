@@ -7,7 +7,7 @@
 module:
   functionUnderTest:
     modulePath: "../../server/genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords.js"
-    exportName: "p2DiscardIrrelevantPmRecords"
+    exportName: ""
 
 processingSteps: []
 
@@ -75,7 +75,7 @@ scenarios:
     inputFixture: "input_missing.json"
     expected:
       type: "error"
-      errorEnum: "general processing error"
+      errorEnum: "General processing error"
       errorSchemaFixture: "error.schema.json"
     mocks: []
 

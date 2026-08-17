@@ -1,0 +1,188 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CalculateBusyHourPerformanceIndicators/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CalculateBusyHourPerformanceIndicators/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1CalculateBusyHourPerformanceIndicators/P1CalculateBusyHourPerformanceIndicators.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okCalculateBusyHourPerformanceIndicators"
+    description: "Should calculate busy hour KPIs and add them to historical-performance-data for a valid 24-hour PM record"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okSelectHourWithHighestAggregatedTotalBytesOutput"
+    description: "Should identify the hour with the highest aggregated total-bytes-output as the busy hour"
+    inputFixture: "input_highest_aggregated_hour.json"
+    expected:
+      type: "success"
+      outputFixture: "output_highest_aggregated_hour.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okSetSuspiciousResultFlagWhenLessThanFour15MinValuesAvailable"
+    description: "Should set suspicious-result-flag to true when fewer than four 15-minute values are available in the busy hour"
+    inputFixture: "input_suspicious_result_flag.json"
+    expected:
+      type: "success"
+      outputFixture: "output_suspicious_result_flag.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okInitializePerformanceDataWhenMissing"
+    description: "Should initialize performance-data when missing and add busy-hour KPIs"
+    inputFixture: "input_missing_performance_data.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_performance_data.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okHandleMissingNumericFieldsAsZero"
+    description: "Should treat missing or non-numeric KPI input fields as zero during busy hour calculation"
+    inputFixture: "input_missing_numeric_fields.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_numeric_fields.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okResolveBusyHourTieByKeepingEarlierHour"
+    description: "Should keep the earlier hour when aggregated-total-bytes-output is equal across multiple hours"
+    inputFixture: "input_busy_hour_tie.json"
+    expected:
+      type: "success"
+      outputFixture: "output_busy_hour_tie.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errGeneralProcessingErrorWhenInputMissing"
+    description: "Should return error when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataNotProvided"
+    description: "Should return error when historical-performance-data is not provided"
+    inputFixture: "input_missing_historical_performance_data.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataInvalid"
+    description: "Should return error when historical-performance-data is invalid"
+    inputFixture: "input_invalid_historical_performance_data.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusNotProvided"
+    description: "Should return error when interface-status is not provided"
+    inputFixture: "input_missing_interface_status.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusInvalid"
+    description: "Should return error when interface-status is invalid"
+    inputFixture: "input_invalid_interface_status.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataOfWrongGranularityProvided"
+    description: "Should return error when historical-performance-data granularity is not 24 hours"
+    inputFixture: "input_wrong_granularity.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData of wrong granularity provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataInvalidWhenPeriodEndTimeMissing"
+    description: "Should return error when historical-performance-data.period-end-time is missing"
+    inputFixture: "input_missing_period_end_time.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceData invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenGranularityPeriodMissing"
+    description: "Should return error when granularity-period is missing"
+    inputFixture: "input_missing_granularity_period.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusInvalidWhen15MinuteValuesByDayMissing"
+    description: "Should return error when interface-status.15-minute-values-by-day is missing"
+    inputFixture: "input_missing_15_minute_values_by_day.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusInvalidWhenDayEntryMissing"
+    description: "Should return error when no matching day entry exists for the period-end-time day"
+    inputFixture: "input_missing_matching_day_entry.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusInvalidWhen15MinuteValuesByHourMissing"
+    description: "Should return error when matching day entry does not contain 15-minute-values-by-hour array"
+    inputFixture: "input_missing_15_minute_values_by_hour.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenPeriodEndTimeInvalid"
+    description: "Should return error when period-end-time is invalid and day parsing fails"
+    inputFixture: "input_invalid_period_end_time.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []

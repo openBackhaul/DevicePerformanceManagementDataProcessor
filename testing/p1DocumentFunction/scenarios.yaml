@@ -1,0 +1,107 @@
+#
+# Spec sources:
+# - spec/Functions/p1DocumentFunction/1.0.0/interface.yaml
+# - spec/Functions/p1DocumentFunction/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1DocumentFunction/P1DocumentFunction.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okDocumentSingleActiveFunction"
+    description: "Should create plain text documentation for a single active function"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okDocumentActiveFunctionWithParameters"
+    description: "Should include string parameters of an active function in the generated documentation"
+    inputFixture: "input_with_parameters.json"
+    expected:
+      type: "success"
+      outputFixture: "output_with_parameters.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okDocumentNestedActiveSubFunctionsOnly"
+    description: "Should document active sub-functions recursively and skip inactive ones"
+    inputFixture: "input_with_subfunctions.json"
+    expected:
+      type: "success"
+      outputFixture: "output_with_subfunctions.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnEmptyDocumentationForInactiveRootFunction"
+    description: "Should return empty documentation when the root function is not active"
+    inputFixture: "input_inactive_root.json"
+    expected:
+      type: "success"
+      outputFixture: "output_empty_string.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errGeneralProcessingErrorWhenInputMissing"
+    description: "Should return error when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errParametersNotProvidedWhenMissing"
+    description: "Should return error when parameters-of-to-be-documented-function is missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errParametersNotProvidedWhenNull"
+    description: "Should return error when parameters-of-to-be-documented-function is null"
+    inputFixture: "input_null_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errParametersInvalidWhenNotObject"
+    description: "Should return error when parameters-of-to-be-documented-function is not an object"
+    inputFixture: "input_invalid_parameters_type.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errParametersInvalidWhenEmptyObject"
+    description: "Should return error when parameters-of-to-be-documented-function is an empty object"
+    inputFixture: "input_empty_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []

@@ -1,0 +1,170 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CategorizeDataVolume/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/p1CategorizeDataVolume/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1CategorizeDataVolume/P1CategorizeDataVolume.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okCategorizeSingle15MinPmRecord"
+    description: "Should categorize one 15-minute PM record into the correct UTC day and hour bucket"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okInitialize15MinuteValuesByDayWhenMissing"
+    description: "Should initialize 15-minute-values-by-day when missing in interface-status"
+    inputFixture: "input_initialize_values_by_day.json"
+    expected:
+      type: "success"
+      outputFixture: "output_initialize_values_by_day.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okAppendSecondRecordInSameHour"
+    description: "Should append a second PM record into the same UTC day and hour bucket"
+    inputFixture: "input_append_same_hour.json"
+    expected:
+      type: "success"
+      outputFixture: "output_append_same_hour.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okKeepOnlyFourValuesPerHour"
+    description: "Should keep only the latest four 15-minute values in one hour bucket"
+    inputFixture: "input_keep_latest_four_per_hour.json"
+    expected:
+      type: "success"
+      outputFixture: "output_keep_latest_four_per_hour.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCreateNewDayBucket"
+    description: "Should create a new day bucket when period-end-time belongs to a different UTC day"
+    inputFixture: "input_create_new_day_bucket.json"
+    expected:
+      type: "success"
+      outputFixture: "output_create_new_day_bucket.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okKeepOnlyTwoDayBuckets"
+    description: "Should keep only two day buckets and remove the oldest inserted one when a third day is added"
+    inputFixture: "input_keep_only_two_day_buckets.json"
+    expected:
+      type: "success"
+      outputFixture: "output_keep_only_two_day_buckets.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCategorizeWithoutOptionalPerformanceFields"
+    description: "Should categorize PM data when optional performance-data fields are missing"
+    inputFixture: "input_missing_optional_performance_fields.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_optional_performance_fields.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errGeneralProcessingErrorWhenInputMissing"
+    description: "Should return error when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListNotProvided"
+    description: "Should return error when historical-performance-data is not provided"
+    inputFixture: "input_missing_historical_performance_data.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalid"
+    description: "Should return error when historical-performance-data is invalid"
+    inputFixture: "input_invalid_historical_performance_data.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusNotProvided"
+    description: "Should return error when interface-status is not provided"
+    inputFixture: "input_missing_interface_status.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInterfaceStatusInvalid"
+    description: "Should return error when interface-status is invalid"
+    inputFixture: "input_invalid_interface_status.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errPmDataOfWrongGranularityProvided"
+    description: "Should return error when PM data granularity is not 15 minutes"
+    inputFixture: "input_wrong_granularity.json"
+    expected:
+      type: "error"
+      errorEnum: "PM data of wrong granularity provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalidWhenPeriodEndTimeMissing"
+    description: "Should return error when period-end-time is missing"
+    inputFixture: "input_missing_period_end_time.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errHistoricalPerformanceDataListInvalidWhenPeriodEndTimeInvalid"
+    description: "Should return error when period-end-time is invalid"
+    inputFixture: "input_invalid_period_end_time.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenGranularityPeriodMissing"
+    description: "Should return error when granularity-period is missing"
+    inputFixture: "input_missing_granularity_period.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []

@@ -1,0 +1,22 @@
+{
+  "historical-performance-data": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-08-14T23:59:59Z",
+    "performance-data": {
+      "busy-hour": {
+        "period-end-time-list": [
+          "2026-08-14T02:00:00Z",
+          "2026-08-14T02:15:00Z",
+          "2026-08-14T02:30:00Z"
+        ],
+        "label": "2026/08/14/02/00",
+        "throughput": 6,
+        "capacity": 750,
+        "utilization": 0,
+        "errored-frames": 3,
+        "dropped-frames": 3,
+        "suspicious-result-flag": true
+      }
+    }
+  }
+}

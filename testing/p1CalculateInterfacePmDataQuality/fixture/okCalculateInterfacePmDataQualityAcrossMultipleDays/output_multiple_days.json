@@ -1,0 +1,17 @@
+{
+  "interface-pm-data-quality": {
+    "uuid": "ethernet-container-1",
+    "quality": [
+      {
+        "date": "2026/08/11",
+        "received": 4,
+        "expected": 4
+      },
+      {
+        "date": "2026/08/12",
+        "received": 3,
+        "expected": 4
+      }
+    ]
+  }
+}

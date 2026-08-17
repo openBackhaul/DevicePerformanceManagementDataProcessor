@@ -1,0 +1,170 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2LoadRawCc/p1CalculateInterfacePmDataQuality/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2LoadRawCc/p1CalculateInterfacePmDataQuality/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okCalculateInterfacePmDataQualitySingleDay"
+    description: "Should calculate expected and received 15min PM records for a monitoring period within a single day"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okCalculateInterfacePmDataQualityAcrossMultipleDays"
+    description: "Should calculate expected PM records across multiple days and compose quality by date"
+    inputFixture: "input_multiple_days.json"
+    expected:
+      type: "success"
+      outputFixture: "output_multiple_days.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okNormalizeReceivedDatesFromIsoTimestamps"
+    description: "Should normalize received dates provided as ISO timestamps before composing interface PM data quality"
+    inputFixture: "input_received_dates_as_iso.json"
+    expected:
+      type: "success"
+      outputFixture: "output_received_dates_as_iso.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnZeroReceivedWhenDateMissingInAmountReceived"
+    description: "Should return received as zero when a date exists in amount-expected but not in amount-received"
+    inputFixture: "input_missing_received_date.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_received_date.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errGeneralProcessingErrorWhenInputMissing"
+    description: "Should return error when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errUuidNotProvided"
+    description: "Should return error when uuid is not provided"
+    inputFixture: "input_missing_uuid.json"
+    expected:
+      type: "error"
+      errorEnum: "uuid not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errUuidInvalid"
+    description: "Should return error when uuid is invalid"
+    inputFixture: "input_invalid_uuid.json"
+    expected:
+      type: "error"
+      errorEnum: "uuid invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errFormerMostRecentPeriodEndTimeNotProvided"
+    description: "Should return error when former-most-recent-period-end-time is not provided"
+    inputFixture: "input_missing_former_mrpet.json"
+    expected:
+      type: "error"
+      errorEnum: "formerMostRecentPeriodEndTime not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errFormerMostRecentPeriodEndTimeInvalid"
+    description: "Should return error when former-most-recent-period-end-time is invalid"
+    inputFixture: "input_invalid_former_mrpet.json"
+    expected:
+      type: "error"
+      errorEnum: "formerMostRecentPeriodEndTime invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errNewMostRecentPeriodEndTimeNotProvided"
+    description: "Should return error when new-most-recent-period-end-time is not provided"
+    inputFixture: "input_missing_new_mrpet.json"
+    expected:
+      type: "error"
+      errorEnum: "newMostRecentPeriodEndTime not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errNewMostRecentPeriodEndTimeInvalid"
+    description: "Should return error when new-most-recent-period-end-time is invalid"
+    inputFixture: "input_invalid_new_mrpet.json"
+    expected:
+      type: "error"
+      errorEnum: "newMostRecentPeriodEndTime invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errAmountReceivedNotProvided"
+    description: "Should return error when amount-received is not provided"
+    inputFixture: "input_missing_amount_received.json"
+    expected:
+      type: "error"
+      errorEnum: "amountReceived not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errAmountReceivedInvalid"
+    description: "Should return error when amount-received is invalid"
+    inputFixture: "input_invalid_amount_received.json"
+    expected:
+      type: "error"
+      errorEnum: "amountReceived invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errExpectedAmountCouldNotBeCalculated"
+    description: "Should return error when new-most-recent-period-end-time is not later than former-most-recent-period-end-time"
+    inputFixture: "input_non_increasing_monitoring_period.json"
+    expected:
+      type: "error"
+      errorEnum: "expected amount could not be calculated"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errAmountReceivedInvalidWhenEntryHasInvalidDate"
+    description: "Should return error when an amount-received entry contains an invalid date"
+    inputFixture: "input_invalid_amount_received_date.json"
+    expected:
+      type: "error"
+      errorEnum: "amountReceived invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errAmountReceivedInvalidWhenEntryHasInvalidCount"
+    description: "Should return error when an amount-received entry contains an invalid count"
+    inputFixture: "input_invalid_amount_received_count.json"
+    expected:
+      type: "error"
+      errorEnum: "amountReceived invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []

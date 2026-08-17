@@ -1,0 +1,11 @@
+{
+  "uuid": "air-interface-1",
+  "former-most-recent-period-end-time": "invalid",
+  "new-most-recent-period-end-time": "2026-08-11T11:00:00Z",
+  "amount-received": [
+    {
+      "date": "2026/08/11",
+      "count": 3
+    }
+  ]
+}

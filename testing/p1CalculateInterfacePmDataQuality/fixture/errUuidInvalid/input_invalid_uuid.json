@@ -1,0 +1,11 @@
+{
+  "uuid": 123,
+  "former-most-recent-period-end-time": "2026-08-11T10:00:00Z",
+  "new-most-recent-period-end-time": "2026-08-11T11:00:00Z",
+  "amount-received": [
+    {
+      "date": "2026/08/11",
+      "count": 3
+    }
+  ]
+}
