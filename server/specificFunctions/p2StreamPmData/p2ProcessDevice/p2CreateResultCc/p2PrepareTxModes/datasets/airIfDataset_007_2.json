@@ -1,0 +1,2615 @@
+{
+  "air-interface-historical-performances": {
+    "historical-performance-data-list": [
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T05:45:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_07",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T04:00:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_14",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T06:45:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_03",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T05:00:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_10",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T06:15:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_05",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T06:00:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_06",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T07:00:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_02",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T04:15:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_13",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T05:15:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_09",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T03:30:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_16",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T03:45:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_15",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+        "period-end-time": "2026-02-05T00:00:00.0+00:00",
+        "history-data-id": "PM_RADIO_24H_1",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 86400,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 86400
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T07:15:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_01",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T04:30:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_12",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T05:30:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_08",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T04:45:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_11",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-02-05T06:30:00.0+00:00",
+        "history-data-id": "PM_RADIO_15M_04",
+        "suspect-interval-flag": false,
+        "performance-data": {
+          "defect-blocks-sum": 0,
+          "cses": 0,
+          "es": 0,
+          "xpd-max": -99,
+          "tx-level-max": 23,
+          "ses": 0,
+          "rx-level-max": -50,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": -50,
+          "unavailability": 0,
+          "time-xstates-list": [
+            {
+              "time-xstate-sequence-number": 14,
+              "time": 0,
+              "transmission-mode": "56014"
+            },
+            {
+              "time-xstate-sequence-number": 12,
+              "time": 0,
+              "transmission-mode": "56012"
+            },
+            {
+              "time-xstate-sequence-number": 13,
+              "time": 0,
+              "transmission-mode": "56013"
+            },
+            {
+              "time-xstate-sequence-number": 10,
+              "time": 0,
+              "transmission-mode": "56010"
+            },
+            {
+              "time-xstate-sequence-number": 11,
+              "time": 0,
+              "transmission-mode": "56011"
+            },
+            {
+              "time-xstate-sequence-number": 8,
+              "time": 0,
+              "transmission-mode": "56008"
+            },
+            {
+              "time-xstate-sequence-number": 9,
+              "time": 0,
+              "transmission-mode": "56009"
+            },
+            {
+              "time-xstate-sequence-number": 6,
+              "time": 0,
+              "transmission-mode": "56006"
+            },
+            {
+              "time-xstate-sequence-number": 7,
+              "time": 0,
+              "transmission-mode": "56007"
+            },
+            {
+              "time-xstate-sequence-number": 4,
+              "time": 0,
+              "transmission-mode": "56004"
+            },
+            {
+              "time-xstate-sequence-number": 5,
+              "time": 0,
+              "transmission-mode": "56005"
+            },
+            {
+              "time-xstate-sequence-number": 2,
+              "time": 900,
+              "transmission-mode": "56002"
+            },
+            {
+              "time-xstate-sequence-number": 3,
+              "time": 0,
+              "transmission-mode": "56003"
+            },
+            {
+              "time-xstate-sequence-number": 1,
+              "time": 0,
+              "transmission-mode": "56001"
+            }
+          ],
+          "rx-level-min": -50,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 23,
+          "tx-level-avg": 23,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 900
+        }
+      }
+    ],
+    "number-of-historical-performance-sets": 17,
+    "time-of-latest-change": "2026-02-05T07:15:00.0+00:00"
+  },
+  "air-interface-capability": {
+    "rx-frequency-max": 19701500,
+    "transmission-mode-list": [
+      {
+        "transmission-mode-name": "112013",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -52,
+        "am-downshift-level": -49,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112013,
+        "am-upshift-level": -47,
+        "modulation-scheme-name-at-lct": "2048QAM",
+        "modulation-scheme": 2048,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "112012",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -54,
+        "am-downshift-level": -51,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112012,
+        "am-upshift-level": -50,
+        "modulation-scheme-name-at-lct": "1024QAM",
+        "modulation-scheme": 1024,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "112014",
+        "tx-power-max": 16,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -49,
+        "am-downshift-level": -46,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": false,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112014,
+        "am-upshift-level": -45,
+        "modulation-scheme-name-at-lct": "4096QAM",
+        "modulation-scheme": 4096,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "112011",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -54,
+        "am-downshift-level": -51,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112011,
+        "am-upshift-level": -50,
+        "modulation-scheme-name-at-lct": "1024QAMStrong",
+        "modulation-scheme": 1024,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "112010",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -58,
+        "am-downshift-level": -55,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112010,
+        "am-upshift-level": -53,
+        "modulation-scheme-name-at-lct": "512QAM",
+        "modulation-scheme": 512,
+        "code-rate": 91
+      },
+      {
+        "transmission-mode-name": "56006",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -70,
+        "am-downshift-level": -66,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 56006,
+        "am-upshift-level": -64,
+        "modulation-scheme-name-at-lct": "64QAM",
+        "modulation-scheme": 64,
+        "code-rate": 90
+      },
+      {
+        "transmission-mode-name": "14010",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -66,
+        "am-downshift-level": -63,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 14010,
+        "am-upshift-level": -61,
+        "modulation-scheme-name-at-lct": "512QAM",
+        "modulation-scheme": 512,
+        "code-rate": 89
+      },
+      {
+        "transmission-mode-name": "56007",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -67,
+        "am-downshift-level": -64,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 56007,
+        "am-upshift-level": -62,
+        "modulation-scheme-name-at-lct": "128QAM",
+        "modulation-scheme": 128,
+        "code-rate": 91
+      },
+      {
+        "transmission-mode-name": "14011",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -63,
+        "am-downshift-level": -60,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 14011,
+        "am-upshift-level": -58,
+        "modulation-scheme-name-at-lct": "1024QAMStrong",
+        "modulation-scheme": 1024,
+        "code-rate": 89
+      },
+      {
+        "transmission-mode-name": "56004",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -76,
+        "am-downshift-level": -71,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 56004,
+        "am-upshift-level": -69,
+        "modulation-scheme-name-at-lct": "16QAM",
+        "modulation-scheme": 16,
+        "code-rate": 85
+      },
+      {
+        "transmission-mode-name": "14012",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -63,
+        "am-downshift-level": -60,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 14012,
+        "am-upshift-level": -58,
+        "modulation-scheme-name-at-lct": "1024QAM",
+        "modulation-scheme": 1024,
+        "code-rate": 89
+      },
+      {
+        "transmission-mode-name": "56005",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -73,
+        "am-downshift-level": -69,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 56005,
+        "am-upshift-level": -67,
+        "modulation-scheme-name-at-lct": "32QAM",
+        "modulation-scheme": 32,
+        "code-rate": 85
+      },
+      {
+        "transmission-mode-name": "14013",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -61,
+        "am-downshift-level": -58,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 14013,
+        "am-upshift-level": -57,
+        "modulation-scheme-name-at-lct": "2048QAM",
+        "modulation-scheme": 2048,
+        "code-rate": 83
+      },
+      {
+        "transmission-mode-name": "56008",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -64,
+        "am-downshift-level": -61,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56008,
+        "am-upshift-level": -59,
+        "modulation-scheme-name-at-lct": "256QAM",
+        "modulation-scheme": 256,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "56009",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -61,
+        "am-downshift-level": -58,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56009,
+        "am-upshift-level": -56,
+        "modulation-scheme-name-at-lct": "512QAMStrong",
+        "modulation-scheme": 512,
+        "code-rate": 91
+      },
+      {
+        "transmission-mode-name": "14006",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -75,
+        "am-downshift-level": -71,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 14006,
+        "am-upshift-level": -69,
+        "modulation-scheme-name-at-lct": "64QAM",
+        "modulation-scheme": 64,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "14007",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -72,
+        "am-downshift-level": -68,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 14007,
+        "am-upshift-level": -66,
+        "modulation-scheme-name-at-lct": "128QAM",
+        "modulation-scheme": 128,
+        "code-rate": 89
+      },
+      {
+        "transmission-mode-name": "56010",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -61,
+        "am-downshift-level": -58,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56010,
+        "am-upshift-level": -56,
+        "modulation-scheme-name-at-lct": "512QAM",
+        "modulation-scheme": 512,
+        "code-rate": 91
+      },
+      {
+        "transmission-mode-name": "14008",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -69,
+        "am-downshift-level": -66,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 14008,
+        "am-upshift-level": -64,
+        "modulation-scheme-name-at-lct": "256QAM",
+        "modulation-scheme": 256,
+        "code-rate": 90
+      },
+      {
+        "transmission-mode-name": "14009",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -66,
+        "am-downshift-level": -63,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 14009,
+        "am-upshift-level": -61,
+        "modulation-scheme-name-at-lct": "512QAMStrong",
+        "modulation-scheme": 512,
+        "code-rate": 89
+      },
+      {
+        "transmission-mode-name": "56013",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -56,
+        "am-downshift-level": -53,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56013,
+        "am-upshift-level": -52,
+        "modulation-scheme-name-at-lct": "2048QAM",
+        "modulation-scheme": 2048,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "56014",
+        "tx-power-max": 16,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -52,
+        "am-downshift-level": -49,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": false,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56014,
+        "am-upshift-level": -48,
+        "modulation-scheme-name-at-lct": "4096QAM",
+        "modulation-scheme": 4096,
+        "code-rate": 89
+      },
+      {
+        "transmission-mode-name": "56011",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -58,
+        "am-downshift-level": -55,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56011,
+        "am-upshift-level": -53,
+        "modulation-scheme-name-at-lct": "1024QAMStrong",
+        "modulation-scheme": 1024,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "56012",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -58,
+        "am-downshift-level": -55,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 56012,
+        "am-upshift-level": -53,
+        "modulation-scheme-name-at-lct": "1024QAM",
+        "modulation-scheme": 1024,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "28001",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -86,
+        "am-downshift-level": -86,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 28001,
+        "am-upshift-level": -86,
+        "modulation-scheme-name-at-lct": "4QAMStrong",
+        "modulation-scheme": 4,
+        "code-rate": 76
+      },
+      {
+        "transmission-mode-name": "28002",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -84,
+        "am-downshift-level": -79,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 28002,
+        "am-upshift-level": -77,
+        "modulation-scheme-name-at-lct": "4QAM",
+        "modulation-scheme": 4,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "28003",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -80,
+        "am-downshift-level": -76,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 28003,
+        "am-upshift-level": -74,
+        "modulation-scheme-name-at-lct": "16QAMStrong",
+        "modulation-scheme": 16,
+        "code-rate": 75
+      },
+      {
+        "transmission-mode-name": "28004",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -79,
+        "am-downshift-level": -74,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 28004,
+        "am-upshift-level": -72,
+        "modulation-scheme-name-at-lct": "16QAM",
+        "modulation-scheme": 16,
+        "code-rate": 86
+      },
+      {
+        "transmission-mode-name": "28005",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -75,
+        "am-downshift-level": -71,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 28005,
+        "am-upshift-level": -69,
+        "modulation-scheme-name-at-lct": "32QAM",
+        "modulation-scheme": 32,
+        "code-rate": 86
+      },
+      {
+        "transmission-mode-name": "28006",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -72,
+        "am-downshift-level": -68,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 28006,
+        "am-upshift-level": -66,
+        "modulation-scheme-name-at-lct": "64QAM",
+        "modulation-scheme": 64,
+        "code-rate": 90
+      },
+      {
+        "transmission-mode-name": "28007",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -69,
+        "am-downshift-level": -66,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 28007,
+        "am-upshift-level": -64,
+        "modulation-scheme-name-at-lct": "128QAM",
+        "modulation-scheme": 128,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "28008",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -66,
+        "am-downshift-level": -63,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28008,
+        "am-upshift-level": -61,
+        "modulation-scheme-name-at-lct": "256QAM",
+        "modulation-scheme": 256,
+        "code-rate": 93
+      },
+      {
+        "transmission-mode-name": "28009",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -63,
+        "am-downshift-level": -60,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28009,
+        "am-upshift-level": -58,
+        "modulation-scheme-name-at-lct": "512QAMStrong",
+        "modulation-scheme": 512,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "14001",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -89,
+        "am-downshift-level": -89,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 14001,
+        "am-upshift-level": -89,
+        "modulation-scheme-name-at-lct": "4QAMStrong",
+        "modulation-scheme": 4,
+        "code-rate": 75
+      },
+      {
+        "transmission-mode-name": "14002",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -87,
+        "am-downshift-level": -82,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 14002,
+        "am-upshift-level": -80,
+        "modulation-scheme-name-at-lct": "4QAM",
+        "modulation-scheme": 4,
+        "code-rate": 86
+      },
+      {
+        "transmission-mode-name": "14003",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -83,
+        "am-downshift-level": -79,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 14003,
+        "am-upshift-level": -77,
+        "modulation-scheme-name-at-lct": "16QAMStrong",
+        "modulation-scheme": 16,
+        "code-rate": 74
+      },
+      {
+        "transmission-mode-name": "14004",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -81,
+        "am-downshift-level": -76,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 14004,
+        "am-upshift-level": -74,
+        "modulation-scheme-name-at-lct": "16QAM",
+        "modulation-scheme": 16,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "14005",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -78,
+        "am-downshift-level": -74,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 14000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 14005,
+        "am-upshift-level": -72,
+        "modulation-scheme-name-at-lct": "32QAM",
+        "modulation-scheme": 32,
+        "code-rate": 84
+      },
+      {
+        "transmission-mode-name": "56002",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -82,
+        "am-downshift-level": -77,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 56002,
+        "am-upshift-level": -75,
+        "modulation-scheme-name-at-lct": "4QAM",
+        "modulation-scheme": 4,
+        "code-rate": 87
+      },
+      {
+        "transmission-mode-name": "56003",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -77,
+        "am-downshift-level": -73,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 56003,
+        "am-upshift-level": -71,
+        "modulation-scheme-name-at-lct": "16QAMStrong",
+        "modulation-scheme": 16,
+        "code-rate": 74
+      },
+      {
+        "transmission-mode-name": "28010",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -63,
+        "am-downshift-level": -60,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28010,
+        "am-upshift-level": -58,
+        "modulation-scheme-name-at-lct": "512QAM",
+        "modulation-scheme": 512,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "28011",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -60,
+        "am-downshift-level": -57,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28011,
+        "am-upshift-level": -55,
+        "modulation-scheme-name-at-lct": "1024QAMStrong",
+        "modulation-scheme": 1024,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "56001",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -83,
+        "am-downshift-level": -83,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 56000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 56001,
+        "am-upshift-level": -83,
+        "modulation-scheme-name-at-lct": "4QAMStrong",
+        "modulation-scheme": 4,
+        "code-rate": 74
+      },
+      {
+        "transmission-mode-name": "28012",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -60,
+        "am-downshift-level": -57,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28012,
+        "am-upshift-level": -55,
+        "modulation-scheme-name-at-lct": "1024QAM",
+        "modulation-scheme": 1024,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "28013",
+        "tx-power-max": 17,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -58,
+        "am-downshift-level": -55,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28013,
+        "am-upshift-level": -54,
+        "modulation-scheme-name-at-lct": "2048QAM",
+        "modulation-scheme": 2048,
+        "code-rate": 87
+      },
+      {
+        "transmission-mode-name": "28014",
+        "tx-power-max": 16,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -53,
+        "am-downshift-level": -51,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": false,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 28014,
+        "am-upshift-level": -50,
+        "modulation-scheme-name-at-lct": "4096QAM",
+        "modulation-scheme": 4096,
+        "code-rate": 88
+      },
+      {
+        "transmission-mode-name": "112002",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -79,
+        "am-downshift-level": -74,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 112002,
+        "am-upshift-level": -72,
+        "modulation-scheme-name-at-lct": "4QAM",
+        "modulation-scheme": 4,
+        "code-rate": 86
+      },
+      {
+        "transmission-mode-name": "112001",
+        "tx-power-max": 23,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -80,
+        "am-downshift-level": -80,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -7,
+        "transmission-mode-rank": 112001,
+        "am-upshift-level": -80,
+        "modulation-scheme-name-at-lct": "4QAMStrong",
+        "modulation-scheme": 4,
+        "code-rate": 73
+      },
+      {
+        "transmission-mode-name": "112004",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -73,
+        "am-downshift-level": -68,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 112004,
+        "am-upshift-level": -66,
+        "modulation-scheme-name-at-lct": "16QAM",
+        "modulation-scheme": 16,
+        "code-rate": 85
+      },
+      {
+        "transmission-mode-name": "112003",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": -6,
+        "rx-threshold": -74,
+        "am-downshift-level": -70,
+        "supported-as-fixed-configuration": false,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": 1,
+        "transmission-mode-rank": 112003,
+        "am-upshift-level": -68,
+        "modulation-scheme-name-at-lct": "16QAMStrong",
+        "modulation-scheme": 16,
+        "code-rate": 73
+      },
+      {
+        "transmission-mode-name": "112009",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -58,
+        "am-downshift-level": -55,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112009,
+        "am-upshift-level": -53,
+        "modulation-scheme-name-at-lct": "512QAMStrong",
+        "modulation-scheme": 512,
+        "code-rate": 91
+      },
+      {
+        "transmission-mode-name": "112006",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -67,
+        "am-downshift-level": -63,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 112006,
+        "am-upshift-level": -61,
+        "modulation-scheme-name-at-lct": "64QAM",
+        "modulation-scheme": 64,
+        "code-rate": 90
+      },
+      {
+        "transmission-mode-name": "112005",
+        "tx-power-max": 21,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -70,
+        "am-downshift-level": -66,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -6,
+        "transmission-mode-rank": 112005,
+        "am-upshift-level": -64,
+        "modulation-scheme-name-at-lct": "32QAM",
+        "modulation-scheme": 32,
+        "code-rate": 85
+      },
+      {
+        "transmission-mode-name": "112008",
+        "tx-power-max": 18,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -61,
+        "am-downshift-level": -58,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -4,
+        "transmission-mode-rank": 112008,
+        "am-upshift-level": -56,
+        "modulation-scheme-name-at-lct": "256QAM",
+        "modulation-scheme": 256,
+        "code-rate": 92
+      },
+      {
+        "transmission-mode-name": "112007",
+        "tx-power-max": 19,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": -64,
+        "am-downshift-level": -60,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 112000,
+        "xpic-is-avail": true,
+        "tx-power-min": -5,
+        "transmission-mode-rank": 112007,
+        "am-upshift-level": -58,
+        "modulation-scheme-name-at-lct": "128QAM",
+        "modulation-scheme": 128,
+        "code-rate": 91
+      }
+    ],
+    "tx-frequency-max": 18691500,
+    "atpc-range": 0,
+    "supported-radio-signal-id-length": 255,
+    "rx-frequency-min": 19341500,
+    "tx-frequency-min": 18331500
+  }
+}
