@@ -139,7 +139,7 @@ function p2PrepareTxModes(input) {
  */
 function validateInput(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
+    return ERRORS.GENERAL_ERROR;
   }
 
   let res = validateHistoricalPerformanceDataList(input['historical-performance-data-list']);
@@ -162,9 +162,7 @@ function validateInput(input) {
  *
  * @param {*} historicalPerformanceDataList
  */
-function validateHistoricalPerformanceDataList(
-  historicalPerformanceDataList
-) {
+function validateHistoricalPerformanceDataList(historicalPerformanceDataList) {
   if (historicalPerformanceDataList === undefined || historicalPerformanceDataList === null) {
     return ERRORS.HIST_PERF_DATA_NOT_PROVIDED;
   }
@@ -198,6 +196,10 @@ function validateHistoricalPerformanceDataList(
 
     if (!Array.isArray(timeXstatesList)) {
       return ERRORS.HIST_PERF_DATA_INVALID
+    }
+
+    if (timeXstatesList.length == 0) {
+      return ERRORS.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED;
     }
 
     for (const timeXstateEntry of timeXstatesList) {
