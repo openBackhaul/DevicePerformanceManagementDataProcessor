@@ -1,0 +1,54 @@
+#
+# testing/p1LoadParameters/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p1StreamPmData/p1LoadParameters/1.0.0/interface.yaml
+# - spec/Functions/p1StreamPmData/p1LoadParameters/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "onf.readControlConstruct"
+    modulePath: "../../server/infra/onf/onfAdapter.js"
+    exportName: "readControlConstruct"
+    isAsync: true
+
+  - stepId: "config.loadConfigFile"
+    modulePath: "../../server/utils/config"
+    exportName: "loadConfigFile"
+    isAsync: false
+
+  - stepId: "functionTree.loadFunctionParameters"
+    modulePath: "../../server/utils/functionTree"
+    exportName: "loadFunctionParameters"
+    isAsync: false
+
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # happy path
+  # -------------------------
+
+  - id: "okConfigProvidedInRequest"
+    description: "Should use configFile from request and return expected parameters + configFile"
+    inputFixture: "input.json"
+    mocks:
+      - stepId: "onf.readControlConstruct"
+        type: "return"
+        fixture: "onfControlConstruct.json"
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "configFile.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
