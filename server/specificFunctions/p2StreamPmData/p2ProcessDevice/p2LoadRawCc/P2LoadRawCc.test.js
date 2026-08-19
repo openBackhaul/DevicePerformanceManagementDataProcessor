@@ -9,7 +9,7 @@ jest.mock("../../../../utils/functionTree", () => ({
 }));
 
 const { getParamFromFunction } = require("../../../../utils/functionTree");
-const { run } = require("./p2LoadRawCc");
+const { run, loadRawCc } = require("./p2LoadRawCc");
 
 describe("p2LoadRawCc", () => {
   let baseRequest;
@@ -176,6 +176,34 @@ describe("p2LoadRawCc", () => {
       expect(result["raw-cc"]).toEqual({ "logical-termination-point": [] });
     });
 
+    it("reads raw-cc filter from the p2LoadRawCc parameter node", async () => {
+      const parameters = {
+        "function-name": "p2LoadRawCc",
+        parameter: [
+          {
+            "parameter-name": "raw-cc",
+            value: "logical-termination-point(uuid)"
+          }
+        ]
+      };
+      getParamFromFunction.mockImplementation(
+        (tree, functionName, parameterName, defaultValue) => {
+          if (tree === parameters && functionName === "p2LoadRawCc" && parameterName === "raw-cc") {
+            return parameters.parameter[0].value;
+          }
+          return defaultValue;
+        }
+      );
+      p1FieldsFilterMock.mockResolvedValue({
+        "filtered-data-structure": { "logical-termination-point": [] }
+      });
+
+      const result = await run({ ...baseRequest, parameters });
+
+      expect(p1FieldsFilterMock).toHaveBeenCalled();
+      expect(result["raw-cc"]).toEqual({ "logical-termination-point": [] });
+    });
+
     it("throws when p1FieldsFilter returns no usable filtered structure", async () => {
       getParamFromFunction.mockReturnValue("uuid");
       p1FieldsFilterMock.mockResolvedValue({});
@@ -185,6 +213,16 @@ describe("p2LoadRawCc", () => {
   });
 
   describe("successful run", () => {
+    it("loadRawCc calls the module and returns its output", async () => {
+      const result = await loadRawCc(baseRequest);
+
+      expect(result).toEqual(expect.objectContaining({
+        "raw-cc": expect.any(Object),
+        offsets: expect.any(Array),
+        "device-pm-data-quality": expect.any(Object)
+      }));
+    });
+
     it("returns raw-cc, offsets, and device-pm-data-quality", async () => {
       const result = await run(baseRequest);
 

@@ -6,8 +6,8 @@ const p2DiscardIrrelevantPmRecords = require(
   "../../../../genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords"
 );
 const p1CalculateInterfacePmDataQuality = require(
-    "../../../../genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality"
-  );
+  "../../../../genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality"
+);
 
 
 const INITIAL_PERIOD_END_TIME = "2010-11-20T14:00:00+01:00";
@@ -196,12 +196,14 @@ async function readControlConstruct(input, request) {
 }
 
 async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
-  const filterString = getParamFromFunction(
-    parameters,
-    "p1FieldsFilter",
-    "raw-cc",
-    getParamFromFunction(parameters, "p1FieldsFilter", "fieldsFilter", "")
-  );
+   const filterString =
+      getParamFromFunction(
+      parameters,
+      "p1FieldsFilter",
+      "raw-cc",
+      getParamFromFunction(parameters, "p1FieldsFilter", "fieldsFilter", "")
+    )
+  
   if (!filterString) return rawCc;
 
   const response = await invoke(dependencies.p1FieldsFilter || p1FieldsFilter, {
@@ -243,9 +245,9 @@ async function processInterface(
   const discardFunction = dependencies.p2DiscardIrrelevantPmRecords ||
     p2DiscardIrrelevantPmRecords;
   const discardResponse = await invoke(discardFunction, {
-      "historical-performance-data-list": historyList,
-      "former-most-recent-period-end-time": formerPeriodEndTime,
-      "former-most-recent-period-end-time-24": formerPeriodEndTime24
+    "historical-performance-data-list": historyList,
+    "former-most-recent-period-end-time": formerPeriodEndTime,
+    "former-most-recent-period-end-time-24": formerPeriodEndTime24
   });
 
   historyContainer["historical-performance-data-list"] = discardResponse[
@@ -261,12 +263,12 @@ async function processInterface(
   const calculatePmDataQuality = dependencies.p1CalculateInterfacePmDataQuality ||
     p1CalculateInterfacePmDataQuality;
   const qualityResponse = await invoke(calculatePmDataQuality, {
-      uuid: ltp.uuid,
-      "former-most-recent-period-end-time": formerPeriodEndTime,
-      "new-most-recent-period-end-time": interfaceOffset[
-        "most-recent-period-end-time"
-      ],
-      "amount-received": discardResponse["amount-received"]
+    uuid: ltp.uuid,
+    "former-most-recent-period-end-time": formerPeriodEndTime,
+    "new-most-recent-period-end-time": interfaceOffset[
+      "most-recent-period-end-time"
+    ],
+    "amount-received": discardResponse["amount-received"]
   });
   const interfacePmDataQuality = qualityResponse && qualityResponse[
     "interface-pm-data-quality"
