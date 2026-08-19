@@ -74,7 +74,7 @@ describe("confluentKafkaProducer TLS config", () => {
 
   it("uses runtime globals when options do not provide broker or TLS settings", async () => {
     const logger = { info: jest.fn(), error: jest.fn() };
-    global.KAFKA_BOOTSTRAP_SERVERS = "localhost:9093";
+    global.KAFKA_BOOTSTRAP_SERVERS = "localhost:9092";
     global.KAFKA_CLIENT_ID = "dpmdp-local";
     global.KAFKA_SECURITY_PROTOCOL = "ssl";
     global.KAFKA_SSL_CA_LOCATION = "C:/cmd/acls/secrets/prod/trust.pem";
@@ -86,7 +86,7 @@ describe("confluentKafkaProducer TLS config", () => {
 
     expect(global.mockKafka).toHaveBeenCalledTimes(1);
     expect(global.mockKafkaInstance.config).toMatchObject({
-      "bootstrap.servers": "localhost:9093",
+      "bootstrap.servers": "localhost:9092",
       "client.id": "dpmdp-local",
       "security.protocol": "ssl",
       "ssl.ca.location": "C:/cmd/acls/secrets/prod/trust.pem",

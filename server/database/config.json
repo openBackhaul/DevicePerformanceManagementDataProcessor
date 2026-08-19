@@ -2971,7 +2971,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "7"
+                "index-alias": "mwdi"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2997,7 +2997,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "18"
+                "index-alias": "mwdireplica"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -3233,7 +3233,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 9093
+                "remote-port": 9092
               }
             }
           }

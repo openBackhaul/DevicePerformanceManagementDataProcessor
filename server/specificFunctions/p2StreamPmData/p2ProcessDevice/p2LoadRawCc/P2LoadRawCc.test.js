@@ -261,6 +261,90 @@ describe("p2LoadRawCc", () => {
     });
   });
 
+  describe("edge cases for branch coverage", () => {
+    it("accepts a direct control-construct object response without body/_source wrapping", async () => {
+      replicaClient.get.mockResolvedValue({
+        "core-model-1-4:control-construct": [
+          {
+            uuid: "device-1",
+            "logical-termination-point": [
+              {
+                uuid: "ltp-air-2",
+                "layer-protocol": [
+                  {
+                    "air-interface-2-0:air-interface-pac": {
+                      "air-interface-historical-performances": {
+                        "historical-performance-data-list": [
+                          { timestamp: "2024-02-01T00:15:00Z" }
+                        ]
+                      },
+                      "air-interface-current-performance": {
+                        "current-performance-data-list": [
+                          { timestamp: "2024-02-01T00:30:00Z" }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      });
+
+      const result = await run(baseRequest);
+
+      expect(result["raw-cc"]).toBeDefined();
+      expect(result["device-pm-data-quality"].interface).toHaveLength(1);
+    });
+
+    it("supports ethernet-container historical performance data and keeps a batch timestamp when present", async () => {
+      baseRequest.parameters = { some: "value" };
+      replicaClient.get.mockResolvedValue({
+        body: {
+          _source: {
+            "core-model-1-4:control-construct": [
+              {
+                uuid: "device-1",
+                "batch-timestamp": "2024-03-01T00:00:00Z",
+                "logical-termination-point": [
+                  {
+                    uuid: "ltp-ec-1",
+                    "layer-protocol": [
+                      {
+                        "ethernet-container-2-0:ethernet-container-pac": {
+                          "ethernet-container-historical-performances": {
+                            "historical-performance-data-list": [
+                              { timestamp: "2024-03-01T00:15:00Z" }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      });
+
+      p2DiscardIrrelevantPmRecordsMock.mockResolvedValue({
+        "filtered-historical-performance-data-list": [
+          { timestamp: "2024-03-01T00:15:00Z" }
+        ],
+        "new-most-recent-period-end-time": "2024-03-01T00:15:00Z",
+        "new-most-recent-period-end-time-24": "2024-03-01T00:00:00Z",
+        "amount-received": [{ date: "2024/03/01", count: 1 }]
+      });
+
+      const result = await run(baseRequest);
+
+      expect(result["raw-cc"]["batch-timestamp"]).toBe("2024-03-01T00:15:00.000Z");
+      expect(result["device-pm-data-quality"].interface[0].uuid).toBe("ltp-ec-1");
+    });
+  });
+
   describe("pm data quality failure", () => {
     it("throws when p1CalculateInterfacePmDataQuality returns no usable result", async () => {
       p1CalculateInterfacePmDataQualityMock.mockResolvedValue(
