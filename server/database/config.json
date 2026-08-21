@@ -605,7 +605,7 @@
               "string-purpose": "Throttles re-indexing to number of copy operations per second, preventing high load on the server"
             },
             "string-profile-configuration": {
-              "string-value": "2"
+              "string-value": "-1"
             }
           }
         },
@@ -618,7 +618,7 @@
               "string-purpose": "Number of documents returned per page when Elasticsearch performs a scroll search"
             },
             "string-profile-configuration": {
-              "string-value": "200"
+              "string-value": "500"
             }
           }
         },
@@ -2971,7 +2971,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "mwdi"
+                "index-alias": "7"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2997,7 +2997,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "mwdireplica"
+                "index-alias": "18"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -3233,7 +3233,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 9092
+                "remote-port": 9093
               }
             }
           }

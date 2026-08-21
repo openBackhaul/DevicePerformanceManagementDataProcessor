@@ -1,9 +1,48 @@
+// {
+//     // Use IntelliSense to learn about possible attributes.
+//     // Hover to view descriptions of existing attributes.
+//     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "type": "node",
+//             "request": "launch",
+//             "name": "p2loadRawCC_debug",
+//             "cwd": "${workspaceFolder}/server",
+//             "program": "${workspaceFolder}/server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2LoadRawCc/testp2LoadRawCc.js"},
+//         {
+//             "type": "node",
+//             "request": "launch",
+//             "name": "Launch Program",
+//             "outputCapture": "std",
+//             "runtimeArgs": [
+//                 "--trace-warnings"
+//             ],
+//             "skipFiles": [
+//                 "<node_internals>/**"
+//             ],
+//             "cwd": "${workspaceFolder}/server",
+//             "program": "${workspaceFolder}/server/index.js",
+//             "env": {
+//                 "DEBUG": "true",
+//             }
+//         }
+//     ]
+// }
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "P2 Load Raw CC - Standalone Debug",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/server/debugger/debugp2LoadRawCc.js",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal"
+        },
         {
             "type": "node",
             "request": "launch",
@@ -18,7 +57,7 @@
             "cwd": "${workspaceFolder}/server",
             "program": "${workspaceFolder}/server/index.js",
             "env": {
-                "DEBUG": "true",
+                "DEBUG": "true"
             }
         }
     ]

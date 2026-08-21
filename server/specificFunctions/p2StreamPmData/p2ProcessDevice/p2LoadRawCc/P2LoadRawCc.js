@@ -196,14 +196,17 @@ async function readControlConstruct(input, request) {
 }
 
 async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
-   const filterString =
-      getParamFromFunction(
+  const filterString = getParamFromFunction(
+    parameters,
+    LOAD_RAW_CC_FUNCTION_NAME,
+    "raw-cc",
+    getParamFromFunction(
       parameters,
       "p1FieldsFilter",
       "raw-cc",
       getParamFromFunction(parameters, "p1FieldsFilter", "fieldsFilter", "")
     )
-  
+  );
   if (!filterString) return rawCc;
 
   const response = await invoke(dependencies.p1FieldsFilter || p1FieldsFilter, {
