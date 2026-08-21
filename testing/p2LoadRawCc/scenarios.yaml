@@ -15,6 +15,8 @@ processingSteps:
     exportName: "getEsClient"
     isAsync: true
 
+
+
   - stepId: "p1FieldsFilter"
     modulePath: "../../server/genericFunctions/p1FieldsFilter/P1FieldsFilter.js"
     exportName: ""
@@ -30,11 +32,75 @@ processingSteps:
     exportName: ""
     isAsync: true
 
-dependencies: []
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
 
 errorMapping: {}
 
 scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okInitializeFunctionOffsetWhenMissing"
+    description: "Should initialize p2LoadRawCc function offset and interface offsets when missing"
+    inputFixture: "input_missing_function_offset.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_function_offset.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+
+  - id: "okLoadRawCcWithFieldsFilter"
+    description: "Should apply p1FieldsFilter before PM processing when raw-cc fields filter is configured"
+    inputFixture: "input_with_fields_filter.json"
+    expected:
+      type: "success"
+      outputFixture: "output_with_fields_filter.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+
+
+
+
+
+  - id: "okProcessMultipleInterfaces"
+    description: "Should process multiple interfaces and append PM data quality for each interface"
+    inputFixture: "input_multiple_interfaces.json"
+    expected:
+      type: "success"
+      outputFixture: "output_multiple_interfaces.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+
+
+
+  - id: "okUpdateBatchTimestampFromLatestCurrentPerformanceTimestamp"
+    description: "Should set raw-cc batch-timestamp to the latest valid current performance timestamp"
+    inputFixture: "input_batch_timestamp_update.json"
+    expected:
+      type: "success"
+      outputFixture: "output_batch_timestamp_update.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.batch_timestamp.json"
+
+
+
+  
   # -------------------------
   # Input validation
   # -------------------------
@@ -103,107 +169,57 @@ scenarios:
       errorEnum: "offsets invalid"
     mocks: []
 
-  # -------------------------
-  # Happy paths
-  # -------------------------
 
 
-  - id: "okLoadRawCcWithFieldsFilter"
-    description: "Should apply p1FieldsFilter before PM processing when raw-cc fields filter is configured"
+  # -------------------------
+  # Processing step failures
+  # -------------------------
+
+  
+  - id: "errPmDataQualityCouldNotBeProvidedWhenP1CalculateInterfacePmDataQualityReturnsInvalidOutput"
+    description: "Should return 'pmDataQuality could not be provided' when p1CalculateInterfacePmDataQuality returns invalid output"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "pmDataQuality could not be provided"
+    mocks:
+      - stepId: "onfAdapter.getEsClient"
+        type: "return"
+        fixture: "onfAdapter.getEsClient.replica.json"
+      - stepId: "p1CalculateInterfacePmDataQuality"
+        type: "return"
+        fixture: "p1CalculateInterfacePmDataQuality.invalid-output.json"
+
+
+  - id: "errRawCcCouldNotBeProvidedWhenFieldsFilterReturnsInvalidStructure"
+    description: "Should return 'rawCc could not be provided' when p1FieldsFilter returns malformed output"
     inputFixture: "input_with_fields_filter.json"
     expected:
-      type: "success"
-      outputFixture: "output_with_fields_filter.json"
-      outputSchemaFixture: "output.schema.json"
+      type: "error"
+      errorEnum: "rawCc could not be provided"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "return"
         fixture: "onfAdapter.getEsClient.replica.json"
       - stepId: "p1FieldsFilter"
         type: "return"
-        fixture: "p1FieldsFilter.output.json"
-      - stepId: "p2DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p2DiscardIrrelevantPmRecords.output.json"
-      - stepId: "p1CalculateInterfacePmDataQuality"
-        type: "return"
-        fixture: "p1CalculateInterfacePmDataQuality.output.json"
+        fixture: "p1FieldsFilter.invalid-output.json"
 
-  - id: "okInitializeFunctionOffsetWhenMissing"
-    description: "Should initialize p2LoadRawCc function offset and interface offsets when missing"
-    inputFixture: "input_missing_function_offset.json"
+  - id: "errRawCcCouldNotBeProvidedWhenFieldsFilterThrows"
+    description: "Should return 'rawCc could not be provided' when p1FieldsFilter throws"
+    inputFixture: "input_with_fields_filter.json"
     expected:
-      type: "success"
-      outputFixture: "output_missing_function_offset.json"
-      outputSchemaFixture: "output.schema.json"
+      type: "error"
+      errorEnum: "fieldsFilterString invalid"
     mocks:
       - stepId: "onfAdapter.getEsClient"
         type: "return"
         fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p2DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p2DiscardIrrelevantPmRecords.output.json"
-      - stepId: "p1CalculateInterfacePmDataQuality"
-        type: "return"
-        fixture: "p1CalculateInterfacePmDataQuality.output.json"
+      - stepId: "p1FieldsFilter"
+        type: "throw"
+        error: "fieldsFilterString invalid"
 
-  - id: "okProcessMultipleInterfaces"
-    description: "Should process multiple interfaces and append PM data quality for each interface"
-    inputFixture: "input_multiple_interfaces.json"
-    expected:
-      type: "success"
-      outputFixture: "output_multiple_interfaces.json"
-      outputSchemaFixture: "output.schema.json"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p2DiscardIrrelevantPmRecords"
-        type: "returnSequence"
-        fixtureSequence:
-          - "p2DiscardIrrelevantPmRecords.output.interface1.json"
-          - "p2DiscardIrrelevantPmRecords.output.interface2.json"
-        repeatLast: false
-      - stepId: "p1CalculateInterfacePmDataQuality"
-        type: "returnSequence"
-        fixtureSequence:
-          - "p1CalculateInterfacePmDataQuality.output.interface1.json"
-          - "p1CalculateInterfacePmDataQuality.output.interface2.json"
-        repeatLast: false
 
-  - id: "okIgnoreLayerProtocolsWithoutHistoricalPerformanceDataList"
-    description: "Should ignore layer protocols that do not contain historical-performance-data-list"
-    inputFixture: "input_without_historical_performance_list.json"
-    expected:
-      type: "success"
-      outputFixture: "output_without_historical_performance_list.json"
-      outputSchemaFixture: "output.schema.json"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.no_history.json"
-
-  - id: "okUpdateBatchTimestampFromLatestCurrentPerformanceTimestamp"
-    description: "Should set raw-cc batch-timestamp to the latest valid current performance timestamp"
-    inputFixture: "input_batch_timestamp_update.json"
-    expected:
-      type: "success"
-      outputFixture: "output_batch_timestamp_update.json"
-      outputSchemaFixture: "output.schema.json"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.batch_timestamp.json"
-      - stepId: "p2DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p2DiscardIrrelevantPmRecords.output.json"
-      - stepId: "p1CalculateInterfacePmDataQuality"
-        type: "return"
-        fixture: "p1CalculateInterfacePmDataQuality.output.json"
-
-  # -------------------------
-  # Processing step failures
-  # -------------------------
 
   - id: "errRawCcCouldNotBeProvidedWhenReplicaClientCreationFails"
     description: "Should return 'rawCc could not be provided' when Replica ES client creation fails during read"
@@ -226,62 +242,3 @@ scenarios:
       - stepId: "onfAdapter.getEsClient"
         type: "return"
         fixture: "onfAdapter.getEsClient.replica.erroring.json"
-
-  - id: "errRawCcCouldNotBeProvidedWhenFieldsFilterReturnsInvalidStructure"
-    description: "Should return 'rawCc could not be provided' when p1FieldsFilter returns malformed output"
-    inputFixture: "input_with_fields_filter.json"
-    expected:
-      type: "error"
-      errorEnum: "rawCc could not be provided"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p1FieldsFilter"
-        type: "return"
-        fixture: "p1FieldsFilter.invalid-output.json"
-
-  - id: "errRawCcCouldNotBeProvidedWhenFieldsFilterThrows"
-    description: "Should return 'rawCc could not be provided' when p1FieldsFilter throws"
-    inputFixture: "input_with_fields_filter.json"
-    expected:
-      type: "error"
-      errorEnum: "rawCc could not be provided"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p1FieldsFilter"
-        type: "throw"
-        error: "fields filter failure"
-
-  - id: "errPmDataQualityCouldNotBeProvidedWhenP1CalculateInterfacePmDataQualityReturnsInvalidOutput"
-    description: "Should return 'pmDataQuality could not be provided' when p1CalculateInterfacePmDataQuality returns invalid output"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "pmDataQuality could not be provided"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p2DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p2DiscardIrrelevantPmRecords.output.json"
-      - stepId: "p1CalculateInterfacePmDataQuality"
-        type: "return"
-        fixture: "p1CalculateInterfacePmDataQuality.invalid-output.json"
-
-  - id: "errPmDataQualityCouldNotBeProvidedWhenP1CalculateInterfacePmDataQualityMissing"
-    description: "Should return 'pmDataQuality could not be provided' when p1CalculateInterfacePmDataQuality implementation is unavailable"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "pmDataQuality could not be provided"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p2DiscardIrrelevantPmRecords"
-        type: "return"
-        fixture: "p2DiscardIrrelevantPmRecords.output.json"

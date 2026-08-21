@@ -26,17 +26,25 @@ async function loadLastReplicaTimeFromEs(loggingEsClient, logger) {
 
   const response = await withRetry(
     async () =>
-      client.get({
-        index: loggingEsClient["index-alias"],
-        id: ES_DOC_ID
-      }),
+      client.get(
+        {
+          index: loggingEsClient["index-alias"],
+          id: ES_DOC_ID
+        },
+        { ignore: [404] }
+      ),
     {
       label: "replicaState.loadFromEs",
       retryIntervalMs: 10000,
       logger
     }
   ).catch((error) => {
-      logger.error(
+    const statusCode = error?.meta?.statusCode || error?.statusCode;
+    if (statusCode === 404) {
+      return null;
+    }
+
+    logger.error(
         {
           label: "replicaState.loadFromEs",
           error: error.message || error
@@ -45,14 +53,13 @@ async function loadLastReplicaTimeFromEs(loggingEsClient, logger) {
       );
     });
 
-  if (!response || !response.found) {
+  const responseBody = response?.body || response;
+  if (!responseBody || !responseBody.found) {
     return null;
   }
 
-  const source = (response || {}).body?._source;
+  const source = responseBody._source || {};
   return source.lastReplicaTime || null;
-
-  //return (response._source || {}).lastReplicaTime || null;
 }
 
 async function saveLastReplicaTimeToEs(loggingEsClient, timestamp, logger) {

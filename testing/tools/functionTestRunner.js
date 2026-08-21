@@ -194,6 +194,117 @@ function toRealError(errVal) {
   return new Error(String(errVal));
 }
 
+function createMockMethodFunction(methodName, methodDef, targetObject, fallbackIsAsync = true) {
+  let callIndex = 0;
+  const isAsync = methodDef.isAsync === true || fallbackIsAsync === true;
+
+  return jest.fn(() => {
+    const currentCallIndex = callIndex;
+    callIndex += 1;
+
+    if (methodDef.type === "return" || methodDef.type === "returnSequence") {
+      let val;
+
+      if (methodDef.type === "returnSequence") {
+        const values = methodDef.values ?? methodDef.valueSequence;
+        if (!Array.isArray(values) || values.length === 0) {
+          throw new Error(
+            `Mock method '${methodName}' declared returnSequence but 'values'/'valueSequence' is empty or invalid`
+          );
+        }
+        val = getSequenceItem(
+          values,
+          currentCallIndex,
+          methodName,
+          "value",
+          methodDef.repeatLast !== false
+        );
+      } else if (methodDef.fixtureSequence !== undefined || methodDef.fixtures !== undefined) {
+        const fixtureSequence = methodDef.fixtureSequence ?? methodDef.fixtures;
+        const fixtureName = getSequenceItem(
+          fixtureSequence,
+          currentCallIndex,
+          methodName,
+          "fixture",
+          methodDef.repeatLast !== false
+        );
+        val = readJsonCloned(path.join(targetObject.__scenarioDir, fixtureName));
+      } else if (methodDef.fixture) {
+        val = readJsonCloned(path.join(targetObject.__scenarioDir, methodDef.fixture));
+      } else {
+        val = cloneValue(methodDef.value);
+      }
+
+      val = materializeMockCapableObject(val, true, targetObject.__scenarioDir);
+      return isAsync ? Promise.resolve(val) : val;
+    }
+
+    if (methodDef.type === "throw" || methodDef.type === "throwSequence") {
+      let errVal;
+
+      if (methodDef.type === "throwSequence") {
+        const errors = methodDef.errors ?? methodDef.errorSequence;
+        if (!Array.isArray(errors) || errors.length === 0) {
+          throw new Error(
+            `Mock method '${methodName}' declared throwSequence but 'errors'/'errorSequence' is empty or invalid`
+          );
+        }
+        errVal = getSequenceItem(
+          errors,
+          currentCallIndex,
+          methodName,
+          "error",
+          methodDef.repeatLast !== false
+        );
+      } else {
+        errVal = methodDef.error;
+      }
+
+      const err = toRealError(errVal);
+      if (isAsync) {
+        return Promise.reject(err);
+      }
+      throw err;
+    }
+
+    throw new Error(
+      `Unknown mock method type '${methodDef.type}' for method '${methodName}'`
+    );
+  });
+}
+
+function materializeMockCapableObject(value, fallbackIsAsync = false, scenarioDir = null) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  if (!value.__mockMethods || typeof value.__mockMethods !== "object") {
+    return value;
+  }
+
+  const result = { ...value };
+  const mockMethods = result.__mockMethods;
+  delete result.__mockMethods;
+
+  Object.defineProperty(result, "__scenarioDir", {
+    value: scenarioDir,
+    enumerable: false,
+    configurable: true,
+    writable: false,
+  });
+
+  for (const [methodName, methodDef] of Object.entries(mockMethods)) {
+    result[methodName] = createMockMethodFunction(
+      methodName,
+      methodDef,
+      result,
+      fallbackIsAsync
+    );
+  }
+
+  return result;
+}
+
 function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = false }) {
   let callIndex = 0;
   const isAsync = mockDef.isAsync === true || fallbackIsAsync === true;
@@ -203,7 +314,8 @@ function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = fa
     callIndex += 1;
 
     if (mockDef.type === "return" || mockDef.type === "returnSequence") {
-      const val = resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex);
+      let val = resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex);
+      val = materializeMockCapableObject(val, true, scenarioDir);
       return isAsync ? Promise.resolve(val) : val;
     }
 

@@ -1,3 +1,188 @@
 {
-  "type": "object"
+  "type": "object",
+  "required": [
+    "raw-cc",
+    "offsets",
+    "device-pm-data-quality"
+  ],
+  "properties": {
+    "raw-cc": {
+      "type": "object",
+      "properties": {
+        "logical-termination-point": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string"
+              },
+              "layer-protocol": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "local-id": {
+                          "type": "string"
+                        },
+                        "layer-protocol-name": {
+                          "type": "string",
+                          "enum": [
+                            "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER"
+                          ]
+                        },
+                        "air-interface-2-0:air-interface-pac": {
+                          "type": "object",
+                          "properties": {
+                            "air-interface-historical-performances": {
+                              "type": "object",
+                              "properties": {
+                                "historical-performance-data-list": {
+                                  "type": "array"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "local-id": {
+                          "type": "string"
+                        },
+                        "layer-protocol-name": {
+                          "type": "string",
+                          "enum": [
+                            "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
+                          ]
+                        },
+                        "ethernet-container-2-0:ethernet-container-pac": {
+                          "type": "object",
+                          "properties": {
+                            "ethernet-container-historical-performances": {
+                              "type": "object",
+                              "properties": {
+                                "historical-performance-data-list": {
+                                  "type": "array"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "batch-timestamp": {
+          "type": "string"
+        }
+      }
+    },
+    "offsets": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "function-name",
+              "offset"
+            ],
+            "properties": {
+              "function-name": {
+                "type": "string",
+                "enum": [
+                  "p2LoadRawCc"
+                ]
+              },
+              "offset": {
+                "type": "object",
+                "properties": {
+                  "interface-offsets": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "uuid",
+                        "most-recent-period-end-time",
+                        "most-recent-period-end-time-24"
+                      ],
+                      "properties": {
+                        "uuid": {
+                          "type": "string"
+                        },
+                        "most-recent-period-end-time": {
+                          "type": "string"
+                        },
+                        "most-recent-period-end-time-24": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "device-pm-data-quality": {
+      "type": "object",
+      "required": [
+        "mount-name",
+        "interface"
+      ],
+      "properties": {
+        "mount-name": {
+          "type": "string"
+        },
+        "interface": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "uuid",
+              "quality"
+            ],
+            "properties": {
+              "uuid": {
+                "type": "string"
+              },
+              "quality": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "date",
+                    "received",
+                    "expected"
+                  ],
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "received": {
+                      "type": "integer"
+                    },
+                    "expected": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

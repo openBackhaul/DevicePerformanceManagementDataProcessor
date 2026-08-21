@@ -1,5 +1,4 @@
 const redisQueue = require("../../infra/redis/redisStreamQueue");
-const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
 const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
@@ -35,7 +34,8 @@ async function handleMessage(message, context) {
   }
   try{
     try {
-        await p1ProcessDevice.run({
+        const processDevice = context.processDevice || require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
+        await processDevice.run({
           mountName,
           parameters: context.processDeviceParameters,
           configFile: context.configFile,

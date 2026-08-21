@@ -108,11 +108,21 @@ function getValidatedRequest(request) {
     throw buildProcessingError(ERRORS.MOUNT_NAME_NOT_PROVIDED);
   }
 
+  const batchTimestamp = getRequestValue(resultCc, "batch-timestamp", "batchTimestamp");
+  if (batchTimestamp === undefined || batchTimestamp === null || batchTimestamp === "") {
+    throw buildProcessingError(ERRORS.BATCH_TIMESTAMP_NOT_PROVIDED);
+  }
+
+  if (typeof batchTimestamp !== "string" || Number.isNaN(Date.parse(batchTimestamp))) {
+    throw buildProcessingError(ERRORS.BATCH_TIMESTAMP_INVALID);
+  }
+
   return {
     dataStoreEsClient,
     resultCc,
     interfaceMetadataList,
-    mountName
+    mountName,
+    batchTimestamp
   };
 }
 
@@ -150,8 +160,7 @@ async function searchExisting(client, index, mountName, logger) {
       "Failed to search existing device"
     );
 
-    //throw buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error);
-      logger.error(buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error).message);
+    throw buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error);
   }
 }
 
@@ -191,9 +200,7 @@ async function writeDataStoreDocument(
       logMessage
     );
 
-    //throw buildProcessingError(errorMessage, error);
-    logger.error(buildProcessingError(errorMessage, error).message);
-
+    throw buildProcessingError(errorMessage, error);
   }
 }
 
@@ -219,7 +226,8 @@ async function run(request) {
       dataStoreEsClient,
       resultCc,
       interfaceMetadataList,
-      mountName
+      mountName,
+      batchTimestamp
     } = getValidatedRequest(request);
 
     let client;
@@ -265,7 +273,6 @@ async function run(request) {
 
     existing["interface-metadata-list"] = interfaceMetadataList;
     existing.batch = Array.isArray(existing.batch) ? existing.batch : [];
-    const batchTimestamp = new Date().toJSON();
     existing.batch.push({
       batchTimestamp,
       ...(saveResultCc ? { resultCc } : {})

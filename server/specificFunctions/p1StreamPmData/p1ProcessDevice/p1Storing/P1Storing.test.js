@@ -31,7 +31,8 @@ function validRequest(overrides = {}) {
     dataStoreEsClient: validDataStoreEsClient,
     resultCc: {
       mountName: "100250001",
-      uuid: "cc-uuid"
+      uuid: "cc-uuid",
+      "batch-timestamp": "2024-01-01T00:00:00.000Z"
     },
     interfaceMetadataList: [],
     mountName: "100250001",
@@ -143,7 +144,8 @@ describe("P1Storing", () => {
     const result = await moduleUnderTest.run({
       "data-store-es-client": validDataStoreEsClient,
       "result-cc": {
-        "mount-name": "100250002"
+        "mount-name": "100250002",
+        "batch-timestamp": "2024-01-01T00:00:00.000Z"
       },
       "interface-metadata-list": [],
       logger: mockLogger
@@ -152,31 +154,33 @@ describe("P1Storing", () => {
     expect(result.mountName).toBe("100250002");
   });
 
-  test("logs ElasticSearch lock error and continues when locking fails", async () => {
+  test("throws ElasticSearch lock error when locking fails", async () => {
     mockDataStoreClient.index.mockRejectedValueOnce(new Error("lock failed"));
 
-    const result = await moduleUnderTest.run(validRequest());
-
-    expect(result.mountName).toBe("100250001");
-    expect(result.batch).toHaveLength(1);
-    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(2);
-    expect(mockLogger.error).toHaveBeenCalledWith(
+    await expect(moduleUnderTest.run(validRequest())).rejects.toThrow(
       ERRORS.ELASTICSEARCH_LOCK_ERROR
     );
+    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(1);
   });
 
-  test("logs Writing to dataStore failed and continues when final save fails", async () => {
+  test("throws Writing to dataStore failed when final save fails", async () => {
     mockDataStoreClient.index
       .mockResolvedValueOnce({})
       .mockRejectedValueOnce(new Error("save failed"));
 
-    const result = await moduleUnderTest.run(validRequest());
-
-    expect(result.mountName).toBe("100250001");
-    expect(result.batch).toHaveLength(1);
-    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(2);
-    expect(mockLogger.error).toHaveBeenCalledWith(
+    await expect(moduleUnderTest.run(validRequest())).rejects.toThrow(
       ERRORS.WRITING_TO_DATA_STORE_FAILED
     );
+    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(2);
+  });
+
+  test("validates batch timestamp before writing a lock", async () => {
+    const request = validRequest();
+    delete request.resultCc["batch-timestamp"];
+
+    await expect(moduleUnderTest.run(request)).rejects.toThrow(
+      ERRORS.BATCH_TIMESTAMP_NOT_PROVIDED
+    );
+    expect(mockDataStoreClient.index).not.toHaveBeenCalled();
   });
 });
