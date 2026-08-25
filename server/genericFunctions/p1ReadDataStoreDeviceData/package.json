@@ -4,6 +4,11 @@
   "scripts": {
     "test": "jest"
   },
+  "dependencies": {
+    "onf-core-model-ap": "2.1.2",
+    "onf-core-model-ap-bs": "2.1.2",
+    "@elastic/elasticsearch": "^7.0.0"
+  },
   "devDependencies": {
     "jest": "^29.7.0"
   }
