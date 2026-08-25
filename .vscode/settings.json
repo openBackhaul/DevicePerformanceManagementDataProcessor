@@ -1,0 +1,6 @@
+{
+  "jest.jestCommandLine": "npm test --",
+  "jest.rootPath": "server",
+  "jest.disabledWorkspaceFolders": [],
+  "jest.runMode": { "type": "watch" }
+}

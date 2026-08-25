@@ -1,7 +1,6 @@
 {
-  "name": "dpmdp",
+  "name": "p2-prepare-tx-modes",
   "version": "1.0.0",
-  "description": "DevicePerformanceManagementDataProcessor",
   "scripts": {
     "test": "jest"
   },

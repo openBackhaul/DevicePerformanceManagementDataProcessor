@@ -1,5 +1,7 @@
 const ERRORS = require('./ErrorsEnum');
 
+const properties = [  "function-name", "description", "is-active", "parameter" ];
+
 /**
  * p1DocumentFunction
  *
@@ -21,10 +23,15 @@ function p1DocumentFunction(input) {
       return ERRORS.PARAMETERS_INVALID;
     }
 
-    const parameters = input["parameters-of-to-be-documented-function"];
-    if (Object.keys(parameters).length == 0) {
+    const rawParameters = input["parameters-of-to-be-documented-function"];
+    if (Object.keys(rawParameters).length == 0) {
       return ERRORS.PARAMETERS_INVALID;
     }
+
+    const parameters =
+      typeof rawParameters === "string"
+        ? JSON.parse(rawParameters)
+        : rawParameters;
 
     const documentation = formatDocumentation({ parameters });
 
@@ -128,7 +135,10 @@ function documentFunctionRecursive(functionObject, indentLevel) {
  */
 function getStringParameters(functionObject) {
   const candidates = [
-    functionObject['parameter'],
+    // functionObject.stringParameters,
+    // functionObject["string-parameters"],
+    functionObject['parameter'],  // This must be the official one
+    // functionObject.parameters,
   ];
 
   for (const candidate of candidates) {
@@ -152,7 +162,9 @@ function getStringParameters(functionObject) {
  */
 function getSubFunctions(functionObject) {
   const candidates = [
-    functionObject["sub-function"],
+    // functionObject.subFunctions,
+    functionObject["sub-function"],    // This must be the official one
+    // functionObject.functions,
   ];
 
   for (const candidate of candidates) {

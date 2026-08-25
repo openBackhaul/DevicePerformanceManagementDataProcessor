@@ -93,7 +93,7 @@ function buildAirInterface(
     'air-interface-identifiers': {
       'mount-name': mountName,
       'link-endpoint-id': ltpAug?.['external-label'],
-      'link-id': ltpAug?.['link-id']?.substring(0, 9),
+      'link-id': ltpAug?.['link-id']?.substring(0, 9) ,
       'logical-termination-point-id': ltp.uuid,
       'link-aggregation-identifiers':
         resolveLinkAggregationIdentifiers(ltp, allLtps)
@@ -217,7 +217,7 @@ function resolveTemperature(equipmentStruct) {
   let iduTemp;
 
   for (const eq of equipmentStruct) {
-    const category = eq?.['actual-equipment']?.['structure']?.['category'];
+    const category = eq?.['structure']?.['category'];
 
     const temp = eq?.['actual-equipment']?.['physical-properties']?.['temperature'];
 
@@ -259,3 +259,5 @@ function buildEthernetContainer(ltp, layerProtocol, mountName) {
 
   return result;
 }
+
+

@@ -122,16 +122,12 @@ describe('p1FormattingOutputApt', () => {
         'result-cc': {
           'equipment': [
             {
-              'actual-equipment': {
-                'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
-                'physical-properties': { 'temperature': 45 }
-              }
+              'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
+              'actual-equipment': { 'physical-properties': { 'temperature': 45 } }
             },
             {
-              'actual-equipment': {
-                'structure': { 'category': 'EQUIPMENT_CATEGORY_SUBRACK' },
-                'physical-properties': { 'temperature': 35 }
-              }
+              'structure': { 'category': 'EQUIPMENT_CATEGORY_SUBRACK' },
+              'actual-equipment': { 'physical-properties': { 'temperature': 35 } }
             }
           ],
           'logical-termination-point': {
@@ -155,7 +151,6 @@ describe('p1FormattingOutputApt', () => {
       const res = p1FormattingOutputApt(input);
       expect(res['output-format']['air-interface-list'][0]['idu-cpu-temperature']).toBe(45);
     });
-
 
 
     test('resolveTransmissionMode: should return null if mode not found', () => {
@@ -233,10 +228,8 @@ describe('p1FormattingOutputApt', () => {
         'result-cc': {
           'equipment': [
             {
-              'actual-equipment': {
-                'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
-                'physical-properties': { 'temperature': 0 }
-              }
+              'structure': { 'category': 'EQUIPMENT_CATEGORY_CENTRAL_PROCESSING_UNIT' },
+              'actual-equipment': { 'physical-properties': { 'temperature': 0 } }
             }
           ],
           'logical-termination-point': {

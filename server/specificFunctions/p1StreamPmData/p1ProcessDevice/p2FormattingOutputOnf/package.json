@@ -1,7 +1,6 @@
 {
-  "name": "dpmdp",
+  "name": "p2-formatting-output-onf",
   "version": "1.0.0",
-  "description": "DevicePerformanceManagementDataProcessor",
   "scripts": {
     "test": "jest"
   },

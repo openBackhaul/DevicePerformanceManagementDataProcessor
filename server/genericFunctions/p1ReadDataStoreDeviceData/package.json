@@ -1,7 +1,6 @@
 {
-  "name": "dpmdp",
+  "name": "p1-remove-out-of-range-temperature",
   "version": "1.0.0",
-  "description": "DevicePerformanceManagementDataProcessor",
   "scripts": {
     "test": "jest"
   },
