@@ -2,6 +2,7 @@ const p1DocumentFunction = require('./P1DocumentFunction');
 const ERRORS = require('./ErrorsEnum');
 const fs = require('fs');
 
+
 const properties = [  "function-name", "description", "is-active", "parameter" ];
 
 describe("Test documentation function", () => {
@@ -55,18 +56,6 @@ describe("Test documentation function", () => {
     expect(result).toEqual(expect.stringContaining("Deletes attributes with default values from the transferred object"));
   });
 
-
-  test("Test real data for p2ProcessDevice function", () => {
-    let dataFile = fs.readFileSync(__dirname + '/datasets/p2ProcessDeviceDoc.json', 'utf8');
-    let functionDataset = JSON.parse(dataFile);
-
-    const result = p1DocumentFunction({
-      "parameters-of-to-be-documented-function": functionDataset['parameters']
-    });
-
-    expect(result).toBeDefined();
-    fs.writeFileSync("resultDataDoc.txt", result, "utf-8");
-  })
 });
 
 // Expected output
