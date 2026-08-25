@@ -70,10 +70,7 @@ function validateInput(input) {
     return ERRORS.DATA_STORE_NOT_PROVIDED;
   }
 
-  if (
-    typeof dataStoreEsClient['url'] !== "string" ||
-    !isValidUrl(dataStoreEsClient['url'])
-  ) {
+  if (typeof dataStoreEsClient['url'] !== "string" || !isValidUrl(dataStoreEsClient['url'])) {
     return ERRORS.DATA_STORE_INVALID;
   }
 
@@ -99,9 +96,7 @@ function isValidUrl(url) {
 
 async function retrieveDevicePmDataFromDs(dataStoreEsClient, dataStoreUrl, mountName) {
   try {
-    const resourcePath = `/data-store/device=${encodeURIComponent(
-      mountName
-    )}/result-data`;
+    const resourcePath = `/data-store/device=${encodeURIComponent(mountName)}/result-data`;
 
     /**
      * This implementation supports two possible client styles:
@@ -115,7 +110,6 @@ async function retrieveDevicePmDataFromDs(dataStoreEsClient, dataStoreUrl, mount
 
     if (typeof dataStoreEsClient.get === "function") {
       const response = await dataStoreEsClient.get(`${dataStoreUrl}${resourcePath}`);
-
       return normalizeDsResponse(response);
     }
 
