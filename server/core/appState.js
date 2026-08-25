@@ -6,7 +6,6 @@ class AppState {
     this.lastReplicaTime = null;
     this.lastReplicaLeaderRunAt = null;
     this.lastCleanupRunAt = null;
-    this.lastSuccessfulCompleteControlConstructUpdateTime = null;
     this.metrics = {
       replicaCycles: 0,
       processedSuccess: 0,

@@ -99,11 +99,19 @@ function validateResponse(responseData) {
  */
 function validateConnectionStatus(metadataArray, inputMountNames) {
   const unconnectedMountNames = [];
+  
+  // Create a set of input mount names for efficient lookup
+  const inputMountNamesSet = new Set(inputMountNames);
 
   // Check each mount's connection status
   for (const item of metadataArray) {
     const mountName = item['mount-name'];
     const connectionStatus = item['connection-status'];
+
+    // Only check mounts that are in the input list
+    if (!inputMountNamesSet.has(mountName)) {
+      continue;
+    }
 
     // If connection-status is not "connected", add to unconnected list
     if (connectionStatus !== 'connected') {
@@ -122,8 +130,7 @@ function validateConnectionStatus(metadataArray, inputMountNames) {
 }
 
 /**
- * trova URL per la post   /v1/provide-device-status-metadata response structure.
- * the response can be either: error or the URL
+ * trova URL per la post   /v1/provide-device-status-metadata response structuerror or the URL
   */
 
 

@@ -3,7 +3,8 @@
 const { AppState } = require('../../../core/appState');
 const { initiatePmDataUpdate } = require('../../../service/IndividualServicesService');
 
-// Mock the util functions
+// Mock dependencies
+jest.mock('../../../genericFunctions/p1LoadParameters/P1LoadParameters');
 jest.mock('../../individualServices/initiatePmDataUpdate/util.js', () => ({
   validateInput: jest.fn(),
   getMwdiURL: jest.fn(),
@@ -18,6 +19,16 @@ jest.mock('../../individualServices/initiatePmDataUpdate/util.js', () => ({
 }));
 
 const { validateInput, getMwdiURL, getCustomHeaders, validateMWDIResponse, validateConnectionStatus, ERRORS } = require('../../individualServices/initiatePmDataUpdate/util.js');
+
+// Setup p1LoadParameters mock
+const p1LoadParameters = require('../../../genericFunctions/p1LoadParameters/P1LoadParameters');
+p1LoadParameters.run = jest.fn().mockResolvedValue({
+  parameters: {
+    parameter: [
+      { 'parameter-name': 'waitTimeForSending', value: '0' }
+    ]
+  }
+});
 
 describe('initiatePmDataUpdate', () => {
   let appState;
@@ -65,23 +76,23 @@ describe('initiatePmDataUpdate', () => {
 
     expect(result.status).toBe('success');
     expect(result.message).toBe('PM data update initiated successfully');
-    expect(appState.lastSuccessfulCompleteControlConstructUpdateTime).not.toBeNull();
   });
 
   test('should return alreadyUpToDate when < 15 minutes since last update', async () => {
-    // Setup: simulate last update 10 minutes ago
-    appState.lastSuccessfulCompleteControlConstructUpdateTime = Date.now() - (10 * 60 * 1000);
     
     // Setup mocks - validations should still be called
     validateInput.mockReturnValue(null);
     getMwdiURL.mockReturnValue('http://test-mwdi:8080/v1/provide-device-status-metadata');
     getCustomHeaders.mockReturnValue({});
     
+    const now = new Date();
+    const fiveMinutesAgo = new Date(now - 5 * 60 * 1000).toISOString();
+    
     const mockMwdiResponse = {
       ok: true,
       json: jest.fn().mockResolvedValue([
-        { 'mount-name': 'mount-1', 'connection-status': 'connected' },
-        { 'mount-name': 'mount-2', 'connection-status': 'connected' }
+        { 'mount-name': 'mount-1', 'connection-status': 'connected', 'last-successful-complete-control-construct-update-time': fiveMinutesAgo },
+        { 'mount-name': 'mount-2', 'connection-status': 'connected', 'last-successful-complete-control-construct-update-time': fiveMinutesAgo }
       ])
     };
     global.fetch = jest.fn().mockResolvedValue(mockMwdiResponse);
@@ -109,8 +120,6 @@ describe('initiatePmDataUpdate', () => {
   });
 
   test('should proceed with update when > 15 minutes since last update', async () => {
-    // Setup: simulate last update 20 minutes ago
-    appState.lastSuccessfulCompleteControlConstructUpdateTime = Date.now() - (20 * 60 * 1000);
     
     validateInput.mockReturnValue(null);
     getMwdiURL.mockReturnValue('http://test-mwdi:8080/v1/provide-device-status-metadata');
@@ -144,8 +153,6 @@ describe('initiatePmDataUpdate', () => {
   });
 
   test('should proceed with update when exactly 15 minutes since last update', async () => {
-    // Setup: simulate last update exactly 15 minutes ago
-    appState.lastSuccessfulCompleteControlConstructUpdateTime = Date.now() - (15 * 60 * 1000);
     
     validateInput.mockReturnValue(null);
     getMwdiURL.mockReturnValue('http://test-mwdi:8080/v1/provide-device-status-metadata');

@@ -30,7 +30,7 @@ module.exports.bequeathYourDataAndDie = function bequeathYourDataAndDie (req, re
 module.exports.initiatePmDataUpdate = function initiatePmDataUpdate (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   var startTime = Date.now();
   
-  IndividualServices.initiatePmDataUpdate(body, user, originator, xCorrelator, traceIndicator, customerJourney, appState)
+  IndividualServices.initiatePmDataUpdate(body, user, originator, xCorrelator, traceIndicator, customerJourney)
     .then(function (response) {
       var execTime = Date.now() - startTime;
       

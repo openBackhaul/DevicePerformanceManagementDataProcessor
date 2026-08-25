@@ -58,7 +58,6 @@ exports.initiatePmDataUpdate = async function (
   xCorrelator,
   traceIndicator,
   customerJourney,
-  appState,
 ) {
   try {
     trace(
@@ -200,6 +199,8 @@ exports.initiatePmDataUpdate = async function (
       );
       
       return {
+        status: "success",
+        message: "PM data is already up to date",
         "already-up-to-date-mount-names": alreadyUpToDateMountNames,
       };
     }
@@ -293,14 +294,6 @@ exports.initiatePmDataUpdate = async function (
 
     trace(`Completed processing ${inputMountNames.length} mount(s)`);
     trace("PM data update initiated successfully");
-
-    // Update the last successful update time
-    if (appState) {
-      appState.lastSuccessfulCompleteControlConstructUpdateTime = Date.now();
-      trace(
-        `Updated lastSuccessfulCompleteControlConstructUpdateTime to ${new Date().toISOString()}`,
-      );
-    }
 
     // Esito positivo
     const successResponse = {
