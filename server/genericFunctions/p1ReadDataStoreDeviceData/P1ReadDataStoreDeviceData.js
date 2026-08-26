@@ -1,8 +1,8 @@
 const ERRORS = require('./ErrorsEnum');
 
-const ElasticsearchServiceModule = require("onf-core-model-ap/applicationPattern/services/ElasticsearchService");
-
 const { Client } = require("@elastic/elasticsearch");
+
+const DEFAULT_DATA_STORE_INDEX = 'data-store';
 
 /**
  * p1ReadDataStoreDeviceData
@@ -13,16 +13,6 @@ const { Client } = require("@elastic/elasticsearch");
  * {
  *   "data-store-es-client": { url: "http://localhost:9200", ... },
  *   "mount-name": "100250001"
- * }
- *
- * Success output:
- * {
- *   "device-pm-data": [
- *     {
- *       "batch-timestamp": "...",
- *       "result-cc": { ... }
- *     }
- *   ]
  * }
  */
 async function p1ReadDataStoreDeviceData(input) {
@@ -35,29 +25,15 @@ async function p1ReadDataStoreDeviceData(input) {
     const dataStoreEsClient = input["data-store-es-client"];
     const mountName = input["mount-name"];
 
-    // const clientEs =
-    //   await ElasticsearchServiceModule.elasticsearchService.getClient(false, dataStoreEsClient['uuid']);
-
-    const client = new Client({
-      'node': dataStoreEsClient['url'],
-      'auth': {
-        'apiKey': {
-          'apiKey': dataStoreEsClient['api-key']
-        }
-      },
-      'requestTimeout': 60000
-    })
-    await client.info();
-
-    const devicePmData = await retrieveDevicePmDataFromDs(client, dataStoreEsClient, mountName);
+    let devicePmData = await retrieveDevicePmDataFromDs(dataStoreEsClient, mountName);
 
     if (typeof devicePmData === "string") { // Error occurred
       return devicePmData;
     }
 
-    if (!Array.isArray(devicePmData) || devicePmData.length === 0) {
-      return ERRORS.MOUNTNAME_NOT_FOUND;
-    }
+    // if (!Array.isArray(devicePmData) || devicePmData.length === 0) {  // To be check
+    //   return ERRORS.MOUNTNAME_NOT_FOUND;
+    // }
 
     return {
       "device-pm-data": devicePmData
@@ -107,29 +83,79 @@ function isValidUrl(url) {
   }
 }
 
-async function retrieveDevicePmDataFromDs(client, dataStore, mountName) {
-  try {
-    const resourcePath = `/data-store/device=${encodeURIComponent(dataStore['mountName'])}/result-data`;
-                       // /data-store/device={/read-data-store-device-data/mount-name}/result-data]
-    let result = await client.get({
-      'index': dataStore['index-alias'],
-      'id': mountName
-    });
+async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
+  const elasticsearchClient = dataStoreConfig.client;
+  const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
+  const documentId = `device=${encodeURIComponent(mountName)}/result-data`;
 
-
-    /**
-     * This implementation supports two possible client styles:
-     *
-     * 1. Custom client:
-     *    dataStoreEsClient.get(url)
-    */
-    // }
-
-    return result.body._source;
-  } catch (error) {
-    return ERRORS.ELK_READ_ERROR;
+  let client;
+  if (elasticsearchClient != undefined) { // For testing purpose
+    client = elasticsearchClient;
+  } else {
+    try {
+      client = new Client({
+        'node': dataStoreConfig['url'],
+        'auth': {
+          'apiKey': {
+            'apiKey': dataStoreConfig['api-key']
+          }
+        },
+        'requestTimeout': 60000
+      })
+      await client.info(); // Testing Connection
+    } catch (error) {
+      throw error;
+    }
   }
+
+  let response;
+  try {
+    response = await client.get({
+      'index': index,
+      'id': documentId
+    });
+  } catch (error) {
+    if (error.meta.statusCode == 404) {
+      return ERRORS.MOUNTNAME_NOT_FOUND;
+    } else {
+      throw (error);
+    }
+  }
+
+  /*
+   * Elasticsearch client v8 normally returns:
+   *
+   * {
+   *   _index: 'data-store',
+   *   _id: 'device=100250001/processing-data',
+   *   _source: {...}
+   * }
+   *
+   * Some wrapped clients or older versions return:
+   *
+   * {
+   *   body: {
+   *     _source: {...}
+   *   }
+   * }
+   */
+  const responseBody = response && response.body ? response.body : response;
+
+  if (!responseBody || typeof responseBody !== 'object') {
+    throw new Error('Invalid Elasticsearch response');
+  }
+
+  const source = responseBody._source;
+
+  if (!source || typeof source !== 'object') {
+    throw new Error('Processing data not available');
+  }
+
+  return source;
 }
+
+module.exports = p1ReadDataStoreDeviceData;
+
 
 // function normalizeDsResponse(response) {
 //   if (Array.isArray(response)) {
@@ -168,5 +194,3 @@ async function retrieveDevicePmDataFromDs(client, dataStore, mountName) {
 //         typeof item["result-cc"] === "object"
 //     );
 // }
-
-module.exports = p1ReadDataStoreDeviceData;
