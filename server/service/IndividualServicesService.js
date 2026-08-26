@@ -1,5 +1,9 @@
 'use strict';
 
+var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
+var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
+var { getParamFromFunction } = require('../utils/functionTree');
+
 
 /**
  * Initiates process of embedding a new release
@@ -12,9 +16,45 @@
  * customerJourney String Holds information supporting customer’s journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.bequeathYourDataAndDie = function(body,user,originator,xCorrelator,traceIndicator,customerJourney) {
-  return new Promise(function(resolve, reject) {
+exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  return new Promise(function (resolve, reject) {
     resolve();
   });
 }
 
+exports.documentPmDataProcessing = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    const ownFunctionResult = await p1LoadParameters.run({
+      functionName: 'documentPmDataProcessing'
+    });
+
+    const functionNameToDocument = getParamFromFunction(
+      ownFunctionResult.parameters,
+      'documentPmDataProcessing',
+      'nameOfToBeDocumentedFunction'
+    );
+
+    if (!functionNameToDocument) {
+      throw {
+        code: 500,
+        message: 'Missing nameOfToBeDocumentedFunction in documentPmDataProcessing configuration'
+      };
+    }
+
+    const documentedFunctionResult = await p1LoadParameters.run({
+      functionName: functionNameToDocument,
+      configFile: ownFunctionResult.configFile
+    });
+
+    const documentation = await p1DocumentFunction({
+      "parameters-of-to-be-documented-function": documentedFunctionResult.parameters
+    });
+
+    return documentation;
+  } catch (error) {
+    throw {
+      code: 500,
+      message: error.message || 'Failed to create PM data processing documentation'
+    };
+  }
+};
