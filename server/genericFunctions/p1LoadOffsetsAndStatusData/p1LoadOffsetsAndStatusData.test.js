@@ -185,7 +185,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     });
   });
 
-  test('throws dataStoreUrl not provided when client configuration is missing', async () => {
+  test('Return error dataStoreUrl not provided when client configuration is missing', async () => {
     const result = await p1LoadOffsetsAndStatusData({
       'mount-name': '100250001'
     });
@@ -193,7 +193,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     expect(elasticsearchClient.get).not.toHaveBeenCalled();
   });
 
-  test('throws dataStoreUrl not provided when URL is missing', async () => {
+  test('Return error dataStoreUrl not provided when URL is missing', async () => {
     delete validInput['data-store-es-client'].url;
 
     const result = await p1LoadOffsetsAndStatusData(validInput);
@@ -207,7 +207,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     [123],
     [{}]
   ])(
-    'throws dataStoreUrl invalid for invalid URL value %p',
+    'Return error dataStoreUrl invalid for invalid URL value %p',
     async invalidUrl => {
       validInput['data-store-es-client'].url = invalidUrl;
 
@@ -217,7 +217,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     }
   );
 
-  test('throws mountName not provided when mount-name is missing', async () => {
+  test('Return error mountName not provided when mount-name is missing', async () => {
     delete validInput['mount-name'];
 
     const result = await p1LoadOffsetsAndStatusData(validInput);
@@ -225,7 +225,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     expect(elasticsearchClient.get).not.toHaveBeenCalled();
   });
 
-  test('throws mountName not provided when mount-name is empty', async () => {
+  test('Return error mountName not provided when mount-name is empty', async () => {
     validInput['mount-name'] = '';
 
     const result = await p1LoadOffsetsAndStatusData(validInput);
@@ -239,7 +239,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     [{}],
     [[]]
   ])(
-    'throws mountName invalid for invalid mount-name %p',
+    'Return error mountName invalid for invalid mount-name %p',
     async invalidMountName => {
       validInput['mount-name'] = invalidMountName;
 
@@ -249,7 +249,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     }
   );
 
-  test('throws ElasticSearch read error for a connection error', async () => {
+  test('Return error ElasticSearch read error for a connection error', async () => {
     const connectionError = new Error('connect ECONNREFUSED');
 
     connectionError.name = 'ConnectionError';
@@ -262,21 +262,21 @@ describe('p1LoadOffsetsAndStatusData', () => {
     expect(result).toBe(ERRORS.ELK_READ_ERROR);
   });
 
-  test('throws ElasticSearch read error when client.get is unavailable', async () => {
+  test('Return error ElasticSearch read error when client.get is unavailable', async () => {
     validInput['data-store-es-client'].client = {};
 
     const result = await p1LoadOffsetsAndStatusData(validInput);
     expect(result).toBe(ERRORS.ELK_READ_ERROR);
   });
 
-  test('throws general processing error for an invalid Elasticsearch response', async () => {
+  test('Return error general processing error for an invalid Elasticsearch response', async () => {
     elasticsearchClient.get.mockResolvedValue(null);
 
     const result = await p1LoadOffsetsAndStatusData(validInput);
     expect(result).toBe(ERRORS.GENERAL_ERROR);
   });
 
-  test('throws general processing error when _source is missing', async () => {
+  test('Return error general processing error when _source is missing', async () => {
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
       '_id': 'device=100250001/processing-data',
