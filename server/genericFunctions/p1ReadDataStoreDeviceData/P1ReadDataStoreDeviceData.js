@@ -31,12 +31,14 @@ async function p1ReadDataStoreDeviceData(input) {
       return devicePmData;
     }
 
-    // if (!Array.isArray(devicePmData) || devicePmData.length === 0) {  // To be check
-    //   return ERRORS.MOUNTNAME_NOT_FOUND;
-    // }
+    let result = normalizeDsResponse(devicePmData);
+
+    if (!Array.isArray(result) || result.length === 0) {
+      return ERRORS.MOUNTNAME_NOT_FOUND;
+    }
 
     return {
-      "device-pm-data": devicePmData
+      "device-pm-data": result
     };
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
@@ -115,7 +117,9 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
       'id': documentId
     });
   } catch (error) {
-    if (error.meta.statusCode == 404) {
+    if (error?.message == "connection failed") {
+      return ERRORS.ELK_READ_ERROR;
+    } else if (error?.meta?.statusCode == 404) {
       return ERRORS.MOUNTNAME_NOT_FOUND;
     } else {
       throw (error);
@@ -157,40 +161,18 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
 module.exports = p1ReadDataStoreDeviceData;
 
 
-// function normalizeDsResponse(response) {
-//   if (Array.isArray(response)) {
-//     return response;
-//   }
+function normalizeDsResponse(response) {
+  if (Array.isArray(response)) {
+    return response;
+  }
 
-//   if (response && Array.isArray(response.data)) {
-//     return response.data;
-//   }
+  if (response && Array.isArray(response.data)) {
+    return response.data;
+  }
 
-//   if (response && Array.isArray(response["device-pm-data"])) {
-//     return response["device-pm-data"];
-//   }
+  if (response && Array.isArray(response["device-pm-data"])) {
+    return response["device-pm-data"];
+  }
 
-//   return [];
-// }
-
-// function normalizeEsSearchResponse(response) {
-//   const hits = response?.hits?.hits;
-
-//   if (!Array.isArray(hits)) {
-//     return [];
-//   }
-
-//   return hits
-//     .map(hit => hit._source)
-//     .filter(item => item)
-//     .map(item => ({
-//       "batch-timestamp": item["batch-timestamp"],
-//       "result-cc": item["result-cc"]
-//     }))
-//     .filter(
-//       item =>
-//         typeof item["batch-timestamp"] === "string" &&
-//         item["result-cc"] &&
-//         typeof item["result-cc"] === "object"
-//     );
-// }
+  return [];
+}

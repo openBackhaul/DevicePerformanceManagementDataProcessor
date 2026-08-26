@@ -6,6 +6,7 @@ const p1ReadDataStoreDeviceData = require('./P1ReadDataStoreDeviceData');
 describe("p1ReadDataStoreDeviceData", () => {
 
   let elasticsearchClient;
+  let elasticsearchClientWrong;
   let inputMock;
 
   const input = {
@@ -23,6 +24,10 @@ describe("p1ReadDataStoreDeviceData", () => {
   beforeEach(() => {
     elasticsearchClient = {
       get: jest.fn()
+    };
+
+    elasticsearchClientWrong = {
+      get: jest.fn().mockRejectedValueOnce(new Error("connection failed"))
     };
 
     inputMock = {
@@ -51,23 +56,32 @@ describe("p1ReadDataStoreDeviceData", () => {
       '_index': 'data-store',
       '_id': 'device=100250001/processing-data',
       'found': true,
-      '_source': {
-        "batch-timestamp": "2026-07-07T10:00:00.000Z",
-        "result-cc": {
-          "control-construct": [
-            {
-              "uuid": "air-interface-1",
-              "historical-performance-data-list": []
+      '_source': 
+        [
+          {
+            "batch-timestamp": "2026-07-07T10:00:00.000Z",
+            "result-cc": {
+              "control-construct": [
+                { "uuid": "air-interface-1", "historical-performance-data-list": [] }
+              ]
             }
-          ]
-        }
-      }
+          },
+          {
+            "batch-timestamp": "2026-07-07T10:30:00.000Z",
+            "result-cc": {
+              "control-construct": [
+                { "uuid": "air-interface-1", "historical-performance-data-list": [] }
+              ]
+            }
+          }
+        ]
+      
     });
 
     const result = await p1ReadDataStoreDeviceData(inputMock);
 
     expect(result).toBeDefined();
-    expect(result["device-pm-data"]).toHaveLength(1);
+    expect(result["device-pm-data"]).toHaveLength(2);
     expect(result["device-pm-data"][0]["batch-timestamp"]).toBe(
       "2026-07-07T10:00:00.000Z"
     );
@@ -120,10 +134,17 @@ describe("p1ReadDataStoreDeviceData", () => {
   });
 
   test("should return mountName not found in DataStore", async () => {
+    elasticsearchClient.get.mockResolvedValue({
+      '_index': 'data-store',
+      '_id': 'device=100250001/processing-data',
+      'found': false,
+      '_source': []
+    });
+
     const input = {
       "data-store-es-client": {
         "url": "http://localhost:9200",
-        get: async () => []
+        "client": elasticsearchClient
       },
       "mount-name": "unknown-device"
     };
@@ -136,9 +157,7 @@ describe("p1ReadDataStoreDeviceData", () => {
     const input = {
       "data-store-es-client": {
         "url": "http://localhost:9200",
-        get: async () => {
-          throw new Error("connection failed");
-        }
+        "client": elasticsearchClientWrong
       },
       "mount-name": "100250001"
     };
