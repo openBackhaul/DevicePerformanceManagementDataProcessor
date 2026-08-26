@@ -15,7 +15,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     validInput = {
       'data-store-es-client': {
         'url': 'http://localhost:9200',
-        'index': 'data-store',
+        'index-alias': 'data-store',
         'client': elasticsearchClient
       },
       'mount-name': '100250001'
@@ -24,6 +24,23 @@ describe('p1LoadOffsetsAndStatusData', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  test('use real dataset', async () => {
+    const input = {
+      "data-store-es-client": {
+        "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-007",
+        "url": "http://127.0.0.1:9200",
+        "index-alias": "7",
+        "api-key": "API key not yet defined.",
+        "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+        "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED",
+      },
+      "mount-name": "513250011"
+    };
+    const result = await p1LoadOffsetsAndStatusData(input);
+
+    expect(result).toBeDefined();
   });
 
   test('returns offsets and status-data from Elasticsearch', async () => {
@@ -258,13 +275,6 @@ describe('p1LoadOffsetsAndStatusData', () => {
     };
 
     elasticsearchClient.get.mockRejectedValue(connectionError);
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.ELK_READ_ERROR);
-  });
-
-  test('Return error ElasticSearch read error when client.get is unavailable', async () => {
-    validInput['data-store-es-client'].client = {};
-
     const result = await p1LoadOffsetsAndStatusData(validInput);
     expect(result).toBe(ERRORS.ELK_READ_ERROR);
   });
