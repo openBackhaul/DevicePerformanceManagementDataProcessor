@@ -101,5 +101,25 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate (req, res, n
       else {
         utils.writeJson(res, error, 500, headers);
       }
+    }
+};
+        
+module.exports.documentPmDataProcessing = function documentPmDataProcessing(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  IndividualServices.documentPmDataProcessing(body, user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(function (response) {
+      if (typeof response === 'string') {
+        res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end(response);
+      } else {
+        utils.writeJson(res, response);
+      }
+    })
+    .catch(function (response) {
+      if (typeof response === 'string') {
+        res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end(response);
+      } else {
+        utils.writeJson(res, response);
+      }
     });
 };

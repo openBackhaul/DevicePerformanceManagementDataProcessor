@@ -10,18 +10,17 @@ const {
   ERRORS,
 } = require("./individualServices/initiatePmDataUpdate/util.js");
 
-var p1LoadParameters = require("../genericFunctions/p1LoadParameters/P1LoadParameters");
-const {
-  getParamFromFunction,
-  findFunctionNode,
-} = require("../utils/functionTree");
-
 // Trace function - enabled via ENABLE_TRACES environment variable
 function trace(message) {
   if (process.env.ENABLE_TRACES === 'true') {
     console.log(message);
   }
 }
+
+var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
+var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
+var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
+
 
 /**
  * Initiates process of embedding a new release
@@ -34,14 +33,7 @@ function trace(message) {
  * customerJourney String Holds information supporting customer's journey to which the execution applies
  * no response value expected for this operation
  **/
-exports.bequeathYourDataAndDie = function (
-  body,
-  user,
-  originator,
-  xCorrelator,
-  traceIndicator,
-  customerJourney,
-) {
+exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   return new Promise(function (resolve, reject) {
     resolve();
   });
@@ -337,5 +329,42 @@ exports.initiatePmDataUpdate = async function (
 
     // Rilancia l'errore verso chi ha chiamato la funzione
     throw { error: error.message || ERRORS.MWDI_CONNECTION_FAILED };
+  }
+};
+
+exports.documentPmDataProcessing = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    const ownFunctionResult = await p1LoadParameters.run({
+      functionName: 'documentPmDataProcessing'
+    });
+
+    const functionNameToDocument = getParamFromFunction(
+      ownFunctionResult.parameters,
+      'documentPmDataProcessing',
+      'nameOfToBeDocumentedFunction'
+    );
+
+    if (!functionNameToDocument) {
+      throw {
+        code: 500,
+        message: 'Missing nameOfToBeDocumentedFunction in documentPmDataProcessing configuration'
+      };
+    }
+
+    const documentedFunctionResult = await p1LoadParameters.run({
+      functionName: functionNameToDocument,
+      configFile: ownFunctionResult.configFile
+    });
+
+    const documentation = await p1DocumentFunction({
+      "parameters-of-to-be-documented-function": documentedFunctionResult.parameters
+    });
+
+    return documentation;
+  } catch (error) {
+    throw {
+      code: 500,
+      message: error.message || 'Failed to create PM data processing documentation'
+    };
   }
 };
