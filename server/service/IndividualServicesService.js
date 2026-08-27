@@ -256,7 +256,8 @@ exports.initiatePmDataUpdate = async function (
       }
       
       // Costruisci l'URL per control-construct
-      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      //const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
       
       try {
         // Esegui GET request
