@@ -1,0 +1,179 @@
+#
+# Spec sources:
+# - spec/Functions/p1ReadDataStoreDeviceData/1.0.0/interface.yaml
+# - spec/Functions/p1ReadDataStoreDeviceData/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies:
+  - name: "@elastic/elasticsearch"
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okReturnDevicePmDataWhenSourceIsArray"
+    description: "Should return device-pm-data when DataStore _source is an array"
+    inputFixture: "input_source_array.json"
+    expected:
+      type: "success"
+      outputFixture: "output_source_array.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnDevicePmDataWhenSourceContainsDataArray"
+    description: "Should return device-pm-data when DataStore _source.data is an array"
+    inputFixture: "input_source_data_array.json"
+    expected:
+      type: "success"
+      outputFixture: "output_source_data_array.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnDevicePmDataWhenSourceContainsDevicePmDataArray"
+    description: "Should return device-pm-data when DataStore _source.device-pm-data is an array"
+    inputFixture: "input_source_device_pm_data_array.json"
+    expected:
+      type: "success"
+      outputFixture: "output_source_device_pm_data_array.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnDevicePmDataWhenWrappedInBodySource"
+    description: "Should return device-pm-data when Elasticsearch response uses body._source format"
+    inputFixture: "input_body_source_array.json"
+    expected:
+      type: "success"
+      outputFixture: "output_body_source_array.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errGeneralProcessingErrorWhenInputMissing"
+    description: "Should return 'General processing error' when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errDataStoreUrlNotProvidedWhenDataStoreEsClientMissing"
+    description: "Should return 'dataStoreUrl not provided' when data-store-es-client is missing"
+    inputFixture: "input_missing_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl not provided"
+    mocks: []
+
+  - id: "errDataStoreUrlNotProvidedWhenUrlMissing"
+    description: "Should return 'dataStoreUrl not provided' when data-store-es-client.url is missing"
+    inputFixture: "input_missing_data_store_url.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl not provided"
+    mocks: []
+
+  - id: "errDataStoreUrlInvalid"
+    description: "Should return 'dataStoreUrl invalid' when data-store-es-client.url is invalid"
+    inputFixture: "input_invalid_data_store_url.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl invalid"
+    mocks: []
+
+  - id: "errMountNameNotProvided"
+    description: "Should return 'mountName not provided' when mount-name is missing"
+    inputFixture: "input_missing_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not provided"
+    mocks: []
+
+  - id: "errMountNameNotProvidedWhenBlank"
+    description: "Should return 'mountName not provided' when mount-name is blank"
+    inputFixture: "input_blank_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not provided"
+    mocks: []
+
+  - id: "errMountNameInvalid"
+    description: "Should return 'mountName invalid' when mount-name is not a string"
+    inputFixture: "input_invalid_mount_name_type.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName invalid"
+    mocks: []
+
+  # -------------------------
+  # DataStore read outcomes
+  # -------------------------
+
+  - id: "errElasticSearchReadErrorWhenConnectionFails"
+    description: "Should return 'ElasticSearch read error' when Elasticsearch get throws connection failed"
+    inputFixture: "input_connection_failed.json"
+    expected:
+      type: "error"
+      errorEnum: "ElasticSearch read error"
+    mocks: []
+
+  - id: "errMountNameNotFoundInDataStoreWhenDocumentMissing"
+    description: "Should return 'mountName not found in DataStore' when Elasticsearch returns 404"
+    inputFixture: "input_document_not_found.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not found in DataStore"
+    mocks: []
+
+  - id: "errMountNameNotFoundInDataStoreWhenSourceArrayEmpty"
+    description: "Should return 'mountName not found in DataStore' when normalized DataStore result is an empty array"
+    inputFixture: "input_empty_source_array.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not found in DataStore"
+    mocks: []
+
+  - id: "errMountNameNotFoundInDataStoreWhenNormalizedResultEmpty"
+    description: "Should return 'mountName not found in DataStore' when DataStore source does not contain a supported array structure"
+    inputFixture: "input_unsupported_source_shape.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not found in DataStore"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenElasticsearchThrowsUnexpectedError"
+    description: "Should return 'General processing error' when Elasticsearch get throws an unexpected error"
+    inputFixture: "input_unexpected_es_error.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenResponseInvalid"
+    description: "Should return 'General processing error' when Elasticsearch response is invalid"
+    inputFixture: "input_invalid_es_response.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenSourceMissing"
+    description: "Should return 'General processing error' when Elasticsearch response has no _source"
+    inputFixture: "input_missing_source.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []

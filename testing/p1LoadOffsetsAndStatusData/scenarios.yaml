@@ -1,0 +1,155 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p1LoadOffsetsAndStatusData/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p1LoadOffsetsAndStatusData/1.0.0/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/genericFunctions/p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData.js"
+    exportName: ""
+
+processingSteps: []
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okReturnOffsetsAndStatusData"
+    description: "Should return offsets and status-data when processing-data exists in DataStore"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnEmptyArraysWhenDocumentNotFound"
+    description: "Should return empty offsets and status-data arrays when processing-data document does not exist"
+    inputFixture: "input_document_not_found.json"
+    expected:
+      type: "success"
+      outputFixture: "output_document_not_found.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnEmptyOffsetsWhenMissingInSource"
+    description: "Should return empty offsets when offsets is missing in processing-data"
+    inputFixture: "input_missing_offsets_in_source.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_offsets_in_source.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnEmptyStatusDataWhenMissingInSource"
+    description: "Should return empty status-data when status-data is missing in processing-data"
+    inputFixture: "input_missing_status_data_in_source.json"
+    expected:
+      type: "success"
+      outputFixture: "output_missing_status_data_in_source.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  - id: "okReturnEmptyArraysWhenOffsetsAndStatusDataAreNotArrays"
+    description: "Should return empty arrays when offsets and status-data in processing-data are not arrays"
+    inputFixture: "input_invalid_processing_data_arrays.json"
+    expected:
+      type: "success"
+      outputFixture: "output_invalid_processing_data_arrays.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errDataStoreUrlNotProvidedWhenInputMissing"
+    description: "Should return 'dataStoreUrl not provided' when input is missing"
+    inputFixture: "input_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl not provided"
+    mocks: []
+
+  - id: "errDataStoreUrlNotProvidedWhenDataStoreEsClientMissing"
+    description: "Should return 'dataStoreUrl not provided' when data-store-es-client is missing"
+    inputFixture: "input_missing_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl not provided"
+    mocks: []
+
+  - id: "errDataStoreUrlNotProvidedWhenDataStoreUrlMissing"
+    description: "Should return 'dataStoreUrl not provided' when data-store-es-client.url is missing"
+    inputFixture: "input_missing_data_store_url.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl not provided"
+    mocks: []
+
+  - id: "errDataStoreUrlInvalid"
+    description: "Should return 'dataStoreUrl invalid' when data-store-es-client.url is invalid"
+    inputFixture: "input_invalid_data_store_url.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreUrl invalid"
+    mocks: []
+
+  - id: "errMountNameNotProvided"
+    description: "Should return 'mountName not provided' when mount-name is missing"
+    inputFixture: "input_missing_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not provided"
+    mocks: []
+
+  - id: "errMountNameInvalid"
+    description: "Should return 'mountName invalid' when mount-name is blank"
+    inputFixture: "input_invalid_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName invalid"
+    mocks: []
+
+  # -------------------------
+  # Processing step failures
+  # -------------------------
+
+  - id: "errElasticSearchReadErrorWhenClientInvalid"
+    description: "Should return 'ElasticSearch read error' when data-store-es-client.client is invalid"
+    inputFixture: "input_invalid_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "ElasticSearch read error"
+    mocks: []
+
+  - id: "errElasticSearchReadErrorWhenDataStoreReadFails"
+    description: "Should return 'ElasticSearch read error' when Elasticsearch get throws a ResponseError"
+    inputFixture: "input_es_response_error.json"
+    expected:
+      type: "error"
+      errorEnum: "ElasticSearch read error"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenResponseInvalid"
+    description: "Should return 'General processing error' when Elasticsearch response is invalid"
+    inputFixture: "input_invalid_es_response.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []
+
+  - id: "errGeneralProcessingErrorWhenSourceMissing"
+    description: "Should return 'General processing error' when Elasticsearch response has no _source"
+    inputFixture: "input_missing_source.json"
+    expected:
+      type: "error"
+      errorEnum: "General processing error"
+    mocks: []

@@ -1,0 +1,36 @@
+{
+  "data-store-es-client": {
+    "url": "http://localhost:9200",
+    "index": "data-store",
+    "client": {
+      "__mockMethods": {
+        "get": {
+          "type": "return",
+          "isAsync": true,
+          "value": {
+            "_source": {
+              "offsets": {
+                  "function-name": "p2LoadRawCc",
+                  "offset": {
+                    "interface-offsets": 
+                      {
+                        "uuid": "LTP-1",
+                        "most-recent-period-end-time": "2026-06-25T11:45:00.0+00:00",
+                        "most-recent-period-end-time-24": "2026-06-25T00:00:00.0+00:00"
+                      }
+                  }
+                }
+              ,
+              "status-data": {
+                  "function-name": "p2ProcessDevice",
+                  "status": "ok"
+                }
+              
+            }
+          }
+        }
+      }
+    }
+  },
+  "mount-name": "100250001"
+}

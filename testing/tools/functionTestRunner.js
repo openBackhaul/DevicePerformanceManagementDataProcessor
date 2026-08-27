@@ -235,7 +235,7 @@ function createMockMethodFunction(methodName, methodDef, targetObject, fallbackI
         val = cloneValue(methodDef.value);
       }
 
-      val = materializeMockCapableObject(val, true, targetObject.__scenarioDir);
+      val = materializeNestedMockCapableObjects(val, targetObject.__scenarioDir);
       return isAsync ? Promise.resolve(val) : val;
     }
 
@@ -305,6 +305,24 @@ function materializeMockCapableObject(value, fallbackIsAsync = false, scenarioDi
   return result;
 }
 
+function materializeNestedMockCapableObjects(value, scenarioDir = null) {
+  if (Array.isArray(value)) {
+    return value.map((item) => materializeNestedMockCapableObjects(item, scenarioDir));
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const result = materializeMockCapableObject(value, false, scenarioDir);
+
+  for (const key of Object.keys(result)) {
+    result[key] = materializeNestedMockCapableObjects(result[key], scenarioDir);
+  }
+
+  return result;
+}
+
 function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = false }) {
   let callIndex = 0;
   const isAsync = mockDef.isAsync === true || fallbackIsAsync === true;
@@ -315,7 +333,7 @@ function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = fa
 
     if (mockDef.type === "return" || mockDef.type === "returnSequence") {
       let val = resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex);
-      val = materializeMockCapableObject(val, true, scenarioDir);
+      val = materializeNestedMockCapableObjects(val, scenarioDir);
       return isAsync ? Promise.resolve(val) : val;
     }
 
@@ -502,7 +520,10 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
         jest.resetAllMocks();
         jest.resetModules();
 
-        const input = readScenarioInput(s, scenarioDir);
+        const input = materializeNestedMockCapableObjects(
+          readScenarioInput(s, scenarioDir),
+          scenarioDir
+        );
 
         installDependencyMocks(dependencies);
 

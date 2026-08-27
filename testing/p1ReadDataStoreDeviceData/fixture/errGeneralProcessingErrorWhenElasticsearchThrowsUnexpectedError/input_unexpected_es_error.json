@@ -1,0 +1,19 @@
+{
+  "data-store-es-client": {
+    "url": "http://localhost:9200",
+    "index": "data-store",
+    "client": {
+      "__mockMethods": {
+        "get": {
+          "type": "throw",
+          "isAsync": true,
+          "error": {
+            "name": "TypeError",
+            "message": "Unexpected failure"
+          }
+        }
+      }
+    }
+  },
+  "mount-name": "100250001"
+}

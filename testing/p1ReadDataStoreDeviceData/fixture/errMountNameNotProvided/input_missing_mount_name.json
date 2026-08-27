@@ -1,0 +1,7 @@
+{
+  "data-store-es-client": {
+    "url": "http://localhost:9200",
+    "index": "data-store",
+    "client": {}
+  }
+}

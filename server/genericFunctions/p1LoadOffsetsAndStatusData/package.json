@@ -1,0 +1,10 @@
+{
+  "name": "p1-load-offsets-and-status-data",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

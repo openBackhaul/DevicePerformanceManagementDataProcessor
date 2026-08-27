@@ -1,0 +1,25 @@
+{
+  "data-store-es-client": {
+    "url": "http://localhost:9200",
+    "index": "data-store",
+    "client": {
+      "__mockMethods": {
+        "get": {
+          "type": "return",
+          "isAsync": true,
+          "value": {
+            "_source": {
+              "status-data": [
+                {
+                  "function-name": "p2ProcessDevice",
+                  "status": "ok"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "mount-name": "100250001"
+}
