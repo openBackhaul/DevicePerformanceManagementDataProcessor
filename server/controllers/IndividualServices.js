@@ -101,8 +101,8 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate (req, res, n
       else {
         utils.writeJson(res, error, 500, headers);
       }
-    }
-};
+    });
+}
         
 module.exports.documentPmDataProcessing = function documentPmDataProcessing(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   IndividualServices.documentPmDataProcessing(body, user, originator, xCorrelator, traceIndicator, customerJourney)
