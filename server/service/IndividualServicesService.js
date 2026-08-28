@@ -10,13 +10,6 @@ const {
   ERRORS,
 } = require("./individualServices/initiatePmDataUpdate/util.js");
 
-// Trace function - enabled via ENABLE_TRACES environment variable
-function trace(message) {
-  if (process.env.ENABLE_TRACES === 'true') {
-    console.log(message);
-  }
-}
-
 var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
@@ -43,18 +36,9 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
  * Updates PM data for the specified devices.
  */
 
-exports.initiatePmDataUpdate = async function (
-  body,
-  user,
-  originator,
-  xCorrelator,
-  traceIndicator,
-  customerJourney,
-) {
+exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   try {
-    trace(
-      `Received mountsList from initiatePmDataUpdate: ${JSON.stringify(body, null, 2)}`,
-    );
+    logger.debug(body, `Received mountsList from initiatePmDataUpdate:`);
 
     // 1. Validazione
     const validationError = validateInput(body);
@@ -84,9 +68,7 @@ exports.initiatePmDataUpdate = async function (
 
     const responseData = await mwdiResponse.json();
 
-    trace(
-      `MWDI Received response for provideDeviceStatusMetadata : ${JSON.stringify(responseData, null, 2)}`,
-    );
+    logger.error(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
 
     // 5. Validate response
     const responseError = validateMWDIResponse(responseData);
@@ -108,7 +90,7 @@ exports.initiatePmDataUpdate = async function (
       JSON.stringify(inputMountNames) !==
       JSON.stringify(returnedMountNamesMWDI);
 
-    trace("Validation mountNameDiscrepancy: " + mountNameDiscrepancy);
+    logger.info(`Validation mountNameDiscrepancy: ${mountNameDiscrepancy}`);
 
     // Handle error 533: Mount name discrepancy
     if (mountNameDiscrepancy) {
@@ -118,9 +100,7 @@ exports.initiatePmDataUpdate = async function (
         (name) => !returnedSet.has(name),
       );
 
-      logger.error(
-        `Mount name discrepancy detected. Missing mount names: ${JSON.stringify(missingMountNames)}`,
-      );
+      logger.error(missingMountNames, `Mount name discrepancy detected. Missing mount names`);
 
       // Throw error with code 533 and missing mount names
       const error533 = {
@@ -138,9 +118,7 @@ exports.initiatePmDataUpdate = async function (
       inputMountNames,
     );
     if (connectionStatusError) {
-      logger.error(
-        `Unconnected mounts detected: ${JSON.stringify(connectionStatusError.unconnectedMountNames)}`,
-      );
+      logger.error(unconnectedMountNames, `Unconnected mounts detected: `);
 
       // Throw error with code 532 and unconnected mount names
       const error532 = {
@@ -152,21 +130,21 @@ exports.initiatePmDataUpdate = async function (
       throw error532;
     }
 
-    trace("All validations passed");
+    logger.info("All validations passed");
 
     // 9. Check if update is needed (15-minute throttle) - AFTER all validations
     // Per-mount throttle based on last-successful-complete-control-construct-update-time from MWDI
     const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
     const currentTime = Date.now();
-    
+
     // Separate mount names into already-up-to-date and outdated based on MWDI timestamps
     const alreadyUpToDateMountNames = [];
     const outdatedMountNames = [];
-    
+
     for (const metadata of metadataArrayMWDI) {
       const mountName = metadata['mount-name'];
       const lastSuccessfulUpdateTime = metadata['last-successful-complete-control-construct-update-time'];
-      
+
       // If no previous update or timestamp is null/undefined, consider it outdated
       if (!lastSuccessfulUpdateTime) {
         outdatedMountNames.push(mountName);
@@ -183,27 +161,23 @@ exports.initiatePmDataUpdate = async function (
         outdatedMountNames.push(mountName);
       }
     }
-    
+
     // If all mounts are already up-to-date, return early
     if (outdatedMountNames.length === 0 && alreadyUpToDateMountNames.length > 0) {
-      trace(
-        `Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`,
-      );
-      
+      logger.info(`Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`);
+
       return {
         status: "success",
         message: "PM data is already up to date",
         "already-up-to-date-mount-names": alreadyUpToDateMountNames,
       };
     }
-    
+
     // If some mounts are outdated, update the body to only process those
     if (outdatedMountNames.length > 0 && alreadyUpToDateMountNames.length > 0) {
-      trace(
-        `Processing ${outdatedMountNames.length} outdated mount(s), skipping ${alreadyUpToDateMountNames.length} up-to-date mount(s)`,
-      );
+      logger.warn(`Processing ${outdatedMountNames.length} outdated mount(s), skipping ${alreadyUpToDateMountNames.length} up-to-date mount(s)`);
     }
-    
+
     // Update body to only contain outdated mount names for processing
     body['mount-names'] = outdatedMountNames;
 
@@ -211,16 +185,16 @@ exports.initiatePmDataUpdate = async function (
       functionName: "initiatePmDataUpdate",
     });
 
-    trace("Validation passed: " + loaded.parameters.parameter);
+    logger.info(`Validation passed: ${loaded.parameters.parameter}`);
 /*
     let waitTimeForSending = Number(
       loaded.parameters.parameter.find(
         (p) => p["parameter-name"] === "waitTimeForSending",
       )?.value,
     );
-*/let waitTimeForSending = 0
-  
-  
+*/
+    let waitTimeForSending = 0
+
     waitTimeForSending = Number(
       getParamFromFunction(
         loaded.parameters,
@@ -230,63 +204,62 @@ exports.initiatePmDataUpdate = async function (
       ),
     );
 
-    trace(`Wait time for sending requests: ${waitTimeForSending}ms`);
+    logger.debug(`Wait time for sending requests: ${waitTimeForSending}ms`);
 
     // Estrai il base URL da mwdiUrl (rimuovi il path esistente)
     const baseMwdiUrl = mwdiUrl.replace('/v1/provide-device-status-metadata', '');
 
     // Array per raccogliere i risultati del ciclo live control-construct
-    const liveControlConstructResults = [];
+    // const liveControlConstructResults = []; // is not used!
 
     // Ciclo attraverso tutti i mount names per recuperare i live control-construct
     for (const mountName of outdatedMountNames) {
-      trace(`Processing mount: ${mountName}`);
-      
+      logger.debug(`Processing mount: ${mountName}`);
+
       // Attendi waitTimeForSending ms prima di ogni richiesta
       if (waitTimeForSending > 0) {
         await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
       }
-      
+
       // Costruisci l'URL per control-construct
-      //const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
       const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
-      
+
       try {
         // Esegui GET request
         const response = await fetch(controlConstructUrl, {
           method: "GET",
           headers: requestHeaders
         });
-        
+
         if (response.ok) {
           const data = await response.json();
-          trace(`✓ Successfully retrieved control-construct for ${mountName}`);
-          liveControlConstructResults.push({
-            mountName: mountName,
-            status: "success",
-            data: data
-          });
+          logger.info(`Successfully retrieved control-construct for ${mountName}`);
+          // liveControlConstructResults.push({
+          //   mountName: mountName,
+          //   status: "success",
+          //   data: data
+          // });
         } else {
-          trace(`✗ Failed to retrieve control-construct for ${mountName}: ${response.status}`);
-          liveControlConstructResults.push({
-            mountName: mountName,
-            status: "failed",
-            error: `HTTP ${response.status}`
-          });
+          logger.warn(`Failed to retrieve control-construct for ${mountName}: ${response.status}`);
+          // liveControlConstructResults.push({
+          //   mountName: mountName,
+          //   status: "failed",
+          //   error: `HTTP ${response.status}`
+          // });
         }
-        
       } catch (error) {
-        trace(`✗ Error retrieving control-construct for ${mountName}: ${error.message}`);
-        liveControlConstructResults.push({
-          mountName: mountName,
-          status: "error",
-          error: error.message
-        });
+        logger.error(`Error retrieving control-construct for ${mountName}: ${error.message}`);
+        // liveControlConstructResults.push({
+        //   mountName: mountName,
+        //   status: "error",
+        //   error: error.message
+        // });
       }
     }
 
-    trace(`Completed processing ${inputMountNames.length} mount(s)`);
-    trace("PM data update initiated successfully");
+    logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
+    logger.info("PM data update initiated successfully");
 
     // Esito positivo
     const successResponse = {
@@ -296,12 +269,12 @@ exports.initiatePmDataUpdate = async function (
       mwdiUrl,
       mwdiResponse: responseData,
     };
-    
+
     // If there were already up-to-date mounts, include them in response
     if (alreadyUpToDateMountNames.length > 0) {
       successResponse['already-up-to-date-mount-names'] = alreadyUpToDateMountNames;
     }
-    
+
     return successResponse;
   } catch (error) {
     // CATCH GLOBALE: Gestisce QUALSIASI errore verificatosi nel blocco 'try'
