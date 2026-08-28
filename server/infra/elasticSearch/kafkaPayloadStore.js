@@ -91,6 +91,35 @@ async function markKafkaPayloadForCleanup(request) {
   );
 }
 
+async function markKafkaPayloadAsOversizedEvidence(request) {
+  const { dataStoreEsClient, payloadRefId, failureReason, logger } = request;
+
+  if (!dataStoreEsClient || !payloadRefId) {
+    return;
+  }
+
+  const client = await getDataStoreClient(dataStoreEsClient, logger);
+  await withRetry(
+    async () => client.update({
+      index: dataStoreEsClient["index-alias"],
+      id: payloadRefId,
+      body: {
+        doc: {
+          deliveryState: "oversized-evidence",
+          failureReason: String(failureReason || "KAFKA_MESSAGE_SIZE_TOO_LARGE"),
+          failedAt: new Date().toJSON()
+        }
+      },
+      refresh: false
+    }),
+    {
+      label: `kafkaPayloadStore.markOversized:${payloadRefId}`,
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+}
+
 async function loadKafkaPayload(request) {
   const { dataStoreEsClient, payloadRefId, logger } = request;
 
@@ -147,5 +176,6 @@ module.exports = {
   storeKafkaPayload,
   loadKafkaPayload,
   markKafkaPayloadForCleanup,
+  markKafkaPayloadAsOversizedEvidence,
   deleteKafkaPayload
 };

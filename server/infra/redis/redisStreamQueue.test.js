@@ -1,5 +1,10 @@
 const mockRedis = {
-  eval: jest.fn()
+  eval: jest.fn(),
+  xAdd: jest.fn(),
+  xAck: jest.fn(),
+  xDel: jest.fn(),
+  xLen: jest.fn(),
+  unlink: jest.fn()
 };
 
 jest.mock("./redisClient", () => ({
@@ -49,6 +54,89 @@ describe("redisStreamQueue batched device enqueue", () => {
     );
 
     expect(result).toEqual({ enqueued: 0, skipped: 0, failed: 2 });
+  });
+});
+
+describe("Kafka outbound dead-letter metadata", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockRedis.xAdd.mockResolvedValue("2-0");
+    mockRedis.xAck.mockResolvedValue(1);
+    mockRedis.xDel.mockResolvedValue(1);
+    mockRedis.xLen.mockResolvedValue(4);
+    mockRedis.unlink.mockResolvedValue(1);
+  });
+
+  test("moves only compact failure metadata and never copies the payload", async () => {
+    await queue.moveKafkaOutboundToDeadLetter({
+      id: "1-0",
+      message: {
+        mountName: "device-1",
+        targetConsumer: "NETEXPLORER",
+        payloadBytes: "1856279",
+        payload: "very-large-payload"
+      }
+    }, {
+      reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
+      message: "Kafka message exceeds permitted size"
+    }, {});
+
+    expect(mockRedis.xAdd).toHaveBeenCalledWith(
+      "dpmdp:stream:kafka-outbound-dead-letter",
+      "*",
+      expect.objectContaining({
+        originalMessageId: "1-0",
+        mountName: "device-1",
+        targetConsumer: "NETEXPLORER",
+        payloadBytes: "1856279",
+        payloadSizeMb: "1.770",
+        failureReason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
+        failureMessage: "Kafka message exceeds permitted size"
+      })
+    );
+    expect(mockRedis.xAdd.mock.calls[0][2]).not.toHaveProperty("payload");
+    expect(mockRedis.xAck).toHaveBeenCalled();
+    expect(mockRedis.xDel).toHaveBeenCalled();
+  });
+
+  test("clears the dead-letter stream and returns its previous entry count", async () => {
+    await expect(queue.clearKafkaOutboundDeadLetter({})).resolves.toBe(4);
+    expect(mockRedis.unlink).toHaveBeenCalledWith(
+      "dpmdp:stream:kafka-outbound-dead-letter"
+    );
+  });
+
+  test("records compact successful-delivery metadata with payload size in MB", async () => {
+    await queue.recordKafkaOutboundSuccess([{
+      id: "3-0",
+      message: {
+        mountName: "device-2",
+        targetConsumer: "APT",
+        payloadBytes: "2097152",
+        payload: "must-not-be-copied"
+      }
+    }], {});
+
+    expect(mockRedis.xAdd).toHaveBeenCalledWith(
+      "dpmdp:stream:kafka-outbound-success",
+      "*",
+      expect.objectContaining({
+        originalMessageId: "3-0",
+        mountName: "device-2",
+        targetConsumer: "APT",
+        payloadBytes: "2097152",
+        payloadSizeMb: "2.000",
+        deliveredAt: expect.any(String)
+      })
+    );
+    expect(mockRedis.xAdd.mock.calls[0][2]).not.toHaveProperty("payload");
+  });
+
+  test("clears the success stream and returns its previous entry count", async () => {
+    await expect(queue.clearKafkaOutboundSuccess({})).resolves.toBe(4);
+    expect(mockRedis.unlink).toHaveBeenCalledWith(
+      "dpmdp:stream:kafka-outbound-success"
+    );
   });
 });
 

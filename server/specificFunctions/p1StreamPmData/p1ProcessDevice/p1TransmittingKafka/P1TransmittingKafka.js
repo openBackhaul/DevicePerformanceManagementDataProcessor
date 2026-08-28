@@ -353,34 +353,6 @@ function getKafkaMessageBytes(message) {
   return keyBytes + valueBytes;
 }
 
-function getMaxSingleKafkaMessageBytes() {
-  return Number(global.KAFKA_MAX_SINGLE_MESSAGE_BYTES || 900000);
-}
-
-function validateKafkaMessageSize(message, context) {
-  const messageBytes = getKafkaMessageBytes(message);
-  const maxBytes = getMaxSingleKafkaMessageBytes();
-
-  if (messageBytes <= maxBytes) {
-    return;
-  }
-
-  const error = new Error(
-    `Kafka message too large. messageBytes=${messageBytes}, maxBytes=${maxBytes}`
-  );
-
-  error.stage = "p1TransmittingKafka";
-  error.reason = "KAFKA_MESSAGE_SIZE_TOO_LARGE";
-  error.retryable = false;
-  error.messageBytes = messageBytes;
-  error.maxBytes = maxBytes;
-  error.topic = context.topic;
-  error.targetConsumer = context.targetConsumer;
-  error.mountName = context.mountName;
-
-  throw error;
-}
-
 async function run(request) {
   let isTransmitting = false;
 
@@ -405,12 +377,6 @@ async function run(request) {
         key: envelope.mountName || envelope.messageId,
         value: JSON.stringify(envelope)
       };
-
-      validateKafkaMessageSize(kafkaMessage, {
-        topic: kafkaConnection.topicName,
-        targetConsumer: envelope.targetConsumer,
-        mountName: envelope.mountName
-      });
 
       /*
        * Group by topic + clientId + brokerList.

@@ -151,6 +151,15 @@ async function run() {
     global.KAFKA_MAX_SINGLE_MESSAGE_BYTES = Number(
       serviceConfig.kafkaMaxSingleMessageBytes || 900000
     );
+    global.KAFKA_LINGER_MS = Number(serviceConfig.kafkaLingerMs ?? 50);
+    global.KAFKA_BATCH_SIZE = Number(serviceConfig.kafkaBatchSize || 1048576);
+    global.KAFKA_BATCH_NUM_MESSAGES = Number(
+      serviceConfig.kafkaBatchNumMessages || 500
+    );
+    global.KAFKA_COMPRESSION_TYPE = serviceConfig.kafkaCompressionType || "lz4";
+    global.KAFKA_ACKS = serviceConfig.kafkaAcks || "all";
+    global.KAFKA_ENABLE_IDEMPOTENCE =
+      String(serviceConfig.kafkaEnableIdempotence ?? true);
 
     const instanceId = `${os.hostname()}-${process.pid}-${crypto.randomUUID()}`;
 

@@ -15,6 +15,7 @@ const RETRY_STATE_HASH = "dpmdp:hash:retry-state";
 const KAFKA_OUTBOUND_STREAM = "dpmdp:stream:kafka-outbound";
 const KAFKA_OUTBOUND_GROUP = "dpmdp:group:kafka-outbound";
 const KAFKA_OUTBOUND_DEAD_LETTER_STREAM = "dpmdp:stream:kafka-outbound-dead-letter";
+const KAFKA_OUTBOUND_SUCCESS_STREAM = "dpmdp:stream:kafka-outbound-success";
 const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
 
 const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
@@ -813,21 +814,20 @@ async function deleteKafkaOutboundMessage(messageId, loggers) {
 async function moveKafkaOutboundToDeadLetter(redisMessage, error, loggers) {
   const redis = await getRedisClient(logger);
   const fields = redisMessage.message || {};
+  const payloadBytes = Number(fields.payloadBytes || 0);
+  const payloadSizeMb = Number.isFinite(payloadBytes)
+    ? (payloadBytes / (1024 * 1024)).toFixed(3)
+    : "0.000";
 
-  // Persist first; only acknowledge/delete the active entry after the dead
-  // letter copy succeeds. This prevents loss of an undeliverable large result.
+  // Redis holds only compact operational failure metadata. The complete
+  // oversized payload is retained separately in Elasticsearch as evidence.
+  // Persist metadata first; only then ACK/delete the active queue entry.
   await redis.xAdd(KAFKA_OUTBOUND_DEAD_LETTER_STREAM, "*", {
     originalMessageId: toRedisValue(redisMessage.id),
     targetConsumer: toRedisValue(fields.targetConsumer),
-    messageType: toRedisValue(fields.messageType),
     mountName: toRedisValue(fields.mountName),
-    correlationId: toRedisValue(fields.correlationId),
-    payloadVersion: toRedisValue(fields.payloadVersion),
-    eventTime: toRedisValue(fields.eventTime),
-    payloadStorage: toRedisValue(fields.payloadStorage),
-    payload: toRedisValue(fields.payload),
-    payloadRefId: toRedisValue(fields.payloadRefId),
     payloadBytes: toRedisValue(fields.payloadBytes),
+    payloadSizeMb: toRedisValue(payloadSizeMb),
     failureReason: toRedisValue(error?.reason || error?.type || "NON_RETRYABLE"),
     failureMessage: toRedisValue(error?.message || error),
     failedAt: new Date().toISOString()
@@ -835,6 +835,60 @@ async function moveKafkaOutboundToDeadLetter(redisMessage, error, loggers) {
 
   await redis.xAck(KAFKA_OUTBOUND_STREAM, KAFKA_OUTBOUND_GROUP, redisMessage.id);
   await redis.xDel(KAFKA_OUTBOUND_STREAM, redisMessage.id);
+}
+
+async function recordKafkaOutboundSuccess(messages, loggers) {
+  const redis = await getRedisClient(logger);
+  const deliveredAt = new Date().toISOString();
+
+  await Promise.all((messages || []).map((redisMessage) => {
+    const fields = redisMessage.message || {};
+    const payloadBytes = Number(fields.payloadBytes || 0);
+    const payloadSizeMb = Number.isFinite(payloadBytes)
+      ? (payloadBytes / (1024 * 1024)).toFixed(3)
+      : "0.000";
+
+    return redis.xAdd(KAFKA_OUTBOUND_SUCCESS_STREAM, "*", {
+      originalMessageId: toRedisValue(redisMessage.id),
+      targetConsumer: toRedisValue(fields.targetConsumer),
+      mountName: toRedisValue(fields.mountName),
+      payloadBytes: toRedisValue(fields.payloadBytes),
+      payloadSizeMb: toRedisValue(payloadSizeMb),
+      deliveredAt
+    });
+  }));
+}
+
+async function clearKafkaOutboundSuccess(loggers) {
+  const redis = await getRedisClient(logger);
+  const entryCount = Number(await redis.xLen(KAFKA_OUTBOUND_SUCCESS_STREAM));
+
+  if (entryCount > 0) {
+    await redis.unlink(KAFKA_OUTBOUND_SUCCESS_STREAM);
+  }
+
+  logger?.info?.(
+    { entryCount },
+    "Cleared Kafka outbound success stream during maintenance"
+  );
+
+  return entryCount;
+}
+
+async function clearKafkaOutboundDeadLetter(loggers) {
+  const redis = await getRedisClient(logger);
+  const entryCount = Number(await redis.xLen(KAFKA_OUTBOUND_DEAD_LETTER_STREAM));
+
+  if (entryCount > 0) {
+    await redis.unlink(KAFKA_OUTBOUND_DEAD_LETTER_STREAM);
+  }
+
+  logger?.info?.(
+    { entryCount },
+    "Cleared Kafka outbound dead-letter stream during maintenance"
+  );
+
+  return entryCount;
 }
 
 module.exports = {
@@ -845,6 +899,7 @@ module.exports = {
     KAFKA_OUTBOUND_STREAM,
     KAFKA_OUTBOUND_GROUP,
     KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
+    KAFKA_OUTBOUND_SUCCESS_STREAM,
     KAFKA_DAILY_METRICS_HASH,
     RETRY_PENDING_SET,
     RETRY_COUNT_HASH,
@@ -869,6 +924,9 @@ module.exports = {
     deleteMessage,
     deleteKafkaOutboundMessage,
     moveKafkaOutboundToDeadLetter,
+    recordKafkaOutboundSuccess,
+    clearKafkaOutboundDeadLetter,
+    clearKafkaOutboundSuccess,
     updateKafkaDailyMetrics,
     resetKafkaDailyMetricsIfNeeded,
     ensureRetryGroup,

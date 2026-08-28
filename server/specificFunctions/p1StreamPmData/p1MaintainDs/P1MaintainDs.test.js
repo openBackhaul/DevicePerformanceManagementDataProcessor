@@ -11,6 +11,11 @@ jest.mock("../../../utils/retry", () => ({
   withRetry: jest.fn()
 }));
 
+jest.mock("../../../infra/redis/redisStreamQueue", () => ({
+  clearKafkaOutboundDeadLetter: jest.fn().mockResolvedValue(0),
+  clearKafkaOutboundSuccess: jest.fn().mockResolvedValue(0)
+}));
+
 const mockLogger = {
   error: jest.fn(),
   info: jest.fn(),
@@ -24,6 +29,7 @@ jest.mock("../../../../service/LoggingService.js", () => ({
 const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
 const { withRetry } = require("../../../utils/retry");
+const redisQueue = require("../../../infra/redis/redisStreamQueue");
 const moduleUnderTest = require("./P1MaintainDs");
 const ERRORS = require("./ErrorsEnum");
 
@@ -93,6 +99,8 @@ describe("P1MaintainDs", () => {
     );
 
     withRetry.mockImplementation((fn) => fn());
+    redisQueue.clearKafkaOutboundDeadLetter.mockResolvedValue(0);
+    redisQueue.clearKafkaOutboundSuccess.mockResolvedValue(0);
   });
 
   test("exports a run function", () => {
@@ -216,6 +224,8 @@ describe("P1MaintainDs", () => {
 
   test("deletes failed and oversized evidence payloads during maintenance", async () => {
     mockDataStoreClient.deleteByQuery.mockResolvedValueOnce({ body: { deleted: 7 } });
+    redisQueue.clearKafkaOutboundDeadLetter.mockResolvedValueOnce(11);
+    redisQueue.clearKafkaOutboundSuccess.mockResolvedValueOnce(17);
 
     const result = await moduleUnderTest.run(validRequest());
 
@@ -240,6 +250,10 @@ describe("P1MaintainDs", () => {
       })
     );
     expect(result.cleanupSummary.kafkaPayloadDocumentsDeleted).toBe(7);
+    expect(result.cleanupSummary.kafkaDeadLetterEntriesDeleted).toBe(11);
+    expect(result.cleanupSummary.kafkaSuccessEntriesDeleted).toBe(17);
+    expect(redisQueue.clearKafkaOutboundDeadLetter).toHaveBeenCalledTimes(1);
+    expect(redisQueue.clearKafkaOutboundSuccess).toHaveBeenCalledTimes(1);
   });
 
   test("waits for an asynchronous Elasticsearch cleanup task", async () => {

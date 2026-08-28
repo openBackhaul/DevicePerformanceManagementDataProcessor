@@ -146,6 +146,28 @@ describe("P1UpdateMwdiReplica", () => {
       });
     });
 
+    test("uses only the configured eight-minute lookback on first start", async () => {
+      const beforeRun = Date.now();
+
+      await moduleUnderTest.run(validRequest({
+        lastReplicaTime: null,
+        runtimeConfig: {
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 },
+          service: { replicaInitialLookbackMs: 480000 }
+        }
+      }));
+
+      const afterRun = Date.now();
+      const reindexRequest = mockSourceClient.reindex.mock.calls[0][0];
+      const range = reindexRequest.body.source.query.bool.must[1].range[
+        "last-complete-control-construct-update-time"
+      ];
+      const periodStartMs = Date.parse(range.gt);
+
+      expect(periodStartMs).toBeGreaterThanOrEqual(beforeRun - 480000);
+      expect(periodStartMs).toBeLessThanOrEqual(afterRun - 480000);
+    });
+
     test("calls Elasticsearch and Redis clients with expected parameters", async () => {
       await moduleUnderTest.run(validRequest());
 

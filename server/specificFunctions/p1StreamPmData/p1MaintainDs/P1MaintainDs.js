@@ -2,6 +2,7 @@ const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
 const { sleep, withRetry } = require("../../../utils/retry");
 const ERRORS = require("./ErrorsEnum");
+const redisQueue = require("../../../infra/redis/redisStreamQueue");
 const logger = require('../../../service/LoggingService.js').getLogger();
 
 function isPlainObject(value) {
@@ -543,6 +544,8 @@ async function run(request) {
       mountNames: [],
       loggingDocumentsDeleted: 0,
       kafkaPayloadDocumentsDeleted: 0,
+      kafkaDeadLetterEntriesDeleted: 0,
+      kafkaSuccessEntriesDeleted: 0,
       cleanupTaskId: null
     };
 
@@ -565,6 +568,13 @@ async function run(request) {
       },
       logger
     );
+
+    // Elasticsearch is the evidence store. Once its failed/oversized evidence
+    // cleanup has completed, discard the corresponding operational DLQ metadata.
+    cleanupSummary.kafkaDeadLetterEntriesDeleted =
+      await redisQueue.clearKafkaOutboundDeadLetter(logger);
+    cleanupSummary.kafkaSuccessEntriesDeleted =
+      await redisQueue.clearKafkaOutboundSuccess(logger);
 
     let cleanupResponse;
     try {

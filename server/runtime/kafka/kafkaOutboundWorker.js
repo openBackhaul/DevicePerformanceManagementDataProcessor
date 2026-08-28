@@ -149,6 +149,17 @@ async function processKafkaOutboundChunk(messages, context) {
         logger: logger
     });
 
+    // Delivery has already succeeded. Success evidence is deliberately
+    // best-effort: a Redis metrics outage must not resend an acknowledged
+    // Kafka message and create a duplicate at the consumer.
+    await redisQueue.recordKafkaOutboundSuccess(messages, logger)
+        .catch((error) => {
+            logger.error(
+                { error: error.message || error, messageCount: messages.length },
+                "Kafka delivery succeeded but success metadata could not be recorded"
+            );
+        });
+
     await ackAndDeleteRedisMessages(messages, context);
     await deleteEsPayloadReferences(messages, context);
     await incrementMetricsForMessages("successful", messages, context);
@@ -162,37 +173,72 @@ async function processKafkaOutboundChunk(messages, context) {
     );
 }
 
-async function processKafkaOutboundMessages(messages, context) {
-    const esBackedMessages = messages.filter(
-        (message) => (message.message || {}).payloadStorage === "ES"
-    );
-    if (esBackedMessages.length > 0) {
-        // Legacy queue references are no longer deliverable by design. Keep
-        // any existing ES evidence document for maintenance and remove only
-        // the Redis references. Missing ES documents are handled identically.
-        await ackAndDeleteRedisMessages(esBackedMessages, context);
-        await incrementMetricsForMessages("failed", esBackedMessages, context);
-        logger.warn(
-            { messageCount: esBackedMessages.length },
-            "Removed legacy Elasticsearch-backed Kafka references from Redis without delivery"
-        );
-    }
+async function processKafkaOutboundChunkWithSizeIsolation(messages, context) {
+    try {
+        await processKafkaOutboundChunk(messages, context);
+        return;
+    } catch (error) {
+        if (error?.reason !== "KAFKA_MESSAGE_SIZE_TOO_LARGE") {
+            throw error;
+        }
 
-    messages = messages.filter(
-        (message) => (message.message || {}).payloadStorage !== "ES"
-    );
+        if (messages.length === 1) {
+            await handleNonRetryableKafkaOutboundFailure(
+                messages,
+                context,
+                "kafka-size-isolation",
+                error
+            );
+            return;
+        }
+
+        const midpoint = Math.ceil(messages.length / 2);
+        const firstHalf = messages.slice(0, midpoint);
+        const secondHalf = messages.slice(midpoint);
+
+        logger.warn(
+            {
+                rejectedBatchSize: messages.length,
+                firstRetrySize: firstHalf.length,
+                secondRetrySize: secondHalf.length
+            },
+            "Kafka batch was rejected for size; splitting it to isolate the exact message"
+        );
+
+        await processKafkaOutboundChunkWithSizeIsolation(firstHalf, context);
+        await processKafkaOutboundChunkWithSizeIsolation(secondHalf, context);
+    }
+}
+
+async function processKafkaOutboundMessages(messages, context) {
     if (messages.length === 0) {
         return;
     }
 
-    const chunks = splitIntoSizedChunks(messages, context);
-
-    for (const chunk of chunks) {
-        if (context.appState.isShuttingDown) {
-            break;
+    // A transmitting call must contain only one target consumer/topic. If a
+    // later topic failed after an earlier topic succeeded, retrying the whole
+    // call could otherwise duplicate the already-delivered topic.
+    const messagesByConsumer = new Map();
+    for (const message of messages) {
+        const consumer = String(
+            (message.message || {}).targetConsumer || "UNKNOWN"
+        ).toUpperCase();
+        if (!messagesByConsumer.has(consumer)) {
+            messagesByConsumer.set(consumer, []);
         }
+        messagesByConsumer.get(consumer).push(message);
+    }
 
-        await processKafkaOutboundChunk(chunk, context);
+    for (const consumerMessages of messagesByConsumer.values()) {
+        const chunks = splitIntoSizedChunks(consumerMessages, context);
+
+        for (const chunk of chunks) {
+            if (context.appState.isShuttingDown) {
+                return;
+            }
+
+            await processKafkaOutboundChunkWithSizeIsolation(chunk, context);
+        }
     }
 }
 
@@ -244,32 +290,39 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
    * Non-retryable Kafka errors should not stay forever in Redis pending state.
    * Example: KAFKA_MESSAGE_SIZE_TOO_LARGE.
    *
-   * For now:
-   * - log clearly
-   * - preserve the complete message in the Kafka outbound dead-letter stream
-   * - ACK and delete it from the active stream only after the copy succeeds
-   * - do not delete any ES payload reference, so the payload remains inspectable
+   * Preserve the complete oversized payload in Elasticsearch, write compact
+   * failure metadata to the Redis dead-letter stream, then ACK/delete the
+   * active Redis entry.
    */
 
   if (error.reason === "KAFKA_MESSAGE_SIZE_TOO_LARGE") {
     for (const msg of messages) {
       const fields = msg.message || {};
-      const payload = parseRedisPayload(fields.payload);
-      await kafkaPayloadStore.storeKafkaPayload({
-        dataStoreEsClient: context.dataStoreEsClient,
-        targetConsumer: fields.targetConsumer,
-        mountName: fields.mountName,
-        payload,
-        payloadBytes: getPayloadBytes(msg),
-        deliveryState: "oversized-evidence",
-        logger
-      });
+      if (fields.payloadStorage === "ES" && fields.payloadRefId) {
+        await kafkaPayloadStore.markKafkaPayloadAsOversizedEvidence({
+          dataStoreEsClient: context.dataStoreEsClient,
+          payloadRefId: fields.payloadRefId,
+          failureReason: error.reason,
+          logger
+        });
+      } else {
+        const payload = parseRedisPayload(fields.payload);
+        await kafkaPayloadStore.storeKafkaPayload({
+          dataStoreEsClient: context.dataStoreEsClient,
+          targetConsumer: fields.targetConsumer,
+          mountName: fields.mountName,
+          payload,
+          payloadBytes: getPayloadBytes(msg),
+          deliveryState: "oversized-evidence",
+          logger
+        });
+      }
+      await redisQueue.moveKafkaOutboundToDeadLetter(msg, error, logger);
     }
     await incrementMetricsForMessages("oversized", messages, context);
-    await ackAndDeleteRedisMessages(messages, context);
     logger.warn(
       { source, messageCount: messages.length },
-      "Legacy oversized Kafka messages stored as Elasticsearch evidence and removed from Redis"
+      "Oversized Kafka messages stored as Elasticsearch evidence and moved to metadata-only dead letter"
     );
     return;
   }
@@ -477,7 +530,11 @@ async function startKafkaOutboundWorkerPool(context) {
 
 module.exports = {
     startKafkaOutboundWorkerPool,
-    /* _internal: {
-        processKafkaOutboundMessages
-    } */
+    // Exposed only for focused unit testing; production code uses the worker
+    // pool entry point above.
+    _internal: {
+        processKafkaOutboundMessages,
+        processKafkaOutboundChunkWithSizeIsolation,
+        handleNonRetryableKafkaOutboundFailure
+    }
 };
