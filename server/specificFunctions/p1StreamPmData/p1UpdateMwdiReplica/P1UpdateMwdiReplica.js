@@ -401,6 +401,14 @@ async function run(request) {
     getParamFromFunction(parameters, "p1UpdateMwdiReplica", "overlapMs", 60000)
   );
 
+  const configuredInitialLookbackMs = Number(
+    runtimeConfig?.service?.replicaInitialLookbackMs ?? 8 * 60 * 1000
+  );
+  const initialLookbackMs =
+    Number.isFinite(configuredInitialLookbackMs) && configuredInitialLookbackMs > 0
+      ? configuredInitialLookbackMs
+      : 8 * 60 * 1000;
+
   const reqPerSec = Number(
     getParamFromFunction(parameters, "p1UpdateMwdiReplica", "reqPerSec", 2)
   );
@@ -426,13 +434,17 @@ async function run(request) {
   const now = Date.now();
   const lastTimestamp = lastReplicaTime
     ? parseTimestamp(lastReplicaTime)
-    : now - overlapMs;
+    : null;
 
   if (lastReplicaTime && lastTimestamp === null) {
     throw new Error(ERRORS.INVALID_LAST_REPLICA_TIME);
   }
 
-  let periodStartTime = new Date(lastTimestamp - overlapMs).toISOString();
+  let periodStartTime = new Date(
+    lastTimestamp === null
+      ? now - initialLookbackMs
+      : lastTimestamp - overlapMs
+  ).toISOString();
   let periodEndTime = new Date(now).toISOString();
 
   logger.debug(
@@ -442,6 +454,7 @@ async function run(request) {
       periodEndTime,
       lastReplicaTime,
       overlapMs,
+      initialLookbackMs,
       reqPerSec,
       scrollSize,
       scrollTtl,

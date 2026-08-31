@@ -93,10 +93,24 @@ async function buildOutputMessage(redisMessage, context) {
 }
 
 async function ackAndDeleteRedisMessages(messages, context) {
-    for (const msg of messages) {
-        await redisQueue.ackKafkaOutbound(msg.id, logger);
-        await redisQueue.deleteKafkaOutboundMessage(msg.id, logger);
-    }
+    const acknowledgementResults = await Promise.all(messages.map(async (msg) => {
+        const ackCount = await redisQueue.ackKafkaOutbound(
+            msg.id,
+            context.consumerName,
+            logger
+        );
+        if (ackCount === 1) {
+            await redisQueue.deleteKafkaOutboundMessage(msg.id, logger);
+            return msg;
+        } else {
+            logger.warn(
+                { redisMessageId: msg.id },
+                "Kafka delivery completed after Redis ownership was lost; ES payload retained"
+            );
+        }
+        return null;
+    }));
+    return acknowledgementResults.filter(Boolean);
 }
 
 async function incrementMetricsForMessages(metric, messages, context) {
@@ -117,7 +131,7 @@ async function incrementMetricsForMessages(metric, messages, context) {
 }
 
 async function deleteEsPayloadReferences(messages, context) {
-    for (const msg of messages) {
+    await Promise.all(messages.map(async (msg) => {
         const fields = msg.message || {};
 
         if (fields.payloadStorage === "ES" && fields.payloadRefId) {
@@ -127,7 +141,7 @@ async function deleteEsPayloadReferences(messages, context) {
                 logger: logger
             });
         }
-    }
+    }));
 }
 
 async function processKafkaOutboundChunk(messages, context) {
@@ -136,11 +150,12 @@ async function processKafkaOutboundChunk(messages, context) {
         return;
     }
 
-    const outputMessages = [];
-
-    for (const msg of messages) {
-        outputMessages.push(await buildOutputMessage(msg, context));
-    }
+    // The Redis read count bounds this fan-out (10 by default). Loading the
+    // independent ES payload documents concurrently avoids one network round
+    // trip per message becoming the Kafka throughput bottleneck.
+    const outputMessages = await Promise.all(
+        messages.map((msg) => buildOutputMessage(msg, context))
+    );
 
     await p1TransmittingKafka.run({
         outputMessages,
@@ -149,9 +164,24 @@ async function processKafkaOutboundChunk(messages, context) {
         logger: logger
     });
 
-    await ackAndDeleteRedisMessages(messages, context);
-    await deleteEsPayloadReferences(messages, context);
-    await incrementMetricsForMessages("successful", messages, context);
+    // Delivery has already succeeded. Only entries still owned by this worker
+    // may be deleted from Redis and Elasticsearch. Success evidence remains
+    // best-effort: a metrics outage must not resend an acknowledged message.
+    const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context);
+
+    // Reset the daily counters/evidence streams before recording today's
+    // successful entries. This keeps both views on the same Berlin date.
+    await redisQueue.resetKafkaDailyMetricsIfNeeded(context.logger);
+    await redisQueue.recordKafkaOutboundSuccess(acknowledgedMessages, logger)
+        .catch((error) => {
+            logger.error(
+                { error: error.message || error, messageCount: messages.length },
+                "Kafka delivery succeeded but success metadata could not be recorded"
+            );
+        });
+
+    await deleteEsPayloadReferences(acknowledgedMessages, context);
+    await incrementMetricsForMessages("successful", acknowledgedMessages, context);
 
     logger.info(
         {
@@ -162,37 +192,75 @@ async function processKafkaOutboundChunk(messages, context) {
     );
 }
 
-async function processKafkaOutboundMessages(messages, context) {
-    const esBackedMessages = messages.filter(
-        (message) => (message.message || {}).payloadStorage === "ES"
-    );
-    if (esBackedMessages.length > 0) {
-        // Legacy queue references are no longer deliverable by design. Keep
-        // any existing ES evidence document for maintenance and remove only
-        // the Redis references. Missing ES documents are handled identically.
-        await ackAndDeleteRedisMessages(esBackedMessages, context);
-        await incrementMetricsForMessages("failed", esBackedMessages, context);
-        logger.warn(
-            { messageCount: esBackedMessages.length },
-            "Removed legacy Elasticsearch-backed Kafka references from Redis without delivery"
-        );
-    }
+async function processKafkaOutboundChunkWithSizeIsolation(messages, context) {
+    try {
+        await processKafkaOutboundChunk(messages, context);
+        return;
+    } catch (error) {
+        const isolatableNonRetryableError =
+            error?.reason === "KAFKA_MESSAGE_SIZE_TOO_LARGE" ||
+            error?.reason === "KAFKA_PAYLOAD_REFERENCE_NOT_FOUND";
+        if (!isolatableNonRetryableError) {
+            throw error;
+        }
 
-    messages = messages.filter(
-        (message) => (message.message || {}).payloadStorage !== "ES"
-    );
+        if (messages.length === 1) {
+            await handleNonRetryableKafkaOutboundFailure(
+                messages,
+                context,
+                "kafka-size-isolation",
+                error
+            );
+            return;
+        }
+
+        const midpoint = Math.ceil(messages.length / 2);
+        const firstHalf = messages.slice(0, midpoint);
+        const secondHalf = messages.slice(midpoint);
+
+        logger.warn(
+            {
+                rejectedBatchSize: messages.length,
+                firstRetrySize: firstHalf.length,
+                secondRetrySize: secondHalf.length
+            },
+            "Kafka batch was rejected for size; splitting it to isolate the exact message"
+        );
+
+        await processKafkaOutboundChunkWithSizeIsolation(firstHalf, context);
+        await processKafkaOutboundChunkWithSizeIsolation(secondHalf, context);
+    }
+}
+
+async function processKafkaOutboundMessages(messages, context) {
     if (messages.length === 0) {
         return;
     }
 
-    const chunks = splitIntoSizedChunks(messages, context);
-
-    for (const chunk of chunks) {
-        if (context.appState.isShuttingDown) {
-            break;
+    // A transmitting call must contain only one target consumer/topic. If a
+    // later topic failed after an earlier topic succeeded, retrying the whole
+    // call could otherwise duplicate the already-delivered topic.
+    const messagesByConsumer = new Map();
+    for (const message of messages) {
+        const consumer = String(
+            (message.message || {}).targetConsumer || "UNKNOWN"
+        ).toUpperCase();
+        if (!messagesByConsumer.has(consumer)) {
+            messagesByConsumer.set(consumer, []);
         }
+        messagesByConsumer.get(consumer).push(message);
+    }
 
-        await processKafkaOutboundChunk(chunk, context);
+    for (const consumerMessages of messagesByConsumer.values()) {
+        const chunks = splitIntoSizedChunks(consumerMessages, context);
+
+        for (const chunk of chunks) {
+            if (context.appState.isShuttingDown) {
+                return;
+            }
+
+            await processKafkaOutboundChunkWithSizeIsolation(chunk, context);
+        }
     }
 }
 
@@ -202,6 +270,60 @@ function getKafkaFailureSleepMs(context) {
 
 function getWorkerIdleSleepMs(context) {
   return Number(context.workerIdleSleepMs || 1000);
+}
+
+function getHeartbeatIntervalMs(context) {
+  const staleMessageIdleMs = Number(context.staleMessageIdleMs || 300000);
+  return Number(
+    context.heartbeatIntervalMs ||
+    Math.max(5000, Math.floor(staleMessageIdleMs / 3))
+  );
+}
+
+async function processWithOwnershipHeartbeat(messages, context, source) {
+  const messageIds = (messages || []).map((message) => message.id);
+  const initiallyOwnedIds = await redisQueue.renewKafkaOutboundOwnership(
+    messageIds,
+    context.consumerName,
+    context.logger
+  );
+  const initiallyOwned = new Set(initiallyOwnedIds.map(String));
+  const ownedMessages = (messages || []).filter(
+    (message) => initiallyOwned.has(String(message.id))
+  );
+
+  if (ownedMessages.length === 0) {
+    return true;
+  }
+
+  let heartbeatPromise = null;
+  const heartbeat = () => {
+    if (heartbeatPromise) {
+      return;
+    }
+    heartbeatPromise = redisQueue.renewKafkaOutboundOwnership(
+      ownedMessages.map((message) => message.id),
+      context.consumerName,
+      context.logger
+    ).catch((error) => {
+      context.logger?.error?.(
+        { consumerName: context.consumerName, error: error.message || error },
+        "Failed to renew Kafka outbound Redis ownership"
+      );
+    }).finally(() => {
+      heartbeatPromise = null;
+    });
+  };
+
+  const timer = setInterval(heartbeat, getHeartbeatIntervalMs(context));
+  try {
+    return await tryProcessKafkaOutboundMessages(ownedMessages, context, source);
+  } finally {
+    clearInterval(timer);
+    if (heartbeatPromise) {
+      await heartbeatPromise;
+    }
+  }
 }
 
 function countStreamMessages(streams) {
@@ -244,32 +366,48 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
    * Non-retryable Kafka errors should not stay forever in Redis pending state.
    * Example: KAFKA_MESSAGE_SIZE_TOO_LARGE.
    *
-   * For now:
-   * - log clearly
-   * - preserve the complete message in the Kafka outbound dead-letter stream
-   * - ACK and delete it from the active stream only after the copy succeeds
-   * - do not delete any ES payload reference, so the payload remains inspectable
+   * Preserve the complete oversized payload in Elasticsearch, write compact
+   * failure metadata to the Redis dead-letter stream, then ACK/delete the
+   * active Redis entry.
    */
 
   if (error.reason === "KAFKA_MESSAGE_SIZE_TOO_LARGE") {
+    const movedMessages = [];
     for (const msg of messages) {
       const fields = msg.message || {};
-      const payload = parseRedisPayload(fields.payload);
-      await kafkaPayloadStore.storeKafkaPayload({
-        dataStoreEsClient: context.dataStoreEsClient,
-        targetConsumer: fields.targetConsumer,
-        mountName: fields.mountName,
-        payload,
-        payloadBytes: getPayloadBytes(msg),
-        deliveryState: "oversized-evidence",
-        logger
-      });
+      const legacyRedisPayload = fields.payloadStorage !== "ES"
+        ? parseRedisPayload(fields.payload)
+        : null;
+      const moved = await redisQueue.moveKafkaOutboundToDeadLetter(
+        msg, error, "oversized", context.consumerName, logger
+      );
+      if (moved !== 1) {
+        continue;
+      }
+      movedMessages.push(msg);
+
+      if (fields.payloadStorage === "ES" && fields.payloadRefId) {
+        await kafkaPayloadStore.markKafkaPayloadAsOversizedEvidence({
+          dataStoreEsClient: context.dataStoreEsClient,
+          payloadRefId: fields.payloadRefId,
+          failureReason: error.reason,
+          logger
+        });
+      } else {
+        await kafkaPayloadStore.storeKafkaPayload({
+          dataStoreEsClient: context.dataStoreEsClient,
+          targetConsumer: fields.targetConsumer,
+          mountName: fields.mountName,
+          payload: legacyRedisPayload,
+          payloadBytes: getPayloadBytes(msg),
+          deliveryState: "oversized-evidence",
+          logger
+        });
+      }
     }
-    await incrementMetricsForMessages("oversized", messages, context);
-    await ackAndDeleteRedisMessages(messages, context);
     logger.warn(
-      { source, messageCount: messages.length },
-      "Legacy oversized Kafka messages stored as Elasticsearch evidence and removed from Redis"
+      { source, messageCount: movedMessages.length },
+      "Oversized Kafka messages stored as Elasticsearch evidence and moved to metadata-only dead letter"
     );
     return;
   }
@@ -296,8 +434,17 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
       "Kafka outbound message moved out of retry flow because error is non-retryable"
     );
 
-    await redisQueue.moveKafkaOutboundToDeadLetter(msg, error, logger);
-    if (fields.payloadStorage === "ES" && fields.payloadRefId) {
+    const moved = await redisQueue.moveKafkaOutboundToDeadLetter(
+      msg, error, "failed", context.consumerName, logger
+    );
+    if (moved !== 1) {
+      continue;
+    }
+    if (
+      error.reason !== "KAFKA_PAYLOAD_REFERENCE_NOT_FOUND" &&
+      fields.payloadStorage === "ES" &&
+      fields.payloadRefId
+    ) {
       await kafkaPayloadStore.markKafkaPayloadForCleanup({
         dataStoreEsClient: context.dataStoreEsClient,
         payloadRefId: fields.payloadRefId,
@@ -306,7 +453,6 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
       });
     }
   }
-  await incrementMetricsForMessages("failed", messages, context);
 }
 
 async function tryProcessKafkaOutboundMessages(messages, context, source) {
@@ -365,10 +511,10 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
   logger.info(
     {
       consumerName,
-      readCount: context.readCount || 100,
+      readCount: context.readCount || 10,
       batchSize: context.batchSize || 100,
       maxBatchBytes: context.maxBatchBytes,
-      staleMessageIdleMs: context.staleMessageIdleMs || 60000,
+      staleMessageIdleMs: context.staleMessageIdleMs || 300000,
       kafkaFailureSleepMs: getKafkaFailureSleepMs(context)
     },
     "Kafka outbound worker started"
@@ -376,16 +522,18 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
 
   while (!context.appState.isShuttingDown) {
     try {
+      const workerContext = { ...context, consumerName };
       const reclaimed = await redisQueue.reclaimStaleKafkaOutbound(
         consumerName,
-        context.staleMessageIdleMs || 60000,
+        context.staleMessageIdleMs || 300000,
+        context.readCount || 10,
         context.logger
       );
 
       if (reclaimed.length > 0) {
-        const success = await tryProcessKafkaOutboundMessages(
+        const success = await processWithOwnershipHeartbeat(
           reclaimed,
-          context,
+          workerContext,
           "reclaimed"
         );
 
@@ -397,7 +545,7 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
       const streams = await redisQueue.readNextKafkaOutbound(
         consumerName,
         5000,
-        context.readCount || 100,
+        context.readCount || 10,
         context.logger
       );
 
@@ -408,7 +556,7 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
       }
 
       if (batch.length > 0) {
-        await tryProcessKafkaOutboundMessages(batch, context, "new");
+        await processWithOwnershipHeartbeat(batch, workerContext, "new");
       } else {
         await sleep(getWorkerIdleSleepMs(context));
       }
@@ -477,7 +625,11 @@ async function startKafkaOutboundWorkerPool(context) {
 
 module.exports = {
     startKafkaOutboundWorkerPool,
-    /* _internal: {
-        processKafkaOutboundMessages
-    } */
+    // Exposed only for focused unit testing; production code uses the worker
+    // pool entry point above.
+    _internal: {
+        processKafkaOutboundMessages,
+        processKafkaOutboundChunkWithSizeIsolation,
+        handleNonRetryableKafkaOutboundFailure
+    }
 };
