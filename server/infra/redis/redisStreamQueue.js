@@ -21,6 +21,7 @@ const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
 const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
 local storedDate = redis.call('HGET', KEYS[1], 'date')
 if storedDate ~= ARGV[1] then
+  redis.call('UNLINK', KEYS[2], KEYS[3])
   redis.call('DEL', KEYS[1])
   redis.call('HSET', KEYS[1],
     'date', ARGV[1],
@@ -41,6 +42,52 @@ redis.call('HSET', KEYS[1], 'updatedAt', ARGV[6])
 return redis.call('HGETALL', KEYS[1])
 `;
 
+const MOVE_KAFKA_OUTBOUND_TO_DEAD_LETTER_SCRIPT = `
+local pending = redis.call('XPENDING', KEYS[1], ARGV[1], ARGV[2], ARGV[2], 1)
+if #pending == 0 or pending[1][2] ~= ARGV[3] then
+  return 0
+end
+local acknowledged = redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+if acknowledged ~= 1 then
+  return 0
+end
+redis.call('XADD', KEYS[2], '*',
+  'originalMessageId', ARGV[2],
+  'targetConsumer', ARGV[4],
+  'mountName', ARGV[5],
+  'payloadBytes', ARGV[6],
+  'payloadSizeMb', ARGV[7],
+  'failureReason', ARGV[8],
+  'failureMessage', ARGV[9],
+  'failedAt', ARGV[10])
+redis.call('XDEL', KEYS[1], ARGV[2])
+redis.call('HINCRBY', KEYS[3], ARGV[11], 1)
+redis.call('HINCRBY', KEYS[3], ARGV[11] .. ':' .. ARGV[4], 1)
+redis.call('HSET', KEYS[3], 'updatedAt', ARGV[10])
+return 1
+`;
+
+const ACK_KAFKA_OUTBOUND_IF_OWNED_SCRIPT = `
+local pending = redis.call('XPENDING', KEYS[1], ARGV[1], ARGV[2], ARGV[2], 1)
+if #pending == 0 or pending[1][2] ~= ARGV[3] then
+  return 0
+end
+return redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+`;
+
+const RENEW_KAFKA_OUTBOUND_OWNERSHIP_SCRIPT = `
+local renewed = {}
+for i = 3, #ARGV do
+  local messageId = ARGV[i]
+  local pending = redis.call('XPENDING', KEYS[1], ARGV[1], messageId, messageId, 1)
+  if #pending > 0 and pending[1][2] == ARGV[2] then
+    redis.call('XCLAIM', KEYS[1], ARGV[1], ARGV[2], 0, messageId, 'IDLE', 0, 'JUSTID')
+    table.insert(renewed, messageId)
+  end
+end
+return renewed
+`;
+
 function getBerlinDate(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Berlin",
@@ -58,7 +105,11 @@ async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
 
   const redis = await getRedisClient(logger);
   return redis.eval(UPDATE_KAFKA_DAILY_METRICS_SCRIPT, {
-    keys: [KAFKA_DAILY_METRICS_HASH],
+    keys: [
+      KAFKA_DAILY_METRICS_HASH,
+      KAFKA_OUTBOUND_SUCCESS_STREAM,
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM
+    ],
     arguments: [
       getBerlinDate(),
       "Europe/Berlin",
@@ -774,12 +825,15 @@ async function readNextKafkaOutbound(consumerName, blockMs, count, loggers) {
   return response || [];
 }
 
-async function ackKafkaOutbound(messageId, loggers) {
+async function ackKafkaOutbound(messageId, consumerName, loggers) {
   const redis = await getRedisClient(logger);
-  await redis.xAck(KAFKA_OUTBOUND_STREAM, KAFKA_OUTBOUND_GROUP, messageId);
+  return Number(await redis.eval(ACK_KAFKA_OUTBOUND_IF_OWNED_SCRIPT, {
+    keys: [KAFKA_OUTBOUND_STREAM],
+    arguments: [KAFKA_OUTBOUND_GROUP, messageId, consumerName]
+  }));
 }
 
-async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, loggers) {
+async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, count, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xAutoClaim(
@@ -789,11 +843,28 @@ async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, loggers) {
     minIdleMs,
     "0-0",
     {
-      COUNT: 100
+      COUNT: count || 10
     }
   );
 
   return response ? response.messages || [] : [];
+}
+
+async function renewKafkaOutboundOwnership(messageIds, consumerName, loggers) {
+  if (!Array.isArray(messageIds) || messageIds.length === 0) {
+    return [];
+  }
+
+  const redis = await getRedisClient(logger);
+  const renewed = await redis.eval(RENEW_KAFKA_OUTBOUND_OWNERSHIP_SCRIPT, {
+    keys: [KAFKA_OUTBOUND_STREAM],
+    arguments: [
+      KAFKA_OUTBOUND_GROUP,
+      toRedisValue(consumerName),
+      ...messageIds.map(toRedisValue)
+    ]
+  });
+  return (renewed || []).map(String);
 }
 
 async function removeFromDedupSet(mountName, loggers) {
@@ -811,30 +882,47 @@ async function deleteKafkaOutboundMessage(messageId, loggers) {
   await redis.xDel(KAFKA_OUTBOUND_STREAM, messageId);
 }
 
-async function moveKafkaOutboundToDeadLetter(redisMessage, error, loggers) {
+async function moveKafkaOutboundToDeadLetter(
+  redisMessage,
+  error,
+  metric,
+  consumerName,
+  loggers
+) {
   const redis = await getRedisClient(logger);
+  // Keep the evidence stream on exactly the same Berlin calendar day as the
+  // daily counters. On the first operation after midnight the metrics hash
+  // and both evidence streams are reset by one atomic Redis script.
+  await resetKafkaDailyMetricsIfNeeded(loggers);
   const fields = redisMessage.message || {};
   const payloadBytes = Number(fields.payloadBytes || 0);
   const payloadSizeMb = Number.isFinite(payloadBytes)
     ? (payloadBytes / (1024 * 1024)).toFixed(3)
     : "0.000";
 
-  // Redis holds only compact operational failure metadata. The complete
-  // oversized payload is retained separately in Elasticsearch as evidence.
-  // Persist metadata first; only then ACK/delete the active queue entry.
-  await redis.xAdd(KAFKA_OUTBOUND_DEAD_LETTER_STREAM, "*", {
-    originalMessageId: toRedisValue(redisMessage.id),
-    targetConsumer: toRedisValue(fields.targetConsumer),
-    mountName: toRedisValue(fields.mountName),
-    payloadBytes: toRedisValue(fields.payloadBytes),
-    payloadSizeMb: toRedisValue(payloadSizeMb),
-    failureReason: toRedisValue(error?.reason || error?.type || "NON_RETRYABLE"),
-    failureMessage: toRedisValue(error?.message || error),
-    failedAt: new Date().toISOString()
-  });
-
-  await redis.xAck(KAFKA_OUTBOUND_STREAM, KAFKA_OUTBOUND_GROUP, redisMessage.id);
-  await redis.xDel(KAFKA_OUTBOUND_STREAM, redisMessage.id);
+  // Only the current pending-entry owner may dead-letter/delete the message.
+  // XACK, compact XADD and XDEL are one atomic Redis operation so a worker
+  // that lost ownership cannot create false failure evidence.
+  return Number(await redis.eval(MOVE_KAFKA_OUTBOUND_TO_DEAD_LETTER_SCRIPT, {
+    keys: [
+      KAFKA_OUTBOUND_STREAM,
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
+      KAFKA_DAILY_METRICS_HASH
+    ],
+    arguments: [
+      KAFKA_OUTBOUND_GROUP,
+      toRedisValue(redisMessage.id),
+      toRedisValue(consumerName),
+      toRedisValue(fields.targetConsumer),
+      toRedisValue(fields.mountName),
+      toRedisValue(fields.payloadBytes),
+      toRedisValue(payloadSizeMb),
+      toRedisValue(error?.reason || error?.type || "NON_RETRYABLE"),
+      toRedisValue(error?.message || error),
+      new Date().toISOString(),
+      toRedisValue(metric)
+    ]
+  }));
 }
 
 async function recordKafkaOutboundSuccess(messages, loggers) {
@@ -920,6 +1008,7 @@ module.exports = {
     readNextKafkaOutbound,
     ackKafkaOutbound,
     reclaimStaleKafkaOutbound,
+    renewKafkaOutboundOwnership,
     removeFromDedupSet,
     deleteMessage,
     deleteKafkaOutboundMessage,

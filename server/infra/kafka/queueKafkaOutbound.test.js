@@ -30,7 +30,7 @@ describe("queueKafkaOutbound", () => {
     kafkaPayloadStore.deleteKafkaPayload.mockClear();
   });
 
-  it("queues messages with payload size less than or equal to 1MB", async () => {
+  it("stores even small payloads in Elasticsearch and queues only a reference", async () => {
     const logger = { error: jest.fn() };
 
     const result = await queueKafkaOutbound.run({
@@ -49,10 +49,16 @@ describe("queueKafkaOutbound", () => {
       expect.objectContaining({
         targetConsumer: "APT",
         mountName: "device-1",
-        payloadStorage: "REDIS",
+        payloadStorage: "ES",
         status: "QUEUED"
       })
     ]);
+    expect(kafkaPayloadStore.storeKafkaPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mountName: "device-1",
+        deliveryState: "pending"
+      })
+    );
     expect(logger.error).not.toHaveBeenCalled();
   });
 

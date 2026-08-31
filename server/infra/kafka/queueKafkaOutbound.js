@@ -2,8 +2,6 @@ const redisQueue = require("../redis/redisStreamQueue");
 const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
 const defaultLogger = require('../../service/LoggingService.js').getLogger();
 
-const MAX_REDIS_KAFKA_PAYLOAD_BYTES = 1024 * 1024;
-
 function normalizeOutputs(request) {
   const output = request.outputs || request.output;
 
@@ -79,22 +77,21 @@ async function run(request) {
 
     const queueMessage = await buildRedisQueueMessage(normalized);
 
-    // Keep small payloads directly in Redis. Store larger payloads in
-    // Elasticsearch and put only their reference in the Redis stream, so a
-    // Kafka slowdown cannot fill Redis with multi-megabyte JSON documents.
-    if (queueMessage.payloadBytes > MAX_REDIS_KAFKA_PAYLOAD_BYTES) {
-      queueMessage.payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
-        dataStoreEsClient: request.dataStoreEsClient,
-        targetConsumer: queueMessage.targetConsumer,
-        mountName: queueMessage.mountName,
-        payload: normalized.payload,
-        payloadBytes: queueMessage.payloadBytes,
-        deliveryState: "pending",
-        logger: activeLogger
-      });
-      queueMessage.payloadStorage = "ES";
-      queueMessage.payload = "";
-    }
+    // Redis is an operational queue and must contain only compact metadata.
+    // Store every payload body in Elasticsearch irrespective of size and put
+    // only its reference in Redis. A Kafka slowdown can then increase queue
+    // length without filling Redis with JSON payload bodies.
+    queueMessage.payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
+      dataStoreEsClient: request.dataStoreEsClient,
+      targetConsumer: queueMessage.targetConsumer,
+      mountName: queueMessage.mountName,
+      payload: normalized.payload,
+      payloadBytes: queueMessage.payloadBytes,
+      deliveryState: "pending",
+      logger: activeLogger
+    });
+    queueMessage.payloadStorage = "ES";
+    queueMessage.payload = "";
 
     if (!kafkaGroupEnsured) {
       await redisQueue.ensureKafkaOutboundGroup(activeLogger);
@@ -131,6 +128,5 @@ async function run(request) {
 
 module.exports = {
   run,
-  buildRedisQueueMessage,
-  MAX_REDIS_KAFKA_PAYLOAD_BYTES
+  buildRedisQueueMessage
 };

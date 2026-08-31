@@ -24,6 +24,7 @@ const ERRORS = require("./ErrorsEnum");
 
 const logger = require('../../service/LoggingService.js').getLogger();
 const appState = new AppState();
+let initializationPromise = null;
 
 function buildProcessingError(message, stage = "p1StreamPmData", details, cause) {
   const error = new Error(message);
@@ -128,7 +129,7 @@ async function startCleanupLeaderLoop(context) {
  *   appState
  * }
  */
-async function run() {
+async function initialize() {
   try {
     const runtimeConfig = loadRuntimeConfig() || {};
     const redisConfig = runtimeConfig.redis || {};
@@ -281,10 +282,11 @@ async function run() {
       p1TransmittingKafkaParameters,
       kafkaConnectionList: kafkaInit.kafkaConnectionList,
       workerCount: Number(serviceConfig.kafkaOutboundConcurrency || 1),
-      readCount: Number(serviceConfig.kafkaOutboundReadCount || 100),
+      readCount: Number(serviceConfig.kafkaOutboundReadCount || 10),
       batchSize: Number(serviceConfig.kafkaOutboundBatchSize || 100),
       maxBatchBytes: Number(serviceConfig.kafkaOutboundMaxBatchBytes || 900 * 1024),
-      staleMessageIdleMs: Number(serviceConfig.kafkaOutboundStaleMessageIdleMs || 60000),
+      staleMessageIdleMs: Number(serviceConfig.kafkaOutboundStaleMessageIdleMs || 300000),
+      heartbeatIntervalMs: Number(serviceConfig.kafkaOutboundHeartbeatIntervalMs || 60000),
       kafkaFailureSleepMs: Number(serviceConfig.kafkaOutboundFailureSleepMs || 10000),
       workerIdleSleepMs: Number(serviceConfig.kafkaOutboundWorkerIdleSleepMs || 1000),
       // kafka producer config for sendBatch
@@ -342,4 +344,34 @@ async function run() {
     throw normalizedError;
   }
 }
-module.exports = { run };
+
+function run() {
+  if (initializationPromise) {
+    logger.warn(
+      { label: "p1-stream-pm-data.duplicate-start-skipped" },
+      "DPMDP stream processing is already initialized; duplicate startup was skipped"
+    );
+    return initializationPromise;
+  }
+
+  initializationPromise = initialize().catch((error) => {
+    // Permit an explicit retry only when initialization itself failed. Once
+    // initialization succeeds, keep the resolved promise so later callers
+    // cannot create a second replica/processing/Kafka worker pool.
+    initializationPromise = null;
+    throw error;
+  });
+
+  return initializationPromise;
+}
+
+function resetInitializationForTest() {
+  initializationPromise = null;
+}
+
+module.exports = {
+  run,
+  _internal: {
+    resetInitializationForTest
+  }
+};

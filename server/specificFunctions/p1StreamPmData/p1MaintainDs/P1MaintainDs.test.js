@@ -224,8 +224,6 @@ describe("P1MaintainDs", () => {
 
   test("deletes failed and oversized evidence payloads during maintenance", async () => {
     mockDataStoreClient.deleteByQuery.mockResolvedValueOnce({ body: { deleted: 7 } });
-    redisQueue.clearKafkaOutboundDeadLetter.mockResolvedValueOnce(11);
-    redisQueue.clearKafkaOutboundSuccess.mockResolvedValueOnce(17);
 
     const result = await moduleUnderTest.run(validRequest());
 
@@ -250,10 +248,8 @@ describe("P1MaintainDs", () => {
       })
     );
     expect(result.cleanupSummary.kafkaPayloadDocumentsDeleted).toBe(7);
-    expect(result.cleanupSummary.kafkaDeadLetterEntriesDeleted).toBe(11);
-    expect(result.cleanupSummary.kafkaSuccessEntriesDeleted).toBe(17);
-    expect(redisQueue.clearKafkaOutboundDeadLetter).toHaveBeenCalledTimes(1);
-    expect(redisQueue.clearKafkaOutboundSuccess).toHaveBeenCalledTimes(1);
+    expect(redisQueue.clearKafkaOutboundDeadLetter).not.toHaveBeenCalled();
+    expect(redisQueue.clearKafkaOutboundSuccess).not.toHaveBeenCalled();
   });
 
   test("waits for an asynchronous Elasticsearch cleanup task", async () => {

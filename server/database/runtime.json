@@ -21,7 +21,7 @@
     "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER",
     "kafkaOutboundConcurrency": 8,
     "kafkaOutboundBatchSize": 100,
-    "kafkaOutboundReadCount": 100,
+    "kafkaOutboundReadCount": 10,
     "kafkaOutboundMaxBatchBytes": 921600,
     "kafkaOutboundFailureSleepMs": 10000,
     "kafkaProducerMessageMaxBytes": 5242880,
@@ -32,7 +32,8 @@
     "kafkaOversizedMessageMode": "ERROR",
 
     "kafkaOutboundWorkerIdleSleepMs": 1000,
-    "kafkaOutboundStaleMessageIdleMs": 60000,
+    "kafkaOutboundStaleMessageIdleMs": 300000,
+    "kafkaOutboundHeartbeatIntervalMs": 60000,
     "kafkaAcks": "all",
     "kafkaEnableIdempotence": true,
     "kafkaLingerMs": 50,

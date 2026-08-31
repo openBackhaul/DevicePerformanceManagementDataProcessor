@@ -68,6 +68,9 @@ describe("Kafka outbound dead-letter metadata", () => {
   });
 
   test("moves only compact failure metadata and never copies the payload", async () => {
+    mockRedis.eval
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(1);
     await queue.moveKafkaOutboundToDeadLetter({
       id: "1-0",
       message: {
@@ -79,24 +82,40 @@ describe("Kafka outbound dead-letter metadata", () => {
     }, {
       reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
       message: "Kafka message exceeds permitted size"
-    }, {});
+    }, "oversized", "worker-1", {});
 
-    expect(mockRedis.xAdd).toHaveBeenCalledWith(
-      "dpmdp:stream:kafka-outbound-dead-letter",
-      "*",
+    expect(mockRedis.eval).toHaveBeenLastCalledWith(
+      expect.any(String),
       expect.objectContaining({
-        originalMessageId: "1-0",
-        mountName: "device-1",
-        targetConsumer: "NETEXPLORER",
-        payloadBytes: "1856279",
-        payloadSizeMb: "1.770",
-        failureReason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
-        failureMessage: "Kafka message exceeds permitted size"
+        keys: [
+          "dpmdp:stream:kafka-outbound",
+          "dpmdp:stream:kafka-outbound-dead-letter",
+          "dpmdp:hash:kafka-daily-metrics"
+        ],
+        arguments: expect.arrayContaining([
+          "1-0", "worker-1", "NETEXPLORER", "device-1", "1856279", "1.770",
+          "KAFKA_MESSAGE_SIZE_TOO_LARGE",
+          "Kafka message exceeds permitted size", "oversized"
+        ])
       })
     );
-    expect(mockRedis.xAdd.mock.calls[0][2]).not.toHaveProperty("payload");
-    expect(mockRedis.xAck).toHaveBeenCalled();
-    expect(mockRedis.xDel).toHaveBeenCalled();
+  });
+
+  test("renews ownership only for message IDs still owned by the worker", async () => {
+    mockRedis.eval.mockResolvedValueOnce(["1-0", "2-0"]);
+
+    await expect(
+      queue.renewKafkaOutboundOwnership(["1-0", "2-0"], "worker-1", {})
+    ).resolves.toEqual(["1-0", "2-0"]);
+    expect(mockRedis.eval).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        keys: ["dpmdp:stream:kafka-outbound"],
+        arguments: [
+          "dpmdp:group:kafka-outbound", "worker-1", "1-0", "2-0"
+        ]
+      })
+    );
   });
 
   test("clears the dead-letter stream and returns its previous entry count", async () => {
@@ -152,7 +171,11 @@ describe("Redis Kafka daily metrics", () => {
     expect(mockRedis.eval).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        keys: ["dpmdp:hash:kafka-daily-metrics"],
+        keys: [
+          "dpmdp:hash:kafka-daily-metrics",
+          "dpmdp:stream:kafka-outbound-success",
+          "dpmdp:stream:kafka-outbound-dead-letter"
+        ],
         arguments: expect.arrayContaining([
           "Europe/Berlin",
           "successful",
