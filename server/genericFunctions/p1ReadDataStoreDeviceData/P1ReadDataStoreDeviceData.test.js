@@ -54,7 +54,7 @@ describe("p1ReadDataStoreDeviceData", () => {
 
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
-      '_id': 'device=100250001/processing-data',
+      '_id': 'device=100250001/result-data',
       'found': true,
       '_source': 
         [
@@ -136,7 +136,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return mountName not found in DataStore", async () => {
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
-      '_id': 'device=100250001/processing-data',
+      '_id': 'device=100250001/result-data',
       'found': false,
       '_source': []
     });

@@ -131,7 +131,7 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
    *
    * {
    *   _index: 'data-store',
-   *   _id: 'device=100250001/processing-data',
+   *   _id: 'device=100250001/result-data',
    *   _source: {...}
    * }
    *
@@ -152,7 +152,7 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
   const source = responseBody._source;
 
   if (!source || typeof source !== 'object') {
-    throw new Error('Processing data not available');
+    throw new Error('Result data not available');
   }
 
   return source;
