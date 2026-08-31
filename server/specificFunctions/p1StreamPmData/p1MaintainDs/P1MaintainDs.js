@@ -1,7 +1,8 @@
 const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
-const { withRetry } = require("../../../utils/retry");
+const { sleep, withRetry } = require("../../../utils/retry");
 const ERRORS = require("./ErrorsEnum");
+const redisQueue = require("../../../infra/redis/redisStreamQueue");
 const logger = require('../../../service/LoggingService.js').getLogger();
 
 function isPlainObject(value) {
@@ -304,6 +305,155 @@ async function deleteDataStoreDocument(client, dataStoreEsClient, hit, mountName
 
   return deleted;
 }
+
+function getTaskBody(response) {
+  return (response || {}).body || response || {};
+}
+
+async function waitForCleanupTask(client, taskId, pollIntervalMs, logger) {
+  while (true) {
+    const taskResponse = await withRetry(
+      async () => client.tasks.get({ task_id: taskId }),
+      {
+        label: `p1MaintainDs.task:${taskId}`,
+        retryIntervalMs: 10000,
+        logger
+      }
+    );
+    const taskBody = getTaskBody(taskResponse);
+
+    if (taskBody.completed === true) {
+      if (taskBody.error) {
+        throw new Error(taskBody.error.reason || JSON.stringify(taskBody.error));
+      }
+      return taskBody.response || {};
+    }
+
+    await sleep(pollIntervalMs);
+  }
+}
+
+async function cleanDataStoreOnServer(
+  client,
+  dataStoreEsClient,
+  cutoff,
+  options,
+  logger
+) {
+  const scriptSource = [
+    "def existing = ctx._source.batch;",
+    "if (existing == null) { existing = new ArrayList(); }",
+    "def retained = new ArrayList();",
+    "for (def entry : existing) {",
+    "  def timestamp = null;",
+    "  if (entry != null && entry.containsKey('batchTimestamp')) { timestamp = entry.batchTimestamp; }",
+    "  else if (entry != null && entry.containsKey('timestamp')) { timestamp = entry.timestamp; }",
+    "  if (timestamp == null) { retained.add(entry); continue; }",
+    "  try {",
+    "    if (ZonedDateTime.parse(timestamp).toInstant().toEpochMilli() >= params.cutoffMillis) { retained.add(entry); }",
+    "  } catch (Exception ignored) { retained.add(entry); }",
+    "}",
+    "boolean batchChanged = retained.size() != existing.size();",
+    "if (retained.isEmpty()) {",
+    "  def documentTimestamp = ctx._source.timestamp;",
+    "  boolean deleteDocument = documentTimestamp == null;",
+    "  if (!deleteDocument) {",
+    "    try { deleteDocument = ZonedDateTime.parse(documentTimestamp).toInstant().toEpochMilli() < params.cutoffMillis; }",
+    "    catch (Exception ignored) { deleteDocument = true; }",
+    "  }",
+    "  if (deleteDocument) { ctx.op = 'delete'; return; }",
+    "}",
+    "if (!batchChanged) { ctx.op = 'noop'; return; }",
+    "ctx._source.batch = retained;",
+    "ctx._source.locked = false;"
+  ].join(" ");
+
+  const startResponse = await withRetry(
+    async () => client.updateByQuery({
+      index: dataStoreEsClient["index-alias"],
+      conflicts: "proceed",
+      refresh: false,
+      wait_for_completion: false,
+      requests_per_second: options.requestsPerSecond,
+      scroll_size: options.scrollSize,
+      body: {
+        query: {
+          bool: {
+            must_not: [
+              { term: { "docType.keyword": "kafka-outbound-payload" } }
+            ]
+          }
+        },
+        script: {
+          lang: "painless",
+          source: scriptSource,
+          params: { cutoffMillis: cutoff }
+        }
+      }
+    }),
+    {
+      label: "p1MaintainDs.updateByQuery",
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+
+  const startBody = getTaskBody(startResponse);
+  if (startBody.task) {
+    return waitForCleanupTask(
+      client,
+      startBody.task,
+      options.taskPollIntervalMs,
+      logger
+    );
+  }
+
+  return startBody;
+}
+
+async function deleteFailedKafkaPayloads(client, dataStoreEsClient, options, logger) {
+  const response = await withRetry(
+    async () => client.deleteByQuery({
+      index: dataStoreEsClient["index-alias"],
+      conflicts: "proceed",
+      refresh: false,
+      wait_for_completion: false,
+      requests_per_second: options.requestsPerSecond,
+      scroll_size: options.scrollSize,
+      body: {
+        query: {
+          bool: {
+            filter: [
+              { term: { "docType.keyword": "kafka-outbound-payload" } }
+            ],
+            should: [
+              { term: { "deliveryState.keyword": "permanent-failure" } },
+              { term: { "deliveryState.keyword": "oversized-evidence" } }
+            ],
+            minimum_should_match: 1
+          }
+        }
+      }
+    }),
+    {
+      label: "p1MaintainDs.deleteFailedKafkaPayloads",
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+
+  const body = getTaskBody(response);
+  if (body.task) {
+    const completed = await waitForCleanupTask(
+      client,
+      body.task,
+      options.taskPollIntervalMs,
+      logger
+    );
+    return Number(completed.deleted || 0);
+  }
+  return Number(body.deleted || 0);
+}
 /**
  * Request:
  * {
@@ -336,6 +486,26 @@ async function run(request) {
       ERRORS.RETENTION_PERIOD_INVALID
     );
 
+    const cleanupRequestsPerSecond = Number(
+      getParamFromFunction(parameters, "p1MaintainDs", "cleanupRequestsPerSecond", 10)
+    );
+    const cleanupScrollSize = Number(
+      getParamFromFunction(parameters, "p1MaintainDs", "cleanupScrollSize", 100)
+    );
+    const cleanupTaskPollIntervalMs = Number(
+      getParamFromFunction(parameters, "p1MaintainDs", "cleanupTaskPollIntervalMs", 5000)
+    );
+
+    if (!Number.isFinite(cleanupRequestsPerSecond) || cleanupRequestsPerSecond <= 0) {
+      throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
+    }
+    if (!Number.isInteger(cleanupScrollSize) || cleanupScrollSize < 1 || cleanupScrollSize > 1000) {
+      throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
+    }
+    if (!Number.isFinite(cleanupTaskPollIntervalMs) || cleanupTaskPollIntervalMs < 100) {
+      throw buildProcessingError(ERRORS.PARAMETERS_INVALID);
+    }
+
     let client;
     try {
       client = await onfAdapter.getEsClient(
@@ -355,35 +525,6 @@ async function run(request) {
       throw buildProcessingError(ERRORS.DATA_STORE_ES_CLIENT_INVALID, error);
     }
 
-    let response;
-    try {
-      response = await withRetry(
-        async () =>
-          client.search({
-            index: dataStoreEsClient["index-alias"],
-            size: 1000,
-            body: {
-              query: { match_all: {} }
-            }
-          }),
-        {
-          label: "p1MaintainDs.search",
-          retryIntervalMs: 10000,
-          logger
-        }
-      );
-    } catch (error) {
-      logger.error(
-        {
-          label: "p1MaintainDs: search-data-store-for-maintenance",
-          error: error.message || error
-        },
-        "Failed to search data store for maintenance"
-      );
-      //throw buildProcessingError(ERRORS.ELASTICSEARCH_READ_ERROR, error);
-      logger.error(buildProcessingError(ERRORS.ELASTICSEARCH_READ_ERROR, error).message);
-    }
-
     const cutoff = Date.now() - retentionPeriodHours * 3600 * 1000;
 
     const cutoffIso = new Date(cutoff).toJSON();
@@ -396,8 +537,14 @@ async function run(request) {
       devicesVisited: 0,
       devicesDeleted: 0,
       batchesDeleted: 0,
+      devicesUpdated: 0,
+      devicesUnchanged: 0,
+      versionConflicts: 0,
+      failures: 0,
       mountNames: [],
-      loggingDocumentsDeleted: 0
+      loggingDocumentsDeleted: 0,
+      kafkaPayloadDocumentsDeleted: 0,
+      cleanupTaskId: null
     };
 
     if (loggingClient) {
@@ -409,108 +556,61 @@ async function run(request) {
       );
     }
 
-  
+    cleanupSummary.kafkaPayloadDocumentsDeleted = await deleteFailedKafkaPayloads(
+      client,
+      dataStoreEsClient,
+      {
+        requestsPerSecond: cleanupRequestsPerSecond,
+        scrollSize: cleanupScrollSize,
+        taskPollIntervalMs: cleanupTaskPollIntervalMs
+      },
+      logger
+    );
 
-    for (const hit of (((response || {}).body?.hits || {}).hits || [])) {
-      const source = hit._source || {};
-      const mountName = source.mountName || source["mount-name"] || hit._id;
-
-      if (!mountName) {
-        throw buildProcessingError(ERRORS.MOUNT_NAME_NOT_PROVIDED);
-      }
-
-      cleanupSummary.devicesVisited += 1;
-      cleanupSummary.mountNames.push(mountName);
-
-      const batch = Array.isArray(source.batch) ? source.batch : [];
-      const filtered = batch.filter((entry) => {
-        const timestamp = entry.batchTimestamp || entry.timestamp;
-        if (!timestamp) {
-          return true;
-        }
-        return new Date(timestamp).getTime() >= cutoff;
-      });
-      const deletedBatches = batch.length - filtered.length;
-
-      if (shouldDeleteDataStoreDocument(source, filtered, cutoff)) {
-        await deleteDataStoreDocument(
-          client,
-          dataStoreEsClient,
-          hit,
-          mountName,
-          logger
-        );
-
-        cleanupSummary.devicesDeleted += 1;
-        cleanupSummary.batchesDeleted += deletedBatches;
-
-        continue;
-      }
-
-      source.locked = true;
-      source.timestamp = source.timestamp || new Date().toJSON();
-
-      try {
-        await withRetry(
-          async () =>
-            client.index({
-              index: dataStoreEsClient["index-alias"],
-              id: hit._id,
-              body: source,
-              refresh: false
-            }),
-          {
-            label: `p1MaintainDs.lock:${mountName}`,
-            retryIntervalMs: 10000,
-            logger
-          }
-        );
-      } catch (error) {
-        logger.error?.(
-          {
-            label: "p1MaintainDs: lock-device-for-maintenance",
-            mountName,
-            error: error.message || error
-          },
-          "Failed to lock device for maintenance"
-        );
-        //throw buildProcessingError(ERRORS.ELASTICSEARCH_LOCK_ERROR, error);
-        logger.error(buildProcessingError(ERRORS.ELASTICSEARCH_LOCK_ERROR, error).message);
-      }
-
-      cleanupSummary.batchesDeleted += deletedBatches;
-      source.batch = filtered;
-      source.timestamp = new Date().toJSON();
-      source.locked = false;
-
-      try {
-        await withRetry(
-          async () =>
-            client.index({
-              index: dataStoreEsClient["index-alias"],
-              id: hit._id,
-              body: source,
-              refresh: false
-            }),
-          {
-            label: `p1MaintainDs.save:${mountName}`,
-            retryIntervalMs: 10000,
-            logger
-          }
-        );
-      } catch (error) {
-        logger.error?.(
-          {
-            label: "p1MaintainDs: save-device-after-maintenance",
-            mountName,
-            error: error.message || error
-          },
-          "Failed to save device after maintenance"
-        );
-       // throw buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error);
-        logger.error(buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error).message);
-      }
+    let cleanupResponse;
+    try {
+      cleanupResponse = await cleanDataStoreOnServer(
+        client,
+        dataStoreEsClient,
+        cutoff,
+        {
+          requestsPerSecond: cleanupRequestsPerSecond,
+          scrollSize: cleanupScrollSize,
+          taskPollIntervalMs: cleanupTaskPollIntervalMs
+        },
+        logger
+      );
+    } catch (error) {
+      logger.error?.(
+        {
+          label: "p1MaintainDs: server-side-cleanup",
+          error: error.message || error
+        },
+        "Failed to clean data store on Elasticsearch"
+      );
+      throw buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error);
     }
+
+    cleanupSummary.devicesVisited = Number(cleanupResponse.total || 0);
+    cleanupSummary.devicesDeleted = Number(cleanupResponse.deleted || 0);
+    cleanupSummary.devicesUpdated = Number(cleanupResponse.updated || 0);
+    cleanupSummary.devicesUnchanged = Number(cleanupResponse.noops || 0);
+    cleanupSummary.versionConflicts = Number(cleanupResponse.version_conflicts || 0);
+    cleanupSummary.failures = Array.isArray(cleanupResponse.failures)
+      ? cleanupResponse.failures.length
+      : 0;
+
+    if (cleanupSummary.failures > 0) {
+      const error = new Error(
+        `Elasticsearch cleanup completed with ${cleanupSummary.failures} failures`
+      );
+      error.failures = cleanupResponse.failures;
+      throw buildProcessingError(ERRORS.ELASTICSEARCH_WRITE_ERROR, error);
+    }
+
+    // Elasticsearch update-by-query does not return a safe aggregate count of
+    // removed nested batch entries. Returning null avoids reporting a false zero.
+    cleanupSummary.batchesDeleted = null;
 
     return { cleanupSummary };
   } catch (error) {

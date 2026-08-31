@@ -14,6 +14,152 @@ const RETRY_COUNT_HASH = "dpmdp:hash:retry-count";
 const RETRY_STATE_HASH = "dpmdp:hash:retry-state";
 const KAFKA_OUTBOUND_STREAM = "dpmdp:stream:kafka-outbound";
 const KAFKA_OUTBOUND_GROUP = "dpmdp:group:kafka-outbound";
+const KAFKA_OUTBOUND_DEAD_LETTER_STREAM = "dpmdp:stream:kafka-outbound-dead-letter";
+const KAFKA_OUTBOUND_SUCCESS_STREAM = "dpmdp:stream:kafka-outbound-success";
+const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
+
+const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
+local storedDate = redis.call('HGET', KEYS[1], 'date')
+if storedDate ~= ARGV[1] then
+  redis.call('UNLINK', KEYS[2], KEYS[3])
+  redis.call('DEL', KEYS[1])
+  redis.call('HSET', KEYS[1],
+    'date', ARGV[1],
+    'timezone', ARGV[2],
+    'successful', '0',
+    'failed', '0',
+    'oversized', '0')
+end
+
+local count = tonumber(ARGV[5]) or 0
+if count > 0 and ARGV[3] ~= '' then
+  redis.call('HINCRBY', KEYS[1], ARGV[3], count)
+  if ARGV[4] ~= '' then
+    redis.call('HINCRBY', KEYS[1], ARGV[3] .. ':' .. ARGV[4], count)
+  end
+end
+redis.call('HSET', KEYS[1], 'updatedAt', ARGV[6])
+return redis.call('HGETALL', KEYS[1])
+`;
+
+const MOVE_KAFKA_OUTBOUND_TO_DEAD_LETTER_SCRIPT = `
+local pending = redis.call('XPENDING', KEYS[1], ARGV[1], ARGV[2], ARGV[2], 1)
+if #pending == 0 or pending[1][2] ~= ARGV[3] then
+  return 0
+end
+local acknowledged = redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+if acknowledged ~= 1 then
+  return 0
+end
+redis.call('XADD', KEYS[2], '*',
+  'originalMessageId', ARGV[2],
+  'targetConsumer', ARGV[4],
+  'mountName', ARGV[5],
+  'payloadBytes', ARGV[6],
+  'payloadSizeMb', ARGV[7],
+  'failureReason', ARGV[8],
+  'failureMessage', ARGV[9],
+  'failedAt', ARGV[10])
+redis.call('XDEL', KEYS[1], ARGV[2])
+redis.call('HINCRBY', KEYS[3], ARGV[11], 1)
+redis.call('HINCRBY', KEYS[3], ARGV[11] .. ':' .. ARGV[4], 1)
+redis.call('HSET', KEYS[3], 'updatedAt', ARGV[10])
+return 1
+`;
+
+const ACK_KAFKA_OUTBOUND_IF_OWNED_SCRIPT = `
+local pending = redis.call('XPENDING', KEYS[1], ARGV[1], ARGV[2], ARGV[2], 1)
+if #pending == 0 or pending[1][2] ~= ARGV[3] then
+  return 0
+end
+return redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+`;
+
+const RENEW_KAFKA_OUTBOUND_OWNERSHIP_SCRIPT = `
+local renewed = {}
+for i = 3, #ARGV do
+  local messageId = ARGV[i]
+  local pending = redis.call('XPENDING', KEYS[1], ARGV[1], messageId, messageId, 1)
+  if #pending > 0 and pending[1][2] == ARGV[2] then
+    redis.call('XCLAIM', KEYS[1], ARGV[1], ARGV[2], 0, messageId, 'IDLE', 0, 'JUSTID')
+    table.insert(renewed, messageId)
+  end
+end
+return renewed
+`;
+
+function getBerlinDate(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(now);
+}
+
+async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
+  const allowedMetrics = new Set(["successful", "failed", "oversized"]);
+  if (metric && !allowedMetrics.has(metric)) {
+    throw new Error(`Unsupported Kafka daily metric: ${metric}`);
+  }
+
+  const redis = await getRedisClient(logger);
+  return redis.eval(UPDATE_KAFKA_DAILY_METRICS_SCRIPT, {
+    keys: [
+      KAFKA_DAILY_METRICS_HASH,
+      KAFKA_OUTBOUND_SUCCESS_STREAM,
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM
+    ],
+    arguments: [
+      getBerlinDate(),
+      "Europe/Berlin",
+      metric || "",
+      String(targetConsumer || "").toUpperCase(),
+      String(Number(count) || 0),
+      new Date().toISOString()
+    ]
+  });
+}
+
+async function resetKafkaDailyMetricsIfNeeded(loggers) {
+  return updateKafkaDailyMetrics("", "", 0, loggers);
+}
+
+const ENQUEUE_MOUNT_NAMES_SCRIPT = `
+local enqueued = 0
+local skipped = 0
+local allowRetryPending = ARGV[1] == '1'
+local allowDeadLetter = ARGV[2] == '1'
+local createdAt = ARGV[3]
+local extraFieldCount = tonumber(ARGV[4])
+local mountNameStart = 5 + (extraFieldCount * 2)
+
+for i = mountNameStart, #ARGV do
+  local mountName = ARGV[i]
+  local blocked = false
+
+  if not allowDeadLetter and redis.call('SISMEMBER', KEYS[3], mountName) == 1 then
+    blocked = true
+  end
+  if not blocked and not allowRetryPending and redis.call('SISMEMBER', KEYS[4], mountName) == 1 then
+    blocked = true
+  end
+
+  if blocked or redis.call('SADD', KEYS[2], mountName) == 0 then
+    skipped = skipped + 1
+  else
+    local fields = { 'mountName', mountName, 'createdAt', createdAt }
+    for fieldIndex = 0, extraFieldCount - 1 do
+      table.insert(fields, ARGV[5 + (fieldIndex * 2)])
+      table.insert(fields, ARGV[6 + (fieldIndex * 2)])
+    end
+    redis.call('XADD', KEYS[1], '*', unpack(fields))
+    enqueued = enqueued + 1
+  end
+end
+
+return { enqueued, skipped }
+`;
 
 async function ensureGroup(loggers) {
     const redis = await getRedisClient(logger);
@@ -141,6 +287,81 @@ async function deleteStreamEntriesByMountName(streamKey, groupName, mountName, l
   }
 
   return deletedCount;
+}
+
+async function deleteStreamEntriesByMountNames(streamKey, groupName, mountNames, loggers) {
+  const redis = await getRedisClient(logger);
+  const mountNameSet = new Set(
+    (mountNames || []).map((value) => String(value || "").trim()).filter(Boolean)
+  );
+
+  if (mountNameSet.size === 0) return 0;
+
+  let deletedCount = 0;
+  let startId = "-";
+  const count = 500;
+
+  while (true) {
+    const entries = await redis.xRange(streamKey, startId, "+", { COUNT: count });
+    if (!entries || entries.length === 0) break;
+
+    const idsToDelete = entries
+      .filter((entry) => mountNameSet.has(String(entry.message?.mountName || "").trim()))
+      .map((entry) => entry.id);
+
+    if (idsToDelete.length > 0) {
+      if (groupName) {
+        await redis.xAck(streamKey, groupName, idsToDelete).catch(() => {});
+      }
+      await redis.xDel(streamKey, idsToDelete);
+      deletedCount += idsToDelete.length;
+    }
+
+    startId = nextStreamId(entries[entries.length - 1].id);
+    if (entries.length < count) break;
+  }
+
+  return deletedCount;
+}
+
+async function clearRetryAndDeadLetterForReplicaUpdates(mountNames, loggers) {
+  const redis = await getRedisClient(logger);
+  const uniqueMountNames = Array.from(new Set(
+    (mountNames || []).map((value) => String(value || "").trim()).filter(Boolean)
+  ));
+
+  if (uniqueMountNames.length === 0) {
+    return { mountNameCount: 0, retryStreamDeleted: 0, deadLetterStreamDeleted: 0 };
+  }
+
+  const retryStreamDeleted = await deleteStreamEntriesByMountNames(
+    RETRY_STREAM,
+    RETRY_GROUP,
+    uniqueMountNames,
+    logger
+  );
+  const deadLetterStreamDeleted = await deleteStreamEntriesByMountNames(
+    RETRY_DEAD_LETTER_STREAM,
+    null,
+    uniqueMountNames,
+    logger
+  );
+
+  const batchSize = 500;
+  for (let i = 0; i < uniqueMountNames.length; i += batchSize) {
+    const batch = uniqueMountNames.slice(i, i + batchSize);
+    await redis.sRem(RETRY_PENDING_SET, batch);
+    await redis.sRem(RETRY_DEAD_LETTER_SET, batch);
+    await redis.hDel(RETRY_COUNT_HASH, batch);
+    await redis.hDel(RETRY_STATE_HASH, batch);
+  }
+
+  logger?.info?.(
+    { mountNameCount: uniqueMountNames.length, retryStreamDeleted, deadLetterStreamDeleted },
+    "Cleared retry/dead-letter state for replica update in bulk"
+  );
+
+  return { mountNameCount: uniqueMountNames.length, retryStreamDeleted, deadLetterStreamDeleted };
 }
 
 async function clearRetryAndDeadLetterForReplicaUpdate(mountName, loggers) {
@@ -497,97 +718,45 @@ async function enqueueMountNames(mountNames, options, loggers) {
   for (let i = 0; i < (mountNames || []).length; i += batchSize) {
     const batch = mountNames.slice(i, i + batchSize);
 
-    for (const mountName of batch) {
-      const safeMountName = String(mountName || "").trim();
+    const safeBatch = batch.map((value) => String(value || "").trim()).filter(Boolean);
+    skipped += batch.length - safeBatch.length;
 
-      if (!safeMountName) {
-        skipped += 1;
-        continue;
+    try {
+      if (clearRetryAndDeadLetterBeforeEnqueue) {
+        for (const safeMountName of safeBatch) {
+          await clearRetryAndDeadLetterForReplicaUpdate(safeMountName, logger);
+        }
       }
 
-      try {
-        if (clearRetryAndDeadLetterBeforeEnqueue) {
-          await clearRetryAndDeadLetterForReplicaUpdate(
-            safeMountName,
-            logger
-          );
-        }
+      const extraArguments = Object.entries(extraFields).flatMap(([key, value]) => [
+        String(key),
+        toRedisValue(value)
+      ]);
+      const result = await redis.eval(ENQUEUE_MOUNT_NAMES_SCRIPT, {
+        keys: [
+          DEVICE_STREAM,
+          DEVICE_DEDUP_SET,
+          RETRY_DEAD_LETTER_SET,
+          RETRY_PENDING_SET
+        ],
+        arguments: [
+          allowRetryPending ? "1" : "0",
+          allowDeadLetter ? "1" : "0",
+          new Date().toISOString(),
+          String(Object.keys(extraFields).length),
+          ...extraArguments,
+          ...safeBatch
+        ]
+      });
 
-        if (!allowDeadLetter) {
-          const isDeadLettered = await redis.sIsMember(
-            RETRY_DEAD_LETTER_SET,
-            safeMountName
-          );
-
-          if (isDeadLettered) {
-            skipped += 1;
-
-            logger &&
-              logger.warn &&
-              logger.warn(
-                { mountName: safeMountName },
-                "Skipped enqueue because mountName is already dead-lettered"
-              );
-
-            continue;
-          }
-        }
-
-        if (!allowRetryPending) {
-          const isRetryPending = await redis.sIsMember(
-            RETRY_PENDING_SET,
-            safeMountName
-          );
-
-          if (isRetryPending) {
-            skipped += 1;
-
-            logger &&
-              logger.warn &&
-              logger.warn(
-                { mountName: safeMountName },
-                "Skipped enqueue because mountName is already pending retry"
-              );
-
-            continue;
-          }
-        }
-
-        const isNew = await redis.sAdd(DEVICE_DEDUP_SET, safeMountName);
-
-        if (isNew === 1) {
-          await redis.xAdd(DEVICE_STREAM, "*", {
-            mountName: toRedisValue(safeMountName),
-            createdAt: new Date().toISOString(),
-            ...Object.fromEntries(
-              Object.entries(extraFields).map(([key, value]) => [
-                key,
-                toRedisValue(value)
-              ])
-            )
-          });
-
-          enqueued += 1;
-        } else {
-          skipped += 1;
-
-          logger &&
-            logger.debug &&
-            logger.debug(
-              { mountName: safeMountName },
-              "Skipped duplicate mountName enqueue"
-            );
-        }
-      } catch (error) {
-        failed += 1;
-
-        logger &&
-          logger.error &&
-          logger.error(
-            { mountName: safeMountName, error },
-            "Failed to enqueue mountName"
-          );
-      }
+      enqueued += Number(result?.[0] || 0);
+      skipped += Number(result?.[1] || 0);
+    } catch (error) {
+      failed += safeBatch.length;
+      logger?.error?.(
+        { batchStart: i, batchSize: safeBatch.length, error: error.message || error },
+        "Failed to enqueue mountName batch"
+      );
     }
 
     if (pauseMs > 0 && i + batchSize < mountNames.length) {
@@ -656,12 +825,15 @@ async function readNextKafkaOutbound(consumerName, blockMs, count, loggers) {
   return response || [];
 }
 
-async function ackKafkaOutbound(messageId, loggers) {
+async function ackKafkaOutbound(messageId, consumerName, loggers) {
   const redis = await getRedisClient(logger);
-  await redis.xAck(KAFKA_OUTBOUND_STREAM, KAFKA_OUTBOUND_GROUP, messageId);
+  return Number(await redis.eval(ACK_KAFKA_OUTBOUND_IF_OWNED_SCRIPT, {
+    keys: [KAFKA_OUTBOUND_STREAM],
+    arguments: [KAFKA_OUTBOUND_GROUP, messageId, consumerName]
+  }));
 }
 
-async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, loggers) {
+async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, count, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xAutoClaim(
@@ -671,11 +843,28 @@ async function reclaimStaleKafkaOutbound(consumerName, minIdleMs, loggers) {
     minIdleMs,
     "0-0",
     {
-      COUNT: 100
+      COUNT: count || 10
     }
   );
 
   return response ? response.messages || [] : [];
+}
+
+async function renewKafkaOutboundOwnership(messageIds, consumerName, loggers) {
+  if (!Array.isArray(messageIds) || messageIds.length === 0) {
+    return [];
+  }
+
+  const redis = await getRedisClient(logger);
+  const renewed = await redis.eval(RENEW_KAFKA_OUTBOUND_OWNERSHIP_SCRIPT, {
+    keys: [KAFKA_OUTBOUND_STREAM],
+    arguments: [
+      KAFKA_OUTBOUND_GROUP,
+      toRedisValue(consumerName),
+      ...messageIds.map(toRedisValue)
+    ]
+  });
+  return (renewed || []).map(String);
 }
 
 async function removeFromDedupSet(mountName, loggers) {
@@ -693,6 +882,103 @@ async function deleteKafkaOutboundMessage(messageId, loggers) {
   await redis.xDel(KAFKA_OUTBOUND_STREAM, messageId);
 }
 
+async function moveKafkaOutboundToDeadLetter(
+  redisMessage,
+  error,
+  metric,
+  consumerName,
+  loggers
+) {
+  const redis = await getRedisClient(logger);
+  // Keep the evidence stream on exactly the same Berlin calendar day as the
+  // daily counters. On the first operation after midnight the metrics hash
+  // and both evidence streams are reset by one atomic Redis script.
+  await resetKafkaDailyMetricsIfNeeded(loggers);
+  const fields = redisMessage.message || {};
+  const payloadBytes = Number(fields.payloadBytes || 0);
+  const payloadSizeMb = Number.isFinite(payloadBytes)
+    ? (payloadBytes / (1024 * 1024)).toFixed(3)
+    : "0.000";
+
+  // Only the current pending-entry owner may dead-letter/delete the message.
+  // XACK, compact XADD and XDEL are one atomic Redis operation so a worker
+  // that lost ownership cannot create false failure evidence.
+  return Number(await redis.eval(MOVE_KAFKA_OUTBOUND_TO_DEAD_LETTER_SCRIPT, {
+    keys: [
+      KAFKA_OUTBOUND_STREAM,
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
+      KAFKA_DAILY_METRICS_HASH
+    ],
+    arguments: [
+      KAFKA_OUTBOUND_GROUP,
+      toRedisValue(redisMessage.id),
+      toRedisValue(consumerName),
+      toRedisValue(fields.targetConsumer),
+      toRedisValue(fields.mountName),
+      toRedisValue(fields.payloadBytes),
+      toRedisValue(payloadSizeMb),
+      toRedisValue(error?.reason || error?.type || "NON_RETRYABLE"),
+      toRedisValue(error?.message || error),
+      new Date().toISOString(),
+      toRedisValue(metric)
+    ]
+  }));
+}
+
+async function recordKafkaOutboundSuccess(messages, loggers) {
+  const redis = await getRedisClient(logger);
+  const deliveredAt = new Date().toISOString();
+
+  await Promise.all((messages || []).map((redisMessage) => {
+    const fields = redisMessage.message || {};
+    const payloadBytes = Number(fields.payloadBytes || 0);
+    const payloadSizeMb = Number.isFinite(payloadBytes)
+      ? (payloadBytes / (1024 * 1024)).toFixed(3)
+      : "0.000";
+
+    return redis.xAdd(KAFKA_OUTBOUND_SUCCESS_STREAM, "*", {
+      originalMessageId: toRedisValue(redisMessage.id),
+      targetConsumer: toRedisValue(fields.targetConsumer),
+      mountName: toRedisValue(fields.mountName),
+      payloadBytes: toRedisValue(fields.payloadBytes),
+      payloadSizeMb: toRedisValue(payloadSizeMb),
+      deliveredAt
+    });
+  }));
+}
+
+async function clearKafkaOutboundSuccess(loggers) {
+  const redis = await getRedisClient(logger);
+  const entryCount = Number(await redis.xLen(KAFKA_OUTBOUND_SUCCESS_STREAM));
+
+  if (entryCount > 0) {
+    await redis.unlink(KAFKA_OUTBOUND_SUCCESS_STREAM);
+  }
+
+  logger?.info?.(
+    { entryCount },
+    "Cleared Kafka outbound success stream during maintenance"
+  );
+
+  return entryCount;
+}
+
+async function clearKafkaOutboundDeadLetter(loggers) {
+  const redis = await getRedisClient(logger);
+  const entryCount = Number(await redis.xLen(KAFKA_OUTBOUND_DEAD_LETTER_STREAM));
+
+  if (entryCount > 0) {
+    await redis.unlink(KAFKA_OUTBOUND_DEAD_LETTER_STREAM);
+  }
+
+  logger?.info?.(
+    { entryCount },
+    "Cleared Kafka outbound dead-letter stream during maintenance"
+  );
+
+  return entryCount;
+}
+
 module.exports = {
     DEVICE_STREAM,
     DEVICE_GROUP,
@@ -700,6 +986,9 @@ module.exports = {
     RETRY_GROUP,
     KAFKA_OUTBOUND_STREAM,
     KAFKA_OUTBOUND_GROUP,
+    KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
+    KAFKA_OUTBOUND_SUCCESS_STREAM,
+    KAFKA_DAILY_METRICS_HASH,
     RETRY_PENDING_SET,
     RETRY_COUNT_HASH,
     RETRY_STATE_HASH,
@@ -719,9 +1008,16 @@ module.exports = {
     readNextKafkaOutbound,
     ackKafkaOutbound,
     reclaimStaleKafkaOutbound,
+    renewKafkaOutboundOwnership,
     removeFromDedupSet,
     deleteMessage,
     deleteKafkaOutboundMessage,
+    moveKafkaOutboundToDeadLetter,
+    recordKafkaOutboundSuccess,
+    clearKafkaOutboundDeadLetter,
+    clearKafkaOutboundSuccess,
+    updateKafkaDailyMetrics,
+    resetKafkaDailyMetricsIfNeeded,
     ensureRetryGroup,
     readNextRetry,
     ackRetryMessage,
@@ -730,5 +1026,6 @@ module.exports = {
     enqueueRetryDeadLetter,
     getRetryQueueLength,
     clearRetryAndDeadLetterForReplicaUpdate,
+    clearRetryAndDeadLetterForReplicaUpdates,
     isRetryPending
 };

@@ -4,11 +4,22 @@ jest.mock("../../../infra/onf/onfAdapter", () => ({
 
 jest.mock("../../../infra/redis/redisStreamQueue", () => ({
   ensureGroup: jest.fn(),
+  clearRetryAndDeadLetterForReplicaUpdates: jest.fn(),
   enqueueMountNames: jest.fn()
+}));
+
+jest.mock("../../../infra/redis/redisClient", () => ({
+  getRedisClient: jest.fn()
+}));
+
+jest.mock("../../../core/replicaStateStore", () => ({
+  saveLastReplicaTime: jest.fn()
 }));
 
 const onfAdapter = require("../../../infra/onf/onfAdapter");
 const redisQueue = require("../../../infra/redis/redisStreamQueue");
+const { getRedisClient } = require("../../../infra/redis/redisClient");
+const { saveLastReplicaTime } = require("../../../core/replicaStateStore");
 const moduleUnderTest = require("./P1UpdateMwdiReplica");
 const ERRORS = require("./ErrorsEnum");
 
@@ -29,11 +40,23 @@ const validRequest = (overrides = {}) => ({
 });
 
 const mockSourceClient = {
-  reindex: jest.fn()
+  reindex: jest.fn(),
+  tasks: {
+    get: jest.fn(),
+    list: jest.fn()
+  }
 };
 
 const mockReplicaClient = {
-  search: jest.fn()
+  search: jest.fn(),
+  scroll: jest.fn(),
+  clearScroll: jest.fn()
+};
+
+const mockRedisClient = {
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn()
 };
 
 const mockLoggingClient = {
@@ -44,6 +67,12 @@ describe("P1UpdateMwdiReplica", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     onfAdapter.getEsClient.mockReset();
+    getRedisClient.mockResolvedValue(mockRedisClient);
+    mockRedisClient.get.mockResolvedValue(null);
+    mockRedisClient.set.mockResolvedValue("OK");
+    mockRedisClient.del.mockResolvedValue(1);
+    saveLastReplicaTime.mockResolvedValue();
+    mockSourceClient.tasks.list.mockResolvedValue({ body: { nodes: {} } });
 
     onfAdapter.getEsClient.mockImplementation(async (forceCreate, uuid) => {
       if (uuid === "source-uuid") return mockSourceClient;
@@ -53,6 +82,11 @@ describe("P1UpdateMwdiReplica", () => {
     });
 
     redisQueue.ensureGroup.mockResolvedValue();
+    redisQueue.clearRetryAndDeadLetterForReplicaUpdates.mockResolvedValue({
+      mountNameCount: 0,
+      retryStreamDeleted: 0,
+      deadLetterStreamDeleted: 0
+    });
     redisQueue.enqueueMountNames.mockResolvedValue({ enqueued: 1, skipped: 0, failed: 0 });
   });
 
@@ -91,8 +125,15 @@ describe("P1UpdateMwdiReplica", () => {
 
   describe("Happy Path", () => {
     beforeEach(() => {
-      mockSourceClient.reindex.mockResolvedValue({ body: { created: 1, updated: 1, total: 1 } });
+      mockSourceClient.reindex.mockResolvedValue({ body: { task: "node-1:123" } });
+      mockSourceClient.tasks.get.mockResolvedValue({
+        body: {
+          completed: true,
+          response: { created: 1, updated: 1, total: 1 }
+        }
+      });
       mockReplicaClient.search.mockResolvedValue({ body: { hits: { hits: [{ _id: "id-1", _source: { mountName: "device-1" } }] } } });
+      mockReplicaClient.clearScroll.mockResolvedValue({});
       mockLoggingClient.index.mockResolvedValue({});
     });
 
@@ -105,23 +146,67 @@ describe("P1UpdateMwdiReplica", () => {
       });
     });
 
+    test("uses only the configured eight-minute lookback on first start", async () => {
+      const beforeRun = Date.now();
+
+      await moduleUnderTest.run(validRequest({
+        lastReplicaTime: null,
+        runtimeConfig: {
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 },
+          service: { replicaInitialLookbackMs: 480000 }
+        }
+      }));
+
+      const afterRun = Date.now();
+      const reindexRequest = mockSourceClient.reindex.mock.calls[0][0];
+      const range = reindexRequest.body.source.query.bool.must[1].range[
+        "last-complete-control-construct-update-time"
+      ];
+      const periodStartMs = Date.parse(range.gt);
+
+      expect(periodStartMs).toBeGreaterThanOrEqual(beforeRun - 480000);
+      expect(periodStartMs).toBeLessThanOrEqual(afterRun - 480000);
+    });
+
     test("calls Elasticsearch and Redis clients with expected parameters", async () => {
       await moduleUnderTest.run(validRequest());
 
       expect(onfAdapter.getEsClient).toHaveBeenCalledTimes(3);
       expect(mockSourceClient.reindex).toHaveBeenCalledTimes(1);
+      expect(mockSourceClient.reindex).toHaveBeenCalledWith(
+        expect.objectContaining({ wait_for_completion: false })
+      );
+      expect(mockSourceClient.tasks.get).toHaveBeenCalledWith({
+        task_id: "node-1:123"
+      });
+      expect(mockRedisClient.set).toHaveBeenCalledWith(
+        "dpmdp:replica:active-reindex-task",
+        expect.stringContaining('"taskId":"node-1:123"')
+      );
       expect(mockReplicaClient.search).toHaveBeenCalledTimes(1);
       expect(redisQueue.ensureGroup).toHaveBeenCalledTimes(1);
+      expect(redisQueue.clearRetryAndDeadLetterForReplicaUpdates).toHaveBeenCalledWith(
+        ["device-1"],
+        logger
+      );
       expect(redisQueue.enqueueMountNames).toHaveBeenCalledWith(
         ["device-1"],
         expect.objectContaining({
           batchSize: 10,
           pauseMs: 1,
-          clearRetryAndDeadLetterBeforeEnqueue: true
+          clearRetryAndDeadLetterBeforeEnqueue: false
         }),
         logger
       );
       expect(mockLoggingClient.index).toHaveBeenCalledTimes(1);
+      expect(saveLastReplicaTime).toHaveBeenCalledWith(
+        validRequest().loggingEsClient,
+        expect.any(String),
+        logger
+      );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "dpmdp:replica:active-reindex-task"
+      );
     });
 
     test("returns empty mount list when replica search returns no hits", async () => {
@@ -131,6 +216,145 @@ describe("P1UpdateMwdiReplica", () => {
 
       expect(result.updatedMountNames).toEqual([]);
       expect(result.timestamp).toEqual(expect.any(String));
+    });
+
+    test("collects mount names from every replica search page", async () => {
+      mockReplicaClient.search.mockResolvedValue({
+        body: {
+          _scroll_id: "scroll-1",
+          hits: { hits: [{ _id: "id-1", _source: { mountName: "device-1" } }] }
+        }
+      });
+      mockReplicaClient.scroll
+        .mockResolvedValueOnce({
+          body: {
+            _scroll_id: "scroll-2",
+            hits: { hits: [{ _id: "id-2", _source: { mountName: "device-2" } }] }
+          }
+        })
+        .mockResolvedValueOnce({
+          body: { _scroll_id: "scroll-2", hits: { hits: [] } }
+        });
+
+      const result = await moduleUnderTest.run(validRequest());
+
+      expect(result.updatedMountNames).toEqual(["device-1", "device-2"]);
+      expect(mockReplicaClient.scroll).toHaveBeenCalledTimes(2);
+      expect(mockReplicaClient.clearScroll).toHaveBeenCalledWith({
+        scroll_id: "scroll-2"
+      });
+    });
+
+    test("resumes the active Redis task instead of starting a duplicate", async () => {
+      mockRedisClient.get.mockResolvedValue(JSON.stringify({
+        taskId: "node-1:existing",
+        sourceIndex: "mwdi-index",
+        destinationIndex: "replica-index",
+        periodStartTime: "2026-01-01T00:00:00.000Z",
+        periodEndTime: "2026-01-02T00:00:00.000Z"
+      }));
+
+      await moduleUnderTest.run(validRequest());
+
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(mockSourceClient.tasks.get).toHaveBeenCalledWith({
+        task_id: "node-1:existing"
+      });
+    });
+
+    test("finishes recovery when a saved Redis task completed before restart", async () => {
+      mockRedisClient.get.mockResolvedValue(JSON.stringify({
+        taskId: "node-1:completed-before-restart",
+        sourceIndex: "mwdi-index",
+        destinationIndex: "replica-index",
+        periodStartTime: "2026-01-01T00:00:00.000Z",
+        periodEndTime: "2026-01-02T00:00:00.000Z"
+      }));
+      mockSourceClient.tasks.get.mockRejectedValue({
+        meta: { statusCode: 404 },
+        message: "resource_not_found_exception"
+      });
+
+      const result = await moduleUnderTest.run(validRequest());
+
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(result.updatedMountNames).toEqual(["device-1"]);
+      expect(saveLastReplicaTime).toHaveBeenCalledWith(
+        validRequest().loggingEsClient,
+        "2026-01-02T00:00:00.000Z",
+        logger
+      );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "dpmdp:replica:active-reindex-task"
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
+          taskId: "node-1:completed-before-restart",
+          discovered: false
+        }),
+        expect.any(String)
+      );
+    });
+
+    test("discovers and resumes an existing Elasticsearch task", async () => {
+      mockSourceClient.tasks.list.mockResolvedValue({
+        body: {
+          nodes: {
+            "node-1": {
+              tasks: {
+                "node-1:existing": {
+                  description: "reindex from [mwdi-index] to [replica-index][_doc]",
+                  start_time_in_millis: Date.parse("2026-01-02T00:00:00.000Z")
+                }
+              }
+            }
+          }
+        }
+      });
+
+      await moduleUnderTest.run(validRequest());
+
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(mockSourceClient.tasks.get).toHaveBeenCalledWith({
+        task_id: "node-1:existing"
+      });
+      expect(mockRedisClient.set).toHaveBeenCalledWith(
+        "dpmdp:replica:active-reindex-task",
+        expect.stringContaining('"discovered":true')
+      );
+    });
+
+    test("continues recovery when a discovered legacy task completed before polling", async () => {
+      mockSourceClient.tasks.list.mockResolvedValue({
+        body: {
+          nodes: {
+            "node-1": {
+              tasks: {
+                "node-1:legacy": {
+                  description: "reindex from [mwdi-index] to [replica-index][_doc]",
+                  start_time_in_millis: Date.parse("2026-01-02T00:00:00.000Z")
+                }
+              }
+            }
+          }
+        }
+      });
+      mockSourceClient.tasks.get.mockRejectedValue({
+        meta: { statusCode: 404 },
+        message: "resource_not_found_exception"
+      });
+
+      const result = await moduleUnderTest.run(validRequest());
+
+      expect(result.updatedMountNames).toEqual(["device-1"]);
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
+          taskId: "node-1:legacy"
+        }),
+        expect.any(String)
+      );
     });
   });
 
@@ -183,12 +407,40 @@ describe("P1UpdateMwdiReplica", () => {
       );
     });
 
-    test("logs and continues when replica search fails", async () => {
-      mockSourceClient.reindex.mockResolvedValue({ body: { created: 1, updated: 1, total: 1 } });
+    test("throws data replication failed when the reindex task fails", async () => {
+      mockSourceClient.reindex.mockResolvedValue({ body: { task: "node-1:failed" } });
+      mockSourceClient.tasks.get.mockResolvedValue({
+        body: {
+          completed: true,
+          error: { reason: "task failed" }
+        }
+      });
+
+      await expect(moduleUnderTest.run(validRequest())).rejects.toThrow(
+        ERRORS.DATA_REPLICATION_FAILED
+      );
+      expect(mockLoggingClient.index).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            status: "FAILED",
+            error: "task failed"
+          })
+        })
+      );
+    });
+
+    test("does not advance when replica search fails", async () => {
+      mockSourceClient.reindex.mockResolvedValue({ body: { task: "node-1:123" } });
+      mockSourceClient.tasks.get.mockResolvedValue({
+        body: {
+          completed: true,
+          response: { created: 1, updated: 1, total: 1 }
+        }
+      });
       mockReplicaClient.search.mockRejectedValueOnce(new Error("search failed"));
       mockLoggingClient.index.mockResolvedValue({});
 
-      const result = await moduleUnderTest.run(validRequest());
+      await expect(moduleUnderTest.run(validRequest())).rejects.toThrow("search failed");
 
       expect(logger.error).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -196,7 +448,8 @@ describe("P1UpdateMwdiReplica", () => {
         }),
         "Failed to search replica after reindex"
       );
-      expect(result.updatedMountNames).toEqual([]);
+      expect(redisQueue.enqueueMountNames).not.toHaveBeenCalled();
+      expect(mockRedisClient.del).not.toHaveBeenCalled();
     });
   });
 });
