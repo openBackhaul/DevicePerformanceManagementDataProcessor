@@ -2,6 +2,7 @@ const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
 const { sleep, withRetry } = require("../../../utils/retry");
 const ERRORS = require("./ErrorsEnum");
+const redisQueue = require("../../../infra/redis/redisStreamQueue");
 const logger = require('../../../service/LoggingService.js').getLogger();
 
 function isPlainObject(value) {

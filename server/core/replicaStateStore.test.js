@@ -42,9 +42,7 @@ describe("replicaStateStore", () => {
   test("uses the initial fallback when the state document does not exist", async () => {
     elasticsearch.get.mockResolvedValue({ body: { found: false } });
 
-    await expect(loadLastReplicaTime(loggingEsClient, logger)).resolves.toBe(
-      "1970-06-01T00:00:00.000Z"
-    );
+    await expect(loadLastReplicaTime(loggingEsClient, logger)).resolves.toBeNull();
     expect(logger.error).not.toHaveBeenCalled();
   });
 });
