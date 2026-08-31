@@ -11,6 +11,7 @@ module.exports = {
     '<rootDir>/genericFunctions/p1CalculateInterfacePmDataQuality',
     '<rootDir>/genericFunctions/p1CategorizeDataVolume',
     '<rootDir>/genericFunctions/P1CalculateBusyHourPerformanceIndicators',
+    '<rootDir>/genericFunctions/p1ReadDataStoreDeviceData',
     '<rootDir>/genericFunctions/p2DiscardIrrelevantPmRecords',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf',
