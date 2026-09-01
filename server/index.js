@@ -71,12 +71,12 @@ http.createServer(app).listen(serverPort, function () {
     });
 
 //  start streaming AFTER success
-   async function initial(){
+   /* async function initial(){
     await P1StreamPmData.run().catch(err => {
         console.error(`Error running P1StreamPmData: ${err}`);
     });
    }
-   initial();
+   initial(); */
 /* prepareElasticsearch(false).catch(err => {
     console.error(`Error preparing Elasticsearch : ${err}`);
 }).finally(() => {

@@ -52,7 +52,7 @@
 
   "redis": {
     "url": "redis://127.0.0.1:6379",
-    "replicaLockTtlMs": 60000,
+    "replicaLockTtlMs": 960000,
     "cleanupLockTtlMs": 300000,
     "staleMessageIdleMs": 300000,
     "reconnectBaseDelayMs": 250,

@@ -730,7 +730,7 @@ async function run(request) {
               : reindexResp?.body?.total ?? 0,
             status: statusMessage,
             updatedMountNameCount: updatedMountNames.length,
-            lastReplicaTime: new Date().toISOString(),
+            lastReplicaTime: timestamp,
             timestamp: new Date().toISOString()
           },
           refresh: false

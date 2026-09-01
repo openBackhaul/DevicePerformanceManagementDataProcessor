@@ -249,7 +249,7 @@ async function run() {
       loggingEsClient,
       maxQueueLengthBeforeReplicaPause: Number(redisConfig.maxQueueLengthBeforeReplicaPause) || 20000,
       replicaPauseMsWhenBacklogged: Number(redisConfig.replicaPauseMsWhenBacklogged) || 30000,
-      replicaLockTtlMs: redisConfig.replicaLockTtlMs || 60000,
+      replicaLockTtlMs: redisConfig.replicaLockTtlMs || 960000,
       runtimeConfig
     }).catch((error) => logger.error({ error }, `Replica leader loop crashed: ${error.message || error}`));
 

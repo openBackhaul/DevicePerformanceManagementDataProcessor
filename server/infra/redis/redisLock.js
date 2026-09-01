@@ -11,21 +11,28 @@ async function acquireLock(lockKey, ttlMs, loggers) {
 
 async function renewLock(lockKey, token, ttlMs, loggers) {
   const redis = await getRedisClient(logger);
-  const current = await redis.get(lockKey);
-
-  if (current !== token) return false;
-
-  const result = await redis.set(lockKey, token, { XX: true, PX: ttlMs });
-  return result === "OK";
+  const result = await redis.eval(
+    "if redis.call('GET', KEYS[1]) == ARGV[1] then " +
+      "return redis.call('PEXPIRE', KEYS[1], ARGV[2]) else return 0 end",
+    {
+      keys: [lockKey],
+      arguments: [token, String(ttlMs)]
+    }
+  );
+  return result === 1;
 }
 
 async function releaseLock(lockKey, token, loggers) {
   const redis = await getRedisClient(logger);
-  const current = await redis.get(lockKey);
-
-  if (current === token) {
-    await redis.del(lockKey);
-  }
+  const result = await redis.eval(
+    "if redis.call('GET', KEYS[1]) == ARGV[1] then " +
+      "return redis.call('DEL', KEYS[1]) else return 0 end",
+    {
+      keys: [lockKey],
+      arguments: [token]
+    }
+  );
+  return result === 1;
 }
 
 module.exports = { acquireLock, renewLock, releaseLock };
