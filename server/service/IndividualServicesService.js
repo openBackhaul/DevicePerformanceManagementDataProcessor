@@ -14,6 +14,27 @@ var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParam
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
+// Errori restituiti dall'endpoint live control-construct di MWDI
+// (vedi response 502/530/531/532/533 in spec/DevicePerformanceManagementDataProcessor.yaml)
+const LIVE_CC_ERROR_MESSAGES = {
+  502: 'Bad Gateway',
+  530: 'Data invalid. Response data not available, incomplete or corrupted',
+  531: 'Bad Gateway. Authentication at upstream server failed.',
+  532: 'Bad Gateway. Upstream server not responding.',
+  533: 'Resource unknown. The resource for the connected device does not exist at the Controller',
+};
+
+// Categoria di fallimento per-mount per ogni codice di errore live CC:
+// - 'unconnected': il device non e' raggiungibile / non risponde (errore 532 a livello di servizio)
+// - 'missing':     la risorsa non esiste presso il controller (errore 533 a livello di servizio)
+const LIVE_CC_ERROR_CATEGORIES = {
+  502: 'unconnected',
+  530: 'unconnected',
+  531: 'unconnected',
+  532: 'unconnected',
+  533: 'missing',
+};
+
 
 /**
  * Initiates process of embedding a new release
@@ -118,7 +139,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       inputMountNames,
     );
     if (connectionStatusError) {
-      logger.error(unconnectedMountNames, `Unconnected mounts detected: `);
+      logger.error(connectionStatusError.unconnectedMountNames, `Unconnected mounts detected: `);
 
       // Throw error with code 532 and unconnected mount names
       const error532 = {
@@ -212,6 +233,10 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     // Array per raccogliere i risultati del ciclo live control-construct
     // const liveControlConstructResults = []; // is not used!
 
+    // Mount names che producono errori live CC: non collegati oppure risorsa sconosciuta
+    const unconnectedMountNames = [];
+    const missingMountNames = [];
+
     // Ciclo attraverso tutti i mount names per recuperare i live control-construct
     for (const mountName of outdatedMountNames) {
       logger.debug(`Processing mount: ${mountName}`);
@@ -241,7 +266,41 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
           //   data: data
           // });
         } else {
-          logger.warn(`Failed to retrieve control-construct for ${mountName}: ${response.status}`);
+          // Prova a decodificare il body di errore restituito da MWDI ({ code, message })
+          let errorBody = null;
+          try {
+            errorBody = await response.json();
+          } catch (err) {
+            // Il body non e' JSON oppure e' assente: ci si basa sullo status HTTP
+          }
+
+          const mwdiErrorCode =
+            (errorBody && typeof errorBody === "object" && errorBody.code) ||
+            response.status;
+
+          const errorCategory = LIVE_CC_ERROR_CATEGORIES[mwdiErrorCode];
+          const errorMessage =
+            (errorBody && errorBody.message) ||
+            LIVE_CC_ERROR_MESSAGES[response.status] ||
+            `HTTP ${response.status}`;
+
+          if (errorCategory === "unconnected") {
+            // 502/530/531/532: il device non e' raggiungibile / non risponde / dati non validi
+            unconnectedMountNames.push(mountName);
+            logger.error(
+              `Mount ${mountName} not connected (HTTP ${response.status}: ${errorMessage})`,
+            );
+          } else if (errorCategory === "missing") {
+            // 533: risorsa sconosciuta presso il controller
+            missingMountNames.push(mountName);
+            logger.error(
+              `Mount ${mountName} resource unknown (HTTP ${response.status}: ${errorMessage})`,
+            );
+          } else {
+            logger.warn(
+              `Failed to retrieve control-construct for ${mountName}: ${response.status} - ${errorMessage}`,
+            );
+          }
           // liveControlConstructResults.push({
           //   mountName: mountName,
           //   status: "failed",
@@ -256,6 +315,24 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         //   error: error.message
         // });
       }
+    }
+
+    // 10. Riepilogo esiti per-mount: se qualche risorsa e' sconosciuta presso il controller (533)
+    if (missingMountNames.length > 0) {
+      throw {
+        code: 533,
+        message: LIVE_CC_ERROR_MESSAGES[533],
+        "missing-mount-names": missingMountNames,
+      };
+    }
+
+    // Se qualche device non e' collegato / non risponde (502/530/531/532)
+    if (unconnectedMountNames.length > 0) {
+      throw {
+        code: 532,
+        message: LIVE_CC_ERROR_MESSAGES[532],
+        "unconnected-mount-names": unconnectedMountNames,
+      };
     }
 
     logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
