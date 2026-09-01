@@ -257,4 +257,124 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
     expect(result).toHaveProperty('status', 'success');
     expect(result).not.toHaveProperty('already-up-to-date-mount-names');
   });
+
+  test('live CC returns 532 -> should throw error 532 with unconnected mount', async () => {
+    const body = {
+      'mount-names': ['CO18302']
+    };
+
+    // 1st call: MWDI provide-device-status-metadata (all connected, no last update -> outdated)
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          'mount-name': 'CO18302',
+          'connection-status': 'connected',
+          'last-successful-complete-control-construct-update-time': null
+        }
+      ]
+    });
+    // 2nd call: live control-construct -> upstream not responding
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 532,
+      json: async () => ({
+        code: 532,
+        message: 'Bad Gateway. Upstream server not responding.'
+      })
+    });
+
+    await expect(
+      IndividualServices.initiatePmDataUpdate(
+        body,
+        'user',
+        'originator',
+        'x-correlator',
+        'trace-indicator',
+        'customer-journey'
+      )
+    ).rejects.toMatchObject({
+      code: 532,
+      message: 'Bad Gateway. Upstream server not responding.',
+      'unconnected-mount-names': ['CO18302']
+    });
+  });
+
+  test('live CC returns 502 -> should throw error 532 with unconnected mount', async () => {
+    const body = {
+      'mount-names': ['CO18302']
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          'mount-name': 'CO18302',
+          'connection-status': 'connected',
+          'last-successful-complete-control-construct-update-time': null
+        }
+      ]
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      json: async () => ({
+        code: 502,
+        message: 'Bad Gateway'
+      })
+    });
+
+    await expect(
+      IndividualServices.initiatePmDataUpdate(
+        body,
+        'user',
+        'originator',
+        'x-correlator',
+        'trace-indicator',
+        'customer-journey'
+      )
+    ).rejects.toMatchObject({
+      code: 532,
+      'unconnected-mount-names': ['CO18302']
+    });
+  });
+
+  test('live CC returns 533 -> should throw error 533 with missing mount', async () => {
+    const body = {
+      'mount-names': ['CO18302']
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          'mount-name': 'CO18302',
+          'connection-status': 'connected',
+          'last-successful-complete-control-construct-update-time': null
+        }
+      ]
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      json: async () => ({
+        code: 533,
+        message: 'Resource unknown. The resource for the connected device does not exist at the Controller'
+      })
+    });
+
+    await expect(
+      IndividualServices.initiatePmDataUpdate(
+        body,
+        'user',
+        'originator',
+        'x-correlator',
+        'trace-indicator',
+        'customer-journey'
+      )
+    ).rejects.toMatchObject({
+      code: 533,
+      'missing-mount-names': ['CO18302']
+    });
+  });
 });
