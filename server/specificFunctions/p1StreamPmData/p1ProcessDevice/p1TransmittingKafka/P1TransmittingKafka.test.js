@@ -111,16 +111,15 @@ describe("P1TransmittingKafka", () => {
       expect(sendBatch).not.toHaveBeenCalled();
     });
 
-    test("rejects oversized Kafka messages locally before sending to EMP", async () => {
+    test("sends a large message to Kafka instead of rejecting it locally", async () => {
       global.KAFKA_MAX_SINGLE_MESSAGE_BYTES = 1;
+      sendBatch.mockResolvedValueOnce({ response: { status: 200 } });
 
       try {
-        await expect(run(validRequest())).rejects.toMatchObject({
-          reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
-          retryable: false,
-          maxBytes: 1
-        });
-        expect(sendBatch).not.toHaveBeenCalled();
+        await expect(run(validRequest())).resolves.toEqual(
+          expect.objectContaining({ transmissionResultList: expect.any(Array) })
+        );
+        expect(sendBatch).toHaveBeenCalledTimes(1);
       } finally {
         delete global.KAFKA_MAX_SINGLE_MESSAGE_BYTES;
       }

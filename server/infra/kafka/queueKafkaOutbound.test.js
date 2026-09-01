@@ -4,20 +4,20 @@ jest.mock("../redis/redisStreamQueue", () => ({
   updateKafkaDailyMetrics: jest.fn().mockResolvedValue(undefined)
 }));
 
+jest.mock("../elasticSearch/kafkaPayloadStore", () => ({
+  storeKafkaPayload: jest.fn().mockResolvedValue("payload-ref-1"),
+  deleteKafkaPayload: jest.fn().mockResolvedValue(undefined)
+}));
+
 jest.mock("../../service/LoggingService.js", () => ({
   getLogger: jest.fn(() => ({
     error: jest.fn()
   }))
 }));
 
-jest.mock("../elasticSearch/kafkaPayloadStore", () => ({
-  storeKafkaPayload: jest.fn().mockResolvedValue("payload-ref-1"),
-  deleteKafkaPayload: jest.fn().mockResolvedValue(undefined)
-}));
-
 const redisQueue = require("../redis/redisStreamQueue");
-const queueKafkaOutbound = require("./queueKafkaOutbound");
 const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
+const queueKafkaOutbound = require("./queueKafkaOutbound");
 
 describe("queueKafkaOutbound", () => {
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe("queueKafkaOutbound", () => {
     kafkaPayloadStore.deleteKafkaPayload.mockClear();
   });
 
-  it("queues messages with payload size less than or equal to 1MB", async () => {
+  it("stores even small payloads in Elasticsearch and queues only a reference", async () => {
     const logger = { error: jest.fn() };
 
     const result = await queueKafkaOutbound.run({
@@ -49,14 +49,20 @@ describe("queueKafkaOutbound", () => {
       expect.objectContaining({
         targetConsumer: "APT",
         mountName: "device-1",
-        payloadStorage: "REDIS",
+        payloadStorage: "ES",
         status: "QUEUED"
       })
     ]);
+    expect(kafkaPayloadStore.storeKafkaPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mountName: "device-1",
+        deliveryState: "pending"
+      })
+    );
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it("stores an oversized payload in Elasticsearch as evidence", async () => {
+  it("builds a Redis queue message without pre-rejecting a large payload", async () => {
     const oneMbStringPayload = "x".repeat((1024 * 1024) - 2);
 
     const queueMessage = await queueKafkaOutbound.buildRedisQueueMessage({
@@ -67,23 +73,17 @@ describe("queueKafkaOutbound", () => {
       payloadVersion: "1.0",
       eventTime: "2026-07-08T00:00:00.000Z",
       payload: oneMbStringPayload
-    }, { "index-alias": "datastore" }, {});
+    });
 
     expect(queueMessage).toMatchObject({
       targetConsumer: "APT",
       mountName: "device-exact",
-      payloadStorage: "ES",
-      payloadRefId: "payload-ref-1",
-      payloadBytes: 1024 * 1024,
-      status: "STORED_NOT_QUEUED",
-      reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE"
+      payloadStorage: "REDIS",
+      payloadBytes: 1024 * 1024
     });
-    expect(kafkaPayloadStore.storeKafkaPayload).toHaveBeenCalledWith(
-      expect.objectContaining({ deliveryState: "oversized-evidence" })
-    );
   });
 
-  it("does not put Elasticsearch evidence references into the Redis queue", async () => {
+  it("stores a payload over 1MB in Elasticsearch and queues only its reference", async () => {
     const logger = { error: jest.fn(), warn: jest.fn() };
 
     const result = await queueKafkaOutbound.run({
@@ -98,22 +98,33 @@ describe("queueKafkaOutbound", () => {
       }
     });
 
-    expect(redisQueue.enqueueKafkaOutbound).not.toHaveBeenCalled();
-    expect(redisQueue.ensureKafkaOutboundGroup).not.toHaveBeenCalled();
+    expect(redisQueue.enqueueKafkaOutbound).toHaveBeenCalledTimes(1);
+    expect(kafkaPayloadStore.storeKafkaPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetConsumer: "APT",
+        mountName: "device-oversized",
+        deliveryState: "pending"
+      })
+    );
+    expect(redisQueue.enqueueKafkaOutbound).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payloadStorage: "ES",
+        payload: "",
+        payloadRefId: "payload-ref-1"
+      }),
+      logger
+    );
+    expect(redisQueue.ensureKafkaOutboundGroup).toHaveBeenCalledTimes(1);
     expect(logger.error).not.toHaveBeenCalled();
     expect(result.queuedResultList).toEqual([
       expect.objectContaining({
         targetConsumer: "APT",
         mountName: "device-oversized",
         payloadStorage: "ES",
-        status: "STORED_NOT_QUEUED",
-        reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE",
+        status: "QUEUED",
         payloadBytes: expect.any(Number)
       })
     ]);
-    expect(logger.warn).toHaveBeenCalled();
-    expect(redisQueue.updateKafkaDailyMetrics).toHaveBeenCalledWith(
-      "oversized", "APT", 1, logger
-    );
+    expect(redisQueue.updateKafkaDailyMetrics).not.toHaveBeenCalled();
   });
 });

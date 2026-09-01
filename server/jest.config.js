@@ -8,12 +8,19 @@ module.exports = {
     '<rootDir>/genericFunctions/p1CalculateAiCapacity',
     '<rootDir>/genericFunctions/p1CalculateUtilization',
     '<rootDir>/genericFunctions/p1CalculateEthernetKpis',
+    '<rootDir>/genericFunctions/p1CalculateInterfacePmDataQuality',
     '<rootDir>/genericFunctions/p1CategorizeDataVolume',
-    '<rootDir>/genericFunctions/p1CalculateBusyHourPerformanceIndicators',
+    '<rootDir>/genericFunctions/P1CalculateBusyHourPerformanceIndicators',
+    '<rootDir>/genericFunctions/p1ReadDataStoreDeviceData',
+    '<rootDir>/genericFunctions/p2DiscardIrrelevantPmRecords',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf',
+    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1PrepareTxModes',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices',
-    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices'
+    '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices',
+    '<rootDir>/specificFunctions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf',
+    '<rootDir>/infra/kafka',
+    '<rootDir>/service'
   ],
 };

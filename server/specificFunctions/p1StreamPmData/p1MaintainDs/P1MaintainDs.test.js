@@ -11,6 +11,11 @@ jest.mock("../../../utils/retry", () => ({
   withRetry: jest.fn()
 }));
 
+jest.mock("../../../infra/redis/redisStreamQueue", () => ({
+  clearKafkaOutboundDeadLetter: jest.fn().mockResolvedValue(0),
+  clearKafkaOutboundSuccess: jest.fn().mockResolvedValue(0)
+}));
+
 const mockLogger = {
   error: jest.fn(),
   info: jest.fn(),
@@ -24,6 +29,7 @@ jest.mock("../../../../service/LoggingService.js", () => ({
 const onfAdapter = require("../../../infra/onf/onfAdapter");
 const { getParamFromFunction } = require("../../../utils/functionTree");
 const { withRetry } = require("../../../utils/retry");
+const redisQueue = require("../../../infra/redis/redisStreamQueue");
 const moduleUnderTest = require("./P1MaintainDs");
 const ERRORS = require("./ErrorsEnum");
 
@@ -93,6 +99,8 @@ describe("P1MaintainDs", () => {
     );
 
     withRetry.mockImplementation((fn) => fn());
+    redisQueue.clearKafkaOutboundDeadLetter.mockResolvedValue(0);
+    redisQueue.clearKafkaOutboundSuccess.mockResolvedValue(0);
   });
 
   test("exports a run function", () => {
@@ -240,6 +248,8 @@ describe("P1MaintainDs", () => {
       })
     );
     expect(result.cleanupSummary.kafkaPayloadDocumentsDeleted).toBe(7);
+    expect(redisQueue.clearKafkaOutboundDeadLetter).not.toHaveBeenCalled();
+    expect(redisQueue.clearKafkaOutboundSuccess).not.toHaveBeenCalled();
   });
 
   test("waits for an asynchronous Elasticsearch cleanup task", async () => {
