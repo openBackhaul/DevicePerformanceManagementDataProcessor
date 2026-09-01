@@ -2,8 +2,10 @@ const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
 const { withRetry } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 
-let producer = null;
-let producerConfigKey = null;
+// A DPMDP instance can publish to several Kafka provider configurations at the
+// same time. Keep one producer per configuration; replacing one global producer
+// caused concurrent workers to disconnect a producer that was still connecting.
+const producerEntries = new Map();
 
 function asNumber(value, defaultValue) {
   const numberValue = Number(value);
@@ -193,8 +195,13 @@ function buildProducerConfig(options) {
       String(global.KAFKA_ENABLE_IDEMPOTENCE || "true") === "true",
 
     // Message/request size
-    //"message.max.bytes": asNumber(global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES, 5242880),
-    //"socket.request.max.bytes": asNumber(global.KAFKA_SOCKET_REQUEST_MAX_BYTES, 10485760),
+    "message.max.bytes": asNumber(global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES, 5242880),
+    // Bound native delivery waits so a failed broker/topic cannot block every
+    // Redis outbound worker indefinitely. Failed entries remain pending and
+    // are reclaimed after the configured stale-message interval.
+    "delivery.timeout.ms": asNumber(global.KAFKA_DELIVERY_TIMEOUT_MS, 60000),
+    "request.timeout.ms": asNumber(global.KAFKA_REQUEST_TIMEOUT_MS, 30000),
+    "socket.timeout.ms": asNumber(global.KAFKA_SOCKET_TIMEOUT_MS, 30000),
 
     // Throughput optimization
     "linger.ms": asNumber(global.KAFKA_LINGER_MS, 50),
@@ -229,18 +236,29 @@ function getConfigKey(config) {
     sslCaLocation: config["ssl.ca.location"],
     sslCertificateLocation: config["ssl.certificate.location"],
     sslKeyLocation: config["ssl.key.location"],
-    sslKeyPassword: config["ssl.key.password"]
+    sslKeyPassword: config["ssl.key.password"],
+    messageMaxBytes: config["message.max.bytes"],
+    deliveryTimeoutMs: config["delivery.timeout.ms"],
+    requestTimeoutMs: config["request.timeout.ms"],
+    socketTimeoutMs: config["socket.timeout.ms"]
   });
 }
 
-async function resetProducer(logger, reason) {
-  if (!producer) {
-    producerConfigKey = null;
-    return;
-  }
+async function resetProducerEntry(key, logger, reason) {
+  const entry = producerEntries.get(key);
+  if (!entry) return;
+
+  // Remove first so no new sender receives an entry that is being closed.
+  producerEntries.delete(key);
 
   try {
-    await producer.disconnect();
+    // If connection is still being established, let that lifecycle settle
+    // before disconnecting. This prevents a late native ready callback from
+    // arriving after disconnect has moved the producer to another state.
+    await entry.connectPromise.catch(() => {});
+    if (entry.connected) {
+      await entry.producer.disconnect();
+    }
   } catch (error) {
     logger &&
       logger.warn &&
@@ -253,8 +271,11 @@ async function resetProducer(logger, reason) {
       );
   }
 
-  producer = null;
-  producerConfigKey = null;
+}
+
+async function resetProducer(logger, reason) {
+  const keys = Array.from(producerEntries.keys());
+  await Promise.all(keys.map((key) => resetProducerEntry(key, logger, reason)));
 }
 
 async function initProducer(options) {
@@ -262,21 +283,23 @@ async function initProducer(options) {
   const config = buildProducerConfig(options || {});
   const key = getConfigKey(config);
 
-  if (producer && producerConfigKey === key) {
-    return producer;
-  }
-
-  if (producer) {
-    await resetProducer(logger, "CONFIG_CHANGED");
+  const existing = producerEntries.get(key);
+  if (existing) {
+    await existing.connectPromise;
+    return existing.producer;
   }
 
   const kafka = new Kafka();
-  producer = kafka.producer(config);
+  const kafkaProducer = kafka.producer(config);
+  const entry = {
+    producer: kafkaProducer,
+    connectPromise: null,
+    connected: false
+  };
 
-  try {
-    await withRetry(
+  entry.connectPromise = withRetry(
       async () => {
-        await producer.connect();
+        await kafkaProducer.connect();
       },
       {
         label: "confluentKafkaProducer.connect",
@@ -284,8 +307,11 @@ async function initProducer(options) {
         logger
       }
     );
+  producerEntries.set(key, entry);
 
-    producerConfigKey = key;
+  try {
+    await entry.connectPromise;
+    entry.connected = true;
 
     logger.info(
       {
@@ -295,9 +321,11 @@ async function initProducer(options) {
       "Confluent Kafka producer connected"
     );
 
-    return producer;
+    return kafkaProducer;
   } catch (error) {
-    await resetProducer(logger, "CONNECT_FAILED");
+    if (producerEntries.get(key) === entry) {
+      await resetProducerEntry(key, logger, "CONNECT_FAILED");
+    }
 
     logger.error(
       {
@@ -378,7 +406,10 @@ async function sendBatch(topic, messages, logger, kafkaOptions) {
       sent: messages.length
     };
   } catch (error) {
-    await resetProducer(logger, "SEND_FAILED");
+    const failedConfig = buildProducerConfig(
+      buildInitOptionsFromSendArgument(kafkaOptions, logger)
+    );
+    await resetProducerEntry(getConfigKey(failedConfig), logger, "SEND_FAILED");
 
     if (isKafkaMessageTooLargeError(error)) {
       error.retryable = false;
@@ -426,30 +457,19 @@ function isKafkaMessageTooLargeError(error) {
 }
 
 async function flushProducer(logger) {
-  if (!producer) {
-    return;
-  }
-
-  if (typeof producer.flush === "function") {
-    await producer.flush({ timeout: 10000 }).catch((error) => {
-      logger && logger.error && logger.error({ error }, "Kafka producer flush failed");
-    });
-  }
+  await Promise.all(Array.from(producerEntries.values()).map(async (entry) => {
+    await entry.connectPromise.catch(() => {});
+    if (typeof entry.producer.flush === "function") {
+      await entry.producer.flush({ timeout: 10000 }).catch((error) => {
+        logger && logger.error && logger.error({ error }, "Kafka producer flush failed");
+      });
+    }
+  }));
 }
 
 async function disconnectProducer(logger) {
-  if (!producer) {
-    return;
-  }
-
   await flushProducer(logger);
-
-  await producer.disconnect().catch((error) => {
-    logger && logger.error && logger.error({ error }, "Kafka producer disconnect failed");
-  });
-
-  producer = null;
-  producerConfigKey = null;
+  await resetProducer(logger, "SHUTDOWN");
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 const redisQueue = require("../../infra/redis/redisStreamQueue");
 const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
-const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
+const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 
 function shouldEnqueueRetry(error) {
   return !error || error.retryable !== false;
@@ -32,6 +32,13 @@ async function handleMessage(message, context) {
 
     return;
   }
+  const renewer = setInterval(async () => {
+    const renewed = await renewLock(lockKey, lockToken, lockTtlMs, context.logger).catch(() => false);
+    if (!renewed) {
+      logger.warn({ mountName, lockKey }, "Device processing lock could not be renewed");
+    }
+  }, Math.max(5000, Math.floor(lockTtlMs / 3)));
+
   try{
     try {
         const processDevice = context.processDevice || require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
@@ -41,8 +48,13 @@ async function handleMessage(message, context) {
           configFile: context.configFile,
           mwdiReplicaEsClient: context.mwdiReplicaEsClient,
           dataStoreEsClient: context.dataStoreEsClient,
-          kafkaConsumerTypes: context.kafkaConsumerTypes
+          kafkaConsumerTypes: context.kafkaConsumerTypes,
+          storingOptions: context.storingOptions
         });
+
+        if (context.appState?.metrics) {
+          context.appState.metrics.processedSuccess += 1;
+        }
 
         await redisQueue.clearRetryState(mountName, context.logger);
         
@@ -50,6 +62,9 @@ async function handleMessage(message, context) {
         await redisQueue.removeFromDedupSet(mountName, context.logger);
         await redisQueue.deleteMessage(id, context.logger);
     } catch (error) {
+        if (context.appState?.metrics) {
+          context.appState.metrics.processedFailure += 1;
+        }
         let retryResult;
 
         if (shouldEnqueueRetry(error)) {
@@ -60,6 +75,9 @@ async function handleMessage(message, context) {
           context.maxRetryCount || 1,
           context.logger
           );
+          if (context.appState?.metrics && retryResult?.status === "ENQUEUED") {
+            context.appState.metrics.retryEnqueued += 1;
+          }
         } else {
           retryResult = buildNonRetryableRetryResult(mountName, error);
 
@@ -90,6 +108,7 @@ async function handleMessage(message, context) {
         await redisQueue.deleteMessage(id, context.logger);
     }
    } finally {
+        clearInterval(renewer);
         await releaseLock(lockKey, lockToken, context.logger).catch(() => {});
    }
 }
@@ -98,40 +117,64 @@ async function workerLoop(context, consumerName) {
   await redisQueue.ensureGroup(context.logger);
 
   while (!context.appState.isShuttingDown) {
-    const reclaimed = await redisQueue.reclaimStale(
-      consumerName,
-      context.staleMessageIdleMs || 60000,
-      context.logger
-    );
+    try {
+      const reclaimed = await redisQueue.reclaimStale(
+        consumerName,
+        context.staleMessageIdleMs || 60000,
+        context.logger
+      );
 
-    for (const message of reclaimed) {
-      if (context.appState.isShuttingDown) break;
-      await handleMessage(message, context);
-    }
-
-    const streams = await redisQueue.readNext(
-      consumerName,
-      5000,
-      10,
-      context.logger
-    );
-
-    for (const stream of streams) {
-      for (const message of stream.messages || []) {
+      for (const message of reclaimed) {
         if (context.appState.isShuttingDown) break;
         await handleMessage(message, context);
       }
-    }
 
-    if (!streams.length && !reclaimed.length) {
-      await sleep(context.workerIdleSleepMs || 1000);
+      const streams = await redisQueue.readNext(
+        consumerName,
+        5000,
+        context.readCount || 10,
+        context.logger
+      );
+
+      for (const stream of streams) {
+        for (const message of stream.messages || []) {
+          if (context.appState.isShuttingDown) break;
+          await handleMessage(message, context);
+        }
+      }
+
+      if (!streams.length && !reclaimed.length) {
+        await sleep(context.workerIdleSleepMs || 1000);
+      }
+    } catch (error) {
+      logger.error(
+        { consumerName, error: error.message || error, code: error.code, type: error.type },
+        "Processing worker loop error; worker will continue"
+      );
+      await sleep(context.workerFailureSleepMs || 5000);
     }
   }
 }
 
 async function startProcessingWorkerPoolRedis(context) {
   const workers = [];
-  const workerCount = context.workerCount || 2;
+  const requestedWorkerCount = Number(context.workerCount ?? 2);
+  const maxWorkerCount = Number(context.maxWorkerCount ?? 16);
+
+  if (!Number.isInteger(requestedWorkerCount) || requestedWorkerCount < 1) {
+    throw new Error("Processing workerCount must be a positive integer");
+  }
+  if (!Number.isInteger(maxWorkerCount) || maxWorkerCount < 1) {
+    throw new Error("Processing maxWorkerCount must be a positive integer");
+  }
+
+  const workerCount = Math.min(requestedWorkerCount, maxWorkerCount);
+  if (workerCount !== requestedWorkerCount) {
+    context.logger?.warn?.(
+      { requestedWorkerCount, maxWorkerCount },
+      "Processing worker count capped by maxProcessingConcurrency"
+    );
+  }
 
   for (let i = 0; i < workerCount; i += 1) {
     const consumerName = `${context.instanceId}-consumer-${i + 1}`;
@@ -143,8 +186,8 @@ async function startProcessingWorkerPoolRedis(context) {
 
 module.exports = {
   startProcessingWorkerPoolRedis,
-  /* _internal: {
+  _internal: {
     handleMessage,
     shouldEnqueueRetry
-  } */
+  }
 };

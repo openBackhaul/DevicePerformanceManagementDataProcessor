@@ -99,6 +99,23 @@ async function ackAndDeleteRedisMessages(messages, context) {
     }
 }
 
+async function incrementMetricsForMessages(metric, messages, context) {
+    const counts = new Map();
+    for (const msg of messages || []) {
+        const consumer = String((msg.message || {}).targetConsumer || "UNKNOWN").toUpperCase();
+        counts.set(consumer, (counts.get(consumer) || 0) + 1);
+    }
+    for (const [consumer, count] of counts.entries()) {
+        await redisQueue.updateKafkaDailyMetrics(metric, consumer, count, context.logger)
+            .catch((error) => {
+                context.logger?.error?.(
+                    { metric, consumer, count, error: error.message || error },
+                    "Failed to update Kafka daily Redis metric"
+                );
+            });
+    }
+}
+
 async function deleteEsPayloadReferences(messages, context) {
     for (const msg of messages) {
         const fields = msg.message || {};
@@ -134,6 +151,7 @@ async function processKafkaOutboundChunk(messages, context) {
 
     await ackAndDeleteRedisMessages(messages, context);
     await deleteEsPayloadReferences(messages, context);
+    await incrementMetricsForMessages("successful", messages, context);
 
     logger.info(
         {
@@ -145,6 +163,28 @@ async function processKafkaOutboundChunk(messages, context) {
 }
 
 async function processKafkaOutboundMessages(messages, context) {
+    const esBackedMessages = messages.filter(
+        (message) => (message.message || {}).payloadStorage === "ES"
+    );
+    if (esBackedMessages.length > 0) {
+        // Legacy queue references are no longer deliverable by design. Keep
+        // any existing ES evidence document for maintenance and remove only
+        // the Redis references. Missing ES documents are handled identically.
+        await ackAndDeleteRedisMessages(esBackedMessages, context);
+        await incrementMetricsForMessages("failed", esBackedMessages, context);
+        logger.warn(
+            { messageCount: esBackedMessages.length },
+            "Removed legacy Elasticsearch-backed Kafka references from Redis without delivery"
+        );
+    }
+
+    messages = messages.filter(
+        (message) => (message.message || {}).payloadStorage !== "ES"
+    );
+    if (messages.length === 0) {
+        return;
+    }
+
     const chunks = splitIntoSizedChunks(messages, context);
 
     for (const chunk of chunks) {
@@ -206,12 +246,33 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
    *
    * For now:
    * - log clearly
-   * - ACK and delete from Kafka outbound stream
-   * - do not delete ES payload reference here, so the payload can still be inspected
-   *
-   * Later this can be changed to move the message to a dedicated
-   * dpmdp:stream:kafka-outbound-dead-letter stream.
+   * - preserve the complete message in the Kafka outbound dead-letter stream
+   * - ACK and delete it from the active stream only after the copy succeeds
+   * - do not delete any ES payload reference, so the payload remains inspectable
    */
+
+  if (error.reason === "KAFKA_MESSAGE_SIZE_TOO_LARGE") {
+    for (const msg of messages) {
+      const fields = msg.message || {};
+      const payload = parseRedisPayload(fields.payload);
+      await kafkaPayloadStore.storeKafkaPayload({
+        dataStoreEsClient: context.dataStoreEsClient,
+        targetConsumer: fields.targetConsumer,
+        mountName: fields.mountName,
+        payload,
+        payloadBytes: getPayloadBytes(msg),
+        deliveryState: "oversized-evidence",
+        logger
+      });
+    }
+    await incrementMetricsForMessages("oversized", messages, context);
+    await ackAndDeleteRedisMessages(messages, context);
+    logger.warn(
+      { source, messageCount: messages.length },
+      "Legacy oversized Kafka messages stored as Elasticsearch evidence and removed from Redis"
+    );
+    return;
+  }
 
   for (const msg of messages) {
     const fields = msg.message || {};
@@ -235,9 +296,17 @@ async function handleNonRetryableKafkaOutboundFailure(messages, context, source,
       "Kafka outbound message moved out of retry flow because error is non-retryable"
     );
 
-    await redisQueue.ackKafkaOutbound(msg.id, logger);
-    await redisQueue.deleteKafkaOutboundMessage(msg.id, logger);
+    await redisQueue.moveKafkaOutboundToDeadLetter(msg, error, logger);
+    if (fields.payloadStorage === "ES" && fields.payloadRefId) {
+      await kafkaPayloadStore.markKafkaPayloadForCleanup({
+        dataStoreEsClient: context.dataStoreEsClient,
+        payloadRefId: fields.payloadRefId,
+        failureReason: error.reason || error.message,
+        logger
+      });
+    }
   }
+  await incrementMetricsForMessages("failed", messages, context);
 }
 
 async function tryProcessKafkaOutboundMessages(messages, context, source) {
@@ -384,15 +453,31 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
 async function startKafkaOutboundWorkerPool(context) {
     const workers = [];
     const workerCount = context.workerCount || 1;
+    await redisQueue.resetKafkaDailyMetricsIfNeeded(context.logger);
+    const dailyMetricsResetTimer = setInterval(() => {
+        redisQueue.resetKafkaDailyMetricsIfNeeded(context.logger).catch((error) => {
+            context.logger?.error?.(
+                { error: error.message || error },
+                "Failed to refresh Kafka daily Redis metrics date"
+            );
+        });
+    }, 30000);
 
     for (let i = 0; i < workerCount; i += 1) {
         const consumerName = `${context.instanceId}-kafka-outbound-${i + 1}`;
         workers.push(kafkaOutboundWorkerLoop(context, consumerName));
     }
 
-    await Promise.all(workers);
+    try {
+        await Promise.all(workers);
+    } finally {
+        clearInterval(dailyMetricsResetTimer);
+    }
 }
 
 module.exports = {
-    startKafkaOutboundWorkerPool
+    startKafkaOutboundWorkerPool,
+    /* _internal: {
+        processKafkaOutboundMessages
+    } */
 };

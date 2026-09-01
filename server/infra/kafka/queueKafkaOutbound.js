@@ -1,15 +1,18 @@
 const redisQueue = require("../redis/redisStreamQueue");
-// const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
+const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
 const defaultLogger = require('../../service/LoggingService.js').getLogger();
 
-const MAX_KAFKA_MESSAGE_BYTES = 1024 * 1024;
+const DEFAULT_MAX_KAFKA_MESSAGE_BYTES = 900000;
 
 function getMaxKafkaMessageBytes() {
-  const configured = Number(process.env.MAX_REDIS_KAFKA_PAYLOAD_BYTES);
+  const configured = Number(
+    global.KAFKA_MAX_SINGLE_MESSAGE_BYTES ||
+    process.env.KAFKA_MAX_SINGLE_MESSAGE_BYTES
+  );
 
   return Number.isFinite(configured) && configured > 0
-    ? Math.min(configured, MAX_KAFKA_MESSAGE_BYTES)
-    : MAX_KAFKA_MESSAGE_BYTES;
+    ? configured
+    : DEFAULT_MAX_KAFKA_MESSAGE_BYTES;
 }
 
 function normalizeOutputs(request) {
@@ -44,53 +47,51 @@ function normalizeOutputMessage(output) {
 async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
   const serializedPayload = JSON.stringify(normalized.payload);
   const payloadBytes = Buffer.byteLength(serializedPayload, "utf8");
+  // Include the Kafka envelope and key in the decision. A payload below the
+  // broker limit can still exceed it once envelope metadata is serialized.
+  const estimatedEnvelope = {
+    messageId: "00000000-0000-4000-8000-000000000000",
+    producer: "DPMDP",
+    targetConsumer: normalized.targetConsumer,
+    messageType: normalized.messageType,
+    eventTime: normalized.eventTime,
+    sourceSystem: "DPMDP",
+    mountName: normalized.mountName,
+    correlationId: normalized.correlationId,
+    payloadVersion: normalized.payloadVersion,
+    payload: normalized.payload
+  };
+  const estimatedMessageBytes =
+    Buffer.byteLength(String(normalized.mountName || ""), "utf8") +
+    Buffer.byteLength(JSON.stringify(estimatedEnvelope), "utf8");
 
-  /*
-   * Previous local 1MB guard, retained for future use if DPMDP must skip
-   * oversized messages before sending to EMP Kafka again:
-   *
-   * const maxKafkaMessageBytes = getMaxKafkaMessageBytes();
-   *
-   * if (payloadBytes > maxKafkaMessageBytes) {
-   *   return {
-   *     targetConsumer: normalized.targetConsumer,
-   *     messageType: normalized.messageType,
-   *     mountName: normalized.mountName,
-   *     correlationId: normalized.correlationId,
-   *     payloadVersion: normalized.payloadVersion,
-   *     eventTime: normalized.eventTime,
-   *     status: "SKIPPED",
-   *     reason: "KAFKA_MESSAGE_SIZE_EXCEEDED_1MB",
-   *     payloadBytes
-   *   };
-   * }
-   */
+  if (estimatedMessageBytes > getMaxKafkaMessageBytes()) {
+    const payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
+      dataStoreEsClient,
+      targetConsumer: normalized.targetConsumer,
+      mountName: normalized.mountName,
+      payload: normalized.payload,
+      payloadBytes,
+      deliveryState: "oversized-evidence",
+      logger
+    });
 
-  /*
-   * Future fallback if payloads larger than 1MB are allowed again:
-   *
-   * const payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
-   *   dataStoreEsClient,
-   *   targetConsumer: normalized.targetConsumer,
-   *   mountName: normalized.mountName,
-   *   payload: normalized.payload,
-   *   payloadBytes,
-   *   logger
-   * });
-   *
-   * return {
-   *   targetConsumer: normalized.targetConsumer,
-   *   messageType: normalized.messageType,
-   *   mountName: normalized.mountName,
-   *   correlationId: normalized.correlationId,
-   *   payloadVersion: normalized.payloadVersion,
-   *   eventTime: normalized.eventTime,
-   *   payloadStorage: "ES",
-   *   payload: "",
-   *   payloadRefId,
-   *   payloadBytes
-   * };
-   */
+    return {
+      targetConsumer: normalized.targetConsumer,
+      messageType: normalized.messageType,
+      mountName: normalized.mountName,
+      correlationId: normalized.correlationId,
+      payloadVersion: normalized.payloadVersion,
+      eventTime: normalized.eventTime,
+      payloadStorage: "ES",
+      payload: "",
+      payloadRefId,
+      payloadBytes,
+      estimatedMessageBytes,
+      status: "STORED_NOT_QUEUED",
+      reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE"
+    };
+  }
 
   return {
     targetConsumer: normalized.targetConsumer,
@@ -119,8 +120,7 @@ async function run(request) {
   const { dataStoreEsClient } = request;
   const outputs = normalizeOutputs(request);
   const queuedResultList = [];
-
-  await redisQueue.ensureKafkaOutboundGroup(activeLogger);
+  let kafkaGroupEnsured = false;
 
   for (const output of outputs) {
     const normalized = normalizeOutputMessage(output);
@@ -140,30 +140,51 @@ async function run(request) {
       activeLogger
     );
 
-    /*
-     * Previous local 1MB skip handling, retained for future use with the
-     * commented guard in buildRedisQueueMessage:
-     *
-     * if (queueMessage.status === "SKIPPED") {
-     *   activeLogger.error(
-     *     {
-     *       label: "kafka-outbound-message-size-exceeded",
-     *       mountName: queueMessage.mountName,
-     *       targetConsumer: queueMessage.targetConsumer,
-     *       messageType: queueMessage.messageType,
-     *       payloadBytes: queueMessage.payloadBytes,
-     *       maxBytes: getMaxKafkaMessageBytes(),
-     *       payloadMb: Number((queueMessage.payloadBytes / (1024 * 1024)).toFixed(3))
-     *     },
-     *     "Kafka outbound message skipped because payload exceeds 1MB"
-     *   );
-     *
-     *   queuedResultList.push(queueMessage);
-     *   continue;
-     * }
-     */
+    if (queueMessage.status === "STORED_NOT_QUEUED") {
+      await redisQueue.updateKafkaDailyMetrics(
+        "oversized",
+        queueMessage.targetConsumer,
+        1,
+        activeLogger
+      ).catch((error) => {
+        activeLogger.error?.(
+          { error: error.message || error },
+          "Failed to increment oversized Kafka daily metric"
+        );
+      });
+      activeLogger.warn?.(
+        {
+          label: "kafka-outbound-oversized-evidence-stored",
+          mountName: queueMessage.mountName,
+          targetConsumer: queueMessage.targetConsumer,
+          payloadRefId: queueMessage.payloadRefId,
+          payloadBytes: queueMessage.payloadBytes,
+          estimatedMessageBytes: queueMessage.estimatedMessageBytes,
+          maxBytes: getMaxKafkaMessageBytes()
+        },
+        "Oversized Kafka output stored in Elasticsearch as evidence and not queued"
+      );
+      queuedResultList.push(queueMessage);
+      continue;
+    }
 
-    await redisQueue.enqueueKafkaOutbound(queueMessage, activeLogger);
+    if (!kafkaGroupEnsured) {
+      await redisQueue.ensureKafkaOutboundGroup(activeLogger);
+      kafkaGroupEnsured = true;
+    }
+
+    try {
+      await redisQueue.enqueueKafkaOutbound(queueMessage, activeLogger);
+    } catch (error) {
+      if (queueMessage.payloadStorage === "ES" && queueMessage.payloadRefId) {
+        await kafkaPayloadStore.deleteKafkaPayload({
+          dataStoreEsClient,
+          payloadRefId: queueMessage.payloadRefId,
+          logger: activeLogger
+        });
+      }
+      throw error;
+    }
 
     queuedResultList.push({
       targetConsumer: queueMessage.targetConsumer,

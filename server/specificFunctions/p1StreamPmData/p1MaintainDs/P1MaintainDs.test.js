@@ -7,6 +7,7 @@ jest.mock("../../../utils/functionTree", () => ({
 }));
 
 jest.mock("../../../utils/retry", () => ({
+  sleep: jest.fn().mockResolvedValue(undefined),
   withRetry: jest.fn()
 }));
 
@@ -53,15 +54,20 @@ describe("P1MaintainDs", () => {
     jest.clearAllMocks();
 
     mockDataStoreClient = {
-      search: jest.fn().mockResolvedValue({
+      deleteByQuery: jest.fn().mockResolvedValue({ body: { deleted: 0 } }),
+      updateByQuery: jest.fn().mockResolvedValue({
         body: {
-          hits: {
-            hits: []
-          }
+          total: 0,
+          updated: 0,
+          deleted: 0,
+          noops: 0,
+          version_conflicts: 0,
+          failures: []
         }
       }),
-      index: jest.fn().mockResolvedValue({}),
-      delete: jest.fn().mockResolvedValue({})
+      tasks: {
+        get: jest.fn()
+      }
     };
 
     mockLoggingClient = {
@@ -165,83 +171,103 @@ describe("P1MaintainDs", () => {
     );
   });
 
-  test("logs ElasticSearch read error and returns empty summary when datastore search fails", async () => {
-    mockDataStoreClient.search.mockRejectedValueOnce(new Error("search failed"));
+  test("runs throttled server-side cleanup without searching full _source documents", async () => {
+    mockDataStoreClient.updateByQuery.mockResolvedValueOnce({
+      body: {
+        total: 37458,
+        updated: 12000,
+        deleted: 25,
+        noops: 25433,
+        version_conflicts: 2,
+        failures: []
+      }
+    });
 
     const result = await moduleUnderTest.run(validRequest());
 
-    expect(result.cleanupSummary.devicesVisited).toBe(0);
-    expect(result.cleanupSummary.batchesDeleted).toBe(0);
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      ERRORS.ELASTICSEARCH_READ_ERROR
+    expect(mockDataStoreClient.updateByQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        index: "datastore-index",
+        conflicts: "proceed",
+        wait_for_completion: false,
+        requests_per_second: 10,
+        scroll_size: 100,
+        body: expect.objectContaining({
+          query: {
+            bool: {
+              must_not: [
+                { term: { "docType.keyword": "kafka-outbound-payload" } }
+              ]
+            }
+          },
+          script: expect.objectContaining({ lang: "painless" })
+        })
+      })
     );
+    expect(result.cleanupSummary).toEqual(expect.objectContaining({
+      devicesVisited: 37458,
+      devicesUpdated: 12000,
+      devicesDeleted: 25,
+      devicesUnchanged: 25433,
+      versionConflicts: 2,
+      batchesDeleted: null
+    }));
   });
 
-  test("logs ElasticSearch lock error and continues when locking a device fails", async () => {
-    mockDataStoreClient.search.mockResolvedValueOnce({
-      body: {
-        hits: {
-          hits: [
-            {
-              _id: "100250001",
-              _source: {
-                mountName: "100250001",
-                batch: [
-                  {
-                    batchTimestamp: new Date().toJSON()
-                  }
-                ]
-              }
+  test("deletes failed and oversized evidence payloads during maintenance", async () => {
+    mockDataStoreClient.deleteByQuery.mockResolvedValueOnce({ body: { deleted: 7 } });
+
+    const result = await moduleUnderTest.run(validRequest());
+
+    expect(mockDataStoreClient.deleteByQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        index: "datastore-index",
+        wait_for_completion: false,
+        body: {
+          query: {
+            bool: {
+            filter: [
+              { term: { "docType.keyword": "kafka-outbound-payload" } }
+            ],
+            should: [
+              { term: { "deliveryState.keyword": "permanent-failure" } },
+              { term: { "deliveryState.keyword": "oversized-evidence" } }
+            ],
+            minimum_should_match: 1
             }
-          ]
+          }
+        }
+      })
+    );
+    expect(result.cleanupSummary.kafkaPayloadDocumentsDeleted).toBe(7);
+  });
+
+  test("waits for an asynchronous Elasticsearch cleanup task", async () => {
+    mockDataStoreClient.updateByQuery.mockResolvedValueOnce({ body: { task: "node-1:42" } });
+    mockDataStoreClient.tasks.get.mockResolvedValueOnce({
+      body: {
+        completed: true,
+        response: {
+          total: 100,
+          updated: 80,
+          deleted: 5,
+          noops: 15,
+          failures: []
         }
       }
     });
-    mockDataStoreClient.index.mockRejectedValueOnce(new Error("lock failed"));
 
     const result = await moduleUnderTest.run(validRequest());
 
-    expect(result.cleanupSummary.devicesVisited).toBe(1);
-    expect(result.cleanupSummary.mountNames).toEqual(["100250001"]);
-    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(2);
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      ERRORS.ELASTICSEARCH_LOCK_ERROR
-    );
+    expect(mockDataStoreClient.tasks.get).toHaveBeenCalledWith({ task_id: "node-1:42" });
+    expect(result.cleanupSummary.devicesVisited).toBe(100);
+    expect(result.cleanupSummary.devicesDeleted).toBe(5);
   });
 
-  test("logs ElasticSearch write error and continues when saving a cleaned device fails", async () => {
-    mockDataStoreClient.search.mockResolvedValueOnce({
-      body: {
-        hits: {
-          hits: [
-            {
-              _id: "100250001",
-              _source: {
-                mountName: "100250001",
-                batch: [
-                  {
-                    batchTimestamp: new Date(Date.now() - 72 * 3600 * 1000).toJSON()
-                  },
-                  {
-                    batchTimestamp: new Date().toJSON()
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
-    });
-    mockDataStoreClient.index
-      .mockResolvedValueOnce({})
-      .mockRejectedValueOnce(new Error("save failed"));
+  test("fails the maintenance cycle when server-side cleanup fails", async () => {
+    mockDataStoreClient.updateByQuery.mockRejectedValueOnce(new Error("cleanup failed"));
 
-    const result = await moduleUnderTest.run(validRequest());
-
-    expect(result.cleanupSummary.devicesVisited).toBe(1);
-    expect(result.cleanupSummary.batchesDeleted).toBe(1);
-    expect(mockDataStoreClient.index).toHaveBeenCalledTimes(2);
-    expect(mockLogger.error).toHaveBeenCalledWith(
+    await expect(moduleUnderTest.run(validRequest())).rejects.toThrow(
       ERRORS.ELASTICSEARCH_WRITE_ERROR
     );
   });
