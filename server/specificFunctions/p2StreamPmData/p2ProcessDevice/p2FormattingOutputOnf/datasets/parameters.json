@@ -1,0 +1,30 @@
+{
+  "parameters": {
+    "function-name": "p2FormattingOutputOnf",
+    "description": "Creates onfOutputFormats from resultCc",
+    "is-active": true,
+    "parameter": [
+      {
+        "parameter-name": "mycom-output-format",
+        "purpose": "fieldsFilter",
+        "owner": "platform",
+        "value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name)"
+      },
+      {
+        "parameter-name": "netexplorer-output-format",
+        "purpose": "fieldsFilter",
+        "owner": "platform",
+        "value": "equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp"
+      }
+    ],
+    "sub-function": [
+      {
+        "function-name": "p1FieldsFilter",
+        "description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
+        "is-active": true,
+        "parameter": [],
+        "sub-function": []
+      }
+    ]
+  }
+}
