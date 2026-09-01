@@ -14,27 +14,6 @@ var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParam
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
-// Errori restituiti dall'endpoint live control-construct di MWDI
-// (vedi response 502/530/531/532/533 in spec/DevicePerformanceManagementDataProcessor.yaml)
-const LIVE_CC_ERROR_MESSAGES = {
-  502: 'Bad Gateway',
-  530: 'Data invalid. Response data not available, incomplete or corrupted',
-  531: 'Bad Gateway. Authentication at upstream server failed.',
-  532: 'Bad Gateway. Upstream server not responding.',
-  533: 'Resource unknown. The resource for the connected device does not exist at the Controller',
-};
-
-// Categoria di fallimento per-mount per ogni codice di errore live CC:
-// - 'unconnected': il device non e' raggiungibile / non risponde (errore 532 a livello di servizio)
-// - 'missing':     la risorsa non esiste presso il controller (errore 533 a livello di servizio)
-const LIVE_CC_ERROR_CATEGORIES = {
-  502: 'unconnected',
-  530: 'unconnected',
-  531: 'unconnected',
-  532: 'unconnected',
-  533: 'missing',
-};
-
 
 /**
  * Initiates process of embedding a new release
@@ -260,11 +239,6 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         if (response.ok) {
           const data = await response.json();
           logger.info(`Successfully retrieved control-construct for ${mountName}`);
-          // liveControlConstructResults.push({
-          //   mountName: mountName,
-          //   status: "success",
-          //   data: data
-          // });
         } else {
           // Prova a decodificare il body di errore restituito da MWDI ({ code, message })
           let errorBody = null;
@@ -278,42 +252,35 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
             (errorBody && typeof errorBody === "object" && errorBody.code) ||
             response.status;
 
-          const errorCategory = LIVE_CC_ERROR_CATEGORIES[mwdiErrorCode];
-          const errorMessage =
-            (errorBody && errorBody.message) ||
-            LIVE_CC_ERROR_MESSAGES[response.status] ||
-            `HTTP ${response.status}`;
+          const mwdiErrorMessage =
+            (errorBody && typeof errorBody === "object" && errorBody.message) ||
+            "";
 
-          if (errorCategory === "unconnected") {
-            // 502/530/531/532: il device non e' raggiungibile / non risponde / dati non validi
-            unconnectedMountNames.push(mountName);
-            logger.error(
-              `Mount ${mountName} not connected (HTTP ${response.status}: ${errorMessage})`,
-            );
-          } else if (errorCategory === "missing") {
-            // 533: risorsa sconosciuta presso il controller
+          if (mwdiErrorCode === 533) {
+            // 533: categoria 'missing' - risorsa sconosciuta presso il controller (errore 533 a livello di servizio)
             missingMountNames.push(mountName);
             logger.error(
-              `Mount ${mountName} resource unknown (HTTP ${response.status}: ${errorMessage})`,
-            );
+              `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`
+);
+          } else if (
+            mwdiErrorCode === 502 ||
+            mwdiErrorCode === 530 ||
+            mwdiErrorCode === 531 ||
+            mwdiErrorCode === 532
+          ) {
+            // 502/530/531/532: categoria 'unconnected' - device non raggiungibile / non risponde / dati non validi (errore 532 a livello di servizio)
+            unconnectedMountNames.push(mountName);
+            logger.error(
+  `Mount ${mountName} not connected (HTTP ${response.status}: ${mwdiErrorMessage || 'Bad Gateway'})`
+);
           } else {
             logger.warn(
-              `Failed to retrieve control-construct for ${mountName}: ${response.status} - ${errorMessage}`,
+              `Failed to retrieve control-construct for ${mountName}: ${response.status} - ${mwdiErrorMessage}`,
             );
           }
-          // liveControlConstructResults.push({
-          //   mountName: mountName,
-          //   status: "failed",
-          //   error: `HTTP ${response.status}`
-          // });
         }
       } catch (error) {
         logger.error(`Error retrieving control-construct for ${mountName}: ${error.message}`);
-        // liveControlConstructResults.push({
-        //   mountName: mountName,
-        //   status: "error",
-        //   error: error.message
-        // });
       }
     }
 
@@ -321,7 +288,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (missingMountNames.length > 0) {
       throw {
         code: 533,
-        message: LIVE_CC_ERROR_MESSAGES[533],
+        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
         "missing-mount-names": missingMountNames,
       };
     }
@@ -330,7 +297,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (unconnectedMountNames.length > 0) {
       throw {
         code: 532,
-        message: LIVE_CC_ERROR_MESSAGES[532],
+        message: "Bad Gateway. Upstream server not responding.",
         "unconnected-mount-names": unconnectedMountNames,
       };
     }
