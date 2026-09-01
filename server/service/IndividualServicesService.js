@@ -12,6 +12,8 @@ const {
 
 var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
+var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
+var p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
 
@@ -118,7 +120,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       inputMountNames,
     );
     if (connectionStatusError) {
-      logger.error(unconnectedMountNames, `Unconnected mounts detected: `);
+      logger.error(connectionStatusError.unconnectedMountNames, `Unconnected mounts detected: `);
 
       // Throw error with code 532 and unconnected mount names
       const error532 = {
@@ -302,6 +304,50 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
 
     // Rilancia l'errore verso chi ha chiamato la funzione
     throw { error: error.message || ERRORS.MWDI_CONNECTION_FAILED };
+  }
+};
+
+/**
+ * Provides all persisted PM result data for one device.
+ */
+exports.provideDeviceDataStoreDump = async function (body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw { code: 400, message: 'request body invalid' };
+  }
+
+  const mountName = body['mount-name'];
+  if (typeof mountName !== 'string' || mountName.trim() === '') {
+    throw { code: 400, message: mountName == null ? 'mountName not provided' : 'mountName invalid' };
+  }
+
+  try {
+    const loaded = await p1LoadParameters.run({
+      functionName: 'provideDeviceDataStoreDump'
+    });
+    const resolveParameters = findFunctionNode(
+      loaded.parameters,
+      'p1ResolveEsAddress'
+    ) || loaded.parameters;
+    const resolved = await p1ResolveEsAddress.run({
+      parameters: resolveParameters,
+      configFile: loaded.configFile,
+      esName: 'dataStoreEsClient'
+    });
+    const result = await p1ReadDataStoreDeviceData({
+      'data-store-es-client': resolved.esAddress,
+      'mount-name': mountName.trim()
+    });
+
+    if (typeof result === 'string') {
+      throw new Error(result);
+    }
+    return result;
+  } catch (error) {
+    if (error && error.code === 400) throw error;
+    throw {
+      code: 500,
+      message: error && error.message ? error.message : 'Failed to provide device data store dump'
+    };
   }
 };
 

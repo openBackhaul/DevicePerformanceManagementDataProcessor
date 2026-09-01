@@ -110,6 +110,26 @@ describe("p1ReadDataStoreDeviceData", () => {
     expect(result).toBe(ERRORS.DATA_STORE_INVALID);
   });
 
+  test("should reject non-HTTP DataStore URLs", async () => {
+    const result = await p1ReadDataStoreDeviceData({
+      "data-store-es-client": { "url": "ftp://localhost/data-store" },
+      "mount-name": "100250001"
+    });
+
+    expect(result).toBe(ERRORS.DATA_STORE_INVALID);
+  });
+
+  test("should recognize Elasticsearch connection errors", async () => {
+    elasticsearchClient.get.mockRejectedValue(Object.assign(
+      new Error("socket closed"),
+      { name: "ConnectionError" }
+    ));
+
+    const result = await p1ReadDataStoreDeviceData(inputMock);
+
+    expect(result).toBe(ERRORS.ELK_READ_ERROR);
+  });
+
   test("should return mountName not provided", async () => {
     const input = {
       "data-store-es-client": {

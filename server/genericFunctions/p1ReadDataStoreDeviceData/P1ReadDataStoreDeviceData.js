@@ -78,8 +78,8 @@ function validateInput(input) {
 
 function isValidUrl(url) {
   try {
-    new URL(url);
-    return true;
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
   } catch {
     return false;
   }
@@ -117,9 +117,14 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
       'id': documentId
     });
   } catch (error) {
-    if (error?.message == "connection failed") {
+    if (
+      error?.message === "connection failed" ||
+      error?.name === "ConnectionError" ||
+      error?.name === "TimeoutError" ||
+      error?.isElasticsearchError === true
+    ) {
       return ERRORS.ELK_READ_ERROR;
-    } else if (error?.meta?.statusCode == 404) {
+    } else if (error?.statusCode === 404 || error?.meta?.statusCode === 404) {
       return ERRORS.MOUNTNAME_NOT_FOUND;
     } else {
       throw (error);

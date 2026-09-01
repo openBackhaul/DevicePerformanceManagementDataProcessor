@@ -4,14 +4,12 @@ const { findFunctionNode } = require("../../../utils/functionTree");
 const p2LoadRawCc = require("./p2LoadRawCc/P2LoadRawCc");
 const p2CreateResultCc = require("./p2CreateResultCc/P2CreateResultCc");
 const p2Storing = require("./p2Storing/P2Storing");
-
-// Enable these imports after the corresponding source files are delivered.
-// const p1LoadOffsetsAndStatusData = require(
-//   "./p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData"
-// );
-// const p2FormattingOutputOnf = require(
-//   "./p2FormattingOutputOnf/P2FormattingOutputOnf"
-// );
+const p1LoadOffsetsAndStatusData = require(
+  "../../../genericFunctions/p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData"
+);
+const p2FormattingOutputOnf = require(
+  "./p2FormattingOutputOnf/P2FormattingOutputOnf"
+);
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -146,7 +144,7 @@ async function createOutputFormats(input, resultCc, dependencies) {
   }
 
   const onfFormatter = requireImplementation(
-    dependencies.p2FormattingOutputOnf,
+    dependencies.p2FormattingOutputOnf || p2FormattingOutputOnf,
     "p2FormattingOutputOnf"
   );
   const onfResponse = await invoke(onfFormatter, {
@@ -182,7 +180,7 @@ async function run(request = {}) {
 
   try {
     const loadOffsetsAndStatusData = requireImplementation(
-      dependencies.p1LoadOffsetsAndStatusData,
+      dependencies.p1LoadOffsetsAndStatusData || p1LoadOffsetsAndStatusData,
       "p1LoadOffsetsAndStatusData"
     );
     const processingDataResponse = await invoke(loadOffsetsAndStatusData, {

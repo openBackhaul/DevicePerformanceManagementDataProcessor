@@ -1,7 +1,5 @@
 'use strict';
 
-var IndividualServices = require('../service/IndividualServicesService');
-
 var utils = require('../utils/writer.js');
 var IndividualServices = require('../service/IndividualServicesService');
 const logger = require('../service/LoggingService').getLogger();
@@ -89,6 +87,28 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate (req, res, n
       }
     });
 }
+
+module.exports.provideDeviceDataStoreDump = function provideDeviceDataStoreDump(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  const startTime = Date.now();
+  IndividualServices.provideDeviceDataStoreDump(body, user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(function (response) {
+      const execTime = Date.now() - startTime;
+      utils.writeJson(res, response, 200, {
+        'x-correlator': xCorrelator,
+        'exec-time': execTime,
+        'backend-time': execTime,
+        'life-cycle-state': 'OPERATIONAL'
+      });
+    })
+    .catch(function (error) {
+      const execTime = Date.now() - startTime;
+      const statusCode = error && error.code === 400 ? 400 : 500;
+      utils.writeJson(res, error, statusCode, {
+        'x-correlator': xCorrelator,
+        'exec-time': execTime
+      });
+    });
+};
 
 module.exports.documentPmDataProcessing = function documentPmDataProcessing(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   IndividualServices.documentPmDataProcessing(body, user, originator, xCorrelator, traceIndicator, customerJourney)
