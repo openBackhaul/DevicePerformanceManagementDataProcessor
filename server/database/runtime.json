@@ -19,7 +19,7 @@
     "shutdownGraceMs": 30000,
     "httpPort": 8080,
     "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER",
-    "kafkaOutboundConcurrency": 8,
+    "kafkaOutboundConcurrency": 16,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 10,
     "kafkaOutboundMaxBatchBytes": 921600,
