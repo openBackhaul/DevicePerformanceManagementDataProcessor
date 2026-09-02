@@ -170,7 +170,27 @@ describe('p2PrepareTxModes - @Negative tests', () => {
 
     expect(result).toBe(ERRORS.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED);
   });
+  test('returns error when used transmission mode is missing from tx mode list', () => {
+    const historicalData = [
+      {
+        'performance-data': {
+          'time-xstates-list': [
+            {
+              'transmission-mode': 'MODE-C',
+              time: 100
+            }
+          ]
+        }
+      }
+    ];
 
+    const result = p2PrepareTxModes({
+      'historical-performance-data-list': historicalData,
+      'transmission-mode-list': validTransmissionModeList
+    });
+
+    expect(result).toBe(ERRORS.TX_MODE_LIST_INCOMPLETE);
+  });
 })
 
 describe('p2PrepareTxModes - Real dataset', () => {
@@ -335,79 +355,4 @@ describe('p2PrepareTxModes - Real dataset', () => {
     }
   });
 
-  // test('Use CC-513250007 Dataset 1', () => {
-  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_1.json', 'utf8');
-  //   let dataSet = JSON.parse(dataFile);
-  //   const result = p2PrepareTxModes({
-  //     'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
-  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-  //   });
-
-  // });
-
-  // test('Use CC-513250007 Dataset 2', () => {
-  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_007_2.json', 'utf8');
-  //   let dataSet = JSON.parse(dataFile);
-  //   const result = p2PrepareTxModes({
-  //     'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
-  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-  //   });
-
-  // });
-
-  // test('Use CC- 991A Dataset 1', () => {
-  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_991A_1.json', 'utf8');
-  //   let dataSet = JSON.parse(dataFile);
-  //   const result = p2PrepareTxModes({
-  //     'historical-performance-data-list': dataSet['air-interface-historical-performances']['historical-performance-data-list'],
-  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-  //   });
-  // });
-
-
-  // test('Use CC- 991B Dataset 1', () => {
-  //   let dataFile = fs.readFileSync(__dirname + '/datasets/airIfDataset_991B_1.json', 'utf8');
-  //   let dataSet = JSON.parse(dataFile);
-  //   const result = p2PrepareTxModes({
-  //     'historical-performance-data-list': dataSet['air-interface-historical-performances'],
-  //     'transmission-mode-list': dataSet['air-interface-capability']['transmission-mode-list']
-  //   });
-
-  //   expect(result["processed-transmission-mode-list"].length).toBe(1);
-  //   expect(result["processed-transmission-mode-list"][0]).toEqual(
-  //     {
-  //       "modulation-scheme-name-at-lct": "Half BPSK strong",
-  //       "transmission-mode-name": "782.1.1.6.3",
-  //       "am-downshift-level": 99,
-  //       "supported-as-fixed-configuration": true,
-  //       "tx-power-min": -10,
-  //       "code-rate": 25,
-  //       "modulation-scheme": 2,
-  //       "xpic-is-avail": false,
-  //       "channel-bandwidth": 250000,
-  //       "tx-power-max": 18,
-  //       "transmission-mode-rank": 55,
-  //       "rx-threshold": 99,
-  //       "am-upshift-level": 99,
-  //       "symbol-rate-reduction-factor": 1,
-  //       'capacity': 54348,
-  //     }
-  //   );
-
-
-  //   const hPerfData = result["historical-performance-data-list"];
-
-  //   for (const pm of hPerfData) {
-  //     expect(pm['performance-data']['time-xstates-list'].length).toBe(1);
-
-  //     if (pm['granularity-period'] == 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') {
-  //       expect(pm['performance-data']['time-xstates-list'][0]['time']).toBeLessThanOrEqual(901);
-  //     } else {
-  //       expect(pm['performance-data']['time-xstates-list'][0]['time']).toBeLessThanOrEqual(86400);
-  //     }
-
-  //     expect(pm['performance-data']['time-xstates-list'][0]['time-xstate-sequence-number']).toBe(2);
-  //     expect(pm['performance-data']['time-xstates-list'][0]['transmission-mode']).toBe('782.1.1.6.3');
-  //   }
-  // });
 });

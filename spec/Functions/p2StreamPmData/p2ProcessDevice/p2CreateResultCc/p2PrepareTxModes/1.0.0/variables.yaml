@@ -28,7 +28,7 @@ prepare-tx-modes:
                   type: object
                   description: >
                     'timeXstateEntry
-                    entry to be deleted, if time == 0'
+                    entry to be deleted, if time <= 0'
                   required:
                     - transmission-mode
                   properties:
