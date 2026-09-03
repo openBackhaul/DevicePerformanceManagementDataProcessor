@@ -16,7 +16,7 @@ function p2PrepareTxModes(input) {
   try {
     const validateRes = validateInput(input);
 
-    if (validateRes != "") {
+    if (validateRes !== "") {
       return validateRes;
     }
 
@@ -27,13 +27,17 @@ function p2PrepareTxModes(input) {
      * JSON cloning is sufficient here because the input contains
      * plain JSON-compatible data.
      */
-    const historicalPerformanceDataList = deepClone(
-      input['historical-performance-data-list']
-    );
+    let historicalPerformanceDataList;
 
-    const transmissionModeList = deepClone(
-      input['transmission-mode-list']
-    );
+    try {
+      historicalPerformanceDataList = deepClone(
+        input['historical-performance-data-list']
+      );
+    } catch {
+      return ERRORS.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED;
+    }
+
+    const transmissionModeList = input['transmission-mode-list'];
 
     const usedTransmissionModeNames = new Set();
 
@@ -112,10 +116,6 @@ function p2PrepareTxModes(input) {
       'processed-transmission-mode-list': processedTransmissionModeList
     };
   } catch (error) {
-    // if (error instanceof ProcessingError) {
-    //   throw error.message;
-    // }
-
     return ERRORS.GENERAL_ERROR;
   }
 };
@@ -144,13 +144,13 @@ function validateInput(input) {
 
   let res = validateHistoricalPerformanceDataList(input['historical-performance-data-list']);
 
-  if (res != "") {
+  if (res !== "") {
     return res;
   }
 
   res = validateTransmissionModeList(input['transmission-mode-list']);
 
-  if (res != "") {
+  if (res !== "") {
     return res;
   }
 
@@ -204,7 +204,7 @@ function validateHistoricalPerformanceDataList(historicalPerformanceDataList) {
 
     for (const timeXstateEntry of timeXstatesList) {
       const resVal = validateTimeXstateEntry(timeXstateEntry);
-      if (resVal != "") {
+      if (resVal !== "") {
         return resVal;
       }
     }
@@ -242,7 +242,7 @@ function validateTimeXstateEntry(timeXstateEntry) {
  * @param {*} transmissionModeList
  */
 function validateTransmissionModeList(transmissionModeList) {
-  if ( transmissionModeList === undefined || transmissionModeList === null) {
+  if (transmissionModeList === undefined || transmissionModeList === null) {
     return ERRORS.TX_MODE_LIST_NOT_PROVIDED;
   }
 
@@ -292,7 +292,7 @@ function validateTransmissionModeList(transmissionModeList) {
     ];
 
     for (const property of numericProperties) {
-      if (!Number.isInteger(transmissionMode[property]) 
+      if (!Number.isInteger(transmissionMode[property])
         // || transmissionMode[property] <= 0
       ) {
         return ERRORS.TX_MODE_LIST_INVALID;
@@ -310,22 +310,12 @@ function validateTransmissionModeList(transmissionModeList) {
  * @returns {*}
  */
 function deepClone(value) {
-  try {
-    if (typeof structuredClone === 'function') {
-      return structuredClone(value);
-    }
-
-    return JSON.parse(JSON.stringify(value));
-  } catch {
-    return ERRORS.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED;
+  if (typeof structuredClone === 'function') {
+    return structuredClone(value);
   }
+
+  return JSON.parse(JSON.stringify(value));
 }
 
-class ProcessingError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'ProcessingError';
-  }
-}
 
 module.exports = p2PrepareTxModes;
