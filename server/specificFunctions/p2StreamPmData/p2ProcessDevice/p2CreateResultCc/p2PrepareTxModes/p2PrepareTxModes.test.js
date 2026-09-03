@@ -67,6 +67,35 @@ describe('p2PrepareTxModes', () => {
     }
   );
 
+  test('removes time-xstate entries with time <= 0', () => {
+    const historicalData = [
+      {
+        'performance-data': {
+          'time-xstates-list': [
+            { 'transmission-mode': 'MODE-A', time: 100 },
+            { 'transmission-mode': 'MODE-B', time: 0 },
+            { 'transmission-mode': 'MODE-B', time: -10 }
+          ]
+        }
+      }
+    ];
+
+    const result = p2PrepareTxModes({
+      'historical-performance-data-list': historicalData,
+      'transmission-mode-list': validTransmissionModeList
+    });
+
+    expect(result['historical-performance-data-list'][0]
+    ['performance-data']['time-xstates-list'])
+      .toEqual([
+        { 'transmission-mode': 'MODE-A', time: 100 }
+      ]);
+
+    expect(result['processed-transmission-mode-list'].map(
+      mode => mode['transmission-mode-name']
+    )).toEqual(['MODE-A']);
+  });
+
   test('output contains only expected keys', () => {
     const result = p2PrepareTxModes({
       'historical-performance-data-list': validHistoricalPerformanceDataList,
