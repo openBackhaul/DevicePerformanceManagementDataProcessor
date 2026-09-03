@@ -185,7 +185,7 @@ function validateMainInput(input) {
     return ERRORS.GENERAL_ERROR;
   }
 
-  if (input['uuid'] == undefined &
+  if (input['uuid'] == undefined &&
     input['former-most-recent-period-end-time'] == undefined &&
     input['new-most-recent-period-end-time'] == undefined &&
     input['amount-received'] == undefined) {
