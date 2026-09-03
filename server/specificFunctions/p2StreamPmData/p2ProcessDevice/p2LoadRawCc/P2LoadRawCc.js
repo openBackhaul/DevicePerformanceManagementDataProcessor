@@ -5,11 +5,10 @@ const p1FieldsFilter = require("../../../../genericFunctions/p1FieldsFilter/P1Fi
 const p2DiscardIrrelevantPmRecords = require(
   "../../../../genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords"
 );
+const p1CalculateInterfacePmDataQuality = require(
+  "../../../../genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality"
+);
 
-// Enable this import after the source file is delivered.
-// const p1CalculateInterfacePmDataQuality = require(
-//   "./p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality"
-// );
 
 const INITIAL_PERIOD_END_TIME = "2010-11-20T14:00:00+01:00";
 const LOAD_RAW_CC_FUNCTION_NAME = "p2LoadRawCc";
@@ -39,15 +38,6 @@ async function invoke(module, request) {
   if (typeof module === "function") return module(request);
   if (module && typeof module.run === "function") return module.run(request);
   throw createProcessingError("function implementation invalid");
-}
-
-function requireImplementation(implementation, functionName) {
-  if (implementation) return implementation;
-  throw createProcessingError(
-    `${functionName} implementation not available`,
-    functionName,
-    false
-  );
 }
 
 function validateRequest(request) {
@@ -97,7 +87,7 @@ function extractControlConstruct(response, mountName) {
   const source = unwrapElasticsearchSource(response);
   const controlConstruct = source["core-model-1-4:control-construct"];
 
-  if (!Array.isArray(controlConstruct)) return controlConstruct || source;
+  if (!Array.isArray(controlConstruct)) return controlConstruct || undefined;
 
   return controlConstruct.find((item) => (
     item && (item.uuid === mountName || item["mount-name"] === mountName)
@@ -158,9 +148,8 @@ function findHistoricalPerformanceContainer(layerProtocol) {
 }
 
 function updateBatchTimestamp(rawCc) {
-  let latestTimestamp = Date.parse(
-    rawCc["batch-timestamp"] || INITIAL_PERIOD_END_TIME
-  );
+  let latestTimestamp;
+  if (rawCc["batch-timestamp"]) latestTimestamp = Date.parse(rawCc["batch-timestamp"]);
 
   for (const ltp of rawCc["logical-termination-point"] || []) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
@@ -171,12 +160,14 @@ function updateBatchTimestamp(rawCc) {
       for (const currentPerformance of currentPerformanceList) {
         const timestamp = Date.parse(currentPerformance.timestamp);
         if (Number.isFinite(timestamp)) {
-          latestTimestamp = Math.max(latestTimestamp, timestamp);
+          latestTimestamp = latestTimestamp === undefined ? timestamp : Math.max(latestTimestamp, timestamp);
         }
       }
     }
   }
-  rawCc["batch-timestamp"] = new Date(latestTimestamp).toISOString();
+  if (Number.isFinite(latestTimestamp)) {
+    rawCc["batch-timestamp"] = new Date(latestTimestamp).toISOString();
+  }
 }
 
 async function readControlConstruct(input, request) {
@@ -207,9 +198,14 @@ async function readControlConstruct(input, request) {
 async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
   const filterString = getParamFromFunction(
     parameters,
-    "p1FieldsFilter",
+    LOAD_RAW_CC_FUNCTION_NAME,
     "raw-cc",
-    getParamFromFunction(parameters, "p1FieldsFilter", "fieldsFilter", "")
+    getParamFromFunction(
+      parameters,
+      "p1FieldsFilter",
+      "raw-cc",
+      getParamFromFunction(parameters, "p1FieldsFilter", "fieldsFilter", "")
+    )
   );
   if (!filterString) return rawCc;
 
@@ -252,9 +248,9 @@ async function processInterface(
   const discardFunction = dependencies.p2DiscardIrrelevantPmRecords ||
     p2DiscardIrrelevantPmRecords;
   const discardResponse = await invoke(discardFunction, {
-      "historical-performance-data-list": historyList,
-      "former-most-recent-period-end-time": formerPeriodEndTime,
-      "former-most-recent-period-end-time-24": formerPeriodEndTime24
+    "historical-performance-data-list": historyList,
+    "former-most-recent-period-end-time": formerPeriodEndTime,
+    "former-most-recent-period-end-time-24": formerPeriodEndTime24
   });
 
   historyContainer["historical-performance-data-list"] = discardResponse[
@@ -267,17 +263,15 @@ async function processInterface(
     "new-most-recent-period-end-time-24"
   ];
 
-  const calculatePmDataQuality = requireImplementation(
-    dependencies.p1CalculateInterfacePmDataQuality,
-    "p1CalculateInterfacePmDataQuality"
-  );
+  const calculatePmDataQuality = dependencies.p1CalculateInterfacePmDataQuality ||
+    p1CalculateInterfacePmDataQuality;
   const qualityResponse = await invoke(calculatePmDataQuality, {
-      uuid: ltp.uuid,
-      "former-most-recent-period-end-time": formerPeriodEndTime,
-      "new-most-recent-period-end-time": interfaceOffset[
-        "most-recent-period-end-time"
-      ],
-      "amount-received": discardResponse["amount-received"]
+    uuid: ltp.uuid,
+    "former-most-recent-period-end-time": formerPeriodEndTime,
+    "new-most-recent-period-end-time": interfaceOffset[
+      "most-recent-period-end-time"
+    ],
+    "amount-received": discardResponse["amount-received"]
   });
   const interfacePmDataQuality = qualityResponse && qualityResponse[
     "interface-pm-data-quality"
