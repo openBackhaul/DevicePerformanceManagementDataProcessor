@@ -4,7 +4,10 @@ const mockRedis = {
   xAck: jest.fn(),
   xDel: jest.fn(),
   xLen: jest.fn(),
-  unlink: jest.fn()
+  unlink: jest.fn(),
+  xRange: jest.fn(),
+  sRem: jest.fn(),
+  hDel: jest.fn()
 };
 
 jest.mock("./redisClient", () => ({
@@ -37,7 +40,9 @@ describe("redisStreamQueue batched device enqueue", () => {
       expect.objectContaining({
         keys: expect.arrayContaining([
           "dpmdp:stream:device-processing",
-          "dpmdp:set:device-processing"
+          "dpmdp:set:device-processing",
+          "dpmdp:hash:retry-count",
+          "dpmdp:hash:retry-state"
         ]),
         arguments: expect.arrayContaining(["device-1", "device-2", "device-3"])
       })
@@ -54,6 +59,68 @@ describe("redisStreamQueue batched device enqueue", () => {
     );
 
     expect(result).toEqual({ enqueued: 0, skipped: 0, failed: 2 });
+  });
+});
+
+describe("replica retry-state cleanup", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockRedis.sRem.mockResolvedValue(1);
+    mockRedis.hDel.mockResolvedValue(1);
+  });
+
+  test("atomically resets replica retry eligibility while enqueueing", async () => {
+    mockRedis.eval.mockResolvedValue([2, 0]);
+
+    await queue.enqueueMountNames(
+      ["device-1", "device-2"],
+      {
+        batchSize: 500,
+        pauseMs: 0,
+        resetRetryEligibilityBeforeEnqueue: true
+      },
+      {}
+    );
+
+    expect(mockRedis.eval).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        keys: [
+          "dpmdp:stream:device-processing",
+          "dpmdp:set:device-processing",
+          "dpmdp:set:retry-dead-letter",
+          "dpmdp:set:retry-pending",
+          "dpmdp:hash:retry-count",
+          "dpmdp:hash:retry-state"
+        ],
+        arguments: expect.arrayContaining(["0", "0", "1", "device-1", "device-2"])
+      })
+    );
+  });
+
+  test("clears authoritative retry state without scanning complete streams", async () => {
+    const result = await queue.clearRetryAndDeadLetterForReplicaUpdates(
+      ["device-1", "device-2", "device-1", ""],
+      { info: jest.fn() }
+    );
+
+    expect(result).toEqual({
+      mountNameCount: 2,
+      retryStreamDeleted: 0,
+      deadLetterStreamDeleted: 0,
+      staleStreamEntriesDeferred: true
+    });
+    expect(mockRedis.xRange).not.toHaveBeenCalled();
+    expect(mockRedis.sRem).toHaveBeenCalledTimes(2);
+    expect(mockRedis.hDel).toHaveBeenCalledTimes(2);
+    expect(mockRedis.sRem).toHaveBeenCalledWith(
+      "dpmdp:set:retry-pending",
+      ["device-1", "device-2"]
+    );
+    expect(mockRedis.sRem).toHaveBeenCalledWith(
+      "dpmdp:set:retry-dead-letter",
+      ["device-1", "device-2"]
+    );
   });
 });
 
