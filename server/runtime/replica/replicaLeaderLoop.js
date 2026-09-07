@@ -4,14 +4,29 @@ const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redis
 const { sleep } = require("../../utils/retry");
 const p1UpdateMwdiReplica = require("../../specificFunctions/p1StreamPmData/p1UpdateMwdiReplica/P1UpdateMwdiReplica");
 
+function calculateNextCycleDelayMs(cycleStartedAtMs, syncPeriodMs, minimumDelayMs) {
+    const elapsedMs = Math.max(0, Date.now() - cycleStartedAtMs);
+    const remainingMs = syncPeriodMs - elapsedMs;
+
+    return remainingMs > 0
+        ? remainingMs
+        : Math.max(0, Number(minimumDelayMs) || 0);
+}
+
 async function startReplicaLeaderLoop(context) {
     const lockKey = "dpmdp:lock:replica";
     const ttlMs = context.replicaLockTtlMs || 60000;
     const syncPeriodSec = Number(
         getParamFromFunction(context.updateParameters, "p1UpdateMwdiReplica", "syncPeriod", 480)
     );
+    const syncPeriodMs = Math.max(1000, syncPeriodSec * 1000);
+    const minimumCycleDelayMs = Math.max(
+        0,
+        Number(context.replicaMinimumCycleDelayMs ?? 1000)
+    );
 
     while (true) {
+        const cycleStartedAtMs = Date.now();
         try {
             const currentQueueLength = await redisQueue.getQueueLength(context.logger);
             if (currentQueueLength >= context.maxQueueLengthBeforeReplicaPause) {
@@ -58,7 +73,20 @@ async function startReplicaLeaderLoop(context) {
                 await releaseLock(lockKey, token, context.logger).catch(() => {});
             }
 
-            await sleep(syncPeriodSec * 1000);
+            const nextCycleDelayMs = calculateNextCycleDelayMs(
+                cycleStartedAtMs,
+                syncPeriodMs,
+                minimumCycleDelayMs
+            );
+            context.logger.debug?.(
+                {
+                    cycleDurationMs: Date.now() - cycleStartedAtMs,
+                    syncPeriodMs,
+                    nextCycleDelayMs
+                },
+                "Replica cycle scheduling calculated"
+            );
+            await sleep(nextCycleDelayMs);
         } catch (error) {
             context.logger.error(
                 { error: error.message || error, code: error.code, type: error.type },
@@ -69,5 +97,6 @@ async function startReplicaLeaderLoop(context) {
     }
 }
 module.exports = {
-  startReplicaLeaderLoop
+  startReplicaLeaderLoop,
+  calculateNextCycleDelayMs
 };

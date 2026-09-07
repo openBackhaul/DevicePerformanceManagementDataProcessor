@@ -130,13 +130,24 @@ local enqueued = 0
 local skipped = 0
 local allowRetryPending = ARGV[1] == '1'
 local allowDeadLetter = ARGV[2] == '1'
-local createdAt = ARGV[3]
-local extraFieldCount = tonumber(ARGV[4])
-local mountNameStart = 5 + (extraFieldCount * 2)
+local resetRetryEligibility = ARGV[3] == '1'
+local createdAt = ARGV[4]
+local extraFieldCount = tonumber(ARGV[5])
+local mountNameStart = 6 + (extraFieldCount * 2)
 
 for i = mountNameStart, #ARGV do
   local mountName = ARGV[i]
   local blocked = false
+
+  -- Replica updates make a device eligible for normal processing again. Do
+  -- this in the same atomic operation as enqueueing so a separate Redis
+  -- cleanup phase cannot delay checkpoint completion indefinitely.
+  if resetRetryEligibility then
+    redis.call('SREM', KEYS[3], mountName)
+    redis.call('SREM', KEYS[4], mountName)
+    redis.call('HDEL', KEYS[5], mountName)
+    redis.call('HDEL', KEYS[6], mountName)
+  end
 
   if not allowDeadLetter and redis.call('SISMEMBER', KEYS[3], mountName) == 1 then
     blocked = true
@@ -150,8 +161,8 @@ for i = mountNameStart, #ARGV do
   else
     local fields = { 'mountName', mountName, 'createdAt', createdAt }
     for fieldIndex = 0, extraFieldCount - 1 do
-      table.insert(fields, ARGV[5 + (fieldIndex * 2)])
       table.insert(fields, ARGV[6 + (fieldIndex * 2)])
+      table.insert(fields, ARGV[7 + (fieldIndex * 2)])
     end
     redis.call('XADD', KEYS[1], '*', unpack(fields))
     enqueued = enqueued + 1
@@ -331,22 +342,27 @@ async function clearRetryAndDeadLetterForReplicaUpdates(mountNames, loggers) {
   ));
 
   if (uniqueMountNames.length === 0) {
-    return { mountNameCount: 0, retryStreamDeleted: 0, deadLetterStreamDeleted: 0 };
+    return {
+      mountNameCount: 0,
+      retryStreamDeleted: 0,
+      deadLetterStreamDeleted: 0,
+      staleStreamEntriesDeferred: true
+    };
   }
 
-  const retryStreamDeleted = await deleteStreamEntriesByMountNames(
-    RETRY_STREAM,
-    RETRY_GROUP,
-    uniqueMountNames,
-    logger
-  );
-  const deadLetterStreamDeleted = await deleteStreamEntriesByMountNames(
-    RETRY_DEAD_LETTER_STREAM,
-    null,
-    uniqueMountNames,
-    logger
-  );
-
+  /*
+   * Do not scan the complete retry and dead-letter streams here. Their size is
+   * unrelated to the current replica batch and a full XRANGE scan previously
+   * delayed checkpoint completion by several minutes after an application
+   * restart.
+   *
+   * The sets and hashes below are the authoritative eligibility state. Once
+   * they are cleared, the updated mountName can be enqueued immediately. If a
+   * historical retry-stream entry is encountered later, retryWorker checks
+   * isRetryPending(), recognises it as stale, ACKs it and deletes it safely.
+   * Dead-letter stream entries are compact evidence and are removed by their
+   * normal retention/maintenance lifecycle.
+   */
   const batchSize = 500;
   for (let i = 0; i < uniqueMountNames.length; i += batchSize) {
     const batch = uniqueMountNames.slice(i, i + batchSize);
@@ -357,11 +373,21 @@ async function clearRetryAndDeadLetterForReplicaUpdates(mountNames, loggers) {
   }
 
   logger?.info?.(
-    { mountNameCount: uniqueMountNames.length, retryStreamDeleted, deadLetterStreamDeleted },
-    "Cleared retry/dead-letter state for replica update in bulk"
+    {
+      mountNameCount: uniqueMountNames.length,
+      retryStreamDeleted: 0,
+      deadLetterStreamDeleted: 0,
+      staleStreamEntriesDeferred: true
+    },
+    "Cleared retry/dead-letter eligibility state for replica update without scanning streams"
   );
 
-  return { mountNameCount: uniqueMountNames.length, retryStreamDeleted, deadLetterStreamDeleted };
+  return {
+    mountNameCount: uniqueMountNames.length,
+    retryStreamDeleted: 0,
+    deadLetterStreamDeleted: 0,
+    staleStreamEntriesDeferred: true
+  };
 }
 
 async function clearRetryAndDeadLetterForReplicaUpdate(mountName, loggers) {
@@ -707,6 +733,8 @@ async function enqueueMountNames(mountNames, options, loggers) {
    */
   const allowRetryPending = (options || {}).allowRetryPending === true;
   const allowDeadLetter = (options || {}).allowDeadLetter === true;
+  const resetRetryEligibility =
+    (options || {}).resetRetryEligibilityBeforeEnqueue === true;
 
   const clearRetryAndDeadLetterBeforeEnqueue =
   (options || {}).clearRetryAndDeadLetterBeforeEnqueue === true;
@@ -737,11 +765,14 @@ async function enqueueMountNames(mountNames, options, loggers) {
           DEVICE_STREAM,
           DEVICE_DEDUP_SET,
           RETRY_DEAD_LETTER_SET,
-          RETRY_PENDING_SET
+          RETRY_PENDING_SET,
+          RETRY_COUNT_HASH,
+          RETRY_STATE_HASH
         ],
         arguments: [
           allowRetryPending ? "1" : "0",
           allowDeadLetter ? "1" : "0",
+          resetRetryEligibility ? "1" : "0",
           new Date().toISOString(),
           String(Object.keys(extraFields).length),
           ...extraArguments,
