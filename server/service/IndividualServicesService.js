@@ -64,8 +64,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
     }
     const responseData = await mwdiResponse.json();
-    logger.error(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
-    // 5. Validate the MWDIresponse
+    logger.debug(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
+    // 5. Validate the MWDI response
     const responseError = validateMWDIResponse(responseData);
     if (responseError) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
@@ -218,6 +218,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
             logger.error(
               `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`
 );
+            missingMountNames.push(mountName);
           } else if (
             mwdiErrorCode === 502 ||
             mwdiErrorCode === 530 ||
@@ -267,7 +268,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       mwdiUrl,
       mwdiResponse: responseData,
     };
-    // Add the list of already up-to-date mount names to the internal response from the controller handling
+    // Add already up-to-date mount names for controller response handling
     if (alreadyUpToDateMountNames.length > 0) {
       successResponse['already-up-to-date-mount-names'] = alreadyUpToDateMountNames;
     }
