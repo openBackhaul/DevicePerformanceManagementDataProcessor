@@ -161,7 +161,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       functionName: "initiatePmDataUpdate",
     });
 
-    logger.info(`Validation passed: ${loaded.parameters.parameter}`);
+    logger.info(`Parameter loaded: ${loaded.parameters.parameter}`);
     let waitTimeForSending = 0
     waitTimeForSending = Number(
       getParamFromFunction(
