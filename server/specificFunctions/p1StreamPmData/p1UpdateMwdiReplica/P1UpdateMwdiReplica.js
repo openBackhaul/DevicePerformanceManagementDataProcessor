@@ -409,6 +409,18 @@ async function run(request) {
       ? configuredInitialLookbackMs
       : 8 * 60 * 1000;
 
+  // A long application outage must not turn the next incremental cycle into a
+  // large catch-up reindex. This policy intentionally processes only the most
+  // recent configured window after an outage. Set the value to 0 to retain the
+  // old unlimited catch-up behaviour.
+  const configuredMaxCatchUpMs = Number(
+    runtimeConfig?.service?.replicaMaxCatchUpMs ?? 8 * 60 * 1000
+  );
+  const maxCatchUpMs =
+    Number.isFinite(configuredMaxCatchUpMs) && configuredMaxCatchUpMs >= 0
+      ? configuredMaxCatchUpMs
+      : 8 * 60 * 1000;
+
   const reqPerSec = Number(
     getParamFromFunction(parameters, "p1UpdateMwdiReplica", "reqPerSec", 2)
   );
@@ -440,12 +452,32 @@ async function run(request) {
     throw new Error(ERRORS.INVALID_LAST_REPLICA_TIME);
   }
 
-  let periodStartTime = new Date(
-    lastTimestamp === null
-      ? now - initialLookbackMs
-      : lastTimestamp - overlapMs
-  ).toISOString();
+  const requestedStartMs =
+    lastTimestamp === null ? now - initialLookbackMs : lastTimestamp - overlapMs;
+  const catchUpBoundaryMs = maxCatchUpMs > 0 ? now - maxCatchUpMs : null;
+  const periodStartMs =
+    lastTimestamp !== null &&
+    catchUpBoundaryMs !== null &&
+    requestedStartMs < catchUpBoundaryMs
+      ? catchUpBoundaryMs
+      : requestedStartMs;
+  let periodStartTime = new Date(periodStartMs).toISOString();
   let periodEndTime = new Date(now).toISOString();
+
+  if (periodStartMs !== requestedStartMs) {
+    logger.warn?.(
+      {
+        label: "p1UpdateMwdiReplica.catchUp.capped",
+        lastReplicaTime,
+        requestedPeriodStartTime: new Date(requestedStartMs).toISOString(),
+        effectivePeriodStartTime: periodStartTime,
+        periodEndTime,
+        maxCatchUpMs,
+        skippedDurationMs: periodStartMs - requestedStartMs
+      },
+      "Replica checkpoint is older than the permitted catch-up window; processing only recent MWDI updates"
+    );
+  }
 
   logger.debug(
     {
@@ -455,6 +487,7 @@ async function run(request) {
       lastReplicaTime,
       overlapMs,
       initialLookbackMs,
+      maxCatchUpMs,
       reqPerSec,
       scrollSize,
       scrollTtl,
@@ -639,10 +672,6 @@ async function run(request) {
 
   try {
     await redisQueue.ensureGroup(logger);
-    await redisQueue.clearRetryAndDeadLetterForReplicaUpdates(
-      updatedMountNames,
-      logger
-    );
   } catch (error) {
     logger.error(
       {
@@ -664,7 +693,8 @@ async function run(request) {
           (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
         pauseMs:
           (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
-        clearRetryAndDeadLetterBeforeEnqueue: false
+        clearRetryAndDeadLetterBeforeEnqueue: false,
+        resetRetryEligibilityBeforeEnqueue: true
       },
       logger
     );
