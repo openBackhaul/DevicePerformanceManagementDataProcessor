@@ -292,9 +292,7 @@ function validateTransmissionModeList(transmissionModeList) {
     ];
 
     for (const property of numericProperties) {
-      if (!Number.isInteger(transmissionMode[property])
-        // || transmissionMode[property] <= 0
-      ) {
+      if (!Number.isInteger(transmissionMode[property])) {
         return ERRORS.TX_MODE_LIST_INVALID;
       }
     }

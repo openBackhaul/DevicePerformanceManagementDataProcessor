@@ -3,7 +3,6 @@ const JSON5 = require('json5');
 
 const p2PrepareTxModes = require('./P2PrepareTxModes');
 
-// p2PrepareTxModes
 const ERRORS = require('./ErrorsEnum');
 
 const validHistoricalPerformanceDataList = [
@@ -95,6 +94,20 @@ describe('p2PrepareTxModes', () => {
       mode => mode['transmission-mode-name']
     )).toEqual(['MODE-A']);
   });
+
+  test('does not modify the original input', () => {
+    const input = structuredClone({
+      'historical-performance-data-list': validHistoricalPerformanceDataList,
+      'transmission-mode-list': validTransmissionModeList
+    });
+
+    const originalInput = structuredClone(input);
+
+    p2PrepareTxModes(input);
+
+    expect(input).toEqual(originalInput);
+  });
+
 
   test('output contains only expected keys', () => {
     const result = p2PrepareTxModes({
