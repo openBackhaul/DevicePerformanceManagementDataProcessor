@@ -10,7 +10,7 @@ module.exports = {
     '<rootDir>/genericFunctions/p1CalculateEthernetKpis',
     '<rootDir>/genericFunctions/p1CalculateInterfacePmDataQuality',
     '<rootDir>/genericFunctions/p1CategorizeDataVolume',
-    '<rootDir>/genericFunctions/P1CalculateBusyHourPerformanceIndicators',
+    '<rootDir>/genericFunctions/p1CalculateBusyHourPerformanceIndicators',
     '<rootDir>/genericFunctions/p2DiscardIrrelevantPmRecords',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputOnf',
@@ -19,6 +19,7 @@ module.exports = {
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateAiPmSlices',
     '<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1CreateResultCc/p1IterateEcPmSlices',
     '<rootDir>/specificFunctions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf',
+    '<rootDir>/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateAiPmSlices',
     '<rootDir>/infra/kafka'
   ],
 };

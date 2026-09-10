@@ -14,25 +14,10 @@ const ERRORS = {
 
   // Output errors
   HISTORICAL_DATA_LIST_PROVIDE_ERROR: 'historicalPerformanceDataList could not be provided',
-  MOST_RECENT_END_TIME_PROVIDE_ERROR: 'mostRecentPeriodEndTime could not be provided',
-  MOST_RECENT_END_TIME_24_PROVIDE_ERROR: 'mostRecentPeriodEndTime24 could not be provided',
-
-  // Update Most Recent errors
-
-  // Internal functions
-  MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED: 'mostRecentPeriodEndTime not provided',
-  MOST_RECENT_PERIOD_END_TIME_INVALID: 'mostRecentPeriodEndTime invalid',
-  MOST_RECENT_PERIOD_END_TIME24_NOT_PROVIDED: 'mostRecentPeriodEndTime24 not provided',
-  MOST_RECENT_PERIOD_END_TIME24_INVALID: 'mostRecentPeriodEndTime24 invalid',
-
-  GRANULARITY_PERIOD_NOT_PROVIDED: 'granularityPeriod not provided',
-  GRANULARITY_PERIOD_INVALID: 'granularityPeriod invalid',
-
-  PERIOD_END_TIME_NOT_PROVIDED: 'periodEndTime not provided',
-  PERIOD_END_TIME_INVALID: 'periodEndTime invalid',
 
   // General error
-  GENERAL_ERROR: 'General processing error'
+  GENERAL_ERROR: 'general processing error'
 };
 
 module.exports = ERRORS;
+
