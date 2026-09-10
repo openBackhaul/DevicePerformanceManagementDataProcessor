@@ -341,5 +341,21 @@ describe('p2IterateAiPmSlices', () => {
       const res = await p2IterateAiPmSlices(invalidDefaultValuesInput);
       expect(res).toBe(ERRORS.DEFAULT_VALUES_ERROR);
     });
+
+    test('returns INTERVAL_CAPACITY_ERROR when time-xstates-list is missing from performance-data', async () => {
+      const missingTimeXStatesInput = JSON.parse(JSON.stringify(validInput));
+      delete missingTimeXStatesInput['historical-performance-data-list'][0]['performance-data']['time-xstates-list'];
+
+      const res = await p2IterateAiPmSlices(missingTimeXStatesInput);
+      expect(res).toBe(ERRORS.INTERVAL_CAPACITY_ERROR);
+    });
+
+    test('returns INTERVAL_CAPACITY_ERROR when time-xstates-list is not an array', async () => {
+      const invalidTimeXStatesInput = JSON.parse(JSON.stringify(validInput));
+      invalidTimeXStatesInput['historical-performance-data-list'][0]['performance-data']['time-xstates-list'] = 'invalid-list';
+
+      const res = await p2IterateAiPmSlices(invalidTimeXStatesInput);
+      expect(res).toBe(ERRORS.INTERVAL_CAPACITY_ERROR);
+    });
   });
 });

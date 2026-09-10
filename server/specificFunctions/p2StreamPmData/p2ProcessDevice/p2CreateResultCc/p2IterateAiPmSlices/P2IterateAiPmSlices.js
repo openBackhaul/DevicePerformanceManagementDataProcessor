@@ -116,7 +116,7 @@ async function p2IterateAiPmSlices(input) {
       let intervalCapacityResult;
       try {
         intervalCapacityResult = p1CalculateIntervalCapacity({
-          'time-xstates-list': Array.isArray(timeXStatesList) ? timeXStatesList : [],
+          'time-xstates-list': timeXStatesList,
           'transmission-mode-list': transmissionModeList
         });
       } catch (error) {
