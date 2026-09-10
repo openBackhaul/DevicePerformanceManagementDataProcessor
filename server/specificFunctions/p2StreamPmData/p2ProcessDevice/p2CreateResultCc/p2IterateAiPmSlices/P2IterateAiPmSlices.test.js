@@ -212,18 +212,40 @@ describe('p2IterateAiPmSlices', () => {
       expect(sliceWithDefault).toBeUndefined();
     });
 
-    test('does not sort original input array reference in-place while updating PM objects', async () => {
-      const originalFirstPeriodEndTime = validInput['historical-performance-data-list'][0]['period-end-time'];
-      const originalListReference = validInput['historical-performance-data-list'];
+    test('does not mutate the original input array or its nested objects', async () => {
+      const originalInputCopy = JSON.parse(JSON.stringify(validInput));
 
-      const result = await p2IterateAiPmSlices(validInput);
+      await p2IterateAiPmSlices(validInput);
 
-      // The original array reference order is not sorted in-place
-      expect(originalListReference[0]['period-end-time']).toBe(originalFirstPeriodEndTime);
+      expect(validInput).toEqual(originalInputCopy);
+    });
 
-      // The PM slice objects are updated with the processed data
-      const firstProcessedSlice = result['historical-performance-data-list'][0];
-      expect(firstProcessedSlice['performance-data']['interval-capacity']).toBeDefined();
+    test('leaves input untouched if processing fails midway', async () => {
+      const failingInput = JSON.parse(JSON.stringify(validInput));
+      failingInput.parameters = {
+        'sub-function': [
+          {
+            'function-name': 'p1RemoveOutOfRangeLevels',
+            parameter: [
+              { 'parameter-name': 'lowerTxLevelLimit', value: '100' },
+              { 'parameter-name': 'upperTxLevelLimit', value: '10' },
+              { 'parameter-name': 'lowerRxLevelLimit', value: '30' },
+              { 'parameter-name': 'upperRxLevelLimit', value: '100' }
+            ]
+          },
+          {
+            'function-name': 'p1RemoveDefaultValues',
+            parameter: [{ 'parameter-name': 'tx-level-avg', value: '-99' }]
+          }
+        ]
+      };
+
+      const originalInputCopy = JSON.parse(JSON.stringify(failingInput));
+      const res = await p2IterateAiPmSlices(failingInput);
+      expect(res).toBe(ERRORS.OUT_OF_RANGE_LEVELS_ERROR);
+
+      // Verify the original input was not modified even partially
+      expect(failingInput).toEqual(originalInputCopy);
     });
 
     test('handles direct sub-function parameters object structure', async () => {

@@ -62,13 +62,11 @@ async function p2IterateAiPmSlices(input) {
     const transmissionModeList = input['transmission-mode-list'];
 
     /*
-     * Clone the array because sorting with Array.sort() changes
-     * the original input array.
-     *
-     * We keep the PM objects themselves because they will be
-     * progressively updated during processing.
+     * Deep-clone the historical-performance-data-list so that
+     * modifications do not mutate the caller's objects, and if processing
+     * stops midway due to an error, the caller's input is not left in a partially modified state.
      */
-    const historicalPerformanceDataList = [...input['historical-performance-data-list']];
+    const historicalPerformanceDataList = deepClone(input['historical-performance-data-list']);
 
     // ---------------------------------------------------------
     // Validate historical PM records
@@ -326,6 +324,21 @@ function getSubFunctionParameters(parameters, functionName) {
   }
 
   return { parameter: [] };
+}
+
+/**
+ * Deep-clones an object or array.
+ * Uses native structuredClone if available, falling back to JSON serialization.
+ *
+ * @param {*} value
+ * @returns {*}
+ */
+function deepClone(value) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(value);
+  }
+
+  return JSON.parse(JSON.stringify(value));
 }
 
 module.exports = p2IterateAiPmSlices;
