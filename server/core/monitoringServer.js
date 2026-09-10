@@ -1,4 +1,5 @@
 const http = require("http");
+const performanceMetrics = require("./performanceMetrics");
 
 function startMonitoringServer(appState, logger, options) {
   const port = (options || {}).port || 8040;
@@ -37,7 +38,8 @@ function startMonitoringServer(appState, logger, options) {
           `dpmdp_processed_failure_total ${appState.metrics.processedFailure}`,
           `dpmdp_retry_enqueued_total ${appState.metrics.retryEnqueued}`,
           `dpmdp_processing_average_devices_per_second ${averageProcessingRate.toFixed(4)}`,
-          `dpmdp_processing_target_devices_per_second 3.7`
+          `dpmdp_processing_target_devices_per_second 3.7`,
+          performanceMetrics.render()
         ].join("\n") + "\n"
       );
       return;
