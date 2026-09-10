@@ -15,4 +15,6 @@ class AppState {
   }
 }
 
-module.exports = { AppState };
+// Create and export a singleton instance
+const appStateInstance = new AppState();
+module.exports = { AppState, appState: appStateInstance };
