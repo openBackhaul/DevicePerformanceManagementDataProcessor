@@ -27,6 +27,15 @@ jest.mock("@confluentinc/kafka-javascript", () => {
 const { initProducer, resetProducer, sendBatch } = require("./confluentKafkaProducer");
 
 describe("confluentKafkaProducer TLS config", () => {
+  it("returns measured send-call timing, not fabricated linger time", async () => {
+    const result = await sendBatch("topic.apt", [{ key: "cc", value: "{}" }],
+      { info: jest.fn(), error: jest.fn() }, { clientId: "timing-test", brokers: ["broker:9092"] });
+    expect(result.timing).toMatchObject({
+      timingScope: "producer-send-call", actualLingerMs: "unavailable", batchMessageCount: 1, sendAttempts: 1
+    });
+    expect(Number(result.timing.sendToAckMs)).toBeGreaterThanOrEqual(0);
+    expect(result.timing.configuredLingerMs).toBe(global.mockKafkaInstance.config["linger.ms"]);
+  });
   beforeEach(async () => {
     await resetProducer({ warn: jest.fn() }, "TEST_RESET");
     global.mockKafka.mockClear();
