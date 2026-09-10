@@ -73,6 +73,13 @@
     "deviceProcessingLockTtlMs": 1800000
   },
   "monitoring": {
-    "enabled": true
+    "enabled": true,
+    "performanceTimings": {
+      "enabled": true,
+      "streamsEnabled": false,
+      "streamMaxLen": 200000,
+      "bufferMaxEntries": 2000,
+      "flushIntervalMs": 1000
+    }
   }
 }

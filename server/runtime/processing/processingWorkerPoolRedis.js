@@ -3,6 +3,7 @@ const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1Proces
 const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
+const performanceMetrics = require("../../core/performanceMetrics");
 
 function shouldEnqueueRetry(error) {
   return !error || error.retryable !== false;
@@ -40,6 +41,10 @@ async function handleMessage(message, context) {
     }
   }, Math.max(5000, Math.floor(lockTtlMs / 3)));
 
+  const timing = performanceMetrics.begin(message, message.pickedAtMs);
+  let processingOutcome = "FAILED";
+  performanceMetrics.active("device", 1);
+
   try{
     try {
         await p1ProcessDevice.run({
@@ -51,6 +56,7 @@ async function handleMessage(message, context) {
           kafkaConsumerTypes: context.kafkaConsumerTypes,
           storingOptions: context.storingOptions
         });
+        processingOutcome = "SUCCESS";
 
         if (context.appState?.metrics) {
           context.appState.metrics.processedSuccess += 1;
@@ -60,7 +66,6 @@ async function handleMessage(message, context) {
         
         await redisQueue.ackMessage(id, context.logger);
         await redisQueue.removeFromDedupSet(mountName, context.logger);
-        await redisQueue.deleteMessage(id, context.logger);
     } catch (error) {
         if (context.appState?.metrics) {
           context.appState.metrics.processedFailure += 1;
@@ -105,9 +110,14 @@ async function handleMessage(message, context) {
 
         await redisQueue.ackMessage(id, context.logger);
         await redisQueue.removeFromDedupSet(mountName, context.logger);
-        await redisQueue.deleteMessage(id, context.logger);
     }
    } finally {
+        performanceMetrics.active("device", -1);
+        performanceMetrics.record("device", timing, {
+          outcome: processingOutcome,
+          worker: context.instanceId || "",
+          attemptSource: message.attemptSource || "new"
+        });
         clearInterval(renewer);
         await releaseLock(lockKey, lockToken, context.logger).catch(() => {});
    }
@@ -123,6 +133,8 @@ async function workerLoop(context, consumerName) {
         context.staleMessageIdleMs || 60000,
         context.logger
       );
+      const reclaimedAt = Date.now();
+      reclaimed.forEach(message => { message.pickedAtMs = reclaimedAt; message.attemptSource = "reclaimed"; });
 
       for (const message of reclaimed) {
         if (context.appState.isShuttingDown) break;
@@ -135,6 +147,8 @@ async function workerLoop(context, consumerName) {
         context.readCount || 10,
         context.logger
       );
+      const pickedAt = Date.now();
+      streams.forEach(stream => (stream.messages || []).forEach(message => { message.pickedAtMs = pickedAt; }));
 
       for (const stream of streams) {
         for (const message of stream.messages || []) {
@@ -169,6 +183,7 @@ async function startProcessingWorkerPoolRedis(context) {
   }
 
   const workerCount = Math.min(requestedWorkerCount, maxWorkerCount);
+  performanceMetrics.setWorkers("device", workerCount);
   if (workerCount !== requestedWorkerCount) {
     context.logger?.warn?.(
       { requestedWorkerCount, maxWorkerCount },

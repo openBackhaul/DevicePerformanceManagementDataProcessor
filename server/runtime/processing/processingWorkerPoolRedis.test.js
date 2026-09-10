@@ -75,7 +75,7 @@ describe("processingWorkerPoolRedis retry handling", () => {
     expect(redisQueue.enqueueRetry).not.toHaveBeenCalled();
     expect(redisQueue.ackMessage).toHaveBeenCalledWith("1-0", context.logger);
     expect(redisQueue.removeFromDedupSet).toHaveBeenCalledWith("device-1", context.logger);
-    expect(redisQueue.deleteMessage).toHaveBeenCalledWith("1-0", context.logger);
+    expect(redisQueue.deleteMessage).not.toHaveBeenCalled();
     expect(releaseLock).toHaveBeenCalledWith(
       "dpmdp:lock:process:device-1",
       "lock-token",
@@ -101,6 +101,6 @@ describe("processingWorkerPoolRedis retry handling", () => {
     );
     expect(redisQueue.ackMessage).toHaveBeenCalledWith("1-0", context.logger);
     expect(redisQueue.removeFromDedupSet).toHaveBeenCalledWith("device-1", context.logger);
-    expect(redisQueue.deleteMessage).toHaveBeenCalledWith("1-0", context.logger);
+    expect(redisQueue.deleteMessage).not.toHaveBeenCalled();
   });
 });

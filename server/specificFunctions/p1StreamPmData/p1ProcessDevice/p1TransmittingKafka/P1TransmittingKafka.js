@@ -428,7 +428,7 @@ async function run(request) {
         );
       isTransmitting = true;
 
-      await sendBatch(
+      const sendResult = await sendBatch(
         item.topicName,
         item.messages,
         logger,
@@ -442,7 +442,8 @@ async function run(request) {
         clientId: item.kafkaOptions.clientId,
         brokers: item.kafkaOptions.brokers,
         messageCount: item.messages.length,
-        status: "SENT"
+        status: "SENT",
+        timing: sendResult?.timing
       });
     }
 

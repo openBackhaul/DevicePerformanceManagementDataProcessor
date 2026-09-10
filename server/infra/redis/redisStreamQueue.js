@@ -1,4 +1,5 @@
 const { getRedisClient } = require("./redisClient");
+const { commandOptions } = require("redis");
 const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 
@@ -17,11 +18,13 @@ const KAFKA_OUTBOUND_GROUP = "dpmdp:group:kafka-outbound";
 const KAFKA_OUTBOUND_DEAD_LETTER_STREAM = "dpmdp:stream:kafka-outbound-dead-letter";
 const KAFKA_OUTBOUND_SUCCESS_STREAM = "dpmdp:stream:kafka-outbound-success";
 const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
+const DEVICE_TIMING_STREAM = "dpmdp:stream:device-processing-timing";
+const KAFKA_TIMING_STREAM = "dpmdp:stream:kafka-outbound-timing";
 
 const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
 local storedDate = redis.call('HGET', KEYS[1], 'date')
 if storedDate ~= ARGV[1] then
-  redis.call('UNLINK', KEYS[2], KEYS[3])
+  redis.call('UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5])
   redis.call('DEL', KEYS[1])
   redis.call('HSET', KEYS[1],
     'date', ARGV[1],
@@ -39,6 +42,23 @@ if count > 0 and ARGV[3] ~= '' then
   end
 end
 redis.call('HSET', KEYS[1], 'updatedAt', ARGV[6])
+if ARGV[7] then
+  local written = 0
+  for _, record in ipairs(cjson.decode(ARGV[7])) do
+    if record.date == ARGV[1] then
+      local stream = KEYS[4]
+      if record.stage == 'kafka' then stream = KEYS[5] end
+      local fields = {}
+      for key, value in pairs(record.fields) do
+        table.insert(fields, key)
+        table.insert(fields, value)
+      end
+      redis.call('XADD', stream, 'MAXLEN', '~', ARGV[8], '*', unpack(fields))
+      written = written + 1
+    end
+  end
+  return written
+end
 return redis.call('HGETALL', KEYS[1])
 `;
 
@@ -72,7 +92,16 @@ local pending = redis.call('XPENDING', KEYS[1], ARGV[1], ARGV[2], ARGV[2], 1)
 if #pending == 0 or pending[1][2] ~= ARGV[3] then
   return 0
 end
-return redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+local acknowledged = redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+if acknowledged == 1 then redis.call('XDEL', KEYS[1], ARGV[2]) end
+return acknowledged
+`;
+
+// Both streams are single-group work queues. Never delete an unread entry.
+const ACK_AND_DELETE_DEVICE_SCRIPT = `
+local acknowledged = redis.call('XACK', KEYS[1], ARGV[1], ARGV[2])
+if acknowledged == 1 then redis.call('XDEL', KEYS[1], ARGV[2]) end
+return acknowledged
 `;
 
 const RENEW_KAFKA_OUTBOUND_OWNERSHIP_SCRIPT = `
@@ -108,7 +137,9 @@ async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
     keys: [
       KAFKA_DAILY_METRICS_HASH,
       KAFKA_OUTBOUND_SUCCESS_STREAM,
-      KAFKA_OUTBOUND_DEAD_LETTER_STREAM
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
+      DEVICE_TIMING_STREAM,
+      KAFKA_TIMING_STREAM
     ],
     arguments: [
       getBerlinDate(),
@@ -123,6 +154,45 @@ async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
 
 async function resetKafkaDailyMetricsIfNeeded(loggers) {
   return updateKafkaDailyMetrics("", "", 0, loggers);
+}
+
+async function recordPerformanceTimings(entries, maxLen, loggers) {
+  const redis = await getRedisClient(loggers);
+  return redis.eval(UPDATE_KAFKA_DAILY_METRICS_SCRIPT, {
+    keys: [KAFKA_DAILY_METRICS_HASH, KAFKA_OUTBOUND_SUCCESS_STREAM,
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM, DEVICE_TIMING_STREAM, KAFKA_TIMING_STREAM],
+    arguments: [getBerlinDate(), "Europe/Berlin", "", "", "0", new Date().toISOString(),
+      JSON.stringify(entries.map(entry => ({ ...entry, date: getBerlinDate(new Date(entry.fields.completedAt)) }))),
+      String(maxLen)]
+  });
+}
+
+async function getPerformanceQueueStats(loggers) {
+  const redis = await getRedisClient(loggers);
+  return Promise.all([
+    ["device", DEVICE_STREAM, DEVICE_GROUP],
+    ["kafka", KAFKA_OUTBOUND_STREAM, KAFKA_OUTBOUND_GROUP]
+  ].map(async ([stage, stream, group]) => {
+    const [entries, groups] = await Promise.all([
+      redis.xLen(stream),
+      redis.xInfoGroups(stream).catch(error => {
+        if (String(error.message).includes("no such key")) return [];
+        throw error;
+      })
+    ]);
+    const info = groups.find(item => item.name === group);
+    const retryPending = stage === "device" ? await redis.sCard(RETRY_PENDING_SET) : 0;
+    return { stage, entries, pending: info?.pending ?? null, lag: info?.lag ?? null, retryPending };
+  }));
+}
+
+async function writePerformanceMetricsSnapshot(fields, loggers) {
+  const redis = await getRedisClient(loggers);
+  // One atomic update, independent of the daily delivery accounting hash.
+  // Expiry prevents stopped applications from displaying indefinitely fresh data.
+  const key = "dpmdp:hash:performance-metrics";
+  // Replace only this diagnostic snapshot so fields from older schemas vanish.
+  await redis.multi().del(key).hSet(key, fields).expire(key, 120).exec();
 }
 
 const ENQUEUE_MOUNT_NAMES_SCRIPT = `
@@ -200,6 +270,8 @@ async function readNext(consumerName, blockMs, count, loggers) {
 
     return (
         await redis.xReadGroup(
+            // BLOCK must not stall ACK/DEL, locks or metrics on the shared socket.
+            commandOptions({ isolated: true }),
             DEVICE_GROUP,
             consumerName,
             { key: DEVICE_STREAM, id: ">" },
@@ -210,7 +282,9 @@ async function readNext(consumerName, blockMs, count, loggers) {
 
 async function ackMessage(messageId, loggers) {
     const redis = await getRedisClient(logger);
-    await redis.xAck(DEVICE_STREAM, DEVICE_GROUP, messageId);
+    return Number(await redis.eval(ACK_AND_DELETE_DEVICE_SCRIPT, {
+      keys: [DEVICE_STREAM], arguments: [DEVICE_GROUP, messageId]
+    }));
 }
 
 async function reclaimStale(consumerName, minIdleMs, loggers) {
@@ -649,6 +723,7 @@ async function readNextRetry(consumerName, blockMs, count, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xReadGroup(
+    commandOptions({ isolated: true }),
     RETRY_GROUP,
     consumerName,
     { key: RETRY_STREAM, id: ">" },
@@ -781,6 +856,7 @@ async function enqueueMountNames(mountNames, options, loggers) {
       });
 
       enqueued += Number(result?.[0] || 0);
+      require("../../core/performanceMetrics").enqueue("device", Number(result?.[0] || 0));
       skipped += Number(result?.[1] || 0);
     } catch (error) {
       failed += safeBatch.length;
@@ -838,12 +914,14 @@ async function enqueueKafkaOutbound(outputMessage, loggers) {
     payloadRefId: outputMessage.payloadRefId || "",
     payloadBytes: String(outputMessage.payloadBytes || 0)
   });
+  require("../../core/performanceMetrics").enqueue("kafka");
 }
 
 async function readNextKafkaOutbound(consumerName, blockMs, count, loggers) {
   const redis = await getRedisClient(logger);
 
   const response = await redis.xReadGroup(
+    commandOptions({ isolated: true }),
     KAFKA_OUTBOUND_GROUP,
     consumerName,
     { key: KAFKA_OUTBOUND_STREAM, id: ">" },
@@ -1011,6 +1089,9 @@ async function clearKafkaOutboundDeadLetter(loggers) {
 }
 
 module.exports = {
+    recordPerformanceTimings,
+    getPerformanceQueueStats,
+    writePerformanceMetricsSnapshot,
     DEVICE_STREAM,
     DEVICE_GROUP,
     RETRY_STREAM,

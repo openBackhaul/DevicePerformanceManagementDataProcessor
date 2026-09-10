@@ -29,6 +29,36 @@ const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1Pr
 const { _internal } = require("./kafkaOutboundWorker");
 
 describe("kafkaOutboundWorker Elasticsearch payload references", () => {
+  test("records send-call timings separately from ES loading and does not await evidence writes", async () => {
+    const metrics = require("../../core/performanceMetrics");
+    const record = jest.spyOn(metrics, "record");
+    p1TransmittingKafka.run.mockResolvedValueOnce({ transmissionResultList: [{ topic: "topic.apt", timing: {
+      sendToAckMs: "12.5", configuredLingerMs: 50, actualLingerMs: "unavailable",
+      acknowledgementsRequested: "all", timingScope: "producer-send-call", batchMessageCount: 1
+    } }] });
+    const now = Date.now();
+    await _internal.processKafkaOutboundMessages([{
+      id: `${now - 1000}-0`, pickedAtMs: now - 500,
+      message: { mountName: "cc", targetConsumer: "APT", payload: "{}" }
+    }], { appState: { isShuttingDown: false }, p1TransmittingKafkaParameters: {}, kafkaConnectionList: [] });
+    expect(record).toHaveBeenCalledWith("kafka", expect.objectContaining({ fields: expect.objectContaining({ queueWaitingMs: 500 }) }),
+      expect.objectContaining({ sendToAckMs: "12.5", actualLingerMs: "unavailable", outcome: "SUCCESS", topic: "topic.apt" }));
+    record.mockRestore();
+  });
+  test("does not report a broker acknowledgement when acks is zero", async () => {
+    const metrics = require("../../core/performanceMetrics");
+    const record = jest.spyOn(metrics, "record");
+    p1TransmittingKafka.run.mockResolvedValueOnce({ transmissionResultList: [{ topic: "topic.apt", timing: {
+      sendToAckMs: "2", acknowledgementsRequested: "0", actualLingerMs: "unavailable"
+    } }] });
+    await _internal.processKafkaOutboundMessages([{
+      id: `${Date.now()}-0`, message: { mountName: "cc", targetConsumer: "APT", payload: "{}" }
+    }], { appState: { isShuttingDown: false }, p1TransmittingKafkaParameters: {}, kafkaConnectionList: [] });
+    expect(record).toHaveBeenCalledWith("kafka", expect.anything(), expect.objectContaining({
+      outcome: "SENT_NO_ACK", sendToAckMs: "", sendCompletionMs: "2"
+    }));
+    record.mockRestore();
+  });
   beforeEach(() => {
     jest.clearAllMocks();
     kafkaPayloadStore.loadKafkaPayload.mockResolvedValue({ value: "large-payload" });
@@ -54,7 +84,7 @@ describe("kafkaOutboundWorker Elasticsearch payload references", () => {
     expect(redisQueue.ackKafkaOutbound).toHaveBeenCalledWith(
       "1-0", undefined, expect.anything()
     );
-    expect(redisQueue.deleteKafkaOutboundMessage).toHaveBeenCalledWith("1-0", expect.anything());
+    expect(redisQueue.deleteKafkaOutboundMessage).not.toHaveBeenCalled();
     expect(kafkaPayloadStore.loadKafkaPayload).toHaveBeenCalledWith(
       expect.objectContaining({ payloadRefId: "payload-1" })
     );
