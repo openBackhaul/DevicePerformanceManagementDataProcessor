@@ -21,11 +21,9 @@ function p2PrepareTxModes(input) {
     }
 
     /*
-     * Work on a copy so that the original input object is not modified.
-     *
-     * structuredClone is available in recent Node.js versions.
-     * JSON cloning is sufficient here because the input contains
-     * plain JSON-compatible data.
+     * Deep-clone the historical-performance-data-list so that
+     * modifications do not mutate the caller's objects, and if processing
+     * stops midway due to an error, the caller's input is not left in a partially modified state.
      */
     let historicalPerformanceDataList;
 
