@@ -64,7 +64,8 @@ async function handleMessage(message, context) {
 
         await redisQueue.clearRetryState(mountName, context.logger);
         
-        await redisQueue.ackMessage(id, context.logger);
+        const acknowledged = await redisQueue.ackMessage(id, context.logger);
+        if (acknowledged === 1) performanceMetrics.recordCompleted("device", timing);
         await redisQueue.removeFromDedupSet(mountName, context.logger);
     } catch (error) {
         if (context.appState?.metrics) {

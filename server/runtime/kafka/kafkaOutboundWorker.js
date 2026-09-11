@@ -94,7 +94,7 @@ async function buildOutputMessage(redisMessage, context) {
     };
 }
 
-async function ackAndDeleteRedisMessages(messages, context) {
+async function ackAndDeleteRedisMessages(messages, context, onCompleted) {
     const acknowledgementResults = await Promise.all(messages.map(async (msg) => {
         const ackCount = await redisQueue.ackKafkaOutbound(
             msg.id,
@@ -102,6 +102,7 @@ async function ackAndDeleteRedisMessages(messages, context) {
             logger
         );
         if (ackCount === 1) {
+            onCompleted?.(msg);
             // ackKafkaOutbound atomically acknowledges and deletes if owned.
             return msg;
         } else {
@@ -190,7 +191,14 @@ async function processKafkaOutboundChunk(messages, context) {
     // Delivery has already succeeded. Only entries still owned by this worker
     // may be deleted from Redis and Elasticsearch. Success evidence remains
     // best-effort: a metrics outage must not resend an acknowledged message.
-    const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context);
+    const timingById = new Map(messages.map((msg, index) => [msg.id, timings[index]]));
+    const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context, msg => {
+      performanceMetrics.recordCompleted("kafka", timingById.get(msg.id), {
+        targetConsumer: String(msg.message?.targetConsumer || "UNKNOWN").toUpperCase(),
+        payloadBytes: getPayloadBytes(msg),
+        status: sendTiming?.acknowledgementsRequested === "0" ? "SENT_NO_ACK" : "SUCCESS"
+      });
+    });
 
     // Reset the daily counters/evidence streams before recording today's
     // successful entries. This keeps both views on the same Berlin date.

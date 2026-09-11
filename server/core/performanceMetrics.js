@@ -52,6 +52,7 @@ function configure(config = {}, logger) {
     enabled: config.enabled !== false,
     // Detailed per-mount streams are opt-in; summary rates remain enabled.
     streamsEnabled: config.streamsEnabled === true,
+    compactStreamsEnabled: config.compactStreamsEnabled === true,
     maxLen: positive(config.streamMaxLen, 200000),
     maxBuffer: positive(config.bufferMaxEntries, 2000)
   };
@@ -59,7 +60,7 @@ function configure(config = {}, logger) {
   clearInterval(timer);
   clearInterval(queueTimer);
   if (options.enabled) {
-    if (options.streamsEnabled) {
+    if (options.streamsEnabled || options.compactStreamsEnabled) {
       timer = setInterval(flush, positive(config.flushIntervalMs, 1000));
       timer.unref();
     }
@@ -126,14 +127,14 @@ function record(stage, timing, extra = {}) {
   for (const field of ["queueWaitingMs", "workerWaitingMs", "processingMs", "payloadLoadMs", "sendToAckMs"]) {
     observe(stage, outcome, target, field, record[field]);
   }
-  if (!options.enabled || !options.streamsEnabled) return;
+  if (!options.enabled || !options.streamsEnabled || options.compactStreamsEnabled) return;
   if (buffer.length >= options.maxBuffer) { dropped++; return; }
   buffer.push({ stage, fields: Object.fromEntries(Object.entries(record).map(([key, value]) => [key, String(value ?? "")])) });
 }
 
 // Bounded, best-effort evidence. Never await Redis timing writes on delivery paths.
 async function flush() {
-  if (!options.enabled || !options.streamsEnabled || flushing || !buffer.length) return;
+  if (!options.enabled || !(options.streamsEnabled || options.compactStreamsEnabled) || flushing || !buffer.length) return;
   flushing = true;
   const entries = buffer.splice(0, 100);
   try {
@@ -146,6 +147,23 @@ async function flush() {
   } finally {
     flushing = false;
   }
+}
+
+// Called immediately after Redis completion. Does not alter rate counters.
+function recordCompleted(stage, timing, extra = {}) {
+  if (!options.enabled || !options.compactStreamsEnabled) return;
+  if (buffer.length >= options.maxBuffer) { dropped++; return; }
+  const fields = {
+    mountName: String(timing.fields.mountName || ""),
+    processingSeconds: (Math.max(0, performance.now() - timing.clock) / 1000).toFixed(3)
+  };
+  if (stage === "kafka") Object.assign(fields, {
+    targetConsumer: String(extra.targetConsumer || "UNKNOWN"),
+    beforeCompressionMB: Number.isFinite(Number(extra.payloadBytes)) ? (Number(extra.payloadBytes) / 1000000).toFixed(6) : "unavailable",
+    afterCompressionMB: "unavailable",
+    status: extra.status || "SUCCESS"
+  });
+  buffer.push({ stage, completedAt: new Date().toISOString(), fields });
 }
 
 async function sampleQueues() {
@@ -246,4 +264,4 @@ function render() {
   return lines.join("\n");
 }
 
-module.exports = { configure, begin, record, flush, render, setWorkers, active, enqueue, sampleQueues };
+module.exports = { configure, begin, record, recordCompleted, flush, render, setWorkers, active, enqueue, sampleQueues };

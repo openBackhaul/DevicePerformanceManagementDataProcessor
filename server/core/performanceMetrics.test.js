@@ -23,6 +23,32 @@ describe("bounded performance timing evidence", () => {
   });
   afterEach(() => { metrics.configure({ enabled: false }); jest.useRealTimers(); });
 
+  test("compact completed streams contain only client fields and exclude queue age", async () => {
+    metrics.configure({ compactStreamsEnabled: true });
+    const timing = metrics.begin({ id: "1-0", message: { mountName: "cc" } }, 100);
+    jest.advanceTimersByTime(2500);
+    metrics.recordCompleted("device", timing);
+    metrics.recordCompleted("kafka", timing, { targetConsumer: "APT", payloadBytes: 1500000 });
+    await metrics.flush();
+    const entries = queue.recordPerformanceTimings.mock.calls[0][0];
+    expect(entries[0].fields).toEqual({ mountName: "cc", processingSeconds: "2.500" });
+    expect(entries[1].fields).toEqual({ mountName: "cc", processingSeconds: "2.500", targetConsumer: "APT",
+      beforeCompressionMB: "1.500000", afterCompressionMB: "unavailable", status: "SUCCESS" });
+    expect(entries[0].completedAt).toBeTruthy();
+  });
+
+  test("compact logging is bounded, opt-in and does not update throughput counters", async () => {
+    const timing = metrics.begin({ message: { mountName: "cc" } });
+    metrics.recordCompleted("device", timing);
+    metrics.configure({ compactStreamsEnabled: true, bufferMaxEntries: 1 });
+    metrics.recordCompleted("device", timing);
+    metrics.recordCompleted("device", timing);
+    await metrics.flush();
+    expect(queue.recordPerformanceTimings.mock.calls[0][0]).toHaveLength(1);
+    expect(metrics.render()).toContain("dpmdp_timing_records_dropped_total 1");
+    expect(require("./dailyPerformanceMetrics").DailyPerformanceMetrics.mock.results[0].value.record).not.toHaveBeenCalled();
+  });
+
   test.each([
     { pending: 0, lag: 0, retryPending: 0, expected: "0.000" },
     { pending: 1, lag: 0, retryPending: 0, expected: "15.000" },

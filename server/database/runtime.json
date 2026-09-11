@@ -77,6 +77,7 @@
     "performanceTimings": {
       "enabled": true,
       "streamsEnabled": false,
+      "compactStreamsEnabled": true,
       "streamMaxLen": 200000,
       "bufferMaxEntries": 2000,
       "flushIntervalMs": 1000
