@@ -222,14 +222,27 @@ function comparePmSlices(a, b) {
     return granularityA - granularityB;
   }
 
-  const timeA = new Date(a['period-end-time']).getTime();
-  const timeB = new Date(b['period-end-time']).getTime();
+  const timeStrA = a['period-end-time'];
+  const timeStrB = b['period-end-time'];
+
+  if (timeStrA === null || timeStrA === undefined) {
+    if (timeStrB === null || timeStrB === undefined) {
+      return 0;
+    }
+    return 1;
+  }
+  if (timeStrB === null || timeStrB === undefined) {
+    return -1;
+  }
+
+  const timeA = new Date(timeStrA).getTime();
+  const timeB = new Date(timeStrB).getTime();
 
   if (!Number.isNaN(timeA) && !Number.isNaN(timeB)) {
     return timeA - timeB;
   }
 
-  return String(a['period-end-time']).localeCompare(String(b['period-end-time']));
+  return String(timeStrA).localeCompare(String(timeStrB));
 }
 
 /**

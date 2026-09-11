@@ -182,6 +182,39 @@ describe('p2IterateAiPmSlices', () => {
       expect(list[0]['granularity-period']).toBe('15min');
       expect(list[1]['granularity-period']).toBe('24h');
     });
+
+    test('handles null or undefined period-end-time during sorting without calling Date', async () => {
+      const inputData = {
+        parameters: validInput.parameters,
+        'transmission-mode-list': validInput['transmission-mode-list'],
+        'historical-performance-data-list': [
+          {
+            'period-end-time': null,
+            'granularity-period': '15min',
+            'performance-data': {
+              'time-xstates-list': [
+                { 'transmission-mode': '0056-QPSK-52680/61762-1', time: 900 }
+              ]
+            }
+          },
+          {
+            'period-end-time': '2026-05-18T10:00:00+00:00',
+            'granularity-period': '15min',
+            'performance-data': {
+              'time-xstates-list': [
+                { 'transmission-mode': '0056-QPSK-52680/61762-1', time: 900 }
+              ]
+            }
+          }
+        ]
+      };
+
+      const result = await p2IterateAiPmSlices(inputData);
+      expect(typeof result).toBe('object');
+      const list = result['historical-performance-data-list'];
+      expect(list[0]['period-end-time']).toBe('2026-05-18T10:00:00+00:00');
+      expect(list[1]['period-end-time']).toBeNull();
+    });
   });
 
   describe('Processing Iteration & Feature Execution', () => {
