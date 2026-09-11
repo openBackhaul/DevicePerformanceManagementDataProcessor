@@ -10,7 +10,7 @@ const p1CalculateAiCapacity = require('../../../../../genericFunctions/p1Calcula
  * of the transmission modes that are actually referenced.
  *
  * @param {Object} input
- * @returns {Promise<Object>}
+ * @returns {Object|string}
  */
 function p2PrepareTxModes(input) {
   try {
