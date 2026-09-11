@@ -118,7 +118,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       inputMountNames,
     );
     if (connectionStatusError) {
-      logger.error(unconnectedMountNames, `Unconnected mounts detected: `);
+      logger.error(connectionStatusError.unconnectedMountNames, `Unconnected mounts detected: `);
 
       // Throw error with code 532 and unconnected mount names
       const error532 = {
@@ -212,6 +212,10 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     // Array per raccogliere i risultati del ciclo live control-construct
     // const liveControlConstructResults = []; // is not used!
 
+    // Mount names che producono errori live CC: non collegati oppure risorsa sconosciuta
+    const unconnectedMountNames = [];
+    const missingMountNames = [];
+
     // Ciclo attraverso tutti i mount names per recuperare i live control-construct
     for (const mountName of outdatedMountNames) {
       logger.debug(`Processing mount: ${mountName}`);
@@ -235,27 +239,67 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         if (response.ok) {
           const data = await response.json();
           logger.info(`Successfully retrieved control-construct for ${mountName}`);
-          // liveControlConstructResults.push({
-          //   mountName: mountName,
-          //   status: "success",
-          //   data: data
-          // });
         } else {
-          logger.warn(`Failed to retrieve control-construct for ${mountName}: ${response.status}`);
-          // liveControlConstructResults.push({
-          //   mountName: mountName,
-          //   status: "failed",
-          //   error: `HTTP ${response.status}`
-          // });
+          // Prova a decodificare il body di errore restituito da MWDI ({ code, message })
+          let errorBody = null;
+          try {
+            errorBody = await response.json();
+          } catch (err) {
+            // Il body non e' JSON oppure e' assente: ci si basa sullo status HTTP
+          }
+
+          const mwdiErrorCode =
+            (errorBody && typeof errorBody === "object" && errorBody.code) ||
+            response.status;
+
+          const mwdiErrorMessage =
+            (errorBody && typeof errorBody === "object" && errorBody.message) ||
+            "";
+
+          if (mwdiErrorCode === 533) {
+            // 533: categoria 'missing' - risorsa sconosciuta presso il controller (errore 533 a livello di servizio)
+            missingMountNames.push(mountName);
+            logger.error(
+              `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`
+);
+          } else if (
+            mwdiErrorCode === 502 ||
+            mwdiErrorCode === 530 ||
+            mwdiErrorCode === 531 ||
+            mwdiErrorCode === 532
+          ) {
+            // 502/530/531/532: categoria 'unconnected' - device non raggiungibile / non risponde / dati non validi (errore 532 a livello di servizio)
+            unconnectedMountNames.push(mountName);
+            logger.error(
+  `Mount ${mountName} not connected (HTTP ${response.status}: ${mwdiErrorMessage || 'Bad Gateway'})`
+);
+          } else {
+            logger.warn(
+              `Failed to retrieve control-construct for ${mountName}: ${response.status} - ${mwdiErrorMessage}`,
+            );
+          }
         }
       } catch (error) {
         logger.error(`Error retrieving control-construct for ${mountName}: ${error.message}`);
-        // liveControlConstructResults.push({
-        //   mountName: mountName,
-        //   status: "error",
-        //   error: error.message
-        // });
       }
+    }
+
+    // 10. Riepilogo esiti per-mount: se qualche risorsa e' sconosciuta presso il controller (533)
+    if (missingMountNames.length > 0) {
+      throw {
+        code: 533,
+        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
+        "missing-mount-names": missingMountNames,
+      };
+    }
+
+    // Se qualche device non e' collegato / non risponde (502/530/531/532)
+    if (unconnectedMountNames.length > 0) {
+      throw {
+        code: 532,
+        message: "Bad Gateway. Upstream server not responding.",
+        "unconnected-mount-names": unconnectedMountNames,
+      };
     }
 
     logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
