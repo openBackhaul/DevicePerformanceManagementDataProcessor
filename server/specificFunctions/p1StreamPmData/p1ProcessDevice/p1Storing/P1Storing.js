@@ -108,11 +108,33 @@ function getValidatedRequest(request) {
     throw buildProcessingError(ERRORS.MOUNT_NAME_NOT_PROVIDED);
   }
 
+  const batchTimestamp = getRequestValue(resultCc, "batch-timestamp", "batchTimestamp");
+  if (batchTimestamp === undefined || batchTimestamp === null || batchTimestamp === "") {
+    throw buildProcessingError(ERRORS.BATCH_TIMESTAMP_NOT_PROVIDED);
+  }
+
+  if (typeof batchTimestamp !== "string" || Number.isNaN(Date.parse(batchTimestamp))) {
+    throw buildProcessingError(ERRORS.BATCH_TIMESTAMP_INVALID);
+  }
+
   return {
     dataStoreEsClient,
     resultCc,
     interfaceMetadataList,
-    mountName
+    mountName,
+    batchTimestamp,
+    saveResultCc: getRequestValue(request, "saveResultCc", "save-result-cc") !== false,
+    resultHistoryLimit: Number(getRequestValue(request, "resultHistoryLimit", "result-history-limit") ?? 0),
+    dataStoreWriteLockEnabled: getRequestValue(
+      request,
+      "dataStoreWriteLockEnabled",
+      "data-store-write-lock-enabled"
+    ) !== false,
+    atomicDataStoreUpsertEnabled: getRequestValue(
+      request,
+      "atomicDataStoreUpsertEnabled",
+      "atomic-data-store-upsert-enabled"
+    ) === true
   };
 }
 
@@ -150,8 +172,7 @@ async function searchExisting(client, index, mountName, logger) {
       "Failed to search existing device"
     );
 
-    //throw buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error);
-      logger.error(buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error).message);
+    throw buildProcessingError(ERRORS.RESULT_CC_COULD_NOT_BE_STORED, error);
   }
 }
 
@@ -191,9 +212,70 @@ async function writeDataStoreDocument(
       logMessage
     );
 
-    //throw buildProcessingError(errorMessage, error);
-    logger.error(buildProcessingError(errorMessage, error).message);
+    throw buildProcessingError(errorMessage, error);
+  }
+}
 
+async function atomicUpsertDataStoreDocument(
+  client,
+  index,
+  mountName,
+  interfaceMetadataList,
+  batchEntry,
+  resultHistoryLimit,
+  logger
+) {
+  const upsert = {
+    mountName,
+    timestamp: batchEntry.batchTimestamp,
+    locked: false,
+    "interface-metadata-list": interfaceMetadataList,
+    batch: []
+  };
+
+  try {
+    await withRetry(
+      async () => client.update({
+        index,
+        id: mountName,
+        retry_on_conflict: 3,
+        body: {
+          scripted_upsert: true,
+          script: {
+            lang: "painless",
+            source: [
+              "if (ctx._source.batch == null) { ctx._source.batch = new ArrayList(); }",
+              "ctx._source.mountName = params.mountName;",
+              "ctx._source['interface-metadata-list'] = params.interfaceMetadataList;",
+              "ctx._source.batch.add(params.batchEntry);",
+              "while (params.historyLimit > 0 && ctx._source.batch.size() > params.historyLimit) { ctx._source.batch.remove(0); }",
+              "ctx._source.timestamp = params.batchEntry.batchTimestamp;",
+              "ctx._source.locked = false;"
+            ].join(" "),
+            params: {
+              mountName,
+              interfaceMetadataList,
+              batchEntry,
+              historyLimit: Number.isInteger(resultHistoryLimit) && resultHistoryLimit > 0
+                ? resultHistoryLimit
+                : 0
+            }
+          },
+          upsert
+        }
+      }),
+      {
+        label: `p1Storing.atomicUpsert:${mountName}`,
+        retryIntervalMs: 10000,
+        logger
+      }
+    );
+  } catch (error) {
+    logger.error?.(
+      { label: "atomic-upsert-device", mountName, error: error.message || error },
+      "Failed to atomically store device result"
+    );
+    throw buildProcessingError(ERRORS.WRITING_TO_DATA_STORE_FAILED, error);
   }
 }
 
@@ -219,7 +301,12 @@ async function run(request) {
       dataStoreEsClient,
       resultCc,
       interfaceMetadataList,
-      mountName
+      mountName,
+      batchTimestamp,
+      saveResultCc,
+      resultHistoryLimit,
+      dataStoreWriteLockEnabled,
+      atomicDataStoreUpsertEnabled
     } = getValidatedRequest(request);
 
     let client;
@@ -242,34 +329,50 @@ async function run(request) {
     }
 
     const index = dataStoreEsClient["index-alias"];
-    const saveResultCc = true; // Set to true if you want to save the entire resultCc in the batch; can cause large documents in ES
+    const batchEntry = {
+      batchTimestamp,
+      ...(saveResultCc ? { resultCc } : {})
+    };
+
+    if (atomicDataStoreUpsertEnabled) {
+      await atomicUpsertDataStoreDocument(
+        client,
+        index,
+        mountName,
+        interfaceMetadataList,
+        batchEntry,
+        resultHistoryLimit,
+        logger
+      );
+
+      return { mountName, batch: [batchEntry] };
+    }
 
     const existing = await searchExisting(client, index, mountName, logger);
 
-    const lockTimestamp = new Date().toJSON();
     existing.mountName = mountName;
-    existing.timestamp = lockTimestamp;
-    existing.locked = true;
-
-    await writeDataStoreDocument(
-      client,
-      index,
-      mountName,
-      existing,
-      logger,
-      `p1Storing.lock:${mountName}`,
-      "lock-device-for-storing",
-      "Failed to lock device for storing",
-      ERRORS.ELASTICSEARCH_LOCK_ERROR
-    );
+    if (dataStoreWriteLockEnabled) {
+      existing.timestamp = new Date().toJSON();
+      existing.locked = true;
+      await writeDataStoreDocument(
+        client,
+        index,
+        mountName,
+        existing,
+        logger,
+        `p1Storing.lock:${mountName}`,
+        "lock-device-for-storing",
+        "Failed to lock device for storing",
+        ERRORS.ELASTICSEARCH_LOCK_ERROR
+      );
+    }
 
     existing["interface-metadata-list"] = interfaceMetadataList;
     existing.batch = Array.isArray(existing.batch) ? existing.batch : [];
-    const batchTimestamp = new Date().toJSON();
-    existing.batch.push({
-      batchTimestamp,
-      ...(saveResultCc ? { resultCc } : {})
-    });
+    existing.batch.push(batchEntry);
+    if (Number.isInteger(resultHistoryLimit) && resultHistoryLimit > 0) {
+      existing.batch = existing.batch.slice(-resultHistoryLimit);
+    }
 
     existing.timestamp = batchTimestamp;
     existing.locked = false;

@@ -256,7 +256,7 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
     expect(response.interfaceMetadataList[0]).not.toHaveProperty("mostRecentPeriodEndTime24");
   });
 
-  it("prunes failed EthernetContainer LTPs when AirInterface processing succeeds", async () => {
+  it("keeps failed EthernetContainer metadata and continues after AirInterface processing succeeds", async () => {
     const preparedHistoricalPerformanceDataList = [
       {
         "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
@@ -268,6 +268,18 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
       {
         "transmission-mode-name": "MODE-A",
         capacity: 1000
+      }
+    ];
+    const failedEthernetHistoricalPerformanceDataList = [
+      {
+        "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-07-02T09:45:00.000Z",
+        "performance-data": {}
+      },
+      {
+        "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+        "period-end-time": "2026-07-01T00:00:00.000Z",
+        "performance-data": {}
       }
     ];
     const iterateAiMock = jest.fn(() => ({
@@ -333,7 +345,7 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
                 "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
                 "ethernet-container-2-0:ethernet-container-pac": {
                   "ethernet-container-historical-performances": {
-                    "historical-performance-data-list": []
+                    "historical-performance-data-list": failedEthernetHistoricalPerformanceDataList
                   }
                 }
               }
@@ -354,17 +366,23 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
     expect(iterateAiMock).toHaveBeenCalledTimes(1);
     expect(iterateEcMock).toHaveBeenCalledTimes(1);
     expect(response.resultCc["logical-termination-point"].map((ltp) => ltp.uuid))
-      .toEqual(["air-ltp-1", "wire-ltp-1"]);
+      .toEqual(["air-ltp-1", "eth-ltp-1", "wire-ltp-1"]);
     expect(response.interfaceMetadataList.map((metadata) => metadata.uuid))
-      .toEqual(["air-ltp-1"]);
+      .toEqual(["air-ltp-1", "eth-ltp-1"]);
     expect(response.interfaceMetadataList[0]).toHaveProperty(
       "most-recent-period-end-time",
       "2026-07-02T10:15:00.000Z"
     );
     expect(response.interfaceMetadataList[0]).not.toHaveProperty("most-recent-period-end-time-24");
+    expect(response.interfaceMetadataList[1]).toEqual({
+      uuid: "eth-ltp-1",
+      "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+      "most-recent-period-end-time": "2026-07-02T09:45:00.000Z",
+      "most-recent-period-end-time-24": "2026-07-01T00:00:00.000Z"
+    });
   });
 
-  it("prunes failed AirInterface LTPs when EthernetContainer processing succeeds", async () => {
+  it("keeps failed AirInterface metadata and continues with EthernetContainer processing", async () => {
     const iteratedHistoricalPerformanceDataList = [
       {
         "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
@@ -372,6 +390,18 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
         "performance-data": {
           utilization: 50
         }
+      }
+    ];
+    const failedAirHistoricalPerformanceDataList = [
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-07-02T09:30:00.000Z",
+        "performance-data": {}
+      },
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+        "period-end-time": "2026-07-01T00:00:00.000Z",
+        "performance-data": {}
       }
     ];
     const prepareTxModesMock = jest.fn(() => "historicalPerformanceDataList could not be provided");
@@ -415,7 +445,7 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
                 "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
                 "air-interface-2-0:air-interface-pac": {
                   "air-interface-historical-performances": {
-                    "historical-performance-data-list": []
+                    "historical-performance-data-list": failedAirHistoricalPerformanceDataList
                   },
                   "air-interface-capability": {
                     "transmission-mode-list": []
@@ -452,17 +482,37 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
     expect(prepareTxModesMock).toHaveBeenCalledTimes(1);
     expect(iterateEcMock).toHaveBeenCalledTimes(1);
     expect(response.resultCc["logical-termination-point"].map((ltp) => ltp.uuid))
-      .toEqual(["eth-ltp-1", "wire-ltp-1"]);
+      .toEqual(["air-ltp-1", "eth-ltp-1", "wire-ltp-1"]);
     expect(response.interfaceMetadataList.map((metadata) => metadata.uuid))
-      .toEqual(["eth-ltp-1"]);
-    expect(response.interfaceMetadataList[0]).toHaveProperty(
+      .toEqual(["air-ltp-1", "eth-ltp-1"]);
+    expect(response.interfaceMetadataList[0]).toEqual({
+      uuid: "air-ltp-1",
+      "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+      "most-recent-period-end-time": "2026-07-02T09:30:00.000Z",
+      "most-recent-period-end-time-24": "2026-07-01T00:00:00.000Z"
+    });
+    expect(response.interfaceMetadataList[1]).toHaveProperty(
       "most-recent-period-end-time",
       "2026-07-02T10:15:00.000Z"
     );
-    expect(response.interfaceMetadataList[0]).not.toHaveProperty("most-recent-period-end-time-24");
+    expect(response.interfaceMetadataList[1]).not.toHaveProperty("most-recent-period-end-time-24");
   });
 
-  it("stops further processing when all interface processing attempts fail", async () => {
+  it("keeps metadata and continues when all interface processing attempts fail", async () => {
+    const airHistoricalPerformanceDataList = [
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+        "period-end-time": "2026-07-02T09:30:00.000Z",
+        "performance-data": {}
+      }
+    ];
+    const ethernetHistoricalPerformanceDataList = [
+      {
+        "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+        "period-end-time": "2026-07-01T00:00:00.000Z",
+        "performance-data": {}
+      }
+    ];
     const prepareTxModesMock = jest.fn(() => ({
       "historical-performance-data-list": [],
       "transmission-mode-list": []
@@ -479,7 +529,7 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
 
     const p1CreateResultCc = require("./P1CreateResultCc");
 
-    await expect(p1CreateResultCc.run({
+    const response = await p1CreateResultCc.run({
       mountName: "test-device",
       parameters: {
         "function-name": "p1CreateResultCc",
@@ -508,7 +558,7 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
                 "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
                 "air-interface-2-0:air-interface-pac": {
                   "air-interface-historical-performances": {
-                    "historical-performance-data-list": []
+                    "historical-performance-data-list": airHistoricalPerformanceDataList
                   },
                   "air-interface-capability": {
                     "transmission-mode-list": []
@@ -524,7 +574,7 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
                 "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
                 "ethernet-container-2-0:ethernet-container-pac": {
                   "ethernet-container-historical-performances": {
-                    "historical-performance-data-list": []
+                    "historical-performance-data-list": ethernetHistoricalPerformanceDataList
                   }
                 }
               }
@@ -532,27 +582,25 @@ describe("P1CreateResultCc EthernetContainer iteration", () => {
           }
         ]
       }
-    })).rejects.toMatchObject({
-      stage: "p1CreateResultCc",
-      retryable: false,
-      message: "No AirInterface or EthernetContainer processing succeeded",
-      details: {
-        airInterface: {
-          attempted: 1,
-          succeeded: 0,
-          failed: 1
-        },
-        ethernetContainer: {
-          attempted: 1,
-          succeeded: 0,
-          failed: 1
-        }
-      }
     });
 
     expect(prepareTxModesMock).toHaveBeenCalledTimes(1);
     expect(iterateAiMock).toHaveBeenCalledTimes(1);
     expect(iterateEcMock).toHaveBeenCalledTimes(1);
-    expect(removeTemperatureMock).not.toHaveBeenCalled();
+    expect(removeTemperatureMock).toHaveBeenCalledTimes(1);
+    expect(response.resultCc["logical-termination-point"].map((ltp) => ltp.uuid))
+      .toEqual(["air-ltp-1", "eth-ltp-1"]);
+    expect(response.interfaceMetadataList).toEqual([
+      {
+        uuid: "air-ltp-1",
+        "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+        "most-recent-period-end-time": "2026-07-02T09:30:00.000Z"
+      },
+      {
+        uuid: "eth-ltp-1",
+        "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+        "most-recent-period-end-time-24": "2026-07-01T00:00:00.000Z"
+      }
+    ]);
   });
 });

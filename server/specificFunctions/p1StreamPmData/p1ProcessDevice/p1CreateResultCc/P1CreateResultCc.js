@@ -1209,7 +1209,7 @@ function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanc
 }
 
 async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
-  const status = createInterfaceProcessingStatus();
+  // const status = createInterfaceProcessingStatus();
 
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
@@ -1219,11 +1219,17 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
         continue;
       }
 
-      status.attempted += 1;
+      // status.attempted += 1;
+      const metadata = buildAirInterfaceMetadata(
+        ltp,
+        layerProtocol,
+        getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY)
+      );
       const prepareTxModesResult = await integrateP1PrepareTxModes(pac, mountName);
 
       if(prepareTxModesResult === null) {
-        //recordInterfaceFailure(status, ltp.uuid);
+        // recordInterfaceFailure(status, ltp.uuid);
+        interfaceMetadataList.push(metadata);
         continue;
       }
 
@@ -1246,7 +1252,8 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       if (iterateAiResult === null) {
-        //recordInterfaceFailure(status, ltp.uuid);
+        // recordInterfaceFailure(status, ltp.uuid);
+        interfaceMetadataList.push(metadata);
         continue;
       }
 
@@ -1262,27 +1269,21 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
       setAirInterfaceDerivedFields(ltp, derivedFields);
 
-      const metadata = buildAirInterfaceMetadata(
-        ltp,
-        layerProtocol,
-        iterateAiResult.historicalPerformanceDataList
-      );
-
       setInterfaceMetadataPeriodEndTimes(
         metadata,
-        iterateAiResult.mostRecentPeriodEndTime || metadata["most-recent-period-end-time"],
-        iterateAiResult.mostRecentPeriodEndTime24 || metadata["most-recent-period-end-time-24"]
+        iterateAiResult.mostRecentPeriodEndTime,
+        iterateAiResult.mostRecentPeriodEndTime24
       );
       interfaceMetadataList.push(metadata);
-      //recordInterfaceSuccess(status, ltp.uuid);
+      // recordInterfaceSuccess(status, ltp.uuid);
     }
   }
 
-  return status;
+  // return status;
 }
 
 async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
-  const status = createInterfaceProcessingStatus();
+  // const status = createInterfaceProcessingStatus();
 
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
@@ -1292,7 +1293,12 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         continue;
       }
 
-      status.attempted += 1;
+      // status.attempted += 1;
+      const metadata = buildEthernetContainerMetadata(
+        ltp,
+        layerProtocol,
+        getHistoricalPerformanceDataList(pac, ETHERNET_CONTAINER_HIST_PERF_KEY)
+      );
       const aggregationGroup = getAggregationGroupForEthernetContainer(
         ltp.uuid,
         aggregationGroupList
@@ -1307,7 +1313,8 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       );
 
       if (iterateEcResult === null) {
-        //recordInterfaceFailure(status, ltp.uuid);
+        // recordInterfaceFailure(status, ltp.uuid);
+        interfaceMetadataList.push(metadata);
         continue;
       }
 
@@ -1317,24 +1324,18 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         iterateEcResult.historicalPerformanceDataList
       );
 
-      const metadata = buildEthernetContainerMetadata(
-        ltp,
-        layerProtocol,
-        iterateEcResult.historicalPerformanceDataList
-      );
-
       setInterfaceMetadataPeriodEndTimes(
         metadata,
-        iterateEcResult.mostRecentPeriodEndTime || metadata["most-recent-period-end-time"],
-        iterateEcResult.mostRecentPeriodEndTime24 || metadata["most-recent-period-end-time-24"]
+        iterateEcResult.mostRecentPeriodEndTime,
+        iterateEcResult.mostRecentPeriodEndTime24
       );
 
       interfaceMetadataList.push(metadata);
-      //recordInterfaceSuccess(status, ltp.uuid);
+      // recordInterfaceSuccess(status, ltp.uuid);
     }
   }
 
-  return status;
+  // return status;
 }
 
 async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountName) {

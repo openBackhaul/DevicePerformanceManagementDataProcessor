@@ -66,7 +66,11 @@ describe("confluentKafkaProducer TLS config", () => {
       "ssl.ca.location": "/tmp/ca.pem",
       "ssl.certificate.location": "/tmp/client.crt",
       "ssl.key.location": "/tmp/client.key",
-      "ssl.key.password": "secret"
+      "ssl.key.password": "secret",
+      "message.max.bytes": 5242880,
+      "delivery.timeout.ms": 60000,
+      "request.timeout.ms": 30000,
+      "socket.timeout.ms": 30000
     });
     expect(global.mockKafkaInstance.config).not.toHaveProperty("ssl");
     expect(global.mockKafkaInstance.config).not.toHaveProperty("enable.ssl.certificate.verification");
@@ -117,5 +121,53 @@ describe("confluentKafkaProducer TLS config", () => {
       retryable: false,
       stage: "confluentKafkaProducer.sendBatch"
     });
+  });
+
+  it("keeps separate producers for concurrent workers with different Kafka configs", async () => {
+    const logger = { info: jest.fn(), error: jest.fn(), warn: jest.fn() };
+    const firstProducer = {
+      connect: jest.fn().mockResolvedValue(undefined),
+      send: jest.fn().mockResolvedValue(undefined),
+      disconnect: jest.fn().mockResolvedValue(undefined),
+      flush: jest.fn().mockResolvedValue(undefined)
+    };
+    const secondProducer = {
+      connect: jest.fn().mockResolvedValue(undefined),
+      send: jest.fn().mockResolvedValue(undefined),
+      disconnect: jest.fn().mockResolvedValue(undefined),
+      flush: jest.fn().mockResolvedValue(undefined)
+    };
+    global.mockKafkaInstance.producer
+      .mockReturnValueOnce(firstProducer)
+      .mockReturnValueOnce(secondProducer);
+
+    await Promise.all([
+      sendBatch("topic.apt", [{ key: "1", value: "{}" }], logger, {
+        clientId: "apt-provider",
+        brokers: ["broker1:9092"]
+      }),
+      sendBatch("topic.onf", [{ key: "2", value: "{}" }], logger, {
+        clientId: "onf-provider",
+        brokers: ["broker1:9092"]
+      })
+    ]);
+
+    expect(firstProducer.send).toHaveBeenCalledTimes(1);
+    expect(secondProducer.send).toHaveBeenCalledTimes(1);
+    expect(firstProducer.disconnect).not.toHaveBeenCalled();
+    expect(secondProducer.disconnect).not.toHaveBeenCalled();
+  });
+
+  it("does not disconnect a producer whose connection never succeeded", async () => {
+    const logger = { info: jest.fn(), error: jest.fn(), warn: jest.fn() };
+    global.mockProducer.connect.mockRejectedValueOnce(new Error("invalid producer config"));
+
+    await expect(initProducer({
+      clientId: "failed-client",
+      brokers: ["broker1:9092"],
+      logger
+    })).rejects.toThrow("invalid producer config");
+
+    expect(global.mockProducer.disconnect).not.toHaveBeenCalled();
   });
 });
