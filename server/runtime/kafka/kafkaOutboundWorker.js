@@ -2,6 +2,8 @@ const redisQueue = require("../../infra/redis/redisStreamQueue");
 const kafkaPayloadStore = require("../../infra/elasticSearch/kafkaPayloadStore");
 const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/P1TransmittingKafka");
 const { sleep } = require("../../utils/retry");
+const performanceMetrics = require("../../core/performanceMetrics");
+const { performance } = require("perf_hooks");
 const logger = require('../../service/LoggingService.js').getLogger();
 
 function getMaxBatchMessages(context) {
@@ -92,7 +94,7 @@ async function buildOutputMessage(redisMessage, context) {
     };
 }
 
-async function ackAndDeleteRedisMessages(messages, context) {
+async function ackAndDeleteRedisMessages(messages, context, onCompleted) {
     const acknowledgementResults = await Promise.all(messages.map(async (msg) => {
         const ackCount = await redisQueue.ackKafkaOutbound(
             msg.id,
@@ -100,7 +102,8 @@ async function ackAndDeleteRedisMessages(messages, context) {
             logger
         );
         if (ackCount === 1) {
-            await redisQueue.deleteKafkaOutboundMessage(msg.id, logger);
+            onCompleted?.(msg);
+            // ackKafkaOutbound atomically acknowledges and deletes if owned.
             return msg;
         } else {
             logger.warn(
@@ -153,21 +156,49 @@ async function processKafkaOutboundChunk(messages, context) {
     // The Redis read count bounds this fan-out (10 by default). Loading the
     // independent ES payload documents concurrently avoids one network round
     // trip per message becoming the Kafka throughput bottleneck.
+    const timings = messages.map(msg => performanceMetrics.begin(msg, msg.pickedAtMs));
+    const loadClock = performance.now();
     const outputMessages = await Promise.all(
         messages.map((msg) => buildOutputMessage(msg, context))
     );
+    const payloadLoadMs = (performance.now() - loadClock).toFixed(3);
 
-    await p1TransmittingKafka.run({
+    const transmission = await p1TransmittingKafka.run({
         outputMessages,
         p1TransmittingKafkaParameters,
         kafkaConnectionList: kafkaConnectionList || [],
         logger: logger
     });
 
+    // Each record shares its producer send-call completion timing; this is
+    // not a measurement of that record's individual network acknowledgement.
+    const sendTiming = transmission?.transmissionResultList?.[0]?.timing;
+    if (sendTiming) {
+      messages.forEach((msg, index) => performanceMetrics.record("kafka", timings[index], {
+        ...sendTiming,
+        sendToAckMs: sendTiming.acknowledgementsRequested === "0" ? "" : sendTiming.sendToAckMs,
+        sendCompletionMs: sendTiming.sendToAckMs,
+        topic: transmission.transmissionResultList[0].topic,
+        outcome: sendTiming.acknowledgementsRequested === "0" ? "SENT_NO_ACK" : "SUCCESS",
+        targetConsumer: String(msg.message?.targetConsumer || "UNKNOWN").toUpperCase(),
+        payloadBytes: getPayloadBytes(msg),
+        payloadLoadMs,
+        attemptSource: msg.attemptSource || "new",
+        worker: context.consumerName || ""
+      }));
+    }
+
     // Delivery has already succeeded. Only entries still owned by this worker
     // may be deleted from Redis and Elasticsearch. Success evidence remains
     // best-effort: a metrics outage must not resend an acknowledged message.
-    const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context);
+    const timingById = new Map(messages.map((msg, index) => [msg.id, timings[index]]));
+    const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context, msg => {
+      performanceMetrics.recordCompleted("kafka", timingById.get(msg.id), {
+        targetConsumer: String(msg.message?.targetConsumer || "UNKNOWN").toUpperCase(),
+        payloadBytes: getPayloadBytes(msg),
+        status: sendTiming?.acknowledgementsRequested === "0" ? "SENT_NO_ACK" : "SUCCESS"
+      });
+    });
 
     // Reset the daily counters/evidence streams before recording today's
     // successful entries. This keeps both views on the same Berlin date.
@@ -313,12 +344,15 @@ async function processWithOwnershipHeartbeat(messages, context, source) {
     }).finally(() => {
       heartbeatPromise = null;
     });
+
   };
 
   const timer = setInterval(heartbeat, getHeartbeatIntervalMs(context));
+  performanceMetrics.active("kafka", 1);
   try {
     return await tryProcessKafkaOutboundMessages(ownedMessages, context, source);
   } finally {
+    performanceMetrics.active("kafka", -1);
     clearInterval(timer);
     if (heartbeatPromise) {
       await heartbeatPromise;
@@ -529,6 +563,8 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
         context.readCount || 10,
         context.logger
       );
+      const reclaimedAt = Date.now();
+      reclaimed.forEach(message => { message.pickedAtMs = reclaimedAt; message.attemptSource = "reclaimed"; });
 
       if (reclaimed.length > 0) {
         const success = await processWithOwnershipHeartbeat(
@@ -550,8 +586,10 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
       );
 
       let batch = [];
+      const pickedAt = Date.now();
 
       for (const stream of streams) {
+        (stream.messages || []).forEach(message => { message.pickedAtMs = pickedAt; });
         batch = batch.concat(stream.messages || []);
       }
 
@@ -601,6 +639,7 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
 async function startKafkaOutboundWorkerPool(context) {
     const workers = [];
     const workerCount = context.workerCount || 1;
+    performanceMetrics.setWorkers("kafka", workerCount);
     await redisQueue.resetKafkaDailyMetricsIfNeeded(context.logger);
     const dailyMetricsResetTimer = setInterval(() => {
         redisQueue.resetKafkaDailyMetricsIfNeeded(context.logger).catch((error) => {
