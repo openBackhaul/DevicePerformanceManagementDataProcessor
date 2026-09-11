@@ -206,8 +206,8 @@ async function queueKafkaOutputsOneByOne(request) {
     kafkaConsumerTypes
   } = request;
 
-  for (const targetConsumer of getTargetConsumers(kafkaConsumerTypes)) {
-    await redisQueueKafkaOutbound.run({
+  await Promise.all(getTargetConsumers(kafkaConsumerTypes).map((targetConsumer) =>
+    redisQueueKafkaOutbound.run({
       dataStoreEsClient,
       output: {
         targetConsumer,
@@ -218,8 +218,8 @@ async function queueKafkaOutputsOneByOne(request) {
         payload: (targetConsumer === "APT") ? aptPayload : onfPayload
       },
       logger
-    });
-  }
+    })
+  ));
 
   /* if (shouldPublishDataQuality()) {
     await redisQueueKafkaOutbound.run({
@@ -480,7 +480,8 @@ async function run(request) {
       resultCc: createResultCcResponse.resultCc,
       interfaceMetadataList: createResultCcResponse.interfaceMetadataList,
       mountName: resultMountName,
-      logger
+      logger,
+      ...(getRequestValue(request, "storingOptions", "storing-options") || {})
     });
 
     return {

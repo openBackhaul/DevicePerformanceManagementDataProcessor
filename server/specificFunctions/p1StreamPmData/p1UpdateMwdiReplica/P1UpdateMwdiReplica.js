@@ -66,7 +66,16 @@ async function waitForReindexTask(sourceClient, activeTask, pollIntervalMs, logg
         taskResult = await sourceClient.tasks.get({ task_id: taskId });
       } else {
         taskResult = await withRetry(
-          async () => sourceClient.tasks.get({ task_id: taskId }),
+          async () => {
+            try {
+              return await sourceClient.tasks.get({ task_id: taskId });
+            } catch (error) {
+              if (isTaskNotFoundError(error)) {
+                return { body: { recoveredCompletion: true } };
+              }
+              throw error;
+            }
+          },
           {
             label: "p1UpdateMwdiReplica.reindexTask",
             retryIntervalMs: 10000,
@@ -76,13 +85,14 @@ async function waitForReindexTask(sourceClient, activeTask, pollIntervalMs, logg
         );
       }
     } catch (error) {
-      if (activeTask.discovered && isTaskNotFoundError(error)) {
+      if (isTaskNotFoundError(error)) {
         logger.warn?.(
           {
             label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
-            taskId
+            taskId,
+            discovered: activeTask.discovered === true
           },
-          "Discovered legacy reindex task is no longer running; continuing post-reindex recovery"
+          "Saved reindex task is no longer present; continuing idempotent post-reindex recovery"
         );
         return { body: { recoveredCompletion: true } };
       }
@@ -91,6 +101,17 @@ async function waitForReindexTask(sourceClient, activeTask, pollIntervalMs, logg
     }
 
     const taskBody = taskResult?.body || taskResult;
+    if (taskBody.recoveredCompletion === true) {
+      logger.warn?.(
+        {
+          label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
+          taskId,
+          discovered: false
+        },
+        "Saved reindex task is no longer present; continuing idempotent post-reindex recovery"
+      );
+      return { body: taskBody };
+    }
     const status = taskBody.task?.status || taskBody.status || {};
 
     logger.debug?.(
@@ -234,7 +255,10 @@ async function loadUpdatedMountNames(
           scroll: scrollTtl,
           size: scrollSize,
           body: {
-            _source: ["mountName", "mount-name", "uuid"],
+            // MWDI stores the mountName as the document _id. Avoid loading and
+            // decompressing the multi-megabyte ControlConstruct source merely
+            // to discover the changed device identifier.
+            _source: false,
             query: {
               bool: {
                 must: [
@@ -377,6 +401,26 @@ async function run(request) {
     getParamFromFunction(parameters, "p1UpdateMwdiReplica", "overlapMs", 60000)
   );
 
+  const configuredInitialLookbackMs = Number(
+    runtimeConfig?.service?.replicaInitialLookbackMs ?? 8 * 60 * 1000
+  );
+  const initialLookbackMs =
+    Number.isFinite(configuredInitialLookbackMs) && configuredInitialLookbackMs > 0
+      ? configuredInitialLookbackMs
+      : 8 * 60 * 1000;
+
+  // A long application outage must not turn the next incremental cycle into a
+  // large catch-up reindex. This policy intentionally processes only the most
+  // recent configured window after an outage. Set the value to 0 to retain the
+  // old unlimited catch-up behaviour.
+  const configuredMaxCatchUpMs = Number(
+    runtimeConfig?.service?.replicaMaxCatchUpMs ?? 8 * 60 * 1000
+  );
+  const maxCatchUpMs =
+    Number.isFinite(configuredMaxCatchUpMs) && configuredMaxCatchUpMs >= 0
+      ? configuredMaxCatchUpMs
+      : 8 * 60 * 1000;
+
   const reqPerSec = Number(
     getParamFromFunction(parameters, "p1UpdateMwdiReplica", "reqPerSec", 2)
   );
@@ -402,14 +446,38 @@ async function run(request) {
   const now = Date.now();
   const lastTimestamp = lastReplicaTime
     ? parseTimestamp(lastReplicaTime)
-    : now - overlapMs;
+    : null;
 
   if (lastReplicaTime && lastTimestamp === null) {
     throw new Error(ERRORS.INVALID_LAST_REPLICA_TIME);
   }
 
-  let periodStartTime = new Date(lastTimestamp - overlapMs).toISOString();
+  const requestedStartMs =
+    lastTimestamp === null ? now - initialLookbackMs : lastTimestamp - overlapMs;
+  const catchUpBoundaryMs = maxCatchUpMs > 0 ? now - maxCatchUpMs : null;
+  const periodStartMs =
+    lastTimestamp !== null &&
+    catchUpBoundaryMs !== null &&
+    requestedStartMs < catchUpBoundaryMs
+      ? catchUpBoundaryMs
+      : requestedStartMs;
+  let periodStartTime = new Date(periodStartMs).toISOString();
   let periodEndTime = new Date(now).toISOString();
+
+  if (periodStartMs !== requestedStartMs) {
+    logger.warn?.(
+      {
+        label: "p1UpdateMwdiReplica.catchUp.capped",
+        lastReplicaTime,
+        requestedPeriodStartTime: new Date(requestedStartMs).toISOString(),
+        effectivePeriodStartTime: periodStartTime,
+        periodEndTime,
+        maxCatchUpMs,
+        skippedDurationMs: periodStartMs - requestedStartMs
+      },
+      "Replica checkpoint is older than the permitted catch-up window; processing only recent MWDI updates"
+    );
+  }
 
   logger.debug(
     {
@@ -418,6 +486,8 @@ async function run(request) {
       periodEndTime,
       lastReplicaTime,
       overlapMs,
+      initialLookbackMs,
+      maxCatchUpMs,
       reqPerSec,
       scrollSize,
       scrollTtl,
@@ -569,6 +639,7 @@ async function run(request) {
   }
 
   let updatedMountNames;
+  const changedDeviceSearchStartedAt = Date.now();
   try {
     updatedMountNames = await loadUpdatedMountNames(
       replicaClient,
@@ -579,6 +650,14 @@ async function run(request) {
       scrollSize,
       scrollTtl,
       logger
+    );
+    logger.info?.(
+      {
+        label: "p1UpdateMwdiReplica.changedDevices.loaded",
+        mountNameCount: updatedMountNames.length,
+        durationMs: Date.now() - changedDeviceSearchStartedAt
+      },
+      "Loaded changed device identifiers from replica"
     );
   } catch (error) {
     logger.error(
@@ -599,24 +678,37 @@ async function run(request) {
         label: "p1UpdateMwdiReplica.ensureGroup",
         error: error.message || error
       },
-      "Failed to ensure Redis consumer group"
+      "Failed to prepare Redis state for replica update"
     );
 
     throw error;
   }
 
   try {
-    await redisQueue.enqueueMountNames(
+    const enqueueStartedAt = Date.now();
+    const enqueueResult = await redisQueue.enqueueMountNames(
       updatedMountNames,
       {
         batchSize:
           (((runtimeConfig || {}).redis || {}).enqueueBatchSize) || 500,
         pauseMs:
           (((runtimeConfig || {}).redis || {}).enqueuePauseMs) || 50,
-        clearRetryAndDeadLetterBeforeEnqueue: true
+        clearRetryAndDeadLetterBeforeEnqueue: false,
+        resetRetryEligibilityBeforeEnqueue: true
       },
       logger
     );
+    logger.info?.(
+      {
+        label: "p1UpdateMwdiReplica.enqueueMountNames.completed",
+        ...enqueueResult,
+        durationMs: Date.now() - enqueueStartedAt
+      },
+      "Completed batched enqueue of replica updates"
+    );
+    if (enqueueResult.failed > 0) {
+      throw new Error(`Failed to enqueue ${enqueueResult.failed} changed devices`);
+    }
   } catch (error) {
     logger.error(
       {
@@ -668,6 +760,10 @@ async function run(request) {
 
   await saveLastReplicaTime(loggingEsClient, timestamp, logger);
   await clearActiveReindexTask(logger);
+  logger.info?.(
+    { label: "p1UpdateMwdiReplica.completed", timestamp, updatedMountNameCount: updatedMountNames.length },
+    "Replica cycle checkpoint saved and active task cleared"
+  );
 
   return {
     updatedMountNames,

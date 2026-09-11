@@ -1,4 +1,5 @@
 const http = require("http");
+const performanceMetrics = require("./performanceMetrics");
 
 function startMonitoringServer(appState, logger, options) {
   const port = (options || {}).port || 8040;
@@ -24,14 +25,22 @@ function startMonitoringServer(appState, logger, options) {
     }
 
     if (req.url === "/metrics") {
+      const uptimeSeconds = Math.max(
+        1,
+        (Date.now() - Date.parse(appState.startedAt)) / 1000
+      );
+      const averageProcessingRate = appState.metrics.processedSuccess / uptimeSeconds;
       res.writeHead(200, { "Content-Type": "text/plain; version=0.0.4" });
       res.end(
         [
           `dpmdp_replica_cycles_total ${appState.metrics.replicaCycles}`,
           `dpmdp_processed_success_total ${appState.metrics.processedSuccess}`,
           `dpmdp_processed_failure_total ${appState.metrics.processedFailure}`,
-          `dpmdp_retry_enqueued_total ${appState.metrics.retryEnqueued}`
-        ].join("")
+          `dpmdp_retry_enqueued_total ${appState.metrics.retryEnqueued}`,
+          `dpmdp_processing_average_devices_per_second ${averageProcessingRate.toFixed(4)}`,
+          `dpmdp_processing_target_devices_per_second 3.7`,
+          performanceMetrics.render()
+        ].join("\n") + "\n"
       );
       return;
     }

@@ -85,7 +85,7 @@ const { acquireLock } = require("../../infra/redis/redisLock");
 const p1LoadParameters = require("../../genericFunctions/p1LoadParameters/P1LoadParameters");
 const p1ResolveESAddress = require("../../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress");
 const p1InitKafka = require("../../genericFunctions/p1InitKafka/P1InitKafka");
-const { run } = require("./P1StreamPmData");
+const { run, _internal } = require("./P1StreamPmData");
 const ERRORS = require("./ErrorsEnum");
 
 function mockLoadedParameters() {
@@ -116,6 +116,7 @@ function mockLoadedParameters() {
 describe("P1StreamPmData", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    _internal.resetInitializationForTest();
     acquireLock.mockRejectedValue(new Error("stop cleanup loop in unit test"));
     loadRuntimeConfig.mockReturnValue({
       redis: {},
@@ -143,6 +144,15 @@ describe("P1StreamPmData", () => {
         kafkaConnectionList: [{ topicName: "topic-a" }]
       })
     );
+  });
+
+  test("starts the service only once when run is called repeatedly", async () => {
+    const first = run();
+    const second = run();
+
+    await expect(first).resolves.toEqual(await second);
+    expect(p1LoadParameters.run).toHaveBeenCalledTimes(1);
+    expect(p1InitKafka.run).toHaveBeenCalledTimes(1);
   });
 
   test("normalizes parameter loading failures as the interface error contract", async () => {

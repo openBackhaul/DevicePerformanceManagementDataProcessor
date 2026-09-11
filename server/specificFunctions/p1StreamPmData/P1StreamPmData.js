@@ -1,7 +1,7 @@
 const os = require("os");
 const crypto = require("crypto");
 const { findFunctionNode, getParamFromFunction } = require("../../utils/functionTree");
-const { acquireLock, releaseLock } = require("../../infra/redis/redisLock");
+const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const { sleep } = require("../../utils/retry");
 const { loadRuntimeConfig } = require("../../utils/config");
 const { AppState } = require("../../core/appState");
@@ -24,6 +24,7 @@ const ERRORS = require("./ErrorsEnum");
 
 const logger = require('../../service/LoggingService.js').getLogger();
 const appState = new AppState();
+let initializationPromise = null;
 
 function buildProcessingError(message, stage = "p1StreamPmData", details, cause) {
   const error = new Error(message);
@@ -94,12 +95,20 @@ async function startCleanupLeaderLoop(context) {
     }
 
     try {
-      await p1MaintainDs.run({
-        parameters: context.cleanupParameters,
-        dataStoreEsClient: context.dataStoreEsClient,
-        loggingEsClient: context.loggingEsClient,
-        logger: context.logger
-      });
+      const renewer = setInterval(async () => {
+        await renewLock(lockKey, token, ttlMs, context.logger).catch(() => {});
+      }, Math.max(5000, Math.floor(ttlMs / 3)));
+
+      try {
+        await p1MaintainDs.run({
+          parameters: context.cleanupParameters,
+          dataStoreEsClient: context.dataStoreEsClient,
+          loggingEsClient: context.loggingEsClient,
+          logger: context.logger
+        });
+      } finally {
+        clearInterval(renewer);
+      }
     } finally {
       await releaseLock(lockKey, token, context.logger).catch(() => { });
     }
@@ -120,11 +129,41 @@ async function startCleanupLeaderLoop(context) {
  *   appState
  * }
  */
-async function run() {
+async function initialize() {
   try {
     const runtimeConfig = loadRuntimeConfig() || {};
     const redisConfig = runtimeConfig.redis || {};
     const serviceConfig = runtimeConfig.service || {};
+    require("../../core/performanceMetrics").configure(
+      runtimeConfig.monitoring?.performanceTimings || {}, logger
+    );
+
+    // The Confluent producer is process-wide. Publish the validated runtime
+    // limits before any outbound worker creates a producer.
+    global.KAFKA_PRODUCER_MESSAGE_MAX_BYTES = Number(
+      serviceConfig.kafkaProducerMessageMaxBytes || 5242880
+    );
+    global.KAFKA_DELIVERY_TIMEOUT_MS = Number(
+      serviceConfig.kafkaDeliveryTimeoutMs || 60000
+    );
+    global.KAFKA_REQUEST_TIMEOUT_MS = Number(
+      serviceConfig.kafkaRequestTimeoutMs || 30000
+    );
+    global.KAFKA_SOCKET_TIMEOUT_MS = Number(
+      serviceConfig.kafkaSocketTimeoutMs || 30000
+    );
+    global.KAFKA_MAX_SINGLE_MESSAGE_BYTES = Number(
+      serviceConfig.kafkaMaxSingleMessageBytes || 900000
+    );
+    global.KAFKA_LINGER_MS = Number(serviceConfig.kafkaLingerMs ?? 50);
+    global.KAFKA_BATCH_SIZE = Number(serviceConfig.kafkaBatchSize || 1048576);
+    global.KAFKA_BATCH_NUM_MESSAGES = Number(
+      serviceConfig.kafkaBatchNumMessages || 500
+    );
+    global.KAFKA_COMPRESSION_TYPE = serviceConfig.kafkaCompressionType || "lz4";
+    global.KAFKA_ACKS = serviceConfig.kafkaAcks || "all";
+    global.KAFKA_ENABLE_IDEMPOTENCE =
+      String(serviceConfig.kafkaEnableIdempotence ?? true);
 
     const instanceId = `${os.hostname()}-${process.pid}-${crypto.randomUUID()}`;
 
@@ -132,10 +171,10 @@ async function run() {
       shutdownGraceMs: (((runtimeConfig || {}).service || {}).shutdownGraceMs) || 30000
     });
 
-    /* startMonitoringServer(appState, logger, {
+    startMonitoringServer(appState, logger, {
       enabled: ((((runtimeConfig || {}).monitoring || {}).enabled) !== false),
       port: ((((runtimeConfig || {}).service || {}).httpPort) || 8040)
-    }); */
+    });
 
     const loaded = await p1LoadParameters.run({
       functionName: "p1StreamPmData",
@@ -209,19 +248,29 @@ async function run() {
       loggingEsClient,
       maxQueueLengthBeforeReplicaPause: Number(redisConfig.maxQueueLengthBeforeReplicaPause) || 20000,
       replicaPauseMsWhenBacklogged: Number(redisConfig.replicaPauseMsWhenBacklogged) || 30000,
-      replicaLockTtlMs: redisConfig.replicaLockTtlMs || 60000
+      replicaLockTtlMs: redisConfig.replicaLockTtlMs || 60000,
+      replicaMinimumCycleDelayMs: Number(serviceConfig.replicaMinimumCycleDelayMs ?? 3000),
+      runtimeConfig
     }).catch((error) => logger.error({ error }, `Replica leader loop crashed: ${error.message || error}`));
 
     startProcessingWorkerPoolRedis({
       logger,
       instanceId,
       appState,
-      workerCount: Number(serviceConfig.concurrency || 4),
+      workerCount: Number(serviceConfig.concurrency ?? 4),
+      maxWorkerCount: Number(serviceConfig.maxProcessingConcurrency ?? 16),
+      readCount: Number(serviceConfig.processingReadCount ?? 10),
       processDeviceParameters: p1ProcessDeviceParameters,
       kafkaConsumerTypes: serviceConfig.kafkaConsumerTypes,
       configFile: loaded.configFile,
       mwdiReplicaEsClient,
       dataStoreEsClient,
+      storingOptions: {
+        saveResultCc: serviceConfig.saveResultCc !== false,
+        resultHistoryLimit: Number(serviceConfig.resultHistoryLimit ?? 1),
+        dataStoreWriteLockEnabled: serviceConfig.dataStoreWriteLockEnabled === true,
+        atomicDataStoreUpsertEnabled: serviceConfig.atomicDataStoreUpsertEnabled === true
+      },
       staleMessageIdleMs: Number(redisConfig.staleMessageIdleMs || 60000),
       workerIdleSleepMs: Number(serviceConfig.workerIdleSleepMs || 1000),
       // retry control
@@ -237,16 +286,17 @@ async function run() {
       p1TransmittingKafkaParameters,
       kafkaConnectionList: kafkaInit.kafkaConnectionList,
       workerCount: Number(serviceConfig.kafkaOutboundConcurrency || 1),
-      readCount: Number(serviceConfig.kafkaOutboundReadCount || 100),
+      readCount: Number(serviceConfig.kafkaOutboundReadCount || 10),
       batchSize: Number(serviceConfig.kafkaOutboundBatchSize || 100),
       maxBatchBytes: Number(serviceConfig.kafkaOutboundMaxBatchBytes || 900 * 1024),
-      staleMessageIdleMs: Number(serviceConfig.kafkaOutboundStaleMessageIdleMs || 60000),
+      staleMessageIdleMs: Number(serviceConfig.kafkaOutboundStaleMessageIdleMs || 300000),
+      heartbeatIntervalMs: Number(serviceConfig.kafkaOutboundHeartbeatIntervalMs || 60000),
       kafkaFailureSleepMs: Number(serviceConfig.kafkaOutboundFailureSleepMs || 10000),
       workerIdleSleepMs: Number(serviceConfig.kafkaOutboundWorkerIdleSleepMs || 1000),
       // kafka producer config for sendBatch
       kafkaProducerMessageMaxBytes: serviceConfig.kafkaProducerMessageMaxBytes || 5242880,
       kafkaSocketRequestMaxBytes: serviceConfig.kafkaSocketRequestMaxBytes || 10485760,
-      kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 4500000,
+      kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 900000,
       kafkaOversizedMessageMode: serviceConfig.kafkaOversizedMessageMode || "ERROR"
     }).catch((error) =>
       logger.error({ error }, "Kafka outbound worker pool crashed")
@@ -298,4 +348,34 @@ async function run() {
     throw normalizedError;
   }
 }
-module.exports = { run };
+
+function run() {
+  if (initializationPromise) {
+    logger.warn(
+      { label: "p1-stream-pm-data.duplicate-start-skipped" },
+      "DPMDP stream processing is already initialized; duplicate startup was skipped"
+    );
+    return initializationPromise;
+  }
+
+  initializationPromise = initialize().catch((error) => {
+    // Permit an explicit retry only when initialization itself failed. Once
+    // initialization succeeds, keep the resolved promise so later callers
+    // cannot create a second replica/processing/Kafka worker pool.
+    initializationPromise = null;
+    throw error;
+  });
+
+  return initializationPromise;
+}
+
+function resetInitializationForTest() {
+  initializationPromise = null;
+}
+
+module.exports = {
+  run,
+  _internal: {
+    resetInitializationForTest
+  }
+};

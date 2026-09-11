@@ -4,61 +4,99 @@ const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redis
 const { sleep } = require("../../utils/retry");
 const p1UpdateMwdiReplica = require("../../specificFunctions/p1StreamPmData/p1UpdateMwdiReplica/P1UpdateMwdiReplica");
 
+function calculateNextCycleDelayMs(cycleStartedAtMs, syncPeriodMs, minimumDelayMs) {
+    const elapsedMs = Math.max(0, Date.now() - cycleStartedAtMs);
+    const remainingMs = syncPeriodMs - elapsedMs;
+
+    return remainingMs > 0
+        ? remainingMs
+        : Math.max(0, Number(minimumDelayMs) || 0);
+}
+
 async function startReplicaLeaderLoop(context) {
     const lockKey = "dpmdp:lock:replica";
     const ttlMs = context.replicaLockTtlMs || 60000;
     const syncPeriodSec = Number(
         getParamFromFunction(context.updateParameters, "p1UpdateMwdiReplica", "syncPeriod", 480)
     );
+    const syncPeriodMs = Math.max(1000, syncPeriodSec * 1000);
+    const minimumCycleDelayMs = Math.max(
+        0,
+        Number(context.replicaMinimumCycleDelayMs ?? 1000)
+    );
 
     while (true) {
-        const currentQueueLength = await redisQueue.getQueueLength(context.logger);
-        if (currentQueueLength >= context.maxQueueLengthBeforeReplicaPause) {
-            context.logger.warn(
-                {
-                    currentQueueLength,
-                    maxQueueLengthBeforeReplicaPause: context.maxQueueLengthBeforeReplicaPause
-                },
-                "Replica loop paused due to backlog"
-            );
-            await sleep(context.replicaPauseMsWhenBacklogged);
-            continue;
-        }
-        const token = await acquireLock(lockKey, ttlMs, context.logger);
-
-        if (!token) {
-            await sleep(5000);
-            continue;
-        }
-
+        const cycleStartedAtMs = Date.now();
         try {
-            const renewer = setInterval(async () => {
-                await renewLock(lockKey, token, ttlMs, context.logger).catch(() => {});
-            }, Math.max(5000, Math.floor(ttlMs / 3)));
+            const currentQueueLength = await redisQueue.getQueueLength(context.logger);
+            if (currentQueueLength >= context.maxQueueLengthBeforeReplicaPause) {
+                context.logger.warn(
+                    {
+                        currentQueueLength,
+                        maxQueueLengthBeforeReplicaPause: context.maxQueueLengthBeforeReplicaPause
+                    },
+                    "Replica loop paused due to backlog"
+                );
+                await sleep(context.replicaPauseMsWhenBacklogged);
+                continue;
+            }
+            const token = await acquireLock(lockKey, ttlMs, context.logger);
+
+            if (!token) {
+                await sleep(5000);
+                continue;
+            }
 
             try {
-                const response = await p1UpdateMwdiReplica.run({
-                    parameters: context.updateParameters,
-                    mwdiEsClient: context.mwdiEsClient,
-                    mwdiReplicaEsClient: context.mwdiReplicaEsClient,
-                    loggingEsClient: context.loggingEsClient,
-                    lastReplicaTime: context.appState.lastReplicaTime,
-                    logger: context.logger
-                });
+                const renewer = setInterval(async () => {
+                    await renewLock(lockKey, token, ttlMs, context.logger).catch(() => {});
+                }, Math.max(5000, Math.floor(ttlMs / 3)));
 
-                context.appState.lastReplicaTime = response.timestamp;
-                context.appState.lastReplicaLeaderRunAt = new Date().toJSON();
-                context.appState.metrics.replicaCycles += 1;
+                try {
+                    const response = await p1UpdateMwdiReplica.run({
+                        parameters: context.updateParameters,
+                        mwdiEsClient: context.mwdiEsClient,
+                        mwdiReplicaEsClient: context.mwdiReplicaEsClient,
+                        loggingEsClient: context.loggingEsClient,
+                        lastReplicaTime: context.appState.lastReplicaTime,
+                        runtimeConfig: context.runtimeConfig,
+                        logger: context.logger
+                    });
+
+                    context.appState.lastReplicaTime = response.timestamp;
+                    context.appState.lastReplicaLeaderRunAt = new Date().toJSON();
+                    context.appState.metrics.replicaCycles += 1;
+                } finally {
+                    clearInterval(renewer);
+                }
             } finally {
-                clearInterval(renewer);
+                await releaseLock(lockKey, token, context.logger).catch(() => {});
             }
-        } finally {
-            await releaseLock(lockKey, token, context.logger).catch(() => {});
-        }
 
-        await sleep(syncPeriodSec * 1000);
+            const nextCycleDelayMs = calculateNextCycleDelayMs(
+                cycleStartedAtMs,
+                syncPeriodMs,
+                minimumCycleDelayMs
+            );
+            context.logger.debug?.(
+                {
+                    cycleDurationMs: Date.now() - cycleStartedAtMs,
+                    syncPeriodMs,
+                    nextCycleDelayMs
+                },
+                "Replica cycle scheduling calculated"
+            );
+            await sleep(nextCycleDelayMs);
+        } catch (error) {
+            context.logger.error(
+                { error: error.message || error, code: error.code, type: error.type },
+                "Replica leader iteration failed; loop will retry"
+            );
+            await sleep(Number(context.replicaFailureRetryMs || 30000));
+        }
     }
 }
 module.exports = {
-  startReplicaLeaderLoop
+  startReplicaLeaderLoop,
+  calculateNextCycleDelayMs
 };

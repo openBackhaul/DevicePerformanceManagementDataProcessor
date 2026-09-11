@@ -109,7 +109,10 @@ async function loadLastReplicaTime(loggingEsClient, logger) {
     return esValue;
   }
 
-  return "1970-06-01T00:00:00.000Z";//null;
+  // No persisted checkpoint means a genuine first start. Let the replica
+  // function apply its bounded initial lookback instead of requesting the
+  // complete MWDI history from an epoch timestamp.
+  return null;
 }
 
 async function saveLastReplicaTime(loggingEsClient, timestamp, logger) {
