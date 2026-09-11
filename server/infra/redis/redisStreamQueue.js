@@ -162,7 +162,7 @@ async function recordPerformanceTimings(entries, maxLen, loggers) {
     keys: [KAFKA_DAILY_METRICS_HASH, KAFKA_OUTBOUND_SUCCESS_STREAM,
       KAFKA_OUTBOUND_DEAD_LETTER_STREAM, DEVICE_TIMING_STREAM, KAFKA_TIMING_STREAM],
     arguments: [getBerlinDate(), "Europe/Berlin", "", "", "0", new Date().toISOString(),
-      JSON.stringify(entries.map(entry => ({ ...entry, date: getBerlinDate(new Date(entry.fields.completedAt)) }))),
+      JSON.stringify(entries.map(entry => ({ ...entry, date: getBerlinDate(new Date(entry.completedAt || entry.fields.completedAt)) }))),
       String(maxLen)]
   });
 }
