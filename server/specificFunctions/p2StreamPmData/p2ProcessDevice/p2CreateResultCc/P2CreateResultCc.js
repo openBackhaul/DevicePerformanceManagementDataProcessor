@@ -1,15 +1,15 @@
 const p1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/P1RemoveOutOfRangeTemperature");
 const { getParamFromFunction, findFunctionNode } = require("../../../../utils/functionTree");
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
-const ERRORS_P1PrepareTxModes = {};
-const ERRORS_P1IterateAiPmSlices = {};
+const p2PrepareTxModes = require("./p2PrepareTxModes/P2PrepareTxModes");
+const p2IterateAiPmSlices = require("./p2IterateAiPmSlices/P2IterateAiPmSlices");
+const ERRORS_P1PrepareTxModes = require("./p2PrepareTxModes/ErrorsEnum");
+const ERRORS_P1IterateAiPmSlices = require("./p2IterateAiPmSlices/ErrorsEnum");
 const ERRORS_P1IterateEcPmSlices = {};
 let logger = console;
 try { logger = require("../../../../service/LoggingService.js").getLogger(); } catch (_) {}
 
-// Enable these imports after the corresponding source files are delivered.
-// const p2PrepareTxModes = require("./p2PrepareTxModes/P2PrepareTxModes");
-// const p2IterateAiPmSlices = require("./p2IterateAiPmSlices/P2IterateAiPmSlices");
+// Enable this import after the corresponding source file is delivered.
 // const p2IterateEcPmSlices = require("./p2IterateEcPmSlices/P2IterateEcPmSlices");
 
 /*
@@ -32,6 +32,7 @@ function isFunctionActive(parameters, functionName) {
   return Boolean(node && node["is-active"] === true);
 }
 const TRANSMISSION_MODE_LIST_KEY = "transmission-mode-list";
+const PROCESSED_TRANSMISSION_MODE_LIST_KEY = "processed-transmission-mode-list";
 
 function optionalRequire(modulePath) {
   try {
@@ -193,11 +194,11 @@ function isValidPrepareTxModesResponse(response) {
   return (
     response &&
     typeof response === "object" &&
-    (
-      Array.isArray(response[HIST_PERF_DATA_LIST_KEY]) ||
-      //Array.isArray(response.historicalPerformanceDataList) ||
-      Array.isArray(response[TRANSMISSION_MODE_LIST_KEY])
-      //Array.isArray(response.transmissionModeList)
+    Array.isArray(response[HIST_PERF_DATA_LIST_KEY]) &&
+    Array.isArray(
+      response[PROCESSED_TRANSMISSION_MODE_LIST_KEY] ||
+      response[TRANSMISSION_MODE_LIST_KEY] ||
+      response.transmissionModeList
     )
   );
 }
@@ -755,6 +756,7 @@ function getResponseTransmissionModeList(response, fallbackList) {
   }
 
   return (
+    response[PROCESSED_TRANSMISSION_MODE_LIST_KEY] ||
     response[TRANSMISSION_MODE_LIST_KEY] ||
     response.transmissionModeList ||
     fallbackList
@@ -874,7 +876,7 @@ async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
   const transmissionModeList = getTransmissionModeList(pac);
 
   const prepareTxModes = requireImplementation(
-    dependencies.p2PrepareTxModes,
+    dependencies.p2PrepareTxModes || p2PrepareTxModes,
     "p2PrepareTxModes"
   );
   const response = await callFunction(prepareTxModes, {
@@ -921,7 +923,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   );
 
   const iterateAiPmSlices = requireImplementation(
-    dependencies.p2IterateAiPmSlices,
+    dependencies.p2IterateAiPmSlices || p2IterateAiPmSlices,
     "p2IterateAiPmSlices"
   );
   const response = await callFunction(iterateAiPmSlices, {
