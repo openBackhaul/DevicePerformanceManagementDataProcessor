@@ -184,8 +184,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
       }
      // Build the URL to retrieve the control-construct for the current mount
-       const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-      //const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+      // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
       try {
         // Retrieve the control-construct using a GET request
         const response = await fetch(controlConstructUrl, {
@@ -244,7 +244,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (missingMountNames.length > 0) {
       throw {
         code: 533,
-        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
+        message: ERRORS.MOUNT_NAME_DISCREPANCY,
         "missing-mount-names": missingMountNames,
       };
     }
