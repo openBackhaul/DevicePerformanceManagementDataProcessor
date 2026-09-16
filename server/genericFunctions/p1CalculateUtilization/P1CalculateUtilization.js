@@ -74,6 +74,38 @@ function validateResultCC(input) {
   return true;
 }
 
+// Resolve EthernetContainer -> serving structures -> physical servers.
+// Each serving structure contributes its first server LTP, as specified.
+function preparePhysicalServerLtpList(resultCc, uuidOfEthernetContainer) {
+  if (typeof uuidOfEthernetContainer !== 'string' || !uuidOfEthernetContainer.trim()) {
+    return null;
+  }
+  const ltpList = resultCc[LTP];
+  const ethernetContainer = ltpList.find(ltp => ltp.uuid === uuidOfEthernetContainer);
+  const servingStructureLtpList = ethernetContainer?.['server-ltp'];
+  if (!(servingStructureLtpList)) {
+    return null;
+  }
+
+  const physicalServerLtpList = [];
+  for (const structureUuid of servingStructureLtpList) {
+    const structure = ltpList.find(ltp => ltp.uuid === structureUuid);
+    const servers = structure?.['server-ltp'];
+    const physicalServerUuid = Array.isArray(servers) ? servers[0] : undefined;
+    if (typeof physicalServerUuid !== 'string' || !physicalServerUuid.trim() ||
+        !ltpList.some(ltp => ltp.uuid === physicalServerUuid)) {
+      return null;
+    }
+    physicalServerLtpList.push(physicalServerUuid);
+  }
+  return physicalServerLtpList;
+}
+
+function isValidLtpList(value) {
+  return Array.isArray(value) && value.length > 0 &&
+    value.every(uuid => typeof uuid === 'string' && uuid.trim().length > 0);
+}
+
 // Aggregates the interval capacity of all transporting AirInterfaces
 // input
 // - logical-termination-point
@@ -218,13 +250,14 @@ function calculateUtilization(input) {
 // Calculates utilization of the aggregated physical resources in a performance data slice
 // input:
 // - historical-performance-data
-// - aggregation-group
+// - aggregation-group (optional)
 // - result-cc
+// - uuid-of-ethernet-container (used when aggregation-group is absent)
 // 
 // Errors - Utilization added:
 // - 'historicalPerformanceData not provided'
 // - 'historicalPerformanceData invalid'
-// - 'aggregationGroup not provided'
+// - 'aggregationGroup not provided' (neither group nor EthernetContainer UUID supplied)
 // - 'aggregationGroup invalid'
 // - 'result-cc not provided'
 // - 'result-cc invalid'
@@ -245,11 +278,15 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.HIST_PERF_DATA_INVALID;
     }
 
-    // Validate Aggregation Group
-    if (aggGroup == null || aggGroup == undefined) {
+    // Without a group, the EthernetContainer UUID is needed for topology lookup.
+    if (aggGroup == null && input['uuid-of-ethernet-container'] == null) {
       return ERRORS.AGG_GROUP_NOT_PROVIDED;
-    } else if (aggGroup[PSYSERVERLTP] == null ||
-      aggGroup[PSYSERVERLTP].length == 0) {
+    }
+
+    // Omitted/null groups use topology lookup. A supplied malformed group
+    // must fail rather than silently falling back to a different topology.
+    if (aggGroup != null && (typeof aggGroup !== 'object' || Array.isArray(aggGroup) ||
+        !isValidLtpList(aggGroup[PSYSERVERLTP]))) {
       return ERRORS.AGG_GROUP_INVALID;
     }
 
@@ -260,6 +297,13 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.RESULT_CC_INVALID;
     }
 
+    const physicalServerLtpList = aggGroup != null
+      ? aggGroup[PSYSERVERLTP]
+      : preparePhysicalServerLtpList(resultCC, input['uuid-of-ethernet-container']);
+    if (!physicalServerLtpList) {
+      return ERRORS.UTILIZATION_COULDNT_ADD;
+    }
+
     // Functions must process only 15 minutes of PM
     let returnData;
     let retHistoricalPerfData = JSON.parse(JSON.stringify(historicalPerfData)); // Initializate return value
@@ -267,7 +311,7 @@ const p1CalculateUtilization = (input) => {
     if (granularityPeriod.endsWith(GRAN_15MIN)) {
       const inputCapacity = {
         'logical-termination-point': resultCC[LTP],
-        'physical-server-ltp-list': aggGroup[PSYSERVERLTP],
+        'physical-server-ltp-list': physicalServerLtpList,
         'period-end-time': retHistoricalPerfData[ENDTIME],
       }
       let totAirCapacity = calculateTotalAirInterfaceIntervalCapacity(inputCapacity);
