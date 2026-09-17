@@ -105,7 +105,7 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
       })
       await client.info(); // Testing Connection
     } catch (error) {
-      throw error;
+      return ERRORS.ELK_READ_ERROR;
     }
   }
 
@@ -116,13 +116,10 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
       'id': documentId
     });
   } catch (error) {
-    if (error?.message == "connection failed") {
-      return ERRORS.ELK_READ_ERROR;
-    } else if (error?.meta?.statusCode == 404) {
+    if (error?.meta?.statusCode == 404) {
       return ERRORS.MOUNTNAME_NOT_FOUND;
-    } else {
-      throw (error);
     }
+    return (ERRORS.ELK_READ_ERROR);
   }
 
   /*
