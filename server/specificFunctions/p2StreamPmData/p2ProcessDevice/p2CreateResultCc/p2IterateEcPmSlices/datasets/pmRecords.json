@@ -1,0 +1,237 @@
+{
+  "daily": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-04-01T23:59:00Z",
+    "suspect-interval-flag": false,
+    "performance-data": {
+      "time-period": 86400,
+      "total-bytes-output": "112500000",
+      "total-bytes-input": "112500000",
+      "errored-frames-input": 2,
+      "dropped-frames-input": 3,
+      "errored-frames-output": 4,
+      "dropped-frames-output": 5,
+      "unknown-protocol-frames-input": -1
+    }
+  },
+  "firstBatch": [
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T06:15:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T08:00:00+02:00",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    }
+  ],
+  "secondBatch": [
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "period-end-time": "2026-04-01T23:59:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 86400,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T06:45:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T06:30:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    }
+  ],
+  "monthBoundary": [
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T06:00:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-03-30T06:00:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-03-31T06:00:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    }
+  ],
+  "mixed": [
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+      "period-end-time": "2026-04-01T23:59:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 86400,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T06:15:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "period-end-time": "2026-04-01T06:00:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    }
+  ],
+  "unknown": [
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN",
+      "period-end-time": "2026-04-01T06:00:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    },
+    {
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED",
+      "period-end-time": "2026-04-01T06:00:00Z",
+      "suspect-interval-flag": false,
+      "performance-data": {
+        "time-period": 900,
+        "total-bytes-output": "112500000",
+        "total-bytes-input": "112500000",
+        "errored-frames-input": 2,
+        "dropped-frames-input": 3,
+        "errored-frames-output": 4,
+        "dropped-frames-output": 5,
+        "unknown-protocol-frames-input": -1
+      }
+    }
+  ],
+  "missingStatusDay": {
+    "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+    "period-end-time": "2026-04-02T23:59:00Z",
+    "suspect-interval-flag": false,
+    "performance-data": {
+      "time-period": 86400,
+      "total-bytes-output": "112500000",
+      "total-bytes-input": "112500000",
+      "errored-frames-input": 2,
+      "dropped-frames-input": 3,
+      "errored-frames-output": 4,
+      "dropped-frames-output": 5,
+      "unknown-protocol-frames-input": -1
+    }
+  }
+}
