@@ -1,4 +1,4 @@
-var { validateMountName, ERRORS } = require('../../../utils/mountNameValidation');
+var ERRORS = require('../../../genericFunctions/p1ReadDataStoreDeviceData/ErrorsEnum');
 
 module.exports = {
   validateInput,
@@ -36,7 +36,15 @@ function validateInput(body) {
     return ERRORS.MOUNTNAME_NOT_PROVIDED;
   }
 
-  return validateMountName(body);
+  const mountName = body['mount-name'];
+  if (mountName === undefined || mountName === null || mountName === '') {
+    return ERRORS.MOUNTNAME_NOT_PROVIDED;
+  }
+  if (typeof mountName !== 'string') {
+    return ERRORS.MOUNTNAME_INVALID;
+  }
+
+  return null;
 }
 
 /**
