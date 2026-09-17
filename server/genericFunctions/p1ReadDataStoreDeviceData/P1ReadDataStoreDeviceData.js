@@ -1,4 +1,5 @@
 const ERRORS = require('./ErrorsEnum');
+const { validateMountName } = require('../../utils/mountNameValidation');
 
 const { Client } = require("@elastic/elasticsearch");
 
@@ -51,7 +52,6 @@ function validateInput(input) {
   }
 
   const dataStoreEsClient = input["data-store-es-client"];
-  const mountName = input["mount-name"];
 
   if (!dataStoreEsClient || typeof dataStoreEsClient !== "object") {
     return ERRORS.DATA_STORE_NOT_PROVIDED;
@@ -65,12 +65,9 @@ function validateInput(input) {
     return ERRORS.DATA_STORE_INVALID;
   }
 
-  if (mountName === undefined || mountName === null || mountName === "") {
-    return ERRORS.MOUNTNAME_NOT_PROVIDED;
-  }
-
-  if (typeof mountName !== "string") {
-    return ERRORS.MOUNTNAME_INVALID;
+  const mountNameError = validateMountName(input);
+  if (mountNameError) {
+    return mountNameError;
   }
 
   return null;
@@ -88,7 +85,9 @@ function isValidUrl(url) {
 async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
   const elasticsearchClient = dataStoreConfig.client;
   const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
-  const documentId = `device=${encodeURIComponent(mountName)}/result-data`;
+  // Issue244: p2Storing/P1Storing store each device document using the mount name
+  // as the Elasticsearch _id. The PM records are kept in the 'result-data' property.
+  const documentId = mountName;
 
   let client;
   if (elasticsearchClient != undefined) { // For testing purpose
@@ -131,15 +130,15 @@ async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
    *
    * {
    *   _index: 'data-store',
-   *   _id: 'device=100250001/result-data',
-   *   _source: {...}
+   *   _id: '100250001',
+   *   _source: { 'mount-name': '100250001', ..., 'result-data': [ ... ] }
    * }
    *
    * Some wrapped clients or older versions return:
    *
    * {
    *   body: {
-   *     _source: {...}
+   *     _source: { ... }
    *   }
    * }
    */
@@ -164,6 +163,21 @@ module.exports = p1ReadDataStoreDeviceData;
 function normalizeDsResponse(response) {
   if (Array.isArray(response)) {
     return response;
+  }
+
+  // p2Storing DataStore structure (issue 244):
+  // _source = { 'result-data': [ { 'batch-timestamp': ..., 'result-cc': ... } ] }
+  if (response && Array.isArray(response['result-data'])) {
+    return response['result-data'];
+  }
+
+  // p1Storing legacy DataStore structure (camelCase 'batch'), mapped to the
+  // output contract expected by '/provide-device-data-store-dump'.
+  if (response && Array.isArray(response.batch)) {
+    return response.batch.map((entry) => ({
+      'batch-timestamp': entry.batchTimestamp,
+      'result-cc': entry.resultCc
+    }));
   }
 
   if (response && Array.isArray(response.data)) {
