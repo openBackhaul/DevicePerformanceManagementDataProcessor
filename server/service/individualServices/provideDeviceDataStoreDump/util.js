@@ -4,8 +4,25 @@ module.exports = {
   validateInput,
   mapReadDataStoreDeviceDataError,
   buildSuccessResponse,
+  createError,
   ERRORS
 };
+
+/**
+ * Builds the error object propagated to the controller as {code, message}.
+ * NOTE: it deliberately returns a PLAIN object (not an `Error` instance) because:
+ *  - the controller serialises it directly into the HTTP response body
+ *    (an `Error` instance would serialise to `{}`, since `message` is not enumerable);
+ *  - it is the same convention used by initiatePmDataUpdate (plain {code, message} objects);
+ *  - the unit tests assert `rejects.toEqual({ code, message })`.
+ */
+function createError(code, message) {
+  return { code, message };
+}
+
+// NB: qui NON deve esserci un secondo `module.exports`, altrimenti sovrascrive
+// l'export completo dichiarato sopra (validateInput, mapReadDataStoreDeviceDataError,
+// buildSuccessResponse, createError, ERRORS).
 
 /**
  * Validates the body of the provideDeviceDataStoreDump service.
@@ -59,4 +76,6 @@ function buildSuccessResponse(readResult) {
   return {
     'device-pm-data': readResult['device-pm-data']
   };
+
+  
 }
