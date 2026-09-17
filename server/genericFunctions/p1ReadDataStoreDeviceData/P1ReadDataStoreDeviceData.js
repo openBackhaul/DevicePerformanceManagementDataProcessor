@@ -1,5 +1,4 @@
 const ERRORS = require('./ErrorsEnum');
-const { validateMountName } = require('../../utils/mountNameValidation');
 
 const { Client } = require("@elastic/elasticsearch");
 
@@ -80,6 +79,26 @@ function isValidUrl(url) {
   } catch {
     return false;
   }
+}
+
+/**
+ * Validates the mount-name field of the request body.
+ *
+ * @param {Object} body
+ * @returns {string} ERRORS constant or null if valid
+ */
+function validateMountName(body) {
+  const mountName = body && body['mount-name'];
+
+  if (mountName === undefined || mountName === null || mountName === '') {
+    return ERRORS.MOUNTNAME_NOT_PROVIDED;
+  }
+
+  if (typeof mountName !== 'string') {
+    return ERRORS.MOUNTNAME_INVALID;
+  }
+
+  return null;
 }
 
 async function retrieveDevicePmDataFromDs(dataStoreConfig, mountName) {
