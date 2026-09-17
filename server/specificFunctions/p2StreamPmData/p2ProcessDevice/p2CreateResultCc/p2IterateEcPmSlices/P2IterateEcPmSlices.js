@@ -65,6 +65,9 @@ function validateInput(input) {
   }
 
   // A missing/null group denotes an EthernetContainer on a single server.
+  if (input['aggregation-group'] == null && input['uuid-of-ethernet-container'] == null) {
+    return ERRORS.AGGREGATION_GROUP_NOT_PROVIDED;
+  }
   if (input['aggregation-group'] != null && !isObject(input['aggregation-group'])) {
     return ERRORS.AGGREGATION_GROUP_INVALID;
   }
@@ -102,8 +105,31 @@ function getGranularityPriority(granularityPeriod) {
 function comparePmSlices(a, b) {
   const priorityA = getGranularityPriority(a['granularity-period']);
   const priorityB = getGranularityPriority(b['granularity-period']);
-  return priorityA - priorityB ||
-    Date.parse(a['period-end-time']) - Date.parse(b['period-end-time']);
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  const timeStrA = a['period-end-time'];
+  const timeStrB = b['period-end-time'];
+
+  // Keep missing dates last within the same granularity, as in the AI iterator.
+  if (timeStrA === null || timeStrA === undefined) {
+    if (timeStrB === null || timeStrB === undefined) {
+      return 0;
+    }
+    return 1;
+  }
+  if (timeStrB === null || timeStrB === undefined) {
+    return -1;
+  }
+
+  const timeA = Date.parse(timeStrA);
+  const timeB = Date.parse(timeStrB);
+  if (!Number.isNaN(timeA) && !Number.isNaN(timeB)) {
+    return timeA - timeB;
+  }
+
+  return String(timeStrA).localeCompare(String(timeStrB));
 }
 
 /**
@@ -135,8 +161,6 @@ function p2IterateEcPmSlices(input) {
       let pmSlice = historicalPerformanceDataList[index];
 
       // 1. Calculate Ethernet KPIs.
-      // The existing helper names its performance-data payload
-      // historical-performance-data; preserve its current interface.
       let ethernetKpisResult;
       try {
         ethernetKpisResult = p1CalculateEthernetKpis({
@@ -215,13 +239,27 @@ function p2IterateEcPmSlices(input) {
         }
         pmSlice = busyHourResult['historical-performance-data'];
       }
-      historicalPerformanceDataList[index] = pmSlice;
+      try {
+        historicalPerformanceDataList[index] = pmSlice;
+      } catch (error) {
+        return ERRORS.HISTORICAL_DATA_LIST_PROVIDE_FAILED;
+      }
     }
 
-    return {
-      'historical-performance-data-list': historicalPerformanceDataList,
-      'interface-status': interfaceStatus
-    };
+    // Check the assembled output as well as each helper response
+    try {
+      if (!Array.isArray(historicalPerformanceDataList) ||
+          historicalPerformanceDataList.length !== input['historical-performance-data-list'].length ||
+          !Array.from(historicalPerformanceDataList).every(isSlice)) {
+        return ERRORS.HISTORICAL_DATA_LIST_PROVIDE_FAILED;
+      }
+      return {
+        'historical-performance-data-list': historicalPerformanceDataList,
+        'interface-status': interfaceStatus
+      };
+    } catch (error) {
+      return ERRORS.HISTORICAL_DATA_LIST_PROVIDE_FAILED;
+    }
   } catch (error) {
     return ERRORS.GENERAL_ERROR;
   }

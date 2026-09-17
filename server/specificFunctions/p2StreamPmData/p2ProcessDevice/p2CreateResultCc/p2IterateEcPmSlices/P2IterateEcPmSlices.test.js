@@ -28,6 +28,17 @@ describe('Input validation and processing with real helpers', () => {
     }
   });
 
+  test.each([
+    [undefined, undefined], [undefined, null], [null, undefined], [null, null]
+  ])('returns missing-group error when group %p and UUID %p are absent', (group, uuid) => {
+    const data = clone(inputDataset);
+    if (group === undefined) delete data['aggregation-group'];
+    else data['aggregation-group'] = group;
+    if (uuid === undefined) delete data['uuid-of-ethernet-container'];
+    else data['uuid-of-ethernet-container'] = uuid;
+    expect(iterate(data)).toBe(ERRORS.AGGREGATION_GROUP_NOT_PROVIDED);
+  });
+
   test.each([undefined, null, '', ' ', 42])('rejects invalid Ethernet UUID %p', uuid => {
     expect(iterate({ ...clone(inputDataset), 'uuid-of-ethernet-container': uuid })).toBe(ERRORS.GENERAL_ERROR);
   });
@@ -195,6 +206,29 @@ describe('Helper call order, payloads, and error handling', () => {
       calls.push('busyHour');
       return { 'historical-performance-data': { ...data['historical-performance-data'], busy: true } };
     });
+  });
+
+  test('returns output error if categorization corrupts a processed record', () => {
+    const data = clone(inputDataset);
+    const original = clone(data);
+    categorize.mockImplementation(payload => {
+      delete payload['historical-performance-data']['performance-data'];
+      return { 'interface-status': payload['interface-status'] };
+    });
+    expect(iterate(data)).toBe(ERRORS.HISTORICAL_DATA_LIST_PROVIDE_FAILED);
+    expect(data).toEqual(original);
+  });
+
+  test('returns output error if a later helper corrupts an earlier record', () => {
+    const data = clone(inputDataset);
+    data['historical-performance-data-list'] = clone(pmRecords.firstBatch);
+    let previousRecord;
+    categorize.mockImplementation(payload => {
+      if (previousRecord) previousRecord['period-end-time'] = null;
+      previousRecord = payload['historical-performance-data'];
+      return { 'interface-status': payload['interface-status'] };
+    });
+    expect(iterate(data)).toBe(ERRORS.HISTORICAL_DATA_LIST_PROVIDE_FAILED);
   });
 
   test('honors payload boundaries, helper replacements, parameters, and accumulated status', () => {
