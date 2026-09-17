@@ -1,5 +1,8 @@
 const { Kafka } = require("@confluentinc/kafka-javascript").KafkaJS;
 const { withRetry } = require("../../utils/retry");
+const { performance } = require("perf_hooks");
+const producerTimingConfig = new WeakMap();
+const { randomUUID } = require("crypto");
 const logger = require('../../service/LoggingService.js').getLogger();
 
 // A DPMDP instance can publish to several Kafka provider configurations at the
@@ -240,7 +243,10 @@ function getConfigKey(config) {
     messageMaxBytes: config["message.max.bytes"],
     deliveryTimeoutMs: config["delivery.timeout.ms"],
     requestTimeoutMs: config["request.timeout.ms"],
-    socketTimeoutMs: config["socket.timeout.ms"]
+    socketTimeoutMs: config["socket.timeout.ms"],
+    lingerMs: config["linger.ms"],
+    compressionType: config["compression.type"],
+    acknowledgements: config.acks
   });
 }
 
@@ -291,6 +297,10 @@ async function initProducer(options) {
 
   const kafka = new Kafka();
   const kafkaProducer = kafka.producer(config);
+  producerTimingConfig.set(kafkaProducer, {
+    configuredLingerMs: config["linger.ms"],
+    acknowledgementsRequested: String(config.acks)
+  });
   const entry = {
     producer: kafkaProducer,
     connectPromise: null,
@@ -387,8 +397,12 @@ async function sendBatch(topic, messages, logger, kafkaOptions) {
       buildInitOptionsFromSendArgument(kafkaOptions, logger)
     );
 
+    const sendStartedAt = new Date().toISOString();
+    const sendClock = performance.now();
+    let sendAttempts = 0;
     await withRetry(
       async () => {
+        sendAttempts++;
         await kafkaProducer.send({
           topic,
           messages
@@ -403,7 +417,18 @@ async function sendBatch(topic, messages, logger, kafkaOptions) {
 
     return {
       topic,
-      sent: messages.length
+      sent: messages.length,
+      timing: {
+        ...producerTimingConfig.get(kafkaProducer),
+        sendCallId: randomUUID(),
+        sendStartedAt,
+        acknowledgedAt: new Date().toISOString(),
+        sendToAckMs: Math.max(0, performance.now() - sendClock).toFixed(3),
+        sendAttempts,
+        timingScope: "producer-send-call",
+        batchMessageCount: messages.length,
+        actualLingerMs: "unavailable"
+      }
     };
   } catch (error) {
     const failedConfig = buildProducerConfig(

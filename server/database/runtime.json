@@ -2,7 +2,7 @@
   "service": {
     "port": 4031,
     "pollIntervalMs": 15000,
-    "concurrency": 16,
+    "concurrency": 20,
     "maxProcessingConcurrency": 32,
     "processingReadCount": 10,
     "saveResultCc": true,
@@ -21,7 +21,7 @@
     "shutdownGraceMs": 30000,
     "httpPort": 8080,
     "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER",
-    "kafkaOutboundConcurrency": 16,
+    "kafkaOutboundConcurrency": 20,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 10,
     "kafkaOutboundMaxBatchBytes": 921600,
@@ -73,6 +73,14 @@
     "deviceProcessingLockTtlMs": 1800000
   },
   "monitoring": {
-    "enabled": true
+    "enabled": true,
+    "performanceTimings": {
+      "enabled": true,
+      "streamsEnabled": false,
+      "compactStreamsEnabled": true,
+      "streamMaxLen": 200000,
+      "bufferMaxEntries": 2000,
+      "flushIntervalMs": 1000
+    }
   }
 }

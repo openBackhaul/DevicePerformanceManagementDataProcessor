@@ -264,6 +264,24 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       };
     }
 
+    // 10. Riepilogo esiti per-mount: se qualche risorsa e' sconosciuta presso il controller (533)
+    if (missingMountNames.length > 0) {
+      throw {
+        code: 533,
+        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
+        "missing-mount-names": missingMountNames,
+      };
+    }
+
+    // Se qualche device non e' collegato / non risponde (502/530/531/532)
+    if (unconnectedMountNames.length > 0) {
+      throw {
+        code: 532,
+        message: "Bad Gateway. Upstream server not responding.",
+        "unconnected-mount-names": unconnectedMountNames,
+      };
+    }
+
     logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
     logger.info("PM data update initiated successfully");
 

@@ -4,10 +4,14 @@ const mockRedis = {
   xAck: jest.fn(),
   xDel: jest.fn(),
   xLen: jest.fn(),
+  xReadGroup: jest.fn(),
   unlink: jest.fn(),
   xRange: jest.fn(),
   sRem: jest.fn(),
-  hDel: jest.fn()
+  sCard: jest.fn().mockResolvedValue(0),
+  hDel: jest.fn(),
+  xInfoGroups: jest.fn(),
+  multi: jest.fn()
 };
 
 jest.mock("./redisClient", () => ({
@@ -19,6 +23,35 @@ jest.mock("../../service/LoggingService.js", () => ({
 }));
 
 const queue = require("./redisStreamQueue");
+
+describe("atomic acknowledgement and deletion", () => {
+  test.each([0, 1])("device acknowledgement returns %i without a separate deletion", async count => {
+    mockRedis.eval.mockReset().mockResolvedValue(count);
+    expect(await queue.ackMessage("1-0", {})).toBe(count);
+    const [script, options] = mockRedis.eval.mock.calls[0];
+    expect(script).toContain("if acknowledged == 1 then redis.call('XDEL'");
+    expect(options.arguments).toEqual(["dpmdp:group:device-processing", "1-0"]);
+  });
+  test("Kafka script checks ownership before atomic acknowledgement/deletion", async () => {
+    mockRedis.eval.mockReset().mockResolvedValue(1);
+    expect(await queue.ackKafkaOutbound("1-0", "worker", {})).toBe(1);
+    const [script] = mockRedis.eval.mock.calls[0];
+    expect(script).toContain("pending[1][2] ~= ARGV[3]");
+    expect(script).toContain("if acknowledged == 1 then redis.call('XDEL'");
+    expect(script.indexOf("pending[1][2]")).toBeLessThan(script.indexOf("'XACK'"));
+  });
+});
+
+describe("blocking reads use isolated Redis connections", () => {
+  test.each(["readNext", "readNextRetry", "readNextKafkaOutbound"])("%s isolates BLOCK from shared commands", async method => {
+    mockRedis.xReadGroup.mockReset().mockResolvedValue(null);
+    expect(await queue[method]("worker", 5000, 10, {})).toEqual([]);
+    const args = mockRedis.xReadGroup.mock.calls[0];
+    expect(args[0].isolated).toBe(true);
+    expect(args[2]).toBe("worker");
+    expect(args[4]).toEqual({ COUNT: 10, BLOCK: 5000 });
+  });
+});
 
 describe("redisStreamQueue batched device enqueue", () => {
   beforeEach(() => {
@@ -227,6 +260,29 @@ describe("Kafka outbound dead-letter metadata", () => {
 });
 
 describe("Redis Kafka daily metrics", () => {
+  test("writes the performance hash and expiry atomically without changing daily counters", async () => {
+    const transaction = { del: jest.fn().mockReturnThis(), hSet: jest.fn().mockReturnThis(), expire: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue([]) };
+    mockRedis.multi.mockReturnValue(transaction);
+    const fields = { "device:updatesPerSec": "3.1700", updatedAt: "2026-09-09T12:00:00Z" };
+    await queue.writePerformanceMetricsSnapshot(fields, {});
+    expect(transaction.hSet).toHaveBeenCalledWith("dpmdp:hash:performance-metrics", fields);
+    expect(transaction.del).toHaveBeenCalledWith("dpmdp:hash:performance-metrics");
+    expect(transaction.expire).toHaveBeenCalledWith("dpmdp:hash:performance-metrics", 120);
+    expect(transaction.exec).toHaveBeenCalledTimes(1);
+    expect(mockRedis.eval).not.toHaveBeenCalled();
+  });
+  test("keeps unknown group lag unknown and samples entries independently of pending", async () => {
+    mockRedis.xLen.mockResolvedValue(100);
+    mockRedis.xInfoGroups.mockImplementation(async key => [{
+      name: key.includes("kafka") ? "dpmdp:group:kafka-outbound" : "dpmdp:group:device-processing",
+      pending: 3, lag: null
+    }]);
+    const result = await queue.getPerformanceQueueStats({});
+    expect(result).toEqual([
+      { stage: "device", entries: 100, pending: 3, lag: null, retryPending: 0 },
+      { stage: "kafka", entries: 100, pending: 3, lag: null, retryPending: 0 }
+    ]);
+  });
   beforeEach(() => {
     jest.clearAllMocks();
     mockRedis.eval.mockResolvedValue([]);
@@ -241,7 +297,9 @@ describe("Redis Kafka daily metrics", () => {
         keys: [
           "dpmdp:hash:kafka-daily-metrics",
           "dpmdp:stream:kafka-outbound-success",
-          "dpmdp:stream:kafka-outbound-dead-letter"
+          "dpmdp:stream:kafka-outbound-dead-letter",
+          "dpmdp:stream:device-processing-timing",
+          "dpmdp:stream:kafka-outbound-timing"
         ],
         arguments: expect.arrayContaining([
           "Europe/Berlin",
@@ -257,5 +315,17 @@ describe("Redis Kafka daily metrics", () => {
     await expect(
       queue.updateKafkaDailyMetrics("retried", "APT", 1, {})
     ).rejects.toThrow("Unsupported Kafka daily metric");
+  });
+
+  test("writes bounded timing evidence through the same daily reset script", async () => {
+    await queue.recordPerformanceTimings([{ stage: "device", fields: {
+      mountName: "cc", completedAt: "2026-09-09T10:00:00.000Z", processingMs: "12"
+    } }], 200000, {});
+    const [script, args] = mockRedis.eval.mock.calls[0];
+    expect(script).toContain("record.date == ARGV[1]");
+    expect(script).toContain("'MAXLEN', '~'");
+    expect(script).toContain("'UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5]");
+    expect(args.arguments[7]).toBe("200000");
+    expect(JSON.parse(args.arguments[6])[0].date).toBe("2026-09-09");
   });
 });

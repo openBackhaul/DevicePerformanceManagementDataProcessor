@@ -134,6 +134,9 @@ async function initialize() {
     const runtimeConfig = loadRuntimeConfig() || {};
     const redisConfig = runtimeConfig.redis || {};
     const serviceConfig = runtimeConfig.service || {};
+    require("../../core/performanceMetrics").configure(
+      runtimeConfig.monitoring?.performanceTimings || {}, logger
+    );
 
     // The Confluent producer is process-wide. Publish the validated runtime
     // limits before any outbound worker creates a producer.
