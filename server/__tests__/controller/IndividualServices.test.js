@@ -269,3 +269,236 @@ describe('IndividualServices Controller - initiatePmDataUpdate', () => {
     expect(execTime).toBeGreaterThanOrEqual(0);
   });
 });
+describe('IndividualServices Controller - provideDeviceDataStoreDump', () => {
+  let mockReq;
+  let mockRes;
+
+  beforeEach(() => {
+    // Reset all mocks
+    jest.clearAllMocks();
+
+    // Setup request mock
+    mockReq = {
+      body: {
+        'mount-name': '100250001'
+      }
+    };
+
+    // Setup response mock
+    mockRes = {
+      writeHead: jest.fn(),
+      end: jest.fn()
+    };
+
+    // Setup service mock
+    IndividualServicesService.provideDeviceDataStoreDump = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  test('should return 200 with device-pm-data and headers on success', async () => {
+    const mockResponse = {
+      'device-pm-data': [
+        {
+          'batch-timestamp': '2026-07-07T10:00:00.000Z',
+          'result-cc': {
+            'control-construct': []
+          }
+        }
+      ]
+    };
+
+    IndividualServicesService.provideDeviceDataStoreDump.mockResolvedValue(mockResponse);
+
+    await IndividualServices.provideDeviceDataStoreDump(
+      mockReq,
+      mockRes,
+      jest.fn(),
+      mockReq.body,
+      'user',
+      'originator',
+      'x-correlator-123',
+      '1.3.1',
+      'customer-journey'
+    );
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    // Verify response was written
+    expect(mockRes.writeHead).toHaveBeenCalled();
+    expect(mockRes.end).toHaveBeenCalled();
+
+    // Verify the status code and headers
+    const writeHeadCall = mockRes.writeHead.mock.calls[0];
+    expect(writeHeadCall[0]).toBe(200);
+    expect(writeHeadCall[1]).toMatchObject({
+      'x-correlator': 'x-correlator-123',
+      'life-cycle-state': 'EXPERIMENTAL',
+      'exec-time': expect.any(Number),
+      'backend-time': expect.any(Number)
+    });
+
+    // Verify the response body contains device-pm-data
+    const responseBody = JSON.parse(mockRes.end.mock.calls[0][0]);
+    expect(responseBody['device-pm-data']).toHaveLength(1);
+  });
+
+  test('should return 400 with headers when the service reports a bad request', async () => {
+    const mockError = {
+      code: 400,
+      message: 'mountName not provided'
+    };
+
+    IndividualServicesService.provideDeviceDataStoreDump.mockRejectedValue(mockError);
+
+    await IndividualServices.provideDeviceDataStoreDump(
+      mockReq,
+      mockRes,
+      jest.fn(),
+      mockReq.body,
+      'user',
+      'originator',
+      'x-correlator-123',
+      '1.3.1',
+      'customer-journey'
+    );
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const writeHeadCall = mockRes.writeHead.mock.calls[0];
+    expect(writeHeadCall[0]).toBe(400);
+    expect(writeHeadCall[1]).toMatchObject({
+      'x-correlator': 'x-correlator-123',
+      'life-cycle-state': 'EXPERIMENTAL'
+    });
+
+    const responseBody = JSON.parse(mockRes.end.mock.calls[0][0]);
+    expect(responseBody.code).toBe(400);
+    expect(responseBody.message).toBe('mountName not provided');
+  });
+test('should return 404 with headers when the mount name is not found in the DataStore', async () => {
+    const mockError = {
+      code: 404,
+      message: 'mountName not found in DataStore'
+    };
+
+    IndividualServicesService.provideDeviceDataStoreDump.mockRejectedValue(mockError);
+
+    await IndividualServices.provideDeviceDataStoreDump(
+      mockReq,
+      mockRes,
+      jest.fn(),
+      mockReq.body,
+      'user',
+      'originator',
+      'x-correlator-123',
+      '1.3.1',
+      'customer-journey'
+    );
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const writeHeadCall = mockRes.writeHead.mock.calls[0];
+    expect(writeHeadCall[0]).toBe(404);
+    expect(writeHeadCall[1]).toMatchObject({
+      'x-correlator': 'x-correlator-123',
+      'life-cycle-state': 'EXPERIMENTAL'
+    });
+
+    const responseBody = JSON.parse(mockRes.end.mock.calls[0][0]);
+    expect(responseBody.code).toBe(404);
+    expect(responseBody.message).toBe('mountName not found in DataStore');
+  });
+
+  test('should return 500 with headers when reading from ElasticSearch fails', async () => {
+    const mockError = {
+      code: 500,
+      message: 'ElasticSearch read error'
+    };
+
+    IndividualServicesService.provideDeviceDataStoreDump.mockRejectedValue(mockError);
+
+    await IndividualServices.provideDeviceDataStoreDump(
+      mockReq,
+      mockRes,
+      jest.fn(),
+      mockReq.body,
+      'user',
+      'originator',
+      'x-correlator-123',
+      '1.3.1',
+      'customer-journey'
+    );
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const writeHeadCall = mockRes.writeHead.mock.calls[0];
+    expect(writeHeadCall[0]).toBe(500);
+    expect(writeHeadCall[1]).toMatchObject({
+      'x-correlator': 'x-correlator-123',
+      'life-cycle-state': 'EXPERIMENTAL'
+    });
+
+    const responseBody = JSON.parse(mockRes.end.mock.calls[0][0]);
+    expect(responseBody.code).toBe(500);
+    expect(responseBody.message).toBe('ElasticSearch read error');
+  });
+
+  test('should return 500 when the service rejects without a valid code', async () => {
+    const mockError = {
+      error: 'Something went wrong'
+    };
+
+    IndividualServicesService.provideDeviceDataStoreDump.mockRejectedValue(mockError);
+
+    await IndividualServices.provideDeviceDataStoreDump(
+      mockReq,
+      mockRes,
+      jest.fn(),
+      mockReq.body,
+      'user',
+      'originator',
+      'x-correlator-123',
+      '1.3.1',
+      'customer-journey'
+    );
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const writeHeadCall = mockRes.writeHead.mock.calls[0];
+    expect(writeHeadCall[0]).toBe(500);
+    expect(writeHeadCall[1]).toMatchObject({
+      'x-correlator': 'x-correlator-123',
+      'life-cycle-state': 'EXPERIMENTAL'
+    });
+  });
+
+  test('should calculate exec-time correctly on success', async () => {
+    const mockResponse = {
+      'device-pm-data': []
+    };
+
+    IndividualServicesService.provideDeviceDataStoreDump.mockResolvedValue(mockResponse);
+
+    await IndividualServices.provideDeviceDataStoreDump(
+      mockReq,
+      mockRes,
+      jest.fn(),
+      mockReq.body,
+      'user',
+      'originator',
+      'x-correlator-123',
+      '1.3.1',
+      'customer-journey'
+    );
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    const writeHeadCall = mockRes.writeHead.mock.calls[0];
+    const execTime = writeHeadCall[1]['exec-time'];
+    expect(typeof execTime).toBe('number');
+    expect(execTime).toBeGreaterThanOrEqual(0);
+  });
+});

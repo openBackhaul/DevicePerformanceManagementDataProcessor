@@ -12,8 +12,16 @@ const {
 
 var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
+var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
+var p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
+var p1ReadDataStoreDeviceDataErrors = require('../genericFunctions/p1ReadDataStoreDeviceData/ErrorsEnum');
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
-
+var {
+  validateInput: validateProvideDeviceDataStoreDumpInput,
+  mapReadDataStoreDeviceDataError,
+  buildSuccessResponse,
+  createError,
+} = require('./individualServices/provideDeviceDataStoreDump/util.js');
 
 /**
  * Initiates process of embedding a new release
@@ -82,7 +90,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     const mountNameDiscrepancy =
       JSON.stringify(inputMountNames) !==
       JSON.stringify(returnedMountNamesMWDI);
-    logger.info(`Validation mountNameDiscrepancy: ${mountNameDiscrepancy}`);
+    logger.debug(`Validation mountNameDiscrepancy: ${mountNameDiscrepancy}`);
     // Handle error 533: Mount name discrepancy
     if (mountNameDiscrepancy) {
       // Find missing mount names (in input but not in response)
@@ -119,7 +127,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       throw error532;
     }
 
-    logger.info("All validations passed");
+    logger.debug("All validations passed");
     // 9. Check whether a PM data update is required (15-minute threshold)
     // Classify mount names based on the last successful update timestamp from MWDI
     const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
@@ -143,7 +151,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     }
     // Skip processing if all mounts are already up to date
     if (outdatedMountNames.length === 0 && alreadyUpToDateMountNames.length > 0) {
-      logger.info(`Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`);
+      logger.debug(`Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`);
 
       return {
         status: "success",
@@ -160,8 +168,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     var loaded = await p1LoadParameters.run({
       functionName: "initiatePmDataUpdate",
     });
-
-    logger.info(`Parameter loaded: ${loaded.parameters.parameter}`);
+    logger.debug(`Validation passed: ${loaded.parameters.parameter}`);
     let waitTimeForSending = 0
     waitTimeForSending = Number(
       getParamFromFunction(
@@ -332,5 +339,92 @@ exports.documentPmDataProcessing = async function (body, user, originator, xCorr
       code: 500,
       message: error.message || 'Failed to create PM data processing documentation'
     };
+  }
+};
+
+/**
+ * Provides a dump of the PM data of a device from the data store.
+ *
+ * body V1_providedevicedatastoredump_body
+ * user String User identifier from the system starting the service call
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+ * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
+ * traceIndicator String Sequence of request numbers along the flow
+ * customerJourney String Holds information supporting customer's journey to which the execution applies
+ * no response value expected for this operation
+ **/
+exports.provideDeviceDataStoreDump = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    // 1. Input validation: mount-name is mandatory and must be a non-empty string
+    const validationError = validateProvideDeviceDataStoreDumpInput(body);
+    if (validationError) {
+      throw createError(400, validationError);
+    }
+    logger.debug({ body }, 'Received body in provideDeviceDataStoreDump service');
+    const mountName = body['mount-name'];
+  
+    // 2. Load the parameters of the function from the control construct
+    const loaded = await p1LoadParameters.run({
+      functionName: 'provideDeviceDataStoreDump'
+    });
+    if (!loaded || !loaded.parameters) {
+      throw createError(500, "Failed to load function parameters");
+    }
+    // 3. Resolve the address of the DataStore Elasticsearch client
+    const p1ResolveEsAddressParameters = findFunctionNode(
+      loaded.parameters,
+      'p1ResolveEsAddress'
+    );
+    if (!p1ResolveEsAddressParameters) {
+      throw createError(500, 'Missing p1ResolveEsAddress configuration');
+    }
+    logger.debug({ p1ResolveEsAddressParameters }, 'Result of findFunctionNode');
+    const { esAddress } = await p1ResolveEsAddress.run({
+      parameters: p1ResolveEsAddressParameters,
+      configFile: loaded.configFile,
+      esName: 'dataStoreEsClient'
+    });
+    logger.debug({ esAddress }, 'Resolved DataStore Elasticsearch address');
+    logger.debug(
+      { keys: Object.keys(p1ResolveEsAddressParameters) },
+      'Available ES names'
+    );
+ // trovo URL "https://my-es-server:9200"
+ /*
+  const dataStoreEsClient = (
+    await p1ResolveEsAddress.run({
+      parameters: p1ResolveEsAddressParameters,
+      configFile: loaded.configFile,
+      esName: "dataStoreEsClient"
+    })
+  ).esAddress;
+  logger.debug({ dataStoreEsClient }, 'Resolved  Elasticsearch address');
+  */
+    // 4. Read the PM data of the device from the DataStore
+    const readResult = await p1ReadDataStoreDeviceData({
+      'data-store-es-client': esAddress,
+      'mount-name': mountName
+    });
+
+    // 5. Map the error messages returned by the generic function to HTTP errors
+    if (typeof readResult === 'string') {
+      throw mapReadDataStoreDeviceDataError(readResult);
+    }
+
+    logger.debug(`PM data of device ${mountName} read from the DataStore successfully`);
+
+    // 6. Build the success response as expected by the OpenAPI specification
+    return buildSuccessResponse(readResult);
+  } catch (error) {
+    // Propagate errors that already carry an HTTP status code 
+    if (error && Number.isInteger(error.code)) {
+      logger.error(`Error in provideDeviceDataStoreDump: ${error.message || error}`);
+      throw error;
+    }
+
+    // Wrap unexpected errors into a 500 response
+    const message = (error && error.message) || p1ReadDataStoreDeviceDataErrors.GENERAL_ERROR;
+    logger.error(`Error in provideDeviceDataStoreDump: ${message}`);
+    throw createError(500, message);
   }
 };

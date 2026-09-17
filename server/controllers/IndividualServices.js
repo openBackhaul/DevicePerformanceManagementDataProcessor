@@ -119,6 +119,83 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
     });
 };
 
+module.exports.provideDeviceDataStoreDump = function provideDeviceDataStoreDump(
+  req,
+  res,
+  next,
+  body,
+  user,
+  originator,
+  xCorrelator,
+  traceIndicator,
+  customerJourney
+) {
+  var startTime = Date.now();
+
+  IndividualServices.provideDeviceDataStoreDump(
+    body,
+    user,
+    originator,
+    xCorrelator,
+    traceIndicator,
+    customerJourney
+  )
+    .then(function (response) {
+
+      var execTime = Date.now() - startTime;
+
+      var headers = {
+        'x-correlator': xCorrelator,
+        'exec-time': execTime,
+        'backend-time': execTime,
+        'life-cycle-state': 'EXPERIMENTAL'
+      };
+
+      logger.info(
+        `POST /provide-device-data-store-dump SUCCESS ${execTime}ms`
+      );
+
+      logger.info(response, '=== CONTROLLER: Success response ===');
+      logger.info('=== END CONTROLLER ===');
+      /*
+       * Response handling according to the OpenAPI specification:
+       * 200 -> device-pm-data returned
+      */
+      return utils.writeJson(
+        res,
+        response,
+        200,
+        headers
+      );
+    })
+
+    .catch(function (error) {
+
+      var execTime = Date.now() - startTime;
+
+      var headers = {
+        'x-correlator': xCorrelator,
+        'exec-time': execTime,
+        'backend-time': execTime,
+        'life-cycle-state': 'EXPERIMENTAL'
+      };
+
+      var statusCode = 500;
+
+      if (error && Number.isInteger(error.code)) {
+        statusCode = error.code;
+      }
+
+      logger.error(
+        `POST /provide-device-data-store-dump ${statusCode} ERROR ${execTime}ms`
+      );
+
+      logger.error(error, '=== CONTROLLER: Error response ===');
+
+      return utils.writeJson(res, error, statusCode, headers);
+    });
+};
+
 module.exports.documentPmDataProcessing = function documentPmDataProcessing(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   IndividualServices.documentPmDataProcessing(body, user, originator, xCorrelator, traceIndicator, customerJourney)
     .then(function (response) {
