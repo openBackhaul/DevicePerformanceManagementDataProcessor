@@ -14,8 +14,14 @@ var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParam
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
 var p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
+var p1ReadDataStoreDeviceDataErrors = require('../genericFunctions/p1ReadDataStoreDeviceData/ErrorsEnum');
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
-
+var {
+  validateInput: validateProvideDeviceDataStoreDumpInput,
+  mapReadDataStoreDeviceDataError,
+  buildSuccessResponse,
+  createError,
+} = require('./individualServices/provideDeviceDataStoreDump/util.js');
 
 /**
  * Initiates process of embedding a new release
@@ -42,20 +48,19 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
   try {
     logger.debug(body, `Received mountsList from initiatePmDataUpdate:`);
 
-    // 1. Validazione
+    // 1. Input validation test: check if body is valid and contains required fields
     const validationError = validateInput(body);
     if (validationError) {
       throw new Error(`Validation error: ${validationError}`);
     }
 
-    // 2. Recupero URL e Header
+    // 2. Retrieve URL and headers
     const mwdiUrl = getMwdiURL();
     const requestHeaders = {
       ...getCustomHeaders(),
       ...(body._headers || {}),
     };
-
-    // 3. Chiamata HTTP
+    // 3. Call MWDI REST API to get device status metadata
     const mwdiResponse = await fetch(mwdiUrl, {
       method: "POST",
       headers: requestHeaders,
@@ -63,26 +68,20 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         "mount-name-list": body["mount-names"],
       }),
     });
-
     if (!mwdiResponse.ok) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
     }
-
     const responseData = await mwdiResponse.json();
-
-    logger.error(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
-
-    // 5. Validate response
+    logger.debug(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
+    // 5. Validate the MWDI response
     const responseError = validateMWDIResponse(responseData);
     if (responseError) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
     }
-
-    // 6. Extract metadata array (handle both direct array and wrapped format)
+    // 6. Extract the metadata array (handle both direct array and wrapped response formats)
     const metadataArrayMWDI = Array.isArray(responseData)
       ? responseData
       : responseData["device-status-metadata"];
-
     // 7. Verify mount names match
     const inputMountNames = body["mount-names"].sort();
     const returnedMountNamesMWDI = metadataArrayMWDI
@@ -91,9 +90,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     const mountNameDiscrepancy =
       JSON.stringify(inputMountNames) !==
       JSON.stringify(returnedMountNamesMWDI);
-
-    logger.info(`Validation mountNameDiscrepancy: ${mountNameDiscrepancy}`);
-
+    logger.debug(`Validation mountNameDiscrepancy: ${mountNameDiscrepancy}`);
     // Handle error 533: Mount name discrepancy
     if (mountNameDiscrepancy) {
       // Find missing mount names (in input but not in response)
@@ -113,15 +110,13 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
 
       throw error533;
     }
-
-    // 8. Validate connection status
+    // 8. Validate that all requested devices are connected and available
     const connectionStatusError = validateConnectionStatus(
       metadataArrayMWDI,
       inputMountNames,
     );
     if (connectionStatusError) {
       logger.error(connectionStatusError.unconnectedMountNames, `Unconnected mounts detected: `);
-
       // Throw error with code 532 and unconnected mount names
       const error532 = {
         code: 532,
@@ -132,41 +127,31 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       throw error532;
     }
 
-    logger.info("All validations passed");
-
-    // 9. Check if update is needed (15-minute throttle) - AFTER all validations
-    // Per-mount throttle based on last-successful-complete-control-construct-update-time from MWDI
+    logger.debug("All validations passed");
+    // 9. Check whether a PM data update is required (15-minute threshold)
+    // Classify mount names based on the last successful update timestamp from MWDI
     const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
     const currentTime = Date.now();
-
-    // Separate mount names into already-up-to-date and outdated based on MWDI timestamps
     const alreadyUpToDateMountNames = [];
     const outdatedMountNames = [];
-
     for (const metadata of metadataArrayMWDI) {
       const mountName = metadata['mount-name'];
       const lastSuccessfulUpdateTime = metadata['last-successful-complete-control-construct-update-time'];
-
-      // If no previous update or timestamp is null/undefined, consider it outdated
       if (!lastSuccessfulUpdateTime) {
         outdatedMountNames.push(mountName);
         continue;
       }
-      
-      // Parse the timestamp and compare
       const lastUpdateDate = new Date(lastSuccessfulUpdateTime);
       const timeSinceLastUpdate = currentTime - lastUpdateDate.getTime();
-      
       if (timeSinceLastUpdate < FIFTEEN_MINUTES_MS) {
         alreadyUpToDateMountNames.push(mountName);
       } else {
         outdatedMountNames.push(mountName);
       }
     }
-
-    // If all mounts are already up-to-date, return early
+    // Skip processing if all mounts are already up to date
     if (outdatedMountNames.length === 0 && alreadyUpToDateMountNames.length > 0) {
-      logger.info(`Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`);
+      logger.debug(`Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`);
 
       return {
         status: "success",
@@ -174,29 +159,17 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         "already-up-to-date-mount-names": alreadyUpToDateMountNames,
       };
     }
-
-    // If some mounts are outdated, update the body to only process those
+    // If only a subset of mounts requires an update, process the outdated ones only
     if (outdatedMountNames.length > 0 && alreadyUpToDateMountNames.length > 0) {
       logger.warn(`Processing ${outdatedMountNames.length} outdated mount(s), skipping ${alreadyUpToDateMountNames.length} up-to-date mount(s)`);
     }
-
-    // Update body to only contain outdated mount names for processing
+    // Keep only outdated mount names for the remaining update workflow
     body['mount-names'] = outdatedMountNames;
-
     var loaded = await p1LoadParameters.run({
       functionName: "initiatePmDataUpdate",
     });
-
-    logger.info(`Validation passed: ${loaded.parameters.parameter}`);
-/*
-    let waitTimeForSending = Number(
-      loaded.parameters.parameter.find(
-        (p) => p["parameter-name"] === "waitTimeForSending",
-      )?.value,
-    );
-*/
+    logger.debug(`Validation passed: ${loaded.parameters.parameter}`);
     let waitTimeForSending = 0
-
     waitTimeForSending = Number(
       getParamFromFunction(
         loaded.parameters,
@@ -205,34 +178,23 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         0,
       ),
     );
-
     logger.debug(`Wait time for sending requests: ${waitTimeForSending}ms`);
 
-    // Estrai il base URL da mwdiUrl (rimuovi il path esistente)
+    // Get the MWDI base URL
     const baseMwdiUrl = mwdiUrl.replace('/v1/provide-device-status-metadata', '');
-
-    // Array per raccogliere i risultati del ciclo live control-construct
-    // const liveControlConstructResults = []; // is not used!
-
-    // Mount names che producono errori live CC: non collegati oppure risorsa sconosciuta
     const unconnectedMountNames = [];
     const missingMountNames = [];
-
-    // Ciclo attraverso tutti i mount names per recuperare i live control-construct
+    // Retrieve live control-construct data for each mount
     for (const mountName of outdatedMountNames) {
       logger.debug(`Processing mount: ${mountName}`);
-
-      // Attendi waitTimeForSending ms prima di ogni richiesta
       if (waitTimeForSending > 0) {
         await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
       }
-
-      // Costruisci l'URL per control-construct
+     // Build the URL to retrieve the control-construct for the current mount
       // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
       const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
-
       try {
-        // Esegui GET request
+        // Retrieve the control-construct using a GET request
         const response = await fetch(controlConstructUrl, {
           method: "GET",
           headers: requestHeaders
@@ -242,12 +204,12 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
           const data = await response.json();
           logger.info(`Successfully retrieved control-construct for ${mountName}`);
         } else {
-          // Prova a decodificare il body di errore restituito da MWDI ({ code, message })
+          // Attempt to parse the MWDI error response body ({ code, message })
           let errorBody = null;
           try {
             errorBody = await response.json();
           } catch (err) {
-            // Il body non e' JSON oppure e' assente: ci si basa sullo status HTTP
+            logger.error(`Failed to parse MWDI error response for ${mountName}: ${err.message}`);
           }
 
           const mwdiErrorCode =
@@ -259,18 +221,18 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
             "";
 
           if (mwdiErrorCode === 533) {
-            // 533: categoria 'missing' - risorsa sconosciuta presso il controller (errore 533 a livello di servizio)
-            missingMountNames.push(mountName);
+            // Resource not found at the Controller
             logger.error(
               `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`
 );
+            missingMountNames.push(mountName);
           } else if (
             mwdiErrorCode === 502 ||
             mwdiErrorCode === 530 ||
             mwdiErrorCode === 531 ||
             mwdiErrorCode === 532
           ) {
-            // 502/530/531/532: categoria 'unconnected' - device non raggiungibile / non risponde / dati non validi (errore 532 a livello di servizio)
+            // Device is unreachable or unavailable
             unconnectedMountNames.push(mountName);
             logger.error(
   `Mount ${mountName} not connected (HTTP ${response.status}: ${mwdiErrorMessage || 'Bad Gateway'})`
@@ -284,6 +246,22 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       } catch (error) {
         logger.error(`Error retrieving control-construct for ${mountName}: ${error.message}`);
       }
+    }
+    // 10. Check whether any mount names reference resources that are unknown at the Controller 
+    if (missingMountNames.length > 0) {
+      throw {
+        code: 533,
+        message: ERRORS.MOUNT_NAME_DISCREPANCY,
+        "missing-mount-names": missingMountNames,
+      };
+    }
+    // Handle mount names associated with unreachable or unavailable devices
+    if (unconnectedMountNames.length > 0) {
+      throw {
+        code: 532,
+        message: "Bad Gateway. Upstream server not responding.",
+        "unconnected-mount-names": unconnectedMountNames,
+      };
     }
 
     // 10. Riepilogo esiti per-mount: se qualche risorsa e' sconosciuta presso il controller (533)
@@ -307,7 +285,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
     logger.info("PM data update initiated successfully");
 
-    // Esito positivo
+   // Build the internal success response
     const successResponse = {
       status: "success",
       message: "PM data update initiated successfully",
@@ -315,83 +293,33 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       mwdiUrl,
       mwdiResponse: responseData,
     };
-
-    // If there were already up-to-date mounts, include them in response
+    // Add already up-to-date mount names for controller response handling
     if (alreadyUpToDateMountNames.length > 0) {
       successResponse['already-up-to-date-mount-names'] = alreadyUpToDateMountNames;
     }
 
     return successResponse;
   } catch (error) {
-    // CATCH GLOBALE: Gestisce QUALSIASI errore verificatosi nel blocco 'try'
+    // Handle any error raised during PM data update processing
     logger.error(`Error in initiatePmDataUpdate: ${error.message || error}`);
-
-    // Handle error 533: Mount name discrepancy
+    // Propagate error 533 with the list of missing mount names
     if (error.code === 533) {
-      // Return error 533 with missing mount names
       throw {
         code: error.code,
         message: error.message,
         "missing-mount-names": error["missing-mount-names"],
       };
     }
-
-    // Handle error 532: Unconnected mounts
+    // Propagate error 532 with the list of unconnected mount names
     if (error.code === 532) {
-      // Return error 532 with unconnected mount names
       throw {
         code: error.code,
         message: error.message,
         "unconnected-mount-names": error["unconnected-mount-names"],
       };
     }
-
-    // Rilancia l'errore verso chi ha chiamato la funzione
+    // Propagate unexpected errors to the caller
     throw { error: error.message || ERRORS.MWDI_CONNECTION_FAILED };
-  }
-};
-
-/**
- * Provides all persisted PM result data for one device.
- */
-exports.provideDeviceDataStoreDump = async function (body) {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    throw { code: 400, message: 'request body invalid' };
-  }
-
-  const mountName = body['mount-name'];
-  if (typeof mountName !== 'string' || mountName.trim() === '') {
-    throw { code: 400, message: mountName == null ? 'mountName not provided' : 'mountName invalid' };
-  }
-
-  try {
-    const loaded = await p1LoadParameters.run({
-      functionName: 'provideDeviceDataStoreDump'
-    });
-    const resolveParameters = findFunctionNode(
-      loaded.parameters,
-      'p1ResolveEsAddress'
-    ) || loaded.parameters;
-    const resolved = await p1ResolveEsAddress.run({
-      parameters: resolveParameters,
-      configFile: loaded.configFile,
-      esName: 'dataStoreEsClient'
-    });
-    const result = await p1ReadDataStoreDeviceData({
-      'data-store-es-client': resolved.esAddress,
-      'mount-name': mountName.trim()
-    });
-
-    if (typeof result === 'string') {
-      throw new Error(result);
-    }
-    return result;
-  } catch (error) {
-    if (error && error.code === 400) throw error;
-    throw {
-      code: 500,
-      message: error && error.message ? error.message : 'Failed to provide device data store dump'
-    };
   }
 };
 
@@ -429,5 +357,92 @@ exports.documentPmDataProcessing = async function (body, user, originator, xCorr
       code: 500,
       message: error.message || 'Failed to create PM data processing documentation'
     };
+  }
+};
+
+/**
+ * Provides a dump of the PM data of a device from the data store.
+ *
+ * body V1_providedevicedatastoredump_body
+ * user String User identifier from the system starting the service call
+ * originator String 'Identification for the system consuming the API, as defined in  [/core-model-1-4:control-construct/logical-termination-point={uuid}/layer-protocol=0/http-client-interface-1-0:http-client-interface-pac/http-client-interface-configuration/application-name]'
+ * xCorrelator String UUID for the service execution flow that allows to correlate requests and responses
+ * traceIndicator String Sequence of request numbers along the flow
+ * customerJourney String Holds information supporting customer's journey to which the execution applies
+ * no response value expected for this operation
+ **/
+exports.provideDeviceDataStoreDump = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  try {
+    // 1. Input validation: mount-name is mandatory and must be a non-empty string
+    const validationError = validateProvideDeviceDataStoreDumpInput(body);
+    if (validationError) {
+      throw createError(400, validationError);
+    }
+    logger.debug({ body }, 'Received body in provideDeviceDataStoreDump service');
+    const mountName = body['mount-name'];
+  
+    // 2. Load the parameters of the function from the control construct
+    const loaded = await p1LoadParameters.run({
+      functionName: 'provideDeviceDataStoreDump'
+    });
+    if (!loaded || !loaded.parameters) {
+      throw createError(500, "Failed to load function parameters");
+    }
+    // 3. Resolve the address of the DataStore Elasticsearch client
+    const p1ResolveEsAddressParameters = findFunctionNode(
+      loaded.parameters,
+      'p1ResolveEsAddress'
+    );
+    if (!p1ResolveEsAddressParameters) {
+      throw createError(500, 'Missing p1ResolveEsAddress configuration');
+    }
+    logger.debug({ p1ResolveEsAddressParameters }, 'Result of findFunctionNode');
+    const { esAddress } = await p1ResolveEsAddress.run({
+      parameters: p1ResolveEsAddressParameters,
+      configFile: loaded.configFile,
+      esName: 'dataStoreEsClient'
+    });
+    logger.debug({ esAddress }, 'Resolved DataStore Elasticsearch address');
+    logger.debug(
+      { keys: Object.keys(p1ResolveEsAddressParameters) },
+      'Available ES names'
+    );
+ // trovo URL "https://my-es-server:9200"
+ /*
+  const dataStoreEsClient = (
+    await p1ResolveEsAddress.run({
+      parameters: p1ResolveEsAddressParameters,
+      configFile: loaded.configFile,
+      esName: "dataStoreEsClient"
+    })
+  ).esAddress;
+  logger.debug({ dataStoreEsClient }, 'Resolved  Elasticsearch address');
+  */
+    // 4. Read the PM data of the device from the DataStore
+    const readResult = await p1ReadDataStoreDeviceData({
+      'data-store-es-client': esAddress,
+      'mount-name': mountName
+    });
+
+    // 5. Map the error messages returned by the generic function to HTTP errors
+    if (typeof readResult === 'string') {
+      throw mapReadDataStoreDeviceDataError(readResult);
+    }
+
+    logger.debug(`PM data of device ${mountName} read from the DataStore successfully`);
+
+    // 6. Build the success response as expected by the OpenAPI specification
+    return buildSuccessResponse(readResult);
+  } catch (error) {
+    // Propagate errors that already carry an HTTP status code 
+    if (error && Number.isInteger(error.code)) {
+      logger.error(`Error in provideDeviceDataStoreDump: ${error.message || error}`);
+      throw error;
+    }
+
+    // Wrap unexpected errors into a 500 response
+    const message = (error && error.message) || p1ReadDataStoreDeviceDataErrors.GENERAL_ERROR;
+    logger.error(`Error in provideDeviceDataStoreDump: ${message}`);
+    throw createError(500, message);
   }
 };

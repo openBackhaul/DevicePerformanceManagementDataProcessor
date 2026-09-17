@@ -97,7 +97,7 @@ describe('p1CalculateUtilization', () => {
     expect(p1CalculateUtilization(input)).toBe(ERRORS.HIST_PERF_DATA_INVALID);
   });
 
-  test('should return AGG_GROUP_NOT_PROVIDED if missing', () => {
+  test('should return AGG_GROUP_NOT_PROVIDED when both group and UUID are omitted', () => {
     const input = { 'historical-performance-data': createValidHistoricalData(), 'result-cc': {} };
     expect(p1CalculateUtilization(input)).toBe(ERRORS.AGG_GROUP_NOT_PROVIDED);
   });
@@ -446,4 +446,89 @@ describe('p1CalculateUtilization', () => {
     });
   });
 
+});
+
+
+describe('optional aggregation group and single-server topology', () => {
+  const dataset = require('./datasets/singleServerInput.json');
+  let input;
+  beforeEach(() => { input = JSON.parse(JSON.stringify(dataset)); });
+
+  test.each([undefined, null])('resolves physical servers when group is %p', group => {
+    if (group !== undefined) input['aggregation-group'] = group;
+    const original = JSON.parse(JSON.stringify(input));
+    const result = p1CalculateUtilization(input);
+    expect(result['historical-performance-data']['performance-data']).toMatchObject({
+      'total-air-interface-interval-capacity': 10000, utilization: 10
+    });
+    expect(input).toEqual(original);
+  });
+
+  test('uses the first physical server of each serving structure', () => {
+    const ltps = input['result-cc']['logical-termination-point'];
+    ltps[0]['server-ltp'].push('STRUCTURE-2');
+    ltps[1]['server-ltp'].push('IGNORED');
+    ltps.push({ ...ltps[1], uuid: 'STRUCTURE-2', 'server-ltp': ['AIR-2'] });
+    const air2 = JSON.parse(JSON.stringify(ltps[2]));
+    air2.uuid = 'AIR-2';
+    ltps.push(air2);
+    expect(p1CalculateUtilization(input)['historical-performance-data']['performance-data'])
+      .toMatchObject({ 'total-air-interface-interval-capacity': 20000, utilization: 5 });
+  });
+
+  test('explicit aggregation group takes precedence and does not require UUID', () => {
+    input['aggregation-group'] = { 'physical-server-ltp-list': ['AIR-1'] };
+    delete input['uuid-of-ethernet-container'];
+    delete input['result-cc']['logical-termination-point'][0]['server-ltp'];
+    expect(p1CalculateUtilization(input)['historical-performance-data']['performance-data'].utilization).toBe(10);
+  });
+
+  test.each([{}, [], false, 1, 'group',
+    { 'physical-server-ltp-list': [] }, { 'physical-server-ltp-list': 'AIR-1' },
+    { 'physical-server-ltp-list': [null] }, { 'physical-server-ltp-list': [''] },
+    { 'physical-server-ltp-list': [' '] }, { 'physical-server-ltp-list': [123] }
+  ])('rejects malformed supplied group %p even with valid fallback topology', group => {
+    input['aggregation-group'] = group;
+    expect(p1CalculateUtilization(input)).toBe(ERRORS.AGG_GROUP_INVALID);
+  });
+
+  test.each([
+    [undefined, undefined], [undefined, null], [null, undefined], [null, null]
+  ])('returns missing-group error when group %p and UUID %p are absent', (group, uuid) => {
+    if (group !== undefined) input['aggregation-group'] = group;
+    if (uuid === undefined) delete input['uuid-of-ethernet-container'];
+    else input['uuid-of-ethernet-container'] = uuid;
+    expect(p1CalculateUtilization(input)).toBe(ERRORS.AGG_GROUP_NOT_PROVIDED);
+  });
+
+  test.each(['', ' ', 42, 'missing'])('fails predictably for UUID %p without a group', uuid => {
+    input['uuid-of-ethernet-container'] = uuid;
+    expect(p1CalculateUtilization(input)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
+
+  test.each(['missing-structure', 'empty-structure-list', 'invalid-structure-list',
+    'empty-server-list', 'invalid-server-list', 'missing-physical-server'])('rejects incomplete topology: %s', failure => {
+    const ltps = input['result-cc']['logical-termination-point'];
+    if (failure === 'missing-structure') ltps[0]['server-ltp'] = ['missing'];
+    if (failure === 'empty-structure-list') ltps[0]['server-ltp'] = [];
+    if (failure === 'invalid-structure-list') ltps[0]['server-ltp'] = 'STRUCTURE-1';
+    if (failure === 'empty-server-list') ltps[1]['server-ltp'] = [];
+    if (failure === 'invalid-server-list') ltps[1]['server-ltp'] = 'AIR-1';
+    if (failure === 'missing-physical-server') ltps[1]['server-ltp'] = ['missing'];
+    const original = JSON.parse(JSON.stringify(input));
+    expect(p1CalculateUtilization(input)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+    expect(input).toEqual(original);
+  });
+
+  test.each(['24-HOURS', 'UNKNOWN', 'NOT_YET_DEFINED'])('preserves %s passthrough without a group', period => {
+    input['historical-performance-data']['granularity-period'] =
+      'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-' + period;
+    expect(p1CalculateUtilization(input)['historical-performance-data'])
+      .toEqual(input['historical-performance-data']);
+  });
+
+  test.each([undefined, null, {}])('validates result CC %p without a group', resultCc => {
+    input['result-cc'] = resultCc;
+    expect(p1CalculateUtilization(input)).toBe(resultCc == null ? ERRORS.RESULT_CC_NOT_PROVIDED : ERRORS.RESULT_CC_INVALID);
+  });
 });

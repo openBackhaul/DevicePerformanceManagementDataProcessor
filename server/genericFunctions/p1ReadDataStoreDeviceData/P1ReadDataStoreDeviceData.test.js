@@ -50,32 +50,37 @@ describe("p1ReadDataStoreDeviceData", () => {
     expect(result).toBeDefined();
   });
 
-  test("should return device PM data", async () => {
+  test("should return device PM data (p2Storing result-data format)", async () => {
 
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
-      '_id': 'device=100250001/result-data',
+      '_id': '100250001',
       'found': true,
-      '_source': 
-        [
-          {
-            "batch-timestamp": "2026-07-07T10:00:00.000Z",
-            "result-cc": {
-              "control-construct": [
-                { "uuid": "air-interface-1", "historical-performance-data-list": [] }
-              ]
+      '_source': {
+        'mount-name': '100250001',
+        'processing-data': { 'offsets': [], 'status-data': [] },
+        'locked': false,
+        'timestamp': '2026-07-07T10:00:00.000Z',
+        'result-data':
+          [
+            {
+              "batch-timestamp": "2026-07-07T10:00:00.000Z",
+              "result-cc": {
+                "control-construct": [
+                  { "uuid": "air-interface-1", "historical-performance-data-list": [] }
+                ]
+              }
+            },
+            {
+              "batch-timestamp": "2026-07-07T10:30:00.000Z",
+              "result-cc": {
+                "control-construct": [
+                  { "uuid": "air-interface-1", "historical-performance-data-list": [] }
+                ]
+              }
             }
-          },
-          {
-            "batch-timestamp": "2026-07-07T10:30:00.000Z",
-            "result-cc": {
-              "control-construct": [
-                { "uuid": "air-interface-1", "historical-performance-data-list": [] }
-              ]
-            }
-          }
-        ]
-      
+          ]
+      }
     });
 
     const result = await p1ReadDataStoreDeviceData(inputMock);
@@ -85,6 +90,44 @@ describe("p1ReadDataStoreDeviceData", () => {
     expect(result["device-pm-data"][0]["batch-timestamp"]).toBe(
       "2026-07-07T10:00:00.000Z"
     );
+    // Issue244: the document must be retrieved using the mount name as _id
+    expect(elasticsearchClient.get).toHaveBeenCalledWith({
+      'index': 'data-store',
+      'id': '100250001'
+    });
+  });
+
+  test("should map p1Storing batch format to device-pm-data", async () => {
+    elasticsearchClient.get.mockResolvedValue({
+      '_index': 'data-store',
+      '_id': '100250001',
+      'found': true,
+      '_source': {
+        'mountName': '100250001',
+        'batch': [
+          {
+            'batchTimestamp': '2026-07-07T11:00:00.000Z',
+            'resultCc': {
+              'control-construct': [
+                { 'uuid': 'air-interface-1', 'historical-performance-data-list': [] }
+              ]
+            }
+          }
+        ]
+      }
+    });
+
+    const result = await p1ReadDataStoreDeviceData(inputMock);
+
+    expect(result["device-pm-data"]).toHaveLength(1);
+    expect(result["device-pm-data"][0]).toEqual({
+      'batch-timestamp': '2026-07-07T11:00:00.000Z',
+      'result-cc': {
+        'control-construct': [
+          { 'uuid': 'air-interface-1', 'historical-performance-data-list': [] }
+        ]
+      }
+    });
   });
 
   test("should return dataStoreUrl not provided", async () => {
@@ -156,7 +199,7 @@ describe("p1ReadDataStoreDeviceData", () => {
   test("should return mountName not found in DataStore", async () => {
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
-      '_id': 'device=100250001/result-data',
+      '_id': '100250001',
       'found': false,
       '_source': []
     });
