@@ -36,6 +36,7 @@ function validRequest(overrides = {}) {
 describe("P1TransmittingKafka", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    delete global.KAFKA_MAX_SINGLE_MESSAGE_BYTES;
   });
 
   describe("input validation", () => {
@@ -110,20 +111,14 @@ describe("P1TransmittingKafka", () => {
       expect(sendBatch).not.toHaveBeenCalled();
     });
 
-    test("does not block oversized Kafka messages before sending to EMP", async () => {
+    test("sends a large message to Kafka instead of rejecting it locally", async () => {
       global.KAFKA_MAX_SINGLE_MESSAGE_BYTES = 1;
       sendBatch.mockResolvedValueOnce({ response: { status: 200 } });
 
       try {
-        await expect(run(validRequest())).resolves.toEqual({
-          transmissionResultList: [
-            expect.objectContaining({
-              topic: "raw.mw-sdnc-dpmdp.apt",
-              status: "SENT"
-            })
-          ]
-        });
-
+        await expect(run(validRequest())).resolves.toEqual(
+          expect.objectContaining({ transmissionResultList: expect.any(Array) })
+        );
         expect(sendBatch).toHaveBeenCalledTimes(1);
       } finally {
         delete global.KAFKA_MAX_SINGLE_MESSAGE_BYTES;

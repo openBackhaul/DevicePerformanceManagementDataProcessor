@@ -111,7 +111,7 @@ describe('IndividualServices Controller - initiatePmDataUpdate', () => {
   test('should return 533 with headers on mount name discrepancy', async () => {
     const mockError = {
       code: 533,
-      message: 'Resource unknown. The resource for the connected device does not exist',
+      message: 'Resource unknown. The resource for the connected device does not exist at the Controller',
       'missing-mount-names': ['CO18303']
     };
 

@@ -72,8 +72,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
     }
     const responseData = await mwdiResponse.json();
-    logger.error(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
-    // 5. Validate the MWDIresponse
+    logger.debug(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
+    // 5. Validate the MWDI response
     const responseError = validateMWDIResponse(responseData);
     if (responseError) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
@@ -191,8 +191,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
       }
      // Build the URL to retrieve the control-construct for the current mount
-     const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-     // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+      // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
       try {
         // Retrieve the control-construct using a GET request
         const response = await fetch(controlConstructUrl, {
@@ -225,6 +225,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
             logger.error(
               `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`
 );
+            missingMountNames.push(mountName);
           } else if (
             mwdiErrorCode === 502 ||
             mwdiErrorCode === 530 ||
@@ -250,7 +251,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (missingMountNames.length > 0) {
       throw {
         code: 533,
-        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
+        message: ERRORS.MOUNT_NAME_DISCREPANCY,
         "missing-mount-names": missingMountNames,
       };
     }
@@ -274,7 +275,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       mwdiUrl,
       mwdiResponse: responseData,
     };
-    // Add the list of already up-to-date mount names to the internal response from the controller handling
+    // Add already up-to-date mount names for controller response handling
     if (alreadyUpToDateMountNames.length > 0) {
       successResponse['already-up-to-date-mount-names'] = alreadyUpToDateMountNames;
     }

@@ -1,0 +1,64 @@
+{
+  "air-interface-historical-performances": {
+    "historical-performance-data-list": [
+      {
+        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS",
+        "period-end-time": "2015-05-14T00:00:00+00:00",
+        "history-data-id": "History Data ID not defined.",
+        "suspect-interval-flag": true,
+        "performance-data": {
+          "defect-blocks-sum": -1,
+          "cses": -1,
+          "es": -1,
+          "xpd-max": -99,
+          "tx-level-max": 99,
+          "ses": -1,
+          "rx-level-max": 99,
+          "rf-temp-max": -99,
+          "snir-min": -99,
+          "snir-avg": -99,
+          "rx-level-avg": 99,
+          "unavailability": -1,
+          "rx-level-min": 99,
+          "xpd-min": -99,
+          "xpd-avg": -99,
+          "tx-level-min": 99,
+          "tx-level-avg": 99,
+          "rf-temp-min": -99,
+          "rf-temp-avg": -99,
+          "snir-max": -99,
+          "time-period": 86400
+        }
+      }
+    ],
+    "number-of-historical-performance-sets": 1,
+    "time-of-latest-change": "2015-05-14T00:00:00+00:00"
+  },
+  "air-interface-capability": {
+    "rx-frequency-max": 0,
+    "transmission-mode-list": [
+      {
+        "transmission-mode-name": "28000-128-v1",
+        "tx-power-max": 99,
+        "symbol-rate-reduction-factor": 1,
+        "rx-threshold": 99,
+        "am-downshift-level": 99,
+        "supported-as-fixed-configuration": true,
+        "channel-bandwidth": 28000,
+        "xpic-is-avail": false,
+        "tx-power-min": 0,
+        "transmission-mode-rank": 156,
+        "am-upshift-level": 99,
+        "modulation-scheme-name-at-lct": "128 QAM",
+        "modulation-scheme": 128,
+        "code-rate": 91
+      }
+    ],
+    "tx-frequency-max": 0,
+    "maintenance-timer-range": "900",
+    "atpc-range": 0,
+    "supported-radio-signal-id-length": 4,
+    "rx-frequency-min": 0,
+    "tx-frequency-min": 0
+  }
+}
