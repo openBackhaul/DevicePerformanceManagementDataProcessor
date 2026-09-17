@@ -415,7 +415,7 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
     // 6. Build the success response as expected by the OpenAPI specification
     return buildSuccessResponse(readResult);
   } catch (error) {
-    // Propagate errors that already carry an HTTP status code
+    // Propagate errors that already carry an HTTP status code 
     if (error && Number.isInteger(error.code)) {
       logger.error(`Error in provideDeviceDataStoreDump: ${error.message || error}`);
       throw error;
