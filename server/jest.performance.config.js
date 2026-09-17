@@ -2,6 +2,9 @@ module.exports = {
   rootDir: ".",
   testEnvironment: "node",
   testMatch: [
+    "<rootDir>/core/combinedProcessingTiming.test.js",
+    "<rootDir>/core/combinedProcessingTiming.redis.test.js",
+    "<rootDir>/infra/kafka/queueKafkaOutbound.test.js",
     "<rootDir>/core/performanceMetrics.test.js",
     "<rootDir>/core/dailyPerformanceMetrics.test.js",
     "<rootDir>/infra/redis/redisStreamQueue.test.js",

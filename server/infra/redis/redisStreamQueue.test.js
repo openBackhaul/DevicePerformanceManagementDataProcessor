@@ -24,6 +24,24 @@ jest.mock("../../service/LoggingService.js", () => ({
 
 const queue = require("./redisStreamQueue");
 
+test("success stream can be disabled without Redis writes", async () => {
+  const timing = require("../../core/combinedProcessingTiming");
+  timing.configure({kafkaSuccessStreamEnabled:false});
+  mockRedis.xAdd.mockClear();
+  try {
+    await queue.recordKafkaOutboundSuccess([{id:'1-0',message:{mountName:'cc'}}]);
+    expect(mockRedis.xAdd).not.toHaveBeenCalled();
+  } finally { timing.configure({enabled:false}); }
+});
+
+test("outbound queue preserves internal timing identifiers", async () => {
+  mockRedis.xAdd.mockClear();
+  await queue.enqueueKafkaOutbound({targetConsumer:'APT',mountName:'cc',
+    processingUpdateId:'update',processingPartId:'part',processingExpiresAt:'123'});
+  expect(mockRedis.xAdd).toHaveBeenCalledWith('dpmdp:stream:kafka-outbound','*',
+    expect.objectContaining({processingUpdateId:'update',processingPartId:'part',processingExpiresAt:'123'}));
+});
+
 describe("atomic acknowledgement and deletion", () => {
   test.each([0, 1])("device acknowledgement returns %i without a separate deletion", async count => {
     mockRedis.eval.mockReset().mockResolvedValue(count);

@@ -912,7 +912,12 @@ async function enqueueKafkaOutbound(outputMessage, loggers) {
     payloadStorage: outputMessage.payloadStorage || "REDIS",
     payload: outputMessage.payload || "",
     payloadRefId: outputMessage.payloadRefId || "",
-    payloadBytes: String(outputMessage.payloadBytes || 0)
+    payloadBytes: String(outputMessage.payloadBytes || 0),
+    ...(outputMessage.processingUpdateId ? {
+      processingUpdateId: outputMessage.processingUpdateId,
+      processingPartId: outputMessage.processingPartId,
+      processingExpiresAt: outputMessage.processingExpiresAt
+    } : {})
   });
   require("../../core/performanceMetrics").enqueue("kafka");
 }
@@ -1035,6 +1040,7 @@ async function moveKafkaOutboundToDeadLetter(
 }
 
 async function recordKafkaOutboundSuccess(messages, loggers) {
+  if (!require("../../core/combinedProcessingTiming").successStreamEnabled()) return;
   const redis = await getRedisClient(logger);
   const deliveredAt = new Date().toISOString();
 

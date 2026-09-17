@@ -78,6 +78,9 @@
       "enabled": true,
       "streamsEnabled": false,
       "compactStreamsEnabled": true,
+      "combinedStreamEnabled": true,
+      "combinedTrackingTtlSeconds": 21600,
+      "kafkaSuccessStreamEnabled": false,
       "streamMaxLen": 200000,
       "bufferMaxEntries": 2000,
       "flushIntervalMs": 1000
