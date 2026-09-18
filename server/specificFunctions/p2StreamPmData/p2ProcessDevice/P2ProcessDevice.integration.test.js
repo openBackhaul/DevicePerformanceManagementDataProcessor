@@ -19,27 +19,37 @@ describe('P2ProcessDevice vendor-function integration', () => {
       'result-cc': { uuid: 'device-1' },
       'status-data': [{ status: 'updated' }]
     });
+    const queueKafkaOutbound = jest.fn().mockResolvedValue({
+      queuedResultList: [{ status: 'QUEUED' }]
+    });
+    const p1TransmittingKafka = jest.fn().mockResolvedValue({});
+    const dataStoreEsClient = {
+      url: 'http://data-store:9200',
+      client: dataStoreClient
+    };
 
     const result = await p2ProcessDevice.run({
       parameters: {},
       configFile: {},
       mountName: 'device-1',
       mwdiReplicaEsClient: {},
-      dataStoreEsClient: {
-        url: 'http://data-store:9200',
-        client: dataStoreClient
-      },
+      dataStoreEsClient,
+      kafkaConsumerTypes: 'APT,MYCOM,NETEXPLORER,IVERITAS,DATAQUALITYPROVIDER',
       dependencies: {
         p2LoadRawCc,
         p2CreateResultCc,
-        p1FormattingOutputApt: jest.fn().mockResolvedValue({}),
+        p1FormattingOutputApt: jest.fn().mockResolvedValue({
+          'format-name': 'apt-output-format',
+          'output-format': { format: 'apt', uuid: 'device-1' }
+        }),
         p2FormattingOutputOnf: jest.fn().mockResolvedValue({
           'onf-output-format': [{
             'format-name': 'onf-output-format',
             'output-format': { uuid: 'device-1' }
           }]
         }),
-        p1TransmittingKafka: jest.fn().mockResolvedValue({}),
+        queueKafkaOutbound,
+        p1TransmittingKafka,
         p2Storing: jest.fn().mockResolvedValue({})
       }
     });
@@ -54,8 +64,37 @@ describe('P2ProcessDevice vendor-function integration', () => {
     expect(p2CreateResultCc).toHaveBeenCalledWith(expect.objectContaining({
       'status-data': [{ status: 'ok' }]
     }));
+    expect(queueKafkaOutbound).toHaveBeenCalledWith({
+      dataStoreEsClient,
+      logger: undefined,
+      outputs: [
+        {
+          targetConsumer: 'APT',
+          messageType: 'PERFORMANCE_OUTPUT',
+          mountName: 'device-1',
+          payloadVersion: '1.1',
+          payload: { format: 'apt', uuid: 'device-1' }
+        },
+        {
+          targetConsumer: 'MYCOM',
+          messageType: 'PERFORMANCE_OUTPUT',
+          mountName: 'device-1',
+          payloadVersion: '1.1',
+          payload: { uuid: 'device-1' }
+        },
+        {
+          targetConsumer: 'NETEXPLORER',
+          messageType: 'PERFORMANCE_OUTPUT',
+          mountName: 'device-1',
+          payloadVersion: '1.1',
+          payload: { uuid: 'device-1' }
+        }
+      ]
+    });
+    expect(p1TransmittingKafka).not.toHaveBeenCalled();
     expect(result).toEqual({
       'device-pm-data-quality': { 'mount-name': 'device-1' }
     });
   });
+
 });

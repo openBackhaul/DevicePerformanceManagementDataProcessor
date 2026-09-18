@@ -4,6 +4,7 @@ const { findFunctionNode } = require("../../../utils/functionTree");
 const p2LoadRawCc = require("./p2LoadRawCc/P2LoadRawCc");
 const p2CreateResultCc = require("./p2CreateResultCc/P2CreateResultCc");
 const p2Storing = require("./p2Storing/P2Storing");
+const queueKafkaOutbound = require("../../../infra/kafka/queueKafkaOutbound");
 const p1LoadOffsetsAndStatusData = require(
   "../../../genericFunctions/p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData"
 );
@@ -148,8 +149,8 @@ async function createOutputFormats(input, resultCc, dependencies) {
     "p2FormattingOutputOnf"
   );
   const onfResponse = await invoke(onfFormatter, {
-      parameters: getFunctionParameters(input.parameters, "p2FormattingOutputOnf"),
-      "result-cc": resultCc
+        parameters: getFunctionParameters(input.parameters, "p2FormattingOutputOnf"),
+        "result-cc": resultCc
   });
   const onfFormats = onfResponse && (
     onfResponse["onf-output-format"] || onfResponse.onfOutputFormat
@@ -162,16 +163,38 @@ async function createOutputFormats(input, resultCc, dependencies) {
   return outputFormats;
 }
 
-function createKafkaMessages(outputFormats, mountName) {
-  return outputFormats.map((format) => ({
-    targetConsumer: String(format["format-name"] || "ONF")
-      .split("-")[0]
-      .toUpperCase(),
-    messageType: "PERFORMANCE_OUTPUT",
-    mountName,
-    payloadVersion: "1.1",
-    payload: format["output-format"]
-  }));
+function getActiveKafkaConsumers(kafkaConsumerTypes) {
+  return String(kafkaConsumerTypes || "")
+    .split(",")
+    .map((consumer) => consumer.trim().toUpperCase())
+    .filter(Boolean);
+}
+
+function findOutputPayload(outputFormats, formatName) {
+  const format = outputFormats.find((candidate) =>
+    String(candidate["format-name"] || "").toLowerCase().startsWith(formatName)
+  );
+  return format && format["output-format"];
+}
+
+function createKafkaMessages(outputFormats, mountName, kafkaConsumerTypes) {
+  const aptPayload = findOutputPayload(outputFormats, "apt");
+  const onfPayload = findOutputPayload(outputFormats, "onf");
+  const supportedConsumers = {
+    APT: aptPayload,
+    MYCOM: onfPayload,
+    NETEXPLORER: onfPayload
+  };
+
+  return getActiveKafkaConsumers(kafkaConsumerTypes)
+    .filter((targetConsumer) => supportedConsumers[targetConsumer] !== undefined)
+    .map((targetConsumer) => ({
+      targetConsumer,
+      messageType: "PERFORMANCE_OUTPUT",
+      mountName,
+      payloadVersion: "1.1",
+      payload: supportedConsumers[targetConsumer]
+    }));
 }
 
 async function run(request = {}) {
@@ -217,18 +240,14 @@ async function run(request = {}) {
     const resultData = validateResultCcResponse(resultCcResponse);
     const outputFormats = await createOutputFormats(input, resultData.resultCc, dependencies);
 
-    const transmitter = dependencies.p1TransmittingKafka || require(
-      "../../p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/P1TransmittingKafka"
-    );
-    await invoke(transmitter, {
-      parameters: getFunctionParameters(input.parameters, "p1TransmittingKafka"),
-      configFile: input.configFile,
-      outputFormat: outputFormats,
-      "output-format": outputFormats,
-      kafkaConnectionList: request.kafkaConnectionList,
-      outputMessages: request.outputMessages || createKafkaMessages(
+    const outboundQueue = dependencies.queueKafkaOutbound || queueKafkaOutbound;
+    await invoke(outboundQueue, {
+      dataStoreEsClient: input.dataStoreEsClient,
+      logger: request.logger,
+      outputs: request.outputMessages || createKafkaMessages(
         outputFormats,
-        input.mountName
+        input.mountName,
+        request.kafkaConsumerTypes
       )
     });
 
