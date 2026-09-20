@@ -1,0 +1,200 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2PrepareTxModes/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2PrepareTxModes/1.0.0/variables.yaml
+#
+
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2PrepareTxModes/P2PrepareTxModes.js"
+    exportName: ""
+
+processingSteps:
+  - stepId: "p1CalculateAiCapacity"
+    modulePath: "../../server/genericFunctions/p1CalculateAiCapacity/P1CalculateAiCapacity.js"
+    exportName: ""
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+  - id: "okFiltersUnusedTxModesAndCalculatesCapacity"
+    description: "Returns filtered historical-performance-data-list and processed-transmission-mode-list for referenced transmission modes only"
+    inputFixture: "input_ok_basic.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_basic.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+  - id: "okPreservesOriginalTransmissionModeOrder"
+    description: "Preserves the original order from transmission-mode-list even when used modes are discovered in different order"
+    inputFixture: "input_preserve_order.json"
+    expected:
+      type: "success"
+      outputFixture: "output_preserve_order.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+  - id: "okNegativeAndZeroTimesAreRemovedButNotInvalid"
+    description: "Filters out time-xstates-list entries where time is zero or negative and keeps only positive-time entries"
+    inputFixture: "input_filter_zero_and_negative_times.json"
+    expected:
+      type: "success"
+      outputFixture: "output_filter_zero_and_negative_times.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+  - id: "okHistoricalRecordCanBecomeEmptyAfterFiltering"
+    description: "Allows a historical-performance-data entry to end with an empty time-xstates-list after filtering"
+    inputFixture: "input_record_becomes_empty_after_filter.json"
+    expected:
+      type: "success"
+      outputFixture: "output_record_becomes_empty_after_filter.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+  - id: "okUnusedMissingTransmissionModesDoNotMatter"
+    description: "Does not fail when transmission modes missing from transmission-mode-list are referenced only by filtered-out zero-time entries"
+    inputFixture: "input_unused_missing_tx_mode_ignored.json"
+    expected:
+      type: "success"
+      outputFixture: "output_unused_missing_tx_mode_ignored.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "okNoUsedTransmissionModesReturnsEmptyProcessedList"
+    description: "Returns success with empty processed-transmission-mode-list when all time-xstates entries are filtered out and at least one record had non-empty input list"
+    inputFixture: "input_all_entries_filtered_out.json"
+    expected:
+      type: "success"
+      outputFixture: "output_all_entries_filtered_out.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+  - id: "errWhenInputIsNotObject"
+    description: "Returns general processing error when input is not an object"
+    inputFixture: "input_not_object.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+
+  - id: "errWhenHistoricalPerformanceDataListMissing"
+    description: "Returns historicalPerformanceDataList not provided when historical-performance-data-list is missing"
+    inputFixture: "input_missing_historical_performance_data_list.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+
+  - id: "errWhenHistoricalPerformanceDataListInvalidType"
+    description: "Returns historicalPerformanceDataList invalid when historical-performance-data-list is not an array"
+    inputFixture: "input_invalid_historical_performance_data_list_type.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errWhenHistoricalPerformanceDataIncomplete"
+    description: "Returns historicalPerformanceDataList incomplete when performance-data or time-xstates-list is missing"
+    inputFixture: "input_incomplete_historical_performance_data.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList incomplete"
+
+  - id: "errWhenTimeXstatesListEmptyInitially"
+    description: "Returns historicalPerformanceDataList could not be provided when an input time-xstates-list is empty before processing"
+    inputFixture: "input_empty_time_xstates_list.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList could not be provided"
+
+  - id: "errWhenTimeXstateEntryInvalid"
+    description: "Returns historicalPerformanceDataList invalid when a time-xstates-list entry has invalid types"
+    inputFixture: "input_invalid_time_xstate_entry.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errWhenTransmissionModeListMissing"
+    description: "Returns transmissionModeList not provided when transmission-mode-list is missing"
+    inputFixture: "input_missing_transmission_mode_list.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList not provided"
+
+  - id: "errWhenTransmissionModeListInvalidType"
+    description: "Returns transmissionModeList invalid when transmission-mode-list is not an array"
+    inputFixture: "input_invalid_transmission_mode_list_type.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList invalid"
+
+  - id: "errWhenTransmissionModeListIncomplete"
+    description: "Returns transmissionModeList incomplete when a transmission mode misses required properties"
+    inputFixture: "input_incomplete_transmission_mode.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList incomplete"
+
+  - id: "errWhenTransmissionModeListInvalidDuplicateNames"
+    description: "Returns transmissionModeList invalid when duplicate transmission-mode-name values are present"
+    inputFixture: "input_duplicate_transmission_mode_names.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList invalid"
+
+  - id: "errWhenReferencedTransmissionModeMissing"
+    description: "Returns transmissionModeList incomplete when a positive-time transmission mode reference does not exist in transmission-mode-list"
+    inputFixture: "input_referenced_tx_mode_missing.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList incomplete"
+
+  - id: "errWhenCapacityCalculatorReturnsString"
+    description: "Returns processedTransmissionModeList could not be provided when p1CalculateAiCapacity returns a non-object"
+    inputFixture: "input_ok_single_used_mode.json"
+    expected:
+      type: "error"
+      errorEnum: "processedTransmissionModeList could not be provided"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        value: "calculation failed"
+
+  - id: "errWhenCapacityCalculatorReturnsObjectWithoutCapacity"
+    description: "Returns processedTransmissionModeList could not be provided when p1CalculateAiCapacity returns an object without air-interface-capacity"
+    inputFixture: "input_ok_single_used_mode.json"
+    expected:
+      type: "error"
+      errorEnum: "processedTransmissionModeList could not be provided"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        value:
+          unexpected: 123
+
+  - id: "errWhenCapacityCalculatorReturnsNonFiniteCapacity"
+    description: "Returns processedTransmissionModeList could not be provided when p1CalculateAiCapacity returns NaN or non-finite capacity"
+    inputFixture: "input_ok_single_used_mode.json"
+    expected:
+      type: "error"
+      errorEnum: "processedTransmissionModeList could not be provided"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "return"
+        value:
+          air-interface-capacity: "NaN"
+
+  - id: "errWhenCapacityCalculatorThrows"
+    description: "Returns general processing error when p1CalculateAiCapacity throws"
+    inputFixture: "input_ok_single_used_mode.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+    mocks:
+      - stepId: "p1CalculateAiCapacity"
+        type: "throw"
+        error:
+          message: "unexpected calculator exception"
+

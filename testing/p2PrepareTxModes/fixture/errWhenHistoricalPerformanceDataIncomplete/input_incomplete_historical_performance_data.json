@@ -1,0 +1,9 @@
+{
+  "historical-performance-data-list": [
+    {
+      "granularity-period": "PT15M",
+      "period-end-time": "2026-09-17T10:15:00Z"
+    }
+  ],
+  "transmission-mode-list": []
+}

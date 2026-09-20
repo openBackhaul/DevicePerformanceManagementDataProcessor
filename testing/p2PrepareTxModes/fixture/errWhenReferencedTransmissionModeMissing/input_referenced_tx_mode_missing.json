@@ -1,0 +1,25 @@
+{
+  "historical-performance-data-list": [
+    {
+      "granularity-period": "PT15M",
+      "period-end-time": "2026-09-17T10:15:00Z",
+      "performance-data": {
+        "time-xstates-list": [
+          {
+            "transmission-mode": "tm-missing",
+            "time": 10
+          }
+        ]
+      }
+    }
+  ],
+  "transmission-mode-list": [
+    {
+      "transmission-mode-name": "tm-present",
+      "channel-bandwidth": 28000,
+      "modulation-scheme": 16,
+      "code-rate": 80,
+      "symbol-rate-reduction-factor": 0
+    }
+  ]
+}

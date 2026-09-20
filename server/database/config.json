@@ -579,7 +579,7 @@
               "string-purpose": "?"
             },
             "string-profile-configuration": {
-              "string-value": "last-complete-control-construct-update-time"
+              "string-value": "lastUpdated"
             }
           }
         },
@@ -717,12 +717,7 @@
             "function-profile-capability": {
               "function-name": "p1FieldsFilter",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
-              "parameter-list": [
-                {
-                  "parameter": "dpmdp-1-1-0-string-p-181",
-                  "owner": "platform"
-                }
-              ],
+              "parameter-list": [],
               "sub-function-list": []
             },
             "function-profile-configuration": {
@@ -1870,7 +1865,7 @@
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
               "function-name": "p2FormattingOutputOnf",
-              "function-description": "Creates the onfOutputFormat from resultCc",
+              "function-description": "Creates onfOutputFormats from resultCc",
               "parameter-list": [
                 {
                   "parameter": "dpmdp-1-1-0-string-p-551",
@@ -2161,7 +2156,7 @@
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
               "function-name": "documentPmDataProcessing",
-              "function-description": "Provides documentation about the PM data processing",
+              "function-description": "Provides documentation of active functions",
               "parameter-list": [
                 {
                   "parameter": "dpmdp-1-1-0-string-p-751",
@@ -2815,7 +2810,7 @@
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                "operation-key": "Operation key not yet provided."
+                "operation-key": "n.a."
               }
             }
           }
@@ -2838,7 +2833,7 @@
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                "operation-key": "Operation key not yet provided."
+                "operation-key": "n.a."
               }
             }
           }
@@ -2861,7 +2856,7 @@
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                "operation-key": "Operation key not yet provided."
+                "operation-key": "n.a."
               }
             }
           }
@@ -3103,7 +3098,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 9200
+                "remote-port": 3015
               }
             }
           }
@@ -3122,7 +3117,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.Apt",
+                "topic-name": "raw.mw-sdnc-dpmdp.apt",
                 "type": "provider"
               }
             }
@@ -3142,7 +3137,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.Mycom",
+                "topic-name": "raw.mw-sdnc-dpmdp.mycom",
                 "type": "provider"
               }
             }
@@ -3162,7 +3157,27 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.Netexplorer",
+                "topic-name": "raw.mw-sdnc-dpmdp.netexplorer",
+                "type": "provider"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-003",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
+            "kafka-client-interface-1-0:kafka-client-interface-pac": {
+              "kafka-client-interface-configuration": {
+                "topic-name": "raw.mw-sdnc-dpmdp.iveritas",
                 "type": "provider"
               }
             }
@@ -3182,7 +3197,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.Dataqualityprovider",
+                "topic-name": "raw.mw-sdnc-dpmdp.dataquality",
                 "type": "provider"
               }
             }
@@ -3196,6 +3211,7 @@
           "dpmdp-1-1-0-kmb-c-kmb-1-0-0-000",
           "dpmdp-1-1-0-kmb-c-kmb-1-0-0-001",
           "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002",
+          "dpmdp-1-1-0-kmb-c-kmb-1-0-0-003",
           "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004"
         ],
         "server-ltp": [
@@ -3233,7 +3249,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 9093
+                "remote-port": 3017
               }
             }
           }

@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "required": [
+    "historical-performance-data-list",
+    "processed-transmission-mode-list"
+  ],
+  "properties": {
+    "historical-performance-data-list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "granularity-period": {
+            "type": "string"
+          },
+          "period-end-time": {
+            "type": "string"
+          },
+          "performance-data": {
+            "type": "object",
+            "properties": {
+              "time-xstates-list": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "transmission-mode"
+                  ],
+                  "properties": {
+                    "transmission-mode": {
+                      "type": "string"
+                    },
+                    "time": {
+                      "type": "integer"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "processed-transmission-mode-list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "transmission-mode-name": {
+            "type": "string"
+          },
+          "channel-bandwidth": {
+            "type": "integer"
+          },
+          "modulation-scheme": {
+            "type": "integer"
+          },
+          "code-rate": {
+            "type": "integer"
+          },
+          "symbol-rate-reduction-factor": {
+            "type": "integer"
+          },
+          "capacity": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

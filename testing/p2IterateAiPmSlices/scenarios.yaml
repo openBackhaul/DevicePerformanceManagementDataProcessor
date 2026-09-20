@@ -1,0 +1,252 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateAiPmSlices/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateAiPmSlices/variables.yaml
+#
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateAiPmSlices/P2IterateAiPmSlices.js"
+
+processingSteps:
+  - stepId: "p1CalculateIntervalCapacity"
+    modulePath: "../../server/genericFunctions/p1CalculateIntervalCapacity/P1CalculateIntervalCapacity.js"
+
+  - stepId: "p1RemoveOutOfRangeLevels"
+    modulePath: "../../server/genericFunctions/p1RemoveOutOfRangeLevels/P1RemoveOutOfRangeLevels.js"
+
+  - stepId: "p1RemoveDefaultValues"
+    modulePath: "../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+  - id: "okProcessesSingleSlice"
+    description: "Returns historical-performance-data-list with interval-capacity added and cleaned performance-data for a single valid slice"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_single_slice.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "okSorts15MinBefore24HourAndOldestFirst"
+    description: "Processes 15min slices before 24h slices and sorts oldest first within the same granularity"
+    inputFixture: "input_ok_sorting_mixed_granularity.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_sorting_mixed_granularity.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "okUnknownGranularityProcessedLast"
+    description: "Processes unknown granularity after known 15min and 24h granularities"
+    inputFixture: "input_ok_unknown_granularity_last.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_unknown_granularity_last.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "edgeNullPeriodEndTimeAcceptedAndSortedLastWithinGranularity"
+    description: "Accepts null period-end-time at validation level and sorts it after valid times within same granularity"
+    inputFixture: "input_null_period_end_time.json"
+    expected:
+      type: "success"
+      outputFixture: "output_null_period_end_time.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+
+  - id: "errInputNotObject"
+    description: "Returns general processing error when input is not an object"
+    inputFixture: "input_not_object.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+
+  - id: "errParametersMissing"
+    description: "Returns parameters not provided when parameters is missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+
+  - id: "errParametersInvalid"
+    description: "Returns parameters invalid when parameters is not an object"
+    inputFixture: "input_invalid_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+
+  - id: "errHistoricalPerformanceDataListMissing"
+    description: "Returns historicalPerformanceDataList not provided when historical-performance-data-list is missing"
+    inputFixture: "input_missing_historical_data_list.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+
+  - id: "errHistoricalPerformanceDataListInvalidType"
+    description: "Returns historicalPerformanceDataList invalid when historical-performance-data-list is not an array"
+    inputFixture: "input_invalid_historical_data_list_type.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errTransmissionModeListMissing"
+    description: "Returns transmissionModeList not provided when transmission-mode-list is missing"
+    inputFixture: "input_missing_transmission_mode_list.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList not provided"
+
+  - id: "errTransmissionModeListInvalidType"
+    description: "Returns transmissionModeList invalid when transmission-mode-list is not an array"
+    inputFixture: "input_invalid_transmission_mode_list_type.json"
+    expected:
+      type: "error"
+      errorEnum: "transmissionModeList invalid"
+
+  - id: "errPmSliceInvalidWhenNotObject"
+    description: "Returns historicalPerformanceDataList invalid when a PM slice entry is not an object"
+    inputFixture: "input_invalid_pm_slice_not_object.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errPmSliceInvalidWhenMissingGranularity"
+    description: "Returns historicalPerformanceDataList invalid when a PM slice misses granularity-period"
+    inputFixture: "input_invalid_pm_slice_missing_granularity.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errPmSliceInvalidWhenMissingPeriodEndTime"
+    description: "Returns historicalPerformanceDataList invalid when a PM slice misses period-end-time"
+    inputFixture: "input_invalid_pm_slice_missing_period_end_time.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errPmSliceInvalidWhenPerformanceDataNotObject"
+    description: "Returns historicalPerformanceDataList invalid when performance-data is missing or not an object"
+    inputFixture: "input_invalid_pm_slice_performance_data_not_object.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errCalculateIntervalCapacityThrows"
+    description: "Returns interval capacity could not be calculated when p1CalculateIntervalCapacity throws"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "interval capacity could not be calculated"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "throw"
+        error:
+          message: "interval calculation failure"
+
+  - id: "errCalculateIntervalCapacityMalformedResult"
+    description: "Returns interval capacity could not be calculated when p1CalculateIntervalCapacity does not return an object with interval-capacity"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "interval capacity could not be calculated"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        value:
+          wrong-key: 123
+
+  - id: "errRemoveOutOfRangeLevelsThrows"
+    description: "Returns out of range levels could not be removed when p1RemoveOutOfRangeLevels throws"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "out of range levels could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        value:
+          interval-capacity: 12500
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "throw"
+        error:
+          message: "remove out-of-range failure"
+
+  - id: "errRemoveOutOfRangeLevelsMalformedResult"
+    description: "Returns out of range levels could not be removed when p1RemoveOutOfRangeLevels returns invalid shape"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "out of range levels could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        value:
+          interval-capacity: 12500
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        value:
+          wrong-key: {}
+
+  - id: "errRemoveDefaultValuesThrows"
+    description: "Returns default values could not be removed when p1RemoveDefaultValues throws"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        value:
+          interval-capacity: 12500
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        value:
+          performance-data:
+            time-xstates-list:
+              - transmission-mode: "56008"
+                time: 100
+            interval-capacity: 12500
+      - stepId: "p1RemoveDefaultValues"
+        type: "throw"
+        error:
+          message: "remove default values failure"
+
+  - id: "errRemoveDefaultValuesMalformedResult"
+    description: "Returns default values could not be removed when p1RemoveDefaultValues returns invalid shape"
+    inputFixture: "input_ok_single_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "return"
+        value:
+          interval-capacity: 12500
+      - stepId: "p1RemoveOutOfRangeLevels"
+        type: "return"
+        value:
+          performance-data:
+            time-xstates-list:
+              - transmission-mode: "56008"
+                time: 100
+            interval-capacity: 12500
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          wrong-key: {}
+
+  - id: "edgeTimeXStatesListMissingMapsToIntervalCapacityError"
+    description: "Returns interval capacity could not be calculated when performance-data lacks time-xstates-list because implementation delegates that failure to p1CalculateIntervalCapacity"
+    inputFixture: "input_missing_time_xstates_list.json"
+    expected:
+      type: "error"
+      errorEnum: "interval capacity could not be calculated"
+    mocks:
+      - stepId: "p1CalculateIntervalCapacity"
+        type: "throw"
+        error:
+          message: "time-xstates-list missing"
+

@@ -1,0 +1,426 @@
+# Specification:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/1.0.0/variables.yaml
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices/P2IterateEcPmSlices.js"
+
+processingSteps:
+  - stepId: "p1CalculateEthernetKpis"
+    modulePath: "../../server/genericFunctions/p1CalculateEthernetKpis/P1CalculateEthernetKpis.js"
+  - stepId: "p1RemoveDefaultValues"
+    modulePath: "../../server/genericFunctions/p1RemoveDefaultValues/P1RemoveDefaultValues.js"
+  - stepId: "p1CalculateUtilization"
+    modulePath: "../../server/genericFunctions/p1CalculateUtilization/P1CalculateUtilization.js"
+  - stepId: "p1CategorizeDataVolume"
+    modulePath: "../../server/genericFunctions/p1CategorizeDataVolume/P1CategorizeDataVolume.js"
+  - stepId: "p1CalculateBusyHourPerformanceIndicators"
+    modulePath: "../../server/genericFunctions/p1CalculateBusyHourPerformanceIndicators/P1CalculateBusyHourPerformanceIndicators.js"
+
+dependencies: []
+
+errorMapping: {}
+
+scenarios:
+
+  - id: "okAcceptsNullAggregationGroupWhenUuidProvided"
+    description: "Accepts null aggregation-group when uuid-of-ethernet-container is provided"
+    inputFixture: "input_ok_null_aggregation_group.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_null_aggregation_group.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+      
+  - id: "okProcessesSingle15MinSlice"
+    description: "Processes one valid 15-minute EthernetContainer PM slice and returns updated historical-performance-data-list and interface-status"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_single_15min_slice.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "okProcessesSingle24HourSliceWithBusyHour"
+    description: "Processes one valid 24-hour slice and calculates busy-hour KPIs without data-volume categorization"
+    inputFixture: "input_ok_single_24h_slice.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_single_24h_slice.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "okSorts15MinBefore24HourAndCarriesInterfaceStatus"
+    description: "Processes all 15-minute slices before 24-hour slices and carries interface-status from categorization into busy-hour calculation flow"
+    inputFixture: "input_ok_mixed_granularity_unsorted.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_mixed_granularity_unsorted.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+
+
+  - id: "okSupportsUnknownGranularityWithoutBusyHourOrCategorization"
+    description: "Processes unknown granularity slice with KPI, default-value removal, and utilization only"
+    inputFixture: "input_ok_unknown_granularity.json"
+    expected:
+      type: "success"
+      outputFixture: "output_ok_unknown_granularity.json"
+      outputSchemaFixture: "output_success.schema.json"
+
+  - id: "errInputNotObject"
+    description: "Returns general processing error when input is not an object"
+    inputFixture: "input_not_object.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+
+  - id: "errParametersMissing"
+    description: "Returns parameters not provided when parameters is missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+
+  - id: "errParametersInvalid"
+    description: "Returns parameters invalid when parameters is not an object"
+    inputFixture: "input_invalid_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+
+  - id: "errHistoricalPerformanceDataListMissing"
+    description: "Returns historicalPerformanceDataList not provided when historical-performance-data-list is missing"
+    inputFixture: "input_missing_historical_data_list.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList not provided"
+
+  - id: "errHistoricalPerformanceDataListInvalidType"
+    description: "Returns historicalPerformanceDataList invalid when historical-performance-data-list is not an array"
+    inputFixture: "input_invalid_historical_data_list_type.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errHistoricalPerformanceDataListInvalidSliceGranularity"
+    description: "Returns historicalPerformanceDataList invalid when a slice has unsupported granularity-period"
+    inputFixture: "input_invalid_slice_granularity.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errHistoricalPerformanceDataListInvalidSlicePeriodEndTime"
+    description: "Returns historicalPerformanceDataList invalid when a slice has invalid period-end-time"
+    inputFixture: "input_invalid_slice_period_end_time.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errHistoricalPerformanceDataListInvalidSlicePerformanceData"
+    description: "Returns historicalPerformanceDataList invalid when performance-data is not an object"
+    inputFixture: "input_invalid_slice_performance_data.json"
+    expected:
+      type: "error"
+      errorEnum: "historicalPerformanceDataList invalid"
+
+  - id: "errResultCcMissing"
+    description: "Returns resultCc not provided when result-cc is missing"
+    inputFixture: "input_missing_result_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc not provided"
+
+  - id: "errResultCcInvalid"
+    description: "Returns resultCc invalid when result-cc is not an object"
+    inputFixture: "input_invalid_result_cc.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+
+  - id: "errInterfaceStatusMissing"
+    description: "Returns interfaceStatus not provided when interface-status is missing"
+    inputFixture: "input_missing_interface_status.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus not provided"
+
+  - id: "errInterfaceStatusInvalid"
+    description: "Returns interfaceStatus invalid when interface-status is not an object"
+    inputFixture: "input_invalid_interface_status.json"
+    expected:
+      type: "error"
+      errorEnum: "interfaceStatus invalid"
+
+  - id: "errAggregationGroupNotProvidedWhenGroupAndUuidMissing"
+    description: "Returns aggregationGroup not provided when both aggregation-group and uuid-of-ethernet-container are missing or null"
+    inputFixture: "input_missing_aggregation_group_and_uuid.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup not provided"
+
+  - id: "errAggregationGroupInvalid"
+    description: "Returns aggregationGroup invalid when aggregation-group is present but not an object"
+    inputFixture: "input_invalid_aggregation_group.json"
+    expected:
+      type: "error"
+      errorEnum: "aggregationGroup invalid"
+
+  - id: "errUuidInvalidMapsToGeneralError"
+    description: "Returns general processing error when uuid-of-ethernet-container is empty because implementation has no dedicated UUID contract error"
+    inputFixture: "input_invalid_uuid.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+
+  - id: "errCalculateEthernetKpisThrows"
+    description: "Returns ethernet KPIs could not be added when p1CalculateEthernetKpis throws"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "ethernet KPIs could not be added"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "throw"
+        error:
+          message: "kpi calculation failed"
+
+  - id: "errCalculateEthernetKpisMalformedResult"
+    description: "Returns ethernet KPIs could not be added when p1CalculateEthernetKpis returns invalid shape"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "ethernet KPIs could not be added"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          wrong-key: {}
+
+  - id: "errRemoveDefaultValuesThrows"
+    description: "Returns default values could not be removed when p1RemoveDefaultValues throws"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "throw"
+        error:
+          message: "default removal failed"
+
+  - id: "errRemoveDefaultValuesMalformedResult"
+    description: "Returns default values could not be removed when p1RemoveDefaultValues returns invalid shape"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "default values could not be removed"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          wrong-key: {}
+
+  - id: "errCalculateUtilizationThrows"
+    description: "Returns utilization could not be calculated when p1CalculateUtilization throws"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "utilization could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 10
+      - stepId: "p1CalculateUtilization"
+        type: "throw"
+        error:
+          message: "utilization failure"
+
+  - id: "errCalculateUtilizationMalformedResult"
+    description: "Returns utilization could not be calculated when p1CalculateUtilization returns invalid slice shape"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "utilization could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 10
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value:
+          historical-performance-data:
+            performance-data:
+              utilization: 1
+
+  - id: "errCategorizeDataVolumeThrows"
+    description: "Returns data volume could not be categorized when p1CategorizeDataVolume throws for a 15-minute slice"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "data volume could not be categorized"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 10
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value:
+          historical-performance-data:
+            granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
+            period-end-time: "2026-09-17T10:15:00Z"
+            performance-data:
+              transmit-traffic: 10
+      - stepId: "p1CategorizeDataVolume"
+        type: "throw"
+        error:
+          message: "categorization failure"
+
+  - id: "errCategorizeDataVolumeMalformedResult"
+    description: "Returns data volume could not be categorized when p1CategorizeDataVolume returns invalid shape"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "data volume could not be categorized"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 10
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value:
+          historical-performance-data:
+            granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN"
+            period-end-time: "2026-09-17T10:15:00Z"
+            performance-data:
+              transmit-traffic: 10
+      - stepId: "p1CategorizeDataVolume"
+        type: "return"
+        value:
+          wrong-key: {}
+
+  - id: "errBusyHourCalculationThrows"
+    description: "Returns busyHour KPIs could not be calculated when p1CalculateBusyHourPerformanceIndicators throws for a 24-hour slice"
+    inputFixture: "input_ok_single_24h_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "busyHour KPIs could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 10
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value:
+          historical-performance-data:
+            granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"
+            period-end-time: "2026-09-17T00:00:00Z"
+            performance-data:
+              transmit-traffic: 10
+      - stepId: "p1CalculateBusyHourPerformanceIndicators"
+        type: "throw"
+        error:
+          message: "busy hour failure"
+
+  - id: "errBusyHourCalculationMalformedResult"
+    description: "Returns busyHour KPIs could not be calculated when p1CalculateBusyHourPerformanceIndicators returns invalid slice shape"
+    inputFixture: "input_ok_single_24h_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "busyHour KPIs could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 10
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 10
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value:
+          historical-performance-data:
+            granularity-period: "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS"
+            period-end-time: "2026-09-17T00:00:00Z"
+            performance-data:
+              transmit-traffic: 10
+      - stepId: "p1CalculateBusyHourPerformanceIndicators"
+        type: "return"
+        value:
+          historical-performance-data:
+            performance-data:
+              busy-hour:
+                tx-peak: 1
+
+  - id: "edgeHistoricalDataProvideFailedWhenUtilizationReturnsNonSlice"
+    description: "Returns utilization could not be calculated when utilization result is not a valid slice according to implementation validation"
+    inputFixture: "input_ok_single_15min_slice.json"
+    expected:
+      type: "error"
+      errorEnum: "utilization could not be calculated"
+    mocks:
+      - stepId: "p1CalculateEthernetKpis"
+        type: "return"
+        value:
+          historical-performance-data:
+            transmit-traffic: 1
+      - stepId: "p1RemoveDefaultValues"
+        type: "return"
+        value:
+          cleaned-object:
+            transmit-traffic: 1
+      - stepId: "p1CalculateUtilization"
+        type: "return"
+        value:
+          historical-performance-data:
+            granularity-period: "ethernet-container-2-0:UNSUPPORTED"
+            period-end-time: "2026-09-17T10:15:00Z"
+            performance-data:
+              utilization: 1

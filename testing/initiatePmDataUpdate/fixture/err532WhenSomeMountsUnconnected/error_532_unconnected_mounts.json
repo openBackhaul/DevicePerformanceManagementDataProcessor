@@ -1,0 +1,7 @@
+{
+  "code": 532,
+  "message": "Bad Gateway. Upstream server not responding.",
+  "unconnected-mount-names": [
+    "100250002"
+  ]
+}

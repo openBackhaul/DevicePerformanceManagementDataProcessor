@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "message": "PM data update initiated successfully",
+  "timestamp": "2026-09-18T13:31:13.647Z",
+  "mwdiUrl": "http://mwdi:8080/v1/provide-device-status-metadata",
+  "mwdiResponse": [
+    {
+      "mount-name": "100250001",
+      "connection-status": "connected",
+      "last-successful-complete-control-construct-update-time": "2026-08-01T10:00:00.000Z"
+    },
+    {
+      "mount-name": "100250002",
+      "connection-status": "connected",
+      "last-successful-complete-control-construct-update-time": "2026-08-01T10:00:00.000Z"
+    }
+  ]
+}

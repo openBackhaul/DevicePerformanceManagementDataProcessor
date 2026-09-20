@@ -25,6 +25,7 @@ async function storeKafkaPayload(request) {
     mountName,
     payload,
     payloadBytes,
+    deliveryState = "pending",
     logger
   } = request;
 
@@ -46,6 +47,7 @@ async function storeKafkaPayload(request) {
           mountName,
           payload,
           payloadBytes,
+          deliveryState,
           createdAt: new Date().toJSON()
         },
         refresh: false
@@ -60,6 +62,64 @@ async function storeKafkaPayload(request) {
   return id;
 }
 
+async function markKafkaPayloadForCleanup(request) {
+  const { dataStoreEsClient, payloadRefId, failureReason, logger } = request;
+
+  if (!dataStoreEsClient || !payloadRefId) {
+    return;
+  }
+
+  const client = await getDataStoreClient(dataStoreEsClient, logger);
+  await withRetry(
+    async () => client.update({
+      index: dataStoreEsClient["index-alias"],
+      id: payloadRefId,
+      body: {
+        doc: {
+          deliveryState: "permanent-failure",
+          failureReason: String(failureReason || "NON_RETRYABLE_KAFKA_FAILURE"),
+          failedAt: new Date().toJSON()
+        }
+      },
+      refresh: false
+    }),
+    {
+      label: `kafkaPayloadStore.markForCleanup:${payloadRefId}`,
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+}
+
+async function markKafkaPayloadAsOversizedEvidence(request) {
+  const { dataStoreEsClient, payloadRefId, failureReason, logger } = request;
+
+  if (!dataStoreEsClient || !payloadRefId) {
+    return;
+  }
+
+  const client = await getDataStoreClient(dataStoreEsClient, logger);
+  await withRetry(
+    async () => client.update({
+      index: dataStoreEsClient["index-alias"],
+      id: payloadRefId,
+      body: {
+        doc: {
+          deliveryState: "oversized-evidence",
+          failureReason: String(failureReason || "KAFKA_MESSAGE_SIZE_TOO_LARGE"),
+          failedAt: new Date().toJSON()
+        }
+      },
+      refresh: false
+    }),
+    {
+      label: `kafkaPayloadStore.markOversized:${payloadRefId}`,
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+}
+
 async function loadKafkaPayload(request) {
   const { dataStoreEsClient, payloadRefId, logger } = request;
 
@@ -69,21 +129,53 @@ async function loadKafkaPayload(request) {
 
   const client = await getDataStoreClient(dataStoreEsClient, logger);
 
-  const response = await withRetry(
-    async () =>
-      client.get({
-        index: dataStoreEsClient["index-alias"],
-        id: payloadRefId
-      }),
-    {
-      label: `kafkaPayloadStore.load:${payloadRefId}`,
-      retryIntervalMs: 10000,
-      logger
+  let response;
+  try {
+    response = await withRetry(
+      async () =>
+        client.get({
+          index: dataStoreEsClient["index-alias"],
+          id: payloadRefId
+        }),
+      {
+        label: `kafkaPayloadStore.load:${payloadRefId}`,
+        retryIntervalMs: 10000,
+        logger
+      }
+    );
+  } catch (error) {
+    const statusCode = Number(
+      error?.statusCode || error?.meta?.statusCode || error?.meta?.body?.status
+    );
+    const notFound = statusCode === 404 ||
+      error?.meta?.body?.found === false ||
+      error?.body?.found === false;
+
+    if (notFound) {
+      const missingPayloadError = new Error(
+        `Elasticsearch Kafka payload reference not found: ${payloadRefId}`
+      );
+      missingPayloadError.reason = "KAFKA_PAYLOAD_REFERENCE_NOT_FOUND";
+      missingPayloadError.stage = "kafkaPayloadStore.load";
+      missingPayloadError.payloadRefId = payloadRefId;
+      missingPayloadError.retryable = false;
+      throw missingPayloadError;
     }
-  );
+    throw error;
+  }
 
   const source = (response || {}).body?._source || {};
-  return source["payload"] || null;
+  if (!Object.prototype.hasOwnProperty.call(source, "payload")) {
+    const missingPayloadError = new Error(
+      `Elasticsearch Kafka payload content not found: ${payloadRefId}`
+    );
+    missingPayloadError.reason = "KAFKA_PAYLOAD_REFERENCE_NOT_FOUND";
+    missingPayloadError.stage = "kafkaPayloadStore.load";
+    missingPayloadError.payloadRefId = payloadRefId;
+    missingPayloadError.retryable = false;
+    throw missingPayloadError;
+  }
+  return source["payload"];
 }
 
 async function deleteKafkaPayload(request) {
@@ -115,5 +207,7 @@ async function deleteKafkaPayload(request) {
 module.exports = {
   storeKafkaPayload,
   loadKafkaPayload,
+  markKafkaPayloadForCleanup,
+  markKafkaPayloadAsOversizedEvidence,
   deleteKafkaPayload
 };

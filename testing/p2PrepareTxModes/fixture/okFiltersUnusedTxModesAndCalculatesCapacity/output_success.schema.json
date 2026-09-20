@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "required": [
+    "historical-performance-data-list",
+    "processed-transmission-mode-list"
+  ],
+  "properties": {
+    "historical-performance-data-list": {
+      "type": "array"
+    },
+    "processed-transmission-mode-list": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

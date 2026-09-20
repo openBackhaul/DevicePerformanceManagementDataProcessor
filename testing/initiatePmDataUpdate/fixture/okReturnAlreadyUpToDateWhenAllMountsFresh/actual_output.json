@@ -1,0 +1,8 @@
+{
+  "status": "success",
+  "message": "PM data is already up to date",
+  "already-up-to-date-mount-names": [
+    "100250001",
+    "100250002"
+  ]
+}

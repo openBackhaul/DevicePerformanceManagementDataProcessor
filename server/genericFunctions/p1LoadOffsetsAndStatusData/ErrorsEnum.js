@@ -10,7 +10,7 @@ const ERRORS = {
   // Internal function
   PROCESS_DATA_COULDNT_PROVIDED: 'processingData could not be provided',
 
-  GENERAL_ERROR: "General processing error"
+  GENERAL_ERROR: "general processing error"
 }
 
 module.exports = ERRORS;

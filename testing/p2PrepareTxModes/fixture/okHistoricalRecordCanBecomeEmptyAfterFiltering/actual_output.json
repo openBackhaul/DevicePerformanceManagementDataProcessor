@@ -1,0 +1,47 @@
+{
+  "historical-performance-data-list": [
+    {
+      "history-data-id": "PM_RADIO_15M_04",
+      "period-end-time": "2026-05-11T16:15:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "time-xstates-list": []
+      }
+    },
+    {
+      "history-data-id": "PM_RADIO_15M_05",
+      "period-end-time": "2026-05-11T16:30:00.0+00:00",
+      "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+      "suspect-interval-flag": true,
+      "performance-data": {
+        "time-xstates-list": [
+          {
+            "time-xstate-sequence-number": 6,
+            "time": 40,
+            "transmission-mode": "56006"
+          }
+        ]
+      }
+    }
+  ],
+  "processed-transmission-mode-list": [
+    {
+      "modulation-scheme-name-at-lct": "64QAM",
+      "transmission-mode-name": "56006",
+      "am-downshift-level": -66,
+      "supported-as-fixed-configuration": true,
+      "tx-power-min": -1,
+      "code-rate": 88,
+      "modulation-scheme": 64,
+      "xpic-is-avail": true,
+      "tx-power-max": 19,
+      "channel-bandwidth": 56000,
+      "transmission-mode-rank": 56006,
+      "rx-threshold": -71,
+      "symbol-rate-reduction-factor": 1,
+      "am-upshift-level": -62,
+      "capacity": 257113
+    }
+  ]
+}

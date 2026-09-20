@@ -1,0 +1,12 @@
+{
+  "historical-performance-data-list": "invalid",
+  "transmission-mode-list": [
+    {
+      "transmission-mode-name": "tm-a",
+      "channel-bandwidth": 28000,
+      "modulation-scheme": 16,
+      "code-rate": 80,
+      "symbol-rate-reduction-factor": 0
+    }
+  ]
+}

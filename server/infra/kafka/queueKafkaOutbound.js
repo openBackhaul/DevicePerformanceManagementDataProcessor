@@ -1,16 +1,6 @@
 const redisQueue = require("../redis/redisStreamQueue");
-// const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
+const kafkaPayloadStore = require("../elasticSearch/kafkaPayloadStore");
 const defaultLogger = require('../../service/LoggingService.js').getLogger();
-
-const MAX_KAFKA_MESSAGE_BYTES = 1024 * 1024;
-
-function getMaxKafkaMessageBytes() {
-  const configured = Number(process.env.MAX_REDIS_KAFKA_PAYLOAD_BYTES);
-
-  return Number.isFinite(configured) && configured > 0
-    ? Math.min(configured, MAX_KAFKA_MESSAGE_BYTES)
-    : MAX_KAFKA_MESSAGE_BYTES;
-}
 
 function normalizeOutputs(request) {
   const output = request.outputs || request.output;
@@ -41,56 +31,9 @@ function normalizeOutputMessage(output) {
   };
 }
 
-async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
+async function buildRedisQueueMessage(normalized) {
   const serializedPayload = JSON.stringify(normalized.payload);
   const payloadBytes = Buffer.byteLength(serializedPayload, "utf8");
-
-  /*
-   * Previous local 1MB guard, retained for future use if DPMDP must skip
-   * oversized messages before sending to EMP Kafka again:
-   *
-   * const maxKafkaMessageBytes = getMaxKafkaMessageBytes();
-   *
-   * if (payloadBytes > maxKafkaMessageBytes) {
-   *   return {
-   *     targetConsumer: normalized.targetConsumer,
-   *     messageType: normalized.messageType,
-   *     mountName: normalized.mountName,
-   *     correlationId: normalized.correlationId,
-   *     payloadVersion: normalized.payloadVersion,
-   *     eventTime: normalized.eventTime,
-   *     status: "SKIPPED",
-   *     reason: "KAFKA_MESSAGE_SIZE_EXCEEDED_1MB",
-   *     payloadBytes
-   *   };
-   * }
-   */
-
-  /*
-   * Future fallback if payloads larger than 1MB are allowed again:
-   *
-   * const payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
-   *   dataStoreEsClient,
-   *   targetConsumer: normalized.targetConsumer,
-   *   mountName: normalized.mountName,
-   *   payload: normalized.payload,
-   *   payloadBytes,
-   *   logger
-   * });
-   *
-   * return {
-   *   targetConsumer: normalized.targetConsumer,
-   *   messageType: normalized.messageType,
-   *   mountName: normalized.mountName,
-   *   correlationId: normalized.correlationId,
-   *   payloadVersion: normalized.payloadVersion,
-   *   eventTime: normalized.eventTime,
-   *   payloadStorage: "ES",
-   *   payload: "",
-   *   payloadRefId,
-   *   payloadBytes
-   * };
-   */
 
   return {
     targetConsumer: normalized.targetConsumer,
@@ -116,11 +59,9 @@ async function buildRedisQueueMessage(normalized, dataStoreEsClient, logger) {
  */
 async function run(request) {
   const activeLogger = request.logger || defaultLogger;
-  const { dataStoreEsClient } = request;
   const outputs = normalizeOutputs(request);
   const queuedResultList = [];
-
-  await redisQueue.ensureKafkaOutboundGroup(activeLogger);
+  let kafkaGroupEnsured = false;
 
   for (const output of outputs) {
     const normalized = normalizeOutputMessage(output);
@@ -134,36 +75,43 @@ async function run(request) {
       continue;
     }
 
-    const queueMessage = await buildRedisQueueMessage(
-      normalized,
-      dataStoreEsClient,
-      activeLogger
-    );
+    const queueMessage = await buildRedisQueueMessage(normalized);
 
-    /*
-     * Previous local 1MB skip handling, retained for future use with the
-     * commented guard in buildRedisQueueMessage:
-     *
-     * if (queueMessage.status === "SKIPPED") {
-     *   activeLogger.error(
-     *     {
-     *       label: "kafka-outbound-message-size-exceeded",
-     *       mountName: queueMessage.mountName,
-     *       targetConsumer: queueMessage.targetConsumer,
-     *       messageType: queueMessage.messageType,
-     *       payloadBytes: queueMessage.payloadBytes,
-     *       maxBytes: getMaxKafkaMessageBytes(),
-     *       payloadMb: Number((queueMessage.payloadBytes / (1024 * 1024)).toFixed(3))
-     *     },
-     *     "Kafka outbound message skipped because payload exceeds 1MB"
-     *   );
-     *
-     *   queuedResultList.push(queueMessage);
-     *   continue;
-     * }
-     */
+    // Redis is an operational queue and must contain only compact metadata.
+    // Store every payload body in Elasticsearch irrespective of size and put
+    // only its reference in Redis. A Kafka slowdown can then increase queue
+    // length without filling Redis with JSON payload bodies.
+    queueMessage.payloadRefId = await kafkaPayloadStore.storeKafkaPayload({
+      dataStoreEsClient: request.dataStoreEsClient,
+      targetConsumer: queueMessage.targetConsumer,
+      mountName: queueMessage.mountName,
+      payload: normalized.payload,
+      payloadBytes: queueMessage.payloadBytes,
+      deliveryState: "pending",
+      logger: activeLogger
+    });
+    queueMessage.payloadStorage = "ES";
+    queueMessage.payload = "";
 
-    await redisQueue.enqueueKafkaOutbound(queueMessage, activeLogger);
+    if (!kafkaGroupEnsured) {
+      await redisQueue.ensureKafkaOutboundGroup(activeLogger);
+      kafkaGroupEnsured = true;
+    }
+
+    try {
+      await redisQueue.enqueueKafkaOutbound(queueMessage, activeLogger);
+    } catch (error) {
+      // Avoid leaving an unreachable pending document when creation of the
+      // corresponding Redis reference fails.
+      if (queueMessage.payloadStorage === "ES" && queueMessage.payloadRefId) {
+        await kafkaPayloadStore.deleteKafkaPayload({
+          dataStoreEsClient: request.dataStoreEsClient,
+          payloadRefId: queueMessage.payloadRefId,
+          logger: activeLogger
+        });
+      }
+      throw error;
+    }
 
     queuedResultList.push({
       targetConsumer: queueMessage.targetConsumer,
@@ -178,4 +126,7 @@ async function run(request) {
   return { queuedResultList };
 }
 
-module.exports = { run, buildRedisQueueMessage };
+module.exports = {
+  run,
+  buildRedisQueueMessage
+};

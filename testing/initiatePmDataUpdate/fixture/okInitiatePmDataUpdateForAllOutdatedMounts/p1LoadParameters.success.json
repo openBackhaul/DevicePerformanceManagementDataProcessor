@@ -1,0 +1,13 @@
+{
+  "parameters": {
+    "parameter": [
+      {
+        "parameter-name": "waitTimeForSending",
+        "value": "0"
+      }
+    ]
+  },
+  "configFile": {
+    "core-model-1-4:control-construct": {}
+  }
+}

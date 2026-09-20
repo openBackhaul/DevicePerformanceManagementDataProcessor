@@ -1,0 +1,17 @@
+{
+  "historical-performance-data-list": [
+    {
+      "granularity-period": "PT15M",
+      "period-end-time": "2026-09-17T10:15:00Z",
+      "performance-data": {
+        "time-xstates-list": [
+          {
+            "transmission-mode": "tm-a",
+            "time": 10
+          }
+        ]
+      }
+    }
+  ],
+  "transmission-mode-list": "invalid"
+}

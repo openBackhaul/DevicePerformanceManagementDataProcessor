@@ -4,6 +4,9 @@
   "scripts": {
     "test": "jest"
   },
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.0.0"
+  },
   "devDependencies": {
     "jest": "^29.7.0"
   }

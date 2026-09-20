@@ -2,6 +2,8 @@
 
 const ERRORS = require('./ErrorsEnum');
 
+const { Client } = require("@elastic/elasticsearch");
+
 const DEFAULT_DATA_STORE_INDEX = 'data-store';
 
 /**
@@ -38,20 +40,18 @@ async function p1LoadOffsetsAndStatusData(input) {
     );
 
     return {
-      offsets: Array.isArray(processingData.offsets)
-        ? processingData.offsets
-        : [],
+      'offsets': Array.isArray(processingData['offsets'])
+        ? processingData['offsets'] : [],
 
       'status-data': Array.isArray(processingData['status-data'])
-        ? processingData['status-data']
-        : []
+        ? processingData['status-data'] : []
     };
   } catch (error) {
     if (isNotFoundError(error)) {
       // The specification requires empty arrays when the mount name
       // does not exist in the DataStore.
       return {
-        offsets: [],
+        'offsets': [],
         'status-data': []
       };
     }
@@ -78,21 +78,32 @@ async function p1LoadOffsetsAndStatusData(input) {
  */
 async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
   const elasticsearchClient = dataStoreConfig.client;
-  const index = dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
+  const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
   const documentId = `device=${mountName}/processing-data`;
 
-  if (
-    !elasticsearchClient ||
-    typeof elasticsearchClient.get !== 'function'
-  ) {
-    const error = new Error('Invalid Elasticsearch client');
-    error.isElasticsearchError = true;
-    throw error;
+  let client;
+  if (elasticsearchClient != undefined) { // For testing purpose
+    client = elasticsearchClient;
+  } else {
+    try {
+      client = new Client({
+        'node': dataStoreConfig['url'],
+        'auth': {
+          'apiKey': {
+            'apiKey': dataStoreConfig['api-key']
+          }
+        },
+        'requestTimeout': 60000
+      })
+      await client.info(); // Testing Connection
+    } catch (error) {
+      throw error;
+    }
   }
 
-  const response = await elasticsearchClient.get({
-    index,
-    id: documentId
+  const response = await client.get({
+    'index': index,
+    'id': documentId
   });
 
   /*
@@ -113,8 +124,7 @@ async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
    * }
    */
   const responseBody = response && response.body
-    ? response.body
-    : response;
+    ? response.body : response;
 
   if (!responseBody || typeof responseBody !== 'object') {
     throw new Error('Invalid Elasticsearch response');
@@ -141,21 +151,13 @@ function validateInput(input) {
 
   const dataStoreConfig = input['data-store-es-client'];
 
-  if (
-    !dataStoreConfig ||
-    typeof dataStoreConfig !== 'object' ||
-    Array.isArray(dataStoreConfig)
-  ) {
+  if (!dataStoreConfig || typeof dataStoreConfig !== 'object' || Array.isArray(dataStoreConfig)) {
     return ERRORS.DATA_STORE_URL_NOT_PROV;
   }
 
-  const dataStoreUrl = dataStoreConfig.url;
+  const dataStoreUrl = dataStoreConfig['url'];
 
-  if (
-    dataStoreUrl === undefined ||
-    dataStoreUrl === null ||
-    dataStoreUrl === ''
-  ) {
+  if (dataStoreUrl === undefined || dataStoreUrl === null || dataStoreUrl === '') {
     return ERRORS.DATA_STORE_URL_NOT_PROV;
   }
 
@@ -165,18 +167,11 @@ function validateInput(input) {
 
   const mountName = input['mount-name'];
 
-  if (
-    mountName === undefined ||
-    mountName === null ||
-    mountName === ''
-  ) {
+  if (mountName === undefined || mountName === null || mountName === '') {
     return ERRORS.MOUNT_NAME_NOT_PROVIDED;
   }
 
-  if (
-    typeof mountName !== 'string' ||
-    mountName.trim().length === 0
-  ) {
+  if (typeof mountName !== 'string' || mountName.trim().length === 0) {
     return ERRORS.MOUNT_NAME_INVALID;
   }
 
@@ -197,10 +192,7 @@ function isValidHttpUrl(value) {
   try {
     const parsedUrl = new URL(value);
 
-    return (
-      parsedUrl.protocol === 'http:' ||
-      parsedUrl.protocol === 'https:'
-    );
+    return (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:');
   } catch {
     return false;
   }
@@ -218,12 +210,7 @@ function isValidHttpUrl(value) {
 function isNotFoundError(error) {
   return Boolean(
     error &&
-    (
-      error.statusCode === 404 ||
-      error.meta?.statusCode === 404 ||
-      error.meta?.body?.status === 404 ||
-      error.body?.status === 404
-    )
+    (error.statusCode === 404 || error.meta?.statusCode === 404 || error.meta?.body?.status === 404 || error.body?.status === 404)
   );
 }
 
@@ -238,11 +225,8 @@ function isElasticsearchError(error) {
     error &&
     (
       error.isElasticsearchError === true ||
-      error.name === 'ConnectionError' ||
-      error.name === 'ResponseError' ||
-      error.name === 'TimeoutError' ||
-      error.meta ||
-      error.statusCode
+      error.name === 'ConnectionError' || error.name === 'ResponseError' || error.name === 'TimeoutError' ||
+      error.meta || error.statusCode
     )
   );
 }

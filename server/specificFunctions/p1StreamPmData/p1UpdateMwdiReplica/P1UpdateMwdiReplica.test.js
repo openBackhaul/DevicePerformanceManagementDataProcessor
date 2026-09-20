@@ -4,6 +4,7 @@ jest.mock("../../../infra/onf/onfAdapter", () => ({
 
 jest.mock("../../../infra/redis/redisStreamQueue", () => ({
   ensureGroup: jest.fn(),
+  clearRetryAndDeadLetterForReplicaUpdates: jest.fn(),
   enqueueMountNames: jest.fn()
 }));
 
@@ -81,6 +82,11 @@ describe("P1UpdateMwdiReplica", () => {
     });
 
     redisQueue.ensureGroup.mockResolvedValue();
+    redisQueue.clearRetryAndDeadLetterForReplicaUpdates.mockResolvedValue({
+      mountNameCount: 0,
+      retryStreamDeleted: 0,
+      deadLetterStreamDeleted: 0
+    });
     redisQueue.enqueueMountNames.mockResolvedValue({ enqueued: 1, skipped: 0, failed: 0 });
   });
 
@@ -140,6 +146,80 @@ describe("P1UpdateMwdiReplica", () => {
       });
     });
 
+    test("uses only the configured eight-minute lookback on first start", async () => {
+      const beforeRun = Date.now();
+
+      await moduleUnderTest.run(validRequest({
+        lastReplicaTime: null,
+        runtimeConfig: {
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 },
+          service: { replicaInitialLookbackMs: 480000 }
+        }
+      }));
+
+      const afterRun = Date.now();
+      const reindexRequest = mockSourceClient.reindex.mock.calls[0][0];
+      const range = reindexRequest.body.source.query.bool.must[1].range[
+        "last-complete-control-construct-update-time"
+      ];
+      const periodStartMs = Date.parse(range.gt);
+
+      expect(periodStartMs).toBeGreaterThanOrEqual(beforeRun - 480000);
+      expect(periodStartMs).toBeLessThanOrEqual(afterRun - 480000);
+    });
+
+    test("caps an old checkpoint to the configured catch-up window", async () => {
+      const beforeRun = Date.now();
+
+      await moduleUnderTest.run(validRequest({
+        lastReplicaTime: new Date(beforeRun - 60 * 60 * 1000).toISOString(),
+        runtimeConfig: {
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 },
+          service: { replicaMaxCatchUpMs: 480000 }
+        }
+      }));
+
+      const afterRun = Date.now();
+      const reindexRequest = mockSourceClient.reindex.mock.calls[0][0];
+      const range = reindexRequest.body.source.query.bool.must[1].range[
+        "last-complete-control-construct-update-time"
+      ];
+      const periodStartMs = Date.parse(range.gt);
+
+      expect(periodStartMs).toBeGreaterThanOrEqual(beforeRun - 480000);
+      expect(periodStartMs).toBeLessThanOrEqual(afterRun - 480000);
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          label: "p1UpdateMwdiReplica.catchUp.capped",
+          maxCatchUpMs: 480000
+        }),
+        expect.any(String)
+      );
+    });
+
+    test("can retain unlimited catch-up when the cap is disabled", async () => {
+      const oldCheckpoint = Date.now() - 60 * 60 * 1000;
+
+      await moduleUnderTest.run(validRequest({
+        lastReplicaTime: new Date(oldCheckpoint).toISOString(),
+        runtimeConfig: {
+          redis: { enqueueBatchSize: 10, enqueuePauseMs: 1 },
+          service: { replicaMaxCatchUpMs: 0 }
+        }
+      }));
+
+      const reindexRequest = mockSourceClient.reindex.mock.calls[0][0];
+      const range = reindexRequest.body.source.query.bool.must[1].range[
+        "last-complete-control-construct-update-time"
+      ];
+
+      expect(Date.parse(range.gt)).toBe(oldCheckpoint - 60000);
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.objectContaining({ label: "p1UpdateMwdiReplica.catchUp.capped" }),
+        expect.any(String)
+      );
+    });
+
     test("calls Elasticsearch and Redis clients with expected parameters", async () => {
       await moduleUnderTest.run(validRequest());
 
@@ -157,12 +237,14 @@ describe("P1UpdateMwdiReplica", () => {
       );
       expect(mockReplicaClient.search).toHaveBeenCalledTimes(1);
       expect(redisQueue.ensureGroup).toHaveBeenCalledTimes(1);
+      expect(redisQueue.clearRetryAndDeadLetterForReplicaUpdates).not.toHaveBeenCalled();
       expect(redisQueue.enqueueMountNames).toHaveBeenCalledWith(
         ["device-1"],
         expect.objectContaining({
           batchSize: 10,
           pauseMs: 1,
-          clearRetryAndDeadLetterBeforeEnqueue: true
+          clearRetryAndDeadLetterBeforeEnqueue: false,
+          resetRetryEligibilityBeforeEnqueue: true
         }),
         logger
       );
@@ -228,6 +310,41 @@ describe("P1UpdateMwdiReplica", () => {
       expect(mockSourceClient.tasks.get).toHaveBeenCalledWith({
         task_id: "node-1:existing"
       });
+    });
+
+    test("finishes recovery when a saved Redis task completed before restart", async () => {
+      mockRedisClient.get.mockResolvedValue(JSON.stringify({
+        taskId: "node-1:completed-before-restart",
+        sourceIndex: "mwdi-index",
+        destinationIndex: "replica-index",
+        periodStartTime: "2026-01-01T00:00:00.000Z",
+        periodEndTime: "2026-01-02T00:00:00.000Z"
+      }));
+      mockSourceClient.tasks.get.mockRejectedValue({
+        meta: { statusCode: 404 },
+        message: "resource_not_found_exception"
+      });
+
+      const result = await moduleUnderTest.run(validRequest());
+
+      expect(mockSourceClient.reindex).not.toHaveBeenCalled();
+      expect(result.updatedMountNames).toEqual(["device-1"]);
+      expect(saveLastReplicaTime).toHaveBeenCalledWith(
+        validRequest().loggingEsClient,
+        "2026-01-02T00:00:00.000Z",
+        logger
+      );
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        "dpmdp:replica:active-reindex-task"
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          label: "p1UpdateMwdiReplica.reindexTask.recoveredCompletion",
+          taskId: "node-1:completed-before-restart",
+          discovered: false
+        }),
+        expect.any(String)
+      );
     });
 
     test("discovers and resumes an existing Elasticsearch task", async () => {

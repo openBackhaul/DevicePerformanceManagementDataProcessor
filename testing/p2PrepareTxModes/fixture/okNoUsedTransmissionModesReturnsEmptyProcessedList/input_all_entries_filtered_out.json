@@ -1,0 +1,36 @@
+{
+  "historical-performance-data-list": [
+    {
+      "granularity-period": "PT15M",
+      "period-end-time": "2026-09-17T10:15:00Z",
+      "performance-data": {
+        "time-xstates-list": [
+          {
+            "transmission-mode": "56006",
+            "time": 0
+          },
+          {
+            "transmission-mode": "56008",
+            "time": -2
+          }
+        ]
+      }
+    }
+  ],
+  "transmission-mode-list": [
+    {
+      "transmission-mode-name": "56006",
+      "channel-bandwidth": 56000,
+      "modulation-scheme": 64,
+      "code-rate": 88,
+      "symbol-rate-reduction-factor": 1
+    },
+    {
+      "transmission-mode-name": "56008",
+      "channel-bandwidth": 56000,
+      "modulation-scheme": 256,
+      "code-rate": 90,
+      "symbol-rate-reduction-factor": 1
+    }
+  ]
+}

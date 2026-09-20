@@ -1,0 +1,415 @@
+#
+# Spec sources:
+# - spec/Services/initiatePmDataUpdate/1.0.0/initiatePmDataUpdate.plantuml
+# - spec/Services/initiatePmDataUpdate/1.0.0/variables.yaml
+#
+# Notes:
+# - Service under test: IndividualServicesService.initiatePmDataUpdate
+# - util.js is mocked as one parent module with child export mocks
+# - p1LoadParameters is mocked as one parent module with child export mock "run"
+# - global.fetch must be mocked by the runner or test bootstrap for deterministic execution
+#
+module:
+  functionUnderTest:
+    modulePath: "../../server/service/IndividualServicesService.js"
+    exportName: "initiatePmDataUpdate"
+
+processingSteps:
+  - stepId: "initiatePmDataUpdate.util"
+    modulePath: "../../server/service/individualServices/initiatePmDataUpdate/util.js"
+
+  - stepId: "p1LoadParameters.run"
+    modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
+    exportName: "run"
+    isAsync: true
+
+dependencies:
+  - name: "pino"
+  - name: "../../server/service/LoggingService.js"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  - id: "okInitiatePmDataUpdateForAllOutdatedMounts"
+    description: "Should return success when all requested mount-names are found, connected, outdated, and live control-construct requests complete"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "success"
+      outputFixture: "output_all_outdated.json"
+      outputSchemaFixture: "output_success.schema.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
+        type: "return"
+        value: null
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+            - mount-name: "100250002"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            control-construct:
+              mount-name: "100250001"
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            control-construct:
+              mount-name: "100250002"
+
+  - id: "okInitiatePmDataUpdateWithAlreadyUpToDateSubset"
+    description: "Should return success and include already-up-to-date-mount-names when some mounts are skipped and others are processed"
+    inputFixture: "input_some_up_to_date.json"
+    expected:
+      type: "success"
+      outputFixture: "output_some_up_to_date.json"
+      outputSchemaFixture: "output_success.schema.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
+        type: "return"
+        value: null
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2099-01-01T10:00:00.000Z"
+            - mount-name: "100250002"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            control-construct:
+              mount-name: "100250002"
+
+  - id: "okReturnAlreadyUpToDateWhenAllMountsFresh"
+    description: "Should return early success when all mounts are already up to date"
+    inputFixture: "input_all_up_to_date.json"
+    expected:
+      type: "success"
+      outputFixture: "output_all_up_to_date.json"
+      outputSchemaFixture: "output_all_up_to_date.schema.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
+        type: "return"
+        value: null
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2099-01-01T10:00:00.000Z"
+            - mount-name: "100250002"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2099-01-01T10:01:00.000Z"
+
+  - id: "errValidationErrorWhenMountNamesMissing"
+    description: "Should throw validation error when mount-names is missing"
+    inputFixture: "input_missing_mount_names.json"
+    expected:
+      type: "error"
+      errorEnum: "Validation error: mount-name-list not provided"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: "mount-name-list not provided"
+
+  - id: "errValidationErrorWhenMountNamesEmpty"
+    description: "Should throw validation error when mount-names is empty"
+    inputFixture: "input_empty_mount_names.json"
+    expected:
+      type: "error"
+      errorEnum: "Validation error: mount-name-list empty"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: "mount-name-list empty"
+
+  - id: "errValidationErrorWhenMountNamesInvalid"
+    description: "Should throw validation error when mount-names contains invalid entries"
+    inputFixture: "input_invalid_mount_names.json"
+    expected:
+      type: "error"
+      errorEnum: "Validation error: mount-name-list invalid"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: "mount-name-list invalid"
+
+  - id: "errMwdiConnectionFailedWhenMetadataRequestFails"
+    description: "Should throw MWDI connection failed when metadata fetch returns non-ok"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "error"
+      errorEnum: "MWDI connection failed"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: false
+          status: 500
+          json:
+            message: "internal error"
+
+  - id: "errMwdiConnectionFailedWhenMetadataFetchThrows"
+    description: "Should throw fetch failed when metadata fetch throws before receiving a response"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "error"
+      errorEnum: "fetch failed"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+    fetchMocks:
+      - type: "throw"
+        error:
+          error: "fetch failed"
+
+  - id: "errMwdiConnectionFailedWhenMetadataResponseInvalid"
+    description: "Should throw MWDI connection failed when validateMWDIResponse returns an error"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "error"
+      errorEnum: "MWDI connection failed"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: "MWDI invalid response"
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            invalid: true
+
+  - id: "err533WhenMountNamesMissingInMwdiResponse"
+    description: "Should throw code 533 with missing-mount-names when MWDI metadata does not contain all requested mount-names"
+    inputFixture: "input_missing_mounts.json"
+    expected:
+      type: "error"
+      errorFixture: "error_533_missing_mounts.json"
+      errorSchemaFixture: "error_533.schema.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
+        type: "return"
+        value: null
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+            - mount-name: "100250002"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+  - id: "err532WhenSomeMountsUnconnected"
+    description: "Should throw code 532 with unconnected-mount-names when one or more requested devices are unconnected"
+    inputFixture: "input_unconnected_mounts.json"
+    expected:
+      type: "error"
+      errorFixture: "error_532_unconnected_mounts.json"
+      errorSchemaFixture: "error_532.schema.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
+        type: "return"
+        value:
+          unconnectedMountNames:
+            - "100250002"
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+            - mount-name: "100250002"
+              connection-status: "disconnected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+  - id: "errWhenGetMwdiUrlThrows"
+    description: "Should throw wrapped error when getMwdiURL throws before any HTTP request is made"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "error"
+      errorFixture: "error_config_not_accessible.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "throw"
+        error:
+          message: "config file not accessible"
+
+  - id: "errWhenP1LoadParametersFails"
+    description: "Should throw wrapped error when p1LoadParameters.run fails after metadata validation"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "error"
+      errorFixture: "error_parameter_loading_failed.json"
+    mocks:
+      - stepId: "initiatePmDataUpdate.util.validateInput"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        type: "return"
+        value: "http://mwdi:8080/v1/provide-device-status-metadata"
+      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
+        type: "return"
+        value:
+          Content-Type: "application/json"
+          accept: "application/json"
+      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
+        type: "return"
+        value: null
+      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
+        type: "return"
+        value: null
+      - stepId: "p1LoadParameters.run"
+        type: "throw"
+        error:
+          message: "parameter loading failed"
+    fetchMocks:
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+            - mount-name: "100250002"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
