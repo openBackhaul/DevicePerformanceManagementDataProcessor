@@ -117,6 +117,10 @@ async function ensureIndicesAndMappings(esClients, logger) {
           "mount-name": { type: "keyword" },
           locked: { type: "boolean" },
           timestamp: { type: "date" },
+          "processing-data": {
+            type: "object",
+            enabled: false
+          },
           batch: {
             type: "nested",
             properties: {
@@ -129,6 +133,13 @@ async function ensureIndicesAndMappings(esClients, logger) {
               uuid: { type: "keyword" },
               mostRecentPeriodEndTime: { type: "date" },
               mostRecentPeriodEndTime24: { type: "date" }
+            }
+          },
+          "result-data": {
+            type: "object",
+            properties: {
+              "batch-timestamp": { type: "date" },
+              "result-cc": { type: "object", enabled: false }
             }
           }
         }
