@@ -179,11 +179,12 @@ function findOutputPayload(outputFormats, formatName) {
 
 function createKafkaMessages(outputFormats, mountName, kafkaConsumerTypes) {
   const aptPayload = findOutputPayload(outputFormats, "apt");
-  const onfPayload = findOutputPayload(outputFormats, "onf");
+  const mycomPayload = findOutputPayload(outputFormats, "mycom");
+  const netexplorerPayload = findOutputPayload(outputFormats, "netexplorer");
   const supportedConsumers = {
     APT: aptPayload,
-    MYCOM: onfPayload,
-    NETEXPLORER: onfPayload
+    MYCOM: mycomPayload,
+    NETEXPLORER: netexplorerPayload
   };
 
   return getActiveKafkaConsumers(kafkaConsumerTypes)
@@ -258,7 +259,9 @@ async function run(request = {}) {
       offsets: rawData.offsets,
       statusData: resultData.statusData,
       mountName: input.mountName,
-      esClient: request.esClient
+      esClient: request.esClient,
+      logger: request.logger,
+      atomicDataStoreUpsertEnabled: request.storingOptions?.atomicDataStoreUpsertEnabled === true
     });
 
     return { "device-pm-data-quality": rawData.pmDataQuality };

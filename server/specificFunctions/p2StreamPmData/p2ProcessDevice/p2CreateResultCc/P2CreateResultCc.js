@@ -3,14 +3,12 @@ const { getParamFromFunction, findFunctionNode } = require("../../../../utils/fu
 const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctions/p1RemoveOutOfRangeTemperature/ErrorsEnum");
 const p2PrepareTxModes = require("./p2PrepareTxModes/P2PrepareTxModes");
 const p2IterateAiPmSlices = require("./p2IterateAiPmSlices/P2IterateAiPmSlices");
+const p2IterateEcPmSlices = require("./p2IterateEcPmSlices/P2IterateEcPmSlices");
 const ERRORS_P1PrepareTxModes = require("./p2PrepareTxModes/ErrorsEnum");
 const ERRORS_P1IterateAiPmSlices = require("./p2IterateAiPmSlices/ErrorsEnum");
 const ERRORS_P1IterateEcPmSlices = {};
 let logger = console;
 try { logger = require("../../../../service/LoggingService.js").getLogger(); } catch (_) {}
-
-// Enable this import after the corresponding source file is delivered.
-// const p2IterateEcPmSlices = require("./p2IterateEcPmSlices/P2IterateEcPmSlices");
 
 /*
  * Processing sub-functions delivered as separate source modules.
@@ -972,15 +970,15 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
   
   const iterateEcPmSlices = requireImplementation(
-    dependencies.p2IterateEcPmSlices,
+    dependencies.p2IterateEcPmSlices || p2IterateEcPmSlices,
     "p2IterateEcPmSlices"
   );
   const response = await callFunction(iterateEcPmSlices, {
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     historicalPerformanceDataList,
-    "aggregation-group": aggregationGroup || {},
-    aggregationGroup: aggregationGroup || {},
+    "aggregation-group": aggregationGroup || null,
+    aggregationGroup: aggregationGroup || null,
     "result-cc": resultCc,
     resultCc,
     "interface-status": interfaceStatus,

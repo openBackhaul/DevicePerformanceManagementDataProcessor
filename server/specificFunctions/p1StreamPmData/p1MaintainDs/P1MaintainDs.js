@@ -341,6 +341,7 @@ async function cleanDataStoreOnServer(
   logger
 ) {
   const scriptSource = [
+    "boolean hasBatch = ctx._source.containsKey('batch');",
     "def existing = ctx._source.batch;",
     "if (existing == null) { existing = new ArrayList(); }",
     "def retained = new ArrayList();",
@@ -354,7 +355,19 @@ async function cleanDataStoreOnServer(
     "  } catch (Exception ignored) { retained.add(entry); }",
     "}",
     "boolean batchChanged = retained.size() != existing.size();",
-    "if (retained.isEmpty()) {",
+    "boolean hasResultData = ctx._source.containsKey('result-data');",
+    "def existingResultData = ctx._source['result-data'];",
+    "if (existingResultData == null) { existingResultData = new ArrayList(); }",
+    "def retainedResultData = new ArrayList();",
+    "for (def entry : existingResultData) {",
+    "  def timestamp = entry != null ? entry['batch-timestamp'] : null;",
+    "  if (timestamp == null) { retainedResultData.add(entry); continue; }",
+    "  try {",
+    "    if (ZonedDateTime.parse(timestamp).toInstant().toEpochMilli() >= params.cutoffMillis) { retainedResultData.add(entry); }",
+    "  } catch (Exception ignored) { retainedResultData.add(entry); }",
+    "}",
+    "boolean resultDataChanged = retainedResultData.size() != existingResultData.size();",
+    "if (hasBatch && !hasResultData && retained.isEmpty()) {",
     "  def documentTimestamp = ctx._source.timestamp;",
     "  boolean deleteDocument = documentTimestamp == null;",
     "  if (!deleteDocument) {",
@@ -363,8 +376,9 @@ async function cleanDataStoreOnServer(
     "  }",
     "  if (deleteDocument) { ctx.op = 'delete'; return; }",
     "}",
-    "if (!batchChanged) { ctx.op = 'noop'; return; }",
-    "ctx._source.batch = retained;",
+    "if (!batchChanged && !resultDataChanged) { ctx.op = 'noop'; return; }",
+    "if (batchChanged) { ctx._source.batch = retained; }",
+    "if (resultDataChanged) { ctx._source['result-data'] = retainedResultData; }",
     "ctx._source.locked = false;"
   ].join(" ");
 

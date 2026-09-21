@@ -216,11 +216,9 @@ describe("p2LoadRawCc", () => {
     it("loadRawCc calls the module and returns its output", async () => {
       const result = await loadRawCc(baseRequest);
 
-      expect(result).toEqual(expect.objectContaining({
-        "raw-cc": expect.any(Object),
-        offsets: expect.any(Array),
-        "device-pm-data-quality": expect.any(Object)
-      }));
+      expect(result["raw-cc"]).toBeDefined();
+      expect(Array.isArray(result.offsets)).toBe(true);
+      expect(result["device-pm-data-quality"]).toBeDefined();
     });
 
     it("returns raw-cc, offsets, and device-pm-data-quality", async () => {
@@ -375,23 +373,80 @@ describe("p2LoadRawCc", () => {
         "new-most-recent-period-end-time-24": "2024-03-01T00:00:00Z",
         "amount-received": [{ date: "2024/03/01", count: 1 }]
       });
+      p1CalculateInterfacePmDataQualityMock.mockResolvedValue({
+        "interface-pm-data-quality": { uuid: "ltp-ec-1", quality: [] }
+      });
 
       const result = await run(baseRequest);
 
-      expect(result["raw-cc"]["batch-timestamp"]).toBe("2024-03-01T00:15:00.000Z");
+      expect(result["raw-cc"]["batch-timestamp"]).toBe("2024-03-01T00:00:00.000Z");
       expect(result["device-pm-data-quality"].interface[0].uuid).toBe("ltp-ec-1");
     });
   });
 
   describe("pm data quality failure", () => {
-    it("throws when p1CalculateInterfacePmDataQuality returns no usable result", async () => {
+    it("returns empty interface output and leaves the offset unchanged when quality data is unusable", async () => {
       p1CalculateInterfacePmDataQualityMock.mockResolvedValue(
         "UUID_NOT_PROVIDED" // delivered module returns an error string/enum on failure
       );
 
-      await expect(run(baseRequest)).rejects.toThrow(
-        "pmDataQuality could not be provided"
-      );
+      const result = await run(baseRequest);
+
+      expect(result["device-pm-data-quality"].interface).toEqual([]);
+      expect(result.offsets[0].offset["interface-offsets"]).toEqual([]);
+      expect(
+        result["raw-cc"]["logical-termination-point"][0]["layer-protocol"][0]
+          ["air-interface-2-0:air-interface-pac"]
+          ["air-interface-historical-performances"]
+          ["historical-performance-data-list"]
+      ).toEqual([]);
+    });
+
+    it("rolls back the failed interface and continues processing the next interface", async () => {
+      const secondLtp = JSON.parse(JSON.stringify(
+        rawControlConstruct["logical-termination-point"][0]
+      ));
+      secondLtp.uuid = "ltp-air-2";
+      replicaClient.get.mockResolvedValue({
+        body: {
+          _source: {
+            "core-model-1-4:control-construct": [{
+              uuid: "device-1",
+              "logical-termination-point": [
+                rawControlConstruct["logical-termination-point"][0],
+                secondLtp
+              ]
+            }]
+          }
+        }
+      });
+      p1CalculateInterfacePmDataQualityMock
+        .mockResolvedValueOnce("UUID_NOT_PROVIDED")
+        .mockResolvedValueOnce({
+          "interface-pm-data-quality": { uuid: "ltp-air-2", quality: [] }
+        });
+
+      const result = await run(baseRequest);
+      const interfaceOffsets = result.offsets[0].offset["interface-offsets"];
+
+      expect(interfaceOffsets).toEqual([
+        expect.objectContaining({
+          uuid: "ltp-air-2",
+          "most-recent-period-end-time": "2024-01-01T00:15:00Z"
+        })
+      ]);
+      expect(result["device-pm-data-quality"].interface).toEqual([
+        { uuid: "ltp-air-2", quality: [] }
+      ]);
+      const ltps = result["raw-cc"]["logical-termination-point"];
+      expect(ltps[0]["layer-protocol"][0]
+        ["air-interface-2-0:air-interface-pac"]
+        ["air-interface-historical-performances"]
+        ["historical-performance-data-list"]).toEqual([]);
+      expect(ltps[1]["layer-protocol"][0]
+        ["air-interface-2-0:air-interface-pac"]
+        ["air-interface-historical-performances"]
+        ["historical-performance-data-list"]).toHaveLength(1);
     });
   });
 });

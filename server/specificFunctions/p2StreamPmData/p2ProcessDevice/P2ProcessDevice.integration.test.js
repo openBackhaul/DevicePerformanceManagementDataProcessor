@@ -5,8 +5,10 @@ describe('P2ProcessDevice vendor-function integration', () => {
     const dataStoreClient = {
       get: jest.fn().mockResolvedValue({
         _source: {
-          offsets: [{ value: 7 }],
-          'status-data': [{ status: 'ok' }]
+          'processing-data': {
+            offsets: [{ value: 7 }],
+            'status-data': [{ status: 'ok' }]
+          }
         }
       })
     };
@@ -43,10 +45,16 @@ describe('P2ProcessDevice vendor-function integration', () => {
           'output-format': { format: 'apt', uuid: 'device-1' }
         }),
         p2FormattingOutputOnf: jest.fn().mockResolvedValue({
-          'onf-output-format': [{
-            'format-name': 'onf-output-format',
-            'output-format': { uuid: 'device-1' }
-          }]
+          'onf-output-format': [
+            {
+              'format-name': 'mycom-output-format',
+              'output-format': { uuid: 'device-1' }
+            },
+            {
+              'format-name': 'netexplorer-output-format',
+              'output-format': { uuid: 'device-1' }
+            }
+          ]
         }),
         queueKafkaOutbound,
         p1TransmittingKafka,
@@ -56,7 +64,7 @@ describe('P2ProcessDevice vendor-function integration', () => {
 
     expect(dataStoreClient.get).toHaveBeenCalledWith({
       index: 'data-store',
-      id: 'device=device-1/processing-data'
+      id: 'device-1'
     });
     expect(p2LoadRawCc).toHaveBeenCalledWith(expect.objectContaining({
       offsets: [{ value: 7 }]
