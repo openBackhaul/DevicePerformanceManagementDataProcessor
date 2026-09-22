@@ -26,7 +26,7 @@ function validateResultCC(input) {
 
           if (Array.isArray(ltpObj['layer-protocol'])) {
             const lp = ltpObj['layer-protocol'][0];
-            if (lp['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER") {
+            if (lp != null && lp['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER") {
               ltpObj['layer-protocol'].forEach(lpObj => {
                 if (Object.hasOwn(lpObj, 'local-id') &&
                   Object.hasOwn(lpObj, 'layer-protocol-name') &&
@@ -74,36 +74,95 @@ function validateResultCC(input) {
   return true;
 }
 
-// Resolve EthernetContainer -> serving structures -> physical servers.
-// Each serving structure contributes its first server LTP, as specified.
-function preparePhysicalServerLtpList(resultCc, uuidOfEthernetContainer) {
-  if (typeof uuidOfEthernetContainer !== 'string' || !uuidOfEthernetContainer.trim()) {
+function isLtpUuid(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isValidLtpList(value) {
+  return Array.isArray(value) && value.length > 0 && value.every(isLtpUuid);
+}
+
+// Stored LTP uuids carry the mount name ("121252295+LTP-MWPS-TTP-RADIO-1A")
+// while client-ltp/server-ltp references do not ("LTP-MWPS-TTP-RADIO-1A").
+function stripMountPrefix(uuid) {
+  const value = String(uuid || '').trim();
+  const plusIndex = value.lastIndexOf('+');
+  return plusIndex >= 0 ? value.substring(plusIndex + 1) : value;
+}
+
+function sameLtpReference(left, right) {
+  const leftValue = String(left || '').trim();
+  const rightValue = String(right || '').trim();
+  if (!leftValue || !rightValue) {
+    return false;
+  }
+  return leftValue === rightValue || stripMountPrefix(leftValue) === stripMountPrefix(rightValue);
+}
+
+function hasLtpReference(referenceList, reference) {
+  const references = Array.isArray(referenceList) ? referenceList : [referenceList];
+  return references.some(item => sameLtpReference(item, reference));
+}
+
+function findLtp(ltpList, reference) {
+  return ltpList.find(ltp => sameLtpReference(ltp.uuid, reference));
+}
+
+// The physical server of one serving structure, as
+// {result-cc/logical-termination-point={serving-structure}/server-ltp[0]}.
+//
+// p1FieldsFilter keeps only AirInterface and EthernetContainer LTPs, so the
+// structure itself is usually absent from resultCc. Its physical server is then
+// taken from the reverse relation: the LTPs whose client-ltp names the
+// structure. That relation is unordered, so 'server-ltp[0]' cannot be
+// identified; the first one found is used, which keeps the cardinality of one
+// physical server per serving structure (a structure lists several servers only
+// where a single one is active at a time, e.g. 1+1 protection or a combo port).
+function findPhysicalServerLtp(ltpList, structureReference) {
+  const structure = findLtp(ltpList, structureReference);
+
+  if (structure) {
+    const servers = structure['server-ltp'];
+    return Array.isArray(servers) && isLtpUuid(servers[0])
+      ? findLtp(ltpList, servers[0])
+      : undefined;
+  }
+
+  return ltpList.find(ltp => hasLtpReference(ltp['client-ltp'], structureReference));
+}
+
+// Prepares the list of physical servers for either an individual link or an
+// aggregation group.
+// input
+// - aggregation-group (optional, already validated by the caller)
+// - result-cc
+// - uuid-of-ethernet-container
+//
+// Returns null when the list could not be provided.
+function preparePhysicalServerLtpList(aggregationGroup, resultCc, uuidOfEthernetContainer) {
+  if (aggregationGroup != null) {
+    return aggregationGroup[PSYSERVERLTP];
+  }
+
+  if (!isLtpUuid(uuidOfEthernetContainer)) {
     return null;
   }
   const ltpList = resultCc[LTP];
-  const ethernetContainer = ltpList.find(ltp => ltp.uuid === uuidOfEthernetContainer);
+  const ethernetContainer = findLtp(ltpList, uuidOfEthernetContainer);
   const servingStructureLtpList = ethernetContainer?.['server-ltp'];
-  if (!(servingStructureLtpList)) {
+  if (!isValidLtpList(servingStructureLtpList)) {
     return null;
   }
 
   const physicalServerLtpList = [];
-  for (const structureUuid of servingStructureLtpList) {
-    const structure = ltpList.find(ltp => ltp.uuid === structureUuid);
-    const servers = structure?.['server-ltp'];
-    const physicalServerUuid = Array.isArray(servers) ? servers[0] : undefined;
-    if (typeof physicalServerUuid !== 'string' || !physicalServerUuid.trim() ||
-        !ltpList.some(ltp => ltp.uuid === physicalServerUuid)) {
+  for (const structureReference of servingStructureLtpList) {
+    const physicalServer = findPhysicalServerLtp(ltpList, structureReference);
+    if (!physicalServer) {
       return null;
     }
-    physicalServerLtpList.push(physicalServerUuid);
+    physicalServerLtpList.push(physicalServer.uuid);
   }
-  return physicalServerLtpList;
-}
-
-function isValidLtpList(value) {
-  return Array.isArray(value) && value.length > 0 &&
-    value.every(uuid => typeof uuid === 'string' && uuid.trim().length > 0);
+  return [...new Set(physicalServerLtpList)];
 }
 
 // Aggregates the interval capacity of all transporting AirInterfaces
@@ -143,7 +202,7 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     // TODO: manage 'periodEndTime invalid'
 
     // Filter out LTP no in ServerList
-    const cleanLTPlist = ltpList.filter((ltp) => psyServerLTP.includes(ltp['uuid']));
+    const cleanLTPlist = ltpList.filter((ltp) => hasLtpReference(psyServerLTP, ltp['uuid']));
 
     // Reduce function to calculate all AirInterfaceCapacity for the aggration
     const totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
@@ -250,7 +309,7 @@ function calculateUtilization(input) {
 // Calculates utilization of the aggregated physical resources in a performance data slice
 // input:
 // - historical-performance-data
-// - aggregation-group (optional)
+// - aggregation-group (optional: absent/null for an EthernetContainer on a single server)
 // - result-cc
 // - uuid-of-ethernet-container (used when aggregation-group is absent)
 // 
@@ -297,9 +356,11 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.RESULT_CC_INVALID;
     }
 
-    const physicalServerLtpList = aggGroup != null
-      ? aggGroup[PSYSERVERLTP]
-      : preparePhysicalServerLtpList(resultCC, input['uuid-of-ethernet-container']);
+    const physicalServerLtpList = preparePhysicalServerLtpList(
+      aggGroup,
+      resultCC,
+      input['uuid-of-ethernet-container']
+    );
     if (!physicalServerLtpList) {
       return ERRORS.UTILIZATION_COULDNT_ADD;
     }
