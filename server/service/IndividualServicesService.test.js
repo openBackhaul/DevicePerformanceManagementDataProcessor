@@ -26,7 +26,7 @@ const p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDe
 const { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
 const { documentPmDataProcessing, provideDeviceDataStoreDump, initiatePmDataUpdate } = require('./IndividualServicesService');
-const { ERRORS } = require('./individualServices/initiatePmDataUpdate/util');
+const { ERRORS } = require('./IndividualServicesService');
 
 describe('documentPmDataProcessing', () => {
     beforeEach(() => {
