@@ -25,12 +25,8 @@ const p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1Res
 const p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
 const { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
-<<<<<<< HEAD
-const { documentPmDataProcessing, provideDeviceDataStoreDump } = require('./IndividualServicesService');
-=======
-const { documentPmDataProcessing, initiatePmDataUpdate } = require('./IndividualServicesService');
+const { documentPmDataProcessing, provideDeviceDataStoreDump, initiatePmDataUpdate } = require('./IndividualServicesService');
 const { ERRORS } = require('./individualServices/initiatePmDataUpdate/util');
->>>>>>> 9c443fa (Align initiatePmDataUpdate implementation and tests)
 
 describe('documentPmDataProcessing', () => {
     beforeEach(() => {
@@ -222,7 +218,6 @@ describe('documentPmDataProcessing', () => {
         });
     });
 });
-<<<<<<< HEAD
 describe('provideDeviceDataStoreDump', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -506,7 +501,6 @@ it('rejects with 404 when the mount name is not found in the DataStore', async (
         });
     });
 });
-=======
 describe('IndividualServicesService - initiatePmDataUpdate', () => {
   let mockAppState;
   let mockFetch;
@@ -768,6 +762,42 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
     expect(result).not.toHaveProperty('already-up-to-date-mount-names');
   });
 
+  test('device updated exactly 15 minutes ago -> should be considered outdated (boundary >= 15 min)', async () => {
+    const body = {
+      'mount-names': ['CO18302']
+    };
+
+    const now = new Date();
+    const exactlyFifteenMinutesAgo = new Date(now - 15 * 60 * 1000).toISOString();
+
+    const mwdiResponse = [
+      {
+        'mount-name': 'CO18302',
+        'connection-status': 'connected',
+        'last-successful-complete-control-construct-update-time': exactlyFifteenMinutesAgo
+      }
+    ];
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mwdiResponse
+    });
+    // exactly 15 minutes -> timeSinceLastUpdate is not < 15 min -> outdated -> single control-construct GET (cache CC)
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+
+    const result = await initiatePmDataUpdate(
+      body,
+      'user',
+      'originator',
+      'x-correlator',
+      'trace-indicator',
+      'customer-journey'
+    );
+
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).not.toHaveProperty('already-up-to-date-mount-names');
+  });
+
   test('live CC returns 532 -> should throw error 532 with unconnected mount', async () => {
     const body = {
       'mount-names': ['CO18302']
@@ -923,4 +953,3 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
     });
   });
 });
->>>>>>> 9c443fa (Align initiatePmDataUpdate implementation and tests)
