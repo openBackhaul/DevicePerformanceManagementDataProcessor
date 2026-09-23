@@ -51,7 +51,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     // 1. Input validation test: check if body is valid and contains required fields
     const validationError = validateInput(body);
     if (validationError) {
-      throw new Error(`Validation error: ${validationError}`);
+      throw { code: 400, message: validationError };
     }
 
     // 2. Retrieve URL and headers
@@ -61,19 +61,26 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       ...(body._headers || {}),
     };
     // 3. Call MWDI REST API to get device status metadata
-    const mwdiResponse = await fetch(mwdiUrl, {
-      method: "POST",
-      headers: requestHeaders,
-      body: JSON.stringify({
+    let mwdiResponse;
+    try {
+      mwdiResponse = await fetch(mwdiUrl, {
+        method: "POST",
+        headers: requestHeaders,
+        body: JSON.stringify({
         "mount-name-list": body["mount-names"],
-      }),
-    });
+        }),
+      });
+    } catch (error) {
+      throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
+    }
     if (!mwdiResponse.ok) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
     }
     const responseData = await mwdiResponse.json();
-    logger.debug(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
-    // 5. Validate the MWDI response
+
+    logger.debug(responseData, `MWDI Received response for initiatePmDataUpdate:`);
+
+    // 5. Validate response
     const responseError = validateMWDIResponse(responseData);
     if (responseError) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
@@ -120,7 +127,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       // Throw error with code 532 and unconnected mount names
       const error532 = {
         code: 532,
-        message: ERRORS.UNCONNECTED_MOUNTS,
+        message: ERRORS.UPSTREAM_SERVER_NOT_RESPONDING,
         "unconnected-mount-names": connectionStatusError.unconnectedMountNames,
       };
 
@@ -168,7 +175,15 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     var loaded = await p1LoadParameters.run({
       functionName: "initiatePmDataUpdate",
     });
-    logger.debug(`Validation passed: ${loaded.parameters.parameter}`);
+
+    logger.debug(`Validation passed: ${JSON.stringify(loaded.parameters.parameter)}`);
+/*
+    let waitTimeForSending = Number(
+      loaded.parameters.parameter.find(
+        (p) => p["parameter-name"] === "waitTimeForSending",
+      )?.value,
+    );
+*/
     let waitTimeForSending = 0
     waitTimeForSending = Number(
       getParamFromFunction(
@@ -191,8 +206,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
       }
      // Build the URL to retrieve the control-construct for the current mount
-      // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+       const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+    //  const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
       try {
         // Retrieve the control-construct using a GET request
         const response = await fetch(controlConstructUrl, {
@@ -259,25 +274,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (unconnectedMountNames.length > 0) {
       throw {
         code: 532,
-        message: "Bad Gateway. Upstream server not responding.",
-        "unconnected-mount-names": unconnectedMountNames,
-      };
-    }
-
-    // 10. Riepilogo esiti per-mount: se qualche risorsa e' sconosciuta presso il controller (533)
-    if (missingMountNames.length > 0) {
-      throw {
-        code: 533,
-        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
-        "missing-mount-names": missingMountNames,
-      };
-    }
-
-    // Se qualche device non e' collegato / non risponde (502/530/531/532)
-    if (unconnectedMountNames.length > 0) {
-      throw {
-        code: 532,
-        message: "Bad Gateway. Upstream server not responding.",
+        message: ERRORS.UPSTREAM_SERVER_NOT_RESPONDING,
         "unconnected-mount-names": unconnectedMountNames,
       };
     }
@@ -318,8 +315,12 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         "unconnected-mount-names": error["unconnected-mount-names"],
       };
     }
-    // Propagate unexpected errors to the caller
-    throw { error: error.message || ERRORS.MWDI_CONNECTION_FAILED };
+    // Propagate unexpected errors to the caller, preserving the { code, message }
+    // shape required by the documented errorDescription schema
+    throw {
+      code: Number.isInteger(error.code) ? error.code : 500,
+      message: error.message || ERRORS.MWDI_CONNECTION_FAILED,
+    };
   }
 };
 

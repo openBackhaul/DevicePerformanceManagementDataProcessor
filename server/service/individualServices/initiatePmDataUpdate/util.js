@@ -1,5 +1,24 @@
 const { loadConfigFile } = require("../../../utils/config");
-const ERRORS = require("./errorsEnumInitiatePmDataUpdate");
+
+/**
+ * Catalogo dei messaggi di errore di initiatePmDataUpdate.
+ * E' esportato da questo modulo (vedi module.exports in fondo) e consumato da
+ * service/IndividualServicesService.js, che ne usa
+ * MOUNT_NAME_DISCREPANCY, UPSTREAM_SERVER_NOT_RESPONDING,
+ * MWDI_CONNECTION_FAILED e MWDI_INVALID_RESPONSE.
+ */
+const ERRORS = {
+  INPUT_INVALID: 'Input is not a valid object',
+  MOUNT_NAME_LIST_NOT_PROVIDED: 'mountNames not provided',
+  MOUNT_NAME_LIST_INVALID: 'mountNames invalid',
+  MOUNT_NAME_LIST_EMPTY: 'mountNames invalid',
+  MOUNT_NAME_DISCREPANCY: 'Resource unknown. The resource for the connected device does not exist at the Controller',
+  UPSTREAM_SERVER_NOT_RESPONDING: 'Bad Gateway. Upstream server not responding.',
+  MWDI_CONNECTION_FAILED: 'Failed to connect to MWDI service',
+  MWDI_INVALID_RESPONSE: 'Invalid response from MWDI service',
+  ERR_INVALID_JSON: 'Config file contains invalid JSON',
+  ERR_CONFIG_NOT_ACCESSIBLE: 'Error occurred while loading config file'
+};
 
 module.exports = {
   validateInput,

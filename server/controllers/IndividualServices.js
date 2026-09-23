@@ -95,10 +95,9 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
 
       var statusCode = 500;
 
-      if (error.code === 533) {
-        statusCode = 533;
-      } else if (error.code === 532) {
-        statusCode = 532;
+      // Codici di errore documentati per questa operation
+      if (error && [400, 532, 533].includes(error.code)) {
+        statusCode = error.code;
       }
 
       logger.error(
@@ -107,15 +106,7 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
 
       logger.error(error, '=== CONTROLLER: Error response ===');
 
-      if (statusCode === 533) {
-        return utils.writeJson(res, error, 533, headers);
-      }
-
-      if (statusCode === 532) {
-        return utils.writeJson(res, error, 532, headers);
-      }
-
-      return utils.writeJson(res, error, 500, headers);
+      return utils.writeJson(res, error, statusCode, headers);
     });
 };
 

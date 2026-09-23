@@ -14,7 +14,7 @@ jest.mock('../../individualServices/initiatePmDataUpdate/util.js', () => ({
   ERRORS: {
     MWDI_CONNECTION_FAILED: 'MWDI connection failed',
     MOUNT_NAME_DISCREPANCY: 'Mount name discrepancy',
-    UNCONNECTED_MOUNTS: 'Unconnected mounts'
+    UPSTREAM_SERVER_NOT_RESPONDING: 'Bad Gateway. Upstream server not responding.'
   }
 }));
 
