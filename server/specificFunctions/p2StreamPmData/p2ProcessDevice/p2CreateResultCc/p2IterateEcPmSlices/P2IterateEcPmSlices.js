@@ -9,9 +9,6 @@ const p1CalculateBusyHourPerformanceIndicators = require('../../../../../generic
 
 const PERIOD_15_MIN = 'GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN';
 const PERIOD_24_HOURS = 'GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS';
-const PERIOD_UNKNOWN = 'GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN';
-const PERIOD_NOT_DEFINED = 'GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED';
-const PERIODS = [PERIOD_15_MIN, PERIOD_24_HOURS, PERIOD_UNKNOWN, PERIOD_NOT_DEFINED];
 
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -24,7 +21,6 @@ function granularity(slice) {
 function isSlice(slice) {
   return isObject(slice) &&
     typeof slice['granularity-period'] === 'string' &&
-    PERIODS.includes(granularity(slice)) &&
     typeof slice['period-end-time'] === 'string' &&
     Number.isFinite(Date.parse(slice['period-end-time'])) &&
     isObject(slice['performance-data']);

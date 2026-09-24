@@ -1,0 +1,79 @@
+{
+    "fixture-metadata": {
+        "source-document-id": "121252295",
+        "real-data": "The EthernetContainer, AirInterface and their PM values were extracted from pre-production.",
+        "synthetic-data": "The serving-structure LTP 121252295+LTP-MWS-RADIO-1A was added because it is absent from the v1.0 stored ResultCC."
+    },
+    "input": {
+        "historical-performance-data": {
+            "period-end-time": "2026-09-15T17:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "performance-data": {
+                "total-bytes-output": "3453552994",
+                "time-period": 900
+            }
+        },
+        "result-cc": {
+            "batch-timestamp": "2026-09-15T17:21:03.0+00:00",
+            "logical-termination-point": [
+                {
+                    "uuid": "121252295+LTP-ETC-TTP-PORT-A",
+                    "server-ltp": [
+                        "LTP-MWS-RADIO-1A"
+                    ],
+                    "layer-protocol": [
+                        {
+                            "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER"
+                        }
+                    ]
+                },
+                {
+                    "uuid": "121252295+LTP-MWS-RADIO-1A",
+                    "server-ltp": [
+                        "LTP-MWPS-TTP-RADIO-1A"
+                    ],
+                    "layer-protocol": []
+                },
+                {
+                    "uuid": "121252295+LTP-MWPS-TTP-RADIO-1A",
+                    "client-ltp": [
+                        "LTP-MWS-RADIO-1A"
+                    ],
+                    "layer-protocol": [
+                        {
+                            "local-id": "121252295+LTP-MWPS-TTP-RADIO-1A",
+                            "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+                            "air-interface-2-0:air-interface-pac": {
+                                "air-interface-historical-performances": {
+                                    "number-of-historical-performance-sets": 1,
+                                    "historical-performance-data-list": [
+                                        {
+                                            "period-end-time": "2026-09-15T17:15:00.0+00:00",
+                                            "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                                            "performance-data": {
+                                                "interval-capacity": 350609
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "uuid-of-ethernet-container": "121252295+LTP-ETC-TTP-PORT-A"
+    },
+    "expected-output": {
+        "historical-performance-data": {
+            "period-end-time": "2026-09-15T17:15:00.0+00:00",
+            "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+            "performance-data": {
+                "total-bytes-output": "3453552994",
+                "time-period": 900,
+                "total-air-interface-interval-capacity": 350609,
+                "utilization": 8
+            }
+        }
+    }
+}
