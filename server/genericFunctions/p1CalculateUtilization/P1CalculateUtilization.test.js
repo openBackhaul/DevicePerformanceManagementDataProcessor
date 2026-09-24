@@ -166,27 +166,25 @@ describe('p1CalculateUtilization', () => {
     expect(result['historical-performance-data']['performance-data']['utilization']).toBe(16);
   });
 
-  // Time stamp not more required
-  // test('should not aggregate if period-end-time does not match', () => {
-  //   const input = {
-  //     'historical-performance-data': createValidHistoricalData(),
-  //     'aggregation-group': createValidAggGroup(['LTP-1']),
-  //     'result-cc': createValidResultCC('LTP-1', 1000, 'WRONG-TIME')
-  //   };
-  //   const result = p1CalculateUtilization(input);
-  //   expect(result).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
-  // });
+  test.each(['WRONG-TIME', '2026-04-01T05:45:00.0+00:00'])('should not aggregate if period-end-time does not match (%p)', time => {
+    const input = {
+      'historical-performance-data': createValidHistoricalData(),
+      'aggregation-group': createValidAggGroup(['LTP-1']),
+      'result-cc': createValidResultCC('LTP-1', 1000, time)
+    };
+    const result = p1CalculateUtilization(input);
+    expect(result).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
 
-  // TODO @latta-siae to be verified
-  // test('should return 0 capacity if no LTP matches', () => {
-  //   const input = {
-  //     'historical-performance-data': createValidHistoricalData(),
-  //     'aggregation-group': createValidAggGroup(['UUID-X']),
-  //     'result-cc': createValidResultCC('UUID-Y', 1000)
-  //   };
-  //   const result = p1CalculateUtilization(input);
-  //   expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(0);
-  // });
+  test('should not provide a capacity if no LTP matches', () => {
+    const input = {
+      'historical-performance-data': createValidHistoricalData(),
+      'aggregation-group': createValidAggGroup(['UUID-X']),
+      'result-cc': createValidResultCC('UUID-Y', 1000)
+    };
+    const result = p1CalculateUtilization(input);
+    expect(result).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
 
   test('Happy Path Calculation', () => {
     const input = {
@@ -273,7 +271,8 @@ describe('p1CalculateUtilization', () => {
 
       const result = p1CalculateUtilization(inputStruct);
       expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1100);
-      expect(result['historical-performance-data']['performance-data']['utilization']).toBeCloseTo(0.89, 1);
+      // 1125000 * 8 / (1100 * 1000 * 900) * 100 = 0.909
+      expect(result['historical-performance-data']['performance-data']['utilization']).toBe(0);
     });
   });
 
@@ -283,7 +282,7 @@ describe('p1CalculateUtilization', () => {
         'historical-performance-data': {
           'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
           'period-end-time': '2026-04-01T06:00:00Z',
-          'performance-data': { 'total-bytes-output': '900000', 'time-period': 900 }
+          'performance-data': { 'total-bytes-output': '9000000', 'time-period': 900 }
         },
         'aggregation-group': createValidAggGroup(['LTP-1']),
         'result-cc': createValidResultCC('LTP-1', 1000, '2026-04-01T06:00:00Z')
@@ -291,7 +290,7 @@ describe('p1CalculateUtilization', () => {
 
       const result = p1CalculateUtilization(input);
       expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
-      expect(result['historical-performance-data']['performance-data']['utilization']).toBe(0.8);
+      expect(result['historical-performance-data']['performance-data']['utilization']).toBe(8);
     });
 
     test('should match period-end-time with +00:00 timezone format', () => {
@@ -299,7 +298,7 @@ describe('p1CalculateUtilization', () => {
         'historical-performance-data': {
           'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
           'period-end-time': '2026-04-01T06:00:00.0+00:00',
-          'performance-data': { 'total-bytes-output': '900000', 'time-period': 900 }
+          'performance-data': { 'total-bytes-output': '9000000', 'time-period': 900 }
         },
         'aggregation-group': createValidAggGroup(['LTP-1']),
         'result-cc': createValidResultCC('LTP-1', 1000, '2026-04-01T06:00:00.0+00:00')
@@ -307,43 +306,131 @@ describe('p1CalculateUtilization', () => {
 
       const result = p1CalculateUtilization(input);
       expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
-      expect(result['historical-performance-data']['performance-data']['utilization']).toBe(0.8);
+      expect(result['historical-performance-data']['performance-data']['utilization']).toBe(8);
     });
 
-    // test('should NOT match when timestamps are semantically equal but format differs', () => {
-    //   const input = {
-    //     'historical-performance-data': {
-    //       'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-    //       'period-end-time': '2026-04-01T06:00:00.0+00:00',
-    //       'performance-data': { 'total-bytes-output': '900000', 'time-period': 900 }
-    //     },
-    //     'aggregation-group': createValidAggGroup(['LTP-1']),
-    //     'result-cc': createValidResultCC('LTP-1', 1000, '2026-04-01T06:00:00Z')
-    //   };
+    test.each(['2026-04-01T06:00:00Z', '2026-04-01T08:00:00+02:00'])('should match the same instant written as %p', time => {
+      const input = {
+        'historical-performance-data': {
+          'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+          'period-end-time': '2026-04-01T06:00:00.0+00:00',
+          'performance-data': { 'total-bytes-output': '9000000', 'time-period': 900 }
+        },
+        'aggregation-group': createValidAggGroup(['LTP-1']),
+        'result-cc': createValidResultCC('LTP-1', 1000, time)
+      };
 
-    //   const result = p1CalculateUtilization(input);
-    //   // TODO @latta-siae check the result
-    //   expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(0);
-    // });
+      const result = p1CalculateUtilization(input);
+      expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
+    });
 
-    // TO be review
-  //   test('should use real dataset timestamps correctly', () => {
-  //     const histFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
-  //     const perfData = JSON.parse(histFile);
-  //     const ccFile = fs.readFileSync(__dirname + '/datasets/resultCC2.json', 'utf8');
-  //     const resCC = JSON.parse(ccFile);
+    test('should use real dataset timestamps correctly', () => {
+      const histFile = fs.readFileSync(__dirname + '/datasets/ethHistoricalPerf.json', 'utf8');
+      const perfData = JSON.parse(histFile);
+      const ccFile = fs.readFileSync(__dirname + '/datasets/resultCC2.json', 'utf8');
+      const resCC = JSON.parse(ccFile);
 
-  //     const inputStruct = {
-  //       'historical-performance-data': perfData,
-  //       'aggregation-group': {
-  //         'physical-server-ltp-list': ['LTP-MWPS-TTP-ODU-B']
-  //       },
-  //       'result-cc': resCC
-  //     };
+      const inputStruct = {
+        'historical-performance-data': perfData,
+        'aggregation-group': {
+          'physical-server-ltp-list': ['LTP-MWPS-TTP-ODU-B']
+        },
+        'result-cc': resCC
+      };
 
-  //     const result = p1CalculateUtilization(inputStruct);
-  //     expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
-  //   });
+      const result = p1CalculateUtilization(inputStruct);
+      expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1000);
+    });
+  });
+
+  describe('period-end-time selection of the AirInterface record', () => {
+    const record = (time, capacity, granularity = 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN') => ({
+      'period-end-time': time,
+      'granularity-period': granularity,
+      'performance-data': { 'interval-capacity': capacity }
+    });
+
+    const resultCcWithRecords = (...records) => {
+      const resultCc = createValidResultCC('LTP-1');
+      resultCc['logical-termination-point'][0]['layer-protocol'][0]['air-interface-2-0:air-interface-pac']
+        ['air-interface-historical-performances']['historical-performance-data-list'] = records;
+      return resultCc;
+    };
+
+    const capacityOf = resultCc => p1CalculateUtilization({
+      'historical-performance-data': createValidHistoricalData(),
+      'aggregation-group': createValidAggGroup(['LTP-1']),
+      'result-cc': resultCc
+    })['historical-performance-data']['performance-data']['total-air-interface-interval-capacity'];
+
+    test('uses only the record of the slice among the stored 15-min records', () => {
+      expect(capacityOf(resultCcWithRecords(
+        record('2026-04-01T05:45:00.0+00:00', 100),
+        record('2026-04-01T06:00:00.0+00:00', 1000),
+        record('2026-04-01T06:15:00.0+00:00', 10000)
+      ))).toBe(1000);
+    });
+
+    test('ignores a 24-hours record with the same period-end-time', () => {
+      expect(capacityOf(resultCcWithRecords(
+        record('2026-04-01T06:00:00.0+00:00', 5000, 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'),
+        record('2026-04-01T06:00:00.0+00:00', 1000)
+      ))).toBe(1000);
+    });
+
+    test('counts the record once when the key appears in two formats', () => {
+      expect(capacityOf(resultCcWithRecords(
+        record('2026-04-01T06:00:00.0+00:00', 1000),
+        record('2026-04-01T06:00:00Z', 1000)
+      ))).toBe(1000);
+    });
+
+    test('sums the AirInterfaces of the group that hold a record for the slice', () => {
+      const resultCc = createValidResultCC('LTP-1', 1000);
+      resultCc['logical-termination-point'].push(
+        createValidResultCC('LTP-2', 500)['logical-termination-point'][0],
+        createValidResultCC('LTP-3', 700, '2026-04-01T05:45:00.0+00:00')['logical-termination-point'][0]
+      );
+      const result = p1CalculateUtilization({
+        'historical-performance-data': createValidHistoricalData(),
+        'aggregation-group': createValidAggGroup(['LTP-1', 'LTP-2', 'LTP-3']),
+        'result-cc': resultCc
+      });
+      expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(1500);
+    });
+
+    test.each(['abc', '2026-04-01', 20260401])('rejects the slice period-end-time %p', time => {
+      const input = {
+        'historical-performance-data': { ...createValidHistoricalData(), 'period-end-time': time },
+        'aggregation-group': createValidAggGroup(['LTP-1']),
+        'result-cc': createValidResultCC('LTP-1', 1000)
+      };
+      expect(p1CalculateUtilization(input)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+    });
+
+    test('rejects a slice period-end-time without offset', () => {
+      const time = '2026-04-01T06:00:00';
+      // The record carries the local-time reading of the value, in any time zone
+      const input = {
+        'historical-performance-data': { ...createValidHistoricalData(), 'period-end-time': time },
+        'aggregation-group': createValidAggGroup(['LTP-1']),
+        'result-cc': createValidResultCC('LTP-1', 1000, new Date(time).toISOString())
+      };
+      expect(p1CalculateUtilization(input)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+    });
+
+    test('keeps a 24-hours slice unchanged whatever its period-end-time', () => {
+      const histData = {
+        ...createValidHistoricalData('ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS'),
+        'period-end-time': 'abc'
+      };
+      const result = p1CalculateUtilization({
+        'historical-performance-data': histData,
+        'aggregation-group': createValidAggGroup(['LTP-1']),
+        'result-cc': createValidResultCC('LTP-1', 1000)
+      });
+      expect(result['historical-performance-data']).toEqual(histData);
+    });
   });
 
 
@@ -466,7 +553,7 @@ describe('single-server EthernetContainer (datasets/singleServerEc_fixture.json)
   const AIR_CAPACITY = 350609;
   const TOTAL_BYTES_OUTPUT = 3453552994;
 
-  const utilizationFor = capacity => TOTAL_BYTES_OUTPUT * 8 / (capacity * 1000 * 900) * 100;
+  const utilizationFor = capacity => Math.floor(TOTAL_BYTES_OUTPUT * 8 / (capacity * 1000 * 900) * 100);
   const clone = value => JSON.parse(JSON.stringify(value));
 
   let input;
@@ -564,8 +651,8 @@ describe('single-server EthernetContainer (datasets/singleServerEc_fixture.json)
     test('result agrees with the pre-production extract', () => {
       const result = performanceData(p1CalculateUtilization(input));
       expect(result['total-air-interface-interval-capacity']).toBe(extract.expected['total-air-interface-interval-capacity']);
-      expect(result.utilization).toBe(extract.expected['utilization-percent']);
-      expect(Number(result.utilization.toFixed(2))).toBe(extract.expected['utilization-percent-rounded-to-2-decimals']);
+      // utilization is an integer percentage (interface.yaml), rounded down
+      expect(result.utilization).toBe(Math.floor(extract.expected['utilization-percent']));
       const extractEc = extract['result-cc-extract']['logical-termination-point'][0];
       expect(ltp(EC_UUID).uuid).toBe(extract['uuid-of-ethernet-container']);
       expect(ltp(EC_UUID)['server-ltp']).toEqual(extractEc['server-ltp']);
@@ -721,11 +808,13 @@ describe('real device control construct through the raw-cc fields filter', () =>
     return resultCc;
   }
 
-  function airInterfaceCapacity(resultCc, uuid) {
+  // interval-capacity of the 15-min record at periodEndTime
+  function airInterfaceCapacity(resultCc, uuid, periodEndTime) {
     const ltp = resultCc['logical-termination-point'].find(item => item.uuid === uuid);
     return ltp['layer-protocol']
       .flatMap(lp => lp['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'])
-      .filter(record => record['granularity-period'].endsWith('PERIOD-15-MIN'))
+      .filter(record => record['granularity-period'].endsWith('PERIOD-15-MIN') &&
+        Date.parse(record['period-end-time']) === Date.parse(periodEndTime))
       .reduce((sum, record) => sum + record['performance-data']['interval-capacity'], 0);
   }
 
@@ -741,22 +830,23 @@ describe('real device control construct through the raw-cc fields filter', () =>
 
   test('resolves the transporting AirInterfaces of an EthernetContainer without aggregation group', () => {
     const resultCc = loadFilteredResultCc();
-    const expectedCapacity = airInterfaces.reduce((sum, uuid) => sum + airInterfaceCapacity(resultCc, uuid), 0);
-    expect(expectedCapacity).toBeGreaterThan(0);
+    const periodEndTime = '2026-04-01T06:00:00Z';
+    const expectedCapacity = airInterfaces.reduce((sum, uuid) => sum + airInterfaceCapacity(resultCc, uuid, periodEndTime), 0);
+    expect(expectedCapacity).toBe(1000);
 
     const result = p1CalculateUtilization({
       'historical-performance-data': {
         'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-        'period-end-time': '2026-04-01T06:00:00Z',
-        'performance-data': { 'total-bytes-output': '900000', 'time-period': 900 }
+        'period-end-time': periodEndTime,
+        'performance-data': { 'total-bytes-output': '9000000', 'time-period': 900 }
       },
       'aggregation-group': null,
       'result-cc': resultCc,
       'uuid-of-ethernet-container': ethernetContainerOnRadio
     });
     expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(expectedCapacity);
-    expect(result['historical-performance-data']['performance-data'].utilization)
-      .toBeCloseTo(900000 * 8 / (expectedCapacity * 1000 * 900) * 100, 10);
+    // 9000000 * 8 / (1000 * 1000 * 900) * 100
+    expect(result['historical-performance-data']['performance-data'].utilization).toBe(8);
   });
 
   test('an EthernetContainer transported by wire interfaces only cannot get a utilization', () => {
@@ -775,3 +865,109 @@ describe('real device control construct through the raw-cc fields filter', () =>
   });
 });
 
+
+describe('utilization inputs and AirInterface records', () => {
+  const PERIOD_END_TIME = '2026-04-01T06:00:00.0+00:00';
+
+  const record = (capacity, time = PERIOD_END_TIME) => ({
+    'period-end-time': time,
+    'granularity-period': 'air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+    'performance-data': { 'interval-capacity': capacity }
+  });
+  const airInterface = (uuid, records) => ({
+    uuid,
+    'layer-protocol': [{
+      'local-id': 'LP-1',
+      'layer-protocol-name': 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER',
+      'air-interface-2-0:air-interface-pac': {
+        'air-interface-historical-performances': { 'historical-performance-data-list': records }
+      }
+    }]
+  });
+  const input = ({ performanceData = {}, ltps = [airInterface('LTP-1', [record(1000)])], servers = ['LTP-1'] } = {}) => ({
+    'historical-performance-data': {
+      'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+      'period-end-time': PERIOD_END_TIME,
+      'performance-data': { 'total-bytes-output': '9000000', 'time-period': 900, ...performanceData }
+    },
+    'aggregation-group': { 'physical-server-ltp-list': servers },
+    'result-cc': { 'logical-termination-point': ltps }
+  });
+  const performanceData = result => result['historical-performance-data']['performance-data'];
+
+  test('utilization is an integer percentage, rounded down', () => {
+    expect(performanceData(p1CalculateUtilization(input())).utilization).toBe(8);
+    // 8.7557 %
+    expect(performanceData(p1CalculateUtilization(input({
+      performanceData: { 'total-bytes-output': '3453552994' },
+      ltps: [airInterface('LTP-1', [record(350609)])]
+    }))).utilization).toBe(8);
+  });
+
+  test.each(['abc', '', ' ', ' 123', '-5', '-1', '12.5', '1e6', '0x10', '9223372036854775808',
+    -1, 12.5, true, {}, []])('rejects total-bytes-output %p', value => {
+    expect(p1CalculateUtilization(input({ performanceData: { 'total-bytes-output': value } })))
+      .toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
+
+  test.each([['0', 0], ['9000000', 8], [9000000, 8], ['9223372036854775807', 8198552921648]])(
+    'accepts total-bytes-output %p', (value, utilization) => {
+      expect(performanceData(p1CalculateUtilization(input({ performanceData: { 'total-bytes-output': value } }))).utilization)
+        .toBe(utilization);
+    });
+
+  test.each(['900', '', 0, -900, 900.5, true, {}])('rejects time-period %p', value => {
+    expect(p1CalculateUtilization(input({ performanceData: { 'time-period': value } })))
+      .toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
+
+  test('accepts a partial measurement interval', () => {
+    expect(performanceData(p1CalculateUtilization(input({ performanceData: { 'time-period': 352 } }))).utilization).toBe(20);
+  });
+
+  test.each([['32625000', 29], ['64125000', 57], ['65250000', 58], ['112500000', 100]])(
+    'exact percentage %p is not rounded down by float arithmetic', (value, utilization) => {
+      expect(performanceData(p1CalculateUtilization(input({ performanceData: { 'total-bytes-output': value } }))).utilization)
+        .toBe(utilization);
+    });
+
+  test.each(['1000', '', -1000, 1000.5, null, true, {}])('rejects interval-capacity %p of a matching record', value => {
+    // LTP-2 alone would give a capacity: the invalid record must not be skipped
+    const ltps = [airInterface('LTP-1', [record(value)]), airInterface('LTP-2', [record(500)])];
+    expect(p1CalculateUtilization(input({ ltps, servers: ['LTP-1', 'LTP-2'] })))
+      .toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
+
+  test('accepts interval-capacity 0 of an AirInterface in the group', () => {
+    const ltps = [airInterface('LTP-1', [record(0)]), airInterface('LTP-2', [record(500)])];
+    const result = performanceData(p1CalculateUtilization(input({ ltps, servers: ['LTP-1', 'LTP-2'] })));
+    expect(result['total-air-interface-interval-capacity']).toBe(500);
+    expect(result.utilization).toBe(16);
+  });
+
+  test('ignores invalid records at other times', () => {
+    const ltps = [airInterface('LTP-1', [record('abc', '2026-04-01T05:45:00.0+00:00'), record(1000)])];
+    expect(performanceData(p1CalculateUtilization(input({ ltps })))['total-air-interface-interval-capacity']).toBe(1000);
+  });
+
+  test('an AirInterface without historical-performance-data-list has no record', () => {
+    const noList = airInterface('LTP-2', []);
+    delete noList['layer-protocol'][0]['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
+    const ltps = [airInterface('LTP-1', [record(1000)]), noList];
+    expect(performanceData(p1CalculateUtilization(input({ ltps, servers: ['LTP-1', 'LTP-2'] })))['total-air-interface-interval-capacity'])
+      .toBe(1000);
+  });
+
+  test.each(['2026-13-01T06:00:00Z', '2026-04-01T06:00:00+0000'])('rejects period-end-time %p', time => {
+    const data = input();
+    data['historical-performance-data']['period-end-time'] = time;
+    expect(p1CalculateUtilization(data)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
+
+  test('invalid values do not touch the input', () => {
+    const data = input({ performanceData: { 'total-bytes-output': 'abc' } });
+    const original = JSON.parse(JSON.stringify(data));
+    expect(p1CalculateUtilization(data)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+    expect(data).toEqual(original);
+  });
+});

@@ -16,6 +16,11 @@ const GRAN_24H = 'GRANULARITY_PERIOD_TYPE_PERIOD-24-HOURS';
 const GRAN_UNKN = 'GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN';
 const GRAN_NOTDEF = 'GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED';
 
+const AIR_LAYER = 'air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER';
+const INT64_MAX = 9223372036854775807n;
+// yang:date-and-time, e.g. "2026-04-01T06:00:00.0+00:00" or "2026-04-01T06:00:00Z"
+const DATE_AND_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
+
 
 function validateResultCC(input) {
   try {
@@ -165,12 +170,41 @@ function preparePhysicalServerLtpList(aggregationGroup, resultCc, uuidOfEthernet
   return [...new Set(physicalServerLtpList)];
 }
 
+// Instant of a yang:date-and-time value, or null when the value is not one.
+// Instants are compared because the same period-end-time can be written in
+// different ways ("...T06:00:00Z", "...T06:00:00.0+00:00").
+function toInstant(dateAndTime) {
+  if (typeof dateAndTime !== 'string' || !DATE_AND_TIME.test(dateAndTime)) {
+    return null;
+  }
+  const instant = Date.parse(dateAndTime);
+  return Number.isFinite(instant) ? instant : null;
+}
+
+// Historical performance records of one AirInterface layer protocol
+function airInterfaceHistoricalRecords(layerProtocol) {
+  const airPerfHist = layerProtocol['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
+  if (Array.isArray(airPerfHist?.['historical-performance-data-list'])) {
+    return airPerfHist['historical-performance-data-list'];
+  }
+  return Array.isArray(airPerfHist) ? airPerfHist : [];
+}
+
+// totalBytesOutput is the string representation of a (non-negative) int64
+// value; a JSON number is tolerated, as in p1CalculateEthernetKpis
+function isTotalBytesOutput(value) {
+  if (typeof value === 'string') {
+    return /^\d+$/.test(value) && BigInt(value) <= INT64_MAX;
+  }
+  return Number.isSafeInteger(value) && value >= 0;
+}
+
 // Aggregates the interval capacity of all transporting AirInterfaces
 // input
 // - logical-termination-point
 // - physical-server-ltp-list
 // - period-end-time
-// 
+//
 // Errors:
 // - 'logicalTerminationPoint list not provided'
 // - 'logicalTerminationPoint list invalid'
@@ -188,59 +222,55 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
 
     if (ltpList == null) {
       return ERRORS.LTP_LIST_NOT_PROVIDED;
+    } else if (!Array.isArray(ltpList)) {
+      return ERRORS.LTP_LIST_INVALID;
     }
-    // TODO: manage 'logicalTerminationPoint list invalid'
 
     if (psyServerLTP == null) {
       return ERRORS.PSY_SERVER_LTP_LIST_NOT_PROVIDED;
+    } else if (!isValidLtpList(psyServerLTP)) {
+      return ERRORS.PSY_SERVER_LTP_LIST_INVALID;
     }
-    // TODO: manage 'physicalServerLtpList invalid'
 
     if (periodEndTime == null) {
       return ERRORS.PERIOD_ENDTIME_NOT_PROVIDED;
     }
-    // TODO: manage 'periodEndTime invalid'
+    const periodEndInstant = toInstant(periodEndTime);
+    if (periodEndInstant == null) {
+      return ERRORS.PERIOD_ENDTIME_INVALID;
+    }
 
     // Filter out LTP no in ServerList
     const cleanLTPlist = ltpList.filter((ltp) => hasLtpReference(psyServerLTP, ltp['uuid']));
 
-    // Reduce function to calculate all AirInterfaceCapacity for the aggration
-    const totalAirIfCap = cleanLTPlist.reduce((accLTP, currentLTP) => {
-      let lp = currentLTP['layer-protocol'];
-      lp = lp.filter(lpObj => lpObj['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER");
-      const resLP = lp.reduce((accLP, currentLP) => {
-        const airPerfHist = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
-        // In case of no pm history set Accumulator equal to 0
-        if (airPerfHist['number-of-historical-performance-sets'] == 0) {
-          return accLP + 0;
-        }
-        // Pick-up historical performance data array
-        // const histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
-        let histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances']['historical-performance-data-list'];
-        if (histPerfList == undefined) { // TODO @latta-siae workaround  // Historical-performance-data-list shoud be present
-          histPerfList = currentLP['air-interface-2-0:air-interface-pac']['air-interface-historical-performances'];
-        }
-
-        // Filter out data that is not related to air-interface 15 minutes and should match period end time
-        const histDataClean = histPerfList.filter((perfData) => {
-          return perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`;
-          // return time1 < time2 && perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}`;  // Timestamp is not more required
-        });
-
-        let resHistory = 0;  // Check if array lenght is equal to 0
-        if (histDataClean.length != 0) {
-          // Sum all interval-capacity
-          resHistory = histDataClean.reduce((accHis, currHistory) => accHis += currHistory[PERFDATA]['interval-capacity'], 0);
-        }
-
-        return accLP + resHistory;
-      }, 0); // 0 is initial accumulator
-      return accLTP + resLP;
-    }, 0); // 0 is initial accumulator
-
     // 'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
     // from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
     //             with {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/granularity-period]}==air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN'
+    let totalAirIfCap = 0;
+    let matchedRecords = 0;
+    for (const ltp of cleanLTPlist) {
+      const airLayers = ltp['layer-protocol'].filter(lpObj => lpObj['layer-protocol-name'] == AIR_LAYER);
+      for (const airLayer of airLayers) {
+        // The list is keyed by granularity-period and period-end-time: one record per instant
+        const record = airInterfaceHistoricalRecords(airLayer).find(perfData =>
+          perfData['granularity-period'] == `air-interface-2-0:${GRAN_15MIN}` &&
+          toInstant(perfData[ENDTIME]) === periodEndInstant);
+        if (record === undefined) {
+          continue;
+        }
+        const intervalCapacity = record[PERFDATA]?.['interval-capacity'];
+        if (!Number.isInteger(intervalCapacity) || intervalCapacity < 0) {
+          return ERRORS.TOTAL_AIR_IF_INT_CAP_COULDNT_PROVIDED;
+        }
+        totalAirIfCap += intervalCapacity;
+        matchedRecords++;
+      }
+    }
+
+    // No AirInterface record for this period-end-time
+    if (matchedRecords == 0) {
+      return ERRORS.TOTAL_AIR_IF_INT_CAP_COULDNT_PROVIDED;
+    }
 
     return {
       'total-air-interface-interval-capacity': totalAirIfCap
@@ -268,34 +298,41 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
 // - 'General processing error'
 function calculateUtilization(input) {
   try {
-    const totalByteOutput = input[TOTBYTEOUT];   //string
-    const totalAirIfIntCap = input[TOTAIRIFCAP]; // integer
-    const timePeriod = input[TIMEPERIOD];        // integer
+    const totalByteOutput = input[TOTBYTEOUT];   // string (int64)
+    const totalAirIfIntCap = input[TOTAIRIFCAP]; // integer, kbps
+    const timePeriod = input[TIMEPERIOD];        // integer, seconds
 
     if (totalByteOutput == null) {
       return ERRORS.TOTAL_BYTE_OUTPUT_NOT_PROVIDED;
+    } else if (!isTotalBytesOutput(totalByteOutput)) {
+      return ERRORS.TOTAL_BYTE_OUTPUT_INVALID;
     }
 
     if (totalAirIfIntCap == null) {
       return ERRORS.TOTAL_AIR_IF_INT_CAP_NOT_PROVIDED;
+    } else if (!Number.isInteger(totalAirIfIntCap) || totalAirIfIntCap < 0) {
+      return ERRORS.TOTAL_AIR_IF_INT_CAP_INVALID;
     }
-    // TODO: manage totalAirInterfaceIntervalCapacity invalid
 
     if (timePeriod == null) {
       return ERRORS.TIME_PERIOD_NOT_PROVIDED;
+    } else if (!Number.isInteger(timePeriod) || timePeriod <= 0) {
+      return ERRORS.TIME_PERIOD_INVALID;
     }
 
     // From Spec file: interface.yaml
     //    'Interval utilization in %
     //    from [ {total-bytes-output}*8 / ( {total-air-interface-interval-capacity}*1000 * {time-period} ) ]'
-    const calcNum = Number(totalByteOutput) * 8;
-    const calcDen = totalAirIfIntCap * 1000 * timePeriod;
+    // Integer arithmetic: a float quotient turns e.g. 29 % into 28.999...
+    const calcNum = BigInt(totalByteOutput) * 8n;
+    const calcDen = BigInt(totalAirIfIntCap) * 1000n * BigInt(timePeriod);
 
-    // Check if Denominator is 0, then set by default to 0
-    if (calcDen == 0) {
+    // Check if Denominator is 0 (no capacity)
+    if (calcDen == 0n) {
       return ERRORS.UTILIZATION_COULDNT_PROVIDED;
     }
-    const result = (calcNum / calcDen) * 100;
+    // utilization is an integer: rounded down, like the busy-hour utilization
+    const result = Number(calcNum * 100n / calcDen);
 
     // Return result
     return {
