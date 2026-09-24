@@ -223,16 +223,21 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         baseMwdiUrl.includes('127.0.0.1');
 
       let controlConstructUrl;
-
+//##########################################################################
+/*   
       if (isLocalMwdi) {
         logger.info(`Local Test - using cache control-construct`);
         controlConstructUrl =
           `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
       } else {
+*/
         logger.info(`Live Environment - using live control-construct`);
         controlConstructUrl =
           `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+/*  
       }
+*/
+//##########################################################################
       try {
         // Retrieve the control-construct using a GET request
         const response = await fetch(controlConstructUrl, {
