@@ -4,6 +4,10 @@ var IndividualServices = require('../service/IndividualServicesService');
 
 var utils = require('../utils/writer.js');
 var IndividualServices = require('../service/IndividualServicesService');
+var responseCodeEnum = require('onf-core-model-ap/applicationPattern/rest/server/ResponseCode');
+var RestResponseHeader = require('onf-core-model-ap/applicationPattern/rest/server/ResponseHeader');
+var RestResponseBuilder = require('onf-core-model-ap/applicationPattern/rest/server/ResponseBuilder');
+var ExecutionAndTraceService = require('onf-core-model-ap/applicationPattern/services/ExecutionAndTraceService');
 const logger = require('../service/LoggingService').getLogger();
 
 module.exports.bequeathYourDataAndDie = function bequeathYourDataAndDie(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
@@ -109,81 +113,26 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
     });
 };
 
-module.exports.provideDeviceDataStoreDump = function provideDeviceDataStoreDump(
-  req,
-  res,
-  next,
-  body,
-  user,
-  originator,
-  xCorrelator,
-  traceIndicator,
-  customerJourney
-) {
-  var startTime = Date.now();
-
-  IndividualServices.provideDeviceDataStoreDump(
-    body,
-    user,
-    originator,
-    xCorrelator,
-    traceIndicator,
-    customerJourney
-  )
-    .then(function (response) {
-
-      var execTime = Date.now() - startTime;
-
-      var headers = {
-        'x-correlator': xCorrelator,
-        'exec-time': execTime,
-        'backend-time': execTime,
-        'life-cycle-state': 'EXPERIMENTAL'
-      };
-
-      logger.debug(
-        `POST /provide-device-data-store-dump SUCCESS ${execTime}ms`
-      );
-
-      logger.debug(response, '=== CONTROLLER: Success response ===');
-      logger.debug('=== END CONTROLLER ===');
-      /*
-       * Response handling according to the OpenAPI specification:
-       * 200 -> device-pm-data returned
-      */
-      return utils.writeJson(
-        res,
-        response,
-        200,
-        headers
-      );
+module.exports.provideDeviceDataStoreDump = async function provideDeviceDataStoreDump(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+  let startTime = process.hrtime();
+  let responseCode = responseCodeEnum.code.OK;
+  let responseBodyToDocument = {};
+  await IndividualServices.provideDeviceDataStoreDump(body, user, originator, xCorrelator, traceIndicator, customerJourney)
+    .then(async function (responseBody) {
+      responseBodyToDocument = responseBody;
+      let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
+      RestResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);
     })
-
-    .catch(function (error) {
-
-      var execTime = Date.now() - startTime;
-
-      var headers = {
-        'x-correlator': xCorrelator,
-        'exec-time': execTime,
-        'backend-time': execTime,
-        'life-cycle-state': 'EXPERIMENTAL'
-      };
-
-      var statusCode = 500;
-
-      if (error && Number.isInteger(error.code)) {
-        statusCode = error.code;
-      }
-
-      logger.error(
-        `POST /provide-device-data-store-dump ${statusCode} ERROR ${execTime}ms`
-      );
-
-      logger.error(error, '=== CONTROLLER: Error response ===');
-
-      return utils.writeJson(res, error, statusCode, headers);
+    .catch(async function (responseBody) {
+      let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url, -1);
+      let sentResp = RestResponseBuilder.buildResponse(res, undefined, responseBody, responseHeader);
+      responseCode = sentResp.code;
+      responseBodyToDocument = sentResp.body;
     });
+  let execTime = await RestResponseHeader.executionTimeInMilliseconds(startTime);
+  if (!execTime) execTime = 0;
+  else execTime = Math.round(execTime);
+  ExecutionAndTraceService.recordServiceRequest(xCorrelator, traceIndicator, user, originator, req.url, responseCode, req.body, responseBodyToDocument, execTime);
 };
 
 module.exports.documentPmDataProcessing = function documentPmDataProcessing(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {

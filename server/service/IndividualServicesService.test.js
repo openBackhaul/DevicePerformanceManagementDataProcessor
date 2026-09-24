@@ -35,6 +35,7 @@ const { getParamFromFunction, findFunctionNode } = require('../utils/functionTre
 
 const { documentPmDataProcessing, provideDeviceDataStoreDump, initiatePmDataUpdate } = require('./IndividualServicesService');
 const { ERRORS } = require('./IndividualServicesService');
+const createHttpError = require('http-errors');
 const path = require('path');
 
 describe('documentPmDataProcessing', () => {
@@ -319,197 +320,82 @@ describe('provideDeviceDataStoreDump', () => {
         expect(result).toEqual({ 'device-pm-data': mockDevicePmData });
     });
 
-    it('rejects with 400 when mount-name is missing', async () => {
-        await expect(
-            provideDeviceDataStoreDump(
-                {},
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 400,
-            message: 'mountName not provided'
-        });
+    const callService = (body) => provideDeviceDataStoreDump(
+        body,
+        baseArgs.user,
+        baseArgs.originator,
+        baseArgs.xCorrelator,
+        baseArgs.traceIndicator,
+        baseArgs.customerJourney
+    );
 
-        expect(p1LoadParameters.run).not.toHaveBeenCalled();
-    });
-
-    it('rejects with 400 when the body is null', async () => {
-        await expect(
-            provideDeviceDataStoreDump(
-                null,
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 400,
-            message: 'mountName not provided'
-        });
-
-        expect(p1LoadParameters.run).not.toHaveBeenCalled();
-    });
-
-    it('rejects with 400 when the body is not an object', async () => {
-        await expect(
-            provideDeviceDataStoreDump(
-                'not-an-object',
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 400,
-            message: 'mountName not provided'
-        });
-
-        expect(p1LoadParameters.run).not.toHaveBeenCalled();
-    });
-
-    it('rejects with 400 when mount-name is empty', async () => {
-        await expect(
-            provideDeviceDataStoreDump(
-                { 'mount-name': '' },
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 400,
-            message: 'mountName not provided'
-        });
-    });
-
-    it('rejects with 400 when mount-name is not a string', async () => {
-        await expect(
-            provideDeviceDataStoreDump(
-                { 'mount-name': 100250001 },
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 400,
-            message: 'mountName invalid'
-        });
-    });
-    it('rejects with 404 when the mount name is not found in the DataStore', async () => {
+    const mockFlowUntilRead = () => {
         p1LoadParameters.run.mockResolvedValue({
             parameters: mockParameters,
             configFile: { 'core-model-1-4:control-construct': true }
         });
         findFunctionNode.mockReturnValue(mockParameters['sub-function'][0]);
         p1ResolveEsAddress.run.mockResolvedValue({ esAddress: mockEsAddress });
-        p1ReadDataStoreDeviceData.mockResolvedValue('mountName not found in DataStore');
+    };
 
-        await expect(
-            provideDeviceDataStoreDump(
-                baseArgs.body,
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 404,
-            message: 'mountName not found in DataStore'
+    it.each([
+        ['mount-name is missing', {}, 'mount-name must not be empty'],
+        ['the body is null', null, 'mount-name must not be empty'],
+        ['the body is not an object', 'not-an-object', 'mount-name must not be empty'],
+        ['mount-name is empty', { 'mount-name': '' }, 'mount-name must not be empty'],
+        ['mount-name is not a string', { 'mount-name': 100250001 }, 'mount-name must be a string']
+    ])('rejects with BadRequest (400) when %s', async (_, body, message) => {
+        const error = await callService(body).catch((e) => e);
+
+        expect(createHttpError.isHttpError(error)).toBe(true);
+        expect(error).toMatchObject({ statusCode: 400, message });
+        expect(p1LoadParameters.run).not.toHaveBeenCalled();
+    });
+
+    it('rejects with NotFound (404) when the DataStore holds no PM data for the device', async () => {
+        mockFlowUntilRead();
+        p1ReadDataStoreDeviceData.mockResolvedValue({ 'device-pm-data': [] });
+
+        const error = await callService(baseArgs.body).catch((e) => e);
+
+        expect(createHttpError.isHttpError(error)).toBe(true);
+        expect(error).toMatchObject({
+            statusCode: 404,
+            message: 'mount-name 100250001 not found in DataStore'
         });
     });
 
-    it('rejects with 400 when the DataStore URL is invalid', async () => {
-        p1LoadParameters.run.mockResolvedValue({
-            parameters: mockParameters,
-            configFile: { 'core-model-1-4:control-construct': true }
-        });
-        findFunctionNode.mockReturnValue(mockParameters['sub-function'][0]);
-        p1ResolveEsAddress.run.mockResolvedValue({ esAddress: mockEsAddress });
-        p1ReadDataStoreDeviceData.mockResolvedValue('dataStoreUrl invalid');
+    it('propagates p1ReadDataStoreDeviceData failures as non-HTTP errors (answered with 500)', async () => {
+        mockFlowUntilRead();
+        p1ReadDataStoreDeviceData.mockRejectedValue(new Error('ElasticSearch read error'));
 
-        await expect(
-            provideDeviceDataStoreDump(
-                baseArgs.body,
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 400,
-            message: 'dataStoreUrl invalid'
-        });
+        const error = await callService(baseArgs.body).catch((e) => e);
+
+        expect(createHttpError.isHttpError(error)).toBe(false);
+        expect(error.message).toBe('ElasticSearch read error');
     });
 
-    it('rejects with 500 when reading from ElasticSearch fails', async () => {
-        p1LoadParameters.run.mockResolvedValue({
-            parameters: mockParameters,
-            configFile: { 'core-model-1-4:control-construct': true }
-        });
-        findFunctionNode.mockReturnValue(mockParameters['sub-function'][0]);
-        p1ResolveEsAddress.run.mockResolvedValue({ esAddress: mockEsAddress });
-        p1ReadDataStoreDeviceData.mockResolvedValue('ElasticSearch read error');
-
-        await expect(
-            provideDeviceDataStoreDump(
-                baseArgs.body,
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 500,
-            message: 'ElasticSearch read error'
-        });
-    });
-
-    it('rejects with 500 when p1LoadParameters fails', async () => {
+    it('propagates p1LoadParameters failures as non-HTTP errors (answered with 500)', async () => {
         p1LoadParameters.run.mockRejectedValue(new Error('Function profile not found for provideDeviceDataStoreDump'));
 
-        await expect(
-            provideDeviceDataStoreDump(
-                baseArgs.body,
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 500,
-            message: 'Function profile not found for provideDeviceDataStoreDump'
-        });
+        const error = await callService(baseArgs.body).catch((e) => e);
+
+        expect(createHttpError.isHttpError(error)).toBe(false);
+        expect(error.message).toBe('Function profile not found for provideDeviceDataStoreDump');
     });
 
-    it('rejects with 500 and a generic message when the error has no message', async () => {
-        p1LoadParameters.run.mockRejectedValue(new Error());
-
-        await expect(
-            provideDeviceDataStoreDump(
-                baseArgs.body,
-                baseArgs.user,
-                baseArgs.originator,
-                baseArgs.xCorrelator,
-                baseArgs.traceIndicator,
-                baseArgs.customerJourney
-            )
-        ).rejects.toEqual({
-            code: 500,
-            message: 'General processing error'
+    it('rejects with a non-HTTP error when the p1ResolveEsAddress configuration is missing', async () => {
+        p1LoadParameters.run.mockResolvedValue({
+            parameters: mockParameters,
+            configFile: { 'core-model-1-4:control-construct': true }
         });
+        findFunctionNode.mockReturnValue(undefined);
+
+        const error = await callService(baseArgs.body).catch((e) => e);
+
+        expect(createHttpError.isHttpError(error)).toBe(false);
+        expect(error.message).toBe('Missing p1ResolveEsAddress configuration');
+        expect(p1ResolveEsAddress.run).not.toHaveBeenCalled();
     });
 });
 describe('IndividualServicesService - initiatePmDataUpdate', () => {

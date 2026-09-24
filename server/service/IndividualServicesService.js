@@ -1,6 +1,7 @@
 "use strict";
 
 const logger = require("./LoggingService.js").getLogger();
+const createHttpError = require("http-errors");
 
 const { loadConfigFile } = require("../utils/config");
 
@@ -31,7 +32,6 @@ var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParam
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
 var p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
-var p1ReadDataStoreDeviceDataErrors = require('../genericFunctions/p1ReadDataStoreDeviceData/ErrorsEnum');
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
 //================ SERVICES ================
@@ -405,19 +405,21 @@ exports.documentPmDataProcessing = async function (body, user, originator, xCorr
 exports.provideDeviceDataStoreDump = async function (body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   try {
     // 1. Input validation: mount-name is mandatory and must be a non-empty string
-    const validationError = validateProvideDeviceDataStoreDumpInput(body);
-    if (validationError) {
-      throw createError(400, validationError);
+    const mountName = body && body['mount-name'];
+    if (mountName === undefined || mountName === null || mountName === '') {
+      throw new createHttpError.BadRequest('mount-name must not be empty');
+    }
+    if (typeof mountName !== 'string') {
+      throw new createHttpError.BadRequest('mount-name must be a string');
     }
     logger.debug({ body }, 'Received body in provideDeviceDataStoreDump service');
-    const mountName = body['mount-name'];
 
     // 2. Load the parameters of the function from the control construct
     const loaded = await p1LoadParameters.run({
       functionName: 'provideDeviceDataStoreDump'
     });
     if (!loaded || !loaded.parameters) {
-      throw createError(500, "Failed to load function parameters");
+      throw new Error("Failed to load function parameters");
     }
     // 3. Resolve the address of the DataStore Elasticsearch client
     const p1ResolveEsAddressParameters = findFunctionNode(
@@ -425,7 +427,7 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
       'p1ResolveEsAddress'
     );
     if (!p1ResolveEsAddressParameters) {
-      throw createError(500, 'Missing p1ResolveEsAddress configuration');
+      throw new Error('Missing p1ResolveEsAddress configuration');
     }
     logger.debug({ p1ResolveEsAddressParameters }, 'Result of findFunctionNode');
     const { esAddress } = await p1ResolveEsAddress.run({
@@ -455,26 +457,19 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
       'mount-name': mountName
     });
 
-    // 5. Map the error messages returned by the generic function to HTTP errors
-    if (typeof readResult === 'string') {
-      throw mapReadDataStoreDeviceDataError(readResult);
+    // 5. No PM data stored for the device: 404 as per OpenAPI specification
+    if (readResult['device-pm-data'].length === 0) {
+      throw new createHttpError.NotFound(`mount-name ${mountName} not found in DataStore`);
     }
 
     logger.debug(`PM data of device ${mountName} read from the DataStore successfully`);
 
-    // 6. Build the success response as expected by the OpenAPI specification
-    return buildSuccessResponse(readResult);
+    return readResult;
   } catch (error) {
-    // Propagate errors that already carry an HTTP status code 
-    if (error && Number.isInteger(error.code)) {
-      logger.error(`Error in provideDeviceDataStoreDump: ${error.message || error}`);
-      throw error;
-    }
-
-    // Wrap unexpected errors into a 500 response
-    const message = (error && error.message) || p1ReadDataStoreDeviceDataErrors.GENERAL_ERROR;
-    logger.error(`Error in provideDeviceDataStoreDump: ${message}`);
-    throw createError(500, message);
+    // HttpErrors are answered with their own status code by the ResponseBuilder,
+    // any other error is answered with 500
+    logger.error(`Error in provideDeviceDataStoreDump: ${error.message}`);
+    throw error;
   }
 };
 
@@ -667,87 +662,5 @@ function getCustomHeaders() {
     'trace-indicator': process.env.HTTP_TRACE_INDICATOR || '1.3.1',
     'customer-journey': process.env.HTTP_CUSTOMER_JOURNEY || 'Unknown value',
     'operation-key': process.env.HTTP_OPERATION_KEY || 'Operation key not yet provided.'
-  };
-}
-
-
-
-// ---------------------------------------------------------------------------
-// provideDeviceDataStoreDump utilities
-// ---------------------------------------------------------------------------
-
-
-
-/**
- * Builds the error object propagated to the controller as {code, message}.
- * NOTE: it deliberately returns a PLAIN object (not an `Error` instance) because:
- *  - the controller serialises it directly into the HTTP response body
- *    (an `Error` instance would serialise to `{}`, since `message` is not enumerable);
- *  - it is the same convention used by initiatePmDataUpdate (plain {code, message} objects);
- *  - the unit tests assert `rejects.toEqual({ code, message })`.
- */
-function createError(code, message) {
-  return { code, message };
-}
-
-/**
- * Validates the body of the provideDeviceDataStoreDump service.
- * The mount-name is mandatory and must be a non-empty string.
- *
- * @param {Object} body
- * @returns {string} ERRORS constant or null if valid
- */
-function validateProvideDeviceDataStoreDumpInput(body) {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED;
-  }
-
-  const mountName = body['mount-name'];
-  if (mountName === undefined || mountName === null || mountName === '') {
-    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED;
-  }
-  if (typeof mountName !== 'string') {
-    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_INVALID;
-  }
-
-  return null;
-}
-
-/**
- * Maps the error messages returned by p1ReadDataStoreDeviceData to
- * the HTTP error objects propagated to the controller.
- *
- * @param {string} message
- * @returns {{ code: number, message: string }}
- */
-function mapReadDataStoreDeviceDataError(message) {
-  switch (message) {
-    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_FOUND:
-      return { code: 404, message };
-
-    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED:
-    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_INVALID:
-    case p1ReadDataStoreDeviceDataErrors.DATA_STORE_NOT_PROVIDED:
-    case p1ReadDataStoreDeviceDataErrors.DATA_STORE_INVALID:
-      return { code: 400, message };
-
-    default:
-      return { code: 500, message };
-  }
-}
-
-/**
- * Builds the success response expected by the OpenAPI specification.
- *
- * @param {Object} readResult Result returned by p1ReadDataStoreDeviceData
- * @returns {Object} { 'device-pm-data': [...] }
- */
-function buildSuccessResponse(readResult) {
-  if (!readResult || !Array.isArray(readResult['device-pm-data'])) {
-    throw new Error('Invalid p1ReadDataStoreDeviceData result');
-  }
-
-  return {
-    'device-pm-data': readResult['device-pm-data']
   };
 }
