@@ -6,7 +6,7 @@ var utils = require('../utils/writer.js');
 var IndividualServices = require('../service/IndividualServicesService');
 const logger = require('../service/LoggingService').getLogger();
 
-module.exports.bequeathYourDataAndDie = function bequeathYourDataAndDie (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+module.exports.bequeathYourDataAndDie = function bequeathYourDataAndDie(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   IndividualServices.bequeathYourDataAndDie(body, user, originator, xCorrelator, traceIndicator, customerJourney)
     .then(function (response) {
       utils.writeJson(res, response);
@@ -95,7 +95,6 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
 
       var statusCode = 500;
 
-      // Codici di errore documentati per questa operation
       if (error && [400, 532, 533].includes(error.code)) {
         statusCode = error.code;
       }
