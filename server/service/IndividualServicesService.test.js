@@ -26,6 +26,7 @@ jest.mock('./LoggingService.js', () => ({
         debug: jest.fn()
     }))
 }));
+
 const p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
 const p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');
 const p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
@@ -34,6 +35,7 @@ const { getParamFromFunction, findFunctionNode } = require('../utils/functionTre
 
 const { documentPmDataProcessing, provideDeviceDataStoreDump, initiatePmDataUpdate } = require('./IndividualServicesService');
 const { ERRORS } = require('./IndividualServicesService');
+const path = require('path');
 
 describe('documentPmDataProcessing', () => {
     beforeEach(() => {
@@ -225,6 +227,8 @@ describe('documentPmDataProcessing', () => {
         });
     });
 });
+
+
 describe('provideDeviceDataStoreDump', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -1029,5 +1033,118 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             code: 400,
             message: ERRORS.MOUNT_NAME_LIST_EMPTY
         });
+    });
+});
+
+
+/////////////////////////////////////////////////////////////////
+// Integration Tests
+/////////////////////////////////////////////////////////////////
+
+
+describe('Integration - documentPmDataProcessing with real config', () => {
+
+    const realConfig = require('../database/config.json');
+    const { loadFunctionParameters, getParamFromFunction: realGetParamFromFunction } =
+        jest.requireActual('../utils/functionTree');
+
+    let documentPmDataProcessingReal;
+    let p1LoadParametersReal;
+    let p1DocumentFunctionMock;
+    let functionNameToDocument;
+    let p1LoadParametersSpy;
+    let previousDatabasePath;
+
+    beforeAll(() => {
+        previousDatabasePath = global.databasePath;
+        global.databasePath = path.resolve(__dirname, '../database/config.json');
+
+        // Svuota il registry: altrimenti isolateModules riusa i mock gia' creati in cima al file
+        jest.resetModules();
+
+        jest.isolateModules(() => {
+            jest.doMock('../genericFunctions/p1LoadParameters/P1LoadParameters', () =>
+                jest.requireActual('../genericFunctions/p1LoadParameters/P1LoadParameters')
+            );
+            jest.doMock('../utils/functionTree', () =>
+                jest.requireActual('../utils/functionTree')
+            );
+            jest.doMock('../genericFunctions/p1DocumentFunction/P1DocumentFunction', () =>
+                jest.fn()
+            );
+
+            p1LoadParametersReal = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
+            p1DocumentFunctionMock = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');
+            ({ documentPmDataProcessing: documentPmDataProcessingReal } = require('./IndividualServicesService'));
+        });
+    });
+
+    afterAll(() => {
+        if (previousDatabasePath === undefined) {
+            delete global.databasePath;
+        } else {
+            global.databasePath = previousDatabasePath;
+        }
+    });
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        const ownFunctionParameters = loadFunctionParameters(realConfig, 'documentPmDataProcessing');
+        functionNameToDocument = realGetParamFromFunction(
+            ownFunctionParameters,
+            'documentPmDataProcessing',
+            'nameOfToBeDocumentedFunction'
+        );
+
+        p1DocumentFunctionMock.mockReturnValue(`- ${functionNameToDocument}`);
+        p1LoadParametersSpy = jest.spyOn(p1LoadParametersReal, 'run');
+    });
+
+    afterEach(() => {
+        p1LoadParametersSpy.mockRestore();
+    });
+
+    const baseArgs = {
+        body: {},
+        user: 'user',
+        originator: 'originator',
+        xCorrelator: 'x-correlator',
+        traceIndicator: 'trace-indicator',
+        customerJourney: 'customer-journey'
+    };
+
+    it('loads the real config.json and documents the function referenced by nameOfToBeDocumentedFunction', async () => {
+
+        const result = await documentPmDataProcessingReal(
+            baseArgs.body,
+            baseArgs.user,
+            baseArgs.originator,
+            baseArgs.xCorrelator,
+            baseArgs.traceIndicator,
+            baseArgs.customerJourney
+        );
+
+        expect(p1LoadParametersSpy).toHaveBeenCalledTimes(2);
+
+        expect(p1LoadParametersSpy).toHaveBeenNthCalledWith(1, {
+            functionName: 'documentPmDataProcessing'
+        });
+
+        expect(p1LoadParametersSpy).toHaveBeenNthCalledWith(2, {
+            functionName: functionNameToDocument,
+            configFile: expect.any(Object)
+        });
+
+        // p1DocumentFunction viene chiamata con la struttura corretta
+        expect(p1DocumentFunctionMock).toHaveBeenCalledTimes(1);
+        expect(p1DocumentFunctionMock).toHaveBeenCalledWith({
+            'parameters-of-to-be-documented-function': expect.objectContaining({
+                'function-name': functionNameToDocument,
+                'is-active': true
+            })
+        });
+
+        expect(result).toBe(`- ${functionNameToDocument}`);
     });
 });
