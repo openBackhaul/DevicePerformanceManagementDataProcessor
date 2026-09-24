@@ -865,7 +865,7 @@ function getResponseMostRecentTimes(response, fallbackList) {
   };
 }
 
-async function integrateP1PrepareTxModes(pac, mountName) {
+async function integrateP2PrepareTxModes(pac, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -909,7 +909,7 @@ async function integrateP1PrepareTxModes(pac, mountName) {
   };
 }
 
-async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeList, mountName) {
+async function integrateP2IterateAiPmSlices(parameters, pac, transmissionModeList, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -954,7 +954,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   };
 }
 
-async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName, interfaceStatus, uuid) {
+async function integrateP2IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName, interfaceStatus, uuid) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     ETHERNET_CONTAINER_HIST_PERF_KEY
@@ -1252,7 +1252,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
 
       status.attempted += 1;
       const prepareTxModesResult = isFunctionActive(parameters, "p2PrepareTxModes")
-        ? await integrateP1PrepareTxModes(pac, mountName)
+        ? await integrateP2PrepareTxModes(pac, mountName)
         : {
             historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY),
             transmissionModeList: getTransmissionModeList(pac)
@@ -1275,7 +1275,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       const iterateAiResult = isFunctionActive(parameters, "p2IterateAiPmSlices")
-        ? await integrateP1IterateAiPmSlices(
+        ? await integrateP2IterateAiPmSlices(
             parameters, pac, prepareTxModesResult.transmissionModeList, mountName
           )
         : { historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY) };
@@ -1338,7 +1338,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       );
 
       const existingInterfaceStatus = statusEntry.status["interface-status"].find((x) => x && x.uuid === ltp.uuid) || { uuid: ltp.uuid };
-      const iterateEcResult = isFunctionActive(parameters, "p2IterateEcPmSlices") ? await integrateP1IterateEcPmSlices(
+      const iterateEcResult = isFunctionActive(parameters, "p2IterateEcPmSlices") ? await integrateP2IterateEcPmSlices(
         parameters,
         pac,
         aggregationGroup,
