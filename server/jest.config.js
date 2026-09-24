@@ -23,6 +23,7 @@ module.exports = {
     '<rootDir>/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateAiPmSlices',
     '<rootDir>/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/p2IterateEcPmSlices',
     '<rootDir>/infra/kafka',
-    '<rootDir>/service'
+    '<rootDir>/service',
+    '<rootDir>/controllers'
   ],
 };

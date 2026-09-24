@@ -6,7 +6,7 @@ var utils = require('../utils/writer.js');
 var IndividualServices = require('../service/IndividualServicesService');
 const logger = require('../service/LoggingService').getLogger();
 
-module.exports.bequeathYourDataAndDie = function bequeathYourDataAndDie (req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
+module.exports.bequeathYourDataAndDie = function bequeathYourDataAndDie(req, res, next, body, user, originator, xCorrelator, traceIndicator, customerJourney) {
   IndividualServices.bequeathYourDataAndDie(body, user, originator, xCorrelator, traceIndicator, customerJourney)
     .then(function (response) {
       utils.writeJson(res, response);
@@ -47,12 +47,12 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
         'life-cycle-state': 'OPERATIONAL'
       };
 
-      logger.info(
+      logger.debug(
         `POST /initiate-pm-data-update SUCCESS ${execTime}ms`
       );
 
-      logger.info(response, '=== CONTROLLER: Success response ===');
-      logger.info('=== END CONTROLLER ===');
+      logger.debug(response, '=== CONTROLLER: Success response ===');
+      logger.debug('=== END CONTROLLER ===');
       /*
        * Response handling according to the OpenAPI specification:
        * 200 -> already-up-to-date-mount-names returned
@@ -95,10 +95,8 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
 
       var statusCode = 500;
 
-      if (error.code === 533) {
-        statusCode = 533;
-      } else if (error.code === 532) {
-        statusCode = 532;
+      if (error && [400, 532, 533].includes(error.code)) {
+        statusCode = error.code;
       }
 
       logger.error(
@@ -107,15 +105,7 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
 
       logger.error(error, '=== CONTROLLER: Error response ===');
 
-      if (statusCode === 533) {
-        return utils.writeJson(res, error, 533, headers);
-      }
-
-      if (statusCode === 532) {
-        return utils.writeJson(res, error, 532, headers);
-      }
-
-      return utils.writeJson(res, error, 500, headers);
+      return utils.writeJson(res, error, statusCode, headers);
     });
 };
 
@@ -151,12 +141,12 @@ module.exports.provideDeviceDataStoreDump = function provideDeviceDataStoreDump(
         'life-cycle-state': 'EXPERIMENTAL'
       };
 
-      logger.info(
+      logger.debug(
         `POST /provide-device-data-store-dump SUCCESS ${execTime}ms`
       );
 
-      logger.info(response, '=== CONTROLLER: Success response ===');
-      logger.info('=== END CONTROLLER ===');
+      logger.debug(response, '=== CONTROLLER: Success response ===');
+      logger.debug('=== END CONTROLLER ===');
       /*
        * Response handling according to the OpenAPI specification:
        * 200 -> device-pm-data returned
