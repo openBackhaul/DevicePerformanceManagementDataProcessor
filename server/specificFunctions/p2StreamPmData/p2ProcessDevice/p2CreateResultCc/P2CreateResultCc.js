@@ -4,9 +4,9 @@ const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctio
 const p2PrepareTxModes = require("./p2PrepareTxModes/P2PrepareTxModes");
 const p2IterateAiPmSlices = require("./p2IterateAiPmSlices/P2IterateAiPmSlices");
 const p2IterateEcPmSlices = require("./p2IterateEcPmSlices/P2IterateEcPmSlices");
-const ERRORS_P1PrepareTxModes = require("./p2PrepareTxModes/ErrorsEnum");
-const ERRORS_P1IterateAiPmSlices = require("./p2IterateAiPmSlices/ErrorsEnum");
-const ERRORS_P1IterateEcPmSlices = {};
+const ERRORS_P2PrepareTxModes = require("./p2PrepareTxModes/ErrorsEnum");
+const ERRORS_P2IterateAiPmSlices = require("./p2IterateAiPmSlices/ErrorsEnum");
+const ERRORS_P2IterateEcPmSlices = require("./p2IterateEcPmSlices/ErrorsEnum");
 let logger = console;
 try { logger = require("../../../../service/LoggingService.js").getLogger(); } catch (_) {}
 
@@ -211,14 +211,14 @@ function buildPrepareTxModesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_NOT_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_INCOMPLETE ||
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_INVALID ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_INCOMPLETE ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_INVALID ||
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.PROC_TX_MODE_LIST_COULD_NOT_BE_PROVIDED
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_NOT_PROVIDED ||
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_INCOMPLETE ||
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_INVALID ||
+    response === ERRORS_P2PrepareTxModes.TX_MODE_LIST_NOT_PROVIDED ||
+    response === ERRORS_P2PrepareTxModes.TX_MODE_LIST_INCOMPLETE ||
+    response === ERRORS_P2PrepareTxModes.TX_MODE_LIST_INVALID ||
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED ||
+    response === ERRORS_P2PrepareTxModes.PROC_TX_MODE_LIST_COULD_NOT_BE_PROVIDED
   ) {
     error.retryable = false;
   } else {
@@ -787,16 +787,16 @@ function buildIterateAiPmSlicesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-  response === ERRORS_P1IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
-  response === ERRORS_P1IterateAiPmSlices.PARAMETERS_INVALID ||
-  response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
-  response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
-  response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
-  response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
-  response === ERRORS_P1IterateAiPmSlices.INTERVAL_CAPACITY_ERROR ||
-  response === ERRORS_P1IterateAiPmSlices.OUT_OF_RANGE_LEVELS_ERROR ||
-  response === ERRORS_P1IterateAiPmSlices.DEFAULT_VALUES_ERROR ||
-  response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR
+  response === ERRORS_P2IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
+  response === ERRORS_P2IterateAiPmSlices.PARAMETERS_INVALID ||
+  response === ERRORS_P2IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+  response === ERRORS_P2IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+  response === ERRORS_P2IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
+  response === ERRORS_P2IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
+  response === ERRORS_P2IterateAiPmSlices.INTERVAL_CAPACITY_ERROR ||
+  response === ERRORS_P2IterateAiPmSlices.OUT_OF_RANGE_LEVELS_ERROR ||
+  response === ERRORS_P2IterateAiPmSlices.DEFAULT_VALUES_ERROR ||
+  response === ERRORS_P2IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR
 ) {
     error.retryable = false;
   } else {
@@ -816,22 +816,22 @@ function buildIterateEcPmSlicesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-  response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
-  response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
-  response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
-  response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
-  response === ERRORS_P1IterateEcPmSlices.AGGREGATION_GROUP_NOT_PROVIDED ||
-  response === ERRORS_P1IterateEcPmSlices.AGGREGATION_GROUP_INVALID ||
-  response === ERRORS_P1IterateEcPmSlices.RESULT_CC_NOT_PROVIDED ||
-  response === ERRORS_P1IterateEcPmSlices.RESULT_CC_INVALID ||
-  response === ERRORS_P1IterateEcPmSlices.INTERFACE_STATUS_NOT_PROVIDED ||
-  response === ERRORS_P1IterateEcPmSlices.INTERFACE_STATUS_INVALID ||
-  response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
-  response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
-  response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
-  response === ERRORS_P1IterateEcPmSlices.DATA_VOLUME_CATEGORIZATION_FAILED ||
-  response === ERRORS_P1IterateEcPmSlices.BUSY_HOUR_CALCULATION_FAILED ||
-  response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_PROVIDE_FAILED
+  response === ERRORS_P2IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.PARAMETERS_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.AGGREGATION_GROUP_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.AGGREGATION_GROUP_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.RESULT_CC_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.RESULT_CC_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.INTERFACE_STATUS_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.INTERFACE_STATUS_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.KPI_CALCULATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.DATA_VOLUME_CATEGORIZATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.BUSY_HOUR_CALCULATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.HISTORICAL_DATA_LIST_PROVIDE_FAILED
 ) {
     error.retryable = false;
   } else {
