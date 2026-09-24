@@ -47,7 +47,7 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
         'life-cycle-state': 'OPERATIONAL'
       };
 
-      logger.info(
+      logger.debug(
         `POST /initiate-pm-data-update SUCCESS ${execTime}ms`
       );
 
@@ -142,7 +142,7 @@ module.exports.provideDeviceDataStoreDump = function provideDeviceDataStoreDump(
         'life-cycle-state': 'EXPERIMENTAL'
       };
 
-      logger.info(
+      logger.debug(
         `POST /provide-device-data-store-dump SUCCESS ${execTime}ms`
       );
 
