@@ -865,7 +865,7 @@ function getResponseMostRecentTimes(response, fallbackList) {
   };
 }
 
-async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
+async function integrateP1PrepareTxModes(pac, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -874,7 +874,7 @@ async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
   const transmissionModeList = getTransmissionModeList(pac);
 
   const prepareTxModes = requireImplementation(
-    dependencies.p2PrepareTxModes || p2PrepareTxModes,
+     p2PrepareTxModes,
     "p2PrepareTxModes"
   );
   const response = await callFunction(prepareTxModes, {
@@ -909,7 +909,7 @@ async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
   };
 }
 
-async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeList, mountName, dependencies) {
+async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeList, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -921,7 +921,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   );
 
   const iterateAiPmSlices = requireImplementation(
-    dependencies.p2IterateAiPmSlices || p2IterateAiPmSlices,
+     p2IterateAiPmSlices,
     "p2IterateAiPmSlices"
   );
   const response = await callFunction(iterateAiPmSlices, {
@@ -954,7 +954,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   };
 }
 
-async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName, interfaceStatus, uuid, dependencies) {
+async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName, interfaceStatus, uuid) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     ETHERNET_CONTAINER_HIST_PERF_KEY
@@ -970,7 +970,7 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
   
   const iterateEcPmSlices = requireImplementation(
-    dependencies.p2IterateEcPmSlices || p2IterateEcPmSlices,
+     p2IterateEcPmSlices,
     "p2IterateEcPmSlices"
   );
   const response = await callFunction(iterateEcPmSlices, {
@@ -1239,7 +1239,7 @@ function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanc
   return metadata;
 }
 
-async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName, dependencies) {
+async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
   const status = createInterfaceProcessingStatus();
 
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
@@ -1252,7 +1252,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
 
       status.attempted += 1;
       const prepareTxModesResult = isFunctionActive(parameters, "p2PrepareTxModes")
-        ? await integrateP1PrepareTxModes(pac, mountName, dependencies)
+        ? await integrateP1PrepareTxModes(pac, mountName)
         : {
             historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY),
             transmissionModeList: getTransmissionModeList(pac)
@@ -1276,7 +1276,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
 
       const iterateAiResult = isFunctionActive(parameters, "p2IterateAiPmSlices")
         ? await integrateP1IterateAiPmSlices(
-            parameters, pac, prepareTxModesResult.transmissionModeList, mountName, dependencies
+            parameters, pac, prepareTxModesResult.transmissionModeList, mountName
           )
         : { historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY) };
 
@@ -1316,7 +1316,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
   return status;
 }
 
-async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName, statusData, dependencies) {
+async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName, statusData) {
   const status = createInterfaceProcessingStatus();
   let statusEntry = statusData.find((x) => x && x["function-name"] === "p2IterateEcPmSlices");
   if (!statusEntry) { statusEntry = { "function-name": "p2IterateEcPmSlices", status: { "interface-status": [] } }; statusData.push(statusEntry); }
@@ -1345,8 +1345,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
         resultCc,
         mountName,
         existingInterfaceStatus,
-        ltp.uuid,
-        dependencies
+        ltp.uuid
       ) : { historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, ETHERNET_CONTAINER_HIST_PERF_KEY), interfaceStatus: existingInterfaceStatus };
 
       if (iterateEcResult === null) {
@@ -1453,8 +1452,7 @@ async function run(request) {
       resultCc,
       aggregationGroupList,
       interfaceMetadataList,
-      mountName,
-      request.dependencies || {}
+      mountName
     );
 
     //console.log("aggregation-group-list: ",JSON.stringify(aggregationGroupList));
@@ -1474,8 +1472,7 @@ async function run(request) {
       aggregationGroupList,
       interfaceMetadataList,
       mountName,
-      updatedStatusData,
-      request.dependencies || {}
+      updatedStatusData
     );
 
     /* assertAnyInterfaceProcessingSucceeded(

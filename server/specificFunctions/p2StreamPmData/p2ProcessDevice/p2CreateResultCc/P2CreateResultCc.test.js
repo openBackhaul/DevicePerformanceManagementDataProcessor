@@ -78,7 +78,7 @@ describe('P2CreateResultCc Lot 6 integration', () => {
       .toEqual([expect.objectContaining({ capacity: 12345 })]);
   });
 
-  test('still permits dependency overrides for isolated callers', async () => {
+  test('ignores dependency overrides and uses the imported implementation', async () => {
     const override = jest.fn();
     const parameters = {
       'function-name': 'p2CreateResultCc',
