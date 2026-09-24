@@ -128,9 +128,9 @@ function validateResultCcResponse(response) {
   return { resultCc, statusData };
 }
 
-async function createOutputFormats(input, resultCc, dependencies) {
+async function createOutputFormats(input, resultCc) {
   const outputFormats = [];
-  const aptFormatter = dependencies.p1FormattingOutputApt || require(
+  const aptFormatter = require(
     "../../p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt"
   );
   const aptResponse = await invoke(aptFormatter, {
@@ -145,7 +145,7 @@ async function createOutputFormats(input, resultCc, dependencies) {
   }
 
   const onfFormatter = requireImplementation(
-    dependencies.p2FormattingOutputOnf || p2FormattingOutputOnf,
+    p2FormattingOutputOnf,
     "p2FormattingOutputOnf"
   );
   const onfResponse = await invoke(onfFormatter, {
@@ -200,11 +200,10 @@ function createKafkaMessages(outputFormats, mountName, kafkaConsumerTypes) {
 
 async function run(request = {}) {
   const input = validateRequest(request);
-  const dependencies = request.dependencies || {};
 
   try {
     const loadOffsetsAndStatusData = requireImplementation(
-      dependencies.p1LoadOffsetsAndStatusData || p1LoadOffsetsAndStatusData,
+       p1LoadOffsetsAndStatusData,
       "p1LoadOffsetsAndStatusData"
     );
     const processingDataResponse = await invoke(loadOffsetsAndStatusData, {
@@ -215,33 +214,31 @@ async function run(request = {}) {
     });
     const processingData = validateLoadedProcessingData(processingDataResponse);
 
-    const rawCcResponse = await invoke(dependencies.p2LoadRawCc || p2LoadRawCc, {
+    const rawCcResponse = await invoke(p2LoadRawCc, {
       parameters: getFunctionParameters(input.parameters, "p2LoadRawCc"),
       mountName: input.mountName,
       mwdiReplicaEsClient: input.mwdiReplicaEsClient,
       offsets: processingData.offsets,
-      dependencies,
       "mount-name": input.mountName,
       "mwdi-replica-es-client": input.mwdiReplicaEsClient
     });
     const rawData = validateRawCcResponse(rawCcResponse);
 
     const resultCcResponse = await invoke(
-      dependencies.p2CreateResultCc || p2CreateResultCc,
+      p2CreateResultCc,
       {
         parameters: getFunctionParameters(input.parameters, "p2CreateResultCc"),
         rawCc: rawData.rawCc,
         statusData: processingData.statusData,
         mountName: input.mountName,
-        dependencies,
         "raw-cc": rawData.rawCc,
         "status-data": processingData.statusData
       }
     );
     const resultData = validateResultCcResponse(resultCcResponse);
-    const outputFormats = await createOutputFormats(input, resultData.resultCc, dependencies);
+    const outputFormats = await createOutputFormats(input, resultData.resultCc);
 
-    const outboundQueue = dependencies.queueKafkaOutbound || queueKafkaOutbound;
+    const outboundQueue = queueKafkaOutbound;
     await invoke(outboundQueue, {
       dataStoreEsClient: input.dataStoreEsClient,
       logger: request.logger,
@@ -252,7 +249,7 @@ async function run(request = {}) {
       )
     });
 
-    await invoke(dependencies.p2Storing || p2Storing, {
+    await invoke(p2Storing, {
       parameters: getFunctionParameters(input.parameters, "p2Storing"),
       dataStoreEsClient: input.dataStoreEsClient,
       resultCc: resultData.resultCc,

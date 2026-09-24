@@ -184,7 +184,7 @@ async function readControlConstruct(input, request) {
   }
 }
 
-async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
+async function applyRawCcFieldsFilter(rawCc, parameters) {
   const filterString = getParamFromFunction(
     parameters,
     LOAD_RAW_CC_FUNCTION_NAME,
@@ -198,7 +198,7 @@ async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
   );
   if (!filterString) return rawCc;
 
-  const response = await invoke(dependencies.p1FieldsFilter || p1FieldsFilter, {
+  const response = await invoke(p1FieldsFilter, {
     dataStructure: rawCc,
     fieldsFilterString: filterString,
     "data-structure": rawCc,
@@ -217,8 +217,7 @@ async function processInterface(
   ltp,
   layerProtocol,
   functionOffset,
-  devicePmDataQuality,
-  dependencies
+  devicePmDataQuality
 ) {
   const historyContainer = findHistoricalPerformanceContainer(layerProtocol);
   const historyList = historyContainer && historyContainer[
@@ -239,8 +238,7 @@ async function processInterface(
     "most-recent-period-end-time-24"
   ] || INITIAL_PERIOD_END_TIME;
 
-  const discardFunction = dependencies.p2DiscardIrrelevantPmRecords ||
-    p2DiscardIrrelevantPmRecords;
+  const discardFunction = p2DiscardIrrelevantPmRecords;
   const discardResponse = await invoke(discardFunction, {
     "historical-performance-data-list": historyList,
     "former-most-recent-period-end-time": formerPeriodEndTime,
@@ -262,8 +260,7 @@ async function processInterface(
     );
   }
 
-  const calculatePmDataQuality = dependencies.p1CalculateInterfacePmDataQuality ||
-    p1CalculateInterfacePmDataQuality;
+  const calculatePmDataQuality = p1CalculateInterfacePmDataQuality;
   const qualityResponse = await invoke(calculatePmDataQuality, {
     uuid: ltp.uuid,
     "former-most-recent-period-end-time": formerPeriodEndTime,
@@ -303,7 +300,6 @@ function isFatalInterfaceError(error) {
 
 async function run(request = {}) {
   const input = validateRequest(request);
-  const dependencies = request.dependencies || {};
   const updatedOffsets = structuredClone(input.offsets);
   const functionOffset = getOrCreateLoadRawCcOffset(updatedOffsets);
 
@@ -311,7 +307,7 @@ async function run(request = {}) {
   if (!isObject(rawCc)) {
     throw createProcessingError("rawCc could not be provided");
   }
-  rawCc = await applyRawCcFieldsFilter(rawCc, input.parameters, dependencies);
+  rawCc = await applyRawCcFieldsFilter(rawCc, input.parameters);
 
   const devicePmDataQuality = {
     "mount-name": input.mountName,
@@ -324,8 +320,7 @@ async function run(request = {}) {
           ltp,
           layerProtocol,
           functionOffset,
-          devicePmDataQuality,
-          dependencies
+          devicePmDataQuality
         );
       } catch (error) {
         if (isFatalInterfaceError(error)) throw error;

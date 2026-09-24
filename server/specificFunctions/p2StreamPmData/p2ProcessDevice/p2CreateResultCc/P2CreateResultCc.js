@@ -4,9 +4,9 @@ const ERRORS_P1RemoveOutOfRangeTemperature = require("../../../../genericFunctio
 const p2PrepareTxModes = require("./p2PrepareTxModes/P2PrepareTxModes");
 const p2IterateAiPmSlices = require("./p2IterateAiPmSlices/P2IterateAiPmSlices");
 const p2IterateEcPmSlices = require("./p2IterateEcPmSlices/P2IterateEcPmSlices");
-const ERRORS_P1PrepareTxModes = require("./p2PrepareTxModes/ErrorsEnum");
-const ERRORS_P1IterateAiPmSlices = require("./p2IterateAiPmSlices/ErrorsEnum");
-const ERRORS_P1IterateEcPmSlices = {};
+const ERRORS_P2PrepareTxModes = require("./p2PrepareTxModes/ErrorsEnum");
+const ERRORS_P2IterateAiPmSlices = require("./p2IterateAiPmSlices/ErrorsEnum");
+const ERRORS_P2IterateEcPmSlices = require("./p2IterateEcPmSlices/ErrorsEnum");
 let logger = console;
 try { logger = require("../../../../service/LoggingService.js").getLogger(); } catch (_) {}
 
@@ -211,14 +211,14 @@ function buildPrepareTxModesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_NOT_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_INCOMPLETE ||
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_INVALID ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_INCOMPLETE ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_INVALID ||
-    response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_COULD_NOT_BE_PROVIDED
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_NOT_PROVIDED ||
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_INCOMPLETE ||
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_INVALID ||
+    response === ERRORS_P2PrepareTxModes.TX_MODE_LIST_NOT_PROVIDED ||
+    response === ERRORS_P2PrepareTxModes.TX_MODE_LIST_INCOMPLETE ||
+    response === ERRORS_P2PrepareTxModes.TX_MODE_LIST_INVALID ||
+    response === ERRORS_P2PrepareTxModes.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED ||
+    response === ERRORS_P2PrepareTxModes.PROC_TX_MODE_LIST_COULD_NOT_BE_PROVIDED
   ) {
     error.retryable = false;
   } else {
@@ -787,20 +787,17 @@ function buildIterateAiPmSlicesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-    response === ERRORS_P1IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.PARAMETERS_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR ||
-    response === ERRORS_P1IterateAiPmSlices.MOST_RECENT_END_TIME_PROVIDE_ERROR ||
-    response === ERRORS_P1IterateAiPmSlices.MOST_RECENT_END_TIME_24_PROVIDE_ERROR ||
-    response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_INVALID
-  ) {
+  response === ERRORS_P2IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
+  response === ERRORS_P2IterateAiPmSlices.PARAMETERS_INVALID ||
+  response === ERRORS_P2IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+  response === ERRORS_P2IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+  response === ERRORS_P2IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
+  response === ERRORS_P2IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
+  response === ERRORS_P2IterateAiPmSlices.INTERVAL_CAPACITY_ERROR ||
+  response === ERRORS_P2IterateAiPmSlices.OUT_OF_RANGE_LEVELS_ERROR ||
+  response === ERRORS_P2IterateAiPmSlices.DEFAULT_VALUES_ERROR ||
+  response === ERRORS_P2IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR
+) {
     error.retryable = false;
   } else {
     error.retryable = true;
@@ -819,25 +816,23 @@ function buildIterateEcPmSlicesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_OUTPUT_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_NOT_PROV ||
-    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_INVALID
-  ) {
+  response === ERRORS_P2IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.PARAMETERS_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.AGGREGATION_GROUP_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.AGGREGATION_GROUP_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.RESULT_CC_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.RESULT_CC_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.INTERFACE_STATUS_NOT_PROVIDED ||
+  response === ERRORS_P2IterateEcPmSlices.INTERFACE_STATUS_INVALID ||
+  response === ERRORS_P2IterateEcPmSlices.KPI_CALCULATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.DATA_VOLUME_CATEGORIZATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.BUSY_HOUR_CALCULATION_FAILED ||
+  response === ERRORS_P2IterateEcPmSlices.HISTORICAL_DATA_LIST_PROVIDE_FAILED
+) {
     error.retryable = false;
   } else {
     error.retryable = true;
@@ -865,7 +860,7 @@ function getResponseMostRecentTimes(response, fallbackList) {
   };
 }
 
-async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
+async function integrateP2PrepareTxModes(pac, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -874,7 +869,7 @@ async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
   const transmissionModeList = getTransmissionModeList(pac);
 
   const prepareTxModes = requireImplementation(
-    dependencies.p2PrepareTxModes || p2PrepareTxModes,
+     p2PrepareTxModes,
     "p2PrepareTxModes"
   );
   const response = await callFunction(prepareTxModes, {
@@ -909,7 +904,7 @@ async function integrateP1PrepareTxModes(pac, mountName, dependencies) {
   };
 }
 
-async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeList, mountName, dependencies) {
+async function integrateP2IterateAiPmSlices(parameters, pac, transmissionModeList, mountName) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     AIR_INTERFACE_HIST_PERF_KEY
@@ -921,7 +916,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   );
 
   const iterateAiPmSlices = requireImplementation(
-    dependencies.p2IterateAiPmSlices || p2IterateAiPmSlices,
+     p2IterateAiPmSlices,
     "p2IterateAiPmSlices"
   );
   const response = await callFunction(iterateAiPmSlices, {
@@ -954,7 +949,7 @@ async function integrateP1IterateAiPmSlices(parameters, pac, transmissionModeLis
   };
 }
 
-async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName, interfaceStatus, uuid, dependencies) {
+async function integrateP2IterateEcPmSlices(parameters, pac, aggregationGroup, resultCc, mountName, interfaceStatus, uuid) {
   const historicalPerformanceDataList = getHistoricalPerformanceDataList(
     pac,
     ETHERNET_CONTAINER_HIST_PERF_KEY
@@ -970,7 +965,7 @@ async function integrateP1IterateEcPmSlices(parameters, pac, aggregationGroup, r
   //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
   
   const iterateEcPmSlices = requireImplementation(
-    dependencies.p2IterateEcPmSlices || p2IterateEcPmSlices,
+     p2IterateEcPmSlices,
     "p2IterateEcPmSlices"
   );
   const response = await callFunction(iterateEcPmSlices, {
@@ -1239,7 +1234,7 @@ function buildEthernetContainerMetadata(ltp, layerProtocol, historicalPerformanc
   return metadata;
 }
 
-async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName, dependencies) {
+async function processAirInterfaces(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName) {
   const status = createInterfaceProcessingStatus();
 
   for (const ltp of getLogicalTerminationPointList(resultCc)) {
@@ -1252,7 +1247,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
 
       status.attempted += 1;
       const prepareTxModesResult = isFunctionActive(parameters, "p2PrepareTxModes")
-        ? await integrateP1PrepareTxModes(pac, mountName, dependencies)
+        ? await integrateP2PrepareTxModes(pac, mountName)
         : {
             historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY),
             transmissionModeList: getTransmissionModeList(pac)
@@ -1275,8 +1270,8 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
       );
 
       const iterateAiResult = isFunctionActive(parameters, "p2IterateAiPmSlices")
-        ? await integrateP1IterateAiPmSlices(
-            parameters, pac, prepareTxModesResult.transmissionModeList, mountName, dependencies
+        ? await integrateP2IterateAiPmSlices(
+            parameters, pac, prepareTxModesResult.transmissionModeList, mountName
           )
         : { historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, AIR_INTERFACE_HIST_PERF_KEY) };
 
@@ -1316,7 +1311,7 @@ async function processAirInterfaces(parameters, resultCc, aggregationGroupList, 
   return status;
 }
 
-async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName, statusData, dependencies) {
+async function processEthernetContainers(parameters, resultCc, aggregationGroupList, interfaceMetadataList, mountName, statusData) {
   const status = createInterfaceProcessingStatus();
   let statusEntry = statusData.find((x) => x && x["function-name"] === "p2IterateEcPmSlices");
   if (!statusEntry) { statusEntry = { "function-name": "p2IterateEcPmSlices", status: { "interface-status": [] } }; statusData.push(statusEntry); }
@@ -1338,15 +1333,14 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
       );
 
       const existingInterfaceStatus = statusEntry.status["interface-status"].find((x) => x && x.uuid === ltp.uuid) || { uuid: ltp.uuid };
-      const iterateEcResult = isFunctionActive(parameters, "p2IterateEcPmSlices") ? await integrateP1IterateEcPmSlices(
+      const iterateEcResult = isFunctionActive(parameters, "p2IterateEcPmSlices") ? await integrateP2IterateEcPmSlices(
         parameters,
         pac,
         aggregationGroup,
         resultCc,
         mountName,
         existingInterfaceStatus,
-        ltp.uuid,
-        dependencies
+        ltp.uuid
       ) : { historicalPerformanceDataList: getHistoricalPerformanceDataList(pac, ETHERNET_CONTAINER_HIST_PERF_KEY), interfaceStatus: existingInterfaceStatus };
 
       if (iterateEcResult === null) {
@@ -1453,8 +1447,7 @@ async function run(request) {
       resultCc,
       aggregationGroupList,
       interfaceMetadataList,
-      mountName,
-      request.dependencies || {}
+      mountName
     );
 
     //console.log("aggregation-group-list: ",JSON.stringify(aggregationGroupList));
@@ -1474,8 +1467,7 @@ async function run(request) {
       aggregationGroupList,
       interfaceMetadataList,
       mountName,
-      updatedStatusData,
-      request.dependencies || {}
+      updatedStatusData
     );
 
     /* assertAnyInterfaceProcessingSucceeded(

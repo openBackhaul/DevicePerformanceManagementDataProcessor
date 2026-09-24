@@ -1,22 +1,55 @@
 "use strict";
 
-// Mock getParamFromFunction using factory-function syntax (per team convention —
-// avoids pulling in extra mocking helpers that are blocked by the corporate
-// npm registry). Adjust this path if your test file doesn't sit in the same
-// folder as p2LoadRawCc.js.
+// Mock getParamFromFunction using factory-function syntax
 jest.mock("../../../../utils/functionTree", () => ({
   getParamFromFunction: jest.fn()
 }));
 
+// Mock the actual production dependencies used directly by P2LoadRawCc.
+// P2LoadRawCc no longer receives these through request.dependencies.
+jest.mock(
+  "../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter",
+  () => ({
+    run: jest.fn()
+  })
+);
+
+jest.mock(
+  "../../../../genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords",
+  () => ({
+    run: jest.fn()
+  })
+);
+
+jest.mock(
+  "../../../../genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality",
+  () => ({
+    run: jest.fn()
+  })
+);
+
 const { getParamFromFunction } = require("../../../../utils/functionTree");
-const { run, loadRawCc } = require("./p2LoadRawCc");
+
+const p1FieldsFilter = require(
+  "../../../../genericFunctions/p1FieldsFilter/P1FieldsFilter"
+);
+
+const p2DiscardIrrelevantPmRecords = require(
+  "../../../../genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords"
+);
+
+const p1CalculateInterfacePmDataQuality = require(
+  "../../../../genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality"
+);
+
+const { run, loadRawCc } = require("./P2LoadRawCc");
+
+const INITIAL_PERIOD_END_TIME = "2010-11-20T14:00:00+01:00";
+const LOAD_RAW_CC_FUNCTION_NAME = "p2LoadRawCc";
 
 describe("p2LoadRawCc", () => {
   let baseRequest;
   let replicaClient;
-  let p1FieldsFilterMock;
-  let p2DiscardIrrelevantPmRecordsMock;
-  let p1CalculateInterfacePmDataQualityMock;
 
   const rawControlConstruct = {
     "logical-termination-point": [
@@ -27,12 +60,16 @@ describe("p2LoadRawCc", () => {
             "air-interface-2-0:air-interface-pac": {
               "air-interface-historical-performances": {
                 "historical-performance-data-list": [
-                  { timestamp: "2024-01-01T00:15:00Z" }
+                  {
+                    timestamp: "2024-01-01T00:15:00Z"
+                  }
                 ]
               },
               "air-interface-current-performance": {
                 "current-performance-data-list": [
-                  { timestamp: "2024-01-01T00:30:00Z" }
+                  {
+                    timestamp: "2024-01-01T00:30:00Z"
+                  }
                 ]
               }
             }
@@ -50,26 +87,48 @@ describe("p2LoadRawCc", () => {
         body: {
           _source: {
             "core-model-1-4:control-construct": [
-              { uuid: "device-1", ...rawControlConstruct }
+              {
+                uuid: "device-1",
+                ...rawControlConstruct
+              }
             ]
           }
         }
       })
     };
 
-    p1FieldsFilterMock = jest.fn();
-    p2DiscardIrrelevantPmRecordsMock = jest.fn().mockResolvedValue({
+    p1FieldsFilter.run.mockResolvedValue({
+      "filtered-data-structure": {
+        "logical-termination-point": []
+      }
+    });
+
+    p2DiscardIrrelevantPmRecords.run.mockResolvedValue({
       "filtered-historical-performance-data-list": [
-        { timestamp: "2024-01-01T00:15:00Z" }
+        {
+          timestamp: "2024-01-01T00:15:00Z"
+        }
       ],
       "new-most-recent-period-end-time": "2024-01-01T00:15:00Z",
       "new-most-recent-period-end-time-24": "2024-01-01T00:00:00Z",
-      "amount-received": [{ date: "2024/01/01", count: 1 }]
+      "amount-received": [
+        {
+          date: "2024/01/01",
+          count: 1
+        }
+      ]
     });
-    p1CalculateInterfacePmDataQualityMock = jest.fn().mockResolvedValue({
+
+    p1CalculateInterfacePmDataQuality.run.mockResolvedValue({
       "interface-pm-data-quality": {
         uuid: "ltp-air-1",
-        quality: [{ date: "2024/01/01", received: 1, expected: 96 }]
+        quality: [
+          {
+            date: "2024/01/01",
+            received: 1,
+            expected: 96
+          }
+        ]
       }
     });
 
@@ -83,60 +142,83 @@ describe("p2LoadRawCc", () => {
       },
       mountName: "device-1",
       offsets: [],
-      replicaClient,
-      dependencies: {
-        p1FieldsFilter: p1FieldsFilterMock,
-        p2DiscardIrrelevantPmRecords: p2DiscardIrrelevantPmRecordsMock,
-        p1CalculateInterfacePmDataQuality: p1CalculateInterfacePmDataQualityMock
-      }
+      replicaClient
     };
   });
 
   describe("input validation", () => {
     it("throws when parameters is missing", async () => {
       delete baseRequest.parameters;
-      await expect(run(baseRequest)).rejects.toThrow("parameters not provided");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "parameters not provided"
+      );
     });
 
     it("throws when parameters is not an object", async () => {
       baseRequest.parameters = "not-an-object";
-      await expect(run(baseRequest)).rejects.toThrow("parameters invalid");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "parameters invalid"
+      );
     });
 
     it("throws when mwdiReplicaEsClient is missing", async () => {
       delete baseRequest.mwdiReplicaEsClient;
-      await expect(run(baseRequest)).rejects.toThrow("mwdiReplicaEsClient not provided");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "mwdiReplicaEsClient not provided"
+      );
     });
 
     it("throws when mwdiReplicaEsClient is missing required fields", async () => {
-      baseRequest.mwdiReplicaEsClient = { uuid: "es-client-1" }; // missing index-alias
-      await expect(run(baseRequest)).rejects.toThrow("mwdiReplicaEsClient invalid");
+      baseRequest.mwdiReplicaEsClient = {
+        uuid: "es-client-1"
+      };
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "mwdiReplicaEsClient invalid"
+      );
     });
 
     it("throws when mountName is missing", async () => {
       delete baseRequest.mountName;
-      await expect(run(baseRequest)).rejects.toThrow("mountName not provided");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "mountName not provided"
+      );
     });
 
     it("throws when mountName is an empty string", async () => {
       baseRequest.mountName = "   ";
-      await expect(run(baseRequest)).rejects.toThrow("mountName invalid");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "mountName invalid"
+      );
     });
 
     it("throws when offsets is missing", async () => {
       delete baseRequest.offsets;
-      await expect(run(baseRequest)).rejects.toThrow("offsets not provided");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "offsets not provided"
+      );
     });
 
     it("throws when offsets is not an array", async () => {
       baseRequest.offsets = "not-an-array";
-      await expect(run(baseRequest)).rejects.toThrow("offsets invalid");
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "offsets invalid"
+      );
     });
   });
 
   describe("reading the control construct", () => {
     it("throws a retryable error when the ES read fails", async () => {
-      replicaClient.get.mockRejectedValue(new Error("connection refused"));
+      replicaClient.get.mockRejectedValue(
+        new Error("connection refused")
+      );
 
       await expect(run(baseRequest)).rejects.toMatchObject({
         message: "rawCc could not be provided",
@@ -145,9 +227,15 @@ describe("p2LoadRawCc", () => {
     });
 
     it("throws when the ES response has no usable control construct", async () => {
-      replicaClient.get.mockResolvedValue({ body: { _source: {} } });
+      replicaClient.get.mockResolvedValue({
+        body: {
+          _source: {}
+        }
+      });
 
-      await expect(run(baseRequest)).rejects.toThrow("rawCc could not be provided");
+      await expect(run(baseRequest)).rejects.toThrow(
+        "rawCc could not be provided"
+      );
     });
   });
 
@@ -157,12 +245,15 @@ describe("p2LoadRawCc", () => {
 
       await run(baseRequest);
 
-      expect(p1FieldsFilterMock).not.toHaveBeenCalled();
+      expect(p1FieldsFilter.run).not.toHaveBeenCalled();
     });
 
     it("applies p1FieldsFilter when a filter string is present in parameters", async () => {
-      getParamFromFunction.mockReturnValue("uuid;layer-protocol");
-      p1FieldsFilterMock.mockResolvedValue({
+      getParamFromFunction.mockReturnValue(
+        "uuid;layer-protocol"
+      );
+
+      p1FieldsFilter.run.mockResolvedValue({
         "filtered-data-structure": {
           "logical-termination-point": []
         }
@@ -170,15 +261,20 @@ describe("p2LoadRawCc", () => {
 
       const result = await run(baseRequest);
 
-      expect(p1FieldsFilterMock).toHaveBeenCalledWith(
-        expect.objectContaining({ "fields-filter-string": "uuid;layer-protocol" })
+      expect(p1FieldsFilter.run).toHaveBeenCalledWith(
+        expect.objectContaining({
+          "fields-filter-string": "uuid;layer-protocol"
+        })
       );
-      expect(result["raw-cc"]).toEqual({ "logical-termination-point": [] });
+
+      expect(result["raw-cc"]).toEqual({
+        "logical-termination-point": []
+      });
     });
 
     it("reads raw-cc filter from the p2LoadRawCc parameter node", async () => {
       const parameters = {
-        "function-name": "p2LoadRawCc",
+        "function-name": LOAD_RAW_CC_FUNCTION_NAME,
         parameter: [
           {
             "parameter-name": "raw-cc",
@@ -186,29 +282,47 @@ describe("p2LoadRawCc", () => {
           }
         ]
       };
+
       getParamFromFunction.mockImplementation(
         (tree, functionName, parameterName, defaultValue) => {
-          if (tree === parameters && functionName === "p2LoadRawCc" && parameterName === "raw-cc") {
+          if (
+            tree === parameters &&
+            functionName === LOAD_RAW_CC_FUNCTION_NAME &&
+            parameterName === "raw-cc"
+          ) {
             return parameters.parameter[0].value;
           }
+
           return defaultValue;
         }
       );
-      p1FieldsFilterMock.mockResolvedValue({
-        "filtered-data-structure": { "logical-termination-point": [] }
+
+      p1FieldsFilter.run.mockResolvedValue({
+        "filtered-data-structure": {
+          "logical-termination-point": []
+        }
       });
 
-      const result = await run({ ...baseRequest, parameters });
+      const result = await run({
+        ...baseRequest,
+        parameters
+      });
 
-      expect(p1FieldsFilterMock).toHaveBeenCalled();
-      expect(result["raw-cc"]).toEqual({ "logical-termination-point": [] });
+      expect(p1FieldsFilter.run).toHaveBeenCalled();
+
+      expect(result["raw-cc"]).toEqual({
+        "logical-termination-point": []
+      });
     });
 
     it("throws when p1FieldsFilter returns no usable filtered structure", async () => {
       getParamFromFunction.mockReturnValue("uuid");
-      p1FieldsFilterMock.mockResolvedValue({});
 
-      await expect(run(baseRequest)).rejects.toThrow("rawCc could not be provided");
+      p1FieldsFilter.run.mockResolvedValue({});
+
+      await expect(run(baseRequest)).rejects.toThrow(
+        "rawCc could not be provided"
+      );
     });
   });
 
@@ -226,13 +340,24 @@ describe("p2LoadRawCc", () => {
 
       expect(result).toHaveProperty("raw-cc");
       expect(result).toHaveProperty("offsets");
-      expect(result).toHaveProperty("device-pm-data-quality");
-      expect(result["device-pm-data-quality"]).toEqual({
+      expect(result).toHaveProperty(
+        "device-pm-data-quality"
+      );
+
+      expect(
+        result["device-pm-data-quality"]
+      ).toEqual({
         "mount-name": "device-1",
         interface: [
           {
             uuid: "ltp-air-1",
-            quality: [{ date: "2024/01/01", received: 1, expected: 96 }]
+            quality: [
+              {
+                date: "2024/01/01",
+                received: 1,
+                expected: 96
+              }
+            ]
           }
         ]
       });
@@ -242,12 +367,19 @@ describe("p2LoadRawCc", () => {
       const result = await run(baseRequest);
 
       const functionOffset = result.offsets.find(
-        (item) => item["function-name"] === "p2LoadRawCc"
+        (item) =>
+          item["function-name"] === LOAD_RAW_CC_FUNCTION_NAME
       );
+
       expect(functionOffset).toBeDefined();
-      expect(functionOffset.offset["interface-offsets"]).toEqual(
+
+      expect(
+        functionOffset.offset["interface-offsets"]
+      ).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ uuid: "ltp-air-1" })
+          expect.objectContaining({
+            uuid: "ltp-air-1"
+          })
         ])
       );
     });
@@ -255,13 +387,15 @@ describe("p2LoadRawCc", () => {
     it("reuses and updates an existing interface offset instead of resetting it", async () => {
       baseRequest.offsets = [
         {
-          "function-name": "p2LoadRawCc",
+          "function-name": LOAD_RAW_CC_FUNCTION_NAME,
           offset: {
             "interface-offsets": [
               {
                 uuid: "ltp-air-1",
-                "most-recent-period-end-time": "2023-06-01T00:00:00Z",
-                "most-recent-period-end-time-24": "2023-06-01T00:00:00Z"
+                "most-recent-period-end-time":
+                  "2023-06-01T00:00:00Z",
+                "most-recent-period-end-time-24":
+                  "2023-06-01T00:00:00Z"
               }
             ]
           }
@@ -270,25 +404,33 @@ describe("p2LoadRawCc", () => {
 
       const result = await run(baseRequest);
 
-      expect(p2DiscardIrrelevantPmRecordsMock).toHaveBeenCalledWith(
+      expect(
+        p2DiscardIrrelevantPmRecords.run
+      ).toHaveBeenCalledWith(
         expect.objectContaining({
-          "former-most-recent-period-end-time": "2023-06-01T00:00:00Z"
+          "former-most-recent-period-end-time":
+            "2023-06-01T00:00:00Z"
         })
       );
 
       const functionOffset = result.offsets.find(
-        (item) => item["function-name"] === "p2LoadRawCc"
+        (item) =>
+          item["function-name"] === LOAD_RAW_CC_FUNCTION_NAME
       );
-      const interfaceOffset = functionOffset.offset["interface-offsets"].find(
-        (item) => item.uuid === "ltp-air-1"
-      );
-      expect(interfaceOffset["most-recent-period-end-time"]).toBe(
-        "2024-01-01T00:15:00Z"
-      );
+
+      const interfaceOffset =
+        functionOffset.offset["interface-offsets"].find(
+          (item) => item.uuid === "ltp-air-1"
+        );
+
+      expect(
+        interfaceOffset["most-recent-period-end-time"]
+      ).toBe("2024-01-01T00:15:00Z");
     });
 
     it("does not mutate the offsets array that was passed in", async () => {
       const originalOffsets = [];
+
       baseRequest.offsets = originalOffsets;
 
       await run(baseRequest);
@@ -311,12 +453,18 @@ describe("p2LoadRawCc", () => {
                     "air-interface-2-0:air-interface-pac": {
                       "air-interface-historical-performances": {
                         "historical-performance-data-list": [
-                          { timestamp: "2024-02-01T00:15:00Z" }
+                          {
+                            timestamp:
+                              "2024-02-01T00:15:00Z"
+                          }
                         ]
                       },
                       "air-interface-current-performance": {
                         "current-performance-data-list": [
-                          { timestamp: "2024-02-01T00:30:00Z" }
+                          {
+                            timestamp:
+                              "2024-02-01T00:30:00Z"
+                          }
                         ]
                       }
                     }
@@ -331,30 +479,43 @@ describe("p2LoadRawCc", () => {
       const result = await run(baseRequest);
 
       expect(result["raw-cc"]).toBeDefined();
-      expect(result["device-pm-data-quality"].interface).toHaveLength(1);
+
+      expect(
+        result["device-pm-data-quality"].interface
+      ).toHaveLength(1);
     });
 
     it("supports ethernet-container historical performance data and keeps a batch timestamp when present", async () => {
-      baseRequest.parameters = { some: "value" };
+      baseRequest.parameters = {
+        some: "value"
+      };
+
       replicaClient.get.mockResolvedValue({
         body: {
           _source: {
             "core-model-1-4:control-construct": [
               {
                 uuid: "device-1",
-                "batch-timestamp": "2024-03-01T00:00:00Z",
+                "batch-timestamp":
+                  "2024-03-01T00:00:00Z",
                 "logical-termination-point": [
                   {
                     uuid: "ltp-ec-1",
                     "layer-protocol": [
                       {
-                        "ethernet-container-2-0:ethernet-container-pac": {
-                          "ethernet-container-historical-performances": {
-                            "historical-performance-data-list": [
-                              { timestamp: "2024-03-01T00:15:00Z" }
-                            ]
+                        "ethernet-container-2-0:ethernet-container-pac":
+                          {
+                            "ethernet-container-historical-performances":
+                              {
+                                "historical-performance-data-list":
+                                  [
+                                    {
+                                      timestamp:
+                                        "2024-03-01T00:15:00Z"
+                                    }
+                                  ]
+                              }
                           }
-                        }
                       }
                     ]
                   }
@@ -365,37 +526,62 @@ describe("p2LoadRawCc", () => {
         }
       });
 
-      p2DiscardIrrelevantPmRecordsMock.mockResolvedValue({
+      p2DiscardIrrelevantPmRecords.run.mockResolvedValue({
         "filtered-historical-performance-data-list": [
-          { timestamp: "2024-03-01T00:15:00Z" }
+          {
+            timestamp: "2024-03-01T00:15:00Z"
+          }
         ],
-        "new-most-recent-period-end-time": "2024-03-01T00:15:00Z",
-        "new-most-recent-period-end-time-24": "2024-03-01T00:00:00Z",
-        "amount-received": [{ date: "2024/03/01", count: 1 }]
+        "new-most-recent-period-end-time":
+          "2024-03-01T00:15:00Z",
+        "new-most-recent-period-end-time-24":
+          "2024-03-01T00:00:00Z",
+        "amount-received": [
+          {
+            date: "2024/03/01",
+            count: 1
+          }
+        ]
       });
-      p1CalculateInterfacePmDataQualityMock.mockResolvedValue({
-        "interface-pm-data-quality": { uuid: "ltp-ec-1", quality: [] }
+
+      p1CalculateInterfacePmDataQuality.run.mockResolvedValue({
+        "interface-pm-data-quality": {
+          uuid: "ltp-ec-1",
+          quality: []
+        }
       });
 
       const result = await run(baseRequest);
 
-      expect(result["raw-cc"]["batch-timestamp"]).toBe("2024-03-01T00:00:00.000Z");
-      expect(result["device-pm-data-quality"].interface[0].uuid).toBe("ltp-ec-1");
+      expect(
+        result["raw-cc"]["batch-timestamp"]
+      ).toBe("2024-03-01T00:00:00.000Z");
+
+      expect(
+        result["device-pm-data-quality"].interface[0].uuid
+      ).toBe("ltp-ec-1");
     });
   });
 
   describe("pm data quality failure", () => {
     it("returns empty interface output and leaves the offset unchanged when quality data is unusable", async () => {
-      p1CalculateInterfacePmDataQualityMock.mockResolvedValue(
-        "UUID_NOT_PROVIDED" // delivered module returns an error string/enum on failure
+      p1CalculateInterfacePmDataQuality.run.mockResolvedValue(
+        "UUID_NOT_PROVIDED"
       );
 
       const result = await run(baseRequest);
 
-      expect(result["device-pm-data-quality"].interface).toEqual([]);
-      expect(result.offsets[0].offset["interface-offsets"]).toEqual([]);
       expect(
-        result["raw-cc"]["logical-termination-point"][0]["layer-protocol"][0]
+        result["device-pm-data-quality"].interface
+      ).toEqual([]);
+
+      expect(
+        result.offsets[0].offset["interface-offsets"]
+      ).toEqual([]);
+
+      expect(
+        result["raw-cc"]["logical-termination-point"][0]
+          ["layer-protocol"][0]
           ["air-interface-2-0:air-interface-pac"]
           ["air-interface-historical-performances"]
           ["historical-performance-data-list"]
@@ -403,50 +589,79 @@ describe("p2LoadRawCc", () => {
     });
 
     it("rolls back the failed interface and continues processing the next interface", async () => {
-      const secondLtp = JSON.parse(JSON.stringify(
-        rawControlConstruct["logical-termination-point"][0]
-      ));
+      const secondLtp = JSON.parse(
+        JSON.stringify(
+          rawControlConstruct["logical-termination-point"][0]
+        )
+      );
+
       secondLtp.uuid = "ltp-air-2";
+
       replicaClient.get.mockResolvedValue({
         body: {
           _source: {
-            "core-model-1-4:control-construct": [{
-              uuid: "device-1",
-              "logical-termination-point": [
-                rawControlConstruct["logical-termination-point"][0],
-                secondLtp
-              ]
-            }]
+            "core-model-1-4:control-construct": [
+              {
+                uuid: "device-1",
+                "logical-termination-point": [
+                  rawControlConstruct[
+                    "logical-termination-point"
+                  ][0],
+                  secondLtp
+                ]
+              }
+            ]
           }
         }
       });
-      p1CalculateInterfacePmDataQualityMock
+
+      p1CalculateInterfacePmDataQuality.run
         .mockResolvedValueOnce("UUID_NOT_PROVIDED")
         .mockResolvedValueOnce({
-          "interface-pm-data-quality": { uuid: "ltp-air-2", quality: [] }
+          "interface-pm-data-quality": {
+            uuid: "ltp-air-2",
+            quality: []
+          }
         });
 
       const result = await run(baseRequest);
-      const interfaceOffsets = result.offsets[0].offset["interface-offsets"];
+
+      const interfaceOffsets =
+        result.offsets[0].offset["interface-offsets"];
 
       expect(interfaceOffsets).toEqual([
         expect.objectContaining({
           uuid: "ltp-air-2",
-          "most-recent-period-end-time": "2024-01-01T00:15:00Z"
+          "most-recent-period-end-time":
+            "2024-01-01T00:15:00Z"
         })
       ]);
-      expect(result["device-pm-data-quality"].interface).toEqual([
-        { uuid: "ltp-air-2", quality: [] }
+
+      expect(
+        result["device-pm-data-quality"].interface
+      ).toEqual([
+        {
+          uuid: "ltp-air-2",
+          quality: []
+        }
       ]);
-      const ltps = result["raw-cc"]["logical-termination-point"];
-      expect(ltps[0]["layer-protocol"][0]
-        ["air-interface-2-0:air-interface-pac"]
-        ["air-interface-historical-performances"]
-        ["historical-performance-data-list"]).toEqual([]);
-      expect(ltps[1]["layer-protocol"][0]
-        ["air-interface-2-0:air-interface-pac"]
-        ["air-interface-historical-performances"]
-        ["historical-performance-data-list"]).toHaveLength(1);
+
+      const ltps =
+        result["raw-cc"]["logical-termination-point"];
+
+      expect(
+        ltps[0]["layer-protocol"][0]
+          ["air-interface-2-0:air-interface-pac"]
+          ["air-interface-historical-performances"]
+          ["historical-performance-data-list"]
+      ).toEqual([]);
+
+      expect(
+        ltps[1]["layer-protocol"][0]
+          ["air-interface-2-0:air-interface-pac"]
+          ["air-interface-historical-performances"]
+          ["historical-performance-data-list"]
+      ).toHaveLength(1);
     });
   });
 });
