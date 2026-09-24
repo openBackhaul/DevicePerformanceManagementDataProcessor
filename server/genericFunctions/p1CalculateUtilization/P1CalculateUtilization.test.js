@@ -141,7 +141,7 @@ describe('p1CalculateUtilization', () => {
   });
 
   test('should return input unchanged for UNKNOWN granularity', () => {
-    const histData = createValidHistoricalData('ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN');
+    const histData = createValidHistoricalData('ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_UNKNOWN');
     const input = {
       'historical-performance-data': histData,
       'aggregation-group': createValidAggGroup(),
@@ -709,9 +709,9 @@ describe('single-server EthernetContainer (datasets/singleServerEc_fixture.json)
       expect(input).toEqual(original);
     });
 
-    test.each(['24-HOURS', 'UNKNOWN', 'NOT_YET_DEFINED'])('preserves %s passthrough without a group', period => {
+    test.each(['PERIOD-24-HOURS', 'UNKNOWN', 'NOT_YET_DEFINED'])('preserves %s passthrough without a group', period => {
       input['historical-performance-data']['granularity-period'] =
-        'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-' + period;
+        'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_' + period;
       expect(p1CalculateUtilization(input)['historical-performance-data'])
         .toEqual(input['historical-performance-data']);
     });
