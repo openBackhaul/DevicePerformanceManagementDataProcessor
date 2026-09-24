@@ -211,4 +211,4 @@ const p1IterateEcPmSlices = (input) => {
   }
 };
 
-module.exports = p1IterateEcPmSlices;
+module.exports = require("../../../../../core/p1FunctionTiming").wrap("p1IterateEcPmSlices", p1IterateEcPmSlices);

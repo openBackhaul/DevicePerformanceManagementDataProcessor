@@ -76,6 +76,9 @@ async function run(request) {
     }
 
     const queueMessage = await buildRedisQueueMessage(normalized);
+    if (normalized.messageType === "PERFORMANCE_OUTPUT") {
+      Object.assign(queueMessage, require("../../core/p1FunctionTiming").metadata());
+    }
     Object.assign(queueMessage, require("../../core/combinedProcessingTiming").attach(normalized));
 
     // Redis is an operational queue and must contain only compact metadata.

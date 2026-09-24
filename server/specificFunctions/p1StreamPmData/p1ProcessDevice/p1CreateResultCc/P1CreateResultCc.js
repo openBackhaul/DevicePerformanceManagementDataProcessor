@@ -1500,7 +1500,7 @@ async function run(request) {
 }
 
 module.exports = {
-  run,
+  run: require("../../../../core/p1FunctionTiming").wrap("p1CreateResultCc", run),
 
   /*
    * Exported for function-level unit testing as per specification.

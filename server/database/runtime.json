@@ -79,6 +79,8 @@
       "streamsEnabled": false,
       "compactStreamsEnabled": true,
       "combinedStreamEnabled": true,
+      "p1DiagnosticsEnabled": true,
+      "p1DiagnosticsSampleRate": 1,
       "combinedTrackingTtlSeconds": 21600,
       "kafkaSuccessStreamEnabled": false,
       "streamMaxLen": 200000,

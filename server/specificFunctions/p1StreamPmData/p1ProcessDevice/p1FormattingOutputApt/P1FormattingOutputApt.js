@@ -74,7 +74,7 @@ const p1FormattingOutputApt = (input) => {
   }
 };
 
-module.exports = p1FormattingOutputApt;
+module.exports = require("../../../../core/p1FunctionTiming").wrap("p1FormattingOutputApt", p1FormattingOutputApt);
 
 // Helper  Methods
 

@@ -163,12 +163,12 @@ async function processKafkaOutboundChunk(messages, context) {
     );
     const payloadLoadMs = (performance.now() - loadClock).toFixed(3);
 
-    const transmission = await p1TransmittingKafka.run({
+    const transmission = await require("../../core/p1FunctionTiming").kafka(messages, () => p1TransmittingKafka.run({
         outputMessages,
         p1TransmittingKafkaParameters,
         kafkaConnectionList: kafkaConnectionList || [],
         logger: logger
-    });
+    }));
 
     // Each record shares its producer send-call completion timing; this is
     // not a measurement of that record's individual network acknowledgement.

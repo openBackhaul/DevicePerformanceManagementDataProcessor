@@ -47,6 +47,7 @@ let dropped = 0;
 let log;
 
 function configure(config = {}, logger) {
+  require("./p1FunctionTiming").configure(config, logger);
   require("./combinedProcessingTiming").configure(config, logger);
   const positive = (value, fallback) => Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
   options = {

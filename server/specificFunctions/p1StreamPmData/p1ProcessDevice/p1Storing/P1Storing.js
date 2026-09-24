@@ -410,4 +410,4 @@ async function run(request) {
   }
 }
 
-module.exports = { run };
+module.exports = { run: require("../../../../core/p1FunctionTiming").wrap("p1Storing", run) };

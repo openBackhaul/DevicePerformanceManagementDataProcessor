@@ -913,6 +913,7 @@ async function enqueueKafkaOutbound(outputMessage, loggers) {
     payload: outputMessage.payload || "",
     payloadRefId: outputMessage.payloadRefId || "",
     payloadBytes: String(outputMessage.payloadBytes || 0),
+    ...(outputMessage.functionTimingUpdateId ? {functionTimingUpdateId:outputMessage.functionTimingUpdateId} : {}),
     ...(outputMessage.processingUpdateId ? {
       processingUpdateId: outputMessage.processingUpdateId,
       processingPartId: outputMessage.processingPartId,

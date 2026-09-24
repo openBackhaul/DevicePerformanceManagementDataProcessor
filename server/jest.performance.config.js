@@ -2,6 +2,10 @@ module.exports = {
   rootDir: ".",
   testEnvironment: "node",
   testMatch: [
+    "<rootDir>/core/p1FunctionTiming.test.js",
+    "<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1LoadRawCc/P1LoadRawCc.test.js",
+    "<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/p1Storing/P1Storing.test.js",
+    "<rootDir>/specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice.test.js",
     "<rootDir>/core/combinedProcessingTiming.test.js",
     "<rootDir>/core/combinedProcessingTiming.redis.test.js",
     "<rootDir>/infra/kafka/queueKafkaOutbound.test.js",

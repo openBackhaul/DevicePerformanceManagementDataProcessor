@@ -114,6 +114,10 @@ function normalizeRawCcAfterFieldsFilter(rawCc) {
   return rawCc;
 }
 
+const functionTiming = require("../../../../core/p1FunctionTiming");
+const timedReplicaGet = functionTiming.wrap("p1LoadRawCc.replicaFetch", (client, request) => client.get(request));
+const timedMetadataGet = functionTiming.wrap("p1LoadRawCc.metadataFetch", (client, request) => client.get(request));
+
 async function loadInterfaceMetadataList(
   dataStoreClient,
   dataStoreIndex,
@@ -122,7 +126,7 @@ async function loadInterfaceMetadataList(
 ) {
   const response = await withRetry(
     async () =>
-      dataStoreClient.get({
+      timedMetadataGet(dataStoreClient, {
         index: dataStoreIndex,
         id: mountName
       }),
@@ -413,7 +417,7 @@ async function run(request) {
     try {
       rawResponse = await withRetry(
         async () =>
-          replicaClient.get({
+          timedReplicaGet(replicaClient, {
             index: mwdiReplicaEsClient["index-alias"],
             id: mountName
           }),
@@ -602,4 +606,4 @@ async function run(request) {
   }
 }
 
-module.exports = { run };
+module.exports = { run: require("../../../../core/p1FunctionTiming").wrap("p1LoadRawCc", run) };

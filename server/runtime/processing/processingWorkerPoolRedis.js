@@ -49,7 +49,7 @@ async function handleMessage(message, context) {
 
   try{
     try {
-        await combinedTiming.run(combined, () => p1ProcessDevice.run({
+        await require("../../core/p1FunctionTiming").device(message, combined, () => combinedTiming.run(combined, () => p1ProcessDevice.run({
           mountName,
           parameters: context.processDeviceParameters,
           configFile: context.configFile,
@@ -57,7 +57,7 @@ async function handleMessage(message, context) {
           dataStoreEsClient: context.dataStoreEsClient,
           kafkaConsumerTypes: context.kafkaConsumerTypes,
           storingOptions: context.storingOptions
-        }));
+        })));
         processingOutcome = "SUCCESS";
 
         if (context.appState?.metrics) {

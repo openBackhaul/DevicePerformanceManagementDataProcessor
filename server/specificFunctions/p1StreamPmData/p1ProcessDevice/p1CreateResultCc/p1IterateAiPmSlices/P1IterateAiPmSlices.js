@@ -200,5 +200,5 @@ function p1IterateAiPmSlices(input) {
 }
 
 module.exports = {
-  p1IterateAiPmSlices
+  p1IterateAiPmSlices: require("../../../../../core/p1FunctionTiming").wrap("p1IterateAiPmSlices", p1IterateAiPmSlices)
 };

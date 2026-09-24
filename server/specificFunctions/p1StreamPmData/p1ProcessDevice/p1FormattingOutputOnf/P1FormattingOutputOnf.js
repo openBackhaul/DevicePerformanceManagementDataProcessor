@@ -148,4 +148,4 @@ function applyFilter(data, keys) {
 }
 
 
-module.exports = p1FormattingOutputOnf;
+module.exports = require("../../../../core/p1FunctionTiming").wrap("p1FormattingOutputOnf", p1FormattingOutputOnf);
