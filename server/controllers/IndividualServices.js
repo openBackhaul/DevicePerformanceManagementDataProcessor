@@ -51,8 +51,8 @@ module.exports.initiatePmDataUpdate = function initiatePmDataUpdate(
         `POST /initiate-pm-data-update SUCCESS ${execTime}ms`
       );
 
-      logger.info(response, '=== CONTROLLER: Success response ===');
-      logger.info('=== END CONTROLLER ===');
+      logger.debug(response, '=== CONTROLLER: Success response ===');
+      logger.debug('=== END CONTROLLER ===');
       /*
        * Response handling according to the OpenAPI specification:
        * 200 -> already-up-to-date-mount-names returned
@@ -146,8 +146,8 @@ module.exports.provideDeviceDataStoreDump = function provideDeviceDataStoreDump(
         `POST /provide-device-data-store-dump SUCCESS ${execTime}ms`
       );
 
-      logger.info(response, '=== CONTROLLER: Success response ===');
-      logger.info('=== END CONTROLLER ===');
+      logger.debug(response, '=== CONTROLLER: Success response ===');
+      logger.debug('=== END CONTROLLER ===');
       /*
        * Response handling according to the OpenAPI specification:
        * 200 -> device-pm-data returned

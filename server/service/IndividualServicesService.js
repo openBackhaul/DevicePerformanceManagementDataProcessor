@@ -9,10 +9,10 @@ const { loadConfigFile } = require("../utils/config");
 // ---------------------------------------------------------------------------
 
 /**
- * Catalogo dei messaggi di errore di initiatePmDataUpdate.
- * Consumato da questo modulo e dai test unitari (exports.ERRORS):
+ * Catalog of error messages for initiatePmDataUpdate.
+ * Consumed by this module and by the unit tests (exports.ERRORS):
  * MOUNT_NAME_DISCREPANCY, UPSTREAM_SERVER_NOT_RESPONDING,
- * MWDI_CONNECTION_FAILED e MWDI_INVALID_RESPONSE.
+ * MWDI_CONNECTION_FAILED and MWDI_INVALID_RESPONSE.
  */
 const ERRORS = {
   INPUT_INVALID: 'Input is not a valid object',
@@ -157,8 +157,8 @@ function validateConnectionStatus(metadataArray, inputMountNames) {
 }
 
 /**
- * trova URL per la post   /v1/provide-device-status-metadata response structuerror or the URL
-  */
+ * Builds the URL for the POST /v1/provide-device-status-metadata request.
+ */
 
 
 function getMwdiURL () {
@@ -176,17 +176,17 @@ function getMwdiURL () {
     throw new Error(ERRORS.ERR_CONFIG_NOT_ACCESSIBLE);
   }
 
-  const mwdiMetadata = "/v1/provide-device-status-metadata";
+  const mwdiBaseUrl = "/v1/provide-device-status-metadata";
 
   const ltps =
     configFile["core-model-1-4:control-construct"]["logical-termination-point"];
-//solo una riga nel file ha  tcp-c-mwdi-  in  uid ( "uuid": "dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000")
+// Only one line in the file has tcp-c-mwdi- in the uuid ( "uuid": "dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000")
   const mwdiTcpLtp = ltps.find(
     (ltp) => ltp.uuid.includes("-tcp-c-mwdi-")
   );
 
   if (!mwdiTcpLtp) {
-    throw new Error("TCP Client MWDI non trovato");
+    throw new Error("TCP Client MWDI not found");
   }
 
   const tcpConfig =
@@ -200,7 +200,7 @@ function getMwdiURL () {
   const port =
     tcpConfig["remote-port"];
 
-  const mwdiUrl = `http://${ip}:${port}${mwdiMetadata}`;
+  const mwdiUrl = `http://${ip}:${port}${mwdiBaseUrl}`;
 
   return mwdiUrl;
 }
@@ -245,7 +245,7 @@ exports.bequeathYourDataAndDie = function (body, user, originator, xCorrelator, 
 // ---------------------------------------------------------------------------
 // provideDeviceDataStoreDump helpers
 // (ex service/individualServices/provideDeviceDataStoreDump/util.js)
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 
 /**
  * Builds the error object propagated to the controller as {code, message}.
@@ -335,7 +335,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       throw { code: 400, message: validationError };
     }
 
-    // 2. Retrieve URL and headers
+    // 2. Retrieve URL ('http://xx/v1/provide-device-status-metadata') and headers
     const mwdiUrl = getMwdiURL();
     const requestHeaders = {
       ...getCustomHeaders(),
@@ -689,7 +689,7 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
       { keys: Object.keys(p1ResolveEsAddressParameters) },
       'Available ES names'
     );
- // trovo URL "https://my-es-server:9200"
+ // Finds the URL "https://my-es-server:9200"
  /*
   const dataStoreEsClient = (
     await p1ResolveEsAddress.run({
