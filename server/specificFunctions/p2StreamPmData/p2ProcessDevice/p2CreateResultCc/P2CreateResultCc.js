@@ -218,7 +218,7 @@ function buildPrepareTxModesError(response, mountName) {
     response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_INCOMPLETE ||
     response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_INVALID ||
     response === ERRORS_P1PrepareTxModes.HIST_PERF_DATA_COULD_NOT_BE_PROVIDED ||
-    response === ERRORS_P1PrepareTxModes.TX_MODE_LIST_COULD_NOT_BE_PROVIDED
+    response === ERRORS_P1PrepareTxModes.PROC_TX_MODE_LIST_COULD_NOT_BE_PROVIDED
   ) {
     error.retryable = false;
   } else {
@@ -787,20 +787,17 @@ function buildIterateAiPmSlicesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-    response === ERRORS_P1IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.PARAMETERS_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR ||
-    response === ERRORS_P1IterateAiPmSlices.MOST_RECENT_END_TIME_PROVIDE_ERROR ||
-    response === ERRORS_P1IterateAiPmSlices.MOST_RECENT_END_TIME_24_PROVIDE_ERROR ||
-    response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.GRANULARITY_PERIOD_INVALID ||
-    response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_NOT_PROVIDED ||
-    response === ERRORS_P1IterateAiPmSlices.PERIOD_END_TIME_INVALID
-  ) {
+  response === ERRORS_P1IterateAiPmSlices.PARAMETERS_NOT_PROVIDED ||
+  response === ERRORS_P1IterateAiPmSlices.PARAMETERS_INVALID ||
+  response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+  response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+  response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_NOT_PROVIDED ||
+  response === ERRORS_P1IterateAiPmSlices.TRANSMISSION_MODE_LIST_INVALID ||
+  response === ERRORS_P1IterateAiPmSlices.INTERVAL_CAPACITY_ERROR ||
+  response === ERRORS_P1IterateAiPmSlices.OUT_OF_RANGE_LEVELS_ERROR ||
+  response === ERRORS_P1IterateAiPmSlices.DEFAULT_VALUES_ERROR ||
+  response === ERRORS_P1IterateAiPmSlices.HISTORICAL_DATA_LIST_PROVIDE_ERROR
+) {
     error.retryable = false;
   } else {
     error.retryable = true;
@@ -819,25 +816,23 @@ function buildIterateEcPmSlicesError(response, mountName) {
   error.mountName = mountName;
 
   if (
-    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_OUTPUT_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_FAILED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.MOST_RECENT_PERIOD_END_TIME_24_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_NOT_PROV ||
-    response === ERRORS_P1IterateEcPmSlices.GRAN_PERIOD_INVALID ||
-    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_NOT_PROVIDED ||
-    response === ERRORS_P1IterateEcPmSlices.PERIOD_ENDTIME_INVALID
-  ) {
+  response === ERRORS_P1IterateEcPmSlices.PARAMETERS_NOT_PROVIDED ||
+  response === ERRORS_P1IterateEcPmSlices.PARAMETERS_INVALID ||
+  response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_NOT_PROVIDED ||
+  response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_INVALID ||
+  response === ERRORS_P1IterateEcPmSlices.AGGREGATION_GROUP_NOT_PROVIDED ||
+  response === ERRORS_P1IterateEcPmSlices.AGGREGATION_GROUP_INVALID ||
+  response === ERRORS_P1IterateEcPmSlices.RESULT_CC_NOT_PROVIDED ||
+  response === ERRORS_P1IterateEcPmSlices.RESULT_CC_INVALID ||
+  response === ERRORS_P1IterateEcPmSlices.INTERFACE_STATUS_NOT_PROVIDED ||
+  response === ERRORS_P1IterateEcPmSlices.INTERFACE_STATUS_INVALID ||
+  response === ERRORS_P1IterateEcPmSlices.KPI_CALCULATION_FAILED ||
+  response === ERRORS_P1IterateEcPmSlices.DEFAULT_VALUES_REMOVAL_FAILED ||
+  response === ERRORS_P1IterateEcPmSlices.UTILIZATION_CALCULATION_FAILED ||
+  response === ERRORS_P1IterateEcPmSlices.DATA_VOLUME_CATEGORIZATION_FAILED ||
+  response === ERRORS_P1IterateEcPmSlices.BUSY_HOUR_CALCULATION_FAILED ||
+  response === ERRORS_P1IterateEcPmSlices.HISTORICAL_DATA_LIST_PROVIDE_FAILED
+) {
     error.retryable = false;
   } else {
     error.retryable = true;
