@@ -242,7 +242,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
 
         if (response.ok) {
           const data = await response.json();
-          logger.info(`Successfully retrieved control-construct for ${mountName}`);
+          logger.debug(`Successfully retrieved control-construct for ${mountName}`);
         } else {
           // Attempt to parse the MWDI error response body ({ code, message })
           let errorBody = null;
@@ -304,8 +304,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       };
     }
 
-    logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
-    logger.info("PM data update initiated successfully");
+    logger.debug(`Completed processing ${inputMountNames.length} mount(s)`);
+    logger.debug("PM data update initiated successfully");
 
     // Build the internal success response
     const successResponse = {
