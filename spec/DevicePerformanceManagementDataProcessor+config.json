@@ -1945,6 +1945,10 @@
                 {
                   "parameter": "dpmdp-1-1-0-string-p-603",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-604",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -1990,6 +1994,19 @@
               "string-name": "netexplorer-output-format",
               "string-purpose": "kafkaClient",
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
+            },
+            "string-profile-configuration": {
+              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-604",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mwdi-sliding-window-size",
+              "string-purpose": "kafkaClient"
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002"
