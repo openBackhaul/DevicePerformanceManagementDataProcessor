@@ -105,7 +105,7 @@ x-javascript-interface:
                       - 'ata structure is missing or invalid'
                       - 'elasticSearch read error'
                       - 'general processing error during reading'
-      p1FieldsFilter:
+      p1ReduceData:
         input:
           required: true
           content:

@@ -8,7 +8,7 @@ end title
 participant "p2ProcessDevice\n" as requestor
 participant "p2LoadRawCc\n" as cur
 database "MWDI ES Replica" as MwdiEs
-participant "p1FieldsFilter\n" as fieldsFilter
+participant "p1ReduceData\n" as fieldsFilter #LightCyan
 participant "p2DiscardIrrelevant\nPmRecords" as filterPm
 participant "p1CalculateInterface\nPmDataQuality" as calPmQual
 
