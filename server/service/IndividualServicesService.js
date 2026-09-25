@@ -1,14 +1,31 @@
 "use strict";
 
 const logger = require("./LoggingService.js").getLogger();
-const {
-  validateInput,
-  getMwdiURL,
-  getCustomHeaders,
-  validateMWDIResponse,
-  validateConnectionStatus,
-  ERRORS,
-} = require("./individualServices/initiatePmDataUpdate/util.js");
+
+const { loadConfigFile } = require("../utils/config");
+
+
+/**
+ * Catalog of error messages for initiatePmDataUpdate.
+ * Consumed by this module and by the unit tests (exports.ERRORS):
+ * MOUNT_NAME_DISCREPANCY, UPSTREAM_SERVER_NOT_RESPONDING,
+ * MWDI_CONNECTION_FAILED and MWDI_INVALID_RESPONSE.
+ */
+const ERRORS = {
+  INPUT_INVALID: 'Input is not a valid object',
+  MOUNT_NAME_LIST_NOT_PROVIDED: 'mountNames not provided',
+  MOUNT_NAME_LIST_INVALID: 'mountNames invalid',
+  MOUNT_NAME_LIST_EMPTY: 'mountNames invalid',
+  MOUNT_NAME_DISCREPANCY: 'Resource unknown. The resource for the connected device does not exist at the Controller',
+  UPSTREAM_SERVER_NOT_RESPONDING: 'Bad Gateway. Upstream server not responding.',
+  MWDI_CONNECTION_FAILED: 'Failed to connect to MWDI service',
+  MWDI_INVALID_RESPONSE: 'Invalid response from MWDI service',
+  ERR_INVALID_JSON: 'Config file contains invalid JSON',
+  ERR_CONFIG_NOT_ACCESSIBLE: 'Error occurred while loading config file'
+};
+
+exports.ERRORS = ERRORS;
+
 
 var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
@@ -16,12 +33,8 @@ var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1Resol
 var p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
 var p1ReadDataStoreDeviceDataErrors = require('../genericFunctions/p1ReadDataStoreDeviceData/ErrorsEnum');
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
-var {
-  validateInput: validateProvideDeviceDataStoreDumpInput,
-  mapReadDataStoreDeviceDataError,
-  buildSuccessResponse,
-  createError,
-} = require('./individualServices/provideDeviceDataStoreDump/util.js');
+
+//================ SERVICES ================
 
 /**
  * Initiates process of embedding a new release
@@ -49,31 +62,38 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     logger.debug(body, `Received mountsList from initiatePmDataUpdate:`);
 
     // 1. Input validation test: check if body is valid and contains required fields
-    const validationError = validateInput(body);
+    const validationError = validatePmDataUpdateInput(body);
     if (validationError) {
-      throw new Error(`Validation error: ${validationError}`);
+      throw { code: 400, message: validationError };
     }
 
-    // 2. Retrieve URL and headers
+    // 2. Retrieve URL ('http://xx/v1/provide-device-status-metadata') and headers
     const mwdiUrl = getMwdiURL();
     const requestHeaders = {
       ...getCustomHeaders(),
       ...(body._headers || {}),
     };
     // 3. Call MWDI REST API to get device status metadata
-    const mwdiResponse = await fetch(mwdiUrl, {
-      method: "POST",
-      headers: requestHeaders,
-      body: JSON.stringify({
-        "mount-name-list": body["mount-names"],
-      }),
-    });
+    let mwdiResponse;
+    try {
+      mwdiResponse = await fetch(mwdiUrl, {
+        method: "POST",
+        headers: requestHeaders,
+        body: JSON.stringify({
+          "mount-name-list": body["mount-names"],
+        }),
+      });
+    } catch (error) {
+      throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
+    }
     if (!mwdiResponse.ok) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
     }
     const responseData = await mwdiResponse.json();
-    logger.debug(responseData, `MWDI Received response for provideDeviceStatusMetadata:`);
-    // 5. Validate the MWDI response
+
+    logger.debug(responseData, `MWDI Received response for initiatePmDataUpdate:`);
+
+    // 5. Validate response
     const responseError = validateMWDIResponse(responseData);
     if (responseError) {
       throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
@@ -120,7 +140,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       // Throw error with code 532 and unconnected mount names
       const error532 = {
         code: 532,
-        message: ERRORS.UNCONNECTED_MOUNTS,
+        message: ERRORS.UPSTREAM_SERVER_NOT_RESPONDING,
         "unconnected-mount-names": connectionStatusError.unconnectedMountNames,
       };
 
@@ -168,7 +188,15 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     var loaded = await p1LoadParameters.run({
       functionName: "initiatePmDataUpdate",
     });
-    logger.debug(`Validation passed: ${loaded.parameters.parameter}`);
+
+    logger.debug(`Validation passed: ${JSON.stringify(loaded.parameters.parameter)}`);
+    /*
+        let waitTimeForSending = Number(
+          loaded.parameters.parameter.find(
+            (p) => p["parameter-name"] === "waitTimeForSending",
+          )?.value,
+        );
+    */
     let waitTimeForSending = 0
     waitTimeForSending = Number(
       getParamFromFunction(
@@ -190,9 +218,26 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       if (waitTimeForSending > 0) {
         await new Promise(resolve => setTimeout(resolve, waitTimeForSending));
       }
-     // Build the URL to retrieve the control-construct for the current mount
-      // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+      const isLocalMwdi =
+        baseMwdiUrl.toLowerCase().includes('localhost') ||
+        baseMwdiUrl.includes('127.0.0.1');
+
+      let controlConstructUrl;
+//##########################################################################
+/*   
+      if (isLocalMwdi) {
+        logger.info(`Local Test - using cache control-construct`);
+        controlConstructUrl =
+          `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      } else {
+*/
+        logger.info(`Live Environment - using live control-construct`);
+        controlConstructUrl =
+          `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+/*  
+      }
+*/
+//##########################################################################
       try {
         // Retrieve the control-construct using a GET request
         const response = await fetch(controlConstructUrl, {
@@ -202,7 +247,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
 
         if (response.ok) {
           const data = await response.json();
-          logger.info(`Successfully retrieved control-construct for ${mountName}`);
+          logger.debug(`Successfully retrieved control-construct for ${mountName}`);
         } else {
           // Attempt to parse the MWDI error response body ({ code, message })
           let errorBody = null;
@@ -224,7 +269,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
             // Resource not found at the Controller
             logger.error(
               `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`
-);
+            );
             missingMountNames.push(mountName);
           } else if (
             mwdiErrorCode === 502 ||
@@ -235,8 +280,8 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
             // Device is unreachable or unavailable
             unconnectedMountNames.push(mountName);
             logger.error(
-  `Mount ${mountName} not connected (HTTP ${response.status}: ${mwdiErrorMessage || 'Bad Gateway'})`
-);
+              `Mount ${mountName} not connected (HTTP ${response.status}: ${mwdiErrorMessage || 'Bad Gateway'})`
+            );
           } else {
             logger.warn(
               `Failed to retrieve control-construct for ${mountName}: ${response.status} - ${mwdiErrorMessage}`,
@@ -259,33 +304,15 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (unconnectedMountNames.length > 0) {
       throw {
         code: 532,
-        message: "Bad Gateway. Upstream server not responding.",
+        message: ERRORS.UPSTREAM_SERVER_NOT_RESPONDING,
         "unconnected-mount-names": unconnectedMountNames,
       };
     }
 
-    // 10. Riepilogo esiti per-mount: se qualche risorsa e' sconosciuta presso il controller (533)
-    if (missingMountNames.length > 0) {
-      throw {
-        code: 533,
-        message: "Resource unknown. The resource for the connected device does not exist at the Controller",
-        "missing-mount-names": missingMountNames,
-      };
-    }
+    logger.debug(`Completed processing ${inputMountNames.length} mount(s)`);
+    logger.debug("PM data update initiated successfully");
 
-    // Se qualche device non e' collegato / non risponde (502/530/531/532)
-    if (unconnectedMountNames.length > 0) {
-      throw {
-        code: 532,
-        message: "Bad Gateway. Upstream server not responding.",
-        "unconnected-mount-names": unconnectedMountNames,
-      };
-    }
-
-    logger.info(`Completed processing ${inputMountNames.length} mount(s)`);
-    logger.info("PM data update initiated successfully");
-
-   // Build the internal success response
+    // Build the internal success response
     const successResponse = {
       status: "success",
       message: "PM data update initiated successfully",
@@ -318,8 +345,12 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         "unconnected-mount-names": error["unconnected-mount-names"],
       };
     }
-    // Propagate unexpected errors to the caller
-    throw { error: error.message || ERRORS.MWDI_CONNECTION_FAILED };
+    // Propagate unexpected errors to the caller, preserving the { code, message }
+    // shape required by the documented errorDescription schema
+    throw {
+      code: Number.isInteger(error.code) ? error.code : 500,
+      message: error.message || ERRORS.MWDI_CONNECTION_FAILED,
+    };
   }
 };
 
@@ -380,7 +411,7 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
     }
     logger.debug({ body }, 'Received body in provideDeviceDataStoreDump service');
     const mountName = body['mount-name'];
-  
+
     // 2. Load the parameters of the function from the control construct
     const loaded = await p1LoadParameters.run({
       functionName: 'provideDeviceDataStoreDump'
@@ -407,17 +438,17 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
       { keys: Object.keys(p1ResolveEsAddressParameters) },
       'Available ES names'
     );
- // trovo URL "https://my-es-server:9200"
- /*
-  const dataStoreEsClient = (
-    await p1ResolveEsAddress.run({
-      parameters: p1ResolveEsAddressParameters,
-      configFile: loaded.configFile,
-      esName: "dataStoreEsClient"
-    })
-  ).esAddress;
-  logger.debug({ dataStoreEsClient }, 'Resolved  Elasticsearch address');
-  */
+    // Finds the URL "https://my-es-server:9200"
+    /*
+     const dataStoreEsClient = (
+       await p1ResolveEsAddress.run({
+         parameters: p1ResolveEsAddressParameters,
+         configFile: loaded.configFile,
+         esName: "dataStoreEsClient"
+       })
+     ).esAddress;
+     logger.debug({ dataStoreEsClient }, 'Resolved  Elasticsearch address');
+     */
     // 4. Read the PM data of the device from the DataStore
     const readResult = await p1ReadDataStoreDeviceData({
       'data-store-es-client': esAddress,
@@ -446,3 +477,277 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
     throw createError(500, message);
   }
 };
+
+
+
+
+//================ UTILITIES ================
+
+// ---------------------------------------------------------------------------
+// initiatePmDataUpdate utilities
+// ---------------------------------------------------------------------------
+
+/**
+ * Validates the input body structure.
+ *
+ * @param {Object} input
+ * @returns {string} ERRORS constant or null if valid
+ */
+function validatePmDataUpdateInput(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return ERRORS.INPUT_INVALID;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(input, "mount-names")) {
+    return ERRORS.MOUNT_NAME_LIST_NOT_PROVIDED;
+  }
+
+  if (!Array.isArray(input["mount-names"])) {
+    return ERRORS.MOUNT_NAME_LIST_INVALID;
+  }
+
+  if (input["mount-names"].length === 0) {
+    return ERRORS.MOUNT_NAME_LIST_EMPTY;
+  }
+
+  for (const item of input["mount-names"]) {
+    if (typeof item !== "string" || item.trim() === "") {
+      return ERRORS.MOUNT_NAME_LIST_INVALID;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Validates the MWDI /v1/provide-device-status-metadata response structure.
+ * The response can be either:
+ * - A direct array of device status metadata objects
+ * - An object with 'device-status-metadata' field containing the array
+ *
+ * @param {Object|Array} responseData
+ * @returns {string} ERRORS constant or null if valid
+ */
+function validateMWDIResponse(responseData) {
+  if (!responseData || typeof responseData !== 'object') {
+    return ERRORS.MWDI_INVALID_RESPONSE;
+  }
+
+  // Handle direct array response (actual MWDI format)
+  let metadataArray;
+  if (Array.isArray(responseData)) {
+    metadataArray = responseData;
+  }
+  // Handle object with 'device-status-metadata' field (for backward compatibility)
+  else if (Object.prototype.hasOwnProperty.call(responseData, 'device-status-metadata')) {
+    if (!Array.isArray(responseData['device-status-metadata'])) {
+      return ERRORS.MWDI_INVALID_RESPONSE;
+    }
+    metadataArray = responseData['device-status-metadata'];
+  }
+  else {
+    return ERRORS.MWDI_INVALID_RESPONSE;
+  }
+
+  // Validate each item in the array
+  for (const item of metadataArray) {
+    if (!item || typeof item !== 'object') {
+      return ERRORS.MWDI_INVALID_RESPONSE;
+    }
+    if (
+      !Object.prototype.hasOwnProperty.call(item, 'mount-name') ||
+      !Object.prototype.hasOwnProperty.call(item, 'connection-status')
+    ) {
+      return ERRORS.MWDI_INVALID_RESPONSE;
+    }
+  }
+
+  return null;
+}
+/**
+ * Validates that all mounts in the metadata array are in connected state.
+ *
+ * @param {Array} metadataArray - Array of device status metadata objects
+ * @param {Array} inputMountNames - Array of mount names from the input request
+ * @returns {Object|null} Object with unconnectedMountNames array or null if all connected
+ */
+function validateConnectionStatus(metadataArray, inputMountNames) {
+  const unconnectedMountNames = [];
+
+  // Create a set of input mount names for efficient lookup
+  const inputMountNamesSet = new Set(inputMountNames);
+
+  // Check each mount's connection status
+  for (const item of metadataArray) {
+    const mountName = item['mount-name'];
+    const connectionStatus = item['connection-status'];
+
+    // Only check mounts that are in the input list
+    if (!inputMountNamesSet.has(mountName)) {
+      continue;
+    }
+
+    // If connection-status is not "connected", add to unconnected list
+    if (connectionStatus !== 'connected') {
+      unconnectedMountNames.push(mountName);
+    }
+  }
+
+  // Return unconnected mounts if any found
+  if (unconnectedMountNames.length > 0) {
+    return {
+      unconnectedMountNames: unconnectedMountNames
+    };
+  }
+
+  return null;
+}
+
+
+/**
+ * finds URL for the POST  
+ * ex:  /v1/provide-device-status-metadata response structuerror or the URL
+  */
+function getMwdiURL() {
+  let configFile;
+
+  try {
+    configFile = loadConfigFile();
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      console.error("Config file contains invalid JSON:", error);
+      throw new Error(ERRORS.ERR_INVALID_JSON);
+    }
+
+    console.error("Error occurred while loading config file:", error);
+    throw new Error(ERRORS.ERR_CONFIG_NOT_ACCESSIBLE);
+  }
+
+  const mwdiMetadata = "/v1/provide-device-status-metadata";
+
+  const ltps =
+    configFile["core-model-1-4:control-construct"]["logical-termination-point"];
+  //solo una riga nel file ha  tcp-c-mwdi-  in  uid ( "uuid": "dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000")
+  const mwdiTcpLtp = ltps.find(
+    (ltp) => ltp.uuid.includes("-tcp-c-mwdi-")
+  );
+
+  if (!mwdiTcpLtp) {
+    throw new Error("TCP Client MWDI non trovato");
+  }
+
+  const tcpConfig =
+    mwdiTcpLtp["layer-protocol"][0][
+    "tcp-client-interface-1-0:tcp-client-interface-pac"
+    ]["tcp-client-interface-configuration"];
+
+  const ip =
+    tcpConfig["remote-address"]["ip-address"]["ipv-4-address"];
+
+  const port =
+    tcpConfig["remote-port"];
+
+  const mwdiUrl = `http://${ip}:${port}${mwdiMetadata}`;
+  return mwdiUrl;
+}
+
+/**
+ * Returns custom headers for the MWDI API call.
+ * Headers are read from environment variables with sensible defaults.
+ *
+ * @returns {Object}
+ */
+function getCustomHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'accept': process.env.HTTP_ACCEPT || 'application/json',
+    'user': process.env.HTTP_USER || 'User Name',
+    'originator': process.env.HTTP_ORIGINATOR || 'Resolver',
+    'x-correlator': process.env.HTTP_X_CORRELATOR || '550e8400-e29b-11d4-a716-446655440000',
+    'trace-indicator': process.env.HTTP_TRACE_INDICATOR || '1.3.1',
+    'customer-journey': process.env.HTTP_CUSTOMER_JOURNEY || 'Unknown value',
+    'operation-key': process.env.HTTP_OPERATION_KEY || 'Operation key not yet provided.'
+  };
+}
+
+
+
+// ---------------------------------------------------------------------------
+// provideDeviceDataStoreDump utilities
+// ---------------------------------------------------------------------------
+
+
+
+/**
+ * Builds the error object propagated to the controller as {code, message}.
+ * NOTE: it deliberately returns a PLAIN object (not an `Error` instance) because:
+ *  - the controller serialises it directly into the HTTP response body
+ *    (an `Error` instance would serialise to `{}`, since `message` is not enumerable);
+ *  - it is the same convention used by initiatePmDataUpdate (plain {code, message} objects);
+ *  - the unit tests assert `rejects.toEqual({ code, message })`.
+ */
+function createError(code, message) {
+  return { code, message };
+}
+
+/**
+ * Validates the body of the provideDeviceDataStoreDump service.
+ * The mount-name is mandatory and must be a non-empty string.
+ *
+ * @param {Object} body
+ * @returns {string} ERRORS constant or null if valid
+ */
+function validateProvideDeviceDataStoreDumpInput(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED;
+  }
+
+  const mountName = body['mount-name'];
+  if (mountName === undefined || mountName === null || mountName === '') {
+    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED;
+  }
+  if (typeof mountName !== 'string') {
+    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_INVALID;
+  }
+
+  return null;
+}
+
+/**
+ * Maps the error messages returned by p1ReadDataStoreDeviceData to
+ * the HTTP error objects propagated to the controller.
+ *
+ * @param {string} message
+ * @returns {{ code: number, message: string }}
+ */
+function mapReadDataStoreDeviceDataError(message) {
+  switch (message) {
+    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_FOUND:
+      return { code: 404, message };
+
+    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED:
+    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_INVALID:
+    case p1ReadDataStoreDeviceDataErrors.DATA_STORE_NOT_PROVIDED:
+    case p1ReadDataStoreDeviceDataErrors.DATA_STORE_INVALID:
+      return { code: 400, message };
+
+    default:
+      return { code: 500, message };
+  }
+}
+
+/**
+ * Builds the success response expected by the OpenAPI specification.
+ *
+ * @param {Object} readResult Result returned by p1ReadDataStoreDeviceData
+ * @returns {Object} { 'device-pm-data': [...] }
+ */
+function buildSuccessResponse(readResult) {
+  if (!readResult || !Array.isArray(readResult['device-pm-data'])) {
+    throw new Error('Invalid p1ReadDataStoreDeviceData result');
+  }
+
+  return {
+    'device-pm-data': readResult['device-pm-data']
+  };
+}
