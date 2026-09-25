@@ -20,11 +20,15 @@ const KAFKA_OUTBOUND_SUCCESS_STREAM = "dpmdp:stream:kafka-outbound-success";
 const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
 const DEVICE_TIMING_STREAM = "dpmdp:stream:device-processing-timing";
 const KAFKA_TIMING_STREAM = "dpmdp:stream:kafka-outbound-timing";
+const PERFORMANCE_TIMING_DEDUP_SET = "dpmdp:set:performance-timing-written";
 
 const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
 local storedDate = redis.call('HGET', KEYS[1], 'date')
 if storedDate ~= ARGV[1] then
-  redis.call('UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5])
+  -- Reset the daily evidence streams once, at the first operation observed on
+  -- a new Europe/Berlin calendar date. The same atomic script then writes any
+  -- timing records supplied by that operation, so current-day evidence is kept.
+  redis.call('UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5], KEYS[6])
   redis.call('DEL', KEYS[1])
   redis.call('HSET', KEYS[1],
     'date', ARGV[1],
@@ -43,21 +47,29 @@ if count > 0 and ARGV[3] ~= '' then
 end
 redis.call('HSET', KEYS[1], 'updatedAt', ARGV[6])
 if ARGV[7] then
-  local written = 0
+  local accepted = 0
+  local deduplicate = ARGV[9] == '1'
   for _, record in ipairs(cjson.decode(ARGV[7])) do
     if record.date == ARGV[1] then
-      local stream = KEYS[4]
-      if record.stage == 'kafka' then stream = KEYS[5] end
-      local fields = {}
-      for key, value in pairs(record.fields) do
-        table.insert(fields, key)
-        table.insert(fields, value)
+      local shouldWrite = true
+      if deduplicate and record.timingId then
+        shouldWrite = redis.call('SADD', KEYS[6], record.timingId) == 1
       end
-      redis.call('XADD', stream, 'MAXLEN', '~', ARGV[8], '*', unpack(fields))
-      written = written + 1
+      if shouldWrite then
+        local stream = KEYS[4]
+        if record.stage == 'kafka' then stream = KEYS[5] end
+        local fields = {}
+        for key, value in pairs(record.fields) do
+          table.insert(fields, key)
+          table.insert(fields, value)
+        end
+        redis.call('XADD', stream, 'MAXLEN', '~', ARGV[8], '*', unpack(fields))
+      end
+      -- A duplicate has already been persisted and is therefore accepted too.
+      accepted = accepted + 1
     end
   end
-  return written
+  return accepted
 end
 return redis.call('HGETALL', KEYS[1])
 `;
@@ -139,7 +151,8 @@ async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
       KAFKA_OUTBOUND_SUCCESS_STREAM,
       KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
       DEVICE_TIMING_STREAM,
-      KAFKA_TIMING_STREAM
+      KAFKA_TIMING_STREAM,
+      PERFORMANCE_TIMING_DEDUP_SET
     ],
     arguments: [
       getBerlinDate(),
@@ -156,14 +169,15 @@ async function resetKafkaDailyMetricsIfNeeded(loggers) {
   return updateKafkaDailyMetrics("", "", 0, loggers);
 }
 
-async function recordPerformanceTimings(entries, maxLen, loggers) {
+async function recordPerformanceTimings(entries, maxLen, loggers, options = {}) {
   const redis = await getRedisClient(loggers);
   return redis.eval(UPDATE_KAFKA_DAILY_METRICS_SCRIPT, {
     keys: [KAFKA_DAILY_METRICS_HASH, KAFKA_OUTBOUND_SUCCESS_STREAM,
-      KAFKA_OUTBOUND_DEAD_LETTER_STREAM, DEVICE_TIMING_STREAM, KAFKA_TIMING_STREAM],
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM, DEVICE_TIMING_STREAM, KAFKA_TIMING_STREAM,
+      PERFORMANCE_TIMING_DEDUP_SET],
     arguments: [getBerlinDate(), "Europe/Berlin", "", "", "0", new Date().toISOString(),
       JSON.stringify(entries.map(entry => ({ ...entry, date: getBerlinDate(new Date(entry.completedAt || entry.fields.completedAt)) }))),
-      String(maxLen)]
+      String(maxLen), options.deduplicate === true ? "1" : "0"]
   });
 }
 

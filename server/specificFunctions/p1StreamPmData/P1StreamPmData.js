@@ -299,7 +299,10 @@ async function initialize() {
       kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 900000,
       kafkaOversizedMessageMode: serviceConfig.kafkaOversizedMessageMode || "ERROR"
     }).catch((error) =>
-      logger.error({ error }, "Kafka outbound worker pool crashed")
+      logger.error(
+        { err: error, errorMessage: error?.message, stack: error?.stack },
+        "Kafka outbound worker pool crashed"
+      )
     );
 
     startRetryWorkerPool({
