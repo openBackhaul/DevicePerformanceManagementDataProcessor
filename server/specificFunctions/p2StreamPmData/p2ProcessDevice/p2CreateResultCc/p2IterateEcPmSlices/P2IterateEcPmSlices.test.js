@@ -45,7 +45,7 @@ describe('Input validation and processing with real helpers', () => {
 
   test.each([null, {}, { ...clone(inputDataset['historical-performance-data-list'][0]), 'period-end-time': 'invalid' },
     { ...clone(inputDataset['historical-performance-data-list'][0]), 'period-end-time': null }, { ...clone(inputDataset['historical-performance-data-list'][0]), 'performance-data': [] },
-    { ...clone(inputDataset['historical-performance-data-list'][0]), 'granularity-period': '15min' }])('rejects malformed slice %p', record => {
+    { ...clone(inputDataset['historical-performance-data-list'][0]), 'granularity-period': 42 }])('rejects malformed slice %p', record => {
     expect(iterate({ ...clone(inputDataset), 'historical-performance-data-list': [record] }))
       .toBe(ERRORS.HISTORICAL_DATA_LIST_INVALID);
   });

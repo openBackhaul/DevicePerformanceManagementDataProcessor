@@ -1,0 +1,74 @@
+{
+    "source": {
+        "environment": "pre-production",
+        "application-version": "DPMDP v1.0",
+        "elasticsearch-index": "dpmdpdatastore_preprod_preprod",
+        "document-id": "121252295",
+        "mount-name": "121252295",
+        "batch-timestamp": "2026-09-15T17:21:03.0+00:00"
+    },
+    "uuid-of-ethernet-container": "121252295+LTP-ETC-TTP-PORT-A",
+    "result-cc-extract": {
+        "batch-timestamp": "2026-09-15T17:21:03.0+00:00",
+        "logical-termination-point": [
+            {
+                "uuid": "121252295+LTP-ETC-TTP-PORT-A",
+                "client-ltp": [
+                    "LTP-MAC-TTP-PORT-A"
+                ],
+                "server-ltp": [
+                    "LTP-MWS-RADIO-1A"
+                ],
+                "layer-protocol": [
+                    {
+                        "layer-protocol-name": "ethernet-container-2-0:LAYER_PROTOCOL_NAME_TYPE_ETHERNET_CONTAINER_LAYER",
+                        "ethernet-container-2-0:ethernet-container-pac": {
+                            "ethernet-container-historical-performances": {
+                                "historical-performance-data-list": [
+                                    {
+                                        "period-end-time": "2026-09-15T17:15:00.0+00:00",
+                                        "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                                        "performance-data": {
+                                            "total-bytes-output": "3453552994",
+                                            "time-period": 900
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "121252295+LTP-MWPS-TTP-RADIO-1A",
+                "client-ltp": [
+                    "LTP-MWS-RADIO-1A"
+                ],
+                "layer-protocol": [
+                    {
+                        "layer-protocol-name": "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER",
+                        "air-interface-2-0:air-interface-pac": {
+                            "air-interface-historical-performances": {
+                                "historical-performance-data-list": [
+                                    {
+                                        "period-end-time": "2026-09-15T17:15:00.0+00:00",
+                                        "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                                        "performance-data": {
+                                            "interval-capacity": 350609
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "expected": {
+        "total-air-interface-interval-capacity": 350609,
+        "utilization-percent": 8.755693332331902,
+        "utilization-percent-rounded-to-2-decimals": 8.76
+    },
+    "limitation": "The v1.0 stored ResultCC does not contain the intermediate serving-structure LTP object identified by LTP-MWS-RADIO-1A."
+}

@@ -73,6 +73,41 @@
                     "performance-data": {
                       "interval-capacity": 10000
                     }
+                  },
+                  {
+                    "period-end-time": "2026-04-01T06:15:00Z",
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "performance-data": {
+                      "interval-capacity": 10000
+                    }
+                  },
+                  {
+                    "period-end-time": "2026-04-01T06:30:00Z",
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "performance-data": {
+                      "interval-capacity": 10000
+                    }
+                  },
+                  {
+                    "period-end-time": "2026-04-01T06:45:00Z",
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "performance-data": {
+                      "interval-capacity": 10000
+                    }
+                  },
+                  {
+                    "period-end-time": "2026-03-30T06:00:00Z",
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "performance-data": {
+                      "interval-capacity": 10000
+                    }
+                  },
+                  {
+                    "period-end-time": "2026-03-31T06:00:00Z",
+                    "granularity-period": "air-interface-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
+                    "performance-data": {
+                      "interval-capacity": 10000
+                    }
                   }
                 ]
               }
