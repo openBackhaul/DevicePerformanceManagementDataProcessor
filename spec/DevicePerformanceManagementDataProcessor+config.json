@@ -715,7 +715,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1FieldsFilter",
+              "function-name": "p1ReduceData",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
               "parameter-list": [],
               "sub-function-list": []
@@ -1916,7 +1916,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1FieldsFilter",
+              "function-name": "p1ExtractData",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
               "parameter-list": [],
               "sub-function-list": []
