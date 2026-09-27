@@ -14,6 +14,16 @@ describe("combined processing evidence", () => {
   });
   afterEach(() => { timing.configure({enabled:false}); jest.useRealTimers(); });
   const message = {id:"1-0",message:{mountName:"same-device"}};
+  test.each([true, false])("details enabled=%s leaves summary tracking enabled", async enabled => {
+    timing.configure({combinedStreamEnabled:true,combinedDetailsStreamEnabled:enabled},log);
+    const state = timing.start(message);
+    timing.run(state, () => timing.attach({messageType:'PERFORMANCE_OUTPUT'}));
+    timing.completeDevice(state);
+    await timing.flush();
+    expect(events).toHaveLength(1);
+    expect(events[0].arguments[3]).toBe(enabled ? '1' : '0');
+    expect(events[0].keys[1]).toBe('dpmdp:stream:combined-processing-timing');
+  });
   test("tracks repeated mounts as independent attempts without changing a p1 request", async () => {
     const first = timing.start(message), second = timing.start(message);
     expect(first.updateId).not.toBe(second.updateId);

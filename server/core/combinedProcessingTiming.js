@@ -14,7 +14,8 @@ const JOIN = `
 local now = tonumber(redis.call('TIME')[1])
 local expires = tonumber(ARGV[2])
 if expires <= now then return 0 end
-for i=1,3 do
+local keyCount = ARGV[4] == '0' and 2 or 3
+for i=1,keyCount do
   local t = redis.call('TYPE',KEYS[i]).ok
   local wanted = i == 1 and 'hash' or 'stream'
   if t ~= 'none' and t ~= wanted then return redis.error_reply('Timing key has unexpected type') end
@@ -38,12 +39,14 @@ for _,part in ipairs(d.expected) do
 end
 local id = redis.call('XADD',KEYS[2],'MAXLEN','~',ARGV[3],'*',
   'mountName',d.mountName,'combinedProcessingSeconds',string.format('%.3f',total))
+if ARGV[4] ~= '0' then
 redis.call('XADD',KEYS[3],'MAXLEN','~',ARGV[3],id,
   'mountName',d.mountName,'updateId',d.updateId,'deviceStreamEntryId',d.sourceId,
   'deviceProcessingSeconds',string.format('%.3f',d.seconds),
   'kafkaProcessingDetails',cjson.encode(evidence),
   'combinedProcessingSeconds',string.format('%.3f',total),
   'timingScope','successful-attempts; excludes queue waits; shared Kafka send-call durations')
+end
 redis.call('HSET',KEYS[1],'complete',id)
 return 1
 `;
@@ -52,6 +55,7 @@ function configure(config = {}, log) {
   const positive = (n, fallback) => Number.isInteger(Number(n)) && Number(n) > 0 ? Number(n) : fallback;
   options = {
     enabled: config.enabled !== false && config.combinedStreamEnabled === true,
+    detailsEnabled: config.combinedDetailsStreamEnabled !== false,
     successStreamEnabled: config.kafkaSuccessStreamEnabled !== false,
     ttl: positive(config.combinedTrackingTtlSeconds, 21600),
     maxBuffer: positive(config.bufferMaxEntries, 2000),
@@ -115,7 +119,7 @@ async function flush() {
     const pipeline = redis.multi();
     for (const e of entries) pipeline.eval(JOIN, {
       keys: [`dpmdp:timing:combined:${e.updateId}`,STREAM,DETAILS],
-      arguments: [JSON.stringify(e),String(e.expires),String(options.maxLen)]
+      arguments: [JSON.stringify(e),String(e.expires),String(options.maxLen),options.detailsEnabled ? '1' : '0']
     });
     await pipeline.execAsPipeline();
   } catch (error) {

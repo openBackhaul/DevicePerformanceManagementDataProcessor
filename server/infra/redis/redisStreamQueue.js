@@ -20,11 +20,13 @@ const KAFKA_OUTBOUND_SUCCESS_STREAM = "dpmdp:stream:kafka-outbound-success";
 const KAFKA_DAILY_METRICS_HASH = "dpmdp:hash:kafka-daily-metrics";
 const DEVICE_TIMING_STREAM = "dpmdp:stream:device-processing-timing";
 const KAFKA_TIMING_STREAM = "dpmdp:stream:kafka-outbound-timing";
+const COMBINED_TIMING_STREAM = "dpmdp:stream:combined-processing-timing";
+const COMBINED_DETAILS_STREAM = "dpmdp:stream:combined-processing-details";
 
 const UPDATE_KAFKA_DAILY_METRICS_SCRIPT = `
 local storedDate = redis.call('HGET', KEYS[1], 'date')
 if storedDate ~= ARGV[1] then
-  redis.call('UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5])
+  redis.call('UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5], KEYS[6], KEYS[7])
   redis.call('DEL', KEYS[1])
   redis.call('HSET', KEYS[1],
     'date', ARGV[1],
@@ -139,7 +141,9 @@ async function updateKafkaDailyMetrics(metric, targetConsumer, count, loggers) {
       KAFKA_OUTBOUND_SUCCESS_STREAM,
       KAFKA_OUTBOUND_DEAD_LETTER_STREAM,
       DEVICE_TIMING_STREAM,
-      KAFKA_TIMING_STREAM
+      KAFKA_TIMING_STREAM,
+      COMBINED_TIMING_STREAM,
+      COMBINED_DETAILS_STREAM
     ],
     arguments: [
       getBerlinDate(),
@@ -160,7 +164,8 @@ async function recordPerformanceTimings(entries, maxLen, loggers) {
   const redis = await getRedisClient(loggers);
   return redis.eval(UPDATE_KAFKA_DAILY_METRICS_SCRIPT, {
     keys: [KAFKA_DAILY_METRICS_HASH, KAFKA_OUTBOUND_SUCCESS_STREAM,
-      KAFKA_OUTBOUND_DEAD_LETTER_STREAM, DEVICE_TIMING_STREAM, KAFKA_TIMING_STREAM],
+      KAFKA_OUTBOUND_DEAD_LETTER_STREAM, DEVICE_TIMING_STREAM, KAFKA_TIMING_STREAM,
+      COMBINED_TIMING_STREAM, COMBINED_DETAILS_STREAM],
     arguments: [getBerlinDate(), "Europe/Berlin", "", "", "0", new Date().toISOString(),
       JSON.stringify(entries.map(entry => ({ ...entry, date: getBerlinDate(new Date(entry.completedAt || entry.fields.completedAt)) }))),
       String(maxLen)]

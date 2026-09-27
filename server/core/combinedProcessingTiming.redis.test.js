@@ -29,5 +29,15 @@ run('real Redis join handles reordering, duplicates, missing topics and expirati
     await redis.del(keys[0]);
     expect(await redis.eval(JOIN,{keys,arguments:[JSON.stringify(d),'1','100']})).toBe(0);
     expect(await redis.exists(keys[0])).toBe(0);
+    // Disabled details must not prevent an exact summary or duplicate protection.
+    await redis.del(keys);
+    const sendWithoutDetails = e => redis.eval(JOIN, {
+      keys, arguments: [JSON.stringify(e), String(expires), '100', '0']
+    });
+    await sendWithoutDetails(d);
+    for (const part of ['a','b','c']) await sendWithoutDetails({part, seconds:1});
+    expect(await redis.xLen(keys[1])).toBe(1);
+    expect(await redis.exists(keys[2])).toBe(0);
+    expect(await sendWithoutDetails(d)).toBe(0);
   } finally { await redis.del(keys); await redis.quit(); }
 },15000);
