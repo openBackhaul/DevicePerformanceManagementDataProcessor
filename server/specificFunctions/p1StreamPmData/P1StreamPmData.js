@@ -10,6 +10,7 @@ const { startMonitoringServer } = require("../../core/monitoringServer");
 
 const { ensureIndicesAndMappings } = require("../../infra/elasticSearch/esBootstrap.js");
 const { loadLastReplicaTime } = require("../../core/replicaStateStore.js");
+const { readMode } = require('../../runtime/replica/directMwdiDiscovery');
 
 const p1LoadParameters = require("../../genericFunctions/p1LoadParameters/P1LoadParameters");
 const p1ResolveESAddress = require("../../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress");
@@ -228,7 +229,11 @@ async function initialize() {
       logger
     );
 
-    const restoredLastReplicaTime = await loadLastReplicaTime(loggingEsClient, logger);
+    const mwdiReadMode = readMode(runtimeConfig);
+    const restoredLastReplicaTime = mwdiReadMode === 'replica'
+      ? await loadLastReplicaTime(loggingEsClient, logger) : null;
+    logger.info({mwdiReadMode, ccSourceIndex: (mwdiReadMode === 'direct' ? mwdiEsClient : mwdiReplicaEsClient)['index-alias']},
+      'Selected MWDI discovery and CC read mode');
 
     appState.lastReplicaTime = restoredLastReplicaTime;
 
@@ -263,7 +268,8 @@ async function initialize() {
       processDeviceParameters: p1ProcessDeviceParameters,
       kafkaConsumerTypes: serviceConfig.kafkaConsumerTypes,
       configFile: loaded.configFile,
-      mwdiReplicaEsClient,
+      // Preserve the p1 request contract while selecting the actual CC source.
+      mwdiReplicaEsClient: mwdiReadMode === 'direct' ? mwdiEsClient : mwdiReplicaEsClient,
       dataStoreEsClient,
       storingOptions: {
         saveResultCc: serviceConfig.saveResultCc !== false,

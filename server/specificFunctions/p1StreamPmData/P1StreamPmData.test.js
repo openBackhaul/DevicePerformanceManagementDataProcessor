@@ -134,6 +134,16 @@ describe("P1StreamPmData", () => {
     expect(typeof run).toBe("function");
   });
 
+  test('direct mode routes CC reads to MWDI without loading the replica checkpoint', async () => {
+    loadRuntimeConfig.mockReturnValue({redis:{},service:{mwdiReadMode:'direct'}});
+    await run();
+    const {startProcessingWorkerPoolRedis}=require('../../runtime/processing/processingWorkerPoolRedis');
+    expect(startProcessingWorkerPoolRedis.mock.calls[0][0].mwdiReplicaEsClient.uuid).toBe('mwdiEsClient');
+    expect(require('../../core/replicaStateStore.js').loadLastReplicaTime).not.toHaveBeenCalled();
+    const {startReplicaLeaderLoop}=require('../../runtime/replica/replicaLeaderLoop');
+    expect(startReplicaLeaderLoop.mock.calls[0][0].runtimeConfig.service.mwdiReadMode).toBe('direct');
+  });
+
   test("returns initialized service information on success", async () => {
     const result = await run();
 

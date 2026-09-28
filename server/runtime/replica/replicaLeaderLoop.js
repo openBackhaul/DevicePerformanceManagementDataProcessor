@@ -3,6 +3,7 @@ const redisQueue = require("../../infra/redis/redisStreamQueue");
 const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const { sleep } = require("../../utils/retry");
 const p1UpdateMwdiReplica = require("../../specificFunctions/p1StreamPmData/p1UpdateMwdiReplica/P1UpdateMwdiReplica");
+const directMwdiDiscovery = require('./directMwdiDiscovery');
 
 function calculateNextCycleDelayMs(cycleStartedAtMs, syncPeriodMs, minimumDelayMs) {
     const elapsedMs = Math.max(0, Date.now() - cycleStartedAtMs);
@@ -14,6 +15,7 @@ function calculateNextCycleDelayMs(cycleStartedAtMs, syncPeriodMs, minimumDelayM
 }
 
 async function startReplicaLeaderLoop(context) {
+    const mode = directMwdiDiscovery.readMode(context.runtimeConfig);
     const lockKey = "dpmdp:lock:replica";
     const ttlMs = context.replicaLockTtlMs || 60000;
     const syncPeriodSec = Number(
@@ -53,7 +55,8 @@ async function startReplicaLeaderLoop(context) {
                 }, Math.max(5000, Math.floor(ttlMs / 3)));
 
                 try {
-                    const response = await p1UpdateMwdiReplica.run({
+                    const discovery = mode === 'direct' ? directMwdiDiscovery : p1UpdateMwdiReplica;
+                    const response = await discovery.run({
                         parameters: context.updateParameters,
                         mwdiEsClient: context.mwdiEsClient,
                         mwdiReplicaEsClient: context.mwdiReplicaEsClient,
@@ -63,7 +66,8 @@ async function startReplicaLeaderLoop(context) {
                         logger: context.logger
                     });
 
-                    context.appState.lastReplicaTime = response.timestamp;
+                    if (mode === 'direct') context.appState.lastDirectMwdiTime = response.timestamp;
+                    else context.appState.lastReplicaTime = response.timestamp;
                     context.appState.lastReplicaLeaderRunAt = new Date().toJSON();
                     context.appState.metrics.replicaCycles += 1;
                 } finally {
