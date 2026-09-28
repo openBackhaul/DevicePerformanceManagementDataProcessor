@@ -24,6 +24,24 @@ jest.mock("../../service/LoggingService.js", () => ({
 
 const queue = require("./redisStreamQueue");
 
+test("success stream can be disabled without Redis writes", async () => {
+  const timing = require("../../core/combinedProcessingTiming");
+  timing.configure({kafkaSuccessStreamEnabled:false});
+  mockRedis.xAdd.mockClear();
+  try {
+    await queue.recordKafkaOutboundSuccess([{id:'1-0',message:{mountName:'cc'}}]);
+    expect(mockRedis.xAdd).not.toHaveBeenCalled();
+  } finally { timing.configure({enabled:false}); }
+});
+
+test("outbound queue preserves internal timing identifiers", async () => {
+  mockRedis.xAdd.mockClear();
+  await queue.enqueueKafkaOutbound({targetConsumer:'APT',mountName:'cc',
+    processingUpdateId:'update',processingPartId:'part',processingExpiresAt:'123'});
+  expect(mockRedis.xAdd).toHaveBeenCalledWith('dpmdp:stream:kafka-outbound','*',
+    expect.objectContaining({processingUpdateId:'update',processingPartId:'part',processingExpiresAt:'123'}));
+});
+
 describe("atomic acknowledgement and deletion", () => {
   test.each([0, 1])("device acknowledgement returns %i without a separate deletion", async count => {
     mockRedis.eval.mockReset().mockResolvedValue(count);
@@ -299,7 +317,9 @@ describe("Redis Kafka daily metrics", () => {
           "dpmdp:stream:kafka-outbound-success",
           "dpmdp:stream:kafka-outbound-dead-letter",
           "dpmdp:stream:device-processing-timing",
-          "dpmdp:stream:kafka-outbound-timing"
+          "dpmdp:stream:kafka-outbound-timing",
+          "dpmdp:stream:combined-processing-timing",
+          "dpmdp:stream:combined-processing-details"
         ],
         arguments: expect.arrayContaining([
           "Europe/Berlin",
@@ -324,7 +344,10 @@ describe("Redis Kafka daily metrics", () => {
     const [script, args] = mockRedis.eval.mock.calls[0];
     expect(script).toContain("record.date == ARGV[1]");
     expect(script).toContain("'MAXLEN', '~'");
-    expect(script).toContain("'UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5]");
+    expect(script).toContain("'UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5], KEYS[6], KEYS[7]");
+    expect(args.keys.slice(5)).toEqual([
+      "dpmdp:stream:combined-processing-timing", "dpmdp:stream:combined-processing-details"
+    ]);
     expect(args.arguments[7]).toBe("200000");
     expect(JSON.parse(args.arguments[6])[0].date).toBe("2026-09-09");
   });

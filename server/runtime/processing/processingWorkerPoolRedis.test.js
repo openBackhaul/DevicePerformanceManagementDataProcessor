@@ -29,6 +29,21 @@ const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redis
 const { _internal } = require("./processingWorkerPoolRedis");
 
 describe("processingWorkerPoolRedis retry handling", () => {
+  test("keeps correlation outside p1 inputs and completes only after Redis acknowledgement", async () => {
+    const combined = require("../../core/combinedProcessingTiming");
+    combined.configure({combinedStreamEnabled:true});
+    const spy = jest.spyOn(combined,'completeDevice');
+    try {
+      redisQueue.ackMessage.mockResolvedValueOnce(1);
+      p1ProcessDevice.run.mockImplementationOnce(async request => {
+        expect(request.processingUpdateId).toBeUndefined();
+        expect(combined.attach({messageType:'PERFORMANCE_OUTPUT'}).processingUpdateId).toBeTruthy();
+        expect(spy).not.toHaveBeenCalled();
+      });
+      await _internal.handleMessage(message, context);
+      expect(spy).toHaveBeenCalledTimes(1);
+    } finally { spy.mockRestore(); combined.configure({enabled:false}); }
+  });
   const context = {
     processDeviceParameters: {},
     configFile: {},

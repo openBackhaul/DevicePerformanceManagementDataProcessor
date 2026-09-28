@@ -4,6 +4,7 @@ const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const performanceMetrics = require("../../core/performanceMetrics");
+const combinedTiming = require("../../core/combinedProcessingTiming");
 
 function shouldEnqueueRetry(error) {
   return !error || error.retryable !== false;
@@ -42,12 +43,13 @@ async function handleMessage(message, context) {
   }, Math.max(5000, Math.floor(lockTtlMs / 3)));
 
   const timing = performanceMetrics.begin(message, message.pickedAtMs);
+  const combined = combinedTiming.start(message);
   let processingOutcome = "FAILED";
   performanceMetrics.active("device", 1);
 
   try{
     try {
-        await p1ProcessDevice.run({
+        await combinedTiming.run(combined, () => p1ProcessDevice.run({
           mountName,
           parameters: context.processDeviceParameters,
           configFile: context.configFile,
@@ -55,7 +57,7 @@ async function handleMessage(message, context) {
           dataStoreEsClient: context.dataStoreEsClient,
           kafkaConsumerTypes: context.kafkaConsumerTypes,
           storingOptions: context.storingOptions
-        });
+        }));
         processingOutcome = "SUCCESS";
 
         if (context.appState?.metrics) {
@@ -65,6 +67,7 @@ async function handleMessage(message, context) {
         await redisQueue.clearRetryState(mountName, context.logger);
         
         const acknowledged = await redisQueue.ackMessage(id, context.logger);
+        if (acknowledged === 1) combinedTiming.completeDevice(combined);
         if (acknowledged === 1) performanceMetrics.recordCompleted("device", timing);
         await redisQueue.removeFromDedupSet(mountName, context.logger);
     } catch (error) {
