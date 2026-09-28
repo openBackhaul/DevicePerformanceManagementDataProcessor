@@ -104,36 +104,19 @@ function sameLtpReference(left, right) {
   return leftValue === rightValue || stripMountPrefix(leftValue) === stripMountPrefix(rightValue);
 }
 
-function hasLtpReference(referenceList, reference) {
-  const references = Array.isArray(referenceList) ? referenceList : [referenceList];
-  return references.some(item => sameLtpReference(item, reference));
-}
-
 function findLtp(ltpList, reference) {
   return ltpList.find(ltp => sameLtpReference(ltp.uuid, reference));
 }
 
-// The physical server of one serving structure, as
+// The physical server of one serving structure:
 // {result-cc/logical-termination-point={serving-structure}/server-ltp[0]}.
-//
-// p1FieldsFilter keeps only AirInterface and EthernetContainer LTPs, so the
-// structure itself is usually absent from resultCc. Its physical server is then
-// taken from the reverse relation: the LTPs whose client-ltp names the
-// structure. That relation is unordered, so 'server-ltp[0]' cannot be
-// identified; the first one found is used, which keeps the cardinality of one
-// physical server per serving structure (a structure lists several servers only
-// where a single one is active at a time, e.g. 1+1 protection or a combo port).
+// The physical server is reached only through the serving structure, so both
+// must be part of resultCc; otherwise undefined is returned.
 function findPhysicalServerLtp(ltpList, structureReference) {
-  const structure = findLtp(ltpList, structureReference);
-
-  if (structure) {
-    const servers = structure['server-ltp'];
-    return Array.isArray(servers) && isLtpUuid(servers[0])
-      ? findLtp(ltpList, servers[0])
-      : undefined;
-  }
-
-  return ltpList.find(ltp => hasLtpReference(ltp['client-ltp'], structureReference));
+  const servers = findLtp(ltpList, structureReference)?.['server-ltp'];
+  return Array.isArray(servers) && isLtpUuid(servers[0])
+    ? findLtp(ltpList, servers[0])
+    : undefined;
 }
 
 // Prepares the list of physical servers for either an individual link or an
@@ -167,7 +150,7 @@ function preparePhysicalServerLtpList(aggregationGroup, resultCc, uuidOfEthernet
     }
     physicalServerLtpList.push(physicalServer.uuid);
   }
-  return [...new Set(physicalServerLtpList)];
+  return physicalServerLtpList;
 }
 
 // Instant of a yang:date-and-time value, or null when the value is not one.
@@ -241,7 +224,7 @@ function calculateTotalAirInterfaceIntervalCapacity(input) {
     }
 
     // Filter out LTP no in ServerList
-    const cleanLTPlist = ltpList.filter((ltp) => hasLtpReference(psyServerLTP, ltp['uuid']));
+    const cleanLTPlist = ltpList.filter((ltp) => psyServerLTP.some(reference => sameLtpReference(reference, ltp['uuid'])));
 
     // 'Sum of the intervalCapacity of all AirInterfaces in the aggregation group that is transporting this EthernetContainer in kbps
     // from [sum of all {[/logical-termination-point={physical-server-ltp-list[*]}/layer-protocol=*/air-interface-2-0:air-interface-pac/air-interface-historical-performances/historical-performance-data-list={$input.period-end-time}/performance-data/interval-capacity}]
@@ -393,20 +376,20 @@ const p1CalculateUtilization = (input) => {
       return ERRORS.RESULT_CC_INVALID;
     }
 
-    const physicalServerLtpList = preparePhysicalServerLtpList(
-      aggGroup,
-      resultCC,
-      input['uuid-of-ethernet-container']
-    );
-    if (!physicalServerLtpList) {
-      return ERRORS.UTILIZATION_COULDNT_ADD;
-    }
-
     // Functions must process only 15 minutes of PM
     let returnData;
     let retHistoricalPerfData = JSON.parse(JSON.stringify(historicalPerfData)); // Initializate return value
     const granularityPeriod = retHistoricalPerfData['granularity-period'];
     if (granularityPeriod.endsWith(GRAN_15MIN)) {
+      const physicalServerLtpList = preparePhysicalServerLtpList(
+        aggGroup,
+        resultCC,
+        input['uuid-of-ethernet-container']
+      );
+      if (!physicalServerLtpList) {
+        return ERRORS.UTILIZATION_COULDNT_ADD;
+      }
+
       const inputCapacity = {
         'logical-termination-point': resultCC[LTP],
         'physical-server-ltp-list': physicalServerLtpList,
