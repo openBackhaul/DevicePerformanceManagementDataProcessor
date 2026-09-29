@@ -5,28 +5,6 @@ const logger = require("./LoggingService.js").getLogger();
 const { loadConfigFile } = require("../utils/config");
 
 
-/**
- * Catalog of error messages for initiatePmDataUpdate.
- * Consumed by this module and by the unit tests (exports.ERRORS):
- * MOUNT_NAME_DISCREPANCY, UPSTREAM_SERVER_NOT_RESPONDING,
- * MWDI_CONNECTION_FAILED and MWDI_INVALID_RESPONSE.
- */
-const ERRORS = {
-  INPUT_INVALID: 'Input is not a valid object',
-  MOUNT_NAME_LIST_NOT_PROVIDED: 'mountNames not provided',
-  MOUNT_NAME_LIST_INVALID: 'mountNames invalid',
-  MOUNT_NAME_LIST_EMPTY: 'mountNames invalid',
-  MOUNT_NAME_DISCREPANCY: 'Resource unknown. The resource for the connected device does not exist at the Controller',
-  UPSTREAM_SERVER_NOT_RESPONDING: 'Bad Gateway. Upstream server not responding.',
-  MWDI_CONNECTION_FAILED: 'Failed to connect to MWDI service',
-  MWDI_INVALID_RESPONSE: 'Invalid response from MWDI service',
-  ERR_INVALID_JSON: 'Config file contains invalid JSON',
-  ERR_CONFIG_NOT_ACCESSIBLE: 'Error occurred while loading config file'
-};
-
-exports.ERRORS = ERRORS;
-
-
 var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParameters');
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
@@ -84,25 +62,21 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
         }),
       });
     } catch (error) {
-      throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
+      throw new Error('Failed to connect to MWDI service');
     }
     if (!mwdiResponse.ok) {
-      throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
+      throw new Error('Failed to connect to MWDI service');
     }
     const responseData = await mwdiResponse.json();
 
     logger.debug(responseData, `MWDI Received response for initiatePmDataUpdate:`);
 
-    // 5. Validate response
-    const responseError = validateMWDIResponse(responseData);
-    if (responseError) {
-      throw new Error(ERRORS.MWDI_CONNECTION_FAILED);
+    // 4. Validate response and normalise the metadata array (handle both direct array and wrapped response formats)
+    const metadataArrayMWDI = validateMWDIResponse(responseData);
+    if (!metadataArrayMWDI) {
+      throw new Error('Failed to connect to MWDI service');
     }
-    // 6. Extract the metadata array (handle both direct array and wrapped response formats)
-    const metadataArrayMWDI = Array.isArray(responseData)
-      ? responseData
-      : responseData["device-status-metadata"];
-    // 7. Verify mount names match
+    // 5. Verify mount names match
     const inputMountNames = body["mount-names"].sort();
     const returnedMountNamesMWDI = metadataArrayMWDI
       .map((item) => item["mount-name"])
@@ -124,13 +98,13 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       // Throw error with code 533 and missing mount names
       const error533 = {
         code: 533,
-        message: ERRORS.MOUNT_NAME_DISCREPANCY,
+        message: 'Resource unknown. The resource for the connected device does not exist at the Controller',
         "missing-mount-names": missingMountNames,
       };
 
       throw error533;
     }
-    // 8. Validate that all requested devices are connected and available
+    // 6. Validate that all requested devices are connected and available
     const connectionStatusError = validateConnectionStatus(
       metadataArrayMWDI,
       inputMountNames,
@@ -140,7 +114,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
       // Throw error with code 532 and unconnected mount names
       const error532 = {
         code: 532,
-        message: ERRORS.UPSTREAM_SERVER_NOT_RESPONDING,
+        message: 'Bad Gateway. Upstream server not responding.',
         "unconnected-mount-names": connectionStatusError.unconnectedMountNames,
       };
 
@@ -148,7 +122,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     }
 
     logger.debug("All validations passed");
-    // 9. Check whether a PM data update is required (15-minute threshold)
+    // 7. Check whether a PM data update is required (15-minute threshold)
     // Classify mount names based on the last successful update timestamp from MWDI
     const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
     const currentTime = Date.now();
@@ -254,7 +228,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
           try {
             errorBody = await response.json();
           } catch (err) {
-            logger.error(`Failed to parse MWDI error response for ${mountName}: ${err.message}`);
+            logger.error(`Failed to parse MWDI error response for ${mountName}: ${err.message}`)
           }
 
           const mwdiErrorCode =
@@ -289,14 +263,15 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
           }
         }
       } catch (error) {
-        logger.error(`Error retrieving control-construct for ${mountName}: ${error.message}`);
+        logger.error(`Comunicaation failure retrieving control-construct for ${mountName}: ${error.message}`);
+        unconnectedMountNames.push(mountName);
       }
     }
-    // 10. Check whether any mount names reference resources that are unknown at the Controller 
+    // 8. Check whether any mount names reference resources that are unknown at the Controller 
     if (missingMountNames.length > 0) {
       throw {
         code: 533,
-        message: ERRORS.MOUNT_NAME_DISCREPANCY,
+        message: 'Resource unknown. The resource for the connected device does not exist at the Controller',
         "missing-mount-names": missingMountNames,
       };
     }
@@ -304,7 +279,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     if (unconnectedMountNames.length > 0) {
       throw {
         code: 532,
-        message: ERRORS.UPSTREAM_SERVER_NOT_RESPONDING,
+        message: 'Bad Gateway. Upstream server not responding.',
         "unconnected-mount-names": unconnectedMountNames,
       };
     }
@@ -349,7 +324,7 @@ exports.initiatePmDataUpdate = async function (body, user, originator, xCorrelat
     // shape required by the documented errorDescription schema
     throw {
       code: Number.isInteger(error.code) ? error.code : 500,
-      message: error.message || ERRORS.MWDI_CONNECTION_FAILED,
+      message: error.message || 'Failed to connect to MWDI service',
     };
   }
 };
@@ -491,46 +466,50 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
  * Validates the input body structure.
  *
  * @param {Object} input
- * @returns {string} ERRORS constant or null if valid
+ * @returns {string} error message or null if valid
  */
 function validatePmDataUpdateInput(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
-    return ERRORS.INPUT_INVALID;
+    return 'Input is not a valid object';
   }
 
   if (!Object.prototype.hasOwnProperty.call(input, "mount-names")) {
-    return ERRORS.MOUNT_NAME_LIST_NOT_PROVIDED;
+    return 'mountNames not provided';
   }
 
-  if (!Array.isArray(input["mount-names"])) {
-    return ERRORS.MOUNT_NAME_LIST_INVALID;
-  }
-
-  if (input["mount-names"].length === 0) {
-    return ERRORS.MOUNT_NAME_LIST_EMPTY;
-  }
-
-  for (const item of input["mount-names"]) {
-    if (typeof item !== "string" || item.trim() === "") {
-      return ERRORS.MOUNT_NAME_LIST_INVALID;
-    }
+  if (!isValidMountNamesList(input["mount-names"])) {
+    return 'mountNames invalid';
   }
 
   return null;
 }
 
 /**
- * Validates the MWDI /v1/provide-device-status-metadata response structure.
+ * Validates the mount-names list: it must be a non-empty array of non-empty strings.
+ *
+ * @param {*} mountNames
+ * @returns {boolean} true when the list is valid
+ */
+function isValidMountNamesList(mountNames) {
+  return (
+    Array.isArray(mountNames) &&
+    mountNames.length > 0 &&
+    mountNames.every((item) => typeof item === "string" && item.trim() !== "")
+  );
+}
+
+/**
+ * Validates and normalises the MWDI /v1/provide-device-status-metadata response.
  * The response can be either:
  * - A direct array of device status metadata objects
  * - An object with 'device-status-metadata' field containing the array
  *
  * @param {Object|Array} responseData
- * @returns {string} ERRORS constant or null if valid
+ * @returns {Array|null} normalised metadata array, or null when the response is invalid
  */
 function validateMWDIResponse(responseData) {
   if (!responseData || typeof responseData !== 'object') {
-    return ERRORS.MWDI_INVALID_RESPONSE;
+    return null;
   }
 
   // Handle direct array response (actual MWDI format)
@@ -541,28 +520,28 @@ function validateMWDIResponse(responseData) {
   // Handle object with 'device-status-metadata' field (for backward compatibility)
   else if (Object.prototype.hasOwnProperty.call(responseData, 'device-status-metadata')) {
     if (!Array.isArray(responseData['device-status-metadata'])) {
-      return ERRORS.MWDI_INVALID_RESPONSE;
+      return null;
     }
     metadataArray = responseData['device-status-metadata'];
   }
   else {
-    return ERRORS.MWDI_INVALID_RESPONSE;
+    return null;
   }
 
   // Validate each item in the array
   for (const item of metadataArray) {
     if (!item || typeof item !== 'object') {
-      return ERRORS.MWDI_INVALID_RESPONSE;
+      return null;
     }
     if (
       !Object.prototype.hasOwnProperty.call(item, 'mount-name') ||
       !Object.prototype.hasOwnProperty.call(item, 'connection-status')
     ) {
-      return ERRORS.MWDI_INVALID_RESPONSE;
+      return null;
     }
   }
 
-  return null;
+  return metadataArray;
 }
 /**
  * Validates that all mounts in the metadata array are in connected state.
@@ -616,11 +595,11 @@ function getMwdiURL() {
   } catch (error) {
     if (error instanceof SyntaxError) {
       console.error("Config file contains invalid JSON:", error);
-      throw new Error(ERRORS.ERR_INVALID_JSON);
+      throw new Error('Config file contains invalid JSON');
     }
 
     console.error("Error occurred while loading config file:", error);
-    throw new Error(ERRORS.ERR_CONFIG_NOT_ACCESSIBLE);
+    throw new Error('Error occurred while loading config file');
   }
 
   const mwdiMetadata = "/v1/provide-device-status-metadata";
@@ -695,7 +674,7 @@ function createError(code, message) {
  * The mount-name is mandatory and must be a non-empty string.
  *
  * @param {Object} body
- * @returns {string} ERRORS constant or null if valid
+ * @returns {string} error message or null if valid
  */
 function validateProvideDeviceDataStoreDumpInput(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
