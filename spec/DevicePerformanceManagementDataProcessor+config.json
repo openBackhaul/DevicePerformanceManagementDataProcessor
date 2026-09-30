@@ -383,7 +383,23 @@
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-095",
+                  "parameter": "dpmdp-1-1-0-string-p-094",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-096",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-097",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-098",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-099",
                   "owner": "platform"
                 }
               ],
@@ -437,7 +453,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-095",
+          "uuid": "dpmdp-1-1-0-string-p-094",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -447,6 +463,58 @@
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-096",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "securityProtocol",
+              "string-purpose": "kafkaClient"
+            },
+            "string-profile-configuration": {
+              "string-value": "ssl"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-097",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "ssl-ca-location",
+              "string-purpose": "kafkaClient"
+            },
+            "string-profile-configuration": {
+              "string-value": "<path>/trust.pem"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-098",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "ssl-certificate-location",
+              "string-purpose": "kafkaClient"
+            },
+            "string-profile-configuration": {
+              "string-value": "<path>/cert.pem"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-1-0-string-p-099",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "ssl-key-location",
+              "string-purpose": "kafkaClient"
+            },
+            "string-profile-configuration": {
+              "string-value": "<path>/key.pem"
             }
           }
         },
