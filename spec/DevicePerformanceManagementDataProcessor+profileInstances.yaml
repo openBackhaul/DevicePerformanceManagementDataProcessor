@@ -234,7 +234,15 @@ profile-instances:
           owner: 'platform'
         - parameter: 'dpmdp-1-1-0-string-p-093'
           owner: 'platform'
-        - parameter: 'dpmdp-1-1-0-string-p-095'
+        - parameter: 'dpmdp-1-1-0-string-p-094'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-096'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-097'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-098'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-1-0-string-p-099'
           owner: 'platform'
       sub-function-list:
     configuration:
@@ -268,7 +276,7 @@ profile-instances:
       string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-002'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-1-0-string-p-095'
+    uuid: 'dpmdp-1-1-0-string-p-094'
     capability:
       string-name: 'pmDataQualityProvider'
       purpose: 'kafkaClient'
@@ -276,6 +284,39 @@ profile-instances:
     configuration:
       string-value: 'dpmdp-1-1-0-kmb-c-kmb-1-0-0-004'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-096'
+    capability:
+      string-name: 'securityProtocol'
+      purpose: 'kafkaClient'
+      enum:
+        - 'ssl'
+    configuration:
+      string-value: 'ssl'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-097'
+    capability:
+      string-name: 'ssl-ca-location'
+      purpose: 'kafkaClient'
+    configuration:
+      string-value: '<path>/trust.pem'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-096'
+    capability:
+      string-name: 'ssl-certificate-location'
+      purpose: 'kafkaClient'
+    configuration:
+      string-value: '<path>/cert.pem'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-1-0-string-p-096'
+    capability:
+      string-name: 'ssl-key-location'
+      purpose: 'kafkaClient'
+    configuration:
+      string-value: '<path>/key.pem'
 
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
