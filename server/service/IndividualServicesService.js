@@ -255,7 +255,7 @@ exports.initiatePmDataUpdate = async function (
         });
 
         if (response.ok) {
-          const data = await response.json();
+          // const data = await response.json();
           logger.debug(
             `Successfully retrieved control-construct for ${mountName}`,
           );
