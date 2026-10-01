@@ -9,7 +9,6 @@ var p1LoadParameters = require('../genericFunctions/p1LoadParameters/P1LoadParam
 var p1DocumentFunction = require('../genericFunctions/p1DocumentFunction/P1DocumentFunction');// TODO
 var p1ResolveEsAddress = require('../genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress');
 var p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData');
-var p1ReadDataStoreDeviceDataErrors = require('../genericFunctions/p1ReadDataStoreDeviceData/ErrorsEnum');
 var { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
 //================ SERVICES ================
@@ -414,16 +413,6 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
       'Available ES names'
     );
     // Finds the URL "https://my-es-server:9200"
-    /*
-     const dataStoreEsClient = (
-       await p1ResolveEsAddress.run({
-         parameters: p1ResolveEsAddressParameters,
-         configFile: loaded.configFile,
-         esName: "dataStoreEsClient"
-       })
-     ).esAddress;
-     logger.debug({ dataStoreEsClient }, 'Resolved  Elasticsearch address');
-     */
     // 4. Read the PM data of the device from the DataStore
     const readResult = await p1ReadDataStoreDeviceData({
       'data-store-es-client': esAddress,
@@ -447,7 +436,7 @@ exports.provideDeviceDataStoreDump = async function (body, user, originator, xCo
     }
 
     // Wrap unexpected errors into a 500 response
-    const message = (error && error.message) || p1ReadDataStoreDeviceDataErrors.GENERAL_ERROR;
+    const message = (error && error.message) || 'General processing error';
     logger.error(`Error in provideDeviceDataStoreDump: ${message}`);
     throw createError(500, message);
   }
@@ -678,36 +667,35 @@ function createError(code, message) {
  */
 function validateProvideDeviceDataStoreDumpInput(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED;
+    return 'mountName not provided';
   }
 
   const mountName = body['mount-name'];
   if (mountName === undefined || mountName === null || mountName === '') {
-    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED;
+    return 'mountName not provided';
   }
   if (typeof mountName !== 'string') {
-    return p1ReadDataStoreDeviceDataErrors.MOUNTNAME_INVALID;
+    return 'mountName invalid';
   }
 
   return null;
 }
 
 /**
- * Maps the error messages returned by p1ReadDataStoreDeviceData to
- * the HTTP error objects propagated to the controller.
+ * Maps the error messages returned 
  *
  * @param {string} message
  * @returns {{ code: number, message: string }}
  */
 function mapReadDataStoreDeviceDataError(message) {
   switch (message) {
-    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_FOUND:
+    case 'mountName not found in DataStore':
       return { code: 404, message };
 
-    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_NOT_PROVIDED:
-    case p1ReadDataStoreDeviceDataErrors.MOUNTNAME_INVALID:
-    case p1ReadDataStoreDeviceDataErrors.DATA_STORE_NOT_PROVIDED:
-    case p1ReadDataStoreDeviceDataErrors.DATA_STORE_INVALID:
+    case 'mountName not provided':
+    case 'mountName invalid':
+    case 'dataStoreUrl not provided':
+    case 'dataStoreUrl invalid':
       return { code: 400, message };
 
     default:
