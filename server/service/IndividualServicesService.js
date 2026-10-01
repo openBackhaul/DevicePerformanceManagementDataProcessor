@@ -266,9 +266,8 @@ exports.initiatePmDataUpdate = async function (
             errorBody = await response.json();
           } catch (err) {
             logger.error(
-              `Communication failure retrieving control-construct for ${mountName}: ${error.message}`
-          );
-            throw err;
+              `Unable to parse MWDI error response for ${mountName}: ${error.message}`
+            );
           }
           const mwdiErrorCode =
             (errorBody && typeof errorBody === "object" && errorBody.code) ||
@@ -304,10 +303,7 @@ exports.initiatePmDataUpdate = async function (
           }
         }
       } catch (error) {
-        throw {
-          code: mwdiErrorCode,
-          message: mwdiErrorMessage || `HTTP ${response.status}`
-          };
+        throw error;
       }
     }
     // 8. Check whether any mount names reference resources that are unknown at the Controller
@@ -327,10 +323,8 @@ exports.initiatePmDataUpdate = async function (
         "unconnected-mount-names": unconnectedMountNames,
       };
     }
-
     logger.debug(`Completed processing ${inputMountNames.length} mount(s)`);
     logger.debug("PM data update initiated successfully");
-
     // Build the internal success response
     const successResponse = {
       status: "success",
