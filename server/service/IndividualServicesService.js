@@ -225,85 +225,80 @@ exports.initiatePmDataUpdate = async function (
     // Retrieve live control-construct data for each mount
     for (const mountName of outdatedMountNames) {
       logger.debug(`Processing mount: ${mountName}`);
+
       if (waitTimeForSending > 0) {
         await new Promise((resolve) => setTimeout(resolve, waitTimeForSending));
       }
-      const isLocalMwdi =
-        baseMwdiUrl.toLowerCase().includes("localhost") ||
-        baseMwdiUrl.includes("127.0.0.1");
 
-      let controlConstructUrl;
-      //##########################################################################
-      /*   
-      if (isLocalMwdi) {
-        logger.info(`Local Test - using cache control-construct`);
-        controlConstructUrl =
-          `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-      } else {
-*/
-      logger.info(`Live Environment - using live control-construct`);
-      controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
-      /*  
-      }
-*/
-      //##########################################################################
+      logger.info("Live Environment - using live control-construct");
+
+     // let controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      let controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+      let response;
       try {
-        // Retrieve the control-construct using a GET request
-        const response = await fetch(controlConstructUrl, {
+        response = await fetch(controlConstructUrl, {
           method: "GET",
           headers: requestHeaders,
         });
+      } catch (err) {
+        logger.error(
+          `Failed to connect to MWDI for mount ${mountName}: ${err.message}`,
+        );
+        
+        throw {
+          code: 500,
+          message: "Failed to connect to MWDI service at control-construct endpoint",
+        };
+      };
+      // Success
+      if (response.ok) {
+        logger.debug(
+          `Successfully retrieved control-construct for ${mountName}`,
+        );
+        continue;
+      }
 
-        if (response.ok) {
-          // const data = await response.json();
-          logger.debug(
-            `Successfully retrieved control-construct for ${mountName}`,
+      // Failure: try to parse MWDI error body
+      let errorBody = null;
+
+      try {
+        errorBody = await response.json();
+      } catch (err) {
+        logger.error(
+          `Unable to parse MWDI error body for ${mountName}: ${err.message}`,
+        );
+      }
+
+      const resolvedErrorCode =
+        (errorBody && typeof errorBody === "object" && errorBody.code) ||
+        response.status;
+
+      const resolvedErrorMessage =
+        (errorBody && typeof errorBody === "object" && errorBody.message) || "";
+
+      switch (resolvedErrorCode) {
+        case 533:
+          logger.error(`Mount ${mountName} resource unknown`);
+          missingMountNames.push(mountName);
+          break;
+
+        case 502:
+        case 530:
+        case 531:
+        case 532:
+          logger.error(
+            `Mount ${mountName} not connected (${resolvedErrorMessage || "Bad Gateway"})`,
           );
-        } else {
-          // Attempt to parse the MWDI error response body ({ code, message })
-          let errorBody = null;
-          try {
-            errorBody = await response.json();
-          } catch (err) {
-            logger.error(
-              `Unable to parse MWDI error response for ${mountName}: ${error.message}`
-            );
-          }
-          const mwdiErrorCode =
-            (errorBody && typeof errorBody === "object" && errorBody.code) ||
-            response.status;
+          unconnectedMountNames.push(mountName);
+          break;
 
-          const mwdiErrorMessage =
-            (errorBody && typeof errorBody === "object" && errorBody.message) ||
-            "";
+        default:
+          logger.warn(
+            `Unexpected MWDI error for mount ${mountName}: code=${resolvedErrorCode}, message=${resolvedErrorMessage || `HTTP ${response.status}`}`,
+          );
 
-          if (mwdiErrorCode === 533) {
-            // Resource not found at the Controller
-            logger.error(
-              `Mount ${mountName} resource unknown (HTTP ${response.status}: Resource unknown. The resource for the connected device does not exist at the Controller)`,
-            );
-            missingMountNames.push(mountName);
-          } else if (
-            mwdiErrorCode === 502 ||
-            mwdiErrorCode === 530 ||
-            mwdiErrorCode === 531 ||
-            mwdiErrorCode === 532
-          ) 
-          {
-            // Device is unreachable or unavailable
-            unconnectedMountNames.push(mountName);
-            logger.error(
-              `Mount ${mountName} not connected (HTTP ${response.status}: ${mwdiErrorMessage || "Bad Gateway"})`,
-            );
-          } else {
-            throw {
-              code: mwdiErrorCode,
-              message: mwdiErrorMessage || `HTTP ${response.status}`
-            };
-          }
-        }
-      } catch (error) {
-        throw error;
+          unconnectedMountNames.push(mountName);
+          break;
       }
     }
     // 8. Check whether any mount names reference resources that are unknown at the Controller
