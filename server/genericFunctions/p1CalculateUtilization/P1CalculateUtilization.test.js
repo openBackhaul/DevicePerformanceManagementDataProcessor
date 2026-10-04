@@ -618,6 +618,34 @@ describe('single-server EthernetContainer (datasets/singleServerEc_fixture.json)
       expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
     });
 
+    test('does not count the same AirInterface twice', () => {
+      ltp(EC_UUID)['server-ltp'].push('LTP-MWS-RADIO-1B');
+      ltps().push({
+        uuid: '121252295+LTP-MWS-RADIO-1B',
+        'server-ltp': [AIR_REF],
+        'layer-protocol': []
+      });
+      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
+    });
+
+    test('ignores AirInterfaces serving other structures', () => {
+      const other = clone(ltp(AIR_UUID));
+      other.uuid = '121252295+LTP-MWPS-TTP-RADIO-2A';
+      other['client-ltp'] = ['LTP-MWS-RADIO-2A'];
+      ltps().push(other);
+      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
+    });
+
+    test('result agrees with the pre-production extract', () => {
+      const result = performanceData(p1CalculateUtilization(input));
+      expect(result['total-air-interface-interval-capacity']).toBe(extract.expected['total-air-interface-interval-capacity']);
+      // utilization is an integer percentage (interface.yaml), rounded down
+      expect(result.utilization).toBe(Math.floor(extract.expected['utilization-percent']));
+      const extractEc = extract['result-cc-extract']['logical-termination-point'][0];
+      expect(ltp(EC_UUID).uuid).toBe(extract['uuid-of-ethernet-container']);
+      expect(ltp(EC_UUID)['server-ltp']).toEqual(extractEc['server-ltp']);
+    });
+
     test('an LTP without layer protocols does not invalidate result-cc', () => {
       expect(ltp(STRUCTURE_UUID)['layer-protocol']).toEqual([]);
       input['aggregation-group'] = { 'physical-server-ltp-list': [AIR_UUID] };
@@ -638,75 +666,27 @@ describe('single-server EthernetContainer (datasets/singleServerEc_fixture.json)
     });
   });
 
-  describe('serving structure removed by p1FieldsFilter (stored v1.0 ResultCC shape)', () => {
+  describe('serving structure missing from result-cc (stored v1.0 ResultCC shape)', () => {
     beforeEach(() => { removeSyntheticStructure(); });
 
-    test.each([undefined, null])('resolves the AirInterface through its client-ltp when group is %p', group => {
+    // The AirInterface still names the structure in its client-ltp; the spec
+    // resolves the physical server through the structure only (issue #341).
+    test.each([undefined, null])('does not fall back to the client-ltp relation when group is %p', group => {
       if (group !== undefined) input['aggregation-group'] = group;
-      const original = clone(input);
-      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
-      expect(input).toEqual(original);
-    });
-
-    test('result agrees with the pre-production extract', () => {
-      const result = performanceData(p1CalculateUtilization(input));
-      expect(result['total-air-interface-interval-capacity']).toBe(extract.expected['total-air-interface-interval-capacity']);
-      // utilization is an integer percentage (interface.yaml), rounded down
-      expect(result.utilization).toBe(Math.floor(extract.expected['utilization-percent']));
-      const extractEc = extract['result-cc-extract']['logical-termination-point'][0];
-      expect(ltp(EC_UUID).uuid).toBe(extract['uuid-of-ethernet-container']);
-      expect(ltp(EC_UUID)['server-ltp']).toEqual(extractEc['server-ltp']);
-    });
-
-    test('accepts a scalar client-ltp reference', () => {
-      ltp(AIR_UUID)['client-ltp'] = STRUCTURE_REF;
-      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
-    });
-
-    test('aggregates one AirInterface per filtered structure', () => {
-      addSecondServingStructure({ structurePresent: false });
-      expect(performanceData(p1CalculateUtilization(input))).toMatchObject({
-        'total-air-interface-interval-capacity': 2 * AIR_CAPACITY,
-        utilization: utilizationFor(2 * AIR_CAPACITY)
-      });
-    });
-
-    test('mixes present and filtered structures', () => {
-      addSecondServingStructure({ structurePresent: true });
-      expect(performanceData(p1CalculateUtilization(input))).toMatchObject({
-        'total-air-interface-interval-capacity': 2 * AIR_CAPACITY,
-        utilization: utilizationFor(2 * AIR_CAPACITY)
-      });
-    });
-
-    test('ignores AirInterfaces serving other structures', () => {
-      const other = clone(ltp(AIR_UUID));
-      other.uuid = '121252295+LTP-MWPS-TTP-RADIO-2A';
-      other['client-ltp'] = ['LTP-MWS-RADIO-2A'];
-      ltps().push(other);
-      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
-    });
-
-    test('counts one physical server per serving structure (1+1 protection)', () => {
-      // A serving structure lists several servers only where one is active at a
-      // time; the spec takes server-ltp[0], so the pair must not be summed.
-      const standby = clone(ltp(AIR_UUID));
-      standby.uuid = '121252295+LTP-MWPS-TTP-RADIO-1A-STANDBY';
-      ltps().push(standby);
-      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
-    });
-
-    test('does not count the same AirInterface twice', () => {
-      ltp(EC_UUID)['server-ltp'].push('LTP-MWS-RADIO-1B');
-      ltp(AIR_UUID)['client-ltp'].push('LTP-MWS-RADIO-1B');
-      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
-    });
-
-    test('fails predictably when no LTP references the filtered structure', () => {
-      ltp(AIR_UUID)['client-ltp'] = ['LTP-MWS-RADIO-1B'];
+      expect(ltp(AIR_UUID)['client-ltp']).toEqual([STRUCTURE_REF]);
       const original = clone(input);
       expect(p1CalculateUtilization(input)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
       expect(input).toEqual(original);
+    });
+
+    test('fails when one of several serving structures is missing', () => {
+      addSecondServingStructure({ structurePresent: true });
+      expect(p1CalculateUtilization(input)).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+    });
+
+    test('an aggregation group does not need the serving structure', () => {
+      input['aggregation-group'] = { 'physical-server-ltp-list': [AIR_UUID] };
+      expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
     });
 
     test.each(['PERIOD-24-HOURS', 'UNKNOWN', 'NOT_YET_DEFINED'])('preserves %s passthrough without a group', period => {
@@ -718,8 +698,6 @@ describe('single-server EthernetContainer (datasets/singleServerEc_fixture.json)
   });
 
   describe('mount-name prefix', () => {
-    beforeEach(() => { removeSyntheticStructure(); });
-
     test('accepts the EthernetContainer UUID without prefix', () => {
       input['uuid-of-ethernet-container'] = 'LTP-ETC-TTP-PORT-A';
       expect(p1CalculateUtilization(input)).toEqual(EXPECTED);
@@ -790,9 +768,26 @@ describe('real device control construct through the raw-cc fields filter', () =>
   const ethernetContainerOnRadio = 'LTP-ETC-TTP-ODU-A';
   const airInterfaces = ['LTP-MWPS-TTP-ODU-A', 'LTP-MWPS-TTP-ODU-B'];
 
-  function loadFilteredResultCc() {
+  // keepAllLtps: as p2LoadRawCc 1.0.1 (issue #341), the LTPs that are neither
+  // AirInterface nor EthernetContainer (structures, wire interfaces, ...) stay
+  // in raw-cc with their uuid, client-ltp, server-ltp and layer-protocol-name.
+  function loadFilteredResultCc({ keepAllLtps = false } = {}) {
     const rawCc = JSON.parse(fs.readFileSync(__dirname + '/datasets/resultCC1.json', 'utf8'));
     const resultCc = applyFieldsFilter(rawCc, RAW_CC_FIELDS_FILTER);
+    if (keepAllLtps) {
+      const kept = new Set(resultCc['logical-termination-point'].map(ltp => ltp.uuid));
+      for (const ltp of rawCc['logical-termination-point'].filter(item => !kept.has(item.uuid))) {
+        resultCc['logical-termination-point'].push({
+          uuid: ltp.uuid,
+          ...(ltp['client-ltp'] && { 'client-ltp': ltp['client-ltp'] }),
+          ...(ltp['server-ltp'] && { 'server-ltp': ltp['server-ltp'] }),
+          'layer-protocol': ltp['layer-protocol'].map(lp => ({
+            'local-id': lp['local-id'],
+            'layer-protocol-name': lp['layer-protocol-name']
+          }))
+        });
+      }
+    }
     // In the real flow the AirInterfaces are iterated first and every 15-min
     // slice gets its interval-capacity; a few raw records of this dump lack it
     // and would make result-cc invalid for p1CalculateUtilization.
@@ -818,7 +813,18 @@ describe('real device control construct through the raw-cc fields filter', () =>
       .reduce((sum, record) => sum + record['performance-data']['interval-capacity'], 0);
   }
 
-  test('the filter removes the structure LTPs but keeps the client-ltp back-references', () => {
+  const utilizationInput = (resultCc, uuidOfEthernetContainer, totalBytesOutput) => ({
+    'historical-performance-data': {
+      'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
+      'period-end-time': '2026-04-01T06:00:00Z',
+      'performance-data': { 'total-bytes-output': totalBytesOutput, 'time-period': 900 }
+    },
+    'aggregation-group': null,
+    'result-cc': resultCc,
+    'uuid-of-ethernet-container': uuidOfEthernetContainer
+  });
+
+  test('the current raw-cc filter removes the structure LTPs', () => {
     const resultCc = loadFilteredResultCc();
     const uuids = resultCc['logical-termination-point'].map(ltp => ltp.uuid);
     expect(uuids).not.toContain('LTP-MWS-ODU-A');
@@ -828,40 +834,29 @@ describe('real device control construct through the raw-cc fields filter', () =>
     expect(ec['server-ltp']).toEqual(['LTP-MWS-ODU-A', 'LTP-MWS-ODU-B']);
   });
 
-  test('resolves the transporting AirInterfaces of an EthernetContainer without aggregation group', () => {
+  test('without the structure LTPs no utilization can be added', () => {
     const resultCc = loadFilteredResultCc();
-    const periodEndTime = '2026-04-01T06:00:00Z';
-    const expectedCapacity = airInterfaces.reduce((sum, uuid) => sum + airInterfaceCapacity(resultCc, uuid, periodEndTime), 0);
+    expect(p1CalculateUtilization(utilizationInput(resultCc, ethernetContainerOnRadio, '9000000')))
+      .toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+  });
+
+  test('resolves the transporting AirInterfaces of an EthernetContainer without aggregation group', () => {
+    const resultCc = loadFilteredResultCc({ keepAllLtps: true });
+    const expectedCapacity = airInterfaces.reduce((sum, uuid) => sum + airInterfaceCapacity(resultCc, uuid, '2026-04-01T06:00:00Z'), 0);
     expect(expectedCapacity).toBe(1000);
 
-    const result = p1CalculateUtilization({
-      'historical-performance-data': {
-        'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-        'period-end-time': periodEndTime,
-        'performance-data': { 'total-bytes-output': '9000000', 'time-period': 900 }
-      },
-      'aggregation-group': null,
-      'result-cc': resultCc,
-      'uuid-of-ethernet-container': ethernetContainerOnRadio
-    });
+    const result = p1CalculateUtilization(utilizationInput(resultCc, ethernetContainerOnRadio, '9000000'));
     expect(result['historical-performance-data']['performance-data']['total-air-interface-interval-capacity']).toBe(expectedCapacity);
     // 9000000 * 8 / (1000 * 1000 * 900) * 100
     expect(result['historical-performance-data']['performance-data'].utilization).toBe(8);
   });
 
   test('an EthernetContainer transported by wire interfaces only cannot get a utilization', () => {
-    const resultCc = loadFilteredResultCc();
-    const result = p1CalculateUtilization({
-      'historical-performance-data': {
-        'granularity-period': 'ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN',
-        'period-end-time': '2026-04-01T06:00:00Z',
-        'performance-data': { 'total-bytes-output': '900000', 'time-period': 900 }
-      },
-      'aggregation-group': null,
-      'result-cc': resultCc,
-      'uuid-of-ethernet-container': 'LTP-ETC-TTP-LAN-1-XG-SFP'
-    });
-    expect(result).toBe(ERRORS.UTILIZATION_COULDNT_ADD);
+    const resultCc = loadFilteredResultCc({ keepAllLtps: true });
+    // LTP-ETC-TTP-LAN-1-XG-SFP -> LTP-MWS-LAN-1-XG-SFP -> LTP-ETY-TTP-LAN-1-XG-SFP (wire interface)
+    expect(resultCc['logical-termination-point'].map(ltp => ltp.uuid)).toContain('LTP-ETY-TTP-LAN-1-XG-SFP');
+    expect(p1CalculateUtilization(utilizationInput(resultCc, 'LTP-ETC-TTP-LAN-1-XG-SFP', '900000')))
+      .toBe(ERRORS.UTILIZATION_COULDNT_ADD);
   });
 });
 
