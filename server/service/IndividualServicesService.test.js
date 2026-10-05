@@ -34,7 +34,6 @@ const p1ReadDataStoreDeviceData = require('../genericFunctions/p1ReadDataStoreDe
 const { getParamFromFunction, findFunctionNode } = require('../utils/functionTree');
 
 const { documentPmDataProcessing, provideDeviceDataStoreDump, initiatePmDataUpdate } = require('./IndividualServicesService');
-const { ERRORS } = require('./IndividualServicesService');
 const path = require('path');
 
 describe('documentPmDataProcessing', () => {
@@ -1012,7 +1011,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             )
         ).rejects.toMatchObject({
             code: 400,
-            message: ERRORS.MOUNT_NAME_LIST_NOT_PROVIDED
+            message: 'mountNames not provided'
         });
 
         // input validation short-circuits before contacting MWDI
@@ -1031,7 +1030,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             )
         ).rejects.toMatchObject({
             code: 400,
-            message: ERRORS.MOUNT_NAME_LIST_EMPTY
+            message: 'mountNames invalid'
         });
     });
 });
