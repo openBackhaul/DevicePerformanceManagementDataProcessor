@@ -184,7 +184,7 @@
   "historical-performance-data-list": [
                   {
                     "history-data-id": "PM_ETH_CONTAINER_RADIO_15M",
-                    "period-end-time": "2026-06-25T01:45:00.0+00:00",
+                    "period-end-time": "2026-06-25T11:45:00.0+00:00",
                     "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-15-MIN",
                     "suspect-interval-flag": false,
                     "performance-data": {
@@ -3843,6 +3843,25 @@
         ]
       },
       {
+        "client-ltp": [
+          "LTP-ETC-TTP-PORT-A"
+        ],
+        "server-ltp": [
+          "LTP-MWPS-TTP-RADIO-2A"
+        ],
+        "uuid": "LTP-MWS-RADIO-2A",
+        "ltp-augment-1-0:ltp-augment-pac": {
+          "original-ltp-name": "RADIO-2A",
+          "external-label": "External label not yet defined."
+        },
+        "layer-protocol": [
+          {
+            "local-id": "LP-MWS-RADIO-2A",
+            "layer-protocol-name": "hybrid-mw-structure-2-0:LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER"
+          }
+        ]
+      },
+      {
         "uuid": "LTP-MWPS-TTP-RADIO-2A",
         "client-ltp": [
           "LTP-MWS-RADIO-2A"
@@ -4292,26 +4311,8 @@
           }
         ],
         "parallel-ltp": []
-      },
-      {
-        "client-ltp": [
-          "LTP-ETC-TTP-PORT-A"
-        ],
-        "server-ltp": [
-          "LTP-MWPS-TTP-RADIO-2A"
-        ],
-        "uuid": "LTP-MWS-RADIO-2A",
-        "ltp-augment-1-0:ltp-augment-pac": {
-          "original-ltp-name": "RADIO-2A",
-          "external-label": "External label not yet defined."
-        },
-        "layer-protocol": [
-          {
-            "local-id": "LP-MWS-RADIO-2A",
-            "layer-protocol-name": "hybrid-mw-structure-2-0:LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER"
-          }
-        ]
       }
+
     ],
     "batch-timestamp": "2026-06-25T12:55:12.0+00:00"
   },
