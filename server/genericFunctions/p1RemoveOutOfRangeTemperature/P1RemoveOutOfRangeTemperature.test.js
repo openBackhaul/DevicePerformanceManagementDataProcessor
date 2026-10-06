@@ -183,7 +183,7 @@ describe('p1RemoveOutOfRangeTemperature', () => {
   dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEwrong.json', 'utf8');
   let equipmentWrongData = JSON.parse(dataFile);
 
-  dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEOK2.json', 'utf8');
+  dataFile = fs.readFileSync(__dirname + '/datasets/equipmentDataSIAEOk2.json', 'utf8');
   let equipmentEmptyTemp = JSON.parse(dataFile);
 
   describe('Positive Tests @positive', () => {

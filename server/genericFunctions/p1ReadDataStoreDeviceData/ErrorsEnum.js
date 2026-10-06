@@ -8,7 +8,7 @@ const ERRORS = {
 
   ELK_READ_ERROR: "ElasticSearch read error",
   
-  GENERAL_ERROR: "General processing error"
+  GENERAL_ERROR: "general processing error"
 }
 
 module.exports = ERRORS;

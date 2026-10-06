@@ -10,7 +10,7 @@ var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommon
 var oas3Tools = require('oas3-tools');
 const logger = require('./service/LoggingService.js').getLogger();
 //const P1StreamPmData = require('./specificFunctions/p1StreamPmData/P1StreamPmData-temp.js');
-const P1StreamPmData = require('./specificFunctions/p1StreamPmData/P1StreamPmData.js');
+const P2StreamPmData = require('./specificFunctions/p2StreamPmData/P2StreamPmData.js');
 const { loadRuntimeConfig } = require("./utils/config");
 const runtimeConfig = loadRuntimeConfig() || {};
 const serviceConfig = runtimeConfig.service || {};
@@ -72,8 +72,8 @@ http.createServer(app).listen(serverPort, function () {
 
 //  start streaming AFTER success
    async function initial(){
-    await P1StreamPmData.run().catch(err => {
-        console.error(`Error running P1StreamPmData: ${err}`);
+    await P2StreamPmData.run().catch(err => {
+        console.error(`Error running P2StreamPmData: ${err}`);
     });
    }
    initial();

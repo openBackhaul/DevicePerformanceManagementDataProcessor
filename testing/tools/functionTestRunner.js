@@ -194,134 +194,6 @@ function toRealError(errVal) {
   return new Error(String(errVal));
 }
 
-function createMockMethodFunction(methodName, methodDef, targetObject, fallbackIsAsync = true) {
-  let callIndex = 0;
-  const isAsync = methodDef.isAsync === true || fallbackIsAsync === true;
-
-  return jest.fn(() => {
-    const currentCallIndex = callIndex;
-    callIndex += 1;
-
-    if (methodDef.type === "return" || methodDef.type === "returnSequence") {
-      let val;
-
-      if (methodDef.type === "returnSequence") {
-        const values = methodDef.values ?? methodDef.valueSequence;
-        if (!Array.isArray(values) || values.length === 0) {
-          throw new Error(
-            `Mock method '${methodName}' declared returnSequence but 'values'/'valueSequence' is empty or invalid`
-          );
-        }
-        val = getSequenceItem(
-          values,
-          currentCallIndex,
-          methodName,
-          "value",
-          methodDef.repeatLast !== false
-        );
-      } else if (methodDef.fixtureSequence !== undefined || methodDef.fixtures !== undefined) {
-        const fixtureSequence = methodDef.fixtureSequence ?? methodDef.fixtures;
-        const fixtureName = getSequenceItem(
-          fixtureSequence,
-          currentCallIndex,
-          methodName,
-          "fixture",
-          methodDef.repeatLast !== false
-        );
-        val = readJsonCloned(path.join(targetObject.__scenarioDir, fixtureName));
-      } else if (methodDef.fixture) {
-        val = readJsonCloned(path.join(targetObject.__scenarioDir, methodDef.fixture));
-      } else {
-        val = cloneValue(methodDef.value);
-      }
-
-      val = materializeNestedMockCapableObjects(val, targetObject.__scenarioDir);
-      return isAsync ? Promise.resolve(val) : val;
-    }
-
-    if (methodDef.type === "throw" || methodDef.type === "throwSequence") {
-      let errVal;
-
-      if (methodDef.type === "throwSequence") {
-        const errors = methodDef.errors ?? methodDef.errorSequence;
-        if (!Array.isArray(errors) || errors.length === 0) {
-          throw new Error(
-            `Mock method '${methodName}' declared throwSequence but 'errors'/'errorSequence' is empty or invalid`
-          );
-        }
-        errVal = getSequenceItem(
-          errors,
-          currentCallIndex,
-          methodName,
-          "error",
-          methodDef.repeatLast !== false
-        );
-      } else {
-        errVal = methodDef.error;
-      }
-
-      if (isAsync) {
-        return Promise.reject(cloneValue(errVal));
-      }
-      throw cloneValue(errVal);
-    }
-
-    throw new Error(
-      `Unknown mock method type '${methodDef.type}' for method '${methodName}'`
-    );
-  });
-}
-
-function materializeMockCapableObject(value, fallbackIsAsync = false, scenarioDir = null) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return value;
-  }
-
-  if (!value.__mockMethods || typeof value.__mockMethods !== "object") {
-    return value;
-  }
-
-  const result = { ...value };
-  const mockMethods = result.__mockMethods;
-  delete result.__mockMethods;
-
-  Object.defineProperty(result, "__scenarioDir", {
-    value: scenarioDir,
-    enumerable: false,
-    configurable: true,
-    writable: false,
-  });
-
-  for (const [methodName, methodDef] of Object.entries(mockMethods)) {
-    result[methodName] = createMockMethodFunction(
-      methodName,
-      methodDef,
-      result,
-      fallbackIsAsync
-    );
-  }
-
-  return result;
-}
-
-function materializeNestedMockCapableObjects(value, scenarioDir = null) {
-  if (Array.isArray(value)) {
-    return value.map((item) => materializeNestedMockCapableObjects(item, scenarioDir));
-  }
-
-  if (!value || typeof value !== "object") {
-    return value;
-  }
-
-  const result = materializeMockCapableObject(value, false, scenarioDir);
-
-  for (const key of Object.keys(result)) {
-    result[key] = materializeNestedMockCapableObjects(result[key], scenarioDir);
-  }
-
-  return result;
-}
-
 function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = false }) {
   let callIndex = 0;
   const isAsync = mockDef.isAsync === true || fallbackIsAsync === true;
@@ -331,19 +203,16 @@ function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = fa
     callIndex += 1;
 
     if (mockDef.type === "return" || mockDef.type === "returnSequence") {
-      let val = resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex);
-      val = materializeNestedMockCapableObjects(val, scenarioDir);
+      const val = resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex);
       return isAsync ? Promise.resolve(val) : val;
     }
 
     if (mockDef.type === "throw" || mockDef.type === "throwSequence") {
-      const errVal = resolveMockError(mockDef, stepId, currentCallIndex);
-
+      const errVal = toRealError(resolveMockError(mockDef, stepId, currentCallIndex));
       if (isAsync) {
-        return Promise.reject(cloneValue(errVal));
+        return Promise.reject(errVal);
       }
-
-      throw cloneValue(errVal);
+      throw errVal;
     }
 
     throw new Error(`Unknown mock type '${mockDef.type}' for step '${stepId}'`);
@@ -482,107 +351,6 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   }
 }
 
-function createFetchResponse(payload) {
-  const body = cloneValue(payload || {});
-  return {
-    ok: body.ok === undefined ? true : body.ok,
-    status: body.status === undefined ? 200 : body.status,
-    json: jest.fn(async () => cloneValue(body.json)),
-    text: jest.fn(async () =>
-      body.text !== undefined
-        ? String(body.text)
-        : JSON.stringify(body.json !== undefined ? body.json : {})
-    ),
-  };
-}
-
-function installGlobalFetchMock({ scenarioDir, scenario }) {
-  const fetchMocks = scenario.fetchMocks || [];
-  delete global.fetch;
-
-  if (!Array.isArray(fetchMocks) || fetchMocks.length === 0) {
-    return;
-  }
-
-  let callIndex = 0;
-
-  global.fetch = jest.fn(() => {
-    const currentCallIndex = callIndex;
-    callIndex += 1;
-
-    const mockDef =
-      currentCallIndex < fetchMocks.length
-        ? fetchMocks[currentCallIndex]
-        : fetchMocks[fetchMocks.length - 1];
-
-    if (!mockDef || !mockDef.type) {
-      throw new Error(`Invalid fetch mock definition at call #${currentCallIndex + 1}`);
-    }
-
-    if (mockDef.type === "return" || mockDef.type === "returnSequence") {
-      let payload;
-
-      if (mockDef.type === "returnSequence") {
-        const values = mockDef.values ?? mockDef.valueSequence;
-        if (!Array.isArray(values) || values.length === 0) {
-          throw new Error(
-            `Fetch mock declared returnSequence but 'values'/'valueSequence' is empty or invalid`
-          );
-        }
-        payload = getSequenceItem(
-          values,
-          currentCallIndex,
-          "fetch",
-          "value",
-          mockDef.repeatLast !== false
-        );
-      } else if (mockDef.fixtureSequence !== undefined || mockDef.fixtures !== undefined) {
-        const fixtureSequence = mockDef.fixtureSequence ?? mockDef.fixtures;
-        const fixtureName = getSequenceItem(
-          fixtureSequence,
-          currentCallIndex,
-          "fetch",
-          "fixture",
-          mockDef.repeatLast !== false
-        );
-        payload = readJsonCloned(path.join(scenarioDir, fixtureName));
-      } else if (mockDef.fixture) {
-        payload = readJsonCloned(path.join(scenarioDir, mockDef.fixture));
-      } else {
-        payload = cloneValue(mockDef.value);
-      }
-
-      return Promise.resolve(createFetchResponse(payload));
-    }
-
-    if (mockDef.type === "throw" || mockDef.type === "throwSequence") {
-      let errVal;
-
-      if (mockDef.type === "throwSequence") {
-        const errors = mockDef.errors ?? mockDef.errorSequence;
-        if (!Array.isArray(errors) || errors.length === 0) {
-          throw new Error(
-            `Fetch mock declared throwSequence but 'errors'/'errorSequence' is empty or invalid`
-          );
-        }
-        errVal = getSequenceItem(
-          errors,
-          currentCallIndex,
-          "fetch",
-          "error",
-          mockDef.repeatLast !== false
-        );
-      } else {
-        errVal = mockDef.error;
-      }
-
-      return Promise.reject(cloneValue(errVal));
-    }
-
-    throw new Error(`Unknown fetch mock type '${mockDef.type}'`);
-  });
-}
-
 function readScenarioInput(s, scenarioDir) {
   if (Object.prototype.hasOwnProperty.call(s, "input")) {
     return cloneValue(s.input);
@@ -616,18 +384,13 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
       let actual;
       let thrown;
       let expectedOutput;
-      let expectedError;
 
       beforeAll(async () => {
         jest.restoreAllMocks();
         jest.resetAllMocks();
         jest.resetModules();
-        delete global.fetch;
 
-        const input = materializeNestedMockCapableObjects(
-          readScenarioInput(s, scenarioDir),
-          scenarioDir
-        );
+        const input = readScenarioInput(s, scenarioDir);
 
         installDependencyMocks(dependencies);
 
@@ -635,11 +398,6 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
           scenarioDir,
           processingSteps,
           scenarioMocks: s.mocks || [],
-        });
-
-        installGlobalFetchMock({
-          scenarioDir,
-          scenario: s,
         });
 
         const futAbsPath = path.resolve(baseDir, fut.modulePath);
@@ -658,16 +416,10 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
         }
 
         if (s.expected?.type === "error") {
-          if (s.expected.errorFixture) {
-            expectedError = readJsonCloned(
-              path.join(scenarioDir, s.expected.errorFixture)
-            );
-          }
-
           try {
             actual = await fn(input);
           } catch (err) {
-            thrown = err;
+            thrown = typeof err === "string" ? err : err?.message;
           }
           return;
         }
@@ -722,25 +474,13 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
           }
         );
 
-        if (s.expected.errorFixture) {
-          test(`error matches ${s.expected.errorFixture}`, () => {
-            expect(thrown).toEqual(expectedError);
-          });
-        } else {
-          test(`error matches '${s.expected.errorEnum}'`, () => {
-            if (thrown !== undefined) {
-              if (typeof thrown === "string") {
-                expect(thrown).toBe(s.expected.errorEnum);
-              } else if (thrown && typeof thrown === "object") {
-                expect(thrown.message || thrown.error).toBe(s.expected.errorEnum);
-              } else {
-                expect(String(thrown)).toBe(s.expected.errorEnum);
-              }
-            } else {
-              expect(actual).toBe(s.expected.errorEnum);
-            }
-          });
-        }
+        test(`error matches '${s.expected.errorEnum}'`, () => {
+          if (thrown !== undefined) {
+            expect(thrown).toBe(s.expected.errorEnum);
+          } else {
+            expect(actual).toBe(s.expected.errorEnum);
+          }
+        });
       }
     });
   }

@@ -4,14 +4,13 @@ const { findFunctionNode } = require("../../../utils/functionTree");
 const p2LoadRawCc = require("./p2LoadRawCc/P2LoadRawCc");
 const p2CreateResultCc = require("./p2CreateResultCc/P2CreateResultCc");
 const p2Storing = require("./p2Storing/P2Storing");
-
-// Enable these imports after the corresponding source files are delivered.
-// const p1LoadOffsetsAndStatusData = require(
-//   "./p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData"
-// );
-// const p2FormattingOutputOnf = require(
-//   "./p2FormattingOutputOnf/P2FormattingOutputOnf"
-// );
+const queueKafkaOutbound = require("../../../infra/kafka/queueKafkaOutbound");
+const p1LoadOffsetsAndStatusData = require(
+  "../../../genericFunctions/p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData"
+);
+const p2FormattingOutputOnf = require(
+  "./p2FormattingOutputOnf/P2FormattingOutputOnf"
+);
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -129,9 +128,9 @@ function validateResultCcResponse(response) {
   return { resultCc, statusData };
 }
 
-async function createOutputFormats(input, resultCc, dependencies) {
+async function createOutputFormats(input, resultCc) {
   const outputFormats = [];
-  const aptFormatter = dependencies.p1FormattingOutputApt || require(
+  const aptFormatter = require(
     "../../p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt"
   );
   const aptResponse = await invoke(aptFormatter, {
@@ -146,12 +145,12 @@ async function createOutputFormats(input, resultCc, dependencies) {
   }
 
   const onfFormatter = requireImplementation(
-    dependencies.p2FormattingOutputOnf,
+    p2FormattingOutputOnf,
     "p2FormattingOutputOnf"
   );
   const onfResponse = await invoke(onfFormatter, {
-      parameters: getFunctionParameters(input.parameters, "p2FormattingOutputOnf"),
-      "result-cc": resultCc
+        parameters: getFunctionParameters(input.parameters, "p2FormattingOutputOnf"),
+        "result-cc": resultCc
   });
   const onfFormats = onfResponse && (
     onfResponse["onf-output-format"] || onfResponse.onfOutputFormat
@@ -164,25 +163,47 @@ async function createOutputFormats(input, resultCc, dependencies) {
   return outputFormats;
 }
 
-function createKafkaMessages(outputFormats, mountName) {
-  return outputFormats.map((format) => ({
-    targetConsumer: String(format["format-name"] || "ONF")
-      .split("-")[0]
-      .toUpperCase(),
-    messageType: "PERFORMANCE_OUTPUT",
-    mountName,
-    payloadVersion: "1.1",
-    payload: format["output-format"]
-  }));
+function getActiveKafkaConsumers(kafkaConsumerTypes) {
+  return String(kafkaConsumerTypes || "")
+    .split(",")
+    .map((consumer) => consumer.trim().toUpperCase())
+    .filter(Boolean);
+}
+
+function findOutputPayload(outputFormats, formatName) {
+  const format = outputFormats.find((candidate) =>
+    String(candidate["format-name"] || "").toLowerCase().startsWith(formatName)
+  );
+  return format && format["output-format"];
+}
+
+function createKafkaMessages(outputFormats, mountName, kafkaConsumerTypes) {
+  const aptPayload = findOutputPayload(outputFormats, "apt");
+  const mycomPayload = findOutputPayload(outputFormats, "mycom");
+  const netexplorerPayload = findOutputPayload(outputFormats, "netexplorer");
+  const supportedConsumers = {
+    APT: aptPayload,
+    MYCOM: mycomPayload,
+    NETEXPLORER: netexplorerPayload
+  };
+
+  return getActiveKafkaConsumers(kafkaConsumerTypes)
+    .filter((targetConsumer) => supportedConsumers[targetConsumer] !== undefined)
+    .map((targetConsumer) => ({
+      targetConsumer,
+      messageType: "PERFORMANCE_OUTPUT",
+      mountName,
+      payloadVersion: "1.1",
+      payload: supportedConsumers[targetConsumer]
+    }));
 }
 
 async function run(request = {}) {
   const input = validateRequest(request);
-  const dependencies = request.dependencies || {};
 
   try {
     const loadOffsetsAndStatusData = requireImplementation(
-      dependencies.p1LoadOffsetsAndStatusData,
+       p1LoadOffsetsAndStatusData,
       "p1LoadOffsetsAndStatusData"
     );
     const processingDataResponse = await invoke(loadOffsetsAndStatusData, {
@@ -193,55 +214,51 @@ async function run(request = {}) {
     });
     const processingData = validateLoadedProcessingData(processingDataResponse);
 
-    const rawCcResponse = await invoke(dependencies.p2LoadRawCc || p2LoadRawCc, {
+    const rawCcResponse = await invoke(p2LoadRawCc, {
       parameters: getFunctionParameters(input.parameters, "p2LoadRawCc"),
       mountName: input.mountName,
       mwdiReplicaEsClient: input.mwdiReplicaEsClient,
       offsets: processingData.offsets,
-      dependencies,
       "mount-name": input.mountName,
       "mwdi-replica-es-client": input.mwdiReplicaEsClient
     });
     const rawData = validateRawCcResponse(rawCcResponse);
 
     const resultCcResponse = await invoke(
-      dependencies.p2CreateResultCc || p2CreateResultCc,
+      p2CreateResultCc,
       {
         parameters: getFunctionParameters(input.parameters, "p2CreateResultCc"),
         rawCc: rawData.rawCc,
         statusData: processingData.statusData,
         mountName: input.mountName,
-        dependencies,
         "raw-cc": rawData.rawCc,
         "status-data": processingData.statusData
       }
     );
     const resultData = validateResultCcResponse(resultCcResponse);
-    const outputFormats = await createOutputFormats(input, resultData.resultCc, dependencies);
+    const outputFormats = await createOutputFormats(input, resultData.resultCc);
 
-    const transmitter = dependencies.p1TransmittingKafka || require(
-      "../../p1StreamPmData/p1ProcessDevice/p1TransmittingKafka/P1TransmittingKafka"
-    );
-    await invoke(transmitter, {
-      parameters: getFunctionParameters(input.parameters, "p1TransmittingKafka"),
-      configFile: input.configFile,
-      outputFormat: outputFormats,
-      "output-format": outputFormats,
-      kafkaConnectionList: request.kafkaConnectionList,
-      outputMessages: request.outputMessages || createKafkaMessages(
+    const outboundQueue = queueKafkaOutbound;
+    await invoke(outboundQueue, {
+      dataStoreEsClient: input.dataStoreEsClient,
+      logger: request.logger,
+      outputs: request.outputMessages || createKafkaMessages(
         outputFormats,
-        input.mountName
+        input.mountName,
+        request.kafkaConsumerTypes
       )
     });
 
-    await invoke(dependencies.p2Storing || p2Storing, {
+    await invoke(p2Storing, {
       parameters: getFunctionParameters(input.parameters, "p2Storing"),
       dataStoreEsClient: input.dataStoreEsClient,
       resultCc: resultData.resultCc,
       offsets: rawData.offsets,
       statusData: resultData.statusData,
       mountName: input.mountName,
-      esClient: request.esClient
+      esClient: request.esClient,
+      logger: request.logger,
+      atomicDataStoreUpsertEnabled: request.storingOptions?.atomicDataStoreUpsertEnabled === true
     });
 
     return { "device-pm-data-quality": rawData.pmDataQuality };

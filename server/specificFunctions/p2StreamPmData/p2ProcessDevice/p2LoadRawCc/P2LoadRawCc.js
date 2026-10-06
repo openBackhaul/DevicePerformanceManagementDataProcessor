@@ -114,19 +114,8 @@ function getOrCreateLoadRawCcOffset(offsets) {
   return functionOffset;
 }
 
-function getOrCreateInterfaceOffset(functionOffset, uuid) {
-  const interfaceOffsets = functionOffset.offset["interface-offsets"];
-  let interfaceOffset = interfaceOffsets.find((item) => item.uuid === uuid);
-
-  if (!interfaceOffset) {
-    interfaceOffset = {
-      uuid,
-      "most-recent-period-end-time": INITIAL_PERIOD_END_TIME,
-      "most-recent-period-end-time-24": INITIAL_PERIOD_END_TIME
-    };
-    interfaceOffsets.push(interfaceOffset);
-  }
-  return interfaceOffset;
+function findInterfaceOffset(functionOffset, uuid) {
+  return functionOffset.offset["interface-offsets"].find((item) => item.uuid === uuid);
 }
 
 function findHistoricalPerformanceContainer(layerProtocol) {
@@ -195,7 +184,7 @@ async function readControlConstruct(input, request) {
   }
 }
 
-async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
+async function applyRawCcFieldsFilter(rawCc, parameters) {
   const filterString = getParamFromFunction(
     parameters,
     LOAD_RAW_CC_FUNCTION_NAME,
@@ -209,7 +198,7 @@ async function applyRawCcFieldsFilter(rawCc, parameters, dependencies) {
   );
   if (!filterString) return rawCc;
 
-  const response = await invoke(dependencies.p1FieldsFilter || p1FieldsFilter, {
+  const response = await invoke(p1FieldsFilter, {
     dataStructure: rawCc,
     fieldsFilterString: filterString,
     "data-structure": rawCc,
@@ -228,16 +217,20 @@ async function processInterface(
   ltp,
   layerProtocol,
   functionOffset,
-  devicePmDataQuality,
-  dependencies
+  devicePmDataQuality
 ) {
   const historyContainer = findHistoricalPerformanceContainer(layerProtocol);
   const historyList = historyContainer && historyContainer[
     "historical-performance-data-list"
   ];
-  if (!Array.isArray(historyList)) return;
+  if (!Array.isArray(historyList)) return false;
 
-  const interfaceOffset = getOrCreateInterfaceOffset(functionOffset, ltp.uuid);
+  const existingInterfaceOffset = findInterfaceOffset(functionOffset, ltp.uuid);
+  const interfaceOffset = existingInterfaceOffset || {
+    uuid: ltp.uuid,
+    "most-recent-period-end-time": INITIAL_PERIOD_END_TIME,
+    "most-recent-period-end-time-24": INITIAL_PERIOD_END_TIME
+  };
   const formerPeriodEndTime = interfaceOffset[
     "most-recent-period-end-time"
   ] || INITIAL_PERIOD_END_TIME;
@@ -245,32 +238,33 @@ async function processInterface(
     "most-recent-period-end-time-24"
   ] || INITIAL_PERIOD_END_TIME;
 
-  const discardFunction = dependencies.p2DiscardIrrelevantPmRecords ||
-    p2DiscardIrrelevantPmRecords;
+  const discardFunction = p2DiscardIrrelevantPmRecords;
   const discardResponse = await invoke(discardFunction, {
     "historical-performance-data-list": historyList,
     "former-most-recent-period-end-time": formerPeriodEndTime,
     "former-most-recent-period-end-time-24": formerPeriodEndTime24
   });
-
-  historyContainer["historical-performance-data-list"] = discardResponse[
+  const filteredHistory = discardResponse && discardResponse[
     "filtered-historical-performance-data-list"
   ];
-  interfaceOffset["most-recent-period-end-time"] = discardResponse[
+  const newPeriodEndTime = discardResponse && discardResponse[
     "new-most-recent-period-end-time"
   ];
-  interfaceOffset["most-recent-period-end-time-24"] = discardResponse[
+  const newPeriodEndTime24 = discardResponse && discardResponse[
     "new-most-recent-period-end-time-24"
   ];
+  if (!Array.isArray(filteredHistory) || !newPeriodEndTime || !newPeriodEndTime24) {
+    throw createProcessingError(
+      "filteredHistoricalPerformanceDataList could not be provided",
+      "p2DiscardIrrelevantPmRecords"
+    );
+  }
 
-  const calculatePmDataQuality = dependencies.p1CalculateInterfacePmDataQuality ||
-    p1CalculateInterfacePmDataQuality;
+  const calculatePmDataQuality = p1CalculateInterfacePmDataQuality;
   const qualityResponse = await invoke(calculatePmDataQuality, {
     uuid: ltp.uuid,
     "former-most-recent-period-end-time": formerPeriodEndTime,
-    "new-most-recent-period-end-time": interfaceOffset[
-      "most-recent-period-end-time"
-    ],
+    "new-most-recent-period-end-time": newPeriodEndTime,
     "amount-received": discardResponse["amount-received"]
   });
   const interfacePmDataQuality = qualityResponse && qualityResponse[
@@ -282,12 +276,30 @@ async function processInterface(
       "p1CalculateInterfacePmDataQuality"
     );
   }
+
+  // Commit all per-interface changes only after every calculation succeeded.
+  historyContainer["historical-performance-data-list"] = filteredHistory;
+  interfaceOffset["most-recent-period-end-time"] = newPeriodEndTime;
+  interfaceOffset["most-recent-period-end-time-24"] = newPeriodEndTime24;
+  if (!existingInterfaceOffset) {
+    functionOffset.offset["interface-offsets"].push(interfaceOffset);
+  }
   devicePmDataQuality.interface.push(interfacePmDataQuality);
+  return true;
+}
+
+function isFatalInterfaceError(error) {
+  return Boolean(
+    error?.retryable === true ||
+    error instanceof TypeError ||
+    error instanceof ReferenceError ||
+    error instanceof SyntaxError ||
+    error?.message === "function implementation invalid"
+  );
 }
 
 async function run(request = {}) {
   const input = validateRequest(request);
-  const dependencies = request.dependencies || {};
   const updatedOffsets = structuredClone(input.offsets);
   const functionOffset = getOrCreateLoadRawCcOffset(updatedOffsets);
 
@@ -295,7 +307,7 @@ async function run(request = {}) {
   if (!isObject(rawCc)) {
     throw createProcessingError("rawCc could not be provided");
   }
-  rawCc = await applyRawCcFieldsFilter(rawCc, input.parameters, dependencies);
+  rawCc = await applyRawCcFieldsFilter(rawCc, input.parameters);
 
   const devicePmDataQuality = {
     "mount-name": input.mountName,
@@ -303,13 +315,32 @@ async function run(request = {}) {
   };
   for (const ltp of rawCc["logical-termination-point"] || []) {
     for (const layerProtocol of ltp["layer-protocol"] || []) {
-      await processInterface(
-        ltp,
-        layerProtocol,
-        functionOffset,
-        devicePmDataQuality,
-        dependencies
-      );
+      try {
+        await processInterface(
+          ltp,
+          layerProtocol,
+          functionOffset,
+          devicePmDataQuality
+        );
+      } catch (error) {
+        if (isFatalInterfaceError(error)) throw error;
+
+        const historyContainer = findHistoricalPerformanceContainer(layerProtocol);
+        if (historyContainer) {
+          // Prevent invalid/unprocessed records from reaching later functions.
+          historyContainer["historical-performance-data-list"] = [];
+        }
+        request.logger?.error?.(
+          {
+            label: "p2-load-raw-cc-interface-processing",
+            mountName: input.mountName,
+            ltpUuid: ltp.uuid,
+            stage: error?.stage,
+            error: error?.message || error
+          },
+          "Failed to process interface; continuing with remaining interfaces"
+        );
+      }
     }
   }
 
@@ -321,4 +352,4 @@ async function run(request = {}) {
   };
 }
 
-module.exports = { run };
+module.exports = { run, loadRawCc: run };

@@ -1,6 +1,7 @@
 "use strict";
 
 const { getParamFromFunction } = require("../../../../utils/functionTree");
+const { withRetry } = require("../../../../utils/retry");
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -207,18 +208,103 @@ async function storeDevice(client, index, input, existingDevice, deviceDocument)
   await client.index(saveRequest);
 }
 
+async function atomicUpsertDevice(client, index, input, storeResultCc, batchTimestamp, logger) {
+  const resultEntry = {
+    "batch-timestamp": batchTimestamp,
+    "result-cc": input.resultCc
+  };
+  const timestamp = new Date().toISOString();
+  const processingData = {
+    offsets: input.offsets,
+    "status-data": input.statusData
+  };
+  const upsert = {
+    "mount-name": input.mountName,
+    "processing-data": processingData,
+    locked: false,
+    timestamp,
+    ...(storeResultCc ? { "result-data": [resultEntry] } : {})
+  };
+
+  await withRetry(
+    () => client.update({
+      index,
+      id: input.mountName,
+      retry_on_conflict: 3,
+      body: {
+        scripted_upsert: true,
+        script: {
+          lang: "painless",
+          source: [
+            "ctx._source['mount-name'] = params.mountName;",
+            "ctx._source['processing-data'] = params.processingData;",
+            "ctx._source.locked = false;",
+            "ctx._source.timestamp = params.timestamp;",
+            "if (params.storeResultCc) {",
+            "  if (ctx._source['result-data'] == null) { ctx._source['result-data'] = new ArrayList(); }",
+            "  int existingIndex = -1;",
+            "  for (int i = 0; i < ctx._source['result-data'].size(); i++) {",
+            "    def entry = ctx._source['result-data'].get(i);",
+            "    if (entry != null && entry['batch-timestamp'] == params.resultEntry['batch-timestamp']) { existingIndex = i; break; }",
+            "  }",
+            "  if (existingIndex >= 0) { ctx._source['result-data'].set(existingIndex, params.resultEntry); }",
+            "  else { ctx._source['result-data'].add(params.resultEntry); }",
+            "}"
+          ].join(" "),
+          params: {
+            mountName: input.mountName,
+            processingData,
+            timestamp,
+            storeResultCc,
+            resultEntry
+          }
+        },
+        upsert
+      }
+    }),
+    {
+      label: `p2Storing.atomicUpsert:${input.mountName}`,
+      retryIntervalMs: 10000,
+      logger
+    }
+  );
+}
+
 async function run(request = {}) {
   const input = validateRequest(request);
   const client = await getDataStoreClient(input, request);
   const index = input.dataStoreEsClient["index-alias"];
+  const batchTimestamp = input.resultCc["batch-timestamp"] || new Date().toISOString();
+  const storeResultCc = isResultCcStorageActive(input.parameters);
+
+  if (request.atomicDataStoreUpsertEnabled === true) {
+    try {
+      await atomicUpsertDevice(
+        client,
+        index,
+        input,
+        storeResultCc,
+        batchTimestamp,
+        request.logger || console
+      );
+    } catch (cause) {
+      const message = storeResultCc
+        ? "resultData could not be stored"
+        : "offsets could not be stored";
+      throw createStoringError(message, true, cause);
+    }
+    return {
+      "mount-name": input.mountName,
+      "batch-timestamp": batchTimestamp
+    };
+  }
+
   const existingDevice = await readExistingDevice(client, index, input.mountName);
 
   if (existingDevice.document.locked === true) {
     throw createStoringError("ElasticSearch lock error", true);
   }
 
-  const batchTimestamp = input.resultCc["batch-timestamp"] || new Date().toISOString();
-  const storeResultCc = isResultCcStorageActive(input.parameters);
   const deviceDocument = createDeviceDocument(
     existingDevice.document,
     input,

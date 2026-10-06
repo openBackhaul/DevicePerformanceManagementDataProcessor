@@ -45,6 +45,7 @@ let queueSampleAt = 0;
 let flushing = false;
 let dropped = 0;
 let log;
+let timingSequence = 0;
 
 function configure(config = {}, logger) {
   const positive = (value, fallback) => Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
@@ -53,6 +54,10 @@ function configure(config = {}, logger) {
     // Detailed per-mount streams are opt-in; summary rates remain enabled.
     streamsEnabled: config.streamsEnabled === true,
     compactStreamsEnabled: config.compactStreamsEnabled === true,
+    reliableFlushEnabled: config.reliableFlushEnabled === true,
+    flushRetryLimit: Number.isInteger(Number(config.flushRetryLimit)) && Number(config.flushRetryLimit) >= 0
+      ? Number(config.flushRetryLimit)
+      : 3,
     maxLen: positive(config.streamMaxLen, 200000),
     maxBuffer: positive(config.bufferMaxEntries, 2000)
   };
@@ -129,7 +134,13 @@ function record(stage, timing, extra = {}) {
   }
   if (!options.enabled || !options.streamsEnabled || options.compactStreamsEnabled) return;
   if (buffer.length >= options.maxBuffer) { dropped++; return; }
-  buffer.push({ stage, fields: Object.fromEntries(Object.entries(record).map(([key, value]) => [key, String(value ?? "")])) });
+  buffer.push({
+    timingId: `${process.pid}-${Date.now()}-${++timingSequence}`,
+    stage,
+    completedAt: record.completedAt,
+    flushAttempts: 0,
+    fields: Object.fromEntries(Object.entries(record).map(([key, value]) => [key, String(value ?? "")]))
+  });
 }
 
 // Bounded, best-effort evidence. Never await Redis timing writes on delivery paths.
@@ -139,11 +150,42 @@ async function flush() {
   const entries = buffer.splice(0, 100);
   try {
     const { recordPerformanceTimings } = require("../infra/redis/redisStreamQueue");
-    const written = await recordPerformanceTimings(entries, options.maxLen, log);
-    dropped += entries.length - Number(written);
+    const written = Number(await recordPerformanceTimings(
+      entries,
+      options.maxLen,
+      log,
+      { deduplicate: options.reliableFlushEnabled }
+    ));
+    if (!Number.isInteger(written) || written < 0 || written > entries.length) {
+      throw new Error(`Invalid performance timing write count: ${written}`);
+    }
+    dropped += entries.length - written;
   } catch (error) {
-    dropped += entries.length;
-    log?.warn?.({ error: error.message, count: entries.length }, "Performance timing evidence could not be saved; processing is unaffected");
+    const stages = entries.reduce((counts, entry) => {
+      const stage = entry.stage || "unknown";
+      counts[stage] = (counts[stage] || 0) + 1;
+      return counts;
+    }, {});
+    let retryEntries = [];
+    if (options.reliableFlushEnabled) {
+      retryEntries = entries
+        .map(entry => ({ ...entry, flushAttempts: Number(entry.flushAttempts || 0) + 1 }))
+        .filter(entry => entry.flushAttempts <= options.flushRetryLimit);
+      const availableCapacity = Math.max(0, options.maxBuffer - buffer.length);
+      retryEntries = retryEntries.slice(0, availableCapacity);
+      buffer.unshift(...retryEntries);
+    }
+    const discarded = entries.length - retryEntries.length;
+    dropped += discarded;
+    log?.warn?.({
+      error: error.message,
+      count: entries.length,
+      stages,
+      requeued: retryEntries.length,
+      dropped: discarded
+    }, options.reliableFlushEnabled
+      ? "Performance timing evidence could not be saved; records retained for retry"
+      : "Performance timing evidence could not be saved; processing is unaffected");
   } finally {
     flushing = false;
   }
@@ -163,7 +205,13 @@ function recordCompleted(stage, timing, extra = {}) {
     afterCompressionMB: "unavailable",
     status: extra.status || "SUCCESS"
   });
-  buffer.push({ stage, completedAt: new Date().toISOString(), fields });
+  buffer.push({
+    timingId: `${process.pid}-${Date.now()}-${++timingSequence}`,
+    stage,
+    completedAt: new Date().toISOString(),
+    flushAttempts: 0,
+    fields
+  });
 }
 
 async function sampleQueues() {

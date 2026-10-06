@@ -189,7 +189,7 @@
   ],
   "unknown": [
     {
-      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-UNKNOWN",
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_UNKNOWN",
       "period-end-time": "2026-04-01T06:00:00Z",
       "suspect-interval-flag": false,
       "performance-data": {
@@ -204,7 +204,7 @@
       }
     },
     {
-      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_PERIOD-NOT_YET_DEFINED",
+      "granularity-period": "ethernet-container-2-0:GRANULARITY_PERIOD_TYPE_NOT_YET_DEFINED",
       "period-end-time": "2026-04-01T06:00:00Z",
       "suspect-interval-flag": false,
       "performance-data": {

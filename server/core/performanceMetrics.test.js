@@ -100,6 +100,50 @@ describe("bounded performance timing evidence", () => {
     expect(metrics.render()).toContain("dpmdp_timing_records_dropped_total 2");
   });
 
+  test("requeues failed timing batches when reliable flushing is enabled", async () => {
+    const logger = { warn: jest.fn() };
+    metrics.configure({
+      compactStreamsEnabled: true,
+      reliableFlushEnabled: true,
+      flushRetryLimit: 2
+    }, logger);
+    metrics.recordCompleted("device", metrics.begin({ message: { mountName: "device-1" } }));
+    queue.recordPerformanceTimings
+      .mockRejectedValueOnce(new Error("Redis unavailable"))
+      .mockImplementationOnce(async entries => entries.length);
+
+    await metrics.flush();
+    expect(metrics.render()).toContain("dpmdp_timing_buffer_entries 1");
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ stages: { device: 1 }, requeued: 1, dropped: 0 }),
+      "Performance timing evidence could not be saved; records retained for retry"
+    );
+
+    await metrics.flush();
+    expect(queue.recordPerformanceTimings).toHaveBeenCalledTimes(2);
+    expect(queue.recordPerformanceTimings.mock.calls[1][0][0]).toEqual(
+      expect.objectContaining({ timingId: expect.any(String), flushAttempts: 1 })
+    );
+    expect(queue.recordPerformanceTimings.mock.calls[1][3]).toEqual({ deduplicate: true });
+    expect(metrics.render()).toContain("dpmdp_timing_buffer_entries 0");
+  });
+
+  test("drops a timing record after the configured retry limit", async () => {
+    metrics.configure({
+      compactStreamsEnabled: true,
+      reliableFlushEnabled: true,
+      flushRetryLimit: 1
+    }, { warn: jest.fn() });
+    metrics.recordCompleted("device", metrics.begin({ message: { mountName: "device-1" } }));
+    queue.recordPerformanceTimings.mockRejectedValue(new Error("Redis unavailable"));
+
+    await metrics.flush();
+    expect(metrics.render()).toContain("dpmdp_timing_buffer_entries 1");
+    await metrics.flush();
+    expect(metrics.render()).toContain("dpmdp_timing_buffer_entries 0");
+    expect(metrics.render()).toContain("dpmdp_timing_records_dropped_total 1");
+  });
+
   test("exports cumulative histograms with bounded labels and no fake linger", () => {
     metrics.record("kafka", metrics.begin({ id: "1000-0", message: { mountName: "secret-mount" } }), {
       outcome: "SUCCESS", targetConsumer: "APT", sendToAckMs: 50, actualLingerMs: "unavailable"

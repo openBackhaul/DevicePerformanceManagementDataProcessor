@@ -1,8 +1,8 @@
 {
   "status": "success",
   "message": "PM data update initiated successfully",
-  "timestamp": "2026-09-18T13:31:13.753Z",
-  "mwdiUrl": "http://mwdi:8080/v1/provide-device-status-metadata",
+  "timestamp": "2026-09-29T14:45:41.336Z",
+  "mwdiUrl": "http://127.0.0.1:4015/v1/provide-device-status-metadata",
   "mwdiResponse": [
     {
       "mount-name": "100250001",

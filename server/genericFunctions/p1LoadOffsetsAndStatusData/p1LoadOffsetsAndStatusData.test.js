@@ -64,11 +64,14 @@ describe('p1LoadOffsetsAndStatusData', () => {
 
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
-      '_id': 'device=100250001/processing-data',
+      '_id': '100250001',
       'found': true,
       '_source': {
-        'offsets': offsets,
-        'status-data': statusData
+        'mount-name': '100250001',
+        'processing-data': {
+          'offsets': offsets,
+          'status-data': statusData
+        }
       }
     });
 
@@ -83,7 +86,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
 
     expect(elasticsearchClient.get).toHaveBeenCalledWith({
       'index': 'data-store',
-      'id': 'device=100250001/processing-data'
+      'id': '100250001'
     });
   });
 
@@ -91,20 +94,22 @@ describe('p1LoadOffsetsAndStatusData', () => {
     elasticsearchClient.get.mockResolvedValue({
       'body': {
         '_index': 'data-store',
-        '_id': 'device=100250001/processing-data',
+        '_id': '100250001',
         '_source': {
-          'offsets': [
-            {
-              'function-name': 'function-a',
-              'offset': 4
-            }
-          ],
-          'status-data': [
-            {
-              'function-name': 'function-a',
-              'status': 'running'
-            }
-          ]
+          'processing-data': {
+            'offsets': [
+              {
+                'function-name': 'function-a',
+                'offset': 4
+              }
+            ],
+            'status-data': [
+              {
+                'function-name': 'function-a',
+                'status': 'running'
+              }
+            ]
+          }
         }
       }
     });
@@ -132,8 +137,10 @@ describe('p1LoadOffsetsAndStatusData', () => {
 
     elasticsearchClient.get.mockResolvedValue({
       '_source': {
-        'offsets': [],
-        'status-data': []
+        'processing-data': {
+          'offsets': [],
+          'status-data': []
+        }
       }
     });
 
@@ -141,7 +148,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
 
     expect(elasticsearchClient.get).toHaveBeenCalledWith({
       'index': 'data-store',
-      'id': 'device=100250001/processing-data'
+      'id': '100250001'
     });
   });
 
@@ -179,13 +186,15 @@ describe('p1LoadOffsetsAndStatusData', () => {
   test('returns an empty offsets array when offsets is not an array', async () => {
     elasticsearchClient.get.mockResolvedValue({
       '_source': {
-        'offsets': 'invalid-offsets',
-        'status-data': [
-          {
-            'function-name': 'function-a',
-            'status': 'completed'
-          }
-        ]
+        'processing-data': {
+          'offsets': 'invalid-offsets',
+          'status-data': [
+            {
+              'function-name': 'function-a',
+              'status': 'completed'
+            }
+          ]
+        }
       }
     });
 
@@ -289,7 +298,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
   test('Return error general processing error when _source is missing', async () => {
     elasticsearchClient.get.mockResolvedValue({
       '_index': 'data-store',
-      '_id': 'device=100250001/processing-data',
+      '_id': '100250001',
       'found': true
     });
 
@@ -298,7 +307,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
   });
 
   test('does not modify the Elasticsearch source arrays', async () => {
-    const source = {
+    const processingData = {
       'offsets': [
         {
           'function-name': 'function-a',
@@ -311,6 +320,10 @@ describe('p1LoadOffsetsAndStatusData', () => {
           'status': 'completed'
         }
       ]
+    };
+    const source = {
+      'mount-name': '100250001',
+      'processing-data': processingData
     };
 
     elasticsearchClient.get.mockResolvedValue({
