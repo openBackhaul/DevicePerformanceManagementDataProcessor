@@ -80,7 +80,7 @@ function calculateAmountExpected(input) {
       const currentDateKey = formatDate(current);
 
       const endOfCurrentDay = new Date(current);
-      endOfCurrentDay.setHours(24, 0, 0, 0);
+      endOfCurrentDay.setUTCHours(24, 0, 0, 0);
 
       const segmentEnd = end < endOfCurrentDay ? end : endOfCurrentDay;
 
@@ -185,10 +185,12 @@ function validateMainInput(input) {
     return ERRORS.GENERAL_ERROR;
   }
 
-  if (input['uuid'] == undefined &
-    input['former-most-recent-period-end-time'] == undefined &&
-    input['new-most-recent-period-end-time'] == undefined &&
-    input['amount-received'] == undefined) {
+  if (
+    input['uuid'] === undefined &&
+    input['former-most-recent-period-end-time'] === undefined &&
+    input['new-most-recent-period-end-time'] === undefined &&
+    input['amount-received'] === undefined
+  ) {
     return ERRORS.GENERAL_ERROR;
   }
 
@@ -236,9 +238,9 @@ function isValidDate(value) {
 }
 
 function formatDate(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
 
   return `${year}/${month}/${day}`;
 }
