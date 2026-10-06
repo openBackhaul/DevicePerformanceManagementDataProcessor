@@ -57,8 +57,7 @@
           "LTP-MAC-TTP-PORT-A"
         ],
         "server-ltp": [
-          "LTP-MWS-RADIO-2A",
-          "LTP-MWS-RADIO-1A"
+          "LTP-MWS-RADIO-2A"
         ],
         "ltp-augment-1-0:ltp-augment-pac": {
           "external-label": "External label not yet defined.",

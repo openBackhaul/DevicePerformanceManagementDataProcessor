@@ -222,7 +222,7 @@
         ],
         "layer-protocol": [
           {
-            "layer-protocol-name": "hybrid-mw-structure-2-0:LAYER_PROTOCOL_NAME_TYPE_HYBRID_MW_STRUCTURE_LAYER"
+            "layer-protocol-name": "structure-2-0:LAYER_PROTOCOL_NAME_TYPE_STRUCTURE_LAYER"
           }
         ]
       },
@@ -251,5 +251,4 @@
     ]
   },
   "aggregation-group": null
-
 }
