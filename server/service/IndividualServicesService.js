@@ -95,7 +95,8 @@ exports.initiatePmDataUpdate = async function (
       throw new Error("Failed to connect to MWDI service");
     }
     // 5. Verify mount names match
-    const inputMountNames = body["mount-names"].sort();
+   // const inputMountNames = body["mount-names"].sort();
+    const inputMountNames = [...body["mount-names"]].sort();
     const returnedMountNamesMWDI = metadataArrayMWDI
       .map((item) => item["mount-name"])
       .sort();
@@ -157,12 +158,21 @@ exports.initiatePmDataUpdate = async function (
       const mountName = metadata["mount-name"];
       const lastSuccessfulUpdateTime =
         metadata["last-successful-complete-control-construct-update-time"];
-      if (!lastSuccessfulUpdateTime) {
+      if (
+        lastSuccessfulUpdateTime === undefined ||
+        lastSuccessfulUpdateTime === null
+      ) {
         outdatedMountNames.push(mountName);
         continue;
       }
       const lastUpdateDate = new Date(lastSuccessfulUpdateTime);
+      if (isNaN(lastUpdateDate.getTime())) {
+        outdatedMountNames.push(mountName);
+        continue;
+      }
+
       const timeSinceLastUpdate = currentTime - lastUpdateDate.getTime();
+
       if (timeSinceLastUpdate < FIFTEEN_MINUTES_MS) {
         alreadyUpToDateMountNames.push(mountName);
       } else {
@@ -177,10 +187,8 @@ exports.initiatePmDataUpdate = async function (
       logger.debug(
         `Update skipped: all ${alreadyUpToDateMountNames.length} mount(s) are already up-to-date`,
       );
-
       return {
-        status: "success",
-        message: "PM data is already up to date",
+        code: 200,
         "already-up-to-date-mount-names": alreadyUpToDateMountNames,
       };
     }
@@ -190,20 +198,13 @@ exports.initiatePmDataUpdate = async function (
         `Processing ${outdatedMountNames.length} outdated mount(s), skipping ${alreadyUpToDateMountNames.length} up-to-date mount(s)`,
       );
     }
-    var loaded = await p1LoadParameters.run({
+    const loaded = await p1LoadParameters.run({
       functionName: "initiatePmDataUpdate",
     });
 
     logger.debug(
       `Validation passed: ${JSON.stringify(loaded.parameters.parameter)}`,
     );
-    /*
-        let waitTimeForSending = Number(
-          loaded.parameters.parameter.find(
-            (p) => p["parameter-name"] === "waitTimeForSending",
-          )?.value,
-        );
-    */
     let waitTimeForSending = 0;
     waitTimeForSending = Number(
       getParamFromFunction(
@@ -220,144 +221,48 @@ exports.initiatePmDataUpdate = async function (
       "/v1/provide-device-status-metadata",
       "",
     );
-    const unconnectedMountNames = [];
-    const missingMountNames = [];
-    // Retrieve live control-construct data for each mount
+
+    // Retrieve live control-construct data for each mount (best effort, errors are logged but ignored)
+    let firstRequest = true;
     for (const mountName of outdatedMountNames) {
-      logger.debug(`Processing mount: ${mountName}`);
-
-      if (waitTimeForSending > 0) {
+      if (!firstRequest && waitTimeForSending > 0) {
         await new Promise((resolve) => setTimeout(resolve, waitTimeForSending));
+      } else {
+        firstRequest = false;
       }
-
-      logger.info("Live Environment - using live control-construct");
-
-     // let controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-      let controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
-      let response;
+      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+     // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
       try {
-        response = await fetch(controlConstructUrl, {
+        await fetch(controlConstructUrl, {
           method: "GET",
           headers: requestHeaders,
         });
       } catch (err) {
-        logger.error(
-          `Failed to connect to MWDI for mount ${mountName}: ${err.message}`,
-        );
-        
-        throw {
-          code: 500,
-          message: "Failed to connect to MWDI service at control-construct endpoint",
-        };
-      };
-      // Success
-      if (response.ok) {
-        logger.debug(
-          `Successfully retrieved control-construct for ${mountName}`,
-        );
-        continue;
-      }
-
-      // Failure: try to parse MWDI error body
-      let errorBody = null;
-
-      try {
-        errorBody = await response.json();
-      } catch (err) {
-        logger.error(
-          `Unable to parse MWDI error body for ${mountName}: ${err.message}`,
+        // Handle fetch errors : error has to be ignored for live control-construct;  we just log them
+        logger.warn(
+          `Ignoring MWDI error for mount ${mountName}: ${err.message}`,
         );
       }
-
-      const resolvedErrorCode =
-        (errorBody && typeof errorBody === "object" && errorBody.code) ||
-        response.status;
-
-      const resolvedErrorMessage =
-        (errorBody && typeof errorBody === "object" && errorBody.message) || "";
-
-      switch (resolvedErrorCode) {
-        case 533:
-          logger.error(`Mount ${mountName} resource unknown`);
-          missingMountNames.push(mountName);
-          break;
-
-        case 502:
-        case 530:
-        case 531:
-        case 532:
-          logger.error(
-            `Mount ${mountName} not connected (${resolvedErrorMessage || "Bad Gateway"})`,
-          );
-          unconnectedMountNames.push(mountName);
-          break;
-
-        default:
-          logger.warn(
-            `Unexpected MWDI error for mount ${mountName}: code=${resolvedErrorCode}, message=${resolvedErrorMessage || `HTTP ${response.status}`}`,
-          );
-
-          unconnectedMountNames.push(mountName);
-          break;
-      }
-    }
-    // 8. Check whether any mount names reference resources that are unknown at the Controller
-    if (missingMountNames.length > 0) {
-      throw {
-        code: 533,
-        message:
-          "Resource unknown. The resource for the connected device does not exist at the Controller",
-        "missing-mount-names": missingMountNames,
-      };
-    }
-    // Handle mount names associated with unreachable or unavailable devices
-    if (unconnectedMountNames.length > 0) {
-      throw {
-        code: 532,
-        message: "Bad Gateway. Upstream server not responding.",
-        "unconnected-mount-names": unconnectedMountNames,
-      };
     }
     logger.debug(`Completed processing ${inputMountNames.length} mount(s)`);
     logger.debug("PM data update initiated successfully");
-    // Build the internal success response
-    const successResponse = {
-      status: "success",
-      message: "PM data update initiated successfully",
-      timestamp: new Date().toISOString(),
-      mwdiUrl,
-      mwdiResponse: responseData,
-    };
-    // Add already up-to-date mount names for controller response handling
+    // Build the success response
     if (alreadyUpToDateMountNames.length > 0) {
-      successResponse["already-up-to-date-mount-names"] =
-        alreadyUpToDateMountNames;
+      return {
+        code: 200,
+        "already-up-to-date-mount-names": alreadyUpToDateMountNames,
+      };
     }
-
-    return successResponse;
+    return {
+      code: 204,
+    };
   } catch (error) {
-    // Handle any error raised during PM data update processing
     logger.error(`Error in initiatePmDataUpdate: ${error.message || error}`);
-    // Propagate error 533 with the list of missing mount names
-    if (error.code === 533) {
-      throw {
-        code: error.code,
-        message: error.message,
-        "missing-mount-names": error["missing-mount-names"],
-      };
+    if (Number.isInteger(error.code)) {
+      throw error;
     }
-    // Propagate error 532 with the list of unconnected mount names
-    if (error.code === 532) {
-      throw {
-        code: error.code,
-        message: error.message,
-        "unconnected-mount-names": error["unconnected-mount-names"],
-      };
-    }
-    // Propagate unexpected errors to the caller, preserving the { code, message }
-    // shape required by the documented errorDescription schema
     throw {
-      code: Number.isInteger(error.code) ? error.code : 500,
+      code: 500,
       message: error.message || "Failed to connect to MWDI service",
     };
   }
