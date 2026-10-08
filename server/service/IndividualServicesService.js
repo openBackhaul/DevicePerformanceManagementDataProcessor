@@ -95,8 +95,7 @@ exports.initiatePmDataUpdate = async function (
       throw new Error("Failed to connect to MWDI service");
     }
     // 5. Verify mount names match
-   // const inputMountNames = body["mount-names"].sort();
-    const inputMountNames = [...body["mount-names"]].sort();
+    const inputMountNames = body["mount-names"].sort();
     const returnedMountNamesMWDI = metadataArrayMWDI
       .map((item) => item["mount-name"])
       .sort();
@@ -231,7 +230,7 @@ exports.initiatePmDataUpdate = async function (
         firstRequest = false;
       }
       const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
-     // const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
+      //const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
       try {
         await fetch(controlConstructUrl, {
           method: "GET",
