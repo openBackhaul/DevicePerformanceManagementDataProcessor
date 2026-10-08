@@ -68,6 +68,11 @@ describe('P2CreateResultCc Lot 6 integration', () => {
       mountName: 'device-1'
     });
 
+    expect(Object.keys(result).sort()).toEqual(['result-cc', 'status-data']);
+    expect(result).not.toHaveProperty('interface-metadata-list');
+    expect(result).not.toHaveProperty('aggregation-group-list');
+    expect(result).not.toHaveProperty('mountName');
+
     expect(mockPrepareTxModes).toHaveBeenCalledTimes(1);
     expect(mockIterateAiPmSlices).toHaveBeenCalledWith(expect.objectContaining({
       'transmission-mode-list': [expect.objectContaining({ capacity: 12345 })]

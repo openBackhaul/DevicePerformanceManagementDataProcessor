@@ -1458,27 +1458,12 @@ async function run(request) {
 
     const response = {
       "result-cc": resultCc,
-      "status-data": updatedStatusData,
-      "interface-metadata-list": interfaceMetadataList,
-      "aggregation-group-list": aggregationGroupList,
-      mountName
+      "status-data": updatedStatusData
     };
 
     Object.defineProperties(response, {
       resultCc: {
         value: resultCc,
-        enumerable: false,
-        configurable: true,
-        writable: true
-      },
-      interfaceMetadataList: {
-        value: interfaceMetadataList,
-        enumerable: false,
-        configurable: true,
-        writable: true
-      },
-      aggregationGroupList: {
-        value: aggregationGroupList,
         enumerable: false,
         configurable: true,
         writable: true
