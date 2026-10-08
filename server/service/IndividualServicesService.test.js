@@ -582,7 +582,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             'customer-journey'
         );
 
-        expect(result).toHaveProperty('status', 'success');
+        expect(result).toEqual({ code: 204 });
         expect(result).not.toHaveProperty('already-up-to-date-mount-names');
     });
 
@@ -626,7 +626,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
 
         expect(result).toHaveProperty('already-up-to-date-mount-names');
         expect(result['already-up-to-date-mount-names']).toEqual(['CO18302']);
-        expect(result).toHaveProperty('status', 'success');
+        expect(result).toHaveProperty('code', 200);
     });
 
     test('all devices up-to-date -> should return 200 with all mount names', async () => {
@@ -787,7 +787,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             'customer-journey'
         );
 
-        expect(result).toHaveProperty('status', 'success');
+        expect(result).toHaveProperty('code', 200);
         expect(result).toHaveProperty(
             'already-up-to-date-mount-names',
             ['CO18302']
@@ -839,7 +839,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             'customer-journey'
         );
 
-        expect(result).toHaveProperty('status', 'success');
+        expect(result).toEqual({ code: 204 });
         expect(result).not.toHaveProperty('already-up-to-date-mount-names');
     });
 
@@ -875,11 +875,11 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             'customer-journey'
         );
 
-        expect(result).toHaveProperty('status', 'success');
+        expect(result).toEqual({ code: 204 });
         expect(result).not.toHaveProperty('already-up-to-date-mount-names');
     });
 
-    test('live CC returns 532 -> should throw error 532 with unconnected mount', async () => {
+    test('live CC returns 532 -> best effort: error is ignored, should return 204', async () => {
         const body = {
             'mount-names': ['CO18302']
         };
@@ -895,7 +895,7 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
                 }
             ]
         });
-        // 2nd call: live control-construct -> upstream not responding
+        // 2nd call: live control-construct -> upstream not responding (best effort: ignored)
         mockFetch.mockResolvedValueOnce({
             ok: false,
             status: 532,
@@ -905,23 +905,19 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             })
         });
 
-        await expect(
-            initiatePmDataUpdate(
-                body,
-                'user',
-                'originator',
-                'x-correlator',
-                'trace-indicator',
-                'customer-journey'
-            )
-        ).rejects.toMatchObject({
-            code: 532,
-            message: 'Bad Gateway. Upstream server not responding.',
-            'unconnected-mount-names': ['CO18302']
-        });
+        const result = await initiatePmDataUpdate(
+            body,
+            'user',
+            'originator',
+            'x-correlator',
+            'trace-indicator',
+            'customer-journey'
+        );
+
+        expect(result).toEqual({ code: 204 });
     });
 
-    test('live CC returns 502 -> should throw error 532 with unconnected mount', async () => {
+    test('live CC returns 502 -> best effort: error is ignored, should return 204', async () => {
         const body = {
             'mount-names': ['CO18302']
         };
@@ -945,22 +941,19 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             })
         });
 
-        await expect(
-            initiatePmDataUpdate(
-                body,
-                'user',
-                'originator',
-                'x-correlator',
-                'trace-indicator',
-                'customer-journey'
-            )
-        ).rejects.toMatchObject({
-            code: 532,
-            'unconnected-mount-names': ['CO18302']
-        });
+        const result502 = await initiatePmDataUpdate(
+            body,
+            'user',
+            'originator',
+            'x-correlator',
+            'trace-indicator',
+            'customer-journey'
+        );
+
+        expect(result502).toEqual({ code: 204 });
     });
 
-    test('live CC returns 533 -> should throw error 533 with missing mount', async () => {
+    test('live CC returns 533 -> best effort: error is ignored, should return 204', async () => {
         const body = {
             'mount-names': ['CO18302']
         };
@@ -984,19 +977,16 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             })
         });
 
-        await expect(
-            initiatePmDataUpdate(
-                body,
-                'user',
-                'originator',
-                'x-correlator',
-                'trace-indicator',
-                'customer-journey'
-            )
-        ).rejects.toMatchObject({
-            code: 533,
-            'missing-mount-names': ['CO18302']
-        });
+        const result533 = await initiatePmDataUpdate(
+            body,
+            'user',
+            'originator',
+            'x-correlator',
+            'trace-indicator',
+            'customer-journey'
+        );
+
+        expect(result533).toEqual({ code: 204 });
     });
 
     test('invalid input -> should throw error 400 with mountNames not provided', async () => {
