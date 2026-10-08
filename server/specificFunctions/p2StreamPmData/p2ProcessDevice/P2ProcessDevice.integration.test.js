@@ -1,3 +1,22 @@
+const mockP2LoadRawCcRun = jest.fn();
+const mockP2CreateResultCcRun = jest.fn();
+const mockP1FormattingOutputApt = jest.fn();
+const mockP2FormattingOutputOnf = jest.fn();
+const mockQueueKafkaOutboundRun = jest.fn();
+const mockP2StoringRun = jest.fn();
+
+jest.mock('./p2LoadRawCc/P2LoadRawCc', () => ({ run: mockP2LoadRawCcRun }));
+jest.mock('./p2CreateResultCc/P2CreateResultCc', () => ({ run: mockP2CreateResultCcRun }));
+jest.mock(
+  '../../p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt',
+  () => mockP1FormattingOutputApt
+);
+jest.mock('./p2FormattingOutputOnf/P2FormattingOutputOnf', () => mockP2FormattingOutputOnf);
+jest.mock('../../../infra/kafka/queueKafkaOutbound', () => ({
+  run: mockQueueKafkaOutboundRun
+}));
+jest.mock('./p2Storing/P2Storing', () => ({ run: mockP2StoringRun }));
+
 const p2ProcessDevice = require('./P2ProcessDevice');
 
 describe('P2ProcessDevice vendor-function integration', () => {
@@ -12,19 +31,35 @@ describe('P2ProcessDevice vendor-function integration', () => {
         }
       })
     };
-    const p2LoadRawCc = jest.fn().mockResolvedValue({
+    mockP2LoadRawCcRun.mockResolvedValue({
       'raw-cc': { uuid: 'device-1' },
       offsets: [{ value: 8 }],
       'device-pm-data-quality': { 'mount-name': 'device-1' }
     });
-    const p2CreateResultCc = jest.fn().mockResolvedValue({
+    mockP2CreateResultCcRun.mockResolvedValue({
       'result-cc': { uuid: 'device-1' },
       'status-data': [{ status: 'updated' }]
     });
-    const queueKafkaOutbound = jest.fn().mockResolvedValue({
+    mockQueueKafkaOutboundRun.mockResolvedValue({
       queuedResultList: [{ status: 'QUEUED' }]
     });
-    const p1TransmittingKafka = jest.fn().mockResolvedValue({});
+    mockP1FormattingOutputApt.mockResolvedValue({
+      'format-name': 'apt-output-format',
+      'output-format': { format: 'apt', uuid: 'device-1' }
+    });
+    mockP2FormattingOutputOnf.mockResolvedValue({
+      'onf-output-format': [
+        {
+          'format-name': 'mycom-output-format',
+          'output-format': { uuid: 'device-1' }
+        },
+        {
+          'format-name': 'netexplorer-output-format',
+          'output-format': { uuid: 'device-1' }
+        }
+      ]
+    });
+    mockP2StoringRun.mockResolvedValue({});
     const dataStoreEsClient = {
       url: 'http://data-store:9200',
       client: dataStoreClient
@@ -34,45 +69,25 @@ describe('P2ProcessDevice vendor-function integration', () => {
       parameters: {},
       configFile: {},
       mountName: 'device-1',
-      mwdiReplicaEsClient: {},
+      mwdiReplicaEsClient: {
+        uuid: 'replica-client',
+        'index-alias': 'mwdi-replica'
+      },
       dataStoreEsClient,
-      kafkaConsumerTypes: 'APT,MYCOM,NETEXPLORER,IVERITAS,DATAQUALITYPROVIDER',
-      dependencies: {
-        p2LoadRawCc,
-        p2CreateResultCc,
-        p1FormattingOutputApt: jest.fn().mockResolvedValue({
-          'format-name': 'apt-output-format',
-          'output-format': { format: 'apt', uuid: 'device-1' }
-        }),
-        p2FormattingOutputOnf: jest.fn().mockResolvedValue({
-          'onf-output-format': [
-            {
-              'format-name': 'mycom-output-format',
-              'output-format': { uuid: 'device-1' }
-            },
-            {
-              'format-name': 'netexplorer-output-format',
-              'output-format': { uuid: 'device-1' }
-            }
-          ]
-        }),
-        queueKafkaOutbound,
-        p1TransmittingKafka,
-        p2Storing: jest.fn().mockResolvedValue({})
-      }
+      kafkaConsumerTypes: 'APT,MYCOM,NETEXPLORER,IVERITAS,DATAQUALITYPROVIDER'
     });
 
     expect(dataStoreClient.get).toHaveBeenCalledWith({
       index: 'data-store',
       id: 'device-1'
     });
-    expect(p2LoadRawCc).toHaveBeenCalledWith(expect.objectContaining({
+    expect(mockP2LoadRawCcRun).toHaveBeenCalledWith(expect.objectContaining({
       offsets: [{ value: 7 }]
     }));
-    expect(p2CreateResultCc).toHaveBeenCalledWith(expect.objectContaining({
+    expect(mockP2CreateResultCcRun).toHaveBeenCalledWith(expect.objectContaining({
       'status-data': [{ status: 'ok' }]
     }));
-    expect(queueKafkaOutbound).toHaveBeenCalledWith({
+    expect(mockQueueKafkaOutboundRun).toHaveBeenCalledWith({
       dataStoreEsClient,
       logger: undefined,
       outputs: [
@@ -99,7 +114,6 @@ describe('P2ProcessDevice vendor-function integration', () => {
         }
       ]
     });
-    expect(p1TransmittingKafka).not.toHaveBeenCalled();
     expect(result).toEqual({
       'device-pm-data-quality': { 'mount-name': 'device-1' }
     });

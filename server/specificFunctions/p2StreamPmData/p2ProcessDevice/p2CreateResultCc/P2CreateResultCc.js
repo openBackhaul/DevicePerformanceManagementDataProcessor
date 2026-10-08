@@ -712,30 +712,6 @@ function getMostRecentPeriodEndTimes(historicalPerformanceDataList) {
   };
 }
 
-async function callFunction(functionImplementation, request) {
-  if (!functionImplementation) {
-    return undefined;
-  }
-
-  if (typeof functionImplementation === "function") {
-    return await functionImplementation(request);
-  }
-
-  if (typeof functionImplementation.run === "function") {
-    return await functionImplementation.run(request);
-  }
-
-  return undefined;
-}
-
-function requireImplementation(implementation, functionName) {
-  if (implementation) return implementation;
-  const error = new Error(`${functionName} implementation not available`);
-  error.stage = functionName;
-  error.retryable = false;
-  throw error;
-}
-
 function getResponseHistoricalPerformanceDataList(response, fallbackList) {
   if (!isPlainObject(response)) {
     return fallbackList;
@@ -868,11 +844,7 @@ async function integrateP2PrepareTxModes(pac, mountName) {
 
   const transmissionModeList = getTransmissionModeList(pac);
 
-  const prepareTxModes = requireImplementation(
-     p2PrepareTxModes,
-    "p2PrepareTxModes"
-  );
-  const response = await callFunction(prepareTxModes, {
+  const response = await p2PrepareTxModes({
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     //historicalPerformanceDataList,
     [TRANSMISSION_MODE_LIST_KEY]: transmissionModeList
@@ -915,11 +887,7 @@ async function integrateP2IterateAiPmSlices(parameters, pac, transmissionModeLis
     "p2IterateAiPmSlices"
   );
 
-  const iterateAiPmSlices = requireImplementation(
-     p2IterateAiPmSlices,
-    "p2IterateAiPmSlices"
-  );
-  const response = await callFunction(iterateAiPmSlices, {
+  const response = await p2IterateAiPmSlices({
     parameters: iterateAiParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     //historicalPerformanceDataList,
@@ -964,11 +932,7 @@ async function integrateP2IterateEcPmSlices(parameters, pac, aggregationGroup, r
   //console.log("historical-performance-data-list: ",JSON.stringify(historicalPerformanceDataList));
   //console.log("aggregation-group: ",JSON.stringify(aggregationGroup));
   
-  const iterateEcPmSlices = requireImplementation(
-     p2IterateEcPmSlices,
-    "p2IterateEcPmSlices"
-  );
-  const response = await callFunction(iterateEcPmSlices, {
+  const response = await p2IterateEcPmSlices({
     parameters: iterateEcParameters,
     [HIST_PERF_DATA_LIST_KEY]: historicalPerformanceDataList,
     historicalPerformanceDataList,
@@ -1381,7 +1345,7 @@ async function processEthernetContainers(parameters, resultCc, aggregationGroupL
 async function applyP1RemoveOutOfRangeTemperature(parameters, resultCc, mountName) {
   const equipment = getEquipmentList(resultCc);
 
-  const response = await callFunction(p1RemoveOutOfRangeTemperature, {
+  const response = await p1RemoveOutOfRangeTemperature({
     equipment,
     parameters: {
       parameter: getRemoveOutOfRangeTemperatureParameters(parameters)
