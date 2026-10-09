@@ -202,13 +202,16 @@ describe("p1CalculateInterfacePmDataQuality", () => {
 
 
   describe("p1CalculateInterfacePmDataQuality - Content data", () => {
-
     test('Dummy data - 1 Day', () => {
       const input = {
         'uuid': 'interface-001',
         'former-most-recent-period-end-time': '2026-01-01T00:00:00+01:00',
         'new-most-recent-period-end-time': '2026-01-02T00:00:00+01:00',
         'amount-received': [
+          {
+            'date': '2025/12/31',
+            'count': 4
+          },
           {
             'date': '2026/01/01',
             'count': 40
@@ -218,11 +221,18 @@ describe("p1CalculateInterfacePmDataQuality", () => {
 
       const result = p1CalculateInterfacePmDataQuality(input);
 
-      expect(result["interface-pm-data-quality"]["quality"][0]).toEqual({
-        "date": "2026/01/01",
-        "received": 40,
-        "expected": 96
-      });
+      expect(result["interface-pm-data-quality"]["quality"]).toEqual([
+        {
+          "date": "2025/12/31",
+          "received": 4,
+          "expected": 4
+        },
+        {
+          "date": "2026/01/01",
+          "received": 40,
+          "expected": 92
+        }
+      ]);
     });
 
     test('Dummy data - 2 Days', () => {
@@ -243,16 +253,17 @@ describe("p1CalculateInterfacePmDataQuality", () => {
       };
 
       const result = p1CalculateInterfacePmDataQuality(input);
+
       expect(result["interface-pm-data-quality"]["quality"][0]).toEqual({
         "date": "2026/07/01",
         "received": 5,
-        "expected": 2
+        "expected": 10
       });
 
       expect(result["interface-pm-data-quality"]["quality"][1]).toEqual({
         "date": "2026/07/02",
         "received": 4,
-        "expected": 13
+        "expected": 5
       });
     });
 
