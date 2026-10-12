@@ -36,7 +36,7 @@ participant "p1RemoveOutOf\nRangeLevels" as p1RORL
 participant "p1Remove\nDefaultValues" as p1RemDefault
 participant "p2IterateEc\nPmSlices" as ecSlices #LightYellow
 participant "p1Calculate\nEthernetKpis" as p1EthKpi
-participant "p2Calculate\nUtilization" as p2Utils <<no lot !>>
+participant "p2Calculate\nUtilization" as p2Util <<no lot !>>
 participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
@@ -437,7 +437,7 @@ activate p2StreamPm
       p2StreamPm <-- p2ProcessPm : {pmDataQuality}
       deactivate p2ProcessPm
 
-    end loop
+    end group
 
     ' KafkaTransmission
     p2StreamPm -> p1Trans
