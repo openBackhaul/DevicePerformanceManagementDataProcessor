@@ -1,3 +1,31 @@
 {
-  "type": "object"
+  "type": "object",
+  "required": [
+    "device-pm-data"
+  ],
+  "properties": {
+    "device-pm-data": {
+      "type": "array",
+      "description": "List of resultCc of diverse batches",
+      "items": {
+        "type": "object",
+        "required": [
+          "batch-timestamp",
+          "result-cc"
+        ],
+        "properties": {
+          "batch-timestamp": {
+            "type": "string",
+            "description": "batchTimestamp"
+          },
+          "result-cc": {
+            "type": "object",
+            "description": "resultCc of a specific batch"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
 }

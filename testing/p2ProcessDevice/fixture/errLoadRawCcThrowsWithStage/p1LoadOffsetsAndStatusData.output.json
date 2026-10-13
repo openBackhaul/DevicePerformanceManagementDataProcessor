@@ -1,0 +1,16 @@
+{
+ "offsets": [
+    {
+      "function-name": "p2LoadRawCc",
+      "offset": {
+        "interface-offsets": []
+      }
+    }
+  ],
+"status-data": [
+    {
+      "function-name": "p2ProcessDevice",
+      "status": "ok"
+    }
+  ]
+}

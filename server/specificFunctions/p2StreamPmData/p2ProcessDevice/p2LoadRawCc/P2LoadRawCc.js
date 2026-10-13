@@ -34,12 +34,6 @@ function createProcessingError(message, stage = LOAD_RAW_CC_FUNCTION_NAME, retry
   return error;
 }
 
-async function invoke(module, request) {
-  if (typeof module === "function") return module(request);
-  if (module && typeof module.run === "function") return module.run(request);
-  throw createProcessingError("function implementation invalid");
-}
-
 function validateRequest(request) {
   const parameters = readProperty(request, "parameters");
   const mwdiReplicaEsClient = readProperty(
@@ -198,7 +192,7 @@ async function applyRawCcFieldsFilter(rawCc, parameters) {
   );
   if (!filterString) return rawCc;
 
-  const response = await invoke(p1FieldsFilter, {
+  const response = await p1FieldsFilter.run({
     dataStructure: rawCc,
     fieldsFilterString: filterString,
     "data-structure": rawCc,
@@ -238,8 +232,7 @@ async function processInterface(
     "most-recent-period-end-time-24"
   ] || INITIAL_PERIOD_END_TIME;
 
-  const discardFunction = p2DiscardIrrelevantPmRecords;
-  const discardResponse = await invoke(discardFunction, {
+  const discardResponse = await p2DiscardIrrelevantPmRecords({
     "historical-performance-data-list": historyList,
     "former-most-recent-period-end-time": formerPeriodEndTime,
     "former-most-recent-period-end-time-24": formerPeriodEndTime24
@@ -260,8 +253,7 @@ async function processInterface(
     );
   }
 
-  const calculatePmDataQuality = p1CalculateInterfacePmDataQuality;
-  const qualityResponse = await invoke(calculatePmDataQuality, {
+  const qualityResponse = await p1CalculateInterfacePmDataQuality({
     uuid: ltp.uuid,
     "former-most-recent-period-end-time": formerPeriodEndTime,
     "new-most-recent-period-end-time": newPeriodEndTime,

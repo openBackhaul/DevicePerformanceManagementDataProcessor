@@ -1,0 +1,87 @@
+{
+  "device-pm-data-quality": {
+    "mount-name": "513250007",
+    "interface": [
+      {
+        "uuid": "LTP-ETC-TTP-LAN-1-XG-SFP",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 23,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-ETC-TTP-LAN-2-XG-SFP",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 61,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-MWPS-TTP-ODU-B",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 16,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-MWPS-TTP-ODU-A",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 16,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-ETC-TTP-LAN-1-COMBO",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 61,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-ETC-TTP-LAN-2-COMBO",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 61,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-ETC-TTP-LAN-4-RJ45",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 61,
+            "expected": 61
+          }
+        ]
+      },
+      {
+        "uuid": "LTP-ETC-TTP-ODU-A",
+        "quality": [
+          {
+            "date": "2026/10/07",
+            "received": 61,
+            "expected": 61
+          }
+        ]
+      }
+    ]
+  }
+}

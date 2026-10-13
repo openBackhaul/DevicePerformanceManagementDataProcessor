@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["code", "message"],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "const": 500
+    },
+    "message": {
+      "type": "string",
+      "const": "Missing p1ResolveEsAddress configuration"
+    }
+  },
+  "additionalProperties": true
+}

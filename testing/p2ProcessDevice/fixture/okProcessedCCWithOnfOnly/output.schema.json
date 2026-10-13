@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "required": [
+    "device-pm-data-quality"
+  ],
+  "properties": {
+    "device-pm-data-quality": {
+      "type": "object",
+      "description": "Information about the quality of the provided PM data of all AirInterfaces and EthernetContainers at the device; initialized with empty array of interfaces.",
+      "required": [
+        "mount-name",
+        "interface"
+      ],
+      "properties": {
+        "mount-name": {
+          "type": "string",
+          "description": "MountName from [/load-raw-cc/mount-name]"
+        },
+        "interface": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Information about the quality of the provided PM data for an individual interface"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

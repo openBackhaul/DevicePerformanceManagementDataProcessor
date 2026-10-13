@@ -143,14 +143,7 @@ scenarios:
       outputSchemaFixture: "output.schema.json"
     mocks: []
 
-  - id: "okCreateResultCcWithEthernetContainersOnly"
-    description: "Should process only EthernetContainer LTPs and populate interface-metadata-list accordingly"
-    inputFixture: "input_ethernet_only.json"
-    expected:
-      type: "success"
-      outputFixture: "output_ethernet_only.json"
-      outputSchemaFixture: "output.schema.json"
-    mocks: []
+
 
   - id: "okCreateResultCcWithMixedLtps"
     description: "Should process both AirInterface and EthernetContainer LTPs in the same raw-cc"

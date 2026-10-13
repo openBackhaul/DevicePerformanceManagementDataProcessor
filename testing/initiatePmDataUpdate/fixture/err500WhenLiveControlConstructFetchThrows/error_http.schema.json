@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "required": ["code", "message","missing-mount-names"],
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "message": {
+      "type": "string"
+    },
+    "missing-mount-names" : {  "type" : "array"}
+  },
+  "additionalProperties": true
+}

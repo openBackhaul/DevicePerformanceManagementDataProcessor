@@ -1,0 +1,16 @@
+{ 
+ "__mockMethods": {
+    "debug": { "type": "return", "value": null },
+    "info": { "type": "return", "value": null },
+    "warn": { "type": "return", "value": null },
+    "error": { "type": "return", "value": null },
+    "fatal": { "type": "return", "value": null },
+    "trace": { "type": "return", "value": null },
+    "child": {
+      "type": "return",
+      "value": {}
+    }
+ }
+}
+    
+      

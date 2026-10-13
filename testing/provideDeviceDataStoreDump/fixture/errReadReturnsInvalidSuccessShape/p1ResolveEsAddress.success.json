@@ -1,0 +1,10 @@
+{
+  "esAddress": {
+    "uuid": "dpmdp-1-0-0-es-c-es-1-0-0-007",
+    "url": "https://es.example.com:9200",
+    "index-alias": "device-pm-data",
+    "api-key": "secret",
+    "operational-state": "ENABLED",
+    "life-cycle-state": "INSTALLED"
+  }
+}

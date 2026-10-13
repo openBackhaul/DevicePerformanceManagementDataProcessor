@@ -37,21 +37,6 @@ function getFunctionParameters(parameters, functionName) {
   return findFunctionNode(parameters, functionName) || {};
 }
 
-async function invoke(module, request) {
-  if (typeof module === "function") return module(request);
-  if (module && typeof module.run === "function") return module.run(request);
-  throw createProcessingError("function implementation invalid");
-}
-
-function requireImplementation(implementation, functionName) {
-  if (implementation) return implementation;
-  throw createProcessingError(
-    `${functionName} implementation not available`,
-    functionName,
-    false
-  );
-}
-
 function validateRequest(request) {
   const parameters = readProperty(request, "parameters");
   const configFile = readProperty(request, "configFile", "config-file");
@@ -133,7 +118,7 @@ async function createOutputFormats(input, resultCc) {
   const aptFormatter = require(
     "../../p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt"
   );
-  const aptResponse = await invoke(aptFormatter, {
+  const aptResponse = await aptFormatter({
     parameters: getFunctionParameters(input.parameters, "p1FormattingOutputApt"),
     "result-cc": resultCc
   });
@@ -144,11 +129,7 @@ async function createOutputFormats(input, resultCc) {
     });
   }
 
-  const onfFormatter = requireImplementation(
-    p2FormattingOutputOnf,
-    "p2FormattingOutputOnf"
-  );
-  const onfResponse = await invoke(onfFormatter, {
+  const onfResponse = await p2FormattingOutputOnf({
         parameters: getFunctionParameters(input.parameters, "p2FormattingOutputOnf"),
         "result-cc": resultCc
   });
@@ -202,11 +183,7 @@ async function run(request = {}) {
   const input = validateRequest(request);
 
   try {
-    const loadOffsetsAndStatusData = requireImplementation(
-       p1LoadOffsetsAndStatusData,
-      "p1LoadOffsetsAndStatusData"
-    );
-    const processingDataResponse = await invoke(loadOffsetsAndStatusData, {
+    const processingDataResponse = await p1LoadOffsetsAndStatusData({
         mountName: input.mountName,
         dataStoreEsClient: input.dataStoreEsClient,
         "mount-name": input.mountName,
@@ -214,7 +191,7 @@ async function run(request = {}) {
     });
     const processingData = validateLoadedProcessingData(processingDataResponse);
 
-    const rawCcResponse = await invoke(p2LoadRawCc, {
+    const rawCcResponse = await p2LoadRawCc.run({
       parameters: getFunctionParameters(input.parameters, "p2LoadRawCc"),
       mountName: input.mountName,
       mwdiReplicaEsClient: input.mwdiReplicaEsClient,
@@ -224,22 +201,18 @@ async function run(request = {}) {
     });
     const rawData = validateRawCcResponse(rawCcResponse);
 
-    const resultCcResponse = await invoke(
-      p2CreateResultCc,
-      {
+    const resultCcResponse = await p2CreateResultCc.run({
         parameters: getFunctionParameters(input.parameters, "p2CreateResultCc"),
         rawCc: rawData.rawCc,
         statusData: processingData.statusData,
         mountName: input.mountName,
         "raw-cc": rawData.rawCc,
         "status-data": processingData.statusData
-      }
-    );
+      });
     const resultData = validateResultCcResponse(resultCcResponse);
     const outputFormats = await createOutputFormats(input, resultData.resultCc);
 
-    const outboundQueue = queueKafkaOutbound;
-    await invoke(outboundQueue, {
+    await queueKafkaOutbound.run({
       dataStoreEsClient: input.dataStoreEsClient,
       logger: request.logger,
       outputs: request.outputMessages || createKafkaMessages(
@@ -249,7 +222,7 @@ async function run(request = {}) {
       )
     });
 
-    await invoke(p2Storing, {
+    await p2Storing.run({
       parameters: getFunctionParameters(input.parameters, "p2Storing"),
       dataStoreEsClient: input.dataStoreEsClient,
       resultCc: resultData.resultCc,

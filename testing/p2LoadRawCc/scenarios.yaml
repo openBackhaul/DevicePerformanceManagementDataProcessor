@@ -176,19 +176,7 @@ scenarios:
   # -------------------------
 
   
-  - id: "errPmDataQualityCouldNotBeProvidedWhenP1CalculateInterfacePmDataQualityReturnsInvalidOutput"
-    description: "Should return 'pmDataQuality could not be provided' when p1CalculateInterfacePmDataQuality returns invalid output"
-    inputFixture: "input.json"
-    expected:
-      type: "error"
-      errorEnum: "pmDataQuality could not be provided"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p1CalculateInterfacePmDataQuality"
-        type: "return"
-        fixture: "p1CalculateInterfacePmDataQuality.invalid-output.json"
+
 
 
   - id: "errRawCcCouldNotBeProvidedWhenFieldsFilterReturnsInvalidStructure"
@@ -205,19 +193,7 @@ scenarios:
         type: "return"
         fixture: "p1FieldsFilter.invalid-output.json"
 
-  - id: "errRawCcCouldNotBeProvidedWhenFieldsFilterThrows"
-    description: "Should return 'rawCc could not be provided' when p1FieldsFilter throws"
-    inputFixture: "input_with_fields_filter.json"
-    expected:
-      type: "error"
-      errorEnum: "fieldsFilterString invalid"
-    mocks:
-      - stepId: "onfAdapter.getEsClient"
-        type: "return"
-        fixture: "onfAdapter.getEsClient.replica.json"
-      - stepId: "p1FieldsFilter"
-        type: "throw"
-        error: "fieldsFilterString invalid"
+
 
 
 

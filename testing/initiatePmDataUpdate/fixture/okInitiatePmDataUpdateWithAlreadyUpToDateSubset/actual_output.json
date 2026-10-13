@@ -1,20 +1,5 @@
 {
-  "status": "success",
-  "message": "PM data update initiated successfully",
-  "timestamp": "2026-09-29T14:45:41.336Z",
-  "mwdiUrl": "http://127.0.0.1:4015/v1/provide-device-status-metadata",
-  "mwdiResponse": [
-    {
-      "mount-name": "100250001",
-      "connection-status": "connected",
-      "last-successful-complete-control-construct-update-time": "2099-01-01T10:00:00.000Z"
-    },
-    {
-      "mount-name": "100250002",
-      "connection-status": "connected",
-      "last-successful-complete-control-construct-update-time": "2026-08-01T10:00:00.000Z"
-    }
-  ],
+  "code": 200,
   "already-up-to-date-mount-names": [
     "100250001"
   ]

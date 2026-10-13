@@ -102,57 +102,6 @@ function getSequenceItem(sequence, index, stepId, kind, repeatLast = true) {
   );
 }
 
-function resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex) {
-  const repeatLast = mockDef.repeatLast !== false;
-  const fixtureSequence = mockDef.fixtureSequence ?? mockDef.fixtures;
-
-  if (fixtureSequence !== undefined) {
-    const fixtureName = getSequenceItem(
-      fixtureSequence,
-      currentCallIndex,
-      stepId,
-      "fixture",
-      repeatLast
-    );
-    return readJsonCloned(path.join(scenarioDir, fixtureName));
-  }
-
-  if (mockDef.fixture) {
-    return readJsonCloned(path.join(scenarioDir, mockDef.fixture));
-  }
-
-  if (mockDef.value !== undefined) {
-    return cloneValue(mockDef.value);
-  }
-
-  throw new Error(
-    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'fixture', 'fixtureSequence'/'fixtures', or 'value'`
-  );
-}
-
-function resolveMockError(mockDef, stepId, currentCallIndex) {
-  const repeatLast = mockDef.repeatLast !== false;
-  const errorSequence = mockDef.errorSequence ?? mockDef.errors;
-
-  if (errorSequence !== undefined) {
-    return getSequenceItem(
-      errorSequence,
-      currentCallIndex,
-      stepId,
-      "error",
-      repeatLast
-    );
-  }
-
-  if (mockDef.error !== undefined) {
-    return mockDef.error;
-  }
-
-  throw new Error(
-    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'error' or 'errorSequence'/'errors'`
-  );
-}
-
 function toRealError(errVal) {
   if (errVal instanceof Error) {
     return errVal;
@@ -217,6 +166,103 @@ function createMockFunction({ scenarioDir, stepId, mockDef, fallbackIsAsync = fa
 
     throw new Error(`Unknown mock type '${mockDef.type}' for step '${stepId}'`);
   });
+}
+
+function materializeMockMethods(value, scenarioDir, stepIdPrefix = "") {
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => materializeMockMethods(item, scenarioDir, stepIdPrefix));
+  }
+
+  if (typeof value !== "object") {
+    return value;
+  }
+
+  const result = {};
+
+  for (const [key, val] of Object.entries(value)) {
+    if (key === "__mockMethods" && val && typeof val === "object" && !Array.isArray(val)) {
+      for (const [methodName, methodDef] of Object.entries(val)) {
+        result[methodName] = createMockFunction({
+          scenarioDir,
+          stepId: stepIdPrefix ? `${stepIdPrefix}.${methodName}` : methodName,
+          mockDef: methodDef,
+          fallbackIsAsync: methodDef?.isAsync === true,
+        });
+      }
+      continue;
+    }
+
+    result[key] = materializeMockMethods(val, scenarioDir, stepIdPrefix);
+  }
+
+  return result;
+}
+
+function resolveMockValue(mockDef, scenarioDir, stepId, currentCallIndex) {
+  const repeatLast = mockDef.repeatLast !== false;
+  const fixtureSequence = mockDef.fixtureSequence ?? mockDef.fixtures;
+
+  if (fixtureSequence !== undefined) {
+    const fixtureName = getSequenceItem(
+      fixtureSequence,
+      currentCallIndex,
+      stepId,
+      "fixture",
+      repeatLast
+    );
+    return materializeMockMethods(
+      readJsonCloned(path.join(scenarioDir, fixtureName)),
+      scenarioDir,
+      stepId
+    );
+  }
+
+  if (mockDef.fixture) {
+    return materializeMockMethods(
+      readJsonCloned(path.join(scenarioDir, mockDef.fixture)),
+      scenarioDir,
+      stepId
+    );
+  }
+
+  if (mockDef.value !== undefined) {
+    return materializeMockMethods(
+      cloneValue(mockDef.value),
+      scenarioDir,
+      stepId
+    );
+  }
+
+  throw new Error(
+    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'fixture', 'fixtureSequence'/'fixtures', or 'value'`
+  );
+}
+
+function resolveMockError(mockDef, stepId, currentCallIndex) {
+  const repeatLast = mockDef.repeatLast !== false;
+  const errorSequence = mockDef.errorSequence ?? mockDef.errors;
+
+  if (errorSequence !== undefined) {
+    return getSequenceItem(
+      errorSequence,
+      currentCallIndex,
+      stepId,
+      "error",
+      repeatLast
+    );
+  }
+
+  if (mockDef.error !== undefined) {
+    return mockDef.error;
+  }
+
+  throw new Error(
+    `Mock for step '${stepId}' with type '${mockDef.type}' requires 'error' or 'errorSequence'/'errors'`
+  );
 }
 
 function installDependencyMocks(dependencies = []) {
@@ -351,12 +397,44 @@ function installMocks({ scenarioDir, processingSteps, scenarioMocks }) {
   }
 }
 
-function readScenarioInput(s, scenarioDir) {
-  if (Object.prototype.hasOwnProperty.call(s, "input")) {
-    return cloneValue(s.input);
+function installFetchMocks(fetchMocks = []) {
+  if (!Array.isArray(fetchMocks) || fetchMocks.length === 0) {
+    return;
   }
 
-  return readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json"));
+  let callIndex = 0;
+
+  global.fetch = jest.fn(async () => {
+    const mockDef = getSequenceItem(fetchMocks, callIndex, "global.fetch", "fetch", true);
+    callIndex += 1;
+
+    if (mockDef.type === "throw") {
+      throw toRealError(mockDef.error);
+    }
+
+    if (mockDef.type === "return") {
+      const val = cloneValue(mockDef.value || {});
+      return {
+        ok: val.ok === true,
+        status: val.status ?? 200,
+        json: jest.fn().mockResolvedValue(cloneValue(val.json)),
+      };
+    }
+
+    throw new Error(`Unknown fetch mock type '${mockDef.type}'`);
+  });
+}
+
+function readScenarioInput(s, scenarioDir) {
+  if (Object.prototype.hasOwnProperty.call(s, "input")) {
+    return materializeMockMethods(cloneValue(s.input), scenarioDir, "input");
+  }
+
+  return materializeMockMethods(
+    readJsonCloned(path.join(scenarioDir, s.inputFixture || "input.json")),
+    scenarioDir,
+    "input"
+  );
 }
 
 /**
@@ -384,11 +462,15 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
       let actual;
       let thrown;
       let expectedOutput;
+      let consoleErrorSpy;
 
       beforeAll(async () => {
         jest.restoreAllMocks();
         jest.resetAllMocks();
         jest.resetModules();
+        delete global.fetch;
+
+        consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
         const input = readScenarioInput(s, scenarioDir);
 
@@ -399,6 +481,8 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
           processingSteps,
           scenarioMocks: s.mocks || [],
         });
+
+        installFetchMocks(s.fetchMocks || []);
 
         const futAbsPath = path.resolve(baseDir, fut.modulePath);
         const fn = loadFunctionUnderTest(futAbsPath, fut.exportName);
@@ -419,12 +503,19 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
           try {
             actual = await fn(input);
           } catch (err) {
-            thrown = typeof err === "string" ? err : err?.message;
+            thrown = err;
           }
           return;
         }
 
         throw new Error(`Scenario '${s.id}' has invalid expected.type`);
+      });
+
+      afterAll(() => {
+        if (consoleErrorSpy) {
+          consoleErrorSpy.mockRestore();
+        }
+        delete global.fetch;
       });
 
       if (s.expected?.type === "success") {
@@ -474,13 +565,24 @@ function runFunctionVersionFromScenarios({ repoRoot, functionName }) {
           }
         );
 
-        test(`error matches '${s.expected.errorEnum}'`, () => {
-          if (thrown !== undefined) {
-            expect(thrown).toBe(s.expected.errorEnum);
-          } else {
-            expect(actual).toBe(s.expected.errorEnum);
-          }
-        });
+        if (s.expected.errorFixture) {
+          test(`error matches ${s.expected.errorFixture}`, () => {
+            const expectedError = readJsonCloned(
+              path.join(scenarioDir, s.expected.errorFixture)
+            );
+            expect(thrown).toEqual(expectedError);
+          });
+        } else {
+          test(`error matches '${s.expected.errorEnum}'`, () => {
+            if (typeof thrown === "string") {
+              expect(thrown).toBe(s.expected.errorEnum);
+            } else if (thrown && typeof thrown === "object" && "message" in thrown) {
+              expect(thrown.message).toBe(s.expected.errorEnum);
+            } else {
+              expect(actual).toBe(s.expected.errorEnum);
+            }
+          });
+        }
       }
     });
   }

@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["code", "message"],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "const": 400
+    },
+    "message": {
+      "type": "string",
+      "const": "mountNames invalid"
+    }
+  },
+  "additionalProperties": true
+}

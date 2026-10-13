@@ -1,0 +1,180 @@
+#
+# testing/p2FormattingOutputOnf/1.0.0/scenarios.yaml
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf/1.0.0/variables.yaml
+#
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf/P2FormattingOutputOnf.js"
+    exportName: ""
+
+processingSteps:
+  - stepId: "p1FieldsFilter.run"
+    modulePath: "../../server/genericFunctions/p1FieldsFilter/P1FieldsFilter.js"
+    exportName: "run"
+    isAsync: true
+
+dependencies:
+  - name: "pino"
+
+errorMapping: {}
+
+scenarios:
+
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okReturnEmptyOnfOutputFormatWhenNoFieldsFilterConfigured"
+    description: "Should return an empty onf-output-format array when no fieldsFilter parameters are configured"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+
+  - id: "okReplicateResultCcWhenFieldsFilterStringIsEmpty"
+    description: "Should clone the full result-cc into output-format when fields-filter-string is empty"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+
+  - id: "okCreateSingleFilteredOnfOutputFormat"
+    description: "Should create one onf-output-format entry from one valid fieldsFilter parameter"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+
+
+  - id: "okCreateMultipleFilteredOnfOutputFormats"
+    description: "Should create multiple onf-output-format entries when multiple valid fieldsFilter parameters are configured"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+
+  # -------------------------
+  # Input validation
+  # -------------------------
+
+  - id: "errParametersNotProvided"
+    description: "Should return 'parameters not provided' when input is missing or parameters is absent"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
+
+  - id: "errParametersInvalid"
+    description: "Should return 'parameters invalid' when parameters is not a plain object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+
+  - id: "errResultCcNotProvided"
+    description: "Should return 'resultCc not provided' when result-cc is missing"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc not provided"
+      errorSchemaFixture: "error.schema.json"
+
+  - id: "errResultCcInvalid"
+    description: "Should return 'resultCc invalid' when result-cc is not a plain object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc invalid"
+      errorSchemaFixture: "error.schema.json"
+
+  # -------------------------
+  # Parameter extraction / validation
+  # -------------------------
+
+  - id: "errParametersInvalidForDuplicateFormatName"
+    description: "Should return 'parameters invalid' when multiple fieldsFilter parameters produce duplicate format-name values"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+
+  - id: "errParametersInvalidForMissingFormatName"
+    description: "Should return 'parameters invalid' when a fieldsFilter parameter has no valid parameter-name"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+
+  - id: "errParametersInvalidForNonStringFilterValue"
+    description: "Should return 'parameters invalid' when a fieldsFilter parameter value is not a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+
+  # -------------------------
+  # Downstream processing failures
+  # -------------------------
+
+  - id: "errOnfOutputFormatsCouldNotBeProvidedWhenFilterReturnsString"
+    description: "Should return 'onfOutputFormats could not be provided' when p1FieldsFilter.run returns a string"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "onfOutputFormats could not be provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.invalidString.json"
+
+  - id: "errOnfOutputFormatsCouldNotBeProvidedWhenFilterThrows"
+    description: "Should return 'onfOutputFormats could not be provided' when p1FieldsFilter.run throws"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "onfOutputFormats could not be provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1FieldsFilter.run"
+        type: "throw"
+        error: "unexpected failure"
+
+  - id: "errOnfOutputFormatsCouldNotBeProvidedWhenFilteredDataStructureMissing"
+    description: "Should return 'onfOutputFormats could not be provided' when p1FieldsFilter.run returns an object without filtered-data-structure"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "onfOutputFormats could not be provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.missingFilteredDataStructure.json"
+
+  - id: "errOnfOutputFormatsCouldNotBeProvidedWhenFilteredDataStructureInvalid"
+    description: "Should return 'onfOutputFormats could not be provided' when filtered-data-structure is not a plain object"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "onfOutputFormats could not be provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1FieldsFilter.run"
+        type: "return"
+        fixture: "p1FieldsFilter.invalidFilteredDataStructure.json"

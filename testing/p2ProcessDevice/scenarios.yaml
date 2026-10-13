@@ -1,0 +1,404 @@
+#
+# Spec sources:
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/1.0.0/interface.yaml
+# - spec/Functions/p2StreamPmData/p2ProcessDevice/1.0.0/variables.yaml
+#
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/P2ProcessDevice.js"
+    exportName: "run"
+
+processingSteps:
+  - stepId: "p1LoadOffsetsAndStatusData"
+    modulePath: "../../server/genericFunctions/p1LoadOffsetsAndStatusData/P1LoadOffsetsAndStatusData.js"
+    exportName: ""
+    isAsync: true
+
+  - stepId: "p2LoadRawCc"
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2LoadRawCc/P2LoadRawCc.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p2CreateResultCc"
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2CreateResultCc/P2CreateResultCc.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1FormattingOutputApt"
+    modulePath: "../../server/specificFunctions/p1StreamPmData/p1ProcessDevice/p1FormattingOutputApt/P1FormattingOutputApt.js"
+    exportName: ""
+    isAsync: true
+
+  - stepId: "p2FormattingOutputOnf"
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2FormattingOutputOnf/P2FormattingOutputOnf.js"
+    exportName: ""
+    isAsync: true
+
+  - stepId: "queueKafkaOutbound.run"
+    modulePath: "../../server/infra/kafka/queueKafkaOutbound.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p2Storing"
+    modulePath: "../../server/specificFunctions/p2StreamPmData/p2ProcessDevice/p2Storing/P2Storing.js"
+    exportName: "run"
+    isAsync: true
+
+dependencies:
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  # -------------------------
+  # Input validation / top-level mandatory fields
+  # -------------------------
+
+  - id: "errMissingParameters"
+    description: "Should fail when parameters are missing"
+    inputFixture: "input_missing_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidParameters"
+    description: "Should fail when parameters is not an object"
+    inputFixture: "input_invalid_parameters.json"
+    expected:
+      type: "error"
+      errorEnum: "parameters invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingConfigFile"
+    description: "Should fail when configFile is missing"
+    inputFixture: "input_missing_config_file.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidConfigFile"
+    description: "Should fail when configFile is not an object"
+    inputFixture: "input_invalid_config_file.json"
+    expected:
+      type: "error"
+      errorEnum: "configFile invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingMountName"
+    description: "Should fail when mountName is missing"
+    inputFixture: "input_missing_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidMountName"
+    description: "Should fail when mountName is blank or not a string"
+    inputFixture: "input_invalid_mount_name.json"
+    expected:
+      type: "error"
+      errorEnum: "mountName invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingMwdiReplicaEsClient"
+    description: "Should fail when mwdiReplicaEsClient is missing"
+    inputFixture: "input_missing_mwdi_replica_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "mwdiReplicaEsClient not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidMwdiReplicaEsClient"
+    description: "Should fail when mwdiReplicaEsClient is not an object"
+    inputFixture: "input_invalid_mwdi_replica_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "mwdiReplicaEsClient invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errMissingDataStoreEsClient"
+    description: "Should fail when dataStoreEsClient is missing"
+    inputFixture: "input_missing_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient not provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  - id: "errInvalidDataStoreEsClient"
+    description: "Should fail when dataStoreEsClient is not an object"
+    inputFixture: "input_invalid_data_store_es_client.json"
+    expected:
+      type: "error"
+      errorEnum: "dataStoreEsClient invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks: []
+
+  # -------------------------
+  # Happy paths
+  # -------------------------
+
+  - id: "okProcessedCC"
+    description: "Should orchestrate successfully when all downstream functions return valid outputs"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "return"
+        fixture: "queueKafkaOutbound.output.json"
+      - stepId: "p2Storing"
+        type: "return"
+        fixture: "p2Storing.output.json"
+
+
+  - id: "okProcessedCCWithOnfOnly"
+    description: "Should succeed when only ONF formatter returns output"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "p1FormattingOutputApt"
+        type: "return"
+        fixture: "p1FormattingOutputApt.empty.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "return"
+        fixture: "queueKafkaOutbound.output.json"
+      - stepId: "p2Storing"
+        type: "return"
+        fixture: "p2Storing.output.json"
+
+  - id: "okProcessedCCWithAptOnly"
+    description: "Should succeed when only APT formatter returns output"
+    inputFixture: "input.json"
+    expected:
+      type: "success"
+      outputFixture: "output.json"
+      outputSchemaFixture: "output.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "p2FormattingOutputOnf"
+        type: "return"
+        fixture: "p2FormattingOutputOnf.empty.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "return"
+        fixture: "queueKafkaOutbound.output.json"
+      - stepId: "p2Storing"
+        type: "return"
+        fixture: "p2Storing.output.json"
+
+
+  # -------------------------
+  # Kafka / storing failures
+  # -------------------------
+
+  - id: "errStoringFailure"
+    description: "Should propagate storing stage failure"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "storing resultCc failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "return"
+        fixture: "queueKafkaOutbound.output.json"
+      - stepId: "p2Storing"
+        type: "throw"
+        error:
+          name: "Error"
+          message: "storing resultCc failed"
+          stage: "p2Storing"
+
+  - id: "errKafkaFailure"
+    description: "Should propagate kafka stage failure"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "kafka transmission failed"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "queueKafkaOutbound.run"
+        type: "throw"
+        error:
+          name: "Error"
+          message: "kafka transmission failed"
+          stage: "queueKafkaOutbound"
+
+  # -------------------------
+  # Formatter aggregation behavior
+  # -------------------------
+
+  - id: "errNoOutputFormatProduced"
+    description: "Should fail when neither APT nor ONF formatter returns usable output"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "output format missing or invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "p1FormattingOutputApt"
+        type: "return"
+        fixture: "p1FormattingOutputApt.empty.json"
+      - stepId: "p2FormattingOutputOnf"
+        type: "return"
+        fixture: "p2FormattingOutputOnf.empty.json"
+
+
+
+  # -------------------------
+  # Downstream response shape validation
+  # -------------------------
+
+  - id: "errLoadOffsetsReturnsInvalidShape"
+    description: "Should fail when p1LoadOffsetsAndStatusData returns invalid shape"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "raw CC data missing or invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.invalid.json"
+
+  - id: "errLoadRawCcReturnsInvalidShape"
+    description: "Should fail when p2LoadRawCc returns invalid shape"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "raw CC data missing or invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.invalid.json"
+
+  - id: "errCreateResultCcReturnsInvalidShape"
+    description: "Should fail when p2CreateResultCc returns invalid shape"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "result CC data missing or invalid"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "p2CreateResultCc"
+        type: "return"
+        fixture: "p2CreateResultCc.invalid.json"
+
+
+  # -------------------------
+  # Stage propagation / wrapper behavior
+  # -------------------------
+
+  - id: "errLoadOffsetsThrowsUnstagedWrappedAsGeneral"
+    description: "Should wrap unstaged downstream errors as general processing error"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "general processing error"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "throw"
+        error: "boom"
+
+  - id: "errLoadRawCcThrowsWithStage"
+    description: "Should propagate staged error from p2LoadRawCc"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "rawCc could not be provided"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "throw"
+        error:
+          name: "Error"
+          message: "rawCc could not be provided"
+          stage: "p2LoadRawCc"
+
+  - id: "errCreateResultCcThrowsWithStage"
+    description: "Should propagate staged error from p2CreateResultCc"
+    inputFixture: "input.json"
+    expected:
+      type: "error"
+      errorEnum: "resultCc could not be created"
+      errorSchemaFixture: "error.schema.json"
+    mocks:
+      - stepId: "p1LoadOffsetsAndStatusData"
+        type: "return"
+        fixture: "p1LoadOffsetsAndStatusData.output.json"
+      - stepId: "p2LoadRawCc"
+        type: "return"
+        fixture: "p2LoadRawCc.output.json"
+      - stepId: "p2CreateResultCc"
+        type: "throw"
+        error:
+          name: "Error"
+          message: "resultCc could not be created"
+          stage: "p2CreateResultCc"

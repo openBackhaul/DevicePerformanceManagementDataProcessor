@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "required": ["code"],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "const": 204
+    }
+  },
+  "additionalProperties": true
+}

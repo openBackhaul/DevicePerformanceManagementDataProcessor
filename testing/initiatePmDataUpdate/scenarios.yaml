@@ -1,31 +1,44 @@
 #
 # Spec sources:
-# - spec/Services/initiatePmDataUpdate/1.0.0/initiatePmDataUpdate.plantuml
-# - spec/Services/initiatePmDataUpdate/1.0.0/variables.yaml
+# - server/service/IndividualServicesService.js
 #
 # Notes:
 # - Service under test: IndividualServicesService.initiatePmDataUpdate
-# - util.js is mocked as one parent module with child export mocks
-# - p1LoadParameters is mocked as one parent module with child export mock "run"
-# - global.fetch must be mocked by the runner or test bootstrap for deterministic execution
+# - initiatePmDataUpdate uses local helper functions inside IndividualServicesService.js
+#   (validatePmDataUpdateInput, getMwdiURL, getCustomHeaders, validateMWDIResponse,
+#   validateConnectionStatus), so they are NOT mocked individually.
+# - Real external dependencies to mock:
+#   - ../utils/config.loadConfigFile
+#   - ../genericFunctions/p1LoadParameters/P1LoadParameters.run
+#   - ../utils/functionTree.getParamFromFunction
+#   - ./LoggingService.getLogger
+#   - global.fetch
 #
+
 module:
   functionUnderTest:
     modulePath: "../../server/service/IndividualServicesService.js"
     exportName: "initiatePmDataUpdate"
 
 processingSteps:
-  - stepId: "initiatePmDataUpdate.util"
-    modulePath: "../../server/service/individualServices/initiatePmDataUpdate/util.js"
+  - stepId: "config.loadConfigFile"
+    modulePath: "../../server/utils/config.js"
+    exportName: "loadConfigFile"
+    isAsync: false
 
   - stepId: "p1LoadParameters.run"
     modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
     exportName: "run"
     isAsync: true
 
+  - stepId: "functionTree.getParamFromFunction"
+    modulePath: "../../server/utils/functionTree.js"
+    exportName: "getParamFromFunction"
+    isAsync: false
+
 dependencies:
-  - name: "pino"
   - name: "../../server/service/LoggingService.js"
+  - name: "pino"
   - name: "@confluentinc/kafka-javascript"
 
 errorMapping: {}
@@ -39,27 +52,14 @@ scenarios:
       outputFixture: "output_all_outdated.json"
       outputSchemaFixture: "output_success.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
-        type: "return"
-        value: null
+        fixture: "loadConfigFile.success.json"
       - stepId: "p1LoadParameters.run"
         type: "return"
         fixture: "p1LoadParameters.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
       - type: "return"
         value:
           ok: true
@@ -71,6 +71,8 @@ scenarios:
             - mount-name: "100250002"
               connection-status: "connected"
               last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+      # fetch #2 -> GET /core-model-1-4:network-control-domain=live/control-construct=100250001
       - type: "return"
         value:
           ok: true
@@ -78,6 +80,8 @@ scenarios:
           json:
             control-construct:
               mount-name: "100250001"
+
+      # fetch #3 -> GET /core-model-1-4:network-control-domain=live/control-construct=100250002
       - type: "return"
         value:
           ok: true
@@ -94,24 +98,15 @@ scenarios:
       outputFixture: "output_some_up_to_date.json"
       outputSchemaFixture: "output_success.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        fixture: "loadConfigFile.success.json"
+      - stepId: "p1LoadParameters.run"
         type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
-        type: "return"
-        value: null
+        fixture: "p1LoadParameters.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # 100250001 is fresh and skipped; 100250002 is outdated and processed
       - type: "return"
         value:
           ok: true
@@ -123,6 +118,8 @@ scenarios:
             - mount-name: "100250002"
               connection-status: "connected"
               last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+      # fetch #2 -> GET /core-model-1-4:network-control-domain=live/control-construct=100250002
       - type: "return"
         value:
           ok: true
@@ -139,24 +136,12 @@ scenarios:
       outputFixture: "output_all_up_to_date.json"
       outputSchemaFixture: "output_all_up_to_date.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
-        type: "return"
-        value: null
+        fixture: "loadConfigFile.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # both mounts are fresh, so there are NO subsequent live control-construct fetches
       - type: "return"
         value:
           ok: true
@@ -169,58 +154,53 @@ scenarios:
               connection-status: "connected"
               last-successful-complete-control-construct-update-time: "2099-01-01T10:01:00.000Z"
 
-  - id: "errValidationErrorWhenMountNamesMissing"
-    description: "Should throw validation error when mount-names is missing"
+  - id: "errMountNamesNotProvided"
+    description: "Should throw 400 when mount-names is missing"
     inputFixture: "input_missing_mount_names.json"
     expected:
       type: "error"
-      errorEnum: "Validation error: mount-name-list not provided"
-    mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
-        type: "return"
-        value: "mount-name-list not provided"
+      errorFixture: "error_mountNames_not_provided.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+    # No fetchMocks:
+    # validation fails before any outbound call is made.
 
-  - id: "errValidationErrorWhenMountNamesEmpty"
-    description: "Should throw validation error when mount-names is empty"
+  - id: "errMountNamesInvalidWhenEmpty"
+    description: "Should throw 400 when mount-names is empty"
     inputFixture: "input_empty_mount_names.json"
     expected:
       type: "error"
-      errorEnum: "Validation error: mount-name-list empty"
-    mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
-        type: "return"
-        value: "mount-name-list empty"
+      errorFixture: "error_mountNames_invalid.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+    # No fetchMocks:
+    # validation fails before any outbound call is made.
 
-  - id: "errValidationErrorWhenMountNamesInvalid"
-    description: "Should throw validation error when mount-names contains invalid entries"
+  - id: "errMountNamesInvalidWhenEntriesInvalid"
+    description: "Should throw 400 when mount-names contains invalid entries"
     inputFixture: "input_invalid_mount_names.json"
     expected:
       type: "error"
-      errorEnum: "Validation error: mount-name-list invalid"
-    mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
-        type: "return"
-        value: "mount-name-list invalid"
+      errorFixture: "error_mountNames_invalid.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+    # No fetchMocks:
+    # validation fails before any outbound call is made.
 
   - id: "errMwdiConnectionFailedWhenMetadataRequestFails"
-    description: "Should throw MWDI connection failed when metadata fetch returns non-ok"
+    description: "Should throw 500 when metadata fetch returns non-ok"
     inputFixture: "input_all_outdated.json"
     expected:
       type: "error"
-      errorEnum: "MWDI connection failed"
+      errorFixture: "error_failed_to_connect_mwdi.json"
+      errorSchemaFixture: "error_http.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
+        fixture: "loadConfigFile.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # non-ok response causes service to throw before any live control-construct fetch occurs
       - type: "return"
         value:
           ok: false
@@ -229,50 +209,37 @@ scenarios:
             message: "internal error"
 
   - id: "errMwdiConnectionFailedWhenMetadataFetchThrows"
-    description: "Should throw fetch failed when metadata fetch throws before receiving a response"
+    description: "Should throw 500 when metadata fetch throws before receiving a response"
     inputFixture: "input_all_outdated.json"
     expected:
       type: "error"
-      errorEnum: "fetch failed"
+      errorFixture: "error_failed_to_connect_mwdi.json"
+      errorSchemaFixture: "error_http.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
+        fixture: "loadConfigFile.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # thrown network failure before any response exists
       - type: "throw"
         error:
-          error: "fetch failed"
+          message: "socket hang up"
 
   - id: "errMwdiConnectionFailedWhenMetadataResponseInvalid"
-    description: "Should throw MWDI connection failed when validateMWDIResponse returns an error"
+    description: "Should throw 500 when MWDI metadata response is invalid"
     inputFixture: "input_all_outdated.json"
     expected:
       type: "error"
-      errorEnum: "MWDI connection failed"
+      errorFixture: "error_failed_to_connect_mwdi.json"
+      errorSchemaFixture: "error_http.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: "MWDI invalid response"
+        fixture: "loadConfigFile.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # response is 200/ok, but body shape is invalid for validateMWDIResponse(...)
       - type: "return"
         value:
           ok: true
@@ -288,24 +255,12 @@ scenarios:
       errorFixture: "error_533_missing_mounts.json"
       errorSchemaFixture: "error_533.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
-        type: "return"
-        value: null
+        fixture: "loadConfigFile.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # response omits one requested mount-name, so service throws 533 before any live fetch
       - type: "return"
         value:
           ok: true
@@ -314,38 +269,24 @@ scenarios:
             - mount-name: "100250001"
               connection-status: "connected"
               last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
-            - mount-name: "100250002"
-              connection-status: "connected"
-              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
 
-  - id: "err532WhenSomeMountsUnconnected"
-    description: "Should throw code 532 with unconnected-mount-names when one or more requested devices are unconnected"
+  - id: "err532WhenSomeMountsUnconnectedInMetadata"
+    description: "Should throw code 532 with unconnected-mount-names when one or more requested devices are unconnected in MWDI metadata"
     inputFixture: "input_unconnected_mounts.json"
     expected:
       type: "error"
       errorFixture: "error_532_unconnected_mounts.json"
       errorSchemaFixture: "error_532.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+        fixture: "loadConfigFile.success.json"
+      - stepId: "p1LoadParameters.run"
         type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
-        type: "return"
-        value:
-          unconnectedMountNames:
-            - "100250002"
+        fixture: "p1LoadParameters.success.json"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # one mount is disconnected, so service throws 532 before any live fetch
       - type: "return"
         value:
           ok: true
@@ -358,50 +299,39 @@ scenarios:
               connection-status: "disconnected"
               last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
 
-  - id: "errWhenGetMwdiUrlThrows"
-    description: "Should throw wrapped error when getMwdiURL throws before any HTTP request is made"
+  - id: "errWhenLoadConfigFileThrows"
+    description: "Should throw 500 when loadConfigFile fails while resolving MWDI URL"
     inputFixture: "input_all_outdated.json"
     expected:
       type: "error"
       errorFixture: "error_config_not_accessible.json"
+      errorSchemaFixture: "error_http.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
+      - stepId: "config.loadConfigFile"
         type: "throw"
         error:
-          message: "config file not accessible"
+          message: "Error occurred while loading config file"
+    # No fetchMocks:
+    # loadConfigFile is used before the first outbound fetch, so execution fails earlier.
 
   - id: "errWhenP1LoadParametersFails"
-    description: "Should throw wrapped error when p1LoadParameters.run fails after metadata validation"
+    description: "Should throw 500 when p1LoadParameters.run fails after metadata validation"
     inputFixture: "input_all_outdated.json"
     expected:
       type: "error"
       errorFixture: "error_parameter_loading_failed.json"
+      errorSchemaFixture: "error_http.schema.json"
     mocks:
-      - stepId: "initiatePmDataUpdate.util.validateInput"
+      - stepId: "config.loadConfigFile"
         type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.getMwdiURL"
-        type: "return"
-        value: "http://mwdi:8080/v1/provide-device-status-metadata"
-      - stepId: "initiatePmDataUpdate.util.getCustomHeaders"
-        type: "return"
-        value:
-          Content-Type: "application/json"
-          accept: "application/json"
-      - stepId: "initiatePmDataUpdate.util.validateMWDIResponse"
-        type: "return"
-        value: null
-      - stepId: "initiatePmDataUpdate.util.validateConnectionStatus"
-        type: "return"
-        value: null
+        fixture: "loadConfigFile.success.json"
       - stepId: "p1LoadParameters.run"
         type: "throw"
         error:
           message: "parameter loading failed"
     fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      # metadata validation passes; then p1LoadParameters.run throws
       - type: "return"
         value:
           ok: true
@@ -413,3 +343,104 @@ scenarios:
             - mount-name: "100250002"
               connection-status: "connected"
               last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+  - id: "err500WhenLiveControlConstructFetchThrows"
+    description: "Should throw 500 when live control-construct fetch throws for an outdated mount"
+    inputFixture: "input_all_outdated.json"
+    expected:
+      type: "error"
+      errorFixture: "error_failed_control_construct_endpoint.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "loadConfigFile.success.json"
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+    fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+      # fetch #2 -> GET /core-model-1-4:network-control-domain=live/control-construct=100250001
+      # thrown network error while fetching live control-construct
+      - type: "throw"
+        error:
+          message: "connect ECONNREFUSED"
+
+  - id: "liveControlConstructReturnsResourceUnknownIsIgnored"
+    description: "Should return success when live control-construct returns 533, because the response status is not checked"
+    inputFixture: "input_all_outdated_single.json"
+    expected:
+      type: "success"
+      outputFixture: "output_live_control_construct_533_ignored.json"
+      outputSchemaFixture: "output_success_minimal.schema.json"
+    mocks:
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "loadConfigFile.success.json"
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+    fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+      # fetch #2 -> GET /core-model-1-4:network-control-domain=live/control-construct=100250001
+      # NOTE: comment reflects intended old behavior; current implementation may interpret non-ok responses
+      - type: "return"
+        value:
+          ok: false
+          status: 533
+          json:
+            code: 533
+            message: "Resource unknown. The resource for the connected device does not exist at the Controller"
+
+  - id: "liveControlConstructReturnsBadGatewayIsIgnored"
+    description: "Should return success when live control-construct returns 532, because the response status is not checked and only thrown fetch errors are ignored"
+    inputFixture: "input_all_outdated_single.json"
+    expected:
+      type: "success"
+      outputFixture: "output_live_control_construct_532_ignored.json"
+      outputSchemaFixture: "output_success_minimal.schema.json"
+    mocks:
+      - stepId: "config.loadConfigFile"
+        type: "return"
+        fixture: "loadConfigFile.success.json"
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+    fetchMocks:
+      # fetch #1 -> POST /v1/provide-device-status-metadata
+      - type: "return"
+        value:
+          ok: true
+          status: 200
+          json:
+            - mount-name: "100250001"
+              connection-status: "connected"
+              last-successful-complete-control-construct-update-time: "2026-08-01T10:00:00.000Z"
+
+      # fetch #2 -> GET /core-model-1-4:network-control-domain=live/control-construct=100250001
+      # NOTE: comment reflects intended old behavior; current implementation may interpret non-ok responses
+      - type: "return"
+        value:
+          ok: false
+          status: 532
+          json:
+            code: 532
+            message: "Bad Gateway. Upstream server not responding."

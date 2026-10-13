@@ -1,0 +1,322 @@
+#
+# Spec sources:
+# - server/service/IndividualServicesService.js
+#
+# Notes:
+# - Service under test: IndividualServicesService.provideDeviceDataStoreDump
+#
+
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/service/IndividualServicesService.js"
+    exportName: "provideDeviceDataStoreDump"
+
+processingSteps:
+  - stepId: "p1LoadParameters.run"
+    modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "functionTree.findFunctionNode"
+    modulePath: "../../server/utils/functionTree.js"
+    exportName: "findFunctionNode"
+    isAsync: false
+
+  - stepId: "p1ResolveEsAddress.run"
+    modulePath: "../../server/genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "p1ReadDataStoreDeviceData"
+    modulePath: "../../server/genericFunctions/p1ReadDataStoreDeviceData/P1ReadDataStoreDeviceData.js"
+    isAsync: true
+
+dependencies:
+  - name: "../../server/service/LoggingService.js"
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  - id: "okProvideDeviceDataStoreDump"
+    description: "Should return device PM data when input is valid and all dependent functions succeed"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "success"
+      outputFixture: "output_success.json"
+      outputSchemaFixture: "output_success.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        fixture: "p1ReadDataStoreDeviceData.success.json"
+
+  - id: "errMountNameNotProvidedWhenBodyMissing"
+    description: "Should throw 400 when body is missing"
+    inputFixture: "input_body_missing.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_not_provided.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+
+  - id: "errMountNameNotProvidedWhenFieldMissing"
+    description: "Should throw 400 when mount-name is missing"
+    inputFixture: "input_mount_name_missing.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_not_provided.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+
+  - id: "errMountNameNotProvidedWhenEmptyString"
+    description: "Should throw 400 when mount-name is empty string"
+    inputFixture: "input_mount_name_empty.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_not_provided.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+
+  - id: "errMountNameInvalidWhenWrongType"
+    description: "Should throw 400 when mount-name is not a string"
+    inputFixture: "input_mount_name_invalid_type.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_invalid.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks: []
+
+  - id: "errLoadParametersReturnsNoParameters"
+    description: "Should throw 500 when p1LoadParameters.run returns no parameters"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_failed_to_load_function_parameters.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.no_parameters.json"
+
+  - id: "errLoadParametersThrows"
+    description: "Should throw 500 when p1LoadParameters.run throws"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_p1LoadParameters_failed.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "throw"
+        error:
+          message: "parameter loading failed"
+
+  - id: "errFindFunctionNodeReturnsNull"
+    description: "Should throw 500 when p1ResolveEsAddress configuration cannot be found"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_missing_p1ResolveEsAddress_configuration.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        value: null
+
+  - id: "errResolveEsAddressThrows"
+    description: "Should throw 500 when p1ResolveEsAddress.run throws"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_resolve_es_address_failed.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "throw"
+        error:
+          message: "Failed to resolve ES address"
+
+  - id: "errReadReturnsMountNameNotFound"
+    description: "Should throw 404 when p1ReadDataStoreDeviceData returns mountName not found in DataStore"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_not_found.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        value: "mountName not found in DataStore"
+
+  - id: "errReadReturnsMountNameNotProvided"
+    description: "Should throw 400 when p1ReadDataStoreDeviceData returns mountName not provided"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_not_provided.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        value: "mountName not provided"
+
+  - id: "errReadReturnsMountNameInvalid"
+    description: "Should throw 400 when p1ReadDataStoreDeviceData returns mountName invalid"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_mountName_invalid.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        value: "mountName invalid"
+
+  - id: "errReadReturnsDataStoreUrlNotProvided"
+    description: "Should throw 400 when p1ReadDataStoreDeviceData returns dataStoreUrl not provided"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_dataStoreUrl_not_provided.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        value: "dataStoreUrl not provided"
+
+  - id: "errReadReturnsDataStoreUrlInvalid"
+    description: "Should throw 400 when p1ReadDataStoreDeviceData returns dataStoreUrl invalid"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_dataStoreUrl_invalid.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+
+
+  - id: "errReadReturnsUnexpectedString"
+    description: "Should throw 500 when p1ReadDataStoreDeviceData returns an unexpected string error"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_unexpected_read_error.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        value: "unexpected read error"
+
+  - id: "errReadThrowsUnexpectedError"
+    description: "Should throw 500 when p1ReadDataStoreDeviceData throws an unexpected error"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_read_threw_unexpected_error.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "throw"
+        error:
+          message: "Elasticsearch connection reset"
+
+  - id: "errReadReturnsInvalidSuccessShape"
+    description: "Should throw 500 when p1ReadDataStoreDeviceData returns an object without device-pm-data array"
+    inputFixture: "input_valid.json"
+    expected:
+      type: "error"
+      errorFixture: "error_invalid_p1ReadDataStoreDeviceData_result.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.success.json"
+      - stepId: "functionTree.findFunctionNode"
+        type: "return"
+        fixture: "findFunctionNode.success.json"
+      - stepId: "p1ResolveEsAddress.run"
+        type: "return"
+        fixture: "p1ResolveEsAddress.success.json"
+      - stepId: "p1ReadDataStoreDeviceData"
+        type: "return"
+        fixture: "p1ReadDataStoreDeviceData.invalid_success_shape.json"

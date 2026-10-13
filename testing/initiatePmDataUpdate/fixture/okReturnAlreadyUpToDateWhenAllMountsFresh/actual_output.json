@@ -1,6 +1,5 @@
 {
-  "status": "success",
-  "message": "PM data is already up to date",
+  "code": 200,
   "already-up-to-date-mount-names": [
     "100250001",
     "100250002"

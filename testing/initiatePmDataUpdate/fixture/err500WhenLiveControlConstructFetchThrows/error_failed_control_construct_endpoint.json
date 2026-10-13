@@ -1,0 +1,7 @@
+{
+  "code": 533,
+  "message": "Resource unknown. The resource for the connected device does not exist at the Controller",
+  "missing-mount-names":[
+        "100250002"
+     ]
+}

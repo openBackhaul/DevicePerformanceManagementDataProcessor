@@ -44,51 +44,57 @@
     "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_ENABLED",
     "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_INSTALLED"
   },
-  "mountName": "513250008",
+  "mountName": "513250007",
   "offsets": [
     {
       "function-name": "p2LoadRawCc",
       "offset": {
         "interface-offsets": [
           {
-            "uuid": "LTP-MWPS-TTP-RADIO-2A",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-ETC-TTP-LAN-1-XG-SFP",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2010-11-20T14:00:00+01:00"
           },
           {
-            "uuid": "LTP-ETC-TTP-LAN-3",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-ETC-TTP-LAN-2-XG-SFP",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
           },
           {
-            "uuid": "LTP-ETC-TTP-LAN-4",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-MWPS-TTP-ODU-B",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
           },
           {
-            "uuid": "LTP-ETC-TTP-LAN-1",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-MWPS-TTP-ODU-A",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
           },
           {
-            "uuid": "LTP-ETC-TTP-LAN-2",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-ETC-TTP-LAN-1-COMBO",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
           },
           {
-            "uuid": "LTP-MWPS-TTP-RADIO-1A",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-ETC-TTP-LAN-2-COMBO",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
           },
           {
-            "uuid": "LTP-ETC-TTP-PORT-A",
-            "most-recent-period-end-time": "2026-05-11T18:15:00.0+00:00",
-            "most-recent-period-end-time-24": "2026-05-10T00:00:00.0+00:00"
+            "uuid": "LTP-ETC-TTP-LAN-4-RJ45",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
+          },
+          {
+            "uuid": "LTP-ETC-TTP-ODU-A",
+            "most-recent-period-end-time": "2026-10-07T13:00:00.0+00:00",
+            "most-recent-period-end-time-24": "2026-10-06T00:00:00.0+00:00"
           }
         ]
       }
     }
   ]
+  
 
 }
 

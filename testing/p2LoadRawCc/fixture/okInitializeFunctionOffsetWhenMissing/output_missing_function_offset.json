@@ -4036,7 +4036,7 @@
           {
             "date": "2011/04/03",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2011/04/04",
@@ -4626,7 +4626,7 @@
           {
             "date": "2011/07/30",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2011/07/31",
@@ -5996,7 +5996,7 @@
           {
             "date": "2012/04/29",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2012/04/30",
@@ -6406,7 +6406,7 @@
           {
             "date": "2012/07/20",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2012/07/21",
@@ -6561,7 +6561,7 @@
           {
             "date": "2012/08/20",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2012/08/21",
@@ -6766,7 +6766,7 @@
           {
             "date": "2012/09/30",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2012/10/01",
@@ -7816,7 +7816,7 @@
           {
             "date": "2013/04/28",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2013/04/29",
@@ -8166,7 +8166,7 @@
           {
             "date": "2013/07/07",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2013/07/08",
@@ -8336,7 +8336,7 @@
           {
             "date": "2013/08/10",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2013/08/11",
@@ -8726,7 +8726,7 @@
           {
             "date": "2013/10/27",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2013/10/28",
@@ -9496,7 +9496,7 @@
           {
             "date": "2014/03/30",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2014/03/31",
@@ -9946,7 +9946,7 @@
           {
             "date": "2014/06/28",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2014/06/29",
@@ -10121,7 +10121,7 @@
           {
             "date": "2014/08/02",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2014/08/03",
@@ -10546,7 +10546,7 @@
           {
             "date": "2014/10/26",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2014/10/27",
@@ -11316,7 +11316,7 @@
           {
             "date": "2015/03/29",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2015/03/30",
@@ -11701,7 +11701,7 @@
           {
             "date": "2015/06/14",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2015/06/15",
@@ -11876,7 +11876,7 @@
           {
             "date": "2015/07/19",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2015/07/20",
@@ -12366,7 +12366,7 @@
           {
             "date": "2015/10/25",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2015/10/26",
@@ -13136,7 +13136,7 @@
           {
             "date": "2016/03/27",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2016/03/28",
@@ -13486,7 +13486,7 @@
           {
             "date": "2016/06/05",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2016/06/06",
@@ -13661,7 +13661,7 @@
           {
             "date": "2016/07/10",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2016/07/11",
@@ -14221,7 +14221,7 @@
           {
             "date": "2016/10/30",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2016/10/31",
@@ -14956,7 +14956,7 @@
           {
             "date": "2017/03/26",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2017/03/27",
@@ -15236,7 +15236,7 @@
           {
             "date": "2017/05/21",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2017/05/22",
@@ -15446,7 +15446,7 @@
           {
             "date": "2017/07/02",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2017/07/03",
@@ -16041,7 +16041,7 @@
           {
             "date": "2017/10/29",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2017/10/30",
@@ -16776,7 +16776,7 @@
           {
             "date": "2018/03/25",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2018/03/26",
@@ -17021,7 +17021,7 @@
           {
             "date": "2018/05/13",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2018/05/14",
@@ -17196,7 +17196,7 @@
           {
             "date": "2018/06/17",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2018/06/18",
@@ -18806,7 +18806,7 @@
           {
             "date": "2019/05/05",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2019/05/06",
@@ -18981,7 +18981,7 @@
           {
             "date": "2019/06/09",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2019/06/10",
@@ -20556,7 +20556,7 @@
           {
             "date": "2020/04/19",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2020/04/20",
@@ -20766,7 +20766,7 @@
           {
             "date": "2020/05/31",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2020/06/01",
@@ -22341,7 +22341,7 @@
           {
             "date": "2021/04/11",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2021/04/12",
@@ -22516,7 +22516,7 @@
           {
             "date": "2021/05/16",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2021/05/17",
@@ -24091,7 +24091,7 @@
           {
             "date": "2022/03/27",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2022/03/28",
@@ -24301,7 +24301,7 @@
           {
             "date": "2022/05/08",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2022/05/09",
@@ -25876,7 +25876,7 @@
           {
             "date": "2023/03/19",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2023/03/20",
@@ -26051,7 +26051,7 @@
           {
             "date": "2023/04/23",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2023/04/24",
@@ -27661,7 +27661,7 @@
           {
             "date": "2024/03/10",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2024/03/11",
@@ -27836,7 +27836,7 @@
           {
             "date": "2024/04/14",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2024/04/15",
@@ -29411,7 +29411,7 @@
           {
             "date": "2025/02/23",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2025/02/24",
@@ -29621,7 +29621,7 @@
           {
             "date": "2025/04/06",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2025/04/07",
@@ -31196,7 +31196,7 @@
           {
             "date": "2026/02/15",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2026/02/16",
@@ -31371,7 +31371,7 @@
           {
             "date": "2026/03/22",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2026/03/23",
@@ -31846,7 +31846,7 @@
           {
             "date": "2026/06/25",
             "received": 16,
-            "expected": 55
+            "expected": 51
           }
         ]
       },
@@ -32526,7 +32526,7 @@
           {
             "date": "2011/04/03",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2011/04/04",
@@ -33116,7 +33116,7 @@
           {
             "date": "2011/07/30",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2011/07/31",
@@ -34486,7 +34486,7 @@
           {
             "date": "2012/04/29",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2012/04/30",
@@ -34896,7 +34896,7 @@
           {
             "date": "2012/07/20",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2012/07/21",
@@ -35051,7 +35051,7 @@
           {
             "date": "2012/08/20",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2012/08/21",
@@ -35256,7 +35256,7 @@
           {
             "date": "2012/09/30",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2012/10/01",
@@ -36306,7 +36306,7 @@
           {
             "date": "2013/04/28",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2013/04/29",
@@ -36656,7 +36656,7 @@
           {
             "date": "2013/07/07",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2013/07/08",
@@ -36826,7 +36826,7 @@
           {
             "date": "2013/08/10",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2013/08/11",
@@ -37216,7 +37216,7 @@
           {
             "date": "2013/10/27",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2013/10/28",
@@ -37986,7 +37986,7 @@
           {
             "date": "2014/03/30",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2014/03/31",
@@ -38436,7 +38436,7 @@
           {
             "date": "2014/06/28",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2014/06/29",
@@ -38611,7 +38611,7 @@
           {
             "date": "2014/08/02",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2014/08/03",
@@ -39036,7 +39036,7 @@
           {
             "date": "2014/10/26",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2014/10/27",
@@ -39806,7 +39806,7 @@
           {
             "date": "2015/03/29",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2015/03/30",
@@ -40191,7 +40191,7 @@
           {
             "date": "2015/06/14",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2015/06/15",
@@ -40366,7 +40366,7 @@
           {
             "date": "2015/07/19",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2015/07/20",
@@ -40856,7 +40856,7 @@
           {
             "date": "2015/10/25",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2015/10/26",
@@ -41626,7 +41626,7 @@
           {
             "date": "2016/03/27",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2016/03/28",
@@ -41976,7 +41976,7 @@
           {
             "date": "2016/06/05",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2016/06/06",
@@ -42151,7 +42151,7 @@
           {
             "date": "2016/07/10",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2016/07/11",
@@ -42711,7 +42711,7 @@
           {
             "date": "2016/10/30",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2016/10/31",
@@ -43446,7 +43446,7 @@
           {
             "date": "2017/03/26",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2017/03/27",
@@ -43726,7 +43726,7 @@
           {
             "date": "2017/05/21",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2017/05/22",
@@ -43936,7 +43936,7 @@
           {
             "date": "2017/07/02",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2017/07/03",
@@ -44531,7 +44531,7 @@
           {
             "date": "2017/10/29",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2017/10/30",
@@ -45266,7 +45266,7 @@
           {
             "date": "2018/03/25",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2018/03/26",
@@ -45511,7 +45511,7 @@
           {
             "date": "2018/05/13",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2018/05/14",
@@ -45686,7 +45686,7 @@
           {
             "date": "2018/06/17",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2018/06/18",
@@ -47296,7 +47296,7 @@
           {
             "date": "2019/05/05",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2019/05/06",
@@ -47471,7 +47471,7 @@
           {
             "date": "2019/06/09",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2019/06/10",
@@ -49046,7 +49046,7 @@
           {
             "date": "2020/04/19",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2020/04/20",
@@ -49256,7 +49256,7 @@
           {
             "date": "2020/05/31",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2020/06/01",
@@ -50831,7 +50831,7 @@
           {
             "date": "2021/04/11",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2021/04/12",
@@ -51006,7 +51006,7 @@
           {
             "date": "2021/05/16",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2021/05/17",
@@ -52581,7 +52581,7 @@
           {
             "date": "2022/03/27",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2022/03/28",
@@ -52791,7 +52791,7 @@
           {
             "date": "2022/05/08",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2022/05/09",
@@ -54366,7 +54366,7 @@
           {
             "date": "2023/03/19",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2023/03/20",
@@ -54541,7 +54541,7 @@
           {
             "date": "2023/04/23",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2023/04/24",
@@ -56151,7 +56151,7 @@
           {
             "date": "2024/03/10",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2024/03/11",
@@ -56326,7 +56326,7 @@
           {
             "date": "2024/04/14",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2024/04/15",
@@ -57901,7 +57901,7 @@
           {
             "date": "2025/02/23",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2025/02/24",
@@ -58111,7 +58111,7 @@
           {
             "date": "2025/04/06",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2025/04/07",
@@ -59686,7 +59686,7 @@
           {
             "date": "2026/02/15",
             "received": 0,
-            "expected": 100
+            "expected": 96
           },
           {
             "date": "2026/02/16",
@@ -59861,7 +59861,7 @@
           {
             "date": "2026/03/22",
             "received": 0,
-            "expected": 92
+            "expected": 96
           },
           {
             "date": "2026/03/23",
@@ -60336,7 +60336,7 @@
           {
             "date": "2026/06/25",
             "received": 16,
-            "expected": 55
+            "expected": 51
           }
         ]
       }

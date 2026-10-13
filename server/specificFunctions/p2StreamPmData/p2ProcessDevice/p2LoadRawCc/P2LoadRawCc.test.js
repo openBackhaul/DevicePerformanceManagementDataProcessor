@@ -16,16 +16,12 @@ jest.mock(
 
 jest.mock(
   "../../../../genericFunctions/p2DiscardIrrelevantPmRecords/P2DiscardIrrelevantPmRecords",
-  () => ({
-    run: jest.fn()
-  })
+  () => jest.fn()
 );
 
 jest.mock(
   "../../../../genericFunctions/p1CalculateInterfacePmDataQuality/P1CalculateInterfacePmDataQuality",
-  () => ({
-    run: jest.fn()
-  })
+  () => jest.fn()
 );
 
 const { getParamFromFunction } = require("../../../../utils/functionTree");
@@ -103,7 +99,7 @@ describe("p2LoadRawCc", () => {
       }
     });
 
-    p2DiscardIrrelevantPmRecords.run.mockResolvedValue({
+    p2DiscardIrrelevantPmRecords.mockResolvedValue({
       "filtered-historical-performance-data-list": [
         {
           timestamp: "2024-01-01T00:15:00Z"
@@ -119,7 +115,7 @@ describe("p2LoadRawCc", () => {
       ]
     });
 
-    p1CalculateInterfacePmDataQuality.run.mockResolvedValue({
+    p1CalculateInterfacePmDataQuality.mockResolvedValue({
       "interface-pm-data-quality": {
         uuid: "ltp-air-1",
         quality: [
@@ -405,7 +401,7 @@ describe("p2LoadRawCc", () => {
       const result = await run(baseRequest);
 
       expect(
-        p2DiscardIrrelevantPmRecords.run
+        p2DiscardIrrelevantPmRecords
       ).toHaveBeenCalledWith(
         expect.objectContaining({
           "former-most-recent-period-end-time":
@@ -526,7 +522,7 @@ describe("p2LoadRawCc", () => {
         }
       });
 
-      p2DiscardIrrelevantPmRecords.run.mockResolvedValue({
+      p2DiscardIrrelevantPmRecords.mockResolvedValue({
         "filtered-historical-performance-data-list": [
           {
             timestamp: "2024-03-01T00:15:00Z"
@@ -544,7 +540,7 @@ describe("p2LoadRawCc", () => {
         ]
       });
 
-      p1CalculateInterfacePmDataQuality.run.mockResolvedValue({
+      p1CalculateInterfacePmDataQuality.mockResolvedValue({
         "interface-pm-data-quality": {
           uuid: "ltp-ec-1",
           quality: []
@@ -565,7 +561,7 @@ describe("p2LoadRawCc", () => {
 
   describe("pm data quality failure", () => {
     it("returns empty interface output and leaves the offset unchanged when quality data is unusable", async () => {
-      p1CalculateInterfacePmDataQuality.run.mockResolvedValue(
+      p1CalculateInterfacePmDataQuality.mockResolvedValue(
         "UUID_NOT_PROVIDED"
       );
 
@@ -615,7 +611,7 @@ describe("p2LoadRawCc", () => {
         }
       });
 
-      p1CalculateInterfacePmDataQuality.run
+      p1CalculateInterfacePmDataQuality
         .mockResolvedValueOnce("UUID_NOT_PROVIDED")
         .mockResolvedValueOnce({
           "interface-pm-data-quality": {

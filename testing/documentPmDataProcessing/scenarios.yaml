@@ -1,0 +1,161 @@
+#
+# Spec sources:
+# - spec/Services/documentPmDataProcessing/1.0.0/variables.yaml
+# - spec/Services/documentPmDataProcessing/1.0.0/documentPmDataProcessing.plantuml
+# - server/service/IndividualServicesService.js
+#
+
+
+module:
+  functionUnderTest:
+    modulePath: "../../server/service/IndividualServicesService.js"
+    exportName: "documentPmDataProcessing"
+
+processingSteps:
+  - stepId: "p1LoadParameters.run"
+    modulePath: "../../server/genericFunctions/p1LoadParameters/P1LoadParameters.js"
+    exportName: "run"
+    isAsync: true
+
+  - stepId: "functionTree.getParamFromFunction"
+    modulePath: "../../server/utils/functionTree.js"
+    exportName: "getParamFromFunction"
+    isAsync: false
+
+  - stepId: "p1DocumentFunction"
+    modulePath: "../../server/genericFunctions/p1DocumentFunction/P1DocumentFunction.js"
+    isAsync: true
+
+dependencies:
+  - name: "../../server/service/LoggingService.js"
+  - name: "pino"
+  - name: "@confluentinc/kafka-javascript"
+
+errorMapping: {}
+
+scenarios:
+  - id: "okReturnsDocumentation"
+    description: "Should return documentation when own parameters are loaded, target function name is resolved, target parameters are loaded, and p1DocumentFunction succeeds"
+    input: {}
+    expected:
+      type: "success"
+      outputFixture: "output_documentation.json"
+      outputSchemaFixture: "output_documentation.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "returnSequence"
+        fixtures:
+          - "p1LoadParameters.own.success.json"
+          - "p1LoadParameters.target.success.json"
+  
+  - id: "okReturnsUnexpectedObjectAsIs"
+    description: "Should return the object as-is when p1DocumentFunction returns a non-string object because the implementation does not validate the documentation type"
+    input: {}
+    expected:
+      type: "success"
+      outputFixture: "output_unexpected_object.json"
+      outputSchemaFixture: "output_unexpected_object.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "returnSequence"
+        fixtures:
+          - "p1LoadParameters.own.success.json"
+          - "p1LoadParameters.target.success.json"
+      - stepId: "p1DocumentFunction"
+        type: "return"
+        value:
+          documentation: "unexpected wrapper"
+
+  - id: "okReturnsNullAsIs"
+    description: "Should return null because the implementation does not validate the p1DocumentFunction return value"
+    input: {}
+    expected:
+      type: "success"
+      outputFixture: "output_null.json"
+      outputSchemaFixture: "output_nullable_documentation.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "returnSequence"
+        fixtures:
+          - "p1LoadParameters.own.success.json"
+          - "p1LoadParameters.target.success.json"
+      - stepId: "p1DocumentFunction"
+        type: "return"
+        value: null
+
+
+
+  - id: "errOwnParametersLoadThrows"
+    description: "Should throw 500 when loading own parameters fails"
+    input: {}
+    expected:
+      type: "error"
+      errorFixture: "error_own_parameters_load_failed.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "throw"
+        error:
+          message: "Failed to load documentPmDataProcessing parameters"
+
+  - id: "errNameOfToBeDocumentedFunctionMissing"
+    description: "Should throw 500 when nameOfToBeDocumentedFunction cannot be resolved from own parameters"
+    input: {}
+    expected:
+      type: "error"
+      errorFixture: "error_missing_name_of_to_be_documented_function.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.own.success.json"
+      - stepId: "functionTree.getParamFromFunction"
+        type: "return"
+        value: null
+
+  - id: "errNameOfToBeDocumentedFunctionEmptyString"
+    description: "Should throw 500 when nameOfToBeDocumentedFunction resolves to an empty string"
+    input: {}
+    expected:
+      type: "error"
+      errorFixture: "error_missing_name_of_to_be_documented_function.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "return"
+        fixture: "p1LoadParameters.own.success.json"
+      - stepId: "functionTree.getParamFromFunction"
+        type: "return"
+        value: ""
+
+  - id: "errDocumentedFunctionParametersLoadThrows"
+    description: "Should throw 500 when loading parameters of the function to be documented fails on the second p1LoadParameters.run call"
+    input: {}
+    expected:
+      type: "error"
+      errorFixture: "error_documented_function_parameters_load_failed.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "returnSequence"
+        fixtures:
+          - "p1LoadParameters.own.success.json"
+        repeatLast: false
+
+  - id: "errDocumentFunctionThrows"
+    description: "Should throw 500 when p1DocumentFunction throws while generating documentation"
+    input: {}
+    expected:
+      type: "error"
+      errorFixture: "error_document_function_failed.json"
+      errorSchemaFixture: "error_http.schema.json"
+    mocks:
+      - stepId: "p1LoadParameters.run"
+        type: "returnSequence"
+        fixtures:
+          - "p1LoadParameters.own.success.json"
+          - "p1LoadParameters.target.success.json"
+      - stepId: "p1DocumentFunction"
+        type: "throw"
+        error:
+          message: "Failed to create documentation"

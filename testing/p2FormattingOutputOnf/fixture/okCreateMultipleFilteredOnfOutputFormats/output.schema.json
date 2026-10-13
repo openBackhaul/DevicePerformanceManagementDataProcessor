@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "required": [
+    "onf-output-format"
+  ],
+  "properties": {
+    "onf-output-format": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "format-name",
+          "output-format"
+        ],
+        "properties": {
+          "format-name": {
+            "type": "string",
+            "description": "Name of the output format"
+          },
+          "output-format": {
+            "type": "object",
+            "description": "Filtered ONF output format"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

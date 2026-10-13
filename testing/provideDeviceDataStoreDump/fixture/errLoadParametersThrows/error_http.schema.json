@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["code", "message"],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "const": 500
+    },
+    "message": {
+      "type": "string",
+      "const": "parameter loading failed"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,9 @@
+{
+  "function-name": "p1ResolveEsAddress",
+  "parameter-list": [
+    {
+      "parameter": "dpmdp-1-1-0-string-p-064",
+      "owner": "platform"
+    }
+  ]
+}

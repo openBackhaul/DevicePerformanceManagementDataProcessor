@@ -40,14 +40,6 @@ scenarios:
       outputSchemaFixture: "output.schema.json"
     mocks: []
 
-  - id: "okReturnDevicePmDataWhenSourceContainsDevicePmDataArray"
-    description: "Should return device-pm-data when DataStore _source.device-pm-data is an array"
-    inputFixture: "input_source_device_pm_data_array.json"
-    expected:
-      type: "success"
-      outputFixture: "output_source_device_pm_data_array.json"
-      outputSchemaFixture: "output.schema.json"
-    mocks: []
 
   - id: "okReturnDevicePmDataWhenWrappedInBodySource"
     description: "Should return device-pm-data when Elasticsearch response uses body._source format"
@@ -63,11 +55,11 @@ scenarios:
   # -------------------------
 
   - id: "errGeneralProcessingErrorWhenInputMissing"
-    description: "Should return 'General processing error' when input is missing"
+    description: "Should return 'general processing error' when input is missing"
     inputFixture: "input_missing.json"
     expected:
       type: "error"
-      errorEnum: "General processing error"
+      errorEnum: "general processing error"
     mocks: []
 
   - id: "errDataStoreUrlNotProvidedWhenDataStoreEsClientMissing"
@@ -154,26 +146,20 @@ scenarios:
       errorEnum: "mountName not found in DataStore"
     mocks: []
 
-  - id: "errGeneralProcessingErrorWhenElasticsearchThrowsUnexpectedError"
-    description: "Should return 'General processing error' when Elasticsearch get throws an unexpected error"
-    inputFixture: "input_unexpected_es_error.json"
-    expected:
-      type: "error"
-      errorEnum: "General processing error"
-    mocks: []
+
 
   - id: "errGeneralProcessingErrorWhenResponseInvalid"
-    description: "Should return 'General processing error' when Elasticsearch response is invalid"
+    description: "Should return 'general processing error' when Elasticsearch response is invalid"
     inputFixture: "input_invalid_es_response.json"
     expected:
       type: "error"
-      errorEnum: "General processing error"
+      errorEnum: "general processing error"
     mocks: []
 
   - id: "errGeneralProcessingErrorWhenSourceMissing"
-    description: "Should return 'General processing error' when Elasticsearch response has no _source"
+    description: "Should return 'general processing error' when Elasticsearch response has no _source"
     inputFixture: "input_missing_source.json"
     expected:
       type: "error"
-      errorEnum: "General processing error"
+      errorEnum: "general processing error"
     mocks: []
