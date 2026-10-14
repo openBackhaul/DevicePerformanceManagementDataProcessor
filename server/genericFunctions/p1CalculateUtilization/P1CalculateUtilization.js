@@ -22,58 +22,95 @@ const INT64_MAX = 9223372036854775807n;
 const DATE_AND_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
 
 
-function validateResultCC(input) {
-  try {
-    if (input[LTP] != null && Array.isArray(input[LTP])) {
-      input[LTP].forEach(ltpObj => {
-        if (Object.hasOwn(ltpObj, 'uuid') &&
-          Object.hasOwn(ltpObj, 'layer-protocol')) {
 
-          if (Array.isArray(ltpObj['layer-protocol'])) {
-            const lp = ltpObj['layer-protocol'][0];
-            if (lp != null && lp['layer-protocol-name'] == "air-interface-2-0:LAYER_PROTOCOL_NAME_TYPE_AIR_LAYER") {
-              ltpObj['layer-protocol'].forEach(lpObj => {
-                if (Object.hasOwn(lpObj, 'local-id') &&
-                  Object.hasOwn(lpObj, 'layer-protocol-name') &&
-                  Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')) {
-                  const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
-                  if (Object.hasOwn(aiPac, 'air-interface-historical-performances') && aiPac['air-interface-historical-performances']['number-of-historical-performance-sets'] == 0) {
-                    // No data to check
-                  } else if (Object.hasOwn(aiPac, 'air-interface-historical-performances') &&
-                    Object.hasOwn(aiPac['air-interface-historical-performances'], 'historical-performance-data-list') &&
-                    Array.isArray(aiPac['air-interface-historical-performances']['historical-performance-data-list'])) {
-                    const hPerf = aiPac['air-interface-historical-performances']['historical-performance-data-list'];
-                    hPerf.forEach(perfData => {
-                      if (Object.hasOwn(perfData, 'granularity-period') &&
-                        Object.hasOwn(perfData, 'period-end-time') &&
-                        Object.hasOwn(perfData, 'performance-data') && Object.hasOwn(perfData['performance-data'], 'interval-capacity')) {
-                        // Validation passed
-                      } else {
-                        throw new Error(ERRORS.RESULT_CC_INVALID);
-                      }
-                    });
-                  } else {
-                    // No dataset available
-                    // throw new Error(ERRORS.RESULT_CC_INVALID);
-                  }
-                } else {
-                  throw new Error(ERRORS.RESULT_CC_INVALID);
-                }
-              });
-            }
-            // else // Do nothing
-          } else {
-            throw new Error(ERRORS.RESULT_CC_INVALID);
-          }
-        } else {
-          throw new Error(ERRORS.RESULT_CC_INVALID);
-        }
-      });
-    } else {
-      throw new Error(ERRORS.RESULT_CC_INVALID);
+function validateResultCC(input) {
+  if (
+    input == null ||
+    typeof input !== 'object' ||
+    Array.isArray(input)
+  ) {
+    return false;
+  }
+  if (input[LTP] == null || !Array.isArray(input[LTP])) {
+    return false;
+  }
+
+  for (const ltpObj of input[LTP]) {
+    if (
+      ltpObj == null ||
+      typeof ltpObj !== 'object' ||
+      !Object.hasOwn(ltpObj, 'uuid') ||
+      !Object.hasOwn(ltpObj, 'layer-protocol') ||
+      !Array.isArray(ltpObj['layer-protocol'])
+    ) {
+      return false;
     }
-  } catch (error) {
-    return false
+
+    for (const lpObj of ltpObj['layer-protocol']) {
+      // Ignore non-AirInterface layers.
+      if (lpObj?.['layer-protocol-name'] !== AIR_LAYER) {
+        continue;
+      }
+
+      if (
+        !Object.hasOwn(lpObj, 'local-id') ||
+        !Object.hasOwn(lpObj, 'layer-protocol-name') ||
+        !Object.hasOwn(lpObj, 'air-interface-2-0:air-interface-pac')
+      ) {
+        return false;
+      }
+
+      const aiPac = lpObj['air-interface-2-0:air-interface-pac'];
+
+      if (
+        aiPac == null ||
+        typeof aiPac !== 'object' ||
+        Array.isArray(aiPac)
+      ) {
+        return false;
+      }
+
+      const historicalPerformances =
+        aiPac['air-interface-historical-performances'];
+
+      if (historicalPerformances === undefined) {
+        continue;
+      }
+
+      if (
+        historicalPerformances === null ||
+        typeof historicalPerformances !== 'object' ||
+        Array.isArray(historicalPerformances)
+      ) {
+        return false;
+      }
+
+      const hPerf =
+        historicalPerformances['historical-performance-data-list'];
+
+      if (hPerf === undefined) {
+        continue;
+      }
+
+      if (!Array.isArray(hPerf)) {
+        return false;
+      }
+
+      for (const perfData of hPerf) {
+        if (
+          perfData == null ||
+          typeof perfData !== 'object' ||
+          Array.isArray(perfData) ||
+          typeof perfData['granularity-period'] !== 'string' ||
+          typeof perfData['period-end-time'] !== 'string' ||
+          perfData['performance-data'] == null ||
+          typeof perfData['performance-data'] !== 'object' ||
+          Array.isArray(perfData['performance-data'])
+        ) {
+          return false;
+        }
+      }
+    }
   }
 
   return true;
@@ -365,7 +402,7 @@ const p1CalculateUtilization = (input) => {
     // Omitted/null groups use topology lookup. A supplied malformed group
     // must fail rather than silently falling back to a different topology.
     if (aggGroup != null && (typeof aggGroup !== 'object' || Array.isArray(aggGroup) ||
-        !isValidLtpList(aggGroup[PSYSERVERLTP]))) {
+      !isValidLtpList(aggGroup[PSYSERVERLTP]))) {
       return ERRORS.AGG_GROUP_INVALID;
     }
 
