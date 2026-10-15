@@ -299,7 +299,8 @@ describe("Redis Kafka daily metrics", () => {
           "dpmdp:stream:kafka-outbound-success",
           "dpmdp:stream:kafka-outbound-dead-letter",
           "dpmdp:stream:device-processing-timing",
-          "dpmdp:stream:kafka-outbound-timing"
+          "dpmdp:stream:kafka-outbound-timing",
+          "dpmdp:set:performance-timing-written"
         ],
         arguments: expect.arrayContaining([
           "Europe/Berlin",
@@ -324,8 +325,28 @@ describe("Redis Kafka daily metrics", () => {
     const [script, args] = mockRedis.eval.mock.calls[0];
     expect(script).toContain("record.date == ARGV[1]");
     expect(script).toContain("'MAXLEN', '~'");
-    expect(script).toContain("'UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5]");
+    const dailyReset = "'UNLINK', KEYS[2], KEYS[3], KEYS[4], KEYS[5], KEYS[6]";
+    expect(script).toContain(dailyReset);
+    // Date rollover cleanup must occur before current-day timing entries are
+    // written, allowing the first device or Kafka completion to recreate its
+    // timing stream immediately after the reset.
+    expect(script.indexOf(dailyReset)).toBeLessThan(script.indexOf("redis.call('XADD', stream"));
     expect(args.arguments[7]).toBe("200000");
+    expect(args.arguments[8]).toBe("0");
     expect(JSON.parse(args.arguments[6])[0].date).toBe("2026-09-09");
+  });
+
+  test("enables idempotent timing writes and resets their daily dedup set", async () => {
+    mockRedis.eval.mockResolvedValue(1);
+    await queue.recordPerformanceTimings([{ timingId: "timing-1", stage: "device",
+      completedAt: "2026-09-09T10:00:00.000Z", fields: { mountName: "cc" } }],
+    200000, {}, { deduplicate: true });
+
+    const [script, args] = mockRedis.eval.mock.calls[0];
+    expect(args.keys).toContain("dpmdp:set:performance-timing-written");
+    expect(args.arguments[8]).toBe("1");
+    expect(script).toContain("redis.call('SADD', KEYS[6], record.timingId)");
+    expect(script).toContain("A duplicate has already been persisted");
+    expect(script).toContain("KEYS[5], KEYS[6]");
   });
 });

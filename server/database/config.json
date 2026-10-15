@@ -579,7 +579,7 @@
               "string-purpose": "?"
             },
             "string-profile-configuration": {
-              "string-value": "lastUpdated"
+              "string-value": "last-complete-control-construct-update-time"
             }
           }
         },
@@ -717,7 +717,12 @@
             "function-profile-capability": {
               "function-name": "p1FieldsFilter",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
-              "parameter-list": [],
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-1-0-string-p-181",
+                  "owner": "platform"
+                }
+              ],
               "sub-function-list": []
             },
             "function-profile-configuration": {
@@ -2029,7 +2034,7 @@
               ]
             },
             "string-profile-configuration": {
-              "string-value": "deactivated"
+              "string-value": "activated"
             }
           }
         },
@@ -2810,7 +2815,7 @@
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                "operation-key": "n.a."
+                "operation-key": "Operation key not yet provided."
               }
             }
           }
@@ -2833,7 +2838,7 @@
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                "operation-key": "n.a."
+                "operation-key": "Operation key not yet provided."
               }
             }
           }
@@ -2856,7 +2861,7 @@
               },
               "operation-server-interface-configuration": {
                 "life-cycle-state": "operation-server-interface-1-0:LIFE_CYCLE_STATE_TYPE_EXPERIMENTAL",
-                "operation-key": "n.a."
+                "operation-key": "Operation key not yet provided."
               }
             }
           }
@@ -2966,7 +2971,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "7"
+                "index-alias": "mwdi"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -2992,7 +2997,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "18"
+                "index-alias": "mwdireplica"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -3018,7 +3023,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "20"
+                "index-alias": "dpmdplogging"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -3044,7 +3049,7 @@
                 "auth": {
                   "api-key": "API key not yet defined."
                 },
-                "index-alias": "22"
+                "index-alias": "dpmdpdatastore"
               },
               "elasticsearch-client-interface-status": {
                 "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
@@ -3098,7 +3103,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 3015
+                "remote-port": 9200
               }
             }
           }
@@ -3117,7 +3122,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.apt",
+                "topic-name": "raw.mw-sdnc-dpmdp.Apt",
                 "type": "provider"
               }
             }
@@ -3137,7 +3142,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.mycom",
+                "topic-name": "raw.mw-sdnc-dpmdp.Mycom",
                 "type": "provider"
               }
             }
@@ -3157,7 +3162,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.netexplorer",
+                "topic-name": "raw.mw-sdnc-dpmdp.Netexplorer",
                 "type": "provider"
               }
             }
@@ -3177,7 +3182,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.iveritas",
+                "topic-name": "raw.mw-sdnc-dpmdp.Iveritas",
                 "type": "provider"
               }
             }
@@ -3197,7 +3202,7 @@
             "layer-protocol-name": "kafka-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_KAFKA_LAYER",
             "kafka-client-interface-1-0:kafka-client-interface-pac": {
               "kafka-client-interface-configuration": {
-                "topic-name": "raw.mw-sdnc-dpmdp.dataquality",
+                "topic-name": "raw.mw-sdnc-dpmdp.Dataqualityprovider",
                 "type": "provider"
               }
             }
@@ -3249,7 +3254,7 @@
                     "ipv-4-address": "127.0.0.1"
                   }
                 },
-                "remote-port": 3017
+                "remote-port": 9093
               }
             }
           }

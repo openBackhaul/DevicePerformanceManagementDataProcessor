@@ -65,12 +65,12 @@ async function p1LoadOffsetsAndStatusData(input) {
 }
 
 /**
- * Retrieves the processing-data document from Elasticsearch.
+ * Retrieves processing-data from the device document in Elasticsearch.
  *
  * Elasticsearch mapping:
  *
  * index: data-store
- * id: device=<mountName>/processing-data
+ * id: <mountName>
  *
  * @param {object} dataStoreConfig
  * @param {string} mountName
@@ -79,7 +79,7 @@ async function p1LoadOffsetsAndStatusData(input) {
 async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
   const elasticsearchClient = dataStoreConfig.client;
   const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
-  const documentId = `device=${mountName}/processing-data`;
+  const documentId = mountName;
 
   let client;
   if (elasticsearchClient != undefined) { // For testing purpose
@@ -111,8 +111,8 @@ async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
    *
    * {
    *   _index: 'data-store',
-   *   _id: 'device=100250001/processing-data',
-   *   _source: {...}
+   *   _id: '100250001',
+   *   _source: { 'mount-name': '100250001', 'processing-data': {...} }
    * }
    *
    * Some wrapped clients or older versions return:
@@ -136,7 +136,17 @@ async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
     throw new Error('Processing data not available');
   }
 
-  return source;
+  const processingData = source['processing-data'];
+
+  if (processingData === undefined || processingData === null) {
+    return {};
+  }
+
+  if (typeof processingData !== 'object' || Array.isArray(processingData)) {
+    throw new Error('Processing data not available');
+  }
+
+  return processingData;
 }
 
 /**
