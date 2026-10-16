@@ -2,7 +2,7 @@
   "data-store-es-client": {
     "url": "http://localhost:9200",
     "index": "data-store",
-    "client": "invalid"
+    "client": 123
   },
   "mount-name": "100250001"
 }

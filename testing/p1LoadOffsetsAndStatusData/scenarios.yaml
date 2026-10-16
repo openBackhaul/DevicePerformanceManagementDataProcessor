@@ -123,11 +123,11 @@ scenarios:
   # -------------------------
 
   - id: "errElasticSearchReadErrorWhenClientInvalid"
-    description: "Should return 'ElasticSearch read error' when data-store-es-client.client is invalid"
+    description: "Should return 'general processing error' when data-store-es-client.client is invalid"
     inputFixture: "input_invalid_es_client.json"
     expected:
       type: "error"
-      errorEnum: "ElasticSearch read error"
+      errorEnum: "general processing error"
     mocks: []
 
   - id: "errElasticSearchReadErrorWhenDataStoreReadFails"
@@ -139,17 +139,17 @@ scenarios:
     mocks: []
 
   - id: "errGeneralProcessingErrorWhenResponseInvalid"
-    description: "Should return 'General processing error' when Elasticsearch response is invalid"
+    description: "Should return 'general processing error' when Elasticsearch response is invalid"
     inputFixture: "input_invalid_es_response.json"
     expected:
       type: "error"
-      errorEnum: "General processing error"
+      errorEnum: "general processing error"
     mocks: []
 
   - id: "errGeneralProcessingErrorWhenSourceMissing"
-    description: "Should return 'General processing error' when Elasticsearch response has no _source"
+    description: "Should return 'general processing error' when Elasticsearch response has no _source"
     inputFixture: "input_missing_source.json"
     expected:
       type: "error"
-      errorEnum: "General processing error"
+      errorEnum: "general processing error"
     mocks: []

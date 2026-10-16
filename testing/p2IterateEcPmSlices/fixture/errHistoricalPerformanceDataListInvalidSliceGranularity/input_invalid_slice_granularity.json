@@ -14,7 +14,7 @@
   },
   "historical-performance-data-list": [
     {
-      "granularity-period": "invalid",
+      "granularity-period": 123,
       "period-end-time": "2026-04-01T06:00:00Z",
       "suspect-interval-flag": false,
       "performance-data": {

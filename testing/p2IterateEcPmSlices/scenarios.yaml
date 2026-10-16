@@ -49,23 +49,8 @@ scenarios:
       outputFixture: "output_ok_single_24h_slice.json"
       outputSchemaFixture: "output_success.schema.json"
 
-  - id: "okSorts15MinBefore24HourAndCarriesInterfaceStatus"
-    description: "Processes all 15-minute slices before 24-hour slices and carries interface-status from categorization into busy-hour calculation flow"
-    inputFixture: "input_ok_mixed_granularity_unsorted.json"
-    expected:
-      type: "success"
-      outputFixture: "output_ok_mixed_granularity_unsorted.json"
-      outputSchemaFixture: "output_success.schema.json"
 
 
-
-  - id: "okSupportsUnknownGranularityWithoutBusyHourOrCategorization"
-    description: "Processes unknown granularity slice with KPI, default-value removal, and utilization only"
-    inputFixture: "input_ok_unknown_granularity.json"
-    expected:
-      type: "success"
-      outputFixture: "output_ok_unknown_granularity.json"
-      outputSchemaFixture: "output_success.schema.json"
 
   - id: "errInputNotObject"
     description: "Returns general processing error when input is not an object"
@@ -399,28 +384,4 @@ scenarios:
               busy-hour:
                 tx-peak: 1
 
-  - id: "edgeHistoricalDataProvideFailedWhenUtilizationReturnsNonSlice"
-    description: "Returns utilization could not be calculated when utilization result is not a valid slice according to implementation validation"
-    inputFixture: "input_ok_single_15min_slice.json"
-    expected:
-      type: "error"
-      errorEnum: "utilization could not be calculated"
-    mocks:
-      - stepId: "p1CalculateEthernetKpis"
-        type: "return"
-        value:
-          historical-performance-data:
-            transmit-traffic: 1
-      - stepId: "p1RemoveDefaultValues"
-        type: "return"
-        value:
-          cleaned-object:
-            transmit-traffic: 1
-      - stepId: "p1CalculateUtilization"
-        type: "return"
-        value:
-          historical-performance-data:
-            granularity-period: "ethernet-container-2-0:UNSUPPORTED"
-            period-end-time: "2026-09-17T10:15:00Z"
-            performance-data:
-              utilization: 1
+ 

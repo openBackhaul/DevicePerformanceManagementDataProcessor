@@ -9,6 +9,7 @@
           "isAsync": true,
           "value": {
             "_source": {
+               "processing-data":{
               "offsets": [
                 {
                   "function-name": "p2LoadRawCc",
@@ -29,6 +30,7 @@
                   "status": "ok"
                 }
               ]
+              }
             }
           }
         }

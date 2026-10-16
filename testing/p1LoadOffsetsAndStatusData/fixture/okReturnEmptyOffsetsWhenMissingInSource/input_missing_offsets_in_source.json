@@ -9,12 +9,14 @@
           "isAsync": true,
           "value": {
             "_source": {
+               "processing-data":{
               "status-data": [
                 {
                   "function-name": "p2ProcessDevice",
                   "status": "ok"
                 }
               ]
+              }
             }
           }
         }
