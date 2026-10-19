@@ -16,7 +16,39 @@ function numberSetting(service, name, fallback, minimum = 0) {
   if (!Number.isSafeInteger(value) || value < minimum) throw new Error(`Invalid ${name}`);
   return value;
 }
-async function run({ mwdiEsClient, runtimeConfig = {}, parameters, logger }) {
+async function run(request) {
+  const { loggingEsClient, logger } = request;
+  const cycle = { jobName: 'mwdi-direct-query-job', mode: 'direct' };
+  const started = Date.now();
+  let response;
+  let failure;
+  try {
+    response = await discover(request, cycle);
+  } catch (error) {
+    failure = error;
+  }
+  // Logging is best effort and must not change discovery/checkpoint behavior.
+  try {
+    const client = await onfAdapter.getEsClient(false, loggingEsClient.uuid, loggingEsClient, logger);
+    await client.index({
+      index: loggingEsClient['index-alias'],
+      body: {
+        ...cycle,
+        status: failure ? 'FAILED' : 'SUCCESS',
+        ...(failure ? { error: String(failure.message || failure) } : { lastDirectMwdiTime: response.timestamp }),
+        durationMs: Date.now() - started,
+        timestamp: new Date().toISOString()
+      },
+      refresh: false
+    });
+  } catch (error) {
+    logger?.error?.({ label: 'directMwdiDiscovery.logging', error: error.message || String(error) },
+      'Failed to write direct MWDI logging document');
+  }
+  if (failure) throw failure;
+  return response;
+}
+async function discover({ mwdiEsClient, runtimeConfig = {}, parameters, logger }, cycle) {
   const redis = await getRedisClient(logger);
   if (await redis.get(ACTIVE_REINDEX)) {
     throw new Error('Finish the active replica task before enabling direct MWDI mode; do not delete its state');
@@ -25,6 +57,8 @@ async function run({ mwdiEsClient, runtimeConfig = {}, parameters, logger }) {
   const initial = numberSetting(service, 'directMwdiInitialLookbackMs', 480000, 1);
   const delay = numberSetting(service, 'directMwdiSafetyDelayMs', 10000);
   const overlap = numberSetting(service, 'directMwdiOverlapMs', 60000);
+  // Share the replica catch-up policy; zero preserves unlimited catch-up.
+  const maxCatchUpMs = numberSetting(service, 'replicaMaxCatchUpMs', 480000);
   const pageSize = numberSetting(service, 'directMwdiPageSize', 500, 1);
   const source = `${mwdiEsClient.uuid}:${mwdiEsClient['index-alias']}`;
   const saved = await redis.get(CHECKPOINT);
@@ -35,10 +69,24 @@ async function run({ mwdiEsClient, runtimeConfig = {}, parameters, logger }) {
   const end = Date.now() - delay;
   const previous = state ? Date.parse(state.timestamp) : null;
   if (previous !== null && previous > end) throw new Error('Direct MWDI checkpoint is ahead of the safe query end');
-  // Never silently discard older unread windows after downtime in this mode.
-  const start = previous === null ? end - initial : previous - overlap;
+  const requestedStart = previous === null ? end - initial : previous - overlap;
+  const start = previous !== null && maxCatchUpMs > 0
+    ? Math.max(requestedStart, end - maxCatchUpMs) : requestedStart;
   const periodStartTime = new Date(start).toISOString();
   const periodEndTime = new Date(end).toISOString();
+  Object.assign(cycle, { periodStartTime, periodEndTime });
+  if (start > requestedStart) {
+    const capped = {
+      requestedPeriodStartTime: new Date(requestedStart).toISOString(),
+      effectivePeriodStartTime: periodStartTime,
+      periodEndTime,
+      maxCatchUpMs,
+      skippedDurationMs: start - requestedStart
+    };
+    Object.assign(cycle, capped);
+    logger?.warn?.({ label: 'directMwdiDiscovery.catchUp.capped', ...capped },
+      'Direct MWDI checkpoint is older than the permitted catch-up window; processing only recent MWDI updates');
+  }
   const field = getParamFromFunction(parameters, 'p1UpdateMwdiReplica',
     'lastUpdatedField', 'last-complete-control-construct-update-time');
   const client = await onfAdapter.getEsClient(false, mwdiEsClient.uuid, mwdiEsClient, logger);
@@ -72,6 +120,7 @@ async function run({ mwdiEsClient, runtimeConfig = {}, parameters, logger }) {
       logger?.warn?.({error: error.message}, 'Failed to clear direct MWDI scroll'));
   }
   const updatedMountNames = [...names];
+  Object.assign(cycle, { total: names.size, updatedMountNameCount: names.size });
   await queue.ensureGroup(logger);
   const result = await queue.enqueueMountNames(updatedMountNames, {
     batchSize: runtimeConfig.redis?.enqueueBatchSize || 500,
@@ -79,6 +128,7 @@ async function run({ mwdiEsClient, runtimeConfig = {}, parameters, logger }) {
     clearRetryAndDeadLetterBeforeEnqueue: false,
     resetRetryEligibilityBeforeEnqueue: true
   }, logger);
+  if (result) Object.assign(cycle, { enqueued: result.enqueued, skipped: result.skipped, failed: result.failed });
   if (!result || result.failed > 0 || result.enqueued + result.skipped !== names.size) {
     throw new Error('Direct MWDI enqueue incomplete; checkpoint not advanced');
   }
