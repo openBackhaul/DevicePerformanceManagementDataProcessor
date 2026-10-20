@@ -27,6 +27,16 @@ jest.mock("@confluentinc/kafka-javascript", () => {
 const { initProducer, resetProducer, sendBatch } = require("./confluentKafkaProducer");
 
 describe("confluentKafkaProducer TLS config", () => {
+  it("retains a connected producer after an oversized rejection", async () => {
+    const log = { info: jest.fn(), error: jest.fn(), warn: jest.fn() };
+    const options = { clientId: "oversize-test", brokers: ["broker:9092"] };
+    global.mockProducer.send.mockRejectedValueOnce(new Error("Message size too large"));
+    await expect(sendBatch("topic", [{ value: "{}" }], log, options))
+      .rejects.toMatchObject({ reason: "KAFKA_MESSAGE_SIZE_TOO_LARGE", retryable: false });
+    expect(global.mockProducer.disconnect).not.toHaveBeenCalled();
+    await sendBatch("topic", [{ value: "{}" }], log, options);
+    expect(global.mockProducer.connect).toHaveBeenCalledTimes(1);
+  });
   it("returns measured send-call timing, not fabricated linger time", async () => {
     const result = await sendBatch("topic.apt", [{ key: "cc", value: "{}" }],
       { info: jest.fn(), error: jest.fn() }, { clientId: "timing-test", brokers: ["broker:9092"] });
