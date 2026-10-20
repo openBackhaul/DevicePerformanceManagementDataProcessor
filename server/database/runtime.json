@@ -1,5 +1,10 @@
 {
   "service": {
+    "mwdiReadMode": "replica",
+    "directMwdiInitialLookbackMs": 480000,
+    "directMwdiSafetyDelayMs": 10000,
+    "directMwdiOverlapMs": 60000,
+    "directMwdiPageSize": 500,
     "port": 4031,
     "pollIntervalMs": 15000,
     "concurrency": 32,
