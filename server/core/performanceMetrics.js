@@ -48,6 +48,7 @@ let log;
 let timingSequence = 0;
 
 function configure(config = {}, logger) {
+  require("./combinedProcessingTiming").configure(config, logger);
   const positive = (value, fallback) => Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
   options = {
     enabled: config.enabled !== false,

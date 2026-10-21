@@ -76,6 +76,7 @@ async function run(request) {
     }
 
     const queueMessage = await buildRedisQueueMessage(normalized);
+    Object.assign(queueMessage, require("../../core/combinedProcessingTiming").attach(normalized));
 
     // Redis is an operational queue and must contain only compact metadata.
     // Store every payload body in Elasticsearch irrespective of size and put

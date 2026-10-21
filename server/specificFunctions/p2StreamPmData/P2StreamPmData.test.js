@@ -102,6 +102,28 @@ describe("P2StreamPmData common runtime integration", () => {
     }));
   });
 
+  test("direct mode reads control constructs from MWDI without loading the replica checkpoint", async () => {
+    loadRuntimeConfig.mockReturnValue({
+      monitoring: { enabled: true },
+      redis: {},
+      service: { mwdiReadMode: "direct" }
+    });
+
+    await run();
+
+    expect(require("../../core/replicaStateStore.js").loadLastReplicaTime)
+      .not.toHaveBeenCalled();
+    expect(startProcessingWorkerPoolRedis).toHaveBeenCalledWith(expect.objectContaining({
+      mwdiReplicaEsClient: expect.objectContaining({ uuid: "mwdiEsClient" }),
+      processDevice: require("./p2ProcessDevice/P2ProcessDevice")
+    }));
+    expect(startReplicaLeaderLoop).toHaveBeenCalledWith(expect.objectContaining({
+      runtimeConfig: expect.objectContaining({
+        service: expect.objectContaining({ mwdiReadMode: "direct" })
+      })
+    }));
+  });
+
   test("normalizes initialization errors and permits a later retry", async () => {
     p1LoadParameters.run.mockRejectedValueOnce(new Error("functionName missing from parameters"));
     await expect(run()).rejects.toMatchObject({ message: "Parameters missing or invalid" });

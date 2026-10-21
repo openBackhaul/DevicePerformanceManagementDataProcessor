@@ -9,7 +9,6 @@ var appCommons = require('onf-core-model-ap/applicationPattern/commons/AppCommon
 
 var oas3Tools = require('oas3-tools');
 const logger = require('./service/LoggingService.js').getLogger();
-//const P1StreamPmData = require('./specificFunctions/p1StreamPmData/P1StreamPmData-temp.js');
 const P2StreamPmData = require('./specificFunctions/p2StreamPmData/P2StreamPmData.js');
 const { loadRuntimeConfig } = require("./utils/config");
 const runtimeConfig = loadRuntimeConfig() || {};
