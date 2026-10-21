@@ -100,14 +100,16 @@ function validateResultCC(input) {
         if (
           perfData == null ||
           typeof perfData !== 'object' ||
-          Array.isArray(perfData) ||
-          typeof perfData['granularity-period'] !== 'string' ||
-          typeof perfData['period-end-time'] !== 'string' ||
-          perfData['performance-data'] == null ||
-          typeof perfData['performance-data'] !== 'object' ||
-          Array.isArray(perfData['performance-data'])
+          Array.isArray(perfData)
         ) {
           return false;
+        }
+
+        if (
+          perfData['granularity-period'] !==
+          `air-interface-2-0:${GRAN_15MIN}`
+        ) {
+          continue;
         }
       }
     }
