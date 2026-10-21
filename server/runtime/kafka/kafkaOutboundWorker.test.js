@@ -29,6 +29,17 @@ const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1Pr
 const { _internal } = require("./kafkaOutboundWorker");
 
 describe("kafkaOutboundWorker Elasticsearch payload references", () => {
+  test("joins only acknowledged delivery and does not forward internal metadata to p1", async () => {
+    const combined = require('../../core/combinedProcessingTiming');
+    const spy = jest.spyOn(combined,'completeKafka');
+    p1TransmittingKafka.run.mockResolvedValueOnce({transmissionResultList:[{timing:{acknowledgementsRequested:'all',sendToAckMs:'10'}}]});
+    const msg={id:'join-1',message:{targetConsumer:'APT',payload:'{}',processingUpdateId:'internal'}};
+    try {
+      await _internal.processKafkaOutboundMessages([msg],{appState:{isShuttingDown:false},p1TransmittingKafkaParameters:{},kafkaConnectionList:[]});
+      expect(spy).toHaveBeenCalledWith(msg,expect.objectContaining({clock:expect.any(Number)}),true);
+      expect(p1TransmittingKafka.run.mock.calls[0][0].outputMessages[0].processingUpdateId).toBeUndefined();
+    } finally { spy.mockRestore(); }
+  });
   test("records send-call timings separately from ES loading and does not await evidence writes", async () => {
     const metrics = require("../../core/performanceMetrics");
     const record = jest.spyOn(metrics, "record");

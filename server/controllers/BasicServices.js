@@ -45,9 +45,9 @@ module.exports.embedYourself = async function embedYourself(req, res, next, body
       responseBodyToDocument = responseBody;
 
     //  start streaming AFTER success
-     /* await P2StreamPmData.run().catch(err => {
+      await P2StreamPmData.run().catch(err => {
         logger.error(`Error running P2StreamPmData: ${err}`);
-    }); */
+    });
 
       let responseHeader = await RestResponseHeader.createResponseHeader(xCorrelator, startTime, req.url);
       RestResponseBuilder.buildResponse(res, responseCode, responseBody, responseHeader);

@@ -193,6 +193,9 @@ async function processKafkaOutboundChunk(messages, context) {
     // best-effort: a metrics outage must not resend an acknowledged message.
     const timingById = new Map(messages.map((msg, index) => [msg.id, timings[index]]));
     const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context, msg => {
+      require("../../core/combinedProcessingTiming").completeKafka(msg, timingById.get(msg.id),
+        Boolean(sendTiming && sendTiming.acknowledgementsRequested != null &&
+          String(sendTiming.acknowledgementsRequested) !== "0"));
       performanceMetrics.recordCompleted("kafka", timingById.get(msg.id), {
         targetConsumer: String(msg.message?.targetConsumer || "UNKNOWN").toUpperCase(),
         payloadBytes: getPayloadBytes(msg),
