@@ -96,22 +96,14 @@ function validateResultCC(input) {
         return false;
       }
 
-      for (const perfData of hPerf) {
-        if (
-          perfData == null ||
-          typeof perfData !== 'object' ||
-          Array.isArray(perfData)
-        ) {
+      hPerf.forEach(perfData => {
+        if (Object.hasOwn(perfData, 'granularity-period') &&
+          Object.hasOwn(perfData, 'period-end-time') &&
+          Object.hasOwn(perfData, 'performance-data') && Object.hasOwn(perfData['performance-data'], 'interval-capacity')) {
+        } else {
           return false;
         }
-
-        if (
-          perfData['granularity-period'] !==
-          `air-interface-2-0:${GRAN_15MIN}`
-        ) {
-          continue;
-        }
-      }
+      });
     }
   }
 
