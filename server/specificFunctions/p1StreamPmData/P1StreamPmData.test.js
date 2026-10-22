@@ -33,6 +33,12 @@ jest.mock("../../core/monitoringServer", () => ({
 jest.mock("../../infra/elasticSearch/esBootstrap.js", () => ({
   ensureIndicesAndMappings: jest.fn().mockResolvedValue(undefined)
 }));
+jest.mock('../../infra/elasticSearch/storageOptimization', () => ({
+  prepareStorage: jest.fn().mockResolvedValue(undefined)
+}));
+jest.mock('../../runtime/kafka/kafkaPayloadCleanupWorker', () => ({
+  start: jest.fn().mockResolvedValue(undefined)
+}));
 
 jest.mock("../../core/replicaStateStore.js", () => ({
   loadLastReplicaTime: jest.fn().mockResolvedValue("2024-01-01T00:00:00Z")
@@ -154,6 +160,18 @@ describe("P1StreamPmData", () => {
         kafkaConnectionList: [{ topicName: "topic-a" }]
       })
     );
+  });
+  test('passes opt-in cleanup settings and preserves full result storage', async () => {
+    loadRuntimeConfig.mockReturnValue({ redis: {}, service: {
+      kafkaPayloadCleanupEnabled: true, kafkaPayloadCleanupBatchSize: 50, kafkaPayloadCleanupMaxBacklog: 1000,
+      saveResultCc: true
+    } });
+    await run();
+    expect(require('../../runtime/kafka/kafkaOutboundWorker').startKafkaOutboundWorkerPool).toHaveBeenCalledWith(
+      expect.objectContaining({ cleanupEnabled: true, cleanupBatchSize: 50, cleanupMaxBacklog: 1000 }));
+    expect(require('../../runtime/processing/processingWorkerPoolRedis').startProcessingWorkerPoolRedis).toHaveBeenCalledWith(
+      expect.objectContaining({ storingOptions: expect.objectContaining({ saveResultCc: true }) }));
+    expect(require('../../runtime/kafka/kafkaPayloadCleanupWorker').start).toHaveBeenCalled();
   });
 
   test("starts the service only once when run is called repeatedly", async () => {
