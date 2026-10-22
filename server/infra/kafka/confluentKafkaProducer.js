@@ -434,12 +434,13 @@ async function sendBatch(topic, messages, logger, kafkaOptions) {
     const failedConfig = buildProducerConfig(
       buildInitOptionsFromSendArgument(kafkaOptions, logger)
     );
-    await resetProducerEntry(getConfigKey(failedConfig), logger, "SEND_FAILED");
-
-    if (isKafkaMessageTooLargeError(error)) {
+    const oversized = isKafkaMessageTooLargeError(error);
+    if (oversized) {
       error.retryable = false;
       error.stage = "confluentKafkaProducer.sendBatch";
       error.reason = "KAFKA_MESSAGE_SIZE_TOO_LARGE";
+    } else {
+      await resetProducerEntry(getConfigKey(failedConfig), logger, "SEND_FAILED");
     }
 
     logger &&
@@ -455,7 +456,7 @@ async function sendBatch(topic, messages, logger, kafkaOptions) {
           retryable: error.retryable,
           reason: error.reason
         },
-        "Kafka send failed; producer reset for reconnect"
+        oversized ? "Kafka message too large; producer retained" : "Kafka send failed; producer reset for reconnect"
       );
 
     throw error;

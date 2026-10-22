@@ -1,5 +1,4 @@
 const redisQueue = require("../../infra/redis/redisStreamQueue");
-const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
 const { sleep } = require("../../utils/retry");
 const logger = require('../../service/LoggingService.js').getLogger();
 const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
@@ -14,7 +13,7 @@ function buildNonRetryableRetryResult(mountName, error) {
     status: "SKIPPED",
     reason: "NON_RETRYABLE_ERROR",
     mountName,
-    stage: error.stage || "p1ProcessDevice",
+    stage: error.stage || "p2ProcessDevice",
     lastError: error.message || String(error)
   };
 }
@@ -47,7 +46,8 @@ async function handleMessage(message, context) {
 
   try{
     try {
-        await p1ProcessDevice.run({
+        const processDevice = context.processDevice || require("../../specificFunctions/p2StreamPmData/p2ProcessDevice/P2ProcessDevice");
+        await processDevice.run({
           mountName,
           parameters: context.processDeviceParameters,
           configFile: context.configFile,
@@ -76,7 +76,7 @@ async function handleMessage(message, context) {
         if (shouldEnqueueRetry(error)) {
           retryResult = await redisQueue.enqueueRetry(
           mountName,
-          error.stage || "p1ProcessDevice",
+          error.stage || "p2ProcessDevice",
           error.message || String(error),
           context.maxRetryCount || 1,
           context.logger

@@ -220,6 +220,11 @@ describe("P1MaintainDs", () => {
       versionConflicts: 2,
       batchesDeleted: null
     }));
+    const cleanupScript = mockDataStoreClient.updateByQuery.mock.calls[0][0].body.script.source;
+    expect(cleanupScript).toContain("ctx._source['result-data']");
+    expect(cleanupScript).toContain("entry['batch-timestamp']");
+    expect(cleanupScript).toContain("hasBatch && !hasResultData");
+    expect(cleanupScript).toContain("retainedResultData.add(entry); continue;");
   });
 
   test("deletes failed and oversized evidence payloads during maintenance", async () => {
