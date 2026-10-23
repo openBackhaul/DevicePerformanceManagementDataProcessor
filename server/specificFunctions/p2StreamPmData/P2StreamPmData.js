@@ -37,6 +37,7 @@ function buildProcessingError(message, stage = "p2StreamPmData", details, cause)
 }
 
 function normalizeProcessingError(error) {
+  if (error instanceof Error && error.stage === "storageOptimization") return error;
   if (error instanceof Error && ERRORS.knownErrors.has(error.message)) return error;
 
   const normalized = String(error?.message || error || "").toLowerCase();
@@ -194,6 +195,17 @@ async function initialize() {
     logger
   );
 
+  await require('../../infra/elasticSearch/storageOptimization').prepareStorage(dataStoreEsClient, serviceConfig, logger);
+  const cleanupOptions = {
+    cleanupEnabled: serviceConfig.kafkaPayloadCleanupEnabled === true,
+    cleanupBatchSize: Number(serviceConfig.kafkaPayloadCleanupBatchSize ?? 100),
+    cleanupMaxBacklog: Number(serviceConfig.kafkaPayloadCleanupMaxBacklog ?? 10000)
+  };
+  if (!Number.isInteger(cleanupOptions.cleanupBatchSize) || cleanupOptions.cleanupBatchSize < 1 || cleanupOptions.cleanupBatchSize > 500 ||
+      !Number.isInteger(cleanupOptions.cleanupMaxBacklog) || cleanupOptions.cleanupMaxBacklog < 1) {
+    throw new Error('Invalid Kafka cleanup limits');
+  }
+
   const mwdiReadMode = readMode(runtimeConfig);
   const restoredLastReplicaTime = mwdiReadMode === "replica"
     ? await loadLastReplicaTime(loggingEsClient, logger)
@@ -255,7 +267,13 @@ async function initialize() {
     deviceProcessingLockTtlMs: Number(redisConfig.deviceProcessingLockTtlMs || 30 * 60 * 1000)
   }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
+  // Drain existing durable cleanup jobs even when new handoffs are disabled.
+  require('../../runtime/kafka/kafkaPayloadCleanupWorker').start({
+    ...cleanupOptions, dataStoreEsClient, logger, appState
+  }).catch(error => logger.error({ error }, 'Kafka cleanup worker stopped'));
+
   startKafkaOutboundWorkerPool({
+    ...cleanupOptions,
     logger,
     instanceId,
     appState,
@@ -317,7 +335,16 @@ async function initialize() {
  } catch (error) {
    const normalizedError = normalizeProcessingError(error);
    logger.error(
-     { label: "p2-stream-pm-data", error: normalizedError.message || error },
+     {
+       label: "p2-stream-pm-data",
+       err: error,
+       error: normalizedError.message,
+       originalMessage: error?.message || String(error),
+       stage: normalizedError.stage,
+       reason: error?.reason,
+       details: error?.details,
+       stack: error?.stack
+     },
      "Failed to initialize stream pm data"
    );
    throw normalizedError;

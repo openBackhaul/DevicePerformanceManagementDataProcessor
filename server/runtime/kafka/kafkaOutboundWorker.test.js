@@ -1,3 +1,4 @@
+jest.mock('./kafkaPayloadCleanupWorker', () => ({ handoff: jest.fn() }));
 jest.mock("../../infra/redis/redisStreamQueue", () => ({
   ackKafkaOutbound: jest.fn().mockResolvedValue(1),
   deleteKafkaOutboundMessage: jest.fn().mockResolvedValue(undefined),
@@ -235,5 +236,24 @@ describe("kafkaOutboundWorker Elasticsearch payload references", () => {
     expect(redisQueue.updateKafkaDailyMetrics).not.toHaveBeenCalledWith(
       "failed", expect.anything(), expect.anything(), expect.anything()
     );
+  });
+});
+
+
+describe('durable Kafka payload cleanup handoff', () => {
+  test.each([1, 0])('defers ES deletion and counts only owned acknowledgements (%s)', async ack => {
+    const cleanup = require('./kafkaPayloadCleanupWorker');
+    jest.clearAllMocks();
+    kafkaPayloadStore.loadKafkaPayload.mockResolvedValue({ value: "large-payload" });
+    cleanup.handoff.mockResolvedValueOnce(ack);
+    p1TransmittingKafka.run.mockResolvedValueOnce({ transmissionResultList: [] });
+    const msg = { id: 'cleanup-1', message: { mountName: 'device', targetConsumer: 'APT', payloadStorage: 'ES', payloadRefId: 'payload-1' } };
+    const context = { cleanupEnabled: true, consumerName: 'owner', appState: { isShuttingDown: false },
+      p1TransmittingKafkaParameters: {}, kafkaConnectionList: [], dataStoreEsClient: { uuid: 'es', 'index-alias': 'ds' } };
+    await _internal.processKafkaOutboundMessages([msg], context);
+    expect(cleanup.handoff).toHaveBeenCalledWith(msg, expect.objectContaining({ consumerName: 'owner' }));
+    expect(redisQueue.ackKafkaOutbound).not.toHaveBeenCalled();
+    expect(kafkaPayloadStore.deleteKafkaPayload).not.toHaveBeenCalled();
+    expect(redisQueue.recordKafkaOutboundSuccess).toHaveBeenCalledWith(ack ? [msg] : [], expect.anything());
   });
 });
