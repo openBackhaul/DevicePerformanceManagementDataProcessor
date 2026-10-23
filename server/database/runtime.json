@@ -7,10 +7,13 @@
     "directMwdiPageSize": 500,
     "port": 4031,
     "pollIntervalMs": 15000,
-    "concurrency": 32,
-    "maxProcessingConcurrency": 32,
+    "concurrency": 16,
+    "maxProcessingConcurrency": 16,
     "processingReadCount": 10,
     "saveResultCc": true,
+    "kafkaPayloadCleanupEnabled": false,
+    "kafkaPayloadCleanupBatchSize": 100,
+    "kafkaPayloadCleanupMaxBacklog": 10000,
     "resultHistoryLimit": 1,
     "dataStoreWriteLockEnabled": false,
     "atomicDataStoreUpsertEnabled": true,
@@ -26,7 +29,7 @@
     "shutdownGraceMs": 30000,
     "httpPort": 8080,
     "kafkaConsumerTypes":"APT,MYCOM,NETEXPLORER",
-    "kafkaOutboundConcurrency": 32,
+    "kafkaOutboundConcurrency": 16,
     "kafkaOutboundBatchSize": 100,
     "kafkaOutboundReadCount": 10,
     "kafkaOutboundMaxBatchBytes": 5242880,
@@ -78,7 +81,7 @@
     "deviceProcessingLockTtlMs": 1800000
   },
   "monitoring": {
-    "enabled": true,
+    "enabled": false,
     "performanceTimings": {
       "enabled": true,
       "streamsEnabled": false,

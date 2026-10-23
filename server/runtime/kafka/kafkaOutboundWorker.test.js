@@ -29,6 +29,23 @@ const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1Pr
 const { _internal } = require("./kafkaOutboundWorker");
 
 describe("kafkaOutboundWorker Elasticsearch payload references", () => {
+  test('cleanup handoff replaces synchronous deletion without exposing payload location to Kafka', async () => {
+    const cleanup = require('./kafkaPayloadCleanupWorker');
+    const handoff = jest.spyOn(cleanup, 'handoff').mockResolvedValue(1);
+    p1TransmittingKafka.run.mockResolvedValueOnce({});
+    const msg = { id: 'cleanup-1', message: { targetConsumer: 'APT', payloadStorage: 'ES', payloadRefId: 'p' } };
+    try {
+      await _internal.processKafkaOutboundMessages([msg], {
+        cleanupEnabled: true, consumerName: 'owner', appState: { isShuttingDown: false },
+        dataStoreEsClient: { 'index-alias': 'legacy' }, p1TransmittingKafkaParameters: {}, kafkaConnectionList: []
+      });
+      expect(handoff).toHaveBeenCalledWith(msg, expect.objectContaining({ consumerName: 'owner' }));
+      expect(redisQueue.ackKafkaOutbound).not.toHaveBeenCalled();
+      expect(kafkaPayloadStore.deleteKafkaPayload).not.toHaveBeenCalled();
+      expect(kafkaPayloadStore.loadKafkaPayload).toHaveBeenCalledWith(expect.objectContaining({ payloadRefId: 'p' }));
+      expect(p1TransmittingKafka.run.mock.calls[0][0].outputMessages[0].payloadIndex).toBeUndefined();
+    } finally { handoff.mockRestore(); }
+  });
   test("joins only acknowledged delivery and does not forward internal metadata to p1", async () => {
     const combined = require('../../core/combinedProcessingTiming');
     const spy = jest.spyOn(combined,'completeKafka');
