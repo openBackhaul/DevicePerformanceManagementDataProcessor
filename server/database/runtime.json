@@ -1,6 +1,6 @@
 {
   "service": {
-    "mwdiReadMode": "direct",
+    "mwdiReadMode": "replica",
     "directMwdiInitialLookbackMs": 480000,
     "directMwdiSafetyDelayMs": 10000,
     "directMwdiOverlapMs": 60000,
