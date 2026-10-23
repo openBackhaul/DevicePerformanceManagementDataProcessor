@@ -1,3 +1,5 @@
+jest.mock('../../infra/elasticSearch/storageOptimization', () => ({ prepareStorage: jest.fn().mockResolvedValue(undefined) }));
+jest.mock('../../runtime/kafka/kafkaPayloadCleanupWorker', () => ({ start: jest.fn().mockResolvedValue(undefined) }));
 jest.mock("../../utils/config", () => ({ loadRuntimeConfig: jest.fn() }));
 jest.mock("../../utils/functionTree", () => ({
   findFunctionNode: jest.fn(() => ({})),
@@ -123,6 +125,50 @@ describe("P2StreamPmData common runtime integration", () => {
       })
     }));
   });
+
+  test.each([true, false])("validates storage and drains cleanup with flag %s", async enabled => {
+    const storage = require('../../infra/elasticSearch/storageOptimization');
+    const cleanup = require('../../runtime/kafka/kafkaPayloadCleanupWorker');
+    loadRuntimeConfig.mockReturnValue({ service: {
+      kafkaPayloadCleanupEnabled: enabled,
+      kafkaPayloadCleanupBatchSize: 25,
+      kafkaPayloadCleanupMaxBacklog: 200
+    } });
+    await run();
+    expect(storage.prepareStorage).toHaveBeenCalledWith(
+      expect.objectContaining({ uuid: 'dataStoreEsClient' }), expect.any(Object), expect.any(Object)
+    );
+    const options = { cleanupEnabled: enabled, cleanupBatchSize: 25, cleanupMaxBacklog: 200 };
+    expect(cleanup.start).toHaveBeenCalledWith(expect.objectContaining(options));
+    expect(cleanup.start).toHaveBeenCalledTimes(1);
+    expect(startKafkaOutboundWorkerPool).toHaveBeenCalledWith(expect.objectContaining(options));
+    expect(storage.prepareStorage.mock.invocationCallOrder[0])
+      .toBeLessThan(startProcessingWorkerPoolRedis.mock.invocationCallOrder[0]);
+  });
+
+  test("incompatible schema prevents workers and allows initialization retry", async () => {
+    const storage = require('../../infra/elasticSearch/storageOptimization');
+    const failure = Object.assign(new Error('Incompatible datastore mapping: payload.enabled must be false'), {
+      stage: 'storageOptimization', reason: 'DATASTORE_MAPPING_INCOMPATIBLE',
+      details: { index: 'existing-datastore' }
+    });
+    storage.prepareStorage.mockRejectedValueOnce(failure);
+    await expect(run()).rejects.toBe(failure);
+    expect(startProcessingWorkerPoolRedis).not.toHaveBeenCalled();
+    expect(startKafkaOutboundWorkerPool).not.toHaveBeenCalled();
+    expect(require('../../runtime/kafka/kafkaPayloadCleanupWorker').start).not.toHaveBeenCalled();
+    await expect(run()).resolves.toBeDefined();
+  });
+
+  test.each([{ kafkaPayloadCleanupBatchSize: 0 }, { kafkaPayloadCleanupBatchSize: 501 },
+    { kafkaPayloadCleanupBatchSize: 1.5 }, { kafkaPayloadCleanupMaxBacklog: 0 }])(
+    "rejects invalid cleanup limits %o before starting workers", async service => {
+      loadRuntimeConfig.mockReturnValue({ service });
+      await expect(run()).rejects.toThrow();
+      expect(startProcessingWorkerPoolRedis).not.toHaveBeenCalled();
+      expect(startKafkaOutboundWorkerPool).not.toHaveBeenCalled();
+    }
+  );
 
   test("normalizes initialization errors and permits a later retry", async () => {
     p1LoadParameters.run.mockRejectedValueOnce(new Error("functionName missing from parameters"));
