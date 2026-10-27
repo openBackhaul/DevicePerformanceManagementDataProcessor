@@ -6,7 +6,7 @@ jest.mock("../../infra/redis/redisStreamQueue", () => ({
   deleteMessage: jest.fn()
 }));
 
-jest.mock("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice", () => ({
+jest.mock("../../specificFunctions/p2StreamPmData/p2ProcessDevice/P2ProcessDevice", () => ({
   run: jest.fn()
 }));
 
@@ -24,11 +24,26 @@ jest.mock("../../service/LoggingService.js", () => ({
 }));
 
 const redisQueue = require("../../infra/redis/redisStreamQueue");
-const p1ProcessDevice = require("../../specificFunctions/p1StreamPmData/p1ProcessDevice/P1ProcessDevice");
+const p2ProcessDevice = require("../../specificFunctions/p2StreamPmData/p2ProcessDevice/P2ProcessDevice");
 const { acquireLock, renewLock, releaseLock } = require("../../infra/redis/redisLock");
 const { _internal } = require("./processingWorkerPoolRedis");
 
 describe("processingWorkerPoolRedis retry handling", () => {
+  test("keeps correlation outside P2 inputs and completes only after Redis acknowledgement", async () => {
+    const combined = require("../../core/combinedProcessingTiming");
+    combined.configure({combinedStreamEnabled:true});
+    const spy = jest.spyOn(combined,'completeDevice');
+    try {
+      redisQueue.ackMessage.mockResolvedValueOnce(1);
+      p2ProcessDevice.run.mockImplementationOnce(async request => {
+        expect(request.processingUpdateId).toBeUndefined();
+        expect(combined.attach({messageType:'PERFORMANCE_OUTPUT'}).processingUpdateId).toBeTruthy();
+        expect(spy).not.toHaveBeenCalled();
+      });
+      await _internal.handleMessage(message, context);
+      expect(spy).toHaveBeenCalledTimes(1);
+    } finally { spy.mockRestore(); combined.configure({enabled:false}); }
+  });
   const context = {
     processDeviceParameters: {},
     configFile: {},
@@ -64,11 +79,11 @@ describe("processingWorkerPoolRedis retry handling", () => {
   test("does not enqueue retry when processing error is non-retryable", async () => {
     const error = {
       message: "No AirInterface or EthernetContainer processing succeeded",
-      stage: "p1CreateResultCc",
+      stage: "p2CreateResultCc",
       retryable: false
     };
 
-    p1ProcessDevice.run.mockRejectedValue(error);
+    p2ProcessDevice.run.mockRejectedValue(error);
 
     await _internal.handleMessage(message, context);
 
@@ -85,16 +100,16 @@ describe("processingWorkerPoolRedis retry handling", () => {
 
   test("enqueues retry when processing error is retryable", async () => {
     const error = new Error("temporary processing failure");
-    error.stage = "p1ProcessDevice";
+    error.stage = "p2ProcessDevice";
     error.retryable = true;
 
-    p1ProcessDevice.run.mockRejectedValue(error);
+    p2ProcessDevice.run.mockRejectedValue(error);
 
     await _internal.handleMessage(message, context);
 
     expect(redisQueue.enqueueRetry).toHaveBeenCalledWith(
       "device-1",
-      "p1ProcessDevice",
+      "p2ProcessDevice",
       "temporary processing failure",
       3,
       context.logger

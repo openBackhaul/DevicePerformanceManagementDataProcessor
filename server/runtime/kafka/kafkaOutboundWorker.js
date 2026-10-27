@@ -4,6 +4,7 @@ const p1TransmittingKafka = require("../../specificFunctions/p1StreamPmData/p1Pr
 const { sleep } = require("../../utils/retry");
 const performanceMetrics = require("../../core/performanceMetrics");
 const { performance } = require("perf_hooks");
+const payloadCleanup = require('./kafkaPayloadCleanupWorker');
 const logger = require('../../service/LoggingService.js').getLogger();
 
 function getMaxBatchMessages(context) {
@@ -96,7 +97,9 @@ async function buildOutputMessage(redisMessage, context) {
 
 async function ackAndDeleteRedisMessages(messages, context, onCompleted) {
     const acknowledgementResults = await Promise.all(messages.map(async (msg) => {
-        const ackCount = await redisQueue.ackKafkaOutbound(
+        const ackCount = context.cleanupEnabled && msg.message?.payloadStorage === 'ES' && msg.message?.payloadRefId
+          ? await payloadCleanup.handoff(msg, context)
+          : await redisQueue.ackKafkaOutbound(
             msg.id,
             context.consumerName,
             logger
@@ -193,6 +196,9 @@ async function processKafkaOutboundChunk(messages, context) {
     // best-effort: a metrics outage must not resend an acknowledged message.
     const timingById = new Map(messages.map((msg, index) => [msg.id, timings[index]]));
     const acknowledgedMessages = await ackAndDeleteRedisMessages(messages, context, msg => {
+      require("../../core/combinedProcessingTiming").completeKafka(msg, timingById.get(msg.id),
+        Boolean(sendTiming && sendTiming.acknowledgementsRequested != null &&
+          String(sendTiming.acknowledgementsRequested) !== "0"));
       performanceMetrics.recordCompleted("kafka", timingById.get(msg.id), {
         targetConsumer: String(msg.message?.targetConsumer || "UNKNOWN").toUpperCase(),
         payloadBytes: getPayloadBytes(msg),
@@ -211,7 +217,7 @@ async function processKafkaOutboundChunk(messages, context) {
             );
         });
 
-    await deleteEsPayloadReferences(acknowledgedMessages, context);
+    if (!context.cleanupEnabled) await deleteEsPayloadReferences(acknowledgedMessages, context);
     await incrementMetricsForMessages("successful", acknowledgedMessages, context);
 
     logger.info(
@@ -556,6 +562,10 @@ async function kafkaOutboundWorkerLoop(context, consumerName) {
 
   while (!context.appState.isShuttingDown) {
     try {
+      if (context.cleanupEnabled && await payloadCleanup.isBacklogged(context)) {
+        await sleep(1000);
+        continue;
+      }
       const workerContext = { ...context, consumerName };
       const reclaimed = await redisQueue.reclaimStaleKafkaOutbound(
         consumerName,

@@ -29,7 +29,9 @@ jest.mock("../../../server/infra/redis/redisLock.js", () => ({
   releaseLock: jest.fn(() => Promise.resolve())
 }));
 
+// ✅ Keep real exports (including withRetry), override only sleep
 jest.mock("../../../server/utils/retry", () => ({
+  ...jest.requireActual("../../../server/utils/retry"),
   sleep: jest.fn(() => Promise.resolve())
 }));
 
@@ -69,6 +71,16 @@ jest.mock("../../../server/infra/elasticSearch/esBootstrap.js", () => ({
   ensureIndicesAndMappings: jest.fn()
 }));
 
+// ✅ Mock storage optimization so startup test doesn't depend on deep ES adapter behavior
+jest.mock("../../../server/infra/elasticSearch/storageOptimization", () => ({
+  prepareStorage: jest.fn(() => Promise.resolve())
+}));
+
+// Optional: prevent cleanup worker side effects if module is reached during startup
+jest.mock("../../../server/runtime/kafka/kafkaPayloadCleanupWorker", () => ({
+  start: jest.fn(() => Promise.resolve())
+}));
+
 jest.mock("../../../server/core/replicaStateStore.js", () => ({
   loadLastReplicaTime: jest.fn()
 }));
@@ -102,11 +114,13 @@ const p1LoadParameters = require("../../../server/genericFunctions/p1LoadParamet
 const p1ResolveESAddress = require("../../../server/genericFunctions/p1ResolveEsAddress/P1ResolveEsAddress.js");
 const p1InitKafka = require("../../../server/genericFunctions/p1InitKafka/P1InitKafka.js");
 const { ensureIndicesAndMappings } = require("../../../server/infra/elasticSearch/esBootstrap.js");
+const { prepareStorage } = require("../../../server/infra/elasticSearch/storageOptimization");
 const { loadLastReplicaTime } = require("../../../server/core/replicaStateStore.js");
 const { startReplicaLeaderLoop } = require("../../../server/runtime/replica/replicaLeaderLoop.js");
 const { startProcessingWorkerPoolRedis } = require("../../../server/runtime/processing/processingWorkerPoolRedis.js");
 const { startKafkaOutboundWorkerPool } = require("../../../server/runtime/kafka/kafkaOutboundWorker.js");
 const { startRetryWorkerPool } = require("../../../server/runtime/processing/retryWorker.js");
+const kafkaPayloadCleanupWorker = require("../../../server/runtime/kafka/kafkaPayloadCleanupWorker");
 
 const p2StreamPmData = require("../../../server/specificFunctions/p2StreamPmData/P2StreamPmData.js");
 const { run, _internal } = p2StreamPmData;
@@ -197,6 +211,7 @@ describe("P2StreamPmData.run", () => {
       .mockResolvedValueOnce({ esAddress: { url: "http://datastore-es:9200" } });
 
     ensureIndicesAndMappings.mockResolvedValue({});
+    prepareStorage.mockResolvedValue(undefined);
     loadLastReplicaTime.mockResolvedValue("2010-11-20T14:00:00+01:00");
     p1InitKafka.run.mockResolvedValue(makeKafkaInit());
   });
@@ -224,16 +239,13 @@ describe("P2StreamPmData.run", () => {
 
   it("configures performance metrics from runtime config", async () => {
     await run();
-
     expect(performanceMetrics.configure).toHaveBeenCalledWith({}, logger);
   });
 
   it("registers graceful shutdown with the configured grace period", async () => {
     loadRuntimeConfig.mockReturnValue({
       redis: {},
-      service: {
-        shutdownGraceMs: 45000
-      },
+      service: { shutdownGraceMs: 45000 },
       monitoring: {}
     });
 
@@ -249,9 +261,7 @@ describe("P2StreamPmData.run", () => {
   it("starts monitoring server with configured port", async () => {
     loadRuntimeConfig.mockReturnValue({
       redis: {},
-      service: {
-        httpPort: 9050
-      },
+      service: { httpPort: 9050 },
       monitoring: {
         enabled: true,
         performanceTimings: {}
@@ -290,6 +300,19 @@ describe("P2StreamPmData.run", () => {
     );
   });
 
+  it("prepares storage before starting workers", async () => {
+    await run();
+
+    expect(prepareStorage).toHaveBeenCalledWith(
+      { url: "http://datastore-es:9200" },
+      expect.objectContaining({
+        concurrency: 4,
+        maxProcessingConcurrency: 16
+      }),
+      logger
+    );
+  });
+
   it("stores restored last replica time into appState", async () => {
     const result = await run();
 
@@ -319,6 +342,7 @@ describe("P2StreamPmData.run", () => {
     expect(startProcessingWorkerPoolRedis).toHaveBeenCalledTimes(1);
     expect(startKafkaOutboundWorkerPool).toHaveBeenCalledTimes(1);
     expect(startRetryWorkerPool).toHaveBeenCalledTimes(1);
+    expect(kafkaPayloadCleanupWorker.start).toHaveBeenCalledTimes(1);
 
     expect(startProcessingWorkerPoolRedis).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -381,6 +405,15 @@ describe("P2StreamPmData.run", () => {
 
   it("rejects with normalized GENERAL_PROCESSING_ERROR when ensureIndicesAndMappings fails", async () => {
     ensureIndicesAndMappings.mockRejectedValue(new Error("bootstrap failed"));
+
+    await expect(run()).rejects.toMatchObject({
+      message: expect.any(String),
+      stage: "p2StreamPmData"
+    });
+  });
+
+  it("rejects with normalized GENERAL_PROCESSING_ERROR when prepareStorage fails", async () => {
+    prepareStorage.mockRejectedValue(new Error("storage optimization failed"));
 
     await expect(run()).rejects.toMatchObject({
       message: expect.any(String),

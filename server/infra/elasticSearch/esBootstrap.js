@@ -115,6 +115,7 @@ async function ensureIndicesAndMappings(esClients, logger) {
         properties: {
           mountName: { type: "keyword" },
           "mount-name": { type: "keyword" },
+          payload: { type: "object", enabled: false },
           locked: { type: "boolean" },
           timestamp: { type: "date" },
           "processing-data": {
@@ -124,7 +125,8 @@ async function ensureIndicesAndMappings(esClients, logger) {
           batch: {
             type: "nested",
             properties: {
-              batchTimestamp: { type: "date" }
+              batchTimestamp: { type: "date" },
+              resultCc: { type: "object", enabled: false }
             }
           },
           "interface-metadata-list": {
