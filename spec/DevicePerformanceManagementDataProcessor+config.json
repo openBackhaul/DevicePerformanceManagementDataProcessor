@@ -1,10 +1,10 @@
 {
   "core-model-1-4:control-construct": {
-    "uuid": "dpmdp-1-1-0",
+    "uuid": "dpmdp-1-2-0",
     "profile-collection": {
       "profile": [
         {
-          "uuid": "dpmdp-1-1-0-action-p-000",
+          "uuid": "dpmdp-1-2-0-action-p-000",
           "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
           "action-profile-1-0:action-profile-pac": {
             "action-profile-capability": {
@@ -14,12 +14,12 @@
               "display-in-new-browser-window": false
             },
             "action-profile-configuration": {
-              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-bs-002/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-op-s-bs-002/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-action-p-001",
+          "uuid": "dpmdp-1-2-0-action-p-001",
           "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
           "action-profile-1-0:action-profile-pac": {
             "action-profile-capability": {
@@ -29,12 +29,12 @@
               "display-in-new-browser-window": false
             },
             "action-profile-configuration": {
-              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-bs-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-op-s-bs-004/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-action-p-002",
+          "uuid": "dpmdp-1-2-0-action-p-002",
           "profile-name": "action-profile-1-0:PROFILE_NAME_TYPE_ACTION_PROFILE",
           "action-profile-1-0:action-profile-pac": {
             "action-profile-capability": {
@@ -44,12 +44,12 @@
               "display-in-new-browser-window": true
             },
             "action-profile-configuration": {
-              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-op-s-bs-005/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
+              "consequent-operation-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-op-s-bs-005/layer-protocol=0/operation-server-interface-1-0:operation-server-interface-pac/operation-server-interface-capability/operation-name"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-000",
+          "uuid": "dpmdp-1-2-0-response-p-000",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -62,13 +62,13 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-001",
+          "uuid": "dpmdp-1-2-0-response-p-001",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -81,13 +81,13 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-name"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-002",
+          "uuid": "dpmdp-1-2-0-response-p-002",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -100,13 +100,13 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-number"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-003",
+          "uuid": "dpmdp-1-2-0-response-p-003",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -119,13 +119,13 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-purpose"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/application-purpose"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-004",
+          "uuid": "dpmdp-1-2-0-response-p-004",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -138,13 +138,13 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/data-update-period"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/data-update-period"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-005",
+          "uuid": "dpmdp-1-2-0-response-p-005",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -157,13 +157,13 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-name"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-name"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-006",
+          "uuid": "dpmdp-1-2-0-response-p-006",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
@@ -176,51 +176,70 @@
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-email-address"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/owner-email-address"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-007",
+          "uuid": "dpmdp-1-2-0-response-p-007",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
               "operation-name": "/v1/inform-about-release-history-in-generic-representation",
               "field-name": {
-                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/release-number"
+                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/release-number"
               },
               "description": "Represents the first entry in the list of releases",
               "datatype": "string"
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/changes"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=0/changes"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-response-p-008",
+          "uuid": "dpmdp-1-2-0-response-p-008",
           "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
           "response-profile-1-0:response-profile-pac": {
             "response-profile-capability": {
               "operation-name": "/v1/inform-about-release-history-in-generic-representation",
               "field-name": {
-                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/release-number"
+                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/release-number"
               },
               "description": "Represents the second entry in the list of releases",
               "datatype": "string"
             },
             "response-profile-configuration": {
               "value": {
-                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-1-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/changes"
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=1/changes"
               }
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-000",
+          "uuid": "dpmdp-1-2-0-response-p-009",
+          "profile-name": "response-profile-1-0:PROFILE_NAME_TYPE_GENERIC_RESPONSE_PROFILE",
+          "response-profile-1-0:response-profile-pac": {
+            "response-profile-capability": {
+              "operation-name": "/v1/inform-about-release-history-in-generic-representation",
+              "field-name": {
+                "field-name-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=2/release-number"
+              },
+              "description": "Represents the third entry in the list of releases",
+              "datatype": "string"
+            },
+            "response-profile-configuration": {
+              "value": {
+                "value-reference": "/core-model-1-4:control-construct/logical-termination-point=dpmdp-1-2-0-http-s-000/layer-protocol=0/http-server-interface-1-0:http-server-interface-pac/http-server-interface-capability/release-list=2/changes"
+              }
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-function-p-000",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -228,7 +247,7 @@
               "function-description": "Service for organizing the embedding of the application into the MW SDN domain",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-020"
+                "dpmdp-1-2-0-function-p-020"
               ]
             },
             "function-profile-configuration": {
@@ -237,7 +256,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-020",
+          "uuid": "dpmdp-1-2-0-function-p-020",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -245,13 +264,13 @@
               "function-description": "Cyclically triggers the replication of MWDI and initiates the processing of the PM data",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-030",
-                "dpmdp-1-1-0-function-p-060",
-                "dpmdp-1-1-0-function-p-090",
-                "dpmdp-1-1-0-function-p-100",
-                "dpmdp-1-1-0-function-p-120",
-                "dpmdp-1-1-0-function-p-150",
-                "dpmdp-1-1-0-function-p-640"
+                "dpmdp-1-2-0-function-p-030",
+                "dpmdp-1-2-0-function-p-060",
+                "dpmdp-1-2-0-function-p-090",
+                "dpmdp-1-2-0-function-p-100",
+                "dpmdp-1-2-0-function-p-120",
+                "dpmdp-1-2-0-function-p-150",
+                "dpmdp-1-2-0-function-p-640"
               ]
             },
             "function-profile-configuration": {
@@ -260,7 +279,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-030",
+          "uuid": "dpmdp-1-2-0-function-p-030",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -275,7 +294,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-060",
+          "uuid": "dpmdp-1-2-0-function-p-060",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -283,19 +302,19 @@
               "function-description": "Composes the address information of an ElasticSearchClient",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-061",
+                  "parameter": "dpmdp-1-2-0-string-p-061",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-062",
+                  "parameter": "dpmdp-1-2-0-string-p-062",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-063",
+                  "parameter": "dpmdp-1-2-0-string-p-063",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-064",
+                  "parameter": "dpmdp-1-2-0-string-p-064",
                   "owner": "platform"
                 }
               ],
@@ -307,7 +326,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-061",
+          "uuid": "dpmdp-1-2-0-string-p-061",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -316,12 +335,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-es-c-es-1-0-0-007"
+              "string-value": "dpmdp-1-2-0-es-c-es-1-0-0-007"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-062",
+          "uuid": "dpmdp-1-2-0-string-p-062",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -330,12 +349,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-es-c-es-1-0-0-018"
+              "string-value": "dpmdp-1-2-0-es-c-es-1-0-0-018"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-063",
+          "uuid": "dpmdp-1-2-0-string-p-063",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -344,12 +363,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-es-c-es-1-0-0-020"
+              "string-value": "dpmdp-1-2-0-es-c-es-1-0-0-020"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-064",
+          "uuid": "dpmdp-1-2-0-string-p-064",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -358,12 +377,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-es-c-es-1-0-0-021"
+              "string-value": "dpmdp-1-2-0-es-c-es-1-0-0-021"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-090",
+          "uuid": "dpmdp-1-2-0-function-p-090",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -371,19 +390,19 @@
               "function-description": "Resolves Kafka address and initializes the Kafka session",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-091",
+                  "parameter": "dpmdp-1-2-0-string-p-091",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-092",
+                  "parameter": "dpmdp-1-2-0-string-p-092",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-093",
+                  "parameter": "dpmdp-1-2-0-string-p-093",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-095",
+                  "parameter": "dpmdp-1-2-0-string-p-095",
                   "owner": "platform"
                 }
               ],
@@ -395,7 +414,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-091",
+          "uuid": "dpmdp-1-2-0-string-p-091",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -404,12 +423,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-000"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-000"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-092",
+          "uuid": "dpmdp-1-2-0-string-p-092",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -418,12 +437,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-001"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-001"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-093",
+          "uuid": "dpmdp-1-2-0-string-p-093",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -432,12 +451,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-002"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-095",
+          "uuid": "dpmdp-1-2-0-string-p-095",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -446,12 +465,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-004"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-100",
+          "uuid": "dpmdp-1-2-0-function-p-100",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -459,11 +478,11 @@
               "function-description": "Cyclically cleans up old entries in the DataStore",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-101",
+                  "parameter": "dpmdp-1-2-0-string-p-101",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-102",
+                  "parameter": "dpmdp-1-2-0-string-p-102",
                   "owner": "platform"
                 }
               ],
@@ -475,7 +494,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-101",
+          "uuid": "dpmdp-1-2-0-string-p-101",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -488,7 +507,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-102",
+          "uuid": "dpmdp-1-2-0-string-p-102",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -501,7 +520,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-120",
+          "uuid": "dpmdp-1-2-0-function-p-120",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -509,31 +528,31 @@
               "function-description": "Replicates updated ControlConstructs from MWDI to MWDI Replica",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-121",
+                  "parameter": "dpmdp-1-2-0-string-p-121",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-122",
+                  "parameter": "dpmdp-1-2-0-string-p-122",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-123",
+                  "parameter": "dpmdp-1-2-0-string-p-123",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-124",
+                  "parameter": "dpmdp-1-2-0-string-p-124",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-125",
+                  "parameter": "dpmdp-1-2-0-string-p-125",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-126",
+                  "parameter": "dpmdp-1-2-0-string-p-126",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-127",
+                  "parameter": "dpmdp-1-2-0-string-p-127",
                   "owner": "platform"
                 }
               ],
@@ -545,7 +564,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-121",
+          "uuid": "dpmdp-1-2-0-string-p-121",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -558,7 +577,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-122",
+          "uuid": "dpmdp-1-2-0-string-p-122",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -571,7 +590,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-123",
+          "uuid": "dpmdp-1-2-0-string-p-123",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -584,7 +603,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-124",
+          "uuid": "dpmdp-1-2-0-string-p-124",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -597,7 +616,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-125",
+          "uuid": "dpmdp-1-2-0-string-p-125",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -610,7 +629,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-126",
+          "uuid": "dpmdp-1-2-0-string-p-126",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -623,7 +642,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-127",
+          "uuid": "dpmdp-1-2-0-string-p-127",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -636,7 +655,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-150",
+          "uuid": "dpmdp-1-2-0-function-p-150",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -644,13 +663,13 @@
               "function-description": "Orchestrates the device-wise processing, formatting, sending and storing of PM data",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-160",
-                "dpmdp-1-1-0-function-p-180",
-                "dpmdp-1-1-0-function-p-270",
-                "dpmdp-1-1-0-function-p-540",
-                "dpmdp-1-1-0-function-p-550",
-                "dpmdp-1-1-0-function-p-600",
-                "dpmdp-1-1-0-function-p-620"
+                "dpmdp-1-2-0-function-p-160",
+                "dpmdp-1-2-0-function-p-180",
+                "dpmdp-1-2-0-function-p-270",
+                "dpmdp-1-2-0-function-p-540",
+                "dpmdp-1-2-0-function-p-550",
+                "dpmdp-1-2-0-function-p-600",
+                "dpmdp-1-2-0-function-p-620"
               ]
             },
             "function-profile-configuration": {
@@ -659,7 +678,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-160",
+          "uuid": "dpmdp-1-2-0-function-p-160",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -674,7 +693,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-180",
+          "uuid": "dpmdp-1-2-0-function-p-180",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -682,14 +701,14 @@
               "function-description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-181",
+                  "parameter": "dpmdp-1-2-0-string-p-181",
                   "owner": "platform"
                 }
               ],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-210",
-                "dpmdp-1-1-0-function-p-240",
-                "dpmdp-1-1-0-function-p-250"
+                "dpmdp-1-2-0-function-p-210",
+                "dpmdp-1-2-0-function-p-240",
+                "dpmdp-1-2-0-function-p-250"
               ]
             },
             "function-profile-configuration": {
@@ -698,7 +717,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-181",
+          "uuid": "dpmdp-1-2-0-string-p-181",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -711,7 +730,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-210",
+          "uuid": "dpmdp-1-2-0-function-p-210",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -726,7 +745,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-240",
+          "uuid": "dpmdp-1-2-0-function-p-240",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -741,7 +760,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-250",
+          "uuid": "dpmdp-1-2-0-function-p-250",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -756,7 +775,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-270",
+          "uuid": "dpmdp-1-2-0-function-p-270",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -764,10 +783,10 @@
               "function-description": "Composes the resultCc from the rawCc",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-300",
-                "dpmdp-1-1-0-function-p-350",
-                "dpmdp-1-1-0-function-p-440",
-                "dpmdp-1-1-0-function-p-530"
+                "dpmdp-1-2-0-function-p-300",
+                "dpmdp-1-2-0-function-p-350",
+                "dpmdp-1-2-0-function-p-440",
+                "dpmdp-1-2-0-function-p-530"
               ]
             },
             "function-profile-configuration": {
@@ -776,7 +795,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-300",
+          "uuid": "dpmdp-1-2-0-function-p-300",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -784,7 +803,7 @@
               "function-description": "Prepares the transmission mode list by removing unused transmission modes and completing used ones with AirInterface capacity",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-330"
+                "dpmdp-1-2-0-function-p-330"
               ]
             },
             "function-profile-configuration": {
@@ -793,7 +812,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-330",
+          "uuid": "dpmdp-1-2-0-function-p-330",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -808,7 +827,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-350",
+          "uuid": "dpmdp-1-2-0-function-p-350",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -816,9 +835,9 @@
               "function-description": "Iterates through all AirInterface historical performance data slices and calls the processing Functions",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-360",
-                "dpmdp-1-1-0-function-p-380",
-                "dpmdp-1-1-0-function-p-410"
+                "dpmdp-1-2-0-function-p-360",
+                "dpmdp-1-2-0-function-p-380",
+                "dpmdp-1-2-0-function-p-410"
               ]
             },
             "function-profile-configuration": {
@@ -827,7 +846,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-360",
+          "uuid": "dpmdp-1-2-0-function-p-360",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -842,7 +861,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-380",
+          "uuid": "dpmdp-1-2-0-function-p-380",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -850,19 +869,19 @@
               "function-description": "Removes out-of-range level attributes from a performance data slice",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-381",
+                  "parameter": "dpmdp-1-2-0-string-p-381",
                   "owner": "engineering"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-382",
+                  "parameter": "dpmdp-1-2-0-string-p-382",
                   "owner": "engineering"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-383",
+                  "parameter": "dpmdp-1-2-0-string-p-383",
                   "owner": "engineering"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-384",
+                  "parameter": "dpmdp-1-2-0-string-p-384",
                   "owner": "engineering"
                 }
               ],
@@ -874,7 +893,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-381",
+          "uuid": "dpmdp-1-2-0-string-p-381",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -887,7 +906,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-382",
+          "uuid": "dpmdp-1-2-0-string-p-382",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -900,7 +919,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-383",
+          "uuid": "dpmdp-1-2-0-string-p-383",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -913,7 +932,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-384",
+          "uuid": "dpmdp-1-2-0-string-p-384",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -926,7 +945,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-410",
+          "uuid": "dpmdp-1-2-0-function-p-410",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -934,95 +953,95 @@
               "function-description": "Deletes attributes with default values from the transferred object",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-411",
+                  "parameter": "dpmdp-1-2-0-string-p-411",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-412",
+                  "parameter": "dpmdp-1-2-0-string-p-412",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-413",
+                  "parameter": "dpmdp-1-2-0-string-p-413",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-414",
+                  "parameter": "dpmdp-1-2-0-string-p-414",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-415",
+                  "parameter": "dpmdp-1-2-0-string-p-415",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-416",
+                  "parameter": "dpmdp-1-2-0-string-p-416",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-417",
+                  "parameter": "dpmdp-1-2-0-string-p-417",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-419",
+                  "parameter": "dpmdp-1-2-0-string-p-419",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-420",
+                  "parameter": "dpmdp-1-2-0-string-p-420",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-421",
+                  "parameter": "dpmdp-1-2-0-string-p-421",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-422",
+                  "parameter": "dpmdp-1-2-0-string-p-422",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-423",
+                  "parameter": "dpmdp-1-2-0-string-p-423",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-424",
+                  "parameter": "dpmdp-1-2-0-string-p-424",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-425",
+                  "parameter": "dpmdp-1-2-0-string-p-425",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-426",
+                  "parameter": "dpmdp-1-2-0-string-p-426",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-427",
+                  "parameter": "dpmdp-1-2-0-string-p-427",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-428",
+                  "parameter": "dpmdp-1-2-0-string-p-428",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-429",
+                  "parameter": "dpmdp-1-2-0-string-p-429",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-430",
+                  "parameter": "dpmdp-1-2-0-string-p-430",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-431",
+                  "parameter": "dpmdp-1-2-0-string-p-431",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-432",
+                  "parameter": "dpmdp-1-2-0-string-p-432",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-433",
+                  "parameter": "dpmdp-1-2-0-string-p-433",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-434",
+                  "parameter": "dpmdp-1-2-0-string-p-434",
                   "owner": "platform"
                 }
               ],
@@ -1034,7 +1053,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-411",
+          "uuid": "dpmdp-1-2-0-string-p-411",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1047,7 +1066,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-412",
+          "uuid": "dpmdp-1-2-0-string-p-412",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1060,7 +1079,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-413",
+          "uuid": "dpmdp-1-2-0-string-p-413",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1073,7 +1092,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-414",
+          "uuid": "dpmdp-1-2-0-string-p-414",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1086,7 +1105,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-415",
+          "uuid": "dpmdp-1-2-0-string-p-415",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1099,7 +1118,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-416",
+          "uuid": "dpmdp-1-2-0-string-p-416",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1112,7 +1131,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-417",
+          "uuid": "dpmdp-1-2-0-string-p-417",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1125,7 +1144,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-419",
+          "uuid": "dpmdp-1-2-0-string-p-419",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1138,7 +1157,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-420",
+          "uuid": "dpmdp-1-2-0-string-p-420",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1151,7 +1170,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-421",
+          "uuid": "dpmdp-1-2-0-string-p-421",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1164,7 +1183,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-424",
+          "uuid": "dpmdp-1-2-0-string-p-424",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1177,7 +1196,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-425",
+          "uuid": "dpmdp-1-2-0-string-p-425",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1190,7 +1209,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-426",
+          "uuid": "dpmdp-1-2-0-string-p-426",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1203,7 +1222,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-427",
+          "uuid": "dpmdp-1-2-0-string-p-427",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1216,7 +1235,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-428",
+          "uuid": "dpmdp-1-2-0-string-p-428",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1229,7 +1248,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-429",
+          "uuid": "dpmdp-1-2-0-string-p-429",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1242,7 +1261,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-430",
+          "uuid": "dpmdp-1-2-0-string-p-430",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1255,7 +1274,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-431",
+          "uuid": "dpmdp-1-2-0-string-p-431",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1268,7 +1287,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-432",
+          "uuid": "dpmdp-1-2-0-string-p-432",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1281,7 +1300,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-433",
+          "uuid": "dpmdp-1-2-0-string-p-433",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1294,7 +1313,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-434",
+          "uuid": "dpmdp-1-2-0-string-p-434",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1307,7 +1326,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-440",
+          "uuid": "dpmdp-1-2-0-function-p-440",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1315,11 +1334,11 @@
               "function-description": "Iterates through all EthernetContainer historical performance data slices and calls the processing Functions",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-450",
-                "dpmdp-1-1-0-function-p-460",
-                "dpmdp-1-1-0-function-p-500",
-                "dpmdp-1-1-0-function-p-510",
-                "dpmdp-1-1-0-function-p-520"
+                "dpmdp-1-2-0-function-p-450",
+                "dpmdp-1-2-0-function-p-460",
+                "dpmdp-1-2-0-function-p-500",
+                "dpmdp-1-2-0-function-p-510",
+                "dpmdp-1-2-0-function-p-520"
               ]
             },
             "function-profile-configuration": {
@@ -1328,7 +1347,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-450",
+          "uuid": "dpmdp-1-2-0-function-p-450",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1343,7 +1362,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-460",
+          "uuid": "dpmdp-1-2-0-function-p-460",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1351,95 +1370,95 @@
               "function-description": "Deletes attributes with default values from the transferred object",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-461",
+                  "parameter": "dpmdp-1-2-0-string-p-461",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-462",
+                  "parameter": "dpmdp-1-2-0-string-p-462",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-463",
+                  "parameter": "dpmdp-1-2-0-string-p-463",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-464",
+                  "parameter": "dpmdp-1-2-0-string-p-464",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-465",
+                  "parameter": "dpmdp-1-2-0-string-p-465",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-466",
+                  "parameter": "dpmdp-1-2-0-string-p-466",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-467",
+                  "parameter": "dpmdp-1-2-0-string-p-467",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-468",
+                  "parameter": "dpmdp-1-2-0-string-p-468",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-469",
+                  "parameter": "dpmdp-1-2-0-string-p-469",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-470",
+                  "parameter": "dpmdp-1-2-0-string-p-470",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-471",
+                  "parameter": "dpmdp-1-2-0-string-p-471",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-472",
+                  "parameter": "dpmdp-1-2-0-string-p-472",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-473",
+                  "parameter": "dpmdp-1-2-0-string-p-473",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-474",
+                  "parameter": "dpmdp-1-2-0-string-p-474",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-475",
+                  "parameter": "dpmdp-1-2-0-string-p-475",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-476",
+                  "parameter": "dpmdp-1-2-0-string-p-476",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-477",
+                  "parameter": "dpmdp-1-2-0-string-p-477",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-478",
+                  "parameter": "dpmdp-1-2-0-string-p-478",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-479",
+                  "parameter": "dpmdp-1-2-0-string-p-479",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-480",
+                  "parameter": "dpmdp-1-2-0-string-p-480",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-481",
+                  "parameter": "dpmdp-1-2-0-string-p-481",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-482",
+                  "parameter": "dpmdp-1-2-0-string-p-482",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-483",
+                  "parameter": "dpmdp-1-2-0-string-p-483",
                   "owner": "platform"
                 }
               ],
@@ -1451,7 +1470,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-461",
+          "uuid": "dpmdp-1-2-0-string-p-461",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1464,7 +1483,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-462",
+          "uuid": "dpmdp-1-2-0-string-p-462",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1477,7 +1496,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-463",
+          "uuid": "dpmdp-1-2-0-string-p-463",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1490,7 +1509,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-464",
+          "uuid": "dpmdp-1-2-0-string-p-464",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1503,7 +1522,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-465",
+          "uuid": "dpmdp-1-2-0-string-p-465",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1516,7 +1535,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-466",
+          "uuid": "dpmdp-1-2-0-string-p-466",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1529,7 +1548,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-467",
+          "uuid": "dpmdp-1-2-0-string-p-467",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1542,7 +1561,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-468",
+          "uuid": "dpmdp-1-2-0-string-p-468",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1555,7 +1574,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-469",
+          "uuid": "dpmdp-1-2-0-string-p-469",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1568,7 +1587,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-470",
+          "uuid": "dpmdp-1-2-0-string-p-470",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1581,7 +1600,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-471",
+          "uuid": "dpmdp-1-2-0-string-p-471",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1594,7 +1613,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-472",
+          "uuid": "dpmdp-1-2-0-string-p-472",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1607,7 +1626,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-473",
+          "uuid": "dpmdp-1-2-0-string-p-473",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1620,7 +1639,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-474",
+          "uuid": "dpmdp-1-2-0-string-p-474",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1633,7 +1652,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-475",
+          "uuid": "dpmdp-1-2-0-string-p-475",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1646,7 +1665,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-476",
+          "uuid": "dpmdp-1-2-0-string-p-476",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1659,7 +1678,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-477",
+          "uuid": "dpmdp-1-2-0-string-p-477",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1672,7 +1691,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-478",
+          "uuid": "dpmdp-1-2-0-string-p-478",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1685,7 +1704,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-479",
+          "uuid": "dpmdp-1-2-0-string-p-479",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1698,7 +1717,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-480",
+          "uuid": "dpmdp-1-2-0-string-p-480",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1711,7 +1730,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-481",
+          "uuid": "dpmdp-1-2-0-string-p-481",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1724,7 +1743,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-482",
+          "uuid": "dpmdp-1-2-0-string-p-482",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1737,7 +1756,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-483",
+          "uuid": "dpmdp-1-2-0-string-p-483",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1750,7 +1769,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-500",
+          "uuid": "dpmdp-1-2-0-function-p-500",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1765,7 +1784,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-510",
+          "uuid": "dpmdp-1-2-0-function-p-510",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1780,7 +1799,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-520",
+          "uuid": "dpmdp-1-2-0-function-p-520",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1795,7 +1814,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-530",
+          "uuid": "dpmdp-1-2-0-function-p-530",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1803,11 +1822,11 @@
               "function-description": "Deletes temperature attributes with values outside pre-defined range from equipment",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-531",
+                  "parameter": "dpmdp-1-2-0-string-p-531",
                   "owner": "engineering"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-532",
+                  "parameter": "dpmdp-1-2-0-string-p-532",
                   "owner": "engineering"
                 }
               ],
@@ -1819,7 +1838,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-531",
+          "uuid": "dpmdp-1-2-0-string-p-531",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1832,7 +1851,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-532",
+          "uuid": "dpmdp-1-2-0-string-p-532",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1845,7 +1864,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-540",
+          "uuid": "dpmdp-1-2-0-function-p-540",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1860,7 +1879,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-550",
+          "uuid": "dpmdp-1-2-0-function-p-550",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1868,16 +1887,16 @@
               "function-description": "Creates onfOutputFormats from resultCc",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-551",
+                  "parameter": "dpmdp-1-2-0-string-p-551",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-552",
+                  "parameter": "dpmdp-1-2-0-string-p-552",
                   "owner": "platform"
                 }
               ],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-560"
+                "dpmdp-1-2-0-function-p-560"
               ]
             },
             "function-profile-configuration": {
@@ -1886,7 +1905,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-551",
+          "uuid": "dpmdp-1-2-0-string-p-551",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1899,7 +1918,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-552",
+          "uuid": "dpmdp-1-2-0-string-p-552",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1912,7 +1931,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-560",
+          "uuid": "dpmdp-1-2-0-function-p-560",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1927,7 +1946,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-600",
+          "uuid": "dpmdp-1-2-0-function-p-600",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -1935,15 +1954,15 @@
               "function-description": "Transfers outputFormats to their respective KafkaClient",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-601",
+                  "parameter": "dpmdp-1-2-0-string-p-601",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-602",
+                  "parameter": "dpmdp-1-2-0-string-p-602",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-603",
+                  "parameter": "dpmdp-1-2-0-string-p-603",
                   "owner": "platform"
                 }
               ],
@@ -1955,7 +1974,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-601",
+          "uuid": "dpmdp-1-2-0-string-p-601",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1964,12 +1983,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-000"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-000"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-602",
+          "uuid": "dpmdp-1-2-0-string-p-602",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1978,12 +1997,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-001"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-001"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-603",
+          "uuid": "dpmdp-1-2-0-string-p-603",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -1992,12 +2011,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-002"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-620",
+          "uuid": "dpmdp-1-2-0-function-p-620",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2005,7 +2024,7 @@
               "function-description": "Stores the resultCc into the DataStore",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-621",
+                  "parameter": "dpmdp-1-2-0-string-p-621",
                   "owner": "platform"
                 }
               ],
@@ -2017,7 +2036,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-621",
+          "uuid": "dpmdp-1-2-0-string-p-621",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -2034,7 +2053,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-640",
+          "uuid": "dpmdp-1-2-0-function-p-640",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2042,7 +2061,7 @@
               "function-description": "Transfers outputFormats to their respective KafkaClient",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-641",
+                  "parameter": "dpmdp-1-2-0-string-p-641",
                   "owner": "platform"
                 }
               ],
@@ -2054,7 +2073,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-641",
+          "uuid": "dpmdp-1-2-0-string-p-641",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -2063,12 +2082,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-kmb-c-kmb-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004"
+              "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-004"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-700",
+          "uuid": "dpmdp-1-2-0-function-p-700",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2076,9 +2095,9 @@
               "function-description": "Provides a dump of the PM data of a device from the data store",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-710",
-                "dpmdp-1-1-0-function-p-720",
-                "dpmdp-1-1-0-function-p-730"
+                "dpmdp-1-2-0-function-p-710",
+                "dpmdp-1-2-0-function-p-720",
+                "dpmdp-1-2-0-function-p-730"
               ]
             },
             "function-profile-configuration": {
@@ -2087,7 +2106,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-710",
+          "uuid": "dpmdp-1-2-0-function-p-710",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2102,7 +2121,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-720",
+          "uuid": "dpmdp-1-2-0-function-p-720",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2110,7 +2129,7 @@
               "function-description": "Composes the address information of an ElasticSearchClient",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-721",
+                  "parameter": "dpmdp-1-2-0-string-p-721",
                   "owner": "platform"
                 }
               ],
@@ -2122,7 +2141,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-721",
+          "uuid": "dpmdp-1-2-0-string-p-721",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -2131,12 +2150,12 @@
               "pattern": "^dpmdp-([0-9]+)-([0-9]+)-([0-9]+)-es-c-es-([0-9]+)-([0-9]+)-([0-9]+)-[0-9]{3}$"
             },
             "string-profile-configuration": {
-              "string-value": "dpmdp-1-1-0-es-c-es-1-0-0-021"
+              "string-value": "dpmdp-1-2-0-es-c-es-1-0-0-021"
             }
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-730",
+          "uuid": "dpmdp-1-2-0-function-p-730",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2151,7 +2170,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-760",
+          "uuid": "dpmdp-1-2-0-function-p-760",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2159,14 +2178,14 @@
               "function-description": "Provides documentation of active functions",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-751",
+                  "parameter": "dpmdp-1-2-0-string-p-751",
                   "owner": "platform"
                 }
               ],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-780",
-                "dpmdp-1-1-0-function-p-800",
-                "dpmdp-1-1-0-function-p-820"
+                "dpmdp-1-2-0-function-p-780",
+                "dpmdp-1-2-0-function-p-800",
+                "dpmdp-1-2-0-function-p-820"
               ]
             },
             "function-profile-configuration": {
@@ -2175,7 +2194,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-751",
+          "uuid": "dpmdp-1-2-0-string-p-751",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -2188,7 +2207,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-780",
+          "uuid": "dpmdp-1-2-0-function-p-780",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2203,7 +2222,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-800",
+          "uuid": "dpmdp-1-2-0-function-p-800",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2218,7 +2237,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-820",
+          "uuid": "dpmdp-1-2-0-function-p-820",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2226,7 +2245,7 @@
               "function-description": "Created text documentation of active functions",
               "parameter-list": [],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-840"
+                "dpmdp-1-2-0-function-p-840"
               ]
             },
             "function-profile-configuration": {
@@ -2235,7 +2254,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-870",
+          "uuid": "dpmdp-1-2-0-function-p-870",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2243,12 +2262,12 @@
               "function-description": "Initiates process of updating PM data for specified devices",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-1-0-string-p-871",
+                  "parameter": "dpmdp-1-2-0-string-p-871",
                   "owner": "platform"
                 }
               ],
               "sub-function-list": [
-                "dpmdp-1-1-0-function-p-890"
+                "dpmdp-1-2-0-function-p-890"
               ]
             },
             "function-profile-configuration": {
@@ -2257,7 +2276,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-string-p-871",
+          "uuid": "dpmdp-1-2-0-string-p-871",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -2270,7 +2289,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-1-0-function-p-890",
+          "uuid": "dpmdp-1-2-0-function-p-890",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -2288,11 +2307,11 @@
     },
     "logical-termination-point": [
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-000",
+        "uuid": "dpmdp-1-2-0-op-s-bm-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2311,11 +2330,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-001",
+        "uuid": "dpmdp-1-2-0-op-s-bm-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2334,11 +2353,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-002",
+        "uuid": "dpmdp-1-2-0-op-s-bm-002",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2357,11 +2376,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-003",
+        "uuid": "dpmdp-1-2-0-op-s-bm-003",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2380,11 +2399,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-004",
+        "uuid": "dpmdp-1-2-0-op-s-bm-004",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2403,11 +2422,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-005",
+        "uuid": "dpmdp-1-2-0-op-s-bm-005",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2426,11 +2445,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-007",
+        "uuid": "dpmdp-1-2-0-op-s-bm-007",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2449,11 +2468,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-008",
+        "uuid": "dpmdp-1-2-0-op-s-bm-008",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2472,11 +2491,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-009",
+        "uuid": "dpmdp-1-2-0-op-s-bm-009",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2495,11 +2514,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-010",
+        "uuid": "dpmdp-1-2-0-op-s-bm-010",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2518,11 +2537,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-011",
+        "uuid": "dpmdp-1-2-0-op-s-bm-011",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2541,11 +2560,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-012",
+        "uuid": "dpmdp-1-2-0-op-s-bm-012",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2564,11 +2583,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-013",
+        "uuid": "dpmdp-1-2-0-op-s-bm-013",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2587,11 +2606,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-014",
+        "uuid": "dpmdp-1-2-0-op-s-bm-014",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2610,11 +2629,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bm-015",
+        "uuid": "dpmdp-1-2-0-op-s-bm-015",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2633,11 +2652,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-im-000",
+        "uuid": "dpmdp-1-2-0-op-s-im-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2656,11 +2675,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bs-000",
+        "uuid": "dpmdp-1-2-0-op-s-bs-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2679,11 +2698,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bs-001",
+        "uuid": "dpmdp-1-2-0-op-s-bs-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2702,11 +2721,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bs-002",
+        "uuid": "dpmdp-1-2-0-op-s-bs-002",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2725,11 +2744,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bs-003",
+        "uuid": "dpmdp-1-2-0-op-s-bs-003",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2748,11 +2767,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bs-004",
+        "uuid": "dpmdp-1-2-0-op-s-bs-004",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2771,11 +2790,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-bs-005",
+        "uuid": "dpmdp-1-2-0-op-s-bs-005",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2794,11 +2813,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-is-000",
+        "uuid": "dpmdp-1-2-0-op-s-is-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2817,11 +2836,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-is-001",
+        "uuid": "dpmdp-1-2-0-op-s-is-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2840,11 +2859,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-s-is-010",
+        "uuid": "dpmdp-1-2-0-op-s-is-010",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "layer-protocol": [
           {
@@ -2863,37 +2882,37 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-s-000",
+        "uuid": "dpmdp-1-2-0-http-s-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [
-          "dpmdp-1-1-0-op-s-bm-000",
-          "dpmdp-1-1-0-op-s-bm-001",
-          "dpmdp-1-1-0-op-s-bm-002",
-          "dpmdp-1-1-0-op-s-bm-003",
-          "dpmdp-1-1-0-op-s-bm-004",
-          "dpmdp-1-1-0-op-s-bm-005",
-          "dpmdp-1-1-0-op-s-bm-007",
-          "dpmdp-1-1-0-op-s-bm-008",
-          "dpmdp-1-1-0-op-s-bm-009",
-          "dpmdp-1-1-0-op-s-bm-010",
-          "dpmdp-1-1-0-op-s-bm-011",
-          "dpmdp-1-1-0-op-s-bm-012",
-          "dpmdp-1-1-0-op-s-bm-013",
-          "dpmdp-1-1-0-op-s-bm-014",
-          "dpmdp-1-1-0-op-s-bm-015",
-          "dpmdp-1-1-0-op-s-im-000",
-          "dpmdp-1-1-0-op-s-bs-000",
-          "dpmdp-1-1-0-op-s-bs-001",
-          "dpmdp-1-1-0-op-s-bs-002",
-          "dpmdp-1-1-0-op-s-bs-003",
-          "dpmdp-1-1-0-op-s-bs-004",
-          "dpmdp-1-1-0-op-s-bs-005",
-          "dpmdp-1-1-0-op-s-is-000",
-          "dpmdp-1-1-0-op-s-is-001",
-          "dpmdp-1-1-0-op-s-is-010"
+          "dpmdp-1-2-0-op-s-bm-000",
+          "dpmdp-1-2-0-op-s-bm-001",
+          "dpmdp-1-2-0-op-s-bm-002",
+          "dpmdp-1-2-0-op-s-bm-003",
+          "dpmdp-1-2-0-op-s-bm-004",
+          "dpmdp-1-2-0-op-s-bm-005",
+          "dpmdp-1-2-0-op-s-bm-007",
+          "dpmdp-1-2-0-op-s-bm-008",
+          "dpmdp-1-2-0-op-s-bm-009",
+          "dpmdp-1-2-0-op-s-bm-010",
+          "dpmdp-1-2-0-op-s-bm-011",
+          "dpmdp-1-2-0-op-s-bm-012",
+          "dpmdp-1-2-0-op-s-bm-013",
+          "dpmdp-1-2-0-op-s-bm-014",
+          "dpmdp-1-2-0-op-s-bm-015",
+          "dpmdp-1-2-0-op-s-im-000",
+          "dpmdp-1-2-0-op-s-bs-000",
+          "dpmdp-1-2-0-op-s-bs-001",
+          "dpmdp-1-2-0-op-s-bs-002",
+          "dpmdp-1-2-0-op-s-bs-003",
+          "dpmdp-1-2-0-op-s-bs-004",
+          "dpmdp-1-2-0-op-s-bs-005",
+          "dpmdp-1-2-0-op-s-is-000",
+          "dpmdp-1-2-0-op-s-is-001",
+          "dpmdp-1-2-0-op-s-is-010"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-s-000"
+          "dpmdp-1-2-0-tcp-s-000"
         ],
         "layer-protocol": [
           {
@@ -2919,6 +2938,12 @@
                     "release-number": "1.1.0",
                     "release-date": "05.06.2026",
                     "changes": "Adds busy hour KPIs, adds PM data quality monitoring, adds three new services for dumping device PM data and providing process documentation and advancing individual devices, provides diverse ONF based output, improves performance"
+                  },
+                  {
+                    "local-id": "2",
+                    "release-number": "1.2.0",
+                    "release-date": "30.11.2026",
+                    "changes": "Corrects findings from 1.1.0"
                   }
                 ]
               }
@@ -2927,10 +2952,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-s-000",
+        "uuid": "dpmdp-1-2-0-tcp-s-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SOURCE",
         "client-ltp": [
-          "dpmdp-1-1-0-http-s-000"
+          "dpmdp-1-2-0-http-s-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -2944,18 +2969,18 @@
                 "local-address": {
                   "ipv-4-address": "127.0.0.1"
                 },
-                "local-port": 4033
+                "local-port": 4037
               }
             }
           }
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-007",
+        "uuid": "dpmdp-1-2-0-es-c-es-1-0-0-007",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-es-1-0-0-000"
+          "dpmdp-1-2-0-http-c-es-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -2977,11 +3002,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-018",
+        "uuid": "dpmdp-1-2-0-es-c-es-1-0-0-018",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-es-1-0-0-000"
+          "dpmdp-1-2-0-http-c-es-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3003,11 +3028,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-020",
+        "uuid": "dpmdp-1-2-0-es-c-es-1-0-0-020",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-es-1-0-0-000"
+          "dpmdp-1-2-0-http-c-es-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3029,11 +3054,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-021",
+        "uuid": "dpmdp-1-2-0-es-c-es-1-0-0-021",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-es-1-0-0-000"
+          "dpmdp-1-2-0-http-c-es-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3055,16 +3080,16 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-es-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-http-c-es-1-0-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-es-c-es-1-0-0-007",
-          "dpmdp-1-1-0-es-c-es-1-0-0-018",
-          "dpmdp-1-1-0-es-c-es-1-0-0-020",
-          "dpmdp-1-1-0-es-c-es-1-0-0-021"
+          "dpmdp-1-2-0-es-c-es-1-0-0-007",
+          "dpmdp-1-2-0-es-c-es-1-0-0-018",
+          "dpmdp-1-2-0-es-c-es-1-0-0-020",
+          "dpmdp-1-2-0-es-c-es-1-0-0-021"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-es-1-0-0-000"
+          "dpmdp-1-2-0-tcp-c-es-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3080,10 +3105,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-es-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-es-1-0-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-es-1-0-0-000"
+          "dpmdp-1-2-0-http-c-es-1-0-0-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3105,11 +3130,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-http-c-kmb-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3125,11 +3150,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-001",
+        "uuid": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-http-c-kmb-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3145,11 +3170,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002",
+        "uuid": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-002",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-http-c-kmb-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3165,11 +3190,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-003",
+        "uuid": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-003",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-http-c-kmb-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3185,11 +3210,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004",
+        "uuid": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-004",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-http-c-kmb-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3205,17 +3230,17 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-kmb-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-http-c-kmb-1-0-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-kmb-c-kmb-1-0-0-000",
-          "dpmdp-1-1-0-kmb-c-kmb-1-0-0-001",
-          "dpmdp-1-1-0-kmb-c-kmb-1-0-0-002",
-          "dpmdp-1-1-0-kmb-c-kmb-1-0-0-003",
-          "dpmdp-1-1-0-kmb-c-kmb-1-0-0-004"
+          "dpmdp-1-2-0-kmb-c-kmb-1-0-0-000",
+          "dpmdp-1-2-0-kmb-c-kmb-1-0-0-001",
+          "dpmdp-1-2-0-kmb-c-kmb-1-0-0-002",
+          "dpmdp-1-2-0-kmb-c-kmb-1-0-0-003",
+          "dpmdp-1-2-0-kmb-c-kmb-1-0-0-004"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-tcp-c-kmb-1-0-0-000"
         ],
         "layer-protocol": [
           {
@@ -3231,10 +3256,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-kmb-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-kmb-1-0-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-kmb-1-0-0-000"
+          "dpmdp-1-2-0-http-c-kmb-1-0-0-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3256,11 +3281,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-or-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-op-c-bm-or-1-1-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-or-1-0-0-000"
+          "dpmdp-1-2-0-http-c-or-1-1-0-000"
         ],
         "layer-protocol": [
           {
@@ -3280,13 +3305,13 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-or-1-0-0-000",
+        "uuid": "dpmdp-1-2-0-http-c-or-1-1-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-bm-or-1-0-0-000"
+          "dpmdp-1-2-0-op-c-bm-or-1-1-0-000"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-or-1-0-0-000"
+          "dpmdp-1-2-0-tcp-c-or-1-1-0-000"
         ],
         "layer-protocol": [
           {
@@ -3295,51 +3320,6 @@
             "http-client-interface-1-0:http-client-interface-pac": {
               "http-client-interface-configuration": {
                 "application-name": "OldRelease",
-                "release-number": "1.0.0"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "uuid": "dpmdp-1-1-0-tcp-c-or-1-0-0-000",
-        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-        "client-ltp": [
-          "dpmdp-1-1-0-http-c-or-1-0-0-000"
-        ],
-        "server-ltp": [],
-        "layer-protocol": [
-          {
-            "local-id": "0",
-            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
-            "tcp-client-interface-1-0:tcp-client-interface-pac": {
-              "tcp-client-interface-configuration": {
-                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
-                "remote-address": {
-                  "ip-address": {
-                    "ipv-4-address": "127.0.0.1"
-                  }
-                },
-                "remote-port": 4031
-              }
-            }
-          }
-        ]
-      },
-      {
-        "uuid": "dpmdp-1-1-0-http-c-nr-1-1-0-000",
-        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
-        "client-ltp": [],
-        "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-nr-1-1-0-000"
-        ],
-        "layer-protocol": [
-          {
-            "local-id": "0",
-            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
-            "http-client-interface-1-0:http-client-interface-pac": {
-              "http-client-interface-configuration": {
-                "application-name": "NewRelease",
                 "release-number": "1.1.0"
               }
             }
@@ -3347,10 +3327,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-nr-1-1-0-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-or-1-1-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-nr-1-1-0-000"
+          "dpmdp-1-2-0-http-c-or-1-1-0-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3372,11 +3352,56 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-nr-1-2-0-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-ro-2-1-2-000"
+          "dpmdp-1-2-0-tcp-c-nr-1-2-0-000"
+        ],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "http-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_HTTP_LAYER",
+            "http-client-interface-1-0:http-client-interface-pac": {
+              "http-client-interface-configuration": {
+                "application-name": "NewRelease",
+                "release-number": "1.2.0"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-2-0-tcp-c-nr-1-2-0-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [
+          "dpmdp-1-2-0-http-c-nr-1-2-0-000"
+        ],
+        "server-ltp": [],
+        "layer-protocol": [
+          {
+            "local-id": "0",
+            "layer-protocol-name": "tcp-client-interface-1-0:LAYER_PROTOCOL_NAME_TYPE_TCP_LAYER",
+            "tcp-client-interface-1-0:tcp-client-interface-pac": {
+              "tcp-client-interface-configuration": {
+                "remote-protocol": "tcp-client-interface-1-0:PROTOCOL_TYPE_HTTP",
+                "remote-address": {
+                  "ip-address": {
+                    "ipv-4-address": "127.0.0.1"
+                  }
+                },
+                "remote-port": 4037
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-000",
+        "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
+        "client-ltp": [],
+        "server-ltp": [
+          "dpmdp-1-2-0-http-c-ro-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3396,11 +3421,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-001",
+        "uuid": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-ro-2-1-2-000"
+          "dpmdp-1-2-0-http-c-ro-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3420,11 +3445,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-002",
+        "uuid": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-002",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-ro-2-1-2-000"
+          "dpmdp-1-2-0-http-c-ro-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3444,11 +3469,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-003",
+        "uuid": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-003",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-ro-2-1-2-000"
+          "dpmdp-1-2-0-http-c-ro-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3468,16 +3493,16 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-ro-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-ro-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-bm-ro-2-1-2-000",
-          "dpmdp-1-1-0-op-c-bm-ro-2-1-2-001",
-          "dpmdp-1-1-0-op-c-bm-ro-2-1-2-002",
-          "dpmdp-1-1-0-op-c-bm-ro-2-1-2-003"
+          "dpmdp-1-2-0-op-c-bm-ro-2-1-2-000",
+          "dpmdp-1-2-0-op-c-bm-ro-2-1-2-001",
+          "dpmdp-1-2-0-op-c-bm-ro-2-1-2-002",
+          "dpmdp-1-2-0-op-c-bm-ro-2-1-2-003"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-ro-2-1-2-000"
+          "dpmdp-1-2-0-tcp-c-ro-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3493,10 +3518,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-ro-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-ro-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-ro-2-1-2-000"
+          "dpmdp-1-2-0-http-c-ro-2-1-2-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3518,11 +3543,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bs-eatl-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-op-c-bs-eatl-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-eatl-2-1-2-000"
+          "dpmdp-1-2-0-http-c-eatl-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3543,13 +3568,13 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-eatl-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-eatl-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-bs-eatl-2-1-2-000"
+          "dpmdp-1-2-0-op-c-bs-eatl-2-1-2-000"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-eatl-2-1-2-000"
+          "dpmdp-1-2-0-tcp-c-eatl-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3565,10 +3590,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-eatl-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-eatl-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-eatl-2-1-2-000"
+          "dpmdp-1-2-0-http-c-eatl-2-1-2-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3590,11 +3615,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bs-ol-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-op-c-bs-ol-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-ol-2-1-2-000"
+          "dpmdp-1-2-0-http-c-ol-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3614,13 +3639,13 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-ol-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-ol-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-bs-ol-2-1-2-000"
+          "dpmdp-1-2-0-op-c-bs-ol-2-1-2-000"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-ol-2-1-2-000"
+          "dpmdp-1-2-0-tcp-c-ol-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3636,10 +3661,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-ol-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-ol-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-ol-2-1-2-000"
+          "dpmdp-1-2-0-http-c-ol-2-1-2-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3661,11 +3686,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bs-aa-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-op-c-bs-aa-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-aa-2-1-2-000"
+          "dpmdp-1-2-0-http-c-aa-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3685,13 +3710,13 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-aa-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-aa-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-bs-aa-2-1-2-000"
+          "dpmdp-1-2-0-op-c-bs-aa-2-1-2-000"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-aa-2-1-2-000"
+          "dpmdp-1-2-0-tcp-c-aa-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3707,10 +3732,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-aa-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-aa-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-aa-2-1-2-000"
+          "dpmdp-1-2-0-http-c-aa-2-1-2-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3732,11 +3757,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3756,11 +3781,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-001",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3780,11 +3805,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-002",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-002",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3804,11 +3829,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-003",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-003",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3828,11 +3853,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-004",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-004",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3852,11 +3877,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-005",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-005",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3876,18 +3901,18 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-alt-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-alt-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-bm-alt-2-1-2-000",
-          "dpmdp-1-1-0-op-c-bm-alt-2-1-2-001",
-          "dpmdp-1-1-0-op-c-bm-alt-2-1-2-002",
-          "dpmdp-1-1-0-op-c-bm-alt-2-1-2-003",
-          "dpmdp-1-1-0-op-c-bm-alt-2-1-2-004",
-          "dpmdp-1-1-0-op-c-bm-alt-2-1-2-005"
+          "dpmdp-1-2-0-op-c-bm-alt-2-1-2-000",
+          "dpmdp-1-2-0-op-c-bm-alt-2-1-2-001",
+          "dpmdp-1-2-0-op-c-bm-alt-2-1-2-002",
+          "dpmdp-1-2-0-op-c-bm-alt-2-1-2-003",
+          "dpmdp-1-2-0-op-c-bm-alt-2-1-2-004",
+          "dpmdp-1-2-0-op-c-bm-alt-2-1-2-005"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-tcp-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3903,10 +3928,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-alt-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-alt-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -3928,11 +3953,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-000",
+        "uuid": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-alt-2-1-2-000"
+          "dpmdp-1-2-0-http-c-alt-2-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3952,11 +3977,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000",
+        "uuid": "dpmdp-1-2-0-op-c-is-mwdi-1-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-mwdi-1-1-2-000"
+          "dpmdp-1-2-0-http-c-mwdi-1-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -3976,11 +4001,11 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001",
+        "uuid": "dpmdp-1-2-0-op-c-is-mwdi-1-1-2-001",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [],
         "server-ltp": [
-          "dpmdp-1-1-0-http-c-mwdi-1-1-2-000"
+          "dpmdp-1-2-0-http-c-mwdi-1-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -4000,14 +4025,14 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-http-c-mwdi-1-1-2-000",
+        "uuid": "dpmdp-1-2-0-http-c-mwdi-1-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000",
-          "dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001"
+          "dpmdp-1-2-0-op-c-is-mwdi-1-1-2-000",
+          "dpmdp-1-2-0-op-c-is-mwdi-1-1-2-001"
         ],
         "server-ltp": [
-          "dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000"
+          "dpmdp-1-2-0-tcp-c-mwdi-1-1-2-000"
         ],
         "layer-protocol": [
           {
@@ -4023,10 +4048,10 @@
         ]
       },
       {
-        "uuid": "dpmdp-1-1-0-tcp-c-mwdi-1-1-2-000",
+        "uuid": "dpmdp-1-2-0-tcp-c-mwdi-1-1-2-000",
         "ltp-direction": "core-model-1-4:TERMINATION_DIRECTION_SINK",
         "client-ltp": [
-          "dpmdp-1-1-0-http-c-mwdi-1-1-2-000"
+          "dpmdp-1-2-0-http-c-mwdi-1-1-2-000"
         ],
         "server-ltp": [],
         "layer-protocol": [
@@ -4050,10 +4075,10 @@
     ],
     "forwarding-domain": [
       {
-        "uuid": "dpmdp-1-1-0-op-fd-000",
+        "uuid": "dpmdp-1-2-0-op-fd-000",
         "forwarding-construct": [
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-999",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-999",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4068,22 +4093,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-000"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-000"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-000"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-000",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-000",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4098,22 +4123,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-000"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-000"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-000"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-001",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-001",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4128,17 +4153,17 @@
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-001"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-or-1-0-0-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-or-1-1-0-000"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-002",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-002",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4153,142 +4178,142 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-002"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-000"
               },
               {
                 "local-id": "101",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-001"
               },
               {
                 "local-id": "102",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-002"
               },
               {
                 "local-id": "103",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-003"
               },
               {
                 "local-id": "104",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-004"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-004"
               },
               {
                 "local-id": "105",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-005"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-005"
               },
               {
                 "local-id": "106",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-007"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-007"
               },
               {
                 "local-id": "107",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-008"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-008"
               },
               {
                 "local-id": "108",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "109",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-010"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-010"
               },
               {
                 "local-id": "110",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-011"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-011"
               },
               {
                 "local-id": "111",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-012"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-012"
               },
               {
                 "local-id": "112",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-013"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-013"
               },
               {
                 "local-id": "113",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-014"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-014"
               },
               {
                 "local-id": "114",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-015"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-015"
               },
               {
                 "local-id": "115",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-im-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-im-000"
               },
               {
                 "local-id": "116",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bs-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bs-000"
               },
               {
                 "local-id": "117",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bs-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bs-001"
               },
               {
                 "local-id": "118",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bs-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bs-002"
               },
               {
                 "local-id": "119",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bs-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bs-003"
               },
               {
                 "local-id": "120",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bs-004"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bs-004"
               },
               {
                 "local-id": "121",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bs-005"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bs-005"
               },
               {
                 "local-id": "122",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-is-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-is-000"
               },
               {
                 "local-id": "123",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-is-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-is-001"
               },
               {
                 "local-id": "124",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-is-010"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-is-010"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bs-eatl-2-1-2-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bs-eatl-2-1-2-000"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-003",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-003",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4303,17 +4328,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-003"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bs-ol-2-1-2-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bs-ol-2-1-2-000"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-005",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-005",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4328,22 +4353,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-012"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-012"
               },
               {
                 "local-id": "001",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-005"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-005"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bs-aa-2-1-2-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bs-aa-2-1-2-000"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-105",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-105",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4358,22 +4383,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-001"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-im-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-im-000"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-001"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-106",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-106",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4388,22 +4413,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-001"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-im-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-im-000"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-002"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-107",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-107",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4418,22 +4443,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-001"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-007"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-007"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-ro-2-1-2-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-ro-2-1-2-003"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-006",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-006",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4448,72 +4473,72 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-000"
               },
               {
                 "local-id": "101",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-001"
               },
               {
                 "local-id": "102",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-002"
               },
               {
                 "local-id": "103",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-003"
               },
               {
                 "local-id": "104",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-005"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-005"
               },
               {
                 "local-id": "105",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-007"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-007"
               },
               {
                 "local-id": "106",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "107",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-011"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-011"
               },
               {
                 "local-id": "108",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-012"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-012"
               },
               {
                 "local-id": "109",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-015"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-015"
               },
               {
                 "local-id": "110",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-im-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-im-000"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-001"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-007",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-007",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4528,22 +4553,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-013"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-013"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-002"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-008",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-008",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4558,17 +4583,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-003"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-009",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-009",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4583,17 +4608,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-004"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-004"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-010",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-010",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4608,22 +4633,22 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-004"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-004"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-005"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-005"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-011",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-011",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4638,17 +4663,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-001"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-012",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-012",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4663,17 +4688,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-002"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-002"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-013",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-013",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4688,17 +4713,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-003"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-003"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-014",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-014",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4713,17 +4738,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-004"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-004"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-bm-015",
+            "uuid": "dpmdp-1-2-0-op-fc-bm-015",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4738,17 +4763,17 @@
               {
                 "local-id": "000",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_MANAGEMENT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-bm-009"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-bm-009"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-bm-alt-2-1-2-005"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-bm-alt-2-1-2-005"
               }
             ]
           },
           {
-            "uuid": "dpmdp-1-1-0-op-fc-is-010",
+            "uuid": "dpmdp-1-2-0-op-fc-is-010",
             "name": [
               {
                 "value-name": "ForwardingKind",
@@ -4763,17 +4788,17 @@
               {
                 "local-id": "100",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_INPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-s-is-010"
+                "logical-termination-point": "dpmdp-1-2-0-op-s-is-010"
               },
               {
                 "local-id": "200",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-is-mwdi-1-1-2-000"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-is-mwdi-1-1-2-000"
               },
               {
                 "local-id": "201",
                 "port-direction": "core-model-1-4:PORT_DIRECTION_TYPE_OUTPUT",
-                "logical-termination-point": "dpmdp-1-1-0-op-c-is-mwdi-1-1-2-001"
+                "logical-termination-point": "dpmdp-1-2-0-op-c-is-mwdi-1-1-2-001"
               }
             ]
           }
