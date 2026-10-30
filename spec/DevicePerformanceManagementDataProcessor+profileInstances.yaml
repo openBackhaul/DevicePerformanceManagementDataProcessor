@@ -1220,7 +1220,7 @@ profile-instances:
       string-name: 'netexplorer-output-format'
       purpose: 'fieldsFilter'
     configuration:
-      string-value: 'equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp'
+      string-value: 'equipment-augment-1-0:control-construct-pac;equipment;logical-termination-point;batch-timestamp'
 
 
   # p1FieldsFilter

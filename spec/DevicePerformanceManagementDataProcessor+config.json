@@ -1926,7 +1926,7 @@
               "string-purpose": "fieldsFilter"
             },
             "string-profile-configuration": {
-              "string-value": "equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp"
+              "string-value": "equipment-augment-1-0:control-construct-pac;equipment;logical-termination-point;batch-timestamp"
             }
           }
         },
