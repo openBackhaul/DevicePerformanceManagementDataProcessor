@@ -1,0 +1,26 @@
+@startuml p1ExtractData
+skinparam responseMessageBelowArrow true
+
+title
+  p1ExtractData
+end title
+
+participant "requestor\n" as requestor
+participant "p1ExtractData\n" as pFF
+
+requestor -> pFF : { {DataStructure}, fieldsFilterString}
+activate pFF
+  note over pFF
+    Applies the fieldsFilterString to the given DataStructure object,
+    following the NETCONF FieldsFilter syntax and semantics.
+    This includes the uuids and localIds being present in the filtered
+    DataStructure, if any of their child elements are kept by the filter.
+
+    Creates an empty object, then successively copies relevant data
+    from the input DataStructure into the object.
+  end note
+
+requestor <-- pFF : { {filteredDataStructure} }
+deactivate pFF
+
+@enduml
