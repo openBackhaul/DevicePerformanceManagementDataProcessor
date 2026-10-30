@@ -33,3 +33,25 @@ Please find a detailed description of the [schema](./data-store-schema/dataStore
 ## NPM Module  
 
 [mw-sdn-p2-storing](https://www.npmjs.com/package/mw-sdn-p2-storing)  
+
+## Additional notes
+
+**Information on ElasticSearch representation (implementation note)**
+
+This note refers to the actual implementation.  
+
+The specification describes logical datastore paths such as: `/data-store/device={mountName}/processing-data`
+The Elasticsearch implementation stores one document per device using: `_id = mountName`
+The corresponding data is stored under:
+
+```
+_source.processing-data
+_source.result-data
+```
+
+This implementation is semantically consistent with the specified datastore schema. However, the physical Elasticsearch representation is documented here to prevent the logical datastore path from being interpreted as the Elasticsearch document ID, for example: `device={mountName}/processing-data`
+
+Note that:
+- the Elasticsearch document ID is the mount name;
+- processing-data and result-data are fields in the same device document;
+- the logical datastore URL is not the physical Elasticsearch document ID.
