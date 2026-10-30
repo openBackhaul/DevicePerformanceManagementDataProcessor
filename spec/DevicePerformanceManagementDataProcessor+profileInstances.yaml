@@ -1212,7 +1212,7 @@ profile-instances:
       string-name: 'mycom-output-format'
       purpose: 'fieldsFilter'
     configuration:
-      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name)'
+      string-value: 'equipment-augment-1-0:control-construct-pac;equipment;logical-termination-point;batch-timestamp'
 
   - profile-name: 'StringProfile'
     uuid: 'dpmdp-1-2-0-string-p-552'
