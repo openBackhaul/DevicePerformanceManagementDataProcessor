@@ -1,3 +1,4 @@
 Was sind die Pfade für die neuen/geänderten Funktionen? (das x muss geeignet gewählt werden)
 - p1ReduceData:   pxStreamPmData/pxProcessDevice/pxLoadRawCc
 - p1ExtractData:  pxStreamPmData/pxProcessDevice/pxFormattingOutputOnf
+- p2ResolveEsAddress: pxStreamPmData
