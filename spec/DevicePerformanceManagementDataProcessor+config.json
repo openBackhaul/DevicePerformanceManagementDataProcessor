@@ -420,6 +420,22 @@
                 {
                   "parameter": "dpmdp-1-2-0-string-p-099",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-100",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-101",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-102",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-103",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -515,7 +531,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-096",
+          "uuid": "dpmdp-1-2-0-string-p-098",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -528,7 +544,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-096",
+          "uuid": "dpmdp-1-2-0-string-p-099",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -537,6 +553,74 @@
             },
             "string-profile-configuration": {
               "string-value": "<path>/key.pem"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-100",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "aptTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-101",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "netexplorerTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-102",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mycomTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-103",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "pmDataQualityTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
             }
           }
         },

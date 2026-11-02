@@ -253,6 +253,15 @@ profile-instances:
         - parameter: 'dpmdp-1-2-0-string-p-098'
           owner: 'platform'
         - parameter: 'dpmdp-1-2-0-string-p-099'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-100'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-101'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-102'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-103'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -312,7 +321,7 @@ profile-instances:
       string-value: '<path>/trust.pem'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-096'
+    uuid: 'dpmdp-1-2-0-string-p-098'
     capability:
       string-name: 'sslCertificateLocation'
       purpose: 'kafkaClientSsl'
@@ -320,12 +329,56 @@ profile-instances:
       string-value: '<path>/cert.pem'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-096'
+    uuid: 'dpmdp-1-2-0-string-p-099'
     capability:
       string-name: 'sslkeyLocation'
       purpose: 'kafkaClientSsl'
     configuration:
       string-value: '<path>/key.pem'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-100'
+    capability:
+      string-name: 'aptTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-101'
+    capability:
+      string-name: 'netexplorerTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-102'
+    capability:
+      string-name: 'mycomTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-103'
+    capability:
+      string-name: 'pmDataQualityTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
 
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
