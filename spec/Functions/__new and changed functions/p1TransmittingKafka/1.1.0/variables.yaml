@@ -63,3 +63,9 @@ transmitting-kafka:
       description: >
         'Object to be sent via Kafka
         from [/transmitting-kafka/output-format={format-name}/output-format]'
+
+    kafka-consumer-name:
+      type: string
+      description: >
+        'Name of the Kafka consumer for transmitting
+        from [/init-kafka/parameters/parameter=*/parameter-name] for [/parameters/parameter=*/purpose] == kafkaConsumer'
