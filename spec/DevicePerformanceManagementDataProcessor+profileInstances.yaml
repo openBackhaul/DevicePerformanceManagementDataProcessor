@@ -1339,6 +1339,12 @@ profile-instances:
           owner: 'platform'
         - parameter: 'dpmdp-1-2-0-string-p-603'
           owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-606'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-607'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-608'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -1370,6 +1376,35 @@ profile-instances:
     configuration:
       string-value: 'dpmdp-1-2-0-kmb-c-kmb-1-0-0-002'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-606'
+    capability:
+      string-name: 'apt-output-format'
+      purpose: 'kafkaConsumer'
+      enum:
+        - 'APT'
+    configuration:
+      string-value: 'APT'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-607'
+    capability:
+      string-name: 'mycom-output-format'
+      purpose: 'kafkaConsumer'
+      enum:
+        - 'MYCOM'
+    configuration:
+      string-value: 'MYCOM'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-608'
+    capability:
+      string-name: 'netexplorer-output-format'
+      purpose: 'kafkaConsumer'
+      enum:
+        - 'NETEXPLORER'
+    configuration:
+      string-value: 'NETEXPLORER'
 
   # p2Storing
   - profile-name: 'FunctionProfile'
@@ -1396,7 +1431,7 @@ profile-instances:
       string-value: 'deactivated'
 
 
-  # p1TransmittingPmData
+  # p1TransmittingKafka
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-2-0-function-p-640'
     capability:
@@ -1404,6 +1439,8 @@ profile-instances:
       function-description: 'Transfers outputFormats to their respective KafkaClient'
       parameter-list:
         - parameter: 'dpmdp-1-2-0-string-p-641'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-642'
           owner: 'platform'
       sub-function-list:
     configuration:
@@ -1418,6 +1455,15 @@ profile-instances:
     configuration:
       string-value: 'dpmdp-1-2-0-kmb-c-kmb-1-0-0-004'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-642'
+    capability:
+      string-name: 'pm-data-quality-output-format'
+      purpose: 'kafkaConsumer'
+      enum:
+        - 'PM_DATA_QUALITY'
+    configuration:
+      string-value: 'PM_DATA_QUALITY'
 
   # provideDeviceDataStoreDump
   - profile-name: 'FunctionProfile'

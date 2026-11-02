@@ -131,6 +131,9 @@ clients:
       - uuid: dpmdp-1-2-0-kmb-c-kmb-1-0-0-001
         topic-name: onf_format
         type: provider
+      - uuid: dpmdp-1-2-0-kmb-c-kmb-1-0-0-004
+        topic-name: pmDataQuality_format
+        type: provider
 
   - http-client:
       application-name: OldRelease

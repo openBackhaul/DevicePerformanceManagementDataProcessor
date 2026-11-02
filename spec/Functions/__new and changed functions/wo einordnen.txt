@@ -4,4 +4,8 @@ Was sind die Pfade für die neuen/geänderten Funktionen? (das x muss geeignet g
 - p2ResolveEsAddress: pxStreamPmData
 
 - p3CreateResultCc: pxStreamPmData/pxProcessDevice
+
 - p1InitKafka: 1.1.0 - normal in p1InitKafka Ordner hinzufügen (unter pXStreamPmData)
+- p1TranmsmittingKafka: 1.1.0
+  - unter pxStreamPmData liegt nur der leere Ordner
+  - unter pxProcessDevice liegt der Ordner nochmal, aber mit der Spec

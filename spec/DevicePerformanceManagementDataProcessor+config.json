@@ -2119,6 +2119,18 @@
                 {
                   "parameter": "dpmdp-1-2-0-string-p-603",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-606",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-607",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-608",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -2171,6 +2183,54 @@
           }
         },
         {
+          "uuid": "dpmdp-1-2-0-string-p-606",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "apt-output-format",
+              "string-purpose": "kafkaConsumer",
+              "enum": [
+                "APT"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "APT"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-607",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mycom-output-format",
+              "string-purpose": "kafkaConsumer",
+              "enum": [
+                "MYCOM"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "MYCOM"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-608",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "netexplorer-output-format",
+              "string-purpose": "kafkaConsumer",
+              "enum": [
+                "NETEXPLORER"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "NETEXPLORER"
+            }
+          }
+        },
+        {
           "uuid": "dpmdp-1-2-0-function-p-620",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
@@ -2218,7 +2278,11 @@
                 {
                   "parameter": "dpmdp-1-2-0-string-p-641",
                   "owner": "platform"
+                },                {
+                  "parameter": "dpmdp-1-2-0-string-p-642",
+                  "owner": "platform"
                 }
+
               ],
               "sub-function-list": []
             },
@@ -2238,6 +2302,22 @@
             },
             "string-profile-configuration": {
               "string-value": "dpmdp-1-2-0-kmb-c-kmb-1-0-0-004"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-642",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "pm-data-quality-output-format",
+              "string-purpose": "kafkaConsumer",
+              "enum": [
+                "PM_DATA_QUALITY"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "PM_DATA_QUALITY"
             }
           }
         },
@@ -3391,7 +3471,6 @@
           "dpmdp-1-2-0-kmb-c-kmb-1-0-0-000",
           "dpmdp-1-2-0-kmb-c-kmb-1-0-0-001",
           "dpmdp-1-2-0-kmb-c-kmb-1-0-0-002",
-          "dpmdp-1-2-0-kmb-c-kmb-1-0-0-003",
           "dpmdp-1-2-0-kmb-c-kmb-1-0-0-004"
         ],
         "server-ltp": [
