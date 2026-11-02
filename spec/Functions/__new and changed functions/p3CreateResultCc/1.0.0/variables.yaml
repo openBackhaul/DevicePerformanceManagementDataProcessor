@@ -443,17 +443,13 @@ create-result-cc:
                                               'Sum of errored and dropped frames on the egress
                                               requires {$p1CalculateEthernetKpis}'
                                           oversized-frames-ingress:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
                                           undersized-frames-ingress:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
                                           jabber-frames-ingress:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
                                           unknown-protocol-frames-input:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
         batch-timestamp:
           type: string
           description: >
