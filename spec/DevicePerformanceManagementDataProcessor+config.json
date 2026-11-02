@@ -267,7 +267,7 @@
                 "dpmdp-1-2-0-function-p-030",
                 "dpmdp-1-2-0-function-p-060",
                 "dpmdp-1-2-0-function-p-090",
-                "dpmdp-1-2-0-function-p-100",
+                "dpmdp-1-2-0-function-p-110",
                 "dpmdp-1-2-0-function-p-120",
                 "dpmdp-1-2-0-function-p-150",
                 "dpmdp-1-2-0-function-p-640"
@@ -420,6 +420,22 @@
                 {
                   "parameter": "dpmdp-1-2-0-string-p-099",
                   "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-100",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-101",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-102",
+                  "owner": "platform"
+                },
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-103",
+                  "owner": "platform"
                 }
               ],
               "sub-function-list": []
@@ -515,7 +531,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-096",
+          "uuid": "dpmdp-1-2-0-string-p-098",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -528,7 +544,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-096",
+          "uuid": "dpmdp-1-2-0-string-p-099",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -541,7 +557,75 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-function-p-100",
+          "uuid": "dpmdp-1-2-0-string-p-100",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "aptTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-101",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "netexplorerTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-102",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "mycomTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-string-p-103",
+          "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
+          "string-profile-1-0:string-profile-pac": {
+            "string-profile-capability": {
+              "string-name": "pmDataQualityTopic",
+              "string-purpose": "kafkaTopicSwitch",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "string-profile-configuration": {
+              "string-value": "active"
+            }
+          }
+        },
+        {
+          "uuid": "dpmdp-1-2-0-function-p-110",
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
@@ -549,11 +633,11 @@
               "function-description": "Cyclically cleans up old entries in the DataStore",
               "parameter-list": [
                 {
-                  "parameter": "dpmdp-1-2-0-string-p-101",
+                  "parameter": "dpmdp-1-2-0-string-p-111",
                   "owner": "platform"
                 },
                 {
-                  "parameter": "dpmdp-1-2-0-string-p-102",
+                  "parameter": "dpmdp-1-2-0-string-p-112",
                   "owner": "platform"
                 }
               ],
@@ -565,7 +649,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-101",
+          "uuid": "dpmdp-1-2-0-string-p-111",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -578,7 +662,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-102",
+          "uuid": "dpmdp-1-2-0-string-p-112",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {

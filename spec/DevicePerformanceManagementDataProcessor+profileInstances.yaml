@@ -155,7 +155,7 @@ profile-instances:
         - 'dpmdp-1-2-0-function-p-030'
         - 'dpmdp-1-2-0-function-p-060'
         - 'dpmdp-1-2-0-function-p-090'
-        - 'dpmdp-1-2-0-function-p-100'
+        - 'dpmdp-1-2-0-function-p-110'
         - 'dpmdp-1-2-0-function-p-120'
         - 'dpmdp-1-2-0-function-p-150'
         - 'dpmdp-1-2-0-function-p-640'
@@ -253,6 +253,15 @@ profile-instances:
         - parameter: 'dpmdp-1-2-0-string-p-098'
           owner: 'platform'
         - parameter: 'dpmdp-1-2-0-string-p-099'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-100'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-101'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-102'
+          owner: 'platform'
+        - parameter: 'dpmdp-1-2-0-string-p-103'
+          owner: 'platform'
       sub-function-list:
     configuration:
       is-active: true
@@ -312,7 +321,7 @@ profile-instances:
       string-value: '<path>/trust.pem'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-096'
+    uuid: 'dpmdp-1-2-0-string-p-098'
     capability:
       string-name: 'sslCertificateLocation'
       purpose: 'kafkaClientSsl'
@@ -320,30 +329,74 @@ profile-instances:
       string-value: '<path>/cert.pem'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-096'
+    uuid: 'dpmdp-1-2-0-string-p-099'
     capability:
       string-name: 'sslkeyLocation'
       purpose: 'kafkaClientSsl'
     configuration:
       string-value: '<path>/key.pem'
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-100'
+    capability:
+      string-name: 'aptTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-101'
+    capability:
+      string-name: 'netexplorerTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-102'
+    capability:
+      string-name: 'mycomTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-103'
+    capability:
+      string-name: 'pmDataQualityTopic'
+      purpose: 'kafkaTopicSwitch'
+      enum:
+        - 'active'
+        - 'inactive'
+    configuration:
+      string-value: 'active'
+
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-2-0-function-p-100'
+    uuid: 'dpmdp-1-2-0-function-p-110'
     capability:
       function-name: 'p1MaintainDs'
       function-description: 'Cyclically cleans up old entries in the DataStore'
       parameter-list:
-        - parameter: 'dpmdp-1-2-0-string-p-101'
+        - parameter: 'dpmdp-1-2-0-string-p-111'
           owner: 'platform'
-        - parameter: 'dpmdp-1-2-0-string-p-102'
+        - parameter: 'dpmdp-1-2-0-string-p-112'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: false   # deactivated by purpose, see also comments in readme of p1MaintainDs
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-101'
+    uuid: 'dpmdp-1-2-0-string-p-111'
     capability:
       string-name: 'dataStoreCleanupPeriod'
       purpose: 'Time period between two cleanup runs in hours'
@@ -351,7 +404,7 @@ profile-instances:
       string-value: '12'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-102'
+    uuid: 'dpmdp-1-2-0-string-p-112'
     capability:
       string-name: 'dataStoreRetentionPeriod'
       purpose: 'Time period for which data is retained before deletion in hours'

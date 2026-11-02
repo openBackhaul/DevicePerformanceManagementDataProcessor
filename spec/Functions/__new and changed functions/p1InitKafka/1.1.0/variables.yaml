@@ -122,3 +122,27 @@ init-kafka:
         from [/init-kafka/parameters/parameter={sslCertificateLocation}/value] for [/parameters/parameter=*/purpose] == kafkaClientSsl'
       example:
         - 'path/to/file/cert.pem'
+
+    apt-topic-switch:
+      type: string
+      description: >
+        'switch to (de-)activate Kafka topic
+        from [/init-kafka/parameters/parameter={aptTopicSwitch}/value] for [/parameters/parameter=*/purpose] == kafkaTopicSwitch'
+
+    netexplorer-topic-switch:
+      type: string
+      description: >
+        'switch to (de-)activate Kafka topic
+        from [/init-kafka/parameters/parameter={netexplorerTopicSwitch}/value] for [/parameters/parameter=*/purpose] == kafkaTopicSwitch'
+
+    mycom-topic-switch:
+      type: string
+      description: >
+        'switch to (de-)activate Kafka topic
+        from [/init-kafka/parameters/parameter={mycomTopicSwitch}/value] for [/parameters/parameter=*/purpose] == kafkaTopicSwitch'
+
+    pm-data-quality-topic-switch:
+      type: string
+      description: >
+        'switch to (de-)activate Kafka topic
+        from [/init-kafka/parameters/parameter={pmDataQualityTopicSwitch}/value] for [/parameters/parameter=*/purpose] == kafkaTopicSwitch'
