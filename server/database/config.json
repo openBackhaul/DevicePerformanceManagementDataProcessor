@@ -1899,7 +1899,7 @@
               "string-purpose": "fieldsFilter"
             },
             "string-profile-configuration": {
-              "string-value": "equipment-augment-1-0:control-construct-pac(external-label;device-model-name)"
+              "string-value": "equipment-augment-1-0:control-construct-pac;logical-termination-point;batch-timestamp"
             }
           }
         },
