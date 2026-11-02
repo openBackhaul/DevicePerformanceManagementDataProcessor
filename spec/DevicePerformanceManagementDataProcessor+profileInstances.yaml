@@ -446,20 +446,11 @@ profile-instances:
     configuration:
       is-active: true
 
-  - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-181'
-    capability:
-      string-name: 'raw-cc'
-      purpose: 'fieldsFilter'
-    configuration:
-      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(current-performance-data-list(granularity-period;timestamp));air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
-
-
-  # p1FieldsFilter
+  # p1ReduceData
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-2-0-function-p-210'
     capability:
-      function-name: 'p1FieldsFilter'
+      function-name: 'p1ReduceData'
       function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
       parameter-list:
         - parameter: 'dpmdp-1-2-0-string-p-211'
@@ -468,6 +459,13 @@ profile-instances:
     configuration:
       is-active: true
 
+  - profile-name: 'StringProfile'
+    uuid: 'dpmdp-1-2-0-string-p-211'
+    capability:
+      string-name: 'raw-cc'
+      purpose: 'fieldsFilter'
+    configuration:
+      string-value: 'equipment-augment-1-0:control-construct-pac(external-label;device-model-name);equipment(uuid;actual-equipment(local-id;physical-properties;structure));profile-collection(profile(uuid;profile-name;layer-1-aggregation-profile-1-0:layer-1-aggregation-profile-pac(layer-1-aggregation-profile-configuration(client-ltp;server-ltp-list))));logical-termination-point(uuid;client-ltp;server-ltp;ltp-augment-1-0:ltp-augment-pac(external-label;original-ltp-name);layer-protocol(local-id;layer-protocol-name;air-interface-2-0:air-interface-pac(air-interface-configuration(transmission-mode-min;transmission-mode-max;tx-power;atpc-is-on;atpc-thresh-upper;atpc-thresh-lower);air-interface-capability(transmission-mode-list);air-interface-current-performance(current-performance-data-list(granularity-period;timestamp));air-interface-historical-performances);ethernet-container-2-0:ethernet-container-pac(ethernet-container-historical-performances)))'
 
   # p2DiscardIrrelevantPmRecords
   - profile-name: 'FunctionProfile'
@@ -1223,11 +1221,11 @@ profile-instances:
       string-value: 'equipment-augment-1-0:control-construct-pac;equipment;logical-termination-point;batch-timestamp'
 
 
-  # p1FieldsFilter
+  # p1ExtractData
   - profile-name: 'FunctionProfile'
     uuid: 'dpmdp-1-2-0-function-p-560'
     capability:
-      function-name: 'p1FieldsFilter'
+      function-name: 'p1ExtractData'
       function-description: 'Filters a provided data structure according to a provided fields filter string and returns the filtered data structure'
       parameter-list:
       sub-function-list:

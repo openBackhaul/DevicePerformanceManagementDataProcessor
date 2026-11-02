@@ -699,12 +699,7 @@
             "function-profile-capability": {
               "function-name": "p2LoadRawCc",
               "function-description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
-              "parameter-list": [
-                {
-                  "parameter": "dpmdp-1-2-0-string-p-181",
-                  "owner": "platform"
-                }
-              ],
+              "parameter-list": [],
               "sub-function-list": [
                 "dpmdp-1-2-0-function-p-210",
                 "dpmdp-1-2-0-function-p-240",
@@ -717,7 +712,7 @@
           }
         },
         {
-          "uuid": "dpmdp-1-2-0-string-p-181",
+          "uuid": "dpmdp-1-2-0-string-p-211",
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
@@ -734,9 +729,14 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1FieldsFilter",
+              "function-name": "p1ReduceData",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
-              "parameter-list": [],
+              "parameter-list": [
+                {
+                  "parameter": "dpmdp-1-2-0-string-p-211",
+                  "owner": "platform"
+                }
+              ],
               "sub-function-list": []
             },
             "function-profile-configuration": {
@@ -1935,7 +1935,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1FieldsFilter",
+              "function-name": "p1ExtractData",
               "function-description": "Filters a provided data structure according to a provided fields filter string and returns the filtered data structure",
               "parameter-list": [],
               "sub-function-list": []
