@@ -155,7 +155,7 @@ profile-instances:
         - 'dpmdp-1-2-0-function-p-030'
         - 'dpmdp-1-2-0-function-p-060'
         - 'dpmdp-1-2-0-function-p-090'
-        - 'dpmdp-1-2-0-function-p-100'
+        - 'dpmdp-1-2-0-function-p-110'
         - 'dpmdp-1-2-0-function-p-120'
         - 'dpmdp-1-2-0-function-p-150'
         - 'dpmdp-1-2-0-function-p-640'
@@ -329,21 +329,21 @@ profile-instances:
 
   # p1MaintainDs
   - profile-name: 'FunctionProfile'
-    uuid: 'dpmdp-1-2-0-function-p-100'
+    uuid: 'dpmdp-1-2-0-function-p-110'
     capability:
       function-name: 'p1MaintainDs'
       function-description: 'Cyclically cleans up old entries in the DataStore'
       parameter-list:
-        - parameter: 'dpmdp-1-2-0-string-p-101'
+        - parameter: 'dpmdp-1-2-0-string-p-111'
           owner: 'platform'
-        - parameter: 'dpmdp-1-2-0-string-p-102'
+        - parameter: 'dpmdp-1-2-0-string-p-112'
           owner: 'platform'
       sub-function-list:
     configuration:
       is-active: false   # deactivated by purpose, see also comments in readme of p1MaintainDs
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-101'
+    uuid: 'dpmdp-1-2-0-string-p-111'
     capability:
       string-name: 'dataStoreCleanupPeriod'
       purpose: 'Time period between two cleanup runs in hours'
@@ -351,7 +351,7 @@ profile-instances:
       string-value: '12'
 
   - profile-name: 'StringProfile'
-    uuid: 'dpmdp-1-2-0-string-p-102'
+    uuid: 'dpmdp-1-2-0-string-p-112'
     capability:
       string-name: 'dataStoreRetentionPeriod'
       purpose: 'Time period for which data is retained before deletion in hours'
