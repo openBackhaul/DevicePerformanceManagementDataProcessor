@@ -28,10 +28,10 @@ participant "p2Resolve\nEsAddress" as p2ResolveAddress #LightBlue
 participant "p1InitKafka\n" as p1InitKafka #LightCyan
 participant "p1Update\nMwdiReplica" as p1UpdateMwdiRep
 
-participant "p2Process\nDevice" as p2ProcessPm #LightCyan
+participant "p3Process\nDevice" as p3ProcessPm #LightBlue
 
 participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus
-participant "p2LoadRawCc\n" as p2AddRaw #LightCyan
+participant "p3LoadRawCc\n" as p3AddRaw #LightBlue
 participant "p1ReduceData\n" as p1ReduceData #LightCoral
 
 
@@ -136,12 +136,12 @@ activate p2StreamPm
     group partially parallel execution of all updatedMountNames
 
       ' ProcessDevice
-      p2StreamPm -> p2ProcessPm
-      activate p2ProcessPm
+      p2StreamPm -> p3ProcessPm
+      activate p3ProcessPm
 
 
         ' Load offsets and statusData
-        p2ProcessPm -> p1LoadStatus
+        p3ProcessPm -> p1LoadStatus
         activate p1LoadStatus
 
           note over p1LoadStatus
@@ -149,30 +149,30 @@ activate p2StreamPm
             from DataStore
           end note
 
-        p2ProcessPm <-- p1LoadStatus
+        p3ProcessPm <-- p1LoadStatus
         deactivate p1LoadStatus
 
         ' Load RawCC
-        p2ProcessPm -> p2AddRaw
-        activate p2AddRaw
+        p3ProcessPm -> p3AddRaw
+        activate p3AddRaw
 
-          note over p2AddRaw
+          note over p3AddRaw
             Loads raw data to rawCc
           end note
 
           ' Apply fieldsFilter
-          p2AddRaw -> p1ReduceData
+          p3AddRaw -> p1ReduceData
           activate p1ReduceData
 
             note over p1ReduceData
               Reduces structure of rawCc
             end note
 
-          p2AddRaw <-- p1ReduceData
+          p3AddRaw <-- p1ReduceData
           deactivate p1ReduceData
 
           ' DiscardIrrelvantPmRecords
-          p2AddRaw -> p2filterPm
+          p3AddRaw -> p2filterPm
           activate p2filterPm
 
             note over p2filterPm
@@ -180,11 +180,11 @@ activate p2StreamPm
               already been processed in past
             end note
 
-          p2AddRaw <-- p2filterPm
+          p3AddRaw <-- p2filterPm
           deactivate p2filterPm
 
           ' Calculate PM data quality
-          p2AddRaw -> calPmQual
+          p3AddRaw -> calPmQual
           activate calPmQual
 
             note over calPmQual
@@ -192,22 +192,22 @@ activate p2StreamPm
               of PM data
             end note
 
-          p2AddRaw <-- calPmQual
+          p3AddRaw <-- calPmQual
           deactivate calPmQual
 
-          note over p2AddRaw
+          note over p3AddRaw
             addBatchTimestamp
           end note
 
-          note over p2AddRaw
+          note over p3AddRaw
             update offset
           end note
 
-        p2ProcessPm <-- p2AddRaw : {rawCc}
-        deactivate p2AddRaw
+        p3ProcessPm <-- p3AddRaw : {rawCc}
+        deactivate p3AddRaw
 
         ' Create resultCC
-        p2ProcessPm -> p3CreateResultCc
+        p3ProcessPm -> p3CreateResultCc
         activate p3CreateResultCc
 
           note over p3CreateResultCc
@@ -383,22 +383,22 @@ activate p2StreamPm
           p3CreateResultCc <-- p1ROoRT
           deactivate p1ROoRT
 
-        p2ProcessPm <-- p3CreateResultCc : {resultCc}
+        p3ProcessPm <-- p3CreateResultCc : {resultCc}
         deactivate p3CreateResultCc
 
         ' OutputApt
-        p2ProcessPm -> p1OutputApt
+        p3ProcessPm -> p1OutputApt
         activate p1OutputApt
 
           note over p1OutputApt
             Create APT format
           end note
 
-        p2ProcessPm <-- p1OutputApt : {aptOutputFormat}
+        p3ProcessPm <-- p1OutputApt : {aptOutputFormat}
         deactivate p1OutputApt
 
         ' OutputOnf
-        p2ProcessPm -> p1OutputOnf
+        p3ProcessPm -> p1OutputOnf
         activate p1OutputOnf
 
           loop FOR all ONF output formats
@@ -420,11 +420,11 @@ activate p2StreamPm
 
           end loop
 
-        p2ProcessPm <-- p1OutputOnf : [onfOutputFormat]
+        p3ProcessPm <-- p1OutputOnf : [onfOutputFormat]
         deactivate p1OutputOnf
 
         ' KafkaTransmission
-        p2ProcessPm -> p1Trans
+        p3ProcessPm -> p1Trans
         activate p1Trans
 
           note over p1Trans
@@ -432,11 +432,11 @@ activate p2StreamPm
             to KafkaProducerService
           end note
 
-        p2ProcessPm <-- p1Trans
+        p3ProcessPm <-- p1Trans
         deactivate p1Trans
 
         ' Storing
-        p2ProcessPm -> p2Store
+        p3ProcessPm -> p2Store
         activate p2Store
 
           note over p2Store
@@ -444,11 +444,11 @@ activate p2StreamPm
             status data to DataStore
           end note
 
-        p2ProcessPm <-- p2Store
+        p3ProcessPm <-- p2Store
         deactivate p2Store
 
-      p2StreamPm <-- p2ProcessPm : {pmDataQuality}
-      deactivate p2ProcessPm
+      p2StreamPm <-- p3ProcessPm : {pmDataQuality}
+      deactivate p3ProcessPm
 
     end group
 
