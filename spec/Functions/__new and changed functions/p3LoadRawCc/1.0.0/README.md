@@ -1,6 +1,6 @@
 # p3LoadRawCc
 
-Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data.  
+Reads ControlConstruct of a device from MWDI ES and filters non-relevant or already processed data.  
 It receives offsets from the DataStore and returns the updated offsets.  
 It returns information about the quality of the provided PM data of all AirInterfaces and EthernetContainers.  
 

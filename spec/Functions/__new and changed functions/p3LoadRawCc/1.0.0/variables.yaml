@@ -2,7 +2,7 @@ load-raw-cc:
   type: object
   required:
     - parameters
-    - mwdi-replica-es-client
+    - mwdi-es-client
     - mount-name
     - offsets
   properties:
@@ -11,11 +11,11 @@ load-raw-cc:
       description: >
         'Hierarchical object holding the parameter settings
         from {$input#/parameters}'
-    mwdi-replica-es-client:
+    mwdi-es-client:
       type: object
       description: >
-        'MWDI Replica ElasticSearch address
-        from {$input#/mwdi-replica-es-client}'
+        'MWDI ElasticSearch address
+        from {$input#/mwdi-es-client}'
     mount-name:
       type: string
       description: >
@@ -72,16 +72,16 @@ load-raw-cc:
                             for uuid = uuid of the interface being processed during the current loop iteration
                             overwritten from [/load-raw-cc/new-most-recent-period-end-time-24]'
 
-    mwdi-replica-url:
+    mwdi-url:
       type: string
       description: >
-        'ElasticSearch URL of MWDI Replica ES
-        from [/load-raw-cc/mwdi-replica-es-client/url]'
+        'ElasticSearch URL of MWDI ES
+        from [/load-raw-cc/mwdi-es-client/url]'
     raw-cc:
       type: object
       description: >
-        'rawCc read from Replica ES, but stripped to the content of the object inside the array
-        from {$readControlConstructFromReplica.output#/core-model-1-4:control-construct={[/load-raw-cc/mount-name]}}
+        'rawCc read from MWDI ES, but stripped to the content of the object inside the array
+        from {$readControlConstructFromMwdi.output#/core-model-1-4:control-construct={[/load-raw-cc/mount-name]}}
         overwritten by {$p1ReduceData.output#/filtered-data-structure}
         ! simplified representation !'
       properties:

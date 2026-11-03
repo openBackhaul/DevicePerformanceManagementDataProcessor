@@ -14,16 +14,16 @@ x-javascript-interface:
             type: object
             required:
               - parameters
-              - mwdi-replica-es-client
+              - mwdi-es-client
               - mount-name
               - offsets
             properties:
               parameters:
                 type: object
                 description: 'Hierarchical object holding the parameter settings'
-              mwdi-replica-es-client:
+              mwdi-es-client:
                 type: object
-                description: 'MWDI Replica ElasticSearch address'
+                description: 'MWDI ElasticSearch address'
               mount-name:
                 type: string
                 description: 'mountName of the device for which ControlConstruct data shall be read'
@@ -66,8 +66,8 @@ x-javascript-interface:
               enum:
                 - 'parameters not provided'
                 - 'parameters invalid'
-                - 'mwdiReplicaEsClient not provided'
-                - 'mwdiReplicaEsClient invalid'
+                - 'mwdiEsClient not provided'
+                - 'mwdiEsClient invalid'
                 - 'mountName not provided'
                 - 'mountName invalid'
                 - 'offsets not provided'
@@ -77,9 +77,9 @@ x-javascript-interface:
                 - 'pmDataQuality could not be provided'
                 - 'general processing error'
     processing:
-      readControlConstructFromReplica:
-        url: # [{/load-raw-cc/mwdi-replica-url}][/control-construct={[/load-raw-cc/mount-name]}]
-          description: 'Reads the complete ControlConstruct for the currently processed device from MWDI ES replica.'
+      readControlConstructFromMwdi:
+        url: # [{/load-raw-cc/mwdi-url}][/control-construct={[/load-raw-cc/mount-name]}]
+          description: 'Reads the complete ControlConstruct for the currently processed device from MWDI ES.'
           output:
             success:
               description: 'Raw ControlConstruct data read'
@@ -102,7 +102,7 @@ x-javascript-interface:
                   schema:
                     type: string
                     enum:
-                      - 'ata structure is missing or invalid'
+                      - 'data structure is missing or invalid'
                       - 'elasticSearch read error'
                       - 'general processing error during reading'
       p1ReduceData:
