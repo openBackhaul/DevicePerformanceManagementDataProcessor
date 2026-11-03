@@ -154,7 +154,7 @@ x-javascript-interface:
                 required:
                   - parameters
                   - mwdi-es-client
-                  - last-examination-time         # last-replica-time
+                  - last-examination-time
                 properties:
                   parameters:
                     type: object

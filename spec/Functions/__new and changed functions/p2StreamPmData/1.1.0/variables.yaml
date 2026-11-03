@@ -39,71 +39,49 @@ stream-pm-data:
               'ElasticSearch address
               from {$p2ResolveEsAddress.output#/es-address}'
 
-    last-replica-time:
+    last-examination-time:
       type: string
       pattern: '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})((\.[0-9]{1,}){0,1})(Z|[\+\-][0-9]{2}:[0-9]{2})$'
       description: >
-        'Timestamp of the last successful replication
+        'Timestamp of the last successful examination
         initial value: {2010-11-20T14:00:00+01:00}
-        later from {$p1UpdateMwdiReplica.output#/timestamp}'
+        later from {$p1ListUpdatedCcs.output#/examination-timestamp}'
 
     to-be-processed-mount-names:
       type: array
       description: >
         'Array of mount names to be processed
-        new values to be added from {$p1UpdateMwdiReplica.output#/updated-mount-names}
+        new values to be added from {$p1ListUpdatedCcs.output#/updated-mount-names}
         existing value to be removed after initiating p2ProcessDevice with it'
       items:
         type: string
 
-
-    # neu für listupdatedccs -------------------------------
-    mwdiEsName:
-      type: string
-      description: >
-        'from [$p1LoadParameters.output#/parameters/function={functionName}/parameter=mwdiEsName/value]'
-
-    mwdiEsClient:
+    mwdi-es-client:
       type: object
       description: >
-        'from [/domain-controller/es-address={mwdiEsName}]'
+        'from [/stream-pm-data/es-address=mwdiEsClient/address]'
 
-    lastExaminationTime:
-      type: string
-      description: >
-        'from [???/last-measurement-time]'
-
-    updatedMountNames:
+    updated-mount-names:
       type: array
       items:
         type: string
         description: >
-          'from [/{listUpdatedCcsFunctionName}/updated-mount-names]'
-    examinationTime:
+          'from [$p1ListUpdatedCcs.output#/updated-mount-names]'
+
+    examination-time:
       type: string
       description: >
-        'from [/{listUpdatedCcsFunctionName}/examination-time]'
+        'from [$p1ListUpdatedCcs.output#/examination-time]'
+
     errorMessage:
       type: string
       description: >
-        'from [{listUpdatedCcsFunctionName}] OR
+        'from [{p1ListUpdatedCcs}] OR
           from
             - connection to MWDI ES failed
             - ElasticSearch read error
             - controlConstruct not found in MWDI
             - general processing error'
-
-    updatedMountName:
-      type: string
-      description: >
-        'from [ updatedMountNames[i] ]'
-    controlConstruct:
-      type: object
-      description: >
-        'from [ [/mwdiEsClient/url] /control-construct={updatedMountName} ]'
-
-    #---------------------------------------------------------------------------
-
 
     output-format:
       type: array
