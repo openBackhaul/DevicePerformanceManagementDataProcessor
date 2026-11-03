@@ -144,7 +144,7 @@ x-javascript-interface:
               application/json:
                 schema:
                   type: string
-      p1UpdateMwdiReplica:
+      p1ListUpdatedCcs:
         input:
           required: true
           content:
@@ -153,39 +153,27 @@ x-javascript-interface:
                 type: object
                 required:
                   - parameters
-                  - last-replica-time
                   - mwdi-es-client
-                  - mwdi-replica-es-client
-                  - logging-es-client
+                  - last-examination-time         # last-replica-time
                 properties:
                   parameters:
                     type: object
                     description: >
                       'Hierarchical object holding the parameter settings
-                      from [/stream-pm-data/parameters/sub-function=p1UpdateMwdiReplica]'
-                  last-replica-time:
-                    type: string
-                    description: >
-                      'Timestamp of the last successful replication
-                      from [/stream-pm-data/last-replica-time]'
+                      from [/stream-pm-data/parameters/sub-function=p1ListUpdatedCcs]'
                   mwdi-es-client:
                     type: object
                     description: >
                       'MWDI ElasticSearch address
                       from [/stream-pm-data/es-address=mwdiEsClient/address]'
-                  mwdi-replica-es-client:
-                    type: object
+                  last-examination-time:
+                    type: string
                     description: >
-                      'MWDI Replica ElasticSearch address
-                      from [/stream-pm-data/es-address=mwdiReplicaEsClient/address]'
-                  logging-es-client:
-                    type: object
-                    description: >
-                      'MWDI Replica ElasticSearch address
-                      from [/stream-pm-data/es-address=loggingEsClient/address]'
+                      'Timestamp of the last examination
+                      from [/stream-pm-data/last-examination-time]'
         output:
           success:
-            description: 'Updated CCs successfully replicated'
+            description: 'Updated ControlConstructs listed'
             content:
               application/json:
                 schema:
@@ -193,21 +181,17 @@ x-javascript-interface:
                   properties:
                     updated-mount-names:
                       type: array
-                      description: >
-                        'List of MountNames of updated ControlConstructs'
                       items:
                         type: string
-                    timestamp:
+                    examination-time:
                       type: string
-                      description: >
-                        'Timestamp marking the end of the replication period'
           error:
-            description: 'Updated CCs could not be replicated'
+            description: 'Updated ControlConstructs could not be listed'
             content:
               application/json:
                 schema:
                   type: string
-      p2ProcessDevice:
+      p3ProcessDevice:
         description: 'Number of parallel processes to be automatically managed for avoiding massive peak loads'
         input:
           required: true
@@ -219,7 +203,7 @@ x-javascript-interface:
                   - parameters
                   - config-file
                   - mount-name
-                  - mwdi-replica-es-client
+                  - mwdi-es-client
                   - data-store-es-client
                 properties:
                   parameters:
@@ -237,11 +221,11 @@ x-javascript-interface:
                     description: >
                       'MountName
                       from [/stream-pm-data/to-be-processed-mount-names[n]]'
-                  mwdi-replica-es-client:
+                  mwdi-es-client:
                     type: object
                     description: >
-                      'MWDI Replica ElasticSearch address
-                      from [/stream-pm-data/es-address=mwdiReplicaEsClient/address]'
+                      'MWDI ElasticSearch address
+                      from [/stream-pm-data/es-address=mwdiEsClient/address]'
                   data-store-es-client:
                     type: object
                     description: >

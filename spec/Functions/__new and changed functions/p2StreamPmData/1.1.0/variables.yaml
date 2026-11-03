@@ -31,7 +31,6 @@ stream-pm-data:
             description: 'ElasticSearch name'
             enum:
               - 'mwdiEsClient'
-              - 'mwdiReplicaEsClient'
               - 'loggingEsClient'
               - 'dataStoreEsClient'
           address:

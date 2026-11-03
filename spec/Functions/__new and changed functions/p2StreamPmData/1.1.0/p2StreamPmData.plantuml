@@ -10,10 +10,9 @@ participant "p2StreamPmData\n" as p2Stream
 participant "p1LoadParameters\n" as p1LP
 participant "p2ResolveEsAddress\n" as p1REA
 participant "p1InitKafka\n" as p1InitKafka
-participant "p1UpdateMwdiReplica\n" as p1UMR  #LightCoral
 participant "p1ListUpdatedCcs\n" as p1UpdatedCcs #LightBlue
 participant "MWDI ES\n" as mwdi #LightBlue
-participant "p2ProcessDevice\n" as p2ProcessDev
+participant "p3ProcessDevice\n" as p3ProcessDev #LightBlue
 participant "p1Transmitting\nKafka" as p1Trans
 participant "p1MaintainDs\n" as p1MDS
 
@@ -69,35 +68,22 @@ activate p2Stream
   loop endless
 
     ' replicate MWDI ES - to be replaced
-    p2Stream -> p1UMR : { {/parameters/sub-function=p1UpdateMwdiReplica}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
-    activate p1UMR
-      note over p1UMR
-        Replicates updated CCs
+    p2Stream -> p1UpdatedCcs : { {/parameters/sub-function=p1ListUpdatedCcs}\n{mwdiEsClient}\nlastExaminationTime }
+    activate p1UpdatedCcs
+      note over p1UpdatedCcs
+        Lists CCs that are updated in MWDI
       end note
-    p2Stream <-- p1UMR : { [updatedMountNames]\ntimestamp }
-    deactivate p1UMR
-
-    note over p2Stream #LightGreen
-      vorher wurde das MWDI ES repliziert,
-      jetzt müssen stattdessen alle
-      aktualisierten CCs abgeholt werden und
-      dann im DPMDP ES abgelegt werden
-
-      beim Aufruf von p2ProcessDevice wird
-      nicht mehr der mwdiReplicaEsClient übergeben,
-      sondern direkt der MWDI Client, d.h.
-      es wird einfach nur der ES client bei
-      den input parametern geändert
-    end note
+    p2Stream <-- p1UpdatedCcs : { [updatedMountNames]\nexaminationTime\nerrorMessage }
+    deactivate p1UpdatedCcs
   
     group partially parallel execution of all updatedMountNames
-      p2Stream -> p2ProcessDev : { {/parameters/sub-function=p2ProcessDevice}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
-      activate p2ProcessDev
-        note over p2ProcessDev
+      p2Stream -> p3ProcessDev : { {/parameters/sub-function=p3ProcessDevice}\n{configFile}\nmountName\n{mwdiEsClient}\n{dataStoreEsClient} }
+      activate p3ProcessDev
+        note over p3ProcessDev
           Processes PM data
         end note
-      p2Stream <-- p2ProcessDev: { {deviceQualityPmData} }
-      deactivate p2ProcessDev
+      p2Stream <-- p3ProcessDev: { {deviceQualityPmData} }
+      deactivate p3ProcessDev
     end group
 
   p2Stream -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
