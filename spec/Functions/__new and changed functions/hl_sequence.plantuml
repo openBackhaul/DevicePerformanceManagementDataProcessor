@@ -52,7 +52,7 @@ participant "p1Categorize\nDataVolume" as p1CatDV
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
-participant "p1Formatting\nOutputApt" as p1OutputApt #LightBlue
+participant "p2Formatting\nOutputApt" as p2OutputApt #LightBlue
 participant "p2Formatting\nOutputOnf" as p1OutputOnf #LightCyan
 
 participant "p1ExtractData\n" as p1ExtractData #LightCoral
@@ -387,15 +387,15 @@ activate p2StreamPm
         deactivate p3CreateResultCc
 
         ' OutputApt
-        p3ProcessPm -> p1OutputApt
-        activate p1OutputApt
+        p3ProcessPm -> p2OutputApt
+        activate p2OutputApt
 
-          note over p1OutputApt
+          note over p2OutputApt
             Create APT format
           end note
 
-        p3ProcessPm <-- p1OutputApt : {aptOutputFormat}
-        deactivate p1OutputApt
+        p3ProcessPm <-- p2OutputApt : {aptOutputFormat}
+        deactivate p2OutputApt
 
         ' OutputOnf
         p3ProcessPm -> p1OutputOnf
