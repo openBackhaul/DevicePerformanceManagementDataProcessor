@@ -10,8 +10,9 @@ participant "p2StreamPmData\n" as p2Stream
 participant "p1LoadParameters\n" as p1LP
 participant "p2ResolveEsAddress\n" as p1REA
 participant "p1InitKafka\n" as p1InitKafka
-participant "p1UpdateMwdiReplica\n" as p1UMR
-participant "p2ProcessDevice\n" as p2ProcessDev
+participant "p1ListUpdatedCcs\n" as p1UpdatedCcs #LightBlue
+participant "MWDI ES\n" as mwdi #LightBlue
+participant "p3ProcessDevice\n" as p3ProcessDev #LightBlue
 participant "p1Transmitting\nKafka" as p1Trans
 participant "p1MaintainDs\n" as p1MDS
 
@@ -22,6 +23,7 @@ end note
 embed -> p2Stream : {}
 activate p2Stream
 
+  ' load parameters
   p2Stream -> p1LP : {functionName=\n"p2StreamPmData"}
   activate p1LP
     note over p1LP
@@ -31,6 +33,7 @@ activate p2Stream
   p2Stream <-- p1LP : { {parameters}\n{configFile} }
   deactivate p1LP
 
+  ' resolve ES addresses
   loop FOR all esName
     p2Stream -> p1REA : { {/parameters/sub-function=p2ResolveEsAddress}\n{configFile}\nesName }
     activate p1REA
@@ -41,6 +44,7 @@ activate p2Stream
     deactivate p1REA
   end loop
 
+    ' init Kafka
     p2Stream -> p1InitKafka : { {/parameters/sub-function=p1InitKafka}\n{configFile} }
     activate p1InitKafka
 
@@ -52,6 +56,8 @@ activate p2Stream
     p2Stream <-- p1InitKafka
     deactivate p1InitKafka
 
+
+  ' maintainDS
   p2Stream -> p1MDS : { {/parameters/sub-function=p1MaintainDs}\n{dataStoreEsClient} }
   activate p1MDS
     note over p1MDS
@@ -61,22 +67,23 @@ activate p2Stream
 
   loop endless
 
-    p2Stream -> p1UMR : { {/parameters/sub-function=p1UpdateMwdiReplica}\nlastReplicaTime\n{mwdiEsClient}\n{mwdiReplicaEsClient}\n{loggingEsClient} }
-    activate p1UMR
-      note over p1UMR
-        Replicates updated CCs
+    ' replicate MWDI ES - to be replaced
+    p2Stream -> p1UpdatedCcs : { {/parameters/sub-function=p1ListUpdatedCcs}\n{mwdiEsClient}\nlastExaminationTime }
+    activate p1UpdatedCcs
+      note over p1UpdatedCcs
+        Lists CCs that are updated in MWDI
       end note
-    p2Stream <-- p1UMR : { [updatedMountNames]\ntimestamp }
-    deactivate p1UMR
-
+    p2Stream <-- p1UpdatedCcs : { [updatedMountNames]\nexaminationTime\nerrorMessage }
+    deactivate p1UpdatedCcs
+  
     group partially parallel execution of all updatedMountNames
-      p2Stream -> p2ProcessDev : { {/parameters/sub-function=p2ProcessDevice}\n{configFile}\nmountName\n{mwdiReplicaEsClient}\n{dataStoreEsClient} }
-      activate p2ProcessDev
-        note over p2ProcessDev
+      p2Stream -> p3ProcessDev : { {/parameters/sub-function=p3ProcessDevice}\n{configFile}\nmountName\n{mwdiEsClient}\n{dataStoreEsClient} }
+      activate p3ProcessDev
+        note over p3ProcessDev
           Processes PM data
         end note
-      p2Stream <-- p2ProcessDev: { {deviceQualityPmData} }
-      deactivate p2ProcessDev
+      p2Stream <-- p3ProcessDev: { {deviceQualityPmData} }
+      deactivate p3ProcessDev
     end group
 
   p2Stream -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
