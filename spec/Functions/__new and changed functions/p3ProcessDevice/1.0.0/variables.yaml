@@ -4,7 +4,7 @@ process-device:
     - parameters
     - config-file
     - mount-name
-    - mwdi-replica-es-client
+    - mwdi-es-client
     - data-store-es-client
   properties:
     parameters:
@@ -22,11 +22,11 @@ process-device:
       description: >
         'MountName
         from {$input#/mount-name}'
-    mwdi-replica-es-client:
+    mwdi-es-client:
       type: object
       description: >
-        'MWDI Replica ElasticSearch address
-        from {$input#/mwdi-replica-es-client}'
+        'MWDI ElasticSearch address
+        from {$input#/mwdi-es-client}'
     data-store-es-client:
       type: object
       description: >
@@ -48,7 +48,7 @@ process-device:
     raw-cc:
       type: object
       description: >
-        'rawCc read from Replica ES, but reduced by irrelevant data
+        'rawCc read from ES, but reduced by irrelevant data
         from {$p2LoadRawCc.output#/raw-cc}'
     device-pm-data-quality:
       type: object

@@ -8,14 +8,14 @@ end title
 participant "p2StreamPmData\n" as requestor
 participant "p3ProcessDevice\n" as cur
 participant "p1LoadOffsets\nAndStatusData" as p1Offset
-participant "p2LoadRawCc\n" as p2AddRaw
+participant "p3LoadRawCc\n" as p3AddRaw
 participant "p3CreateResultCc\n" as p3CreateResCc
 participant "p2Formatting\nOutputApt" as p2OutputApt
 participant "p2Formatting\nOutputOnf" as p2OutputOnf
 participant "p1Transmitting\nKafka" as p1Trans
 participant "p2Storing\n" as p2Store
 
-requestor -> cur : { {parameters},\n{configFile},\nmountName,\n{mwdiReplicaEsClient},\n{dataStoreEsClient} }
+requestor -> cur : { {parameters},\n{configFile},\nmountName,\n{mwdiEsClient},\n{dataStoreEsClient} }
 activate cur
 
   'LoadOffsetsAndStatusData
@@ -31,10 +31,10 @@ activate cur
   deactivate p1Offset
 
   'LoadRawCc
-  cur -> p2AddRaw : { {/parameters/sub-function=p2LoadRawCc},\n{mwdiReplicaEsClient},\nmountName,\n[offsets] }
-  activate p2AddRaw
+  cur -> p3AddRaw : { {/parameters/sub-function=p2LoadRawCc},\n{mwdiEsClient},\nmountName,\n[offsets] }
+  activate p3AddRaw
 
-    note over p2AddRaw
+    note over p3AddRaw
       - Loads rawCc from MWDI ES
       - Reduces structure of rawCc
       - Deletes PM data that has
@@ -44,8 +44,8 @@ activate cur
       - Returns device PM quality data
     end note
 
-  cur <-- p2AddRaw : { {rawCc},\n[offsets],\n{deviceQualityPmData} }
-  deactivate p2AddRaw
+  cur <-- p3AddRaw : { {rawCc},\n[offsets],\n{deviceQualityPmData} }
+  deactivate p3AddRaw
 
   'CreateResultCc
   cur -> p3CreateResCc : { {/parameters/sub-function=p3CreateResultCc},\n{rawCc},\n[statusData] }

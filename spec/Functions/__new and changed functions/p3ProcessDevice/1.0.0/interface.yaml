@@ -16,7 +16,7 @@ x-javascript-interface:
               - parameters
               - config-file
               - mount-name
-              - mwdi-replica-es-client
+              - mwdi-es-client
               - data-store-es-client
             properties:
               parameters:
@@ -31,10 +31,10 @@ x-javascript-interface:
                 type: string
                 description: >
                   'MountName'
-              mwdi-replica-es-client:
+              mwdi-es-client:
                 type: object
                 description: >
-                  'MWDI Replica ElasticSearch address'
+                  'MWDI ElasticSearch address'
               data-store-es-client:
                 type: object
                 description: >
@@ -67,8 +67,8 @@ x-javascript-interface:
                 - 'configFile invalid'
                 - 'mountName not provided'
                 - 'mountName invalid'
-                - 'mwdiReplicaEsClient not provided'
-                - 'mwdiReplicaEsClient invalid'
+                - 'mwdiEsClient not provided'
+                - 'mwdiEsClient invalid'
                 - 'dataStoreEsClient not provided'
                 - 'dataStoreEsClient invalid'
                 - 'raw CC data missing or invalid'
@@ -134,7 +134,7 @@ x-javascript-interface:
                 type: object
                 required:
                   - parameters
-                  - mwdi-replica-es-client
+                  - mwdi-es-client
                   - mount-name
                   - offsets
                 properties:
@@ -143,11 +143,11 @@ x-javascript-interface:
                     description: >
                       'Subtree of the parameters object for p2LoadRawCc
                       from [/process-device/parameters/sub-function=p2LoadRawCc]'
-                  mwdi-replica-es-client:
+                  mwdi-es-client:
                     type: object
                     description: >
-                      'MWDI Replica ElasticSearch address
-                      from [/process-device/mwdi-replica-es-client]'
+                      'MWDI ElasticSearch address
+                      from [/process-device/mwdi-es-client]'
                   mount-name:
                     type: string
                     description: >
@@ -173,7 +173,7 @@ x-javascript-interface:
                     raw-cc:
                       type: object
                       description: >
-                        'rawCc read from Replica ES, but reduced by irrelevant data'
+                        'rawCc read from ES, but reduced by irrelevant data'
                     offsets:
                       type: array
                       description: >
