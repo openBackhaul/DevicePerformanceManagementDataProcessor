@@ -298,7 +298,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1ResolveEsAddress",
+              "function-name": "p2ResolveEsAddress",
               "function-description": "Composes the address information of an ElasticSearchClient",
               "parameter-list": [
                 {
@@ -679,8 +679,8 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1UpdateMwdiReplica",
-              "function-description": "Replicates updated ControlConstructs from MWDI to MWDI Replica",
+              "function-name": "p1ListUpdatedCcs",
+              "function-description": "Lists ControlConstructs that have been updated in MWDI",
               "parameter-list": [
                 {
                   "parameter": "dpmdp-1-2-0-string-p-121",
@@ -688,26 +688,6 @@
                 },
                 {
                   "parameter": "dpmdp-1-2-0-string-p-122",
-                  "owner": "platform"
-                },
-                {
-                  "parameter": "dpmdp-1-2-0-string-p-123",
-                  "owner": "platform"
-                },
-                {
-                  "parameter": "dpmdp-1-2-0-string-p-124",
-                  "owner": "platform"
-                },
-                {
-                  "parameter": "dpmdp-1-2-0-string-p-125",
-                  "owner": "platform"
-                },
-                {
-                  "parameter": "dpmdp-1-2-0-string-p-126",
-                  "owner": "platform"
-                },
-                {
-                  "parameter": "dpmdp-1-2-0-string-p-127",
                   "owner": "platform"
                 }
               ],
@@ -723,11 +703,12 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "jobName",
-              "string-purpose": "Name of the replication job"
+              "string-name": "maxAge",
+              "string-purpose": "p1ListUpdatedCcs compares the lastSuccessfulCompleteControlConstructUpdateTime of MWDI with its lastExaminationTime. If lastExaminationTime would be very old (e.g., default value), maxAge is limiting the number of entries in updatedMountNames. It is recommended to chose maxAge at least a little higher than the update period to avoid slips",
+              "pattern": "^[0-9]{1,5}$"
             },
             "string-profile-configuration": {
-              "string-value": "mwdi-replica-update-job"
+              "string-value": "485"
             }
           }
         },
@@ -736,11 +717,11 @@
           "profile-name": "string-profile-1-0:PROFILE_NAME_TYPE_STRING_PROFILE",
           "string-profile-1-0:string-profile-pac": {
             "string-profile-capability": {
-              "string-name": "syncPeriod",
-              "string-purpose": "Duration between two replications of the MWDI ES in seconds"
+              "string-name": "metaDataTablePath",
+              "string-purpose": "Path to the meta-data table in MWDI"
             },
             "string-profile-configuration": {
-              "string-value": "480"
+              "string-value": "/meta-data-table"
             }
           }
         },
@@ -814,7 +795,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p2ProcessDevice",
+              "function-name": "p3ProcessDevice",
               "function-description": "Orchestrates the device-wise processing, formatting, sending and storing of PM data",
               "parameter-list": [],
               "sub-function-list": [
@@ -852,7 +833,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p2LoadRawCc",
+              "function-name": "p3LoadRawCc",
               "function-description": "Reads ControlConstruct of a device from MWDI ES Replica and filters non-relevant or already processed data",
               "parameter-list": [],
               "sub-function-list": [
@@ -934,7 +915,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p2CreateResultCc",
+              "function-name": "p3CreateResultCc",
               "function-description": "Composes the resultCc from the rawCc",
               "parameter-list": [],
               "sub-function-list": [
@@ -2023,7 +2004,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1FormattingOutputApt",
+              "function-name": "p2FormattingOutputApt",
               "function-description": "Transforms the resultCc into aptOutputFormat",
               "parameter-list": [],
               "sub-function-list": []
@@ -2360,7 +2341,7 @@
           "profile-name": "function-profile-1-0:PROFILE_NAME_TYPE_FUNCTION_PROFILE",
           "function-profile-1-0:function-profile-pac": {
             "function-profile-capability": {
-              "function-name": "p1ResolveEsAddress",
+              "function-name": "p2ResolveEsAddress",
               "function-description": "Composes the address information of an ElasticSearchClient",
               "parameter-list": [
                 {
@@ -2437,7 +2418,7 @@
               "string-purpose": "Name of the function for which the documentation shall be generated"
             },
             "string-profile-configuration": {
-              "string-value": "p2ProcessDevice"
+              "string-value": "p3ProcessDevice"
             }
           }
         },
