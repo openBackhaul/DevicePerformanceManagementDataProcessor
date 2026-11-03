@@ -57,6 +57,55 @@ stream-pm-data:
       items:
         type: string
 
+
+    # neu für listupdatedccs -------------------------------
+    mwdiEsName:
+      type: string
+      description: >
+        'from [$p1LoadParameters.output#/parameters/function={functionName}/parameter=mwdiEsName/value]'
+
+    mwdiEsClient:
+      type: object
+      description: >
+        'from [/domain-controller/es-address={mwdiEsName}]'
+
+    lastExaminationTime:
+      type: string
+      description: >
+        'from [???/last-measurement-time]'
+
+    updatedMountNames:
+      type: array
+      items:
+        type: string
+        description: >
+          'from [/{listUpdatedCcsFunctionName}/updated-mount-names]'
+    examinationTime:
+      type: string
+      description: >
+        'from [/{listUpdatedCcsFunctionName}/examination-time]'
+    errorMessage:
+      type: string
+      description: >
+        'from [{listUpdatedCcsFunctionName}] OR
+          from
+            - connection to MWDI ES failed
+            - ElasticSearch read error
+            - controlConstruct not found in MWDI
+            - general processing error'
+
+    updatedMountName:
+      type: string
+      description: >
+        'from [ updatedMountNames[i] ]'
+    controlConstruct:
+      type: object
+      description: >
+        'from [ [/mwdiEsClient/url] /control-construct={updatedMountName} ]'
+
+    #---------------------------------------------------------------------------
+
+
     output-format:
       type: array
       x-key: format-name
