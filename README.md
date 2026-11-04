@@ -22,11 +22,18 @@ Internal data structure of prepared performance data follows ONF information mod
 
 ## Latest Update
 
-### v1.1.1
+### v.1.2.0
 
-This release adds changes for bugs, findings and still outstanding items observed during implementation of v1.0.0 and v1.1.0.  
+This release adds changes for bugs, findings and still outstanding topics observed during implementation and testing of v1.0.0 and v1.1.0.  
 
-Details on changes are found in [DPMDP v1.1.1_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/8).  
+These changes e.g. include:
+
+- redesigned the input interface to eliminate the MWDI ES replica. Updated ControlConstructs are now identified via MWDI MetadataTable information and then retrieved directly from the MWDI ES index.
+- Introduced the functions p1ReduceData and p1ExtractData to replace p1FieldsFilter. Both functions use a fields filter to narrow down data but address different use cases.
+- added configuration parameters for Kafka handling
+- changed wrong Ethernet counter types in resultCc and APT output format
+
+Details on changes are found in [DPMDP v1.2.0_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/8).  
 
 ### v1.1.0
 
