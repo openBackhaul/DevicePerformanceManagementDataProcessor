@@ -11,7 +11,7 @@ participant "p1LoadParameters\n" as p1LP
 participant "p2ResolveEsAddress\n" as p1REA
 participant "p1InitKafka\n" as p1InitKafka
 participant "p1ListUpdatedCcs\n" as p1UpdatedCcs #LightBlue
-participant "MWDI ES\n" as mwdi #LightBlue
+database "MWDI ES" as mwdi #LightBlue
 participant "p3ProcessDevice\n" as p3ProcessDev #LightBlue
 participant "p1Transmitting\nKafka" as p1Trans
 participant "p1MaintainDs\n" as p1MDS
