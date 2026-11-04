@@ -31,7 +31,7 @@ activate cur
   deactivate p1Offset
 
   'LoadRawCc
-  cur -> p3AddRaw : { {/parameters/sub-function=p2LoadRawCc},\n{mwdiEsClient},\nmountName,\n[offsets] }
+  cur -> p3AddRaw : { {/parameters/sub-function=p3LoadRawCc},\n{mwdiEsClient},\nmountName,\n[offsets] }
   activate p3AddRaw
 
     note over p3AddRaw
