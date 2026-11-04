@@ -1,6 +1,6 @@
 # p1TransmittingKafka
 
-Re-use of [p1TransmittingKafka](../p2ProcessDevice/p1TransmittingKafka/1.0.0/) with different set of parameters.
+Re-use of [p1TransmittingKafka](../p2ProcessDevice/p1TransmittingKafka/1.1.0/) with different set of parameters.
 
 ## Parameters
 
