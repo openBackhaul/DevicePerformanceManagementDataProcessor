@@ -2034,7 +2034,7 @@
               ]
             },
             "string-profile-configuration": {
-              "string-value": "deactivated"
+              "string-value": "activated"
             }
           }
         },
