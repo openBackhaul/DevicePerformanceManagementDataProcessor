@@ -1,5 +1,7 @@
 'use strict';
 
+jest.mock('../../infra/onf/onfAdapter', () => ({ getEsClient: jest.fn() }));
+const adapter = require('../../infra/onf/onfAdapter');
 const p1LoadOffsetsAndStatusData = require('./P1LoadOffsetsAndStatusData');
 const ERRORS = require('./ErrorsEnum');
 
@@ -26,7 +28,11 @@ describe('p1LoadOffsetsAndStatusData', () => {
     jest.clearAllMocks();
   });
 
-  test('use real dataset', async () => {
+  test('uses the shared adapter when no client override is supplied', async () => {
+    elasticsearchClient.get.mockResolvedValue({ body: { _source: {
+      'processing-data': { offsets: [{ offset: 7 }], 'status-data': [] }
+    } } });
+    adapter.getEsClient.mockResolvedValue(elasticsearchClient);
     const input = {
       "data-store-es-client": {
         "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-021",
@@ -40,7 +46,18 @@ describe('p1LoadOffsetsAndStatusData', () => {
     };
     const result = await p1LoadOffsetsAndStatusData(input);
 
-    expect(result).toBeDefined();
+    expect(adapter.getEsClient).toHaveBeenCalledWith(false,
+      input['data-store-es-client'].uuid, input['data-store-es-client'], undefined);
+    expect(result).toEqual({ offsets: [{ offset: 7 }], 'status-data': [] });
+  });
+
+  test('returns the ES read error when shared client authentication fails', async () => {
+    delete validInput['data-store-es-client'].client;
+    adapter.getEsClient.mockRejectedValueOnce(Object.assign(new Error('Unauthorized'), {
+      name: 'ResponseError', meta: { statusCode: 401 }
+    }));
+    expect(await p1LoadOffsetsAndStatusData(validInput)).toBe(ERRORS.ELK_READ_ERROR);
+    expect(elasticsearchClient.get).not.toHaveBeenCalled();
   });
 
   test('returns offsets and status-data from Elasticsearch', async () => {
@@ -83,6 +100,7 @@ describe('p1LoadOffsetsAndStatusData', () => {
     });
 
     expect(elasticsearchClient.get).toHaveBeenCalledTimes(1);
+    expect(adapter.getEsClient).not.toHaveBeenCalled();
 
     expect(elasticsearchClient.get).toHaveBeenCalledWith({
       'index': 'data-store',

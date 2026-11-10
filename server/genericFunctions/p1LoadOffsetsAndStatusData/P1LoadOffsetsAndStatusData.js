@@ -2,7 +2,7 @@
 
 const ERRORS = require('./ErrorsEnum');
 
-const { Client } = require("@elastic/elasticsearch");
+const onfAdapter = require('../../infra/onf/onfAdapter');
 
 const DEFAULT_DATA_STORE_INDEX = 'data-store';
 
@@ -36,7 +36,8 @@ async function p1LoadOffsetsAndStatusData(input) {
   try {
     const processingData = await retrieveProcessingDataFromDs(
       dataStoreConfig,
-      mountName
+      mountName,
+      input.logger
     );
 
     return {
@@ -76,30 +77,14 @@ async function p1LoadOffsetsAndStatusData(input) {
  * @param {string} mountName
  * @returns {Promise<object>}
  */
-async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
+async function retrieveProcessingDataFromDs(dataStoreConfig, mountName, logger) {
   const elasticsearchClient = dataStoreConfig.client;
   const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
   const documentId = mountName;
 
-  let client;
-  if (elasticsearchClient != undefined) { // For testing purpose
-    client = elasticsearchClient;
-  } else {
-    try {
-      client = new Client({
-        'node': dataStoreConfig['url'],
-        'auth': {
-          'apiKey': {
-            'apiKey': dataStoreConfig['api-key']
-          }
-        },
-        'requestTimeout': 60000
-      })
-      await client.info(); // Testing Connection
-    } catch (error) {
-      throw error;
-    }
-  }
+  const client = elasticsearchClient != undefined
+    ? elasticsearchClient
+    : await onfAdapter.getEsClient(false, dataStoreConfig.uuid, dataStoreConfig, logger);
 
   const response = await client.get({
     'index': index,
