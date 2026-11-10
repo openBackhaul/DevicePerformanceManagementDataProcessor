@@ -2,7 +2,7 @@
 
 const ERRORS = require('./ErrorsEnum');
 
-const { Client } = require("@elastic/elasticsearch");
+const onfAdapter = require('../../infra/onf/onfAdapter');
 
 const DEFAULT_DATA_STORE_INDEX = 'data-store';
 
@@ -24,44 +24,45 @@ const DEFAULT_DATA_STORE_INDEX = 'data-store';
  * @throws {Error}
  */
 async function p1LoadOffsetsAndStatusData(input) {
-  let checkInput = validateInput(input);
+    let checkInput = validateInput(input);
 
-  if (checkInput != '') {
-    return checkInput;
-  }
-
-  const dataStoreConfig = input['data-store-es-client'];
-  const mountName = input['mount-name'];
-
-  try {
-    const processingData = await retrieveProcessingDataFromDs(
-      dataStoreConfig,
-      mountName
-    );
-
-    return {
-      'offsets': Array.isArray(processingData['offsets'])
-        ? processingData['offsets'] : [],
-
-      'status-data': Array.isArray(processingData['status-data'])
-        ? processingData['status-data'] : []
-    };
-  } catch (error) {
-    if (isNotFoundError(error)) {
-      // The specification requires empty arrays when the mount name
-      // does not exist in the DataStore.
-      return {
-        'offsets': [],
-        'status-data': []
-      };
+    if (checkInput != '') {
+        return checkInput;
     }
 
-    if (isElasticsearchError(error)) {
-      return ERRORS.ELK_READ_ERROR;
-    }
+    const dataStoreConfig = input['data-store-es-client'];
+    const mountName = input['mount-name'];
 
-    return ERRORS.GENERAL_ERROR;
-  }
+    try {
+        const processingData = await retrieveProcessingDataFromDs(
+            dataStoreConfig,
+            mountName,
+            input.logger
+        );
+
+        return {
+            'offsets': Array.isArray(processingData['offsets'])
+                ? processingData['offsets'] : [],
+
+            'status-data': Array.isArray(processingData['status-data'])
+                ? processingData['status-data'] : []
+        };
+    } catch (error) {
+        if (isNotFoundError(error)) {
+            // The specification requires empty arrays when the mount name
+            // does not exist in the DataStore.
+            return {
+                'offsets': [],
+                'status-data': []
+            };
+        }
+
+        if (isElasticsearchError(error)) {
+            return ERRORS.ELK_READ_ERROR;
+        }
+
+        return ERRORS.GENERAL_ERROR;
+    }
 }
 
 /**
@@ -76,77 +77,61 @@ async function p1LoadOffsetsAndStatusData(input) {
  * @param {string} mountName
  * @returns {Promise<object>}
  */
-async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
-  const elasticsearchClient = dataStoreConfig.client;
-  const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
-  const documentId = mountName;
+async function retrieveProcessingDataFromDs(dataStoreConfig, mountName, logger) {
+    const elasticsearchClient = dataStoreConfig.client;
+    const index = dataStoreConfig['index-alias'] ? dataStoreConfig['index-alias'] : dataStoreConfig.index || DEFAULT_DATA_STORE_INDEX;
+    const documentId = mountName;
 
-  let client;
-  if (elasticsearchClient != undefined) { // For testing purpose
-    client = elasticsearchClient;
-  } else {
-    try {
-      client = new Client({
-        'node': dataStoreConfig['url'],
-        'auth': {
-          'apiKey': {
-            'apiKey': dataStoreConfig['api-key']
-          }
-        },
-        'requestTimeout': 60000
-      })
-      await client.info(); // Testing Connection
-    } catch (error) {
-      throw error;
+    const client = elasticsearchClient != undefined
+        ? elasticsearchClient
+        : await onfAdapter.getEsClient(false, dataStoreConfig.uuid, dataStoreConfig, logger);
+
+    const response = await client.get({
+        'index': index,
+        'id': documentId
+    });
+
+    /*
+     * Elasticsearch client v8 normally returns:
+     *
+     * {
+     *   _index: 'data-store',
+     *   _id: '100250001',
+     *   _source: { 'mount-name': '100250001', 'processing-data': {...} }
+     * }
+     *
+     * Some wrapped clients or older versions return:
+     *
+     * {
+     *   body: {
+     *     _source: {...}
+     *   }
+     * }
+     */
+    const responseBody = response && response.body
+        ? response.body : response;
+
+    if (!responseBody || typeof responseBody !== 'object') {
+        throw new Error('Invalid Elasticsearch response');
     }
-  }
 
-  const response = await client.get({
-    'index': index,
-    'id': documentId
-  });
+    const source = responseBody._source;
 
-  /*
-   * Elasticsearch client v8 normally returns:
-   *
-   * {
-   *   _index: 'data-store',
-   *   _id: '100250001',
-   *   _source: { 'mount-name': '100250001', 'processing-data': {...} }
-   * }
-   *
-   * Some wrapped clients or older versions return:
-   *
-   * {
-   *   body: {
-   *     _source: {...}
-   *   }
-   * }
-   */
-  const responseBody = response && response.body
-    ? response.body : response;
+    if (!source || typeof source !== 'object') {
+        throw new Error('Processing data not available');
+    }
 
-  if (!responseBody || typeof responseBody !== 'object') {
-    throw new Error('Invalid Elasticsearch response');
-  }
+    const processingData = source['processing-data'];
 
-  const source = responseBody._source;
+    if (processingData === undefined || processingData === null) {
+        return {};
+    }
 
-  if (!source || typeof source !== 'object') {
-    throw new Error('Processing data not available');
-  }
+    if (typeof processingData !== 'object' || Array.isArray(processingData)) {
+        throw new Error('Processing data not available');
+    }
 
-  const processingData = source['processing-data'];
-
-  if (processingData === undefined || processingData === null) {
-    return {};
-  }
-
-  if (typeof processingData !== 'object' || Array.isArray(processingData)) {
-    throw new Error('Processing data not available');
-  }
-
-  return processingData;
+    return processingData;
 }
 
 /**
@@ -155,37 +140,37 @@ async function retrieveProcessingDataFromDs(dataStoreConfig, mountName) {
  * @param {*} input
  */
 function validateInput(input) {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return ERRORS.DATA_STORE_URL_NOT_PROV;
-  }
+    if (!input || typeof input !== 'object' || Array.isArray(input)) {
+        return ERRORS.DATA_STORE_URL_NOT_PROV;
+    }
 
-  const dataStoreConfig = input['data-store-es-client'];
+    const dataStoreConfig = input['data-store-es-client'];
 
-  if (!dataStoreConfig || typeof dataStoreConfig !== 'object' || Array.isArray(dataStoreConfig)) {
-    return ERRORS.DATA_STORE_URL_NOT_PROV;
-  }
+    if (!dataStoreConfig || typeof dataStoreConfig !== 'object' || Array.isArray(dataStoreConfig)) {
+        return ERRORS.DATA_STORE_URL_NOT_PROV;
+    }
 
-  const dataStoreUrl = dataStoreConfig['url'];
+    const dataStoreUrl = dataStoreConfig['url'];
 
-  if (dataStoreUrl === undefined || dataStoreUrl === null || dataStoreUrl === '') {
-    return ERRORS.DATA_STORE_URL_NOT_PROV;
-  }
+    if (dataStoreUrl === undefined || dataStoreUrl === null || dataStoreUrl === '') {
+        return ERRORS.DATA_STORE_URL_NOT_PROV;
+    }
 
-  if (!isValidHttpUrl(dataStoreUrl)) {
-    return ERRORS.DATA_STORE_URL_INVALID;
-  }
+    if (!isValidHttpUrl(dataStoreUrl)) {
+        return ERRORS.DATA_STORE_URL_INVALID;
+    }
 
-  const mountName = input['mount-name'];
+    const mountName = input['mount-name'];
 
-  if (mountName === undefined || mountName === null || mountName === '') {
-    return ERRORS.MOUNT_NAME_NOT_PROVIDED;
-  }
+    if (mountName === undefined || mountName === null || mountName === '') {
+        return ERRORS.MOUNT_NAME_NOT_PROVIDED;
+    }
 
-  if (typeof mountName !== 'string' || mountName.trim().length === 0) {
-    return ERRORS.MOUNT_NAME_INVALID;
-  }
+    if (typeof mountName !== 'string' || mountName.trim().length === 0) {
+        return ERRORS.MOUNT_NAME_INVALID;
+    }
 
-  return ""; // Everything is ok.
+    return ""; // Everything is ok.
 }
 
 /**
@@ -195,17 +180,17 @@ function validateInput(input) {
  * @returns {boolean}
  */
 function isValidHttpUrl(value) {
-  if (typeof value !== 'string') {
-    return false;
-  }
+    if (typeof value !== 'string') {
+        return false;
+    }
 
-  try {
-    const parsedUrl = new URL(value);
+    try {
+        const parsedUrl = new URL(value);
 
-    return (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:');
-  } catch {
-    return false;
-  }
+        return (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:');
+    } catch {
+        return false;
+    }
 }
 
 /**
@@ -218,10 +203,10 @@ function isValidHttpUrl(value) {
  * @returns {boolean}
  */
 function isNotFoundError(error) {
-  return Boolean(
-    error &&
-    (error.statusCode === 404 || error.meta?.statusCode === 404 || error.meta?.body?.status === 404 || error.body?.status === 404)
-  );
+    return Boolean(
+        error &&
+        (error.statusCode === 404 || error.meta?.statusCode === 404 || error.meta?.body?.status === 404 || error.body?.status === 404)
+    );
 }
 
 /**
@@ -231,14 +216,14 @@ function isNotFoundError(error) {
  * @returns {boolean}
  */
 function isElasticsearchError(error) {
-  return Boolean(
-    error &&
-    (
-      error.isElasticsearchError === true ||
-      error.name === 'ConnectionError' || error.name === 'ResponseError' || error.name === 'TimeoutError' ||
-      error.meta || error.statusCode
-    )
-  );
+    return Boolean(
+        error &&
+        (
+            error.isElasticsearchError === true ||
+            error.name === 'ConnectionError' || error.name === 'ResponseError' || error.name === 'TimeoutError' ||
+            error.meta || error.statusCode
+        )
+    );
 }
 
 module.exports = p1LoadOffsetsAndStatusData;
