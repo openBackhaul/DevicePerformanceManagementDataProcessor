@@ -228,6 +228,16 @@ async function initialize() {
       },
       logger
     );
+    await require('../../infra/elasticSearch/storageOptimization').prepareStorage(dataStoreEsClient, serviceConfig, logger);
+    const cleanupOptions = {
+      cleanupEnabled: serviceConfig.kafkaPayloadCleanupEnabled === true,
+      cleanupBatchSize: Number(serviceConfig.kafkaPayloadCleanupBatchSize ?? 100),
+      cleanupMaxBacklog: Number(serviceConfig.kafkaPayloadCleanupMaxBacklog ?? 10000)
+    };
+    if (!Number.isInteger(cleanupOptions.cleanupBatchSize) || cleanupOptions.cleanupBatchSize < 1 || cleanupOptions.cleanupBatchSize > 500 ||
+        !Number.isInteger(cleanupOptions.cleanupMaxBacklog) || cleanupOptions.cleanupMaxBacklog < 1) {
+      throw new Error('Invalid Kafka cleanup limits');
+    }
 
     const mwdiReadMode = readMode(runtimeConfig);
     const restoredLastReplicaTime = mwdiReadMode === 'replica'
@@ -284,7 +294,13 @@ async function initialize() {
       deviceProcessingLockTtlMs: Number(redisConfig.deviceProcessingLockTtlMs || 30 * 60 * 1000)
     }).catch((error) => logger.error({ error }, "Worker pool crashed"));
 
+    // Drain durable cleanup jobs even when new handoffs have been disabled.
+    require('../../runtime/kafka/kafkaPayloadCleanupWorker').start({
+      ...cleanupOptions, dataStoreEsClient, logger, appState
+    }).catch(error => logger.error({ error }, 'Kafka cleanup worker stopped'));
+
     startKafkaOutboundWorkerPool({
+      ...cleanupOptions,
       logger,
       instanceId,
       appState,
@@ -305,10 +321,7 @@ async function initialize() {
       kafkaMaxSingleMessageBytes: serviceConfig.kafkaMaxSingleMessageBytes || 900000,
       kafkaOversizedMessageMode: serviceConfig.kafkaOversizedMessageMode || "ERROR"
     }).catch((error) =>
-      logger.error(
-        { err: error, errorMessage: error?.message, stack: error?.stack },
-        "Kafka outbound worker pool crashed"
-      )
+      logger.error({ error }, "Kafka outbound worker pool crashed")
     );
 
     startRetryWorkerPool({

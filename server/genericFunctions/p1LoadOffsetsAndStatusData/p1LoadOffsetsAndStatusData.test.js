@@ -1,337 +1,355 @@
 'use strict';
 
+jest.mock('../../infra/onf/onfAdapter', () => ({ getEsClient: jest.fn() }));
+const adapter = require('../../infra/onf/onfAdapter');
 const p1LoadOffsetsAndStatusData = require('./P1LoadOffsetsAndStatusData');
 const ERRORS = require('./ErrorsEnum');
 
 describe('p1LoadOffsetsAndStatusData', () => {
-  let elasticsearchClient;
-  let validInput;
+    let elasticsearchClient;
+    let validInput;
 
-  beforeEach(() => {
-    elasticsearchClient = {
-      get: jest.fn()
-    };
+    beforeEach(() => {
+        elasticsearchClient = {
+            get: jest.fn()
+        };
 
-    validInput = {
-      'data-store-es-client': {
-        'url': 'http://localhost:9200',
-        'index-alias': 'data-store',
-        'client': elasticsearchClient
-      },
-      'mount-name': '100250001'
-    };
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('use real dataset', async () => {
-    const input = {
-      "data-store-es-client": {
-        "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-021",
-        "url": "http://127.0.0.1:9200",
-        "index-alias": "22",
-        "api-key": "API key not yet defined.",
-        "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
-        "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED",
-      },
-      "mount-name": "513250011"
-    };
-    const result = await p1LoadOffsetsAndStatusData(input);
-
-    expect(result).toBeDefined();
-  });
-
-  test('returns offsets and status-data from Elasticsearch', async () => {
-    const offsets = [
-      {
-        'function-name': 'p1DiscardIrrelevantPmRecords',
-        'offset': 12
-      },
-      {
-        'function-name': 'p1CalculateIntervalCapacity',
-        'offset': 8
-      }
-    ];
-
-    const statusData = [
-      {
-        'function-name': 'p1DiscardIrrelevantPmRecords',
-        'status': 'completed'
-      }
-    ];
-
-    elasticsearchClient.get.mockResolvedValue({
-      '_index': 'data-store',
-      '_id': '100250001',
-      'found': true,
-      '_source': {
-        'mount-name': '100250001',
-        'processing-data': {
-          'offsets': offsets,
-          'status-data': statusData
-        }
-      }
+        validInput = {
+            'data-store-es-client': {
+                'url': 'http://localhost:9200',
+                'index-alias': 'data-store',
+                'client': elasticsearchClient
+            },
+            'mount-name': '100250001'
+        };
     });
 
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-
-    expect(result).toEqual({
-      'offsets': offsets,
-      'status-data': statusData
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
-    expect(elasticsearchClient.get).toHaveBeenCalledTimes(1);
+    test('uses the shared adapter when no client override is supplied', async () => {
+        elasticsearchClient.get.mockResolvedValue({ body: { _source: {
+                    'processing-data': { offsets: [{ offset: 7 }], 'status-data': [] }
+                } } });
+        adapter.getEsClient.mockResolvedValue(elasticsearchClient);
+        const input = {
+            "data-store-es-client": {
+                "uuid": "dpmdp-1-1-0-es-c-es-1-0-0-021",
+                "url": "http://127.0.0.1:9200",
+                "index-alias": "22",
+                "api-key": "API key not yet defined.",
+                "operational-state": "elasticsearch-client-interface-1-0:OPERATIONAL_STATE_TYPE_NOT_YET_DEFINED",
+                "life-cycle-state": "elasticsearch-client-interface-1-0:LIFE_CYCLE_STATE_TYPE_NOT_YET_DEFINED",
+            },
+            "mount-name": "513250011"
+        };
+        const result = await p1LoadOffsetsAndStatusData(input);
 
-    expect(elasticsearchClient.get).toHaveBeenCalledWith({
-      'index': 'data-store',
-      'id': '100250001'
+        expect(adapter.getEsClient).toHaveBeenCalledWith(false,
+            input['data-store-es-client'].uuid, input['data-store-es-client'], undefined);
+        expect(result).toEqual({ offsets: [{ offset: 7 }], 'status-data': [] });
     });
-  });
 
-  test('supports Elasticsearch responses containing body', async () => {
-    elasticsearchClient.get.mockResolvedValue({
-      'body': {
-        '_index': 'data-store',
-        '_id': '100250001',
-        '_source': {
-          'processing-data': {
+    test('returns the ES read error when shared client authentication fails', async () => {
+        delete validInput['data-store-es-client'].client;
+        adapter.getEsClient.mockRejectedValueOnce(Object.assign(new Error('Unauthorized'), {
+            name: 'ResponseError', meta: { statusCode: 401 }
+        }));
+        expect(await p1LoadOffsetsAndStatusData(validInput)).toBe(ERRORS.ELK_READ_ERROR);
+        expect(elasticsearchClient.get).not.toHaveBeenCalled();
+    });
+
+    test('returns offsets and status-data from Elasticsearch', async () => {
+        const offsets = [
+            {
+                'function-name': 'p1DiscardIrrelevantPmRecords',
+                'offset': 12
+            },
+            {
+                'function-name': 'p1CalculateIntervalCapacity',
+                'offset': 8
+            }
+        ];
+
+        const statusData = [
+            {
+                'function-name': 'p1DiscardIrrelevantPmRecords',
+                'status': 'completed'
+            }
+        ];
+
+        elasticsearchClient.get.mockResolvedValue({
+            '_index': 'data-store',
+            '_id': '100250001',
+            'found': true,
+            '_source': {
+                'mount-name': '100250001',
+                'processing-data': {
+                    'offsets': offsets,
+                    'status-data': statusData
+                }
+            }
+        });
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+
+        expect(result).toEqual({
+            'offsets': offsets,
+            'status-data': statusData
+        });
+
+        expect(elasticsearchClient.get).toHaveBeenCalledTimes(1);
+        expect(adapter.getEsClient).not.toHaveBeenCalled();
+
+        expect(elasticsearchClient.get).toHaveBeenCalledWith({
+            'index': 'data-store',
+            'id': '100250001'
+        });
+    });
+
+    test('supports Elasticsearch responses containing body', async () => {
+        elasticsearchClient.get.mockResolvedValue({
+            'body': {
+                '_index': 'data-store',
+                '_id': '100250001',
+                '_source': {
+                    'processing-data': {
+                        'offsets': [
+                            {
+                                'function-name': 'function-a',
+                                'offset': 4
+                            }
+                        ],
+                        'status-data': [
+                            {
+                                'function-name': 'function-a',
+                                'status': 'running'
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+
+        expect(result).toEqual({
             'offsets': [
-              {
-                'function-name': 'function-a',
-                'offset': 4
-              }
+                {
+                    'function-name': 'function-a',
+                    'offset': 4
+                }
             ],
             'status-data': [
-              {
-                'function-name': 'function-a',
-                'status': 'running'
-              }
+                {
+                    'function-name': 'function-a',
+                    'status': 'running'
+                }
             ]
-          }
-        }
-      }
+        });
     });
 
-    const result = await p1LoadOffsetsAndStatusData(validInput);
+    test('uses the default data-store index when index is not provided', async () => {
+        delete validInput['data-store-es-client'].index;
 
-    expect(result).toEqual({
-      'offsets': [
-        {
-          'function-name': 'function-a',
-          'offset': 4
-        }
-      ],
-      'status-data': [
-        {
-          'function-name': 'function-a',
-          'status': 'running'
-        }
-      ]
-    });
-  });
-
-  test('uses the default data-store index when index is not provided', async () => {
-    delete validInput['data-store-es-client'].index;
-
-    elasticsearchClient.get.mockResolvedValue({
-      '_source': {
-        'processing-data': {
-          'offsets': [],
-          'status-data': []
-        }
-      }
-    });
-
-    await p1LoadOffsetsAndStatusData(validInput);
-
-    expect(elasticsearchClient.get).toHaveBeenCalledWith({
-      'index': 'data-store',
-      'id': '100250001'
-    });
-  });
-
-  test('returns empty arrays when the device does not exist', async () => {
-    const notFoundError = new Error('document not found');
-
-    notFoundError.name = 'ResponseError';
-    notFoundError.meta = {
-      'statusCode': 404
-    };
-
-    elasticsearchClient.get.mockRejectedValue(notFoundError);
-
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-
-    expect(result).toEqual({
-      'offsets': [],
-      'status-data': []
-    });
-  });
-
-  test('returns empty arrays when fields are missing from the document', async () => {
-    elasticsearchClient.get.mockResolvedValue({
-      '_source': {}
-    });
-
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-
-    expect(result).toEqual({
-      'offsets': [],
-      'status-data': []
-    });
-  });
-
-  test('returns an empty offsets array when offsets is not an array', async () => {
-    elasticsearchClient.get.mockResolvedValue({
-      '_source': {
-        'processing-data': {
-          'offsets': 'invalid-offsets',
-          'status-data': [
-            {
-              'function-name': 'function-a',
-              'status': 'completed'
+        elasticsearchClient.get.mockResolvedValue({
+            '_source': {
+                'processing-data': {
+                    'offsets': [],
+                    'status-data': []
+                }
             }
-          ]
+        });
+
+        await p1LoadOffsetsAndStatusData(validInput);
+
+        expect(elasticsearchClient.get).toHaveBeenCalledWith({
+            'index': 'data-store',
+            'id': '100250001'
+        });
+    });
+
+    test('returns empty arrays when the device does not exist', async () => {
+        const notFoundError = new Error('document not found');
+
+        notFoundError.name = 'ResponseError';
+        notFoundError.meta = {
+            'statusCode': 404
+        };
+
+        elasticsearchClient.get.mockRejectedValue(notFoundError);
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+
+        expect(result).toEqual({
+            'offsets': [],
+            'status-data': []
+        });
+    });
+
+    test('returns empty arrays when fields are missing from the document', async () => {
+        elasticsearchClient.get.mockResolvedValue({
+            '_source': {}
+        });
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+
+        expect(result).toEqual({
+            'offsets': [],
+            'status-data': []
+        });
+    });
+
+    test('returns an empty offsets array when offsets is not an array', async () => {
+        elasticsearchClient.get.mockResolvedValue({
+            '_source': {
+                'processing-data': {
+                    'offsets': 'invalid-offsets',
+                    'status-data': [
+                        {
+                            'function-name': 'function-a',
+                            'status': 'completed'
+                        }
+                    ]
+                }
+            }
+        });
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+
+        expect(result).toEqual({
+            'offsets': [],
+            'status-data': [
+                {
+                    'function-name': 'function-a',
+                    'status': 'completed'
+                }
+            ]
+        });
+    });
+
+    test('Return error dataStoreUrl not provided when client configuration is missing', async () => {
+        const result = await p1LoadOffsetsAndStatusData({
+            'mount-name': '100250001'
+        });
+        expect(result).toBe(ERRORS.DATA_STORE_URL_NOT_PROV);
+        expect(elasticsearchClient.get).not.toHaveBeenCalled();
+    });
+
+    test('Return error dataStoreUrl not provided when URL is missing', async () => {
+        delete validInput['data-store-es-client'].url;
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+        expect(result).toBe(ERRORS.DATA_STORE_URL_NOT_PROV);
+        expect(elasticsearchClient.get).not.toHaveBeenCalled();
+    });
+
+    test.each([
+        ['not-a-url'],
+        ['ftp://localhost:9200'],
+        [123],
+        [{}]
+    ])(
+        'Return error dataStoreUrl invalid for invalid URL value %p',
+        async invalidUrl => {
+            validInput['data-store-es-client'].url = invalidUrl;
+
+            const result = await p1LoadOffsetsAndStatusData(validInput);
+            expect(result).toBe(ERRORS.DATA_STORE_URL_INVALID);
+            expect(elasticsearchClient.get).not.toHaveBeenCalled();
         }
-      }
+    );
+
+    test('Return error mountName not provided when mount-name is missing', async () => {
+        delete validInput['mount-name'];
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+        expect(result).toBe(ERRORS.MOUNT_NAME_NOT_PROVIDED);
+        expect(elasticsearchClient.get).not.toHaveBeenCalled();
     });
 
-    const result = await p1LoadOffsetsAndStatusData(validInput);
+    test('Return error mountName not provided when mount-name is empty', async () => {
+        validInput['mount-name'] = '';
 
-    expect(result).toEqual({
-      'offsets': [],
-      'status-data': [
-        {
-          'function-name': 'function-a',
-          'status': 'completed'
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+        expect(result).toBe(ERRORS.MOUNT_NAME_NOT_PROVIDED);
+        expect(elasticsearchClient.get).not.toHaveBeenCalled();
+    });
+
+    test.each([
+        ['   '],
+        [123],
+        [{}],
+        [[]]
+    ])(
+        'Return error mountName invalid for invalid mount-name %p',
+        async invalidMountName => {
+            validInput['mount-name'] = invalidMountName;
+
+            const result = await p1LoadOffsetsAndStatusData(validInput);
+            expect(result).toBe(ERRORS.MOUNT_NAME_INVALID);
+            expect(elasticsearchClient.get).not.toHaveBeenCalled();
         }
-      ]
-    });
-  });
+    );
 
-  test('Return error dataStoreUrl not provided when client configuration is missing', async () => {
-    const result = await p1LoadOffsetsAndStatusData({
-      'mount-name': '100250001'
-    });
-    expect(result).toBe(ERRORS.DATA_STORE_URL_NOT_PROV);
-    expect(elasticsearchClient.get).not.toHaveBeenCalled();
-  });
+    test('Return error ElasticSearch read error for a connection error', async () => {
+        const connectionError = new Error('connect ECONNREFUSED');
 
-  test('Return error dataStoreUrl not provided when URL is missing', async () => {
-    delete validInput['data-store-es-client'].url;
+        connectionError.name = 'ConnectionError';
+        connectionError.meta = {
+            'statusCode': 503
+        };
 
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.DATA_STORE_URL_NOT_PROV);
-    expect(elasticsearchClient.get).not.toHaveBeenCalled();
-  });
-
-  test.each([
-    ['not-a-url'],
-    ['ftp://localhost:9200'],
-    [123],
-    [{}]
-  ])(
-    'Return error dataStoreUrl invalid for invalid URL value %p',
-    async invalidUrl => {
-      validInput['data-store-es-client'].url = invalidUrl;
-
-      const result = await p1LoadOffsetsAndStatusData(validInput);
-      expect(result).toBe(ERRORS.DATA_STORE_URL_INVALID);
-      expect(elasticsearchClient.get).not.toHaveBeenCalled();
-    }
-  );
-
-  test('Return error mountName not provided when mount-name is missing', async () => {
-    delete validInput['mount-name'];
-
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.MOUNT_NAME_NOT_PROVIDED);
-    expect(elasticsearchClient.get).not.toHaveBeenCalled();
-  });
-
-  test('Return error mountName not provided when mount-name is empty', async () => {
-    validInput['mount-name'] = '';
-
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.MOUNT_NAME_NOT_PROVIDED);
-    expect(elasticsearchClient.get).not.toHaveBeenCalled();
-  });
-
-  test.each([
-    ['   '],
-    [123],
-    [{}],
-    [[]]
-  ])(
-    'Return error mountName invalid for invalid mount-name %p',
-    async invalidMountName => {
-      validInput['mount-name'] = invalidMountName;
-
-      const result = await p1LoadOffsetsAndStatusData(validInput);
-      expect(result).toBe(ERRORS.MOUNT_NAME_INVALID);
-      expect(elasticsearchClient.get).not.toHaveBeenCalled();
-    }
-  );
-
-  test('Return error ElasticSearch read error for a connection error', async () => {
-    const connectionError = new Error('connect ECONNREFUSED');
-
-    connectionError.name = 'ConnectionError';
-    connectionError.meta = {
-      'statusCode': 503
-    };
-
-    elasticsearchClient.get.mockRejectedValue(connectionError);
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.ELK_READ_ERROR);
-  });
-
-  test('Return error general processing error for an invalid Elasticsearch response', async () => {
-    elasticsearchClient.get.mockResolvedValue(null);
-
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.GENERAL_ERROR);
-  });
-
-  test('Return error general processing error when _source is missing', async () => {
-    elasticsearchClient.get.mockResolvedValue({
-      '_index': 'data-store',
-      '_id': '100250001',
-      'found': true
+        elasticsearchClient.get.mockRejectedValue(connectionError);
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+        expect(result).toBe(ERRORS.ELK_READ_ERROR);
     });
 
-    const result = await p1LoadOffsetsAndStatusData(validInput);
-    expect(result).toBe(ERRORS.GENERAL_ERROR);
-  });
+    test('Return error general processing error for an invalid Elasticsearch response', async () => {
+        elasticsearchClient.get.mockResolvedValue(null);
 
-  test('does not modify the Elasticsearch source arrays', async () => {
-    const processingData = {
-      'offsets': [
-        {
-          'function-name': 'function-a',
-          'offset': 10
-        }
-      ],
-      'status-data': [
-        {
-          'function-name': 'function-a',
-          'status': 'completed'
-        }
-      ]
-    };
-    const source = {
-      'mount-name': '100250001',
-      'processing-data': processingData
-    };
-
-    elasticsearchClient.get.mockResolvedValue({
-      _source: source
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+        expect(result).toBe(ERRORS.GENERAL_ERROR);
     });
 
-    const sourceBeforeExecution = JSON.parse(JSON.stringify(source));
-    await p1LoadOffsetsAndStatusData(validInput);
-    expect(source).toEqual(sourceBeforeExecution);
-  });
+    test('Return error general processing error when _source is missing', async () => {
+        elasticsearchClient.get.mockResolvedValue({
+            '_index': 'data-store',
+            '_id': '100250001',
+            'found': true
+        });
+
+        const result = await p1LoadOffsetsAndStatusData(validInput);
+        expect(result).toBe(ERRORS.GENERAL_ERROR);
+    });
+
+    test('does not modify the Elasticsearch source arrays', async () => {
+        const processingData = {
+            'offsets': [
+                {
+                    'function-name': 'function-a',
+                    'offset': 10
+                }
+            ],
+            'status-data': [
+                {
+                    'function-name': 'function-a',
+                    'status': 'completed'
+                }
+            ]
+        };
+        const source = {
+            'mount-name': '100250001',
+            'processing-data': processingData
+        };
+
+        elasticsearchClient.get.mockResolvedValue({
+            _source: source
+        });
+
+        const sourceBeforeExecution = JSON.parse(JSON.stringify(source));
+        await p1LoadOffsetsAndStatusData(validInput);
+        expect(source).toEqual(sourceBeforeExecution);
+    });
 });
