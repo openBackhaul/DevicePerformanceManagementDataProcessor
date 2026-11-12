@@ -512,6 +512,9 @@ describe('provideDeviceDataStoreDump', () => {
     });
 });
 describe('IndividualServicesService - initiatePmDataUpdate', () => {
+    // Lets the fire-and-forget background work (p1LoadParameters + live GETs) run
+    const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
+
     let mockAppState;
     let mockFetch;
     let mockP1LoadParameters;
@@ -793,6 +796,8 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
             ['CO18302']
         );
 
+        // live control-construct GETs run in the background after the response
+        await flushPromises();
         expect(mockFetch).toHaveBeenCalledTimes(2);
 
         expect(mockFetch).toHaveBeenNthCalledWith(
@@ -987,6 +992,84 @@ describe('IndividualServicesService - initiatePmDataUpdate', () => {
         );
 
         expect(result533).toEqual({ code: 204 });
+    });
+
+    test('responds 204 before the live control-construct requests complete (fire-and-forget)', async () => {
+        const body = {
+            'mount-names': ['CO18302']
+        };
+
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => [
+                {
+                    'mount-name': 'CO18302',
+                    'connection-status': 'connected',
+                    'last-successful-complete-control-construct-update-time': null
+                }
+            ]
+        });
+        // live control-construct request is still pending when the response is returned
+        let releaseLiveCc;
+        mockFetch.mockReturnValueOnce(
+            new Promise((resolve) => { releaseLiveCc = resolve; })
+        );
+
+        const result = await initiatePmDataUpdate(
+            body,
+            'user',
+            'originator',
+            'x-correlator',
+            'trace-indicator',
+            'customer-journey'
+        );
+
+        expect(result).toEqual({ code: 204 });
+
+        await flushPromises();
+        expect(mockFetch).toHaveBeenCalledTimes(2);
+        expect(mockFetch).toHaveBeenNthCalledWith(
+            2,
+            expect.stringContaining('network-control-domain=live/control-construct=CO18302'),
+            expect.objectContaining({ method: 'GET' })
+        );
+
+        // let the background worker finish so it does not leak into the next tests
+        releaseLiveCc({ ok: true });
+        await flushPromises();
+    });
+
+    test('p1LoadParameters failure in the background does not affect the 204 response', async () => {
+        const body = {
+            'mount-names': ['CO18302']
+        };
+
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => [
+                {
+                    'mount-name': 'CO18302',
+                    'connection-status': 'connected',
+                    'last-successful-complete-control-construct-update-time': null
+                }
+            ]
+        });
+        mockP1LoadParameters.run.mockRejectedValueOnce(new Error('boom'));
+
+        const result = await initiatePmDataUpdate(
+            body,
+            'user',
+            'originator',
+            'x-correlator',
+            'trace-indicator',
+            'customer-journey'
+        );
+
+        expect(result).toEqual({ code: 204 });
+
+        await flushPromises();
+        // no live request is sent when parameters cannot be loaded
+        expect(mockFetch).toHaveBeenCalledTimes(1);
     });
 
     test('invalid input -> should throw error 400 with mountNames not provided', async () => {
