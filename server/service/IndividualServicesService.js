@@ -112,8 +112,8 @@ exports.initiatePmDataUpdate = async function (
       );
 
       logger.error(
-        missingMountNames,
-        `Mount name discrepancy detected. Missing mount names`,
+        { missingMountNames, returnedMountNamesMWDI },
+        "Mount name discrepancy detected. Missing mount names",
       );
 
       // Throw error with code 533 and missing mount names
@@ -197,53 +197,17 @@ exports.initiatePmDataUpdate = async function (
         `Processing ${outdatedMountNames.length} outdated mount(s), skipping ${alreadyUpToDateMountNames.length} up-to-date mount(s)`,
       );
     }
-    const loaded = await p1LoadParameters.run({
-      functionName: "initiatePmDataUpdate",
-    });
-
-    logger.debug(
-      `Validation passed: ${JSON.stringify(loaded.parameters.parameter)}`,
-    );
-    let waitTimeForSending = 0;
-    waitTimeForSending = Number(
-      getParamFromFunction(
-        loaded.parameters,
-        "initiatePmDataUpdate",
-        "waitTimeForSending",
-        0,
+    // Per spec, respond immediately: loading parameters and requesting live
+    // control-constructs from MWDI happen in the background (fire-and-forget)
+    triggerLiveControlConstructUpdates(
+      outdatedMountNames,
+      mwdiUrl,
+      requestHeaders,
+    ).catch((err) =>
+      logger.error(
+        `initiatePmDataUpdate background update failed: ${err.message || err}`,
       ),
     );
-    logger.debug(`Wait time for sending requests: ${waitTimeForSending}ms`);
-
-    // Get the MWDI base URL
-    const baseMwdiUrl = mwdiUrl.replace(
-      "/v1/provide-device-status-metadata",
-      "",
-    );
-
-    // Retrieve live control-construct data for each mount (best effort, errors are logged but ignored)
-    let firstRequest = true;
-    for (const mountName of outdatedMountNames) {
-      if (!firstRequest && waitTimeForSending > 0) {
-        await new Promise((resolve) => setTimeout(resolve, waitTimeForSending));
-      } else {
-        firstRequest = false;
-      }
-      const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
-      //const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=cache/control-construct=${mountName}`;
-      try {
-        await fetch(controlConstructUrl, {
-          method: "GET",
-          headers: requestHeaders,
-        });
-      } catch (err) {
-        // Handle fetch errors : error has to be ignored for live control-construct;  we just log them
-        logger.warn(
-          `Ignoring MWDI error for mount ${mountName}: ${err.message}`,
-        );
-      }
-    }
-    logger.debug(`Completed processing ${inputMountNames.length} mount(s)`);
     logger.debug("PM data update initiated successfully");
     // Build the success response
     if (alreadyUpToDateMountNames.length > 0) {
@@ -536,6 +500,61 @@ function validateConnectionStatus(metadataArray, inputMountNames) {
 }
 
 /**
+ * Requests live control-constructs from MWDI for the given mounts, one after the other,
+ * waiting waitTimeForSending between requests. Best effort: MWDI errors are logged and ignored.
+ *
+ * @param {Array<string>} mountNames - mounts to be updated
+ * @param {string} mwdiUrl - MWDI provide-device-status-metadata URL (used to derive the base URL)
+ * @param {Object} requestHeaders - headers forwarded to MWDI
+ */
+async function triggerLiveControlConstructUpdates(
+  mountNames,
+  mwdiUrl,
+  requestHeaders,
+) {
+  const loaded = await p1LoadParameters.run({
+    functionName: "initiatePmDataUpdate",
+  });
+
+  logger.debug(
+    `Validation passed: ${JSON.stringify(loaded.parameters.parameter)}`,
+  );
+  const waitTimeForSending = Number(
+    getParamFromFunction(
+      loaded.parameters,
+      "initiatePmDataUpdate",
+      "waitTimeForSending",
+      0,
+    ),
+  );
+  logger.debug(`Wait time for sending requests: ${waitTimeForSending}ms`);
+
+  // Get the MWDI base URL
+  const baseMwdiUrl = mwdiUrl.replace("/v1/provide-device-status-metadata", "");
+
+  // Retrieve live control-construct data for each mount (best effort, errors are logged but ignored)
+  let firstRequest = true;
+  for (const mountName of mountNames) {
+    if (!firstRequest && waitTimeForSending > 0) {
+      await new Promise((resolve) => setTimeout(resolve, waitTimeForSending));
+    } else {
+      firstRequest = false;
+    }
+    const controlConstructUrl = `${baseMwdiUrl}/core-model-1-4:network-control-domain=live/control-construct=${mountName}`;
+    try {
+      await fetch(controlConstructUrl, {
+        method: "GET",
+        headers: requestHeaders,
+      });
+    } catch (err) {
+      // Handle fetch errors : error has to be ignored for live control-construct;  we just log them
+      logger.warn(`Ignoring MWDI error for mount ${mountName}: ${err.message}`);
+    }
+  }
+  logger.debug(`Completed processing ${mountNames.length} mount(s)`);
+}
+
+/**
  * finds URL for the POST
  * ex:  /v1/provide-device-status-metadata response structuerror or the URL
  */
@@ -567,7 +586,7 @@ function getMwdiURL() {
 
   const tcpConfig =
     mwdiTcpLtp["layer-protocol"][0][
-      "tcp-client-interface-1-0:tcp-client-interface-pac"
+    "tcp-client-interface-1-0:tcp-client-interface-pac"
     ]["tcp-client-interface-configuration"];
 
   const ip = tcpConfig["remote-address"]["ip-address"]["ipv-4-address"];
