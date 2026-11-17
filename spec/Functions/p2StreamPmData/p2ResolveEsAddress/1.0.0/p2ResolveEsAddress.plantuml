@@ -1,0 +1,19 @@
+@startuml p2ResolveEsAddress
+skinparam responseMessageBelowArrow true
+
+title
+  p2ResolveEsAddress
+end title
+
+participant "p2StreamPmData\n" as p2RMWDI
+participant "p2ResolveEsAddress\n" as p2REA
+
+  p2RMWDI -> p2REA : { {parameters}\n{configFile}\nesName }
+  activate p2REA
+    note over p2REA
+      Resolves ES address
+    end note
+  p2RMWDI <-- p2REA : { {esAddress} }
+  deactivate p2REA
+
+@enduml

@@ -1,0 +1,102 @@
+@startuml p2StreamPmData
+skinparam responseMessageBelowArrow true
+
+title
+  p2StreamPmData
+end title
+
+participant "embedYourself\n" as embed
+participant "p2StreamPmData\n" as p2Stream
+participant "p1LoadParameters\n" as p1LP
+participant "p2ResolveEsAddress\n" as p1REA
+participant "p1InitKafka\n" as p1InitKafka
+participant "p1ListUpdatedCcs\n" as p1UpdatedCcs #LightBlue
+participant "MWDI ES\n" as mwdi #LightBlue
+participant "p3ProcessDevice\n" as p3ProcessDev #LightBlue
+participant "p1Transmitting\nKafka" as p1Trans
+participant "p1MaintainDs\n" as p1MDS
+
+note right embed
+  Automatically starts
+  p2StreamPmData
+end note
+embed -> p2Stream : {}
+activate p2Stream
+
+  ' load parameters
+  p2Stream -> p1LP : {functionName=\n"p2StreamPmData"}
+  activate p1LP
+    note over p1LP
+      Loads parameters
+      from configFile
+    end note
+  p2Stream <-- p1LP : { {parameters}\n{configFile} }
+  deactivate p1LP
+
+  ' resolve ES addresses
+  loop FOR all esName
+    p2Stream -> p1REA : { {/parameters/sub-function=p2ResolveEsAddress}\n{configFile}\nesName }
+    activate p1REA
+      note over p1REA
+        Resolves ES address
+      end note
+    p2Stream <-- p1REA : { {esAddress} }
+    deactivate p1REA
+  end loop
+
+    ' init Kafka
+    p2Stream -> p1InitKafka : { {/parameters/sub-function=p1InitKafka}\n{configFile} }
+    activate p1InitKafka
+
+      note over p1InitKafka
+        Resolves Kafka address
+        Establishes session
+      end note
+
+    p2Stream <-- p1InitKafka
+    deactivate p1InitKafka
+
+
+  ' maintainDS
+  p2Stream -> p1MDS : { {/parameters/sub-function=p1MaintainDs}\n{dataStoreEsClient} }
+  activate p1MDS
+    note over p1MDS
+      Periodically deletes
+      old records
+    end note
+
+  loop endless
+
+    ' replicate MWDI ES - to be replaced
+    p2Stream -> p1UpdatedCcs : { {/parameters/sub-function=p1ListUpdatedCcs}\n{mwdiEsClient}\nlastExaminationTime }
+    activate p1UpdatedCcs
+      note over p1UpdatedCcs
+        Lists CCs that are updated in MWDI
+      end note
+    p2Stream <-- p1UpdatedCcs : { [updatedMountNames]\nexaminationTime\nerrorMessage }
+    deactivate p1UpdatedCcs
+  
+    group partially parallel execution of all updatedMountNames
+      p2Stream -> p3ProcessDev : { {/parameters/sub-function=p3ProcessDevice}\n{configFile}\nmountName\n{mwdiEsClient}\n{dataStoreEsClient} }
+      activate p3ProcessDev
+        note over p3ProcessDev
+          Processes PM data
+        end note
+      p2Stream <-- p3ProcessDev: { {deviceQualityPmData} }
+      deactivate p3ProcessDev
+    end group
+
+  p2Stream -> p1Trans : { {/parameters/sub-function=p1TransmittingKafka},\n{configFile},\n[outputFormat] }
+  activate p1Trans
+
+    note over p1Trans
+      Transmits object
+      to Kafka
+    end note
+
+  p2Stream <-- p1Trans
+  deactivate p1Trans
+
+  end loop
+
+@enduml

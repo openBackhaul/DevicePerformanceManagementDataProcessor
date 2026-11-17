@@ -1,0 +1,26 @@
+@startuml p1ReduceData
+skinparam responseMessageBelowArrow true
+
+title
+  p1ReduceData
+end title
+
+participant "requestor\n" as requestor
+participant "p1ReduceData\n" as pFF
+
+requestor -> pFF : { pointer-to-{DataStructure}, fieldsFilterString}
+activate pFF
+  note over pFF
+    Applies the fieldsFilterString to the given DataStructure object
+    referenced by the pointer, following the NETCONF FieldsFilter syntax and semantics.
+    This includes the uuids and localIds being present in the filtered
+    DataStructure, if any of their child elements are kept by the filter.
+
+    Removes unwanted data directly (in-place) from the input
+    DataStructure.
+  end note
+
+requestor <-- pFF : { {filteredDataStructure} }
+deactivate pFF
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml p2FormattingOutputApt
+skinparam responseMessageBelowArrow true
+
+title
+  p2FormattingOutputApt
+end title
+
+participant "requestor\n(e.g. p2ProcessDevice)" as requestor
+participant "p2FormattingOutputApt\n" as cur
+
+requestor -> cur: { {resultCc} }
+activate cur
+
+  note over cur
+    Transforms resultCc data into
+    aptOutputFormat (incl.
+    batchTimestamp)
+  end note
+
+requestor <-- cur: { formatName,\n{outputFormat} }
+deactivate cur
+
+@enduml

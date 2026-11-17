@@ -16,3 +16,8 @@ Please find a detailed description of the [interface](./interface.yaml).
 ## Variables
 
 Please find a detailed description of the [variables](./variables.yaml).
+
+## Notes
+
+p1CalculateInterfacePmDataQuality shall not use local date according to execution environment timezone, but shall use UTC timestamps,
+as data from ControlConstructs are also providing their data with UTC timestamps.
