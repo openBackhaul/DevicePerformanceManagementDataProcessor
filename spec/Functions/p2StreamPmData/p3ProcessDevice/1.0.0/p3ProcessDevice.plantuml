@@ -47,6 +47,19 @@ activate cur
   cur <-- p3AddRaw : { {rawCc},\n[offsets],\n{deviceQualityPmData} }
   deactivate p3AddRaw
 
+  'If no PM data abort
+  note over cur
+    IF amountReceived == 0
+      in deviceQualityPmData
+      for all interfaces
+    THEN exit
+  end note
+  requestor <-- cur: error
+
+  note over cur
+    ELSE
+  end note
+
   'CreateResultCc
   cur -> p3CreateResCc : { {/parameters/sub-function=p3CreateResultCc},\n{rawCc},\n[statusData] }
   activate p3CreateResCc
