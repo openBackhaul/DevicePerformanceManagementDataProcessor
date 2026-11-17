@@ -305,17 +305,6 @@ activate p2StreamPm
             p3CreateResultCc -> ecSlices
             activate ecSlices
 
-              'EthernetKPIs
-              ecSlices -> p1EthKpi
-              activate p1EthKpi
-
-                note over p1EthKpi
-                  Add Ethernet KPIs
-                end note
-
-              ecSlices <-- p1EthKpi
-              deactivate p1EthKpi
-
               ' RemoveOnfDefaultValues
               ecSlices -> p1RemDefault
               activate p1RemDefault
@@ -327,6 +316,17 @@ activate p2StreamPm
 
               ecSlices <-- p1RemDefault
               deactivate p1RemDefault
+
+              'EthernetKPIs
+              ecSlices -> p1EthKpi
+              activate p1EthKpi
+
+                note over p1EthKpi
+                  Add Ethernet KPIs
+                end note
+
+              ecSlices <-- p1EthKpi
+              deactivate p1EthKpi
 
               ' Utilization
               ecSlices -> p2Util
