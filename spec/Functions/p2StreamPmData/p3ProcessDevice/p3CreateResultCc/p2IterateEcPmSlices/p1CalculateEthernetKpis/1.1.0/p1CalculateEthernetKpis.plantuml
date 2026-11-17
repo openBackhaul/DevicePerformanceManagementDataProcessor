@@ -1,0 +1,42 @@
+@startuml p1CalculateEthernetKpis
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateEthernetKpis
+end title
+
+participant "p2IterateEcPmSlices\n" as requestor
+participant "p1CalculateEthernetKpis\n" as ethKpis
+
+requestor -> ethKpis : { performanceData }
+activate ethKpis
+
+    note over ethKpis #White
+      All computations need to
+      handle possibly missing
+      input counters
+      (due to removal of default values)
+    end note
+
+    note over ethKpis
+      Adds transmitTraffic
+    end note
+
+    note over ethKpis
+      Adds receiveTraffic
+    end note
+
+    note over ethKpis
+      Adds frameLossInput
+    end note
+
+    note over ethKpis
+      Adds frameLossOutput
+    end note
+
+requestor <-- ethKpis : { performanceData }
+deactivate ethKpis
+
+deactivate requestor
+
+@enduml
