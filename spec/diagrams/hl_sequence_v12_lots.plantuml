@@ -1,4 +1,4 @@
-@startuml hl_sequence
+@startuml hl_sequence_v12_lots
 skinparam responseMessageBelowArrow true
 
 skinparam ParticipantBorderColor<<no lot !>> Red
