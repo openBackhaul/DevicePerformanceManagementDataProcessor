@@ -44,10 +44,6 @@ x-javascript-interface:
                 - 'performanceData not provided'
                 - 'performanceData incomplete'
                 - 'performanceData invalid'
-                - 'transmitTraffic could not be provided'
-                - 'receiveTraffic could not be provided'
-                - 'frameLossInput could not be provided'
-                - 'frameLossOutput could not be provided'
                 - 'general processing error'
     processing:
       calculateTransmitTraffic:

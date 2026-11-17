@@ -11,9 +11,12 @@ This function processes a single PM data slice and adds:
 - frameLossInput
 - frameLossOutput
 
-If removal of ONF default values is activated, input attributes to compute these metrics may be missing.  
-The function is taking this into consideration.  
-In case that a metric cannot be computed, it is simply not added to the output object (performanceData).  
+Impact of missing input counter attributes:
+
+- If removal of ONF default values is activated, input attributes to compute these metrics may be missing.
+- This function is taking it into consideration.
+- In case that a metric cannot be computed, it is simply not added to the output object (performanceData).
+  - In such cases the performanceData is not considered to be incomplete or invalid; i.e. the performanceData object is returned only with those KPIs that could be computed instead of returning an error message.
 
 ## Diagram
 
