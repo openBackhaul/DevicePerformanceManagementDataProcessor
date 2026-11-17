@@ -71,6 +71,7 @@ x-javascript-interface:
                 - 'mwdiEsClient invalid'
                 - 'dataStoreEsClient not provided'
                 - 'dataStoreEsClient invalid'
+                - 'no pm data in raw CC'
                 - 'raw CC data missing or invalid'
                 - 'result CC data missing or invalid'
                 - 'output format missing or invalid'
