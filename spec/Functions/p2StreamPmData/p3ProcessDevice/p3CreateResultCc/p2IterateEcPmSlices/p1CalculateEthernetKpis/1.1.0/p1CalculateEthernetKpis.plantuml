@@ -1,0 +1,45 @@
+@startuml p1CalculateEthernetKpis
+skinparam responseMessageBelowArrow true
+
+title
+  p1CalculateEthernetKpis
+end title
+
+participant "p2IterateEcPmSlices\n" as requestor
+participant "p1CalculateEthernetKpis\n" as ethKpis
+
+requestor -> ethKpis : { performanceData }
+activate ethKpis
+
+    note over ethKpis #LightCyan
+      Input counters may be missing from performanceData
+      due to removal of default values.
+      This is only considered an error in the
+      respective computation steps.
+      The respective KPI is not added to performanceData.
+      The function does not throw an error, but returns
+      performanceData.
+    end note
+
+    note over ethKpis
+      Adds transmitTraffic
+    end note
+
+    note over ethKpis
+      Adds receiveTraffic
+    end note
+
+    note over ethKpis
+      Adds frameLossInput
+    end note
+
+    note over ethKpis
+      Adds frameLossOutput
+    end note
+
+requestor <-- ethKpis : { performanceData }
+deactivate ethKpis
+
+deactivate requestor
+
+@enduml
