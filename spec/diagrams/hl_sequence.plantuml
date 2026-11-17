@@ -9,47 +9,60 @@ title
   DevicePerformanceManagementDataProcessor
 end title
 
+'new pxVersion: #LightBlue
+'same pxVersion, but 1.1.0 instead of 1.0.0: #LightCyan
+'totally new function: #LightCoral
+
+'still to be discussed: potentially to be changed to ...
+'1.1.0 version: #LightYellow
+'new px: #LightGreen
+'no new version required, because previously no lot: #LightPink
+
 participant "embedYourself\n" as embed
-participant "provideDevice\nDataStoreDump" as deviceDump #LightSalmon
-participant "documentPmData\nProcessing" as docuPm #LightSalmon
-participant "initiatePm\nDataUpdate" as initPmData #LightSalmon
-participant "p2Stream\nPmData" as p2StreamPm #LightYellow
+participant "provideDevice\nDataStoreDump" as deviceDump
+participant "documentPmData\nProcessing" as docuPm
+participant "initiatePm\nDataUpdate" as initPmData
+participant "p2Stream\nPmData" as p2StreamPm #LightCyan
 participant "p1LoadParameters\n" as p1LoadParams
-participant "p1Resolve\nEsAddress" as p1ResolveAddress
-participant "p1InitKafka\n" as p1InitKafka
+participant "p2Resolve\nEsAddress" as p2ResolveAddress #LightBlue
+participant "p1InitKafka\n" as p1InitKafka #LightCyan
 participant "p1Update\nMwdiReplica" as p1UpdateMwdiRep
 
-participant "p2Process\nDevice" as p2ProcessPm #LightYellow
+participant "p3Process\nDevice" as p3ProcessPm #LightBlue
 
-participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus #LightSalmon
-participant "p2LoadRawCc\n" as p2AddRaw #LightYellow
-participant "p1FieldsFilter\n" as p1FieldsFilter
-participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm #LightYellow
-participant "p1CalculateInterface\nPmDataQuality" as calPmQual #LightSalmon
+participant "p1LoadOffsets\nAndStatusData" as p1LoadStatus
+participant "p3LoadRawCc\n" as p3AddRaw #LightBlue
+participant "p1ReduceData\n" as p1ReduceData #LightCoral
 
-participant "p2Create\nResultCc" as p2CreateResultCc #LightYellow
-participant "p2Prepare\nTxModes" as p1prepTxModes #LightYellow
+
+participant "p2DiscardIrrelevant\nPmRecords" as p2filterPm
+participant "p1CalculateInterface\nPmDataQuality" as calPmQual
+
+participant "p3Create\nResultCc" as p3CreateResultCc #LightBlue
+participant "p2Prepare\nTxModes" as p1prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
 participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
 participant "p1Calculate\nIntervalCapacity" as intCC
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL
 participant "p1Remove\nDefaultValues" as p1RemDefault
-participant "p2IterateEc\nPmSlices" as ecSlices #LightYellow
-participant "p1Calculate\nEthernetKpis" as p1EthKpi
-participant "p2Calculate\nUtilization" as p2Util <<no lot !>>
-participant "p1Categorize\nDataVolume" as p1CatDV #LightSalmon
-participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH #LightSalmon
+participant "p2IterateEc\nPmSlices" as ecSlices #LightGreen
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightYellow
+participant "p2Calculate\nUtilization" as p2Util <<no lot !>> #LightPink
+participant "p1Categorize\nDataVolume" as p1CatDV
+participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
 participant "p1RemoveOutOf\nRangeTemperature" as p1ROoRT
 
-participant "p1Formatting\nOutputApt" as p1OutputApt
-participant "p2Formatting\nOutputOnf" as p1OutputOnf #LightYellow
+participant "p2Formatting\nOutputApt" as p2OutputApt #LightBlue
+participant "p2Formatting\nOutputOnf" as p1OutputOnf #LightCyan
 
-participant "p1Transmitting\nKafka" as p1Trans
+participant "p1ExtractData\n" as p1ExtractData #LightCoral
 
-participant "p2Storing\n" as p2Store #LightYellow
+participant "p1Transmitting\nKafka" as p1Trans #LightCyan
+
+participant "p2Storing\n" as p2Store
 participant "p1MaintainDs\n" as p1MaintainDs
-participant "p1ReadData\nStoreDeviceData" as p1ReadDevice #LightSalmon
-participant "p1Document\nFunction" as p1Doc #LightSalmon
+participant "p1ReadData\nStoreDeviceData" as p1ReadDevice
+participant "p1Document\nFunction" as p1Doc
 
 
 note right embed
@@ -71,13 +84,13 @@ activate p2StreamPm
 
   ' Resolve ES address
   loop FOR all esName
-    p2StreamPm -> p1ResolveAddress
-    activate p1ResolveAddress
-      note over p1ResolveAddress
+    p2StreamPm -> p2ResolveAddress
+    activate p2ResolveAddress
+      note over p2ResolveAddress
         Resolves ES address
       end note
-    p2StreamPm <-- p1ResolveAddress
-    deactivate p1ResolveAddress
+    p2StreamPm <-- p2ResolveAddress
+    deactivate p2ResolveAddress
 
   end loop
 
@@ -123,12 +136,12 @@ activate p2StreamPm
     group partially parallel execution of all updatedMountNames
 
       ' ProcessDevice
-      p2StreamPm -> p2ProcessPm
-      activate p2ProcessPm
+      p2StreamPm -> p3ProcessPm
+      activate p3ProcessPm
 
 
         ' Load offsets and statusData
-        p2ProcessPm -> p1LoadStatus
+        p3ProcessPm -> p1LoadStatus
         activate p1LoadStatus
 
           note over p1LoadStatus
@@ -136,30 +149,30 @@ activate p2StreamPm
             from DataStore
           end note
 
-        p2ProcessPm <-- p1LoadStatus
+        p3ProcessPm <-- p1LoadStatus
         deactivate p1LoadStatus
 
         ' Load RawCC
-        p2ProcessPm -> p2AddRaw
-        activate p2AddRaw
+        p3ProcessPm -> p3AddRaw
+        activate p3AddRaw
 
-          note over p2AddRaw
+          note over p3AddRaw
             Loads raw data to rawCc
           end note
 
           ' Apply fieldsFilter
-          p2AddRaw -> p1FieldsFilter
-          activate p1FieldsFilter
+          p3AddRaw -> p1ReduceData
+          activate p1ReduceData
 
-            note over p1FieldsFilter
+            note over p1ReduceData
               Reduces structure of rawCc
             end note
 
-          p2AddRaw <-- p1FieldsFilter
-          deactivate p1FieldsFilter
+          p3AddRaw <-- p1ReduceData
+          deactivate p1ReduceData
 
           ' DiscardIrrelvantPmRecords
-          p2AddRaw -> p2filterPm
+          p3AddRaw -> p2filterPm
           activate p2filterPm
 
             note over p2filterPm
@@ -167,11 +180,11 @@ activate p2StreamPm
               already been processed in past
             end note
 
-          p2AddRaw <-- p2filterPm
+          p3AddRaw <-- p2filterPm
           deactivate p2filterPm
 
           ' Calculate PM data quality
-          p2AddRaw -> calPmQual
+          p3AddRaw -> calPmQual
           activate calPmQual
 
             note over calPmQual
@@ -179,29 +192,29 @@ activate p2StreamPm
               of PM data
             end note
 
-          p2AddRaw <-- calPmQual
+          p3AddRaw <-- calPmQual
           deactivate calPmQual
 
-          note over p2AddRaw
+          note over p3AddRaw
             addBatchTimestamp
           end note
 
-          note over p2AddRaw
+          note over p3AddRaw
             update offset
           end note
 
-        p2ProcessPm <-- p2AddRaw : {rawCc}
-        deactivate p2AddRaw
+        p3ProcessPm <-- p3AddRaw : {rawCc}
+        deactivate p3AddRaw
 
         ' Create resultCC
-        p2ProcessPm -> p2CreateResultCc
-        activate p2CreateResultCc
+        p3ProcessPm -> p3CreateResultCc
+        activate p3CreateResultCc
 
-          note over p2CreateResultCc
+          note over p3CreateResultCc
             Copies rawCc to resultCc
           end note
 
-          note over p2CreateResultCc
+          note over p3CreateResultCc
             Creates aggregationGroupList
           end note
 
@@ -209,7 +222,7 @@ activate p2StreamPm
           loop FOR all AirInterfaces in resultCc
 
             ' prepTxModes
-            p2CreateResultCc -> p1prepTxModes
+            p3CreateResultCc -> p1prepTxModes
             activate p1prepTxModes
 
               note over p1prepTxModes
@@ -227,11 +240,11 @@ activate p2StreamPm
               p1prepTxModes <-- aiCC
               deactivate aiCC
 
-            p2CreateResultCc <-- p1prepTxModes
+            p3CreateResultCc <-- p1prepTxModes
             deactivate p1prepTxModes
 
             ' iterateAiPmSlices
-            p2CreateResultCc -> aiSlices
+            p3CreateResultCc -> aiSlices
             activate aiSlices
 
                 ' capacityCalculation
@@ -271,14 +284,14 @@ activate p2StreamPm
                 aiSlices <-- p1RemDefault
                 deactivate p1RemDefault
 
-            p2CreateResultCc <-- aiSlices
+            p3CreateResultCc <-- aiSlices
             deactivate aiSlices
 
-            note over p2CreateResultCc
+            note over p3CreateResultCc
               Add linkId
             end note
 
-            note over p2CreateResultCc
+            note over p3CreateResultCc
               Add list of parallel LTPs
             end note
 
@@ -289,7 +302,7 @@ activate p2StreamPm
           loop FOR all EthernetContainers in resultCc
 
             ' IterateEcPmSlices
-            p2CreateResultCc -> ecSlices
+            p3CreateResultCc -> ecSlices
             activate ecSlices
 
               'EthernetKPIs
@@ -349,17 +362,17 @@ activate p2StreamPm
               deactivate p1CalcBH
 
 
-            p2CreateResultCc <-- ecSlices
+            p3CreateResultCc <-- ecSlices
             deactivate ecSlices
 
-            note over p2CreateResultCc
+            note over p3CreateResultCc
               Update statusData
             end note
 
           end loop
 
         ' RemoveOutOfRangeTemperatureValues
-          p2CreateResultCc -> p1ROoRT
+          p3CreateResultCc -> p1ROoRT
           activate p1ROoRT
 
             note over p1ROoRT
@@ -367,25 +380,25 @@ activate p2StreamPm
               values outside pre-defined range
             end note
 
-          p2CreateResultCc <-- p1ROoRT
+          p3CreateResultCc <-- p1ROoRT
           deactivate p1ROoRT
 
-        p2ProcessPm <-- p2CreateResultCc : {resultCc}
-        deactivate p2CreateResultCc
+        p3ProcessPm <-- p3CreateResultCc : {resultCc}
+        deactivate p3CreateResultCc
 
         ' OutputApt
-        p2ProcessPm -> p1OutputApt
-        activate p1OutputApt
+        p3ProcessPm -> p2OutputApt
+        activate p2OutputApt
 
-          note over p1OutputApt
+          note over p2OutputApt
             Create APT format
           end note
 
-        p2ProcessPm <-- p1OutputApt : {aptOutputFormat}
-        deactivate p1OutputApt
+        p3ProcessPm <-- p2OutputApt : {aptOutputFormat}
+        deactivate p2OutputApt
 
         ' OutputOnf
-        p2ProcessPm -> p1OutputOnf
+        p3ProcessPm -> p1OutputOnf
         activate p1OutputOnf
 
           loop FOR all ONF output formats
@@ -394,24 +407,24 @@ activate p2StreamPm
               Create ONF format
             end note
 
-            p1OutputOnf -> p1FieldsFilter
-            activate p1FieldsFilter
+            p1OutputOnf -> p1ExtractData
+            activate p1ExtractData
 
-              note over p1FieldsFilter
+              note over p1ExtractData
                 Reduces structure of
                 ONF output format
               end note
 
-            p1OutputOnf <-- p1FieldsFilter
-            deactivate p1FieldsFilter
+            p1OutputOnf <-- p1ExtractData
+            deactivate p1ExtractData
 
           end loop
 
-        p2ProcessPm <-- p1OutputOnf : [onfOutputFormat]
+        p3ProcessPm <-- p1OutputOnf : [onfOutputFormat]
         deactivate p1OutputOnf
 
         ' KafkaTransmission
-        p2ProcessPm -> p1Trans
+        p3ProcessPm -> p1Trans
         activate p1Trans
 
           note over p1Trans
@@ -419,11 +432,11 @@ activate p2StreamPm
             to KafkaProducerService
           end note
 
-        p2ProcessPm <-- p1Trans
+        p3ProcessPm <-- p1Trans
         deactivate p1Trans
 
         ' Storing
-        p2ProcessPm -> p2Store
+        p3ProcessPm -> p2Store
         activate p2Store
 
           note over p2Store
@@ -431,11 +444,11 @@ activate p2StreamPm
             status data to DataStore
           end note
 
-        p2ProcessPm <-- p2Store
+        p3ProcessPm <-- p2Store
         deactivate p2Store
 
-      p2StreamPm <-- p2ProcessPm : {pmDataQuality}
-      deactivate p2ProcessPm
+      p2StreamPm <-- p3ProcessPm : {pmDataQuality}
+      deactivate p3ProcessPm
 
     end group
 
@@ -466,13 +479,13 @@ activate deviceDump
   deviceDump <-- p1LoadParams
   deactivate p1LoadParams
 
-    deviceDump -> p1ResolveAddress
-    activate p1ResolveAddress
-      note over p1ResolveAddress
+    deviceDump -> p2ResolveAddress
+    activate p2ResolveAddress
+      note over p2ResolveAddress
         Resolves ES address
       end note
-    deviceDump <-- p1ResolveAddress
-    deactivate p1ResolveAddress
+    deviceDump <-- p2ResolveAddress
+    deactivate p2ResolveAddress
 
     deviceDump -> p1ReadDevice
     activate p1ReadDevice
