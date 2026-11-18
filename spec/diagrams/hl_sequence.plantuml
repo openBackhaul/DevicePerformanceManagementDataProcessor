@@ -9,14 +9,10 @@ title
   DevicePerformanceManagementDataProcessor
 end title
 
-'new pxVersion: #LightBlue
-'same pxVersion, but 1.1.0 instead of 1.0.0: #LightCyan
-'totally new function: #LightCoral
-
-'still to be discussed: potentially to be changed to ...
-'1.1.0 version: #LightYellow
-'new px: #LightGreen
-'no new version required, because previously no lot: #LightPink
+'- #LightBlue: px -> py
+'- #LightCyan: px, 1.1.0 added
+'- #LightCoral: new function
+'- #LightPink: changed, but no new version, because previously not assigned in any lot
 
 participant "embedYourself\n" as embed
 participant "provideDevice\nDataStoreDump" as deviceDump
@@ -41,12 +37,12 @@ participant "p1CalculateInterface\nPmDataQuality" as calPmQual
 participant "p3Create\nResultCc" as p3CreateResultCc #LightBlue
 participant "p2Prepare\nTxModes" as p1prepTxModes
 participant "p1Calculate\nAiCapacity" as aiCC
-participant "p2IterateAi\nPmSlices" as aiSlices #LightYellow
+participant "p2IterateAi\nPmSlices" as aiSlices #LightCyan
 participant "p1Calculate\nIntervalCapacity" as intCC
 participant "p1RemoveOutOf\nRangeLevels" as p1RORL
 participant "p1Remove\nDefaultValues" as p1RemDefault
-participant "p2IterateEc\nPmSlices" as ecSlices #LightGreen
-participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightYellow
+participant "p2IterateEc\nPmSlices" as ecSlices #LightCyan
+participant "p1Calculate\nEthernetKpis" as p1EthKpi #LightCyan
 participant "p2Calculate\nUtilization" as p2Util <<no lot !>> #LightPink
 participant "p1Categorize\nDataVolume" as p1CatDV
 participant "p1CalculateBusyHour\nPerformanceIndicators" as p1CalcBH
