@@ -28,8 +28,7 @@ calculate-utilization:
           type: object
           properties:
             total-bytes-output:
-              type: string
-              description: 'String representation of int64 value'
+              type: integer
             time-period:
               type: integer
               description: 'Length of the measurement interval in seconds'
