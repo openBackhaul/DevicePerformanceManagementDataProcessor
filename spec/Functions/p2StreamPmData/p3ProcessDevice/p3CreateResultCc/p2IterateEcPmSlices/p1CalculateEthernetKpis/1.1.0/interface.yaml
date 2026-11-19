@@ -59,7 +59,7 @@ x-javascript-interface:
                   - time-period
                 properties:
                   total-bytes-output:
-                    type: string
+                    type: integer
                     description: >
                       'totalBytesOutput
                       from [/calculate-ethernet-kpis/performance-data/total-bytes-output]'
@@ -108,7 +108,7 @@ x-javascript-interface:
                   - time-period
                 properties:
                   total-bytes-input:
-                    type: string
+                    type: integer
                     description: >
                       'totalBytesInput
                       from [/calculate-ethernet-kpis/performance-data/total-bytes-input]'

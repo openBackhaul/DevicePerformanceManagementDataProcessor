@@ -10,11 +10,9 @@ calculate-ethernet-kpis:
         from {$input#/performance-data}'
       properties:
         total-bytes-input:
-          type: string
-          description: 'String representation of int64 value'
+          type: integer
         total-bytes-output:
-          type: string
-          description: 'String representation of int64 value'
+          type: integer
         time-period:
           type: integer
         transmit-traffic:

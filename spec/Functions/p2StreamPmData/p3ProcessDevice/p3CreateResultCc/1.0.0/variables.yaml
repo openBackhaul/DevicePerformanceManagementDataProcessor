@@ -79,6 +79,7 @@ create-result-cc:
       type: object
       description: >
         'ResultCc represents PM data after processing; follows ONF structure, but extended by additional attributes
+        and with typecasts for certain counters or metrics
         from {$createResultCcFromRawCc.output#/result-cc}'
       required:
         - equipment-augment-1-0:control-construct-pac
@@ -378,11 +379,13 @@ create-result-cc:
                                           max-bytes-per-second-output:
                                             type: integer
                                           total-bytes-input:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           total-bytes-output:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           total-air-interface-interval-capacity:
                                             type: integer
                                             description: >
@@ -406,23 +409,29 @@ create-result-cc:
                                               'receiveTraffic in Mbps
                                               requires {$p1CalculateEthernetKpis}'
                                           total-frames-input:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           total-frames-output:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           forwarded-frames-input:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           forwarded-frames-output:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           unicast-frames-input:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           unicast-frames-output:
-                                            type: string
-                                            description: 'String representation of int64 value'
+                                            type: integer
+                                            description: >
+                                              'Typecast from string to integer'
                                           multicast-frames-input:
                                             type: integer
                                           multicast-frames-output:

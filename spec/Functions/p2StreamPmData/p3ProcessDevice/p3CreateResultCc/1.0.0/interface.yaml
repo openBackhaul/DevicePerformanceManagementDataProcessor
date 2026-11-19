@@ -92,7 +92,7 @@ x-javascript-interface:
                       type: object
                       description: >
                         'ResultCc
-                        from {bare copy of {$input#/raw-cc}}'
+                        from {bare copy of {$input#/raw-cc}, with typecasts}'
         error:
           description: 'ResultCc could not be provided'
           content:
