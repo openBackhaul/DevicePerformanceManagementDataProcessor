@@ -55,9 +55,6 @@ x-javascript-interface:
                 - 'historicalPerformanceDataList invalid'
                 - 'transmissionModeList not provided'
                 - 'transmissionModeList invalid'
-                - 'interval capacity could not be calculated'
-                - 'out of range levels could not be removed'
-                - 'default values could not be removed'
                 - 'historicalPerformanceDataList could not be provided'
                 - 'general processing error'
     processing:

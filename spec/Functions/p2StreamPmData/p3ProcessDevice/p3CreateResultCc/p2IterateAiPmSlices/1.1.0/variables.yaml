@@ -28,14 +28,35 @@ iterate-ai-pm-slices:
             type: object
             description: >
               'historicalPerformanceData
-              overwritten by {$p1RemoveOutOfRangeLevels.output#/performance-data}
-              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}'
+              overwritten by {$p1RemoveOutOfRangeLevels.output#/performance-data} IF no error in p1RemoveOutOfRangeLevels
+              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object} IF no error in p1RemoveDefaultValues'
             properties:
               interval-capacity:
                 type: integer
                 description: >
                   'intervalCapacity
-                  from {$p1CalculateIntervalCapacity.output#/interval-capacity}'
+                  from {$p1CalculateIntervalCapacity.output#/interval-capacity} IF no error in p1CalculateIntervalCapacity'
+            errors:
+              type: array
+              description: >
+                'Entry to be added every time a subfunction returns an error'
+              items:
+                type: object
+                properties:
+                  function-name:
+                    type: string
+                    description: >
+                      'Name of the subfunction that returned an error, e.g.
+                        p1CalculateIntervalCapacity
+                        p1RemoveOutOfRangeLevelValues,
+                        p1RemoveDefaultValues'
+                  error-message:
+                    type: string
+                    description: >
+                      'Error message returned by the failed subfunction, e.g.
+                        Interval capacity could not be provided,
+                        Performance data slice could not be cleaned from out-of-range level attributes,
+                        Input object could not be cleaned from attributes with default values'
     transmission-mode-list:
       type: array
       description: >

@@ -23,7 +23,7 @@ activate iterateSlices
       note over intCC
         Calculates intervalCapacity
       end note
-    iterateSlices <-- intCC: { intervalCapacity }
+    iterateSlices <-- intCC: { intervalCapacity } \nor error
     deactivate intCC
 
     iterateSlices -> p1RORL : { {/parameters/sub-function=p1RemoveOutOfRangeLevels},\n{historical-performance-data} }
@@ -32,7 +32,7 @@ activate iterateSlices
         Deletes TX and RX levels
         outside pre-defined range
       end note
-    iterateSlices <-- p1RORL: { historical-performance-data }
+    iterateSlices <-- p1RORL: { historical-performance-data } \nor error
     deactivate p1RORL
 
     iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{historical-performance-data} }
@@ -40,7 +40,7 @@ activate iterateSlices
       note over p1RemDefault
         Deletes default values
       end note
-    iterateSlices <-- p1RemDefault: { historical-performance-data }
+    iterateSlices <-- p1RemDefault: { historical-performance-data } \nor error
     deactivate p1RemDefault
 
   end loop
