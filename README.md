@@ -32,6 +32,7 @@ These changes e.g. include:
 - Introduced the functions p1ReduceData and p1ExtractData to replace p1FieldsFilter. Both functions use a fields filter to narrow down data but address different use cases.
 - added configuration parameters for Kafka handling
 - changed wrong Ethernet counter types in resultCc and APT output format
+- type change from string to integer for several Ethernet counters (#418)
 
 Details on changes are found in [DPMDP v1.2.0_spec](https://github.com/openBackhaul/DevicePerformanceManagementDataProcessor/milestone/8).  
 
