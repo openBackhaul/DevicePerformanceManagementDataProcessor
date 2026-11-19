@@ -323,15 +323,6 @@ create-result-cc:
                                             type: integer
                                           time-period:
                                             type: integer
-                                          errors:
-                                            type: array
-                                            items:
-                                              type: object
-                                              properties:
-                                                function-name:
-                                                  type: string
-                                                error-message:
-                                                  type: string
                     - description: 'ethernet-container'
                       type: object
                       required:
@@ -464,15 +455,6 @@ create-result-cc:
                                           unknown-protocol-frames-input:
                                             type: string
                                             description: 'String representation of int64 value'
-                                          errors:
-                                            type: array
-                                            items:
-                                              type: object
-                                              properties:
-                                                function-name:
-                                                  type: string
-                                                error-message:
-                                                  type: string
         batch-timestamp:
           type: string
           description: >

@@ -80,11 +80,6 @@ x-javascript-interface:
                 - 'resultCc invalid'
                 - 'interfaceStatus not provided'
                 - 'interfaceStatus invalid'
-                - 'ethernet KPIs could not be added'
-                - 'default values could not be removed'
-                - 'utilization could not be calculated'
-                - 'data volume could not be categorized'
-                - 'busyHour KPIs could not be calculated'
                 - 'historicalPerformanceDataList could not be provided'
                 - 'general processing error'
     processing:

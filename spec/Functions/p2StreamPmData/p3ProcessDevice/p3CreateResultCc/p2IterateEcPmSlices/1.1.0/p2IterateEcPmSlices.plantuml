@@ -19,20 +19,22 @@ activate iterateSlices
 
   loop FOR [historicalPerformanceDataList]   (15min slices to be processed first)
 
+    ' remove default values
     iterateSlices -> p1RemDefault : { {/parameters/sub-function=p1RemoveDefaultValues},\n{performance-data} }
     activate p1RemDefault
       note over p1RemDefault
         Deletes default values
       end note
-    iterateSlices <-- p1RemDefault: { {performance-data} }
+    iterateSlices <-- p1RemDefault: { {performance-data} } \nor error
     deactivate p1RemDefault
 
+    ' add Ethernet KPIs
     iterateSlices -> intCC : { {performance-data} }
     activate intCC
       note over intCC
         Adds Ethernet KPIs
       end note
-    iterateSlices <-- intCC: { {performance-data} }
+    iterateSlices <-- intCC: { {performance-data} } \nor error
     deactivate intCC
 
     note left iterateSlices #Orange
@@ -44,13 +46,13 @@ activate iterateSlices
       [historical-performance-data-list].
     end note
 
-
+    ' calculate utilization
     iterateSlices -> p2CalcUtil : { {historical-performance-data},\n{aggregation-group},\n{result-cc},\nuuidOfEthernetContainer }
     activate p2CalcUtil
       note over p2CalcUtil
         Adds utilization
       end note
-    iterateSlices <-- p2CalcUtil: { {historical-performance-data} }
+    iterateSlices <-- p2CalcUtil: { {historical-performance-data} } \nor error
     deactivate p2CalcUtil
 
     note over iterateSlices
@@ -61,13 +63,14 @@ activate iterateSlices
       THEN
     end note
 
+    ' categorize PM data for BH
     iterateSlices -> p1CatDataVo : { {historical-performance-data},\n{interfaceStatus} }
     activate p1CatDataVo
       note over p1CatDataVo
         Categorizes PM data
         by day and hour
       end note
-    iterateSlices <-- p1CatDataVo: { {interfaceStatus} }
+    iterateSlices <-- p1CatDataVo: { {interfaceStatus} } \nor error
     deactivate p1CatDataVo
 
     note over iterateSlices
@@ -78,12 +81,13 @@ activate iterateSlices
       THEN
     end note
 
+    ' calculate BH
     iterateSlices -> p1CalcBH : { {historical-performance-data},\n{interfaceStatus} }
     activate p1CalcBH
       note over p1CalcBH
         Adds BusyHourKPIs
       end note
-    iterateSlices <-- p1CalcBH: { {historical-performance-data} }
+    iterateSlices <-- p1CalcBH: { {historical-performance-data} } \nor error
     deactivate p1CalcBH
 
   end loop
