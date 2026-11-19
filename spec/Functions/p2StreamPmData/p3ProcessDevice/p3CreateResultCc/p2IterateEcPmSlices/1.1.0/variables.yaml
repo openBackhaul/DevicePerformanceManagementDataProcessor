@@ -33,9 +33,9 @@ iterate-ec-pm-slices:
             type: object
             description: >
               'historicalPerformanceData set
-              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object}
-              overwritten by {$p1CalculateEthernetKpis.output#/performance-data}
-              overwritten by {$p1CalculateBusyHourPerformanceIndicators.output#/performance-data}'
+              overwritten by {$p1RemoveDefaultValues.output#/cleaned-object} IF no error in p1RemoveDefaultValues
+              overwritten by {$p1CalculateEthernetKpis.output#/performance-data} IF no error in p1CalculateEthernetKpis
+              overwritten by {$p1CalculateBusyHourPerformanceIndicators.output#/performance-data} IF no error in p1CalculateBusyHourPerformanceIndicators'
             properties:
               transmit-traffic:
                 type: integer
@@ -63,6 +63,31 @@ iterate-ec-pm-slices:
                   'busy hour KPIs
                   exclusively if {granularity-period} indicates 24-HOURS
                   requires {$p1CalculateBusyHourPerformanceIndicators}'
+              errors:
+                type: array
+                description: >
+                  'Entry to be added every time a subfunction returns an error'
+                items:
+                  type: object
+                  properties:
+                    function-name:
+                      type: string
+                      description: >
+                        'Name of the subfunction that returned an error, e.g.
+                          p1RemoveDefaultValues,
+                          p1CalculateEthernetKpis,
+                          p2CalculateUtilization,
+                          p1CategorizeDataVolume,
+                          p1CalculateBusyHourPerformanceIndicators'
+                    error-message:
+                      type: string
+                      description: >
+                        'Error message returned by the failed subfunction, e.g.
+                          Input object could not be cleaned from attributes with default values,
+                          Ethernet KPIs could not be added,
+                          Utilization could not be added,
+                          PM data could not be categorized by day and hour,
+                          BusyHour KPIs could not be added'
     aggregation-group:
       type: object
       description: >
@@ -78,7 +103,7 @@ iterate-ec-pm-slices:
       description: >
         'status at the interface based on already processed batches
         from {$input#/interface-status}
-        overwritten by {$p1CategorizeDataVolume.output#/interface-status}'
+        overwritten by {$p1CategorizeDataVolume.output#/interface-status} IF no error in p1CategorizeDataVolume'
     uuid-of-ethernet-container:
       type: string
       description: >
